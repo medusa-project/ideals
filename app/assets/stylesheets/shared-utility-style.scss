@@ -1,0 +1,23 @@
+//table display classes
+//used in banner images
+.table-row {
+  display: table-row;
+}
+
+.table-cell {
+  display: table-cell;
+}
+
+//hide elements on mobile view
+@media (max-width: 767px) {
+  .ui-lib-mobile-hide {
+    display: none;
+  }
+}
+
+//show elements on mobile view
+@media (min-width: 768px) {
+  .ui-lib-mobile-show {
+    display: none;
+  }
+}

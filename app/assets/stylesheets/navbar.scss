@@ -1,0 +1,269 @@
+/*navbar*/
+#ui-lib-global-nav {
+  border: 0;
+  background-color: $color__darker-blue;
+  border-radius: 0;
+}
+
+#ui-lib-mobile-utilities {
+  background-color: $color__dark-navy;
+  border-bottom: 1px solid $color__text-light;
+  margin-left: -15px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 10px;
+  a {
+    color: $color__text-light;
+  }
+  > div {
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+  .form-group {
+    margin-bottom: 0px;
+    margin-top: 5px;
+  }
+}
+
+// #ui-lib-global-menu.keyboard ul ul {
+//   a:focus {
+//     //a:hover,a:focus {
+//     color: $color__dark-navy !important;
+//     background-color: $color__background-main-column !important;
+//   }         
+// }
+
+#ui-lib-global-menu {
+  .global-nav-description {
+    display: block;
+    font-style: italic;
+    font-size: 13px;
+    white-space: normal;
+    line-height: 16px;
+    padding-top: 3px;
+  }
+  float: right;
+  .dropdown-menu > .active > a {
+    background-color: $color__burnt-orange;
+  }
+  // .current-menu-ancestor
+
+  // .current-menu-ancestor {
+  //   background-color: $color__burnt-orange;
+  // }
+  a {
+    outline: none;
+    color: $color__text-light;
+    font-size: 16px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  > ul > li {
+    margin: 0px;
+  }
+  a:focus {
+    background-color: $color__burnt-orange;
+  }
+  .nav .open > a, {
+    background-color: $color__burnt-orange;
+  }
+  a:hover {
+    background-color: $color__burnt-orange;
+  }
+  ul li:last-of-type ul {
+    //@extend .pull-right;
+    float: right;
+    right: 0;
+    left: auto;
+  }
+  ul .dropdown ul {
+    background-color: $color__burnt-orange;
+    border: none;
+    border-radius: 0;
+    padding: 0px;
+    a:hover, a:focus {
+      color: $color__dark-navy;
+      background-color: $color__background-main-column;
+    }
+    > li:last-of-type {
+      border-top: 1px solid $color__text-light;
+      a {
+        text-align: right;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      a::after {
+        font-family: FontAwesome;
+        content: ' \f0a9';
+      }
+    }
+    > li:last-of-type:hover, > li:last-of-type:focus {
+      border: 1px solid $color__burnt-orange;
+      color: $color__dark-navy;
+      background-color: $color__background-main-column;
+    }
+    li {
+      margin: 0px;
+      border: 1px solid $color__burnt-orange;
+      a {
+        padding-top: 10px;
+      }
+    }
+  }
+}
+
+#ui-lib-site-mobile-title {
+  background-color: $color__lightest-grey;
+  font-weight: 700;
+  margin-left: -15px;
+  padding-left: 15px;
+  padding-top: 5px;
+}
+
+#ui-lib-mobile-site-menu {
+  background-color: $color__lightest-grey;
+  height: 100%;
+  margin-left: -15px;
+  padding-left: 15px;
+  padding-right: 15px;
+  a {
+    color: $color__darkest-grey;
+    font-size: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  li {
+    margin: 0px;
+  }
+  ul {
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+}
+
+.navbar {
+  @include border-rad();
+}
+
+/*off-canvas navbar*/
+/*http://www.smashingmagazine.com/2013/01/15/off-canvas-navigation-for-responsive-website/ */
+@media (max-width: 767px) {
+  #ui-lib-global-nav {
+    right: -85%;
+    width: 85%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    margin-right: 0;
+    margin-left: 0;
+    padding-left: 15px;
+    div {
+      float: none;
+    }
+    ul li:last-of-type ul {
+      float: none;
+      right: 0;
+      left: auto;
+    }
+  }
+  #ui-lib-global-menu {
+    margin-left: -15px;
+    > ul {
+      margin: 0px;
+    }
+    > ul > li {
+      border-bottom: 1px solid $color__text-light;
+      margin: 0px;
+      > a {
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+    }
+    > ul > li:last-of-type {
+      border: none;
+    }
+    ul ul a {
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+  }
+  header {
+    margin-bottom: 15px;
+  }
+  #inner-wrap {
+    position: relative;
+    width: 100%;
+  }
+  #inner-wrap.off-canvas {
+    right: 85%;
+    right: 0;
+    transform: translateX(-85%);
+  }
+  #inner-wrap {
+    transition: transform 500ms ease;
+  }
+  .mobile-overlay.off-canvas {
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+  }
+  #mobile-canvas-button {
+    color: $color__background-main-column;
+    background-color: transparent;
+  }
+  #outer-wrap {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+}
+
+@media (max-width: 550px) {
+  #mobile-canvas-button > i {
+    font-size: 2em;
+  }
+  .off-canvas #mobile-canvas-button:before {
+    font-size: 2em;
+    font-family: FontAwesome;
+    content: '\f00d';
+    z-index: 3;
+    position: relative;
+  }
+  #mobile-canvas-button:before {
+    font-size: 2em;
+    font-family: FontAwesome;
+    content: '\f0c9';
+    z-index: 3;
+    position: relative;
+  }
+  #mobile-canvas-button {
+    text-decoration: none;
+    > textarea {
+      line-height: 0;
+    }
+  }
+}
+
+@media (min-width: 551px) {
+  .off-canvas #mobile-canvas-button:before {
+    font-size: 3em;
+    font-family: FontAwesome;
+    content: '\f00d';
+    z-index: 3;
+    position: relative;
+  }
+  #mobile-canvas-button:before {
+    font-size: 3em;
+    font-family: FontAwesome;
+    content: '\f0c9';
+    z-index: 3;
+    position: relative;
+  }
+  #mobile-canvas-button {
+    text-decoration: none;
+  }
+}

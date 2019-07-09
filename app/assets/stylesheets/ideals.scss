@@ -1,0 +1,936 @@
+// uses variables from libguide-style.scss
+$one-line-header-height: 102px;
+$two-line-header-height: 137px;
+$minibar-height: 50px;
+
+//.idb-help ul {
+//  list-style-type: none !important;
+//}
+
+.idb-help p {
+  font-size: large;
+  line-height: 1.3;
+}
+
+.idb-help-section-head {
+  border: 1px $color__medium-grey;
+}
+
+.idb-help {
+  padding-top: 10px;
+}
+
+li.current {
+  background-color: $color__light-blue;
+}
+
+// Place all the styles related to the home controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.faqHeader {
+  font-size: 27px;
+  margin: 20px;
+}
+
+.bg-subtle {
+  background-color: $color__lightest-grey;
+}
+
+.navbar-user {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  position: relative;
+  display: block;
+}
+
+.panel, .panel-group {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.add-file-controls {
+  line-height: 30px;
+  font-size: 16px;
+}
+
+div.alert.alert-alert {
+  padding: 15px;
+  background-color: $color__yellow;
+  position: relative;
+  //z-index: 2100;
+  margin-bottom: 0;
+}
+div.alert.alert-notice {
+  padding: 15px;
+  background-color: $color__light-blue;
+  position: relative;
+  //z-index: 2100;
+  margin-bottom: 0;
+}
+
+.idb-callout {
+  background: $color__yellow;
+  padding: 5px;
+  border: 1px solid $color__light-orange;
+}
+
+.completion-warning, .datacite-changes-warning {
+  background: $color__yellow;
+  padding: 5px;
+  margin-left: -5px;
+}
+
+pre {
+  background-color: $color__lightest-grey;
+  padding: 10px;
+  font-size: 11px;
+}
+
+div {
+  &.field, &.actions {
+    margin-bottom: 10px;
+  }
+}
+
+#notice {
+  color: green;
+}
+
+.metrics-border{
+  border: 1px solid $color__light-grey;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.field_with_errors {
+  padding: 2px;
+  background-color: $color__red;
+  display: table;
+}
+
+#error_explanation {
+  width: 450px;
+  border: 2px solid $color__red;
+  padding: 7px;
+  padding-bottom: 0;
+  margin-bottom: 20px;
+  background-color: $color__lightest-grey;
+  h2 {
+    text-align: left;
+    font-weight: bold;
+    padding: 5px 5px 5px 15px;
+    font-size: 12px;
+    margin: -7px;
+    margin-bottom: 0px;
+    background-color: $color__red;
+    color: #fff;
+  }
+  ul li {
+    font-size: 12px;
+    list-style: square;
+  }
+}
+
+//a.btn {
+//  color: $color__text-light;
+//&:visited {
+//    color: $color__text-light;
+//  }
+//  &:hover {
+//    color: $color__text-light;
+//    background-color: $color__dark-navy;
+//  }
+//}
+
+//a.btn {
+//  color: red;
+//  &:visited {
+//    color: purple;
+//  }
+//  &:hover {
+//    color: orange;
+//    background-color: yellow;
+//  }
+//}
+
+
+.bs-callout-info {
+  padding-bottom: 10px;
+}
+
+.help-big-question {
+  font-size: 24px;
+  text-align: center;
+}
+
+.flame-icon {
+  color: $color__red;
+}
+
+/* unvisited link */
+a.idb:link {
+  color: $color__text-light !important;
+}
+
+/* visited link */
+a.idb:visited {
+  color: $color__text-light !important;
+}
+
+/* mouse over link */
+a.idb:hover {
+  color: $color__text-light !important;
+}
+
+/* selected link */
+a.idb:active {
+  color: $color__text-light !important;
+}
+
+.idb-info-body {
+  margin-left: 25px;
+}
+
+.idb-info-header {
+  padding-left: 10px;
+  background-color: $color__light-grey;
+}
+
+//body {
+//  background-color: $color__lightest_blue;
+//}
+
+table.dataTable.no-footer {
+  border-color: $color__darker-grey;
+}
+
+table {
+  border-color: $color__darker-grey;
+}
+
+.switch-box {
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 15px;
+  margin-top: 15px;
+}
+
+.idb-help-prompt{
+  font-weight: normal;
+}
+
+/*
+Firefox and fieldsets
+Firefox has some awkward fieldset styling involving width that interferes with the responsive table. This cannot be overridden without a Firefox-specific hack that we don't provide in Bootstrap:
+*/
+@-moz-document url-prefix() {
+  fieldset { display: table-cell; }
+}
+
+tr.row.idb-infographic-header > th{
+  vertical-align: top;
+}
+
+td {
+  vertical-align: top;
+}
+
+div#box-select{
+  display: inline-block;
+  position: relative;
+  top: 2px;
+}
+
+.file-btn-group{
+  vertical-align: middle;
+}
+
+#file-drop-area{
+  background-color: $color__lightest-grey;
+  display: inline-block;
+  border: 2px dashed $color__light-blue;
+  padding: 15px;
+}
+
+#copy-persistent-link{
+  padding-top: 10px;
+  padding-bottom: 5px;
+}
+.dataset-index-btn{
+  margin-bottom: 3px;
+}
+div.row.checkbox {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+#my_datasets-table th:nth-of-type(1) {
+   width: 75%;
+}
+#curator_datasets-table th:nth-of-type(2) {
+  width: 60%;
+}
+
+.idb-callout-lg{
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+}
+
+.fileinput-button{
+  height: 40px;
+  width: 305.4px;
+  position: relative;
+}
+.fileinput-button-content{
+  position: relative;
+  top: 3px;
+}
+
+#selectedFiles{
+ display: none;
+}
+
+.inline_formatted_text{
+  display:inline-block;
+  vertical-align: text-top;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.borderless * {
+  border: none !important;
+}
+#feedback-header-link{
+  text-decoration: underline;
+  color: $color__dark-link;
+  &:visited {
+    color: $color__dark-link
+  }
+  &:hover {
+    color: $color__text-light;
+    background-color: $color__dark-navy;
+  }
+}
+.beta-block{
+  position: relative;
+  top: -10px;
+  text-align: center;
+  color: $color__text-light;
+  background-color: $color__burnt-orange !important;
+  border-radius: 5px;
+  margin-bottom: -8px;
+  padding-bottom: 0;
+}
+
+div.panel-heading{
+  background-color: $color__light-blue-background !important;
+}
+table.deposit-agreement-selection-warning > tbody > tr > td {
+  padding-left: 5px;
+}
+.error-message{
+  padding: 5px;
+  border: solid 2px $color__red
+}
+
+.nudge-left-12{
+  margin-left: -12px;
+}
+
+.nudge-left-20{
+  margin-left: -20px;
+}
+
+.idb-infographic-subhead{
+  background-color: $color__lightest-grey;
+  font-weight: bold;
+}
+
+.large-text{
+  font-size: large;
+}
+.test-border{
+  border: 1px solid red;
+}
+.help-bottom-spacer{
+  height: 800px;
+}
+
+.label-as-badge-info {
+  color: $color__text-main;
+  background-color: $color__background-main-column;
+  border-radius: 2em;
+  padding: 3px;
+}
+
+.full-width{
+  width: 100%;
+  display: block;
+}
+.citation-example{
+  color: $color__text-main;
+  background-color: $color__background-main-column;
+  padding: 20px;
+  margin-bottom: .8em;
+}
+.citation{
+  padding: 2px;
+}
+.client-example{
+  font-family: monospace;
+}
+.indent{
+  margin-left: 15px;
+}
+.table-title{
+  background-color: $color__navy;
+  color: $color__text-light;
+}
+
+.instruction-box{
+  background-color: $color__yellow-background;
+  border: 1px solid $color__light-grey;
+  padding: 3px;
+  border-radius: 3px;
+}
+
+.featured-datasaet{
+  border: 1px solid $color__highlight-orange;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 15px;
+  margin-top: 30px;
+  background-color: $color__gray-background;
+}
+
+.example-site{
+  background-color: $color__highlight-orange;
+}
+.example-person{
+  background-color: $color__highlight-green;
+}
+
+.example.db-inner{
+  border: 2px solid $color__navy;
+  margin: 5px;
+}
+
+.db-inner{
+  border: 2px solid $color__burnt-orange;
+  margin: 10px;
+  padding: 10px;
+}
+
+.db-outer{
+  border: 2px solid $color__navy;
+  margin: 10px;
+}
+.curator-form-help>h3, .curator-form-help>h4{
+  font-weight: bold;
+}
+.welcome{
+  margin: 5px;
+}
+
+.featured-researcher{
+  border-left: 2px solid $color__gray-background;
+}
+
+.no-image-available{
+  padding: 20px;
+  text-align: center;
+  background-color: $color__gray-background;
+  font-size: large;
+}
+
+.featured-bio{
+  margin-top: 5px;
+}
+
+.elbow{
+  margin-top: 5px;
+}
+.more-elbow {
+  margin-top: 10px;
+}
+
+.bordercol{
+  border-left: 1px solid $color__light-grey;
+}
+
+.photo-preview {
+  padding: 10%;
+  margin: auto;
+  border-radius: 50%;
+}
+
+.photo-preview img {
+  margin: auto;
+}
+
+.featured-buttons{
+  margin-top: 5px;
+  margin-bottom: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.featured-buttons button{
+  width: 45%;
+  text-align: center;
+  margin: auto;
+}
+
+.featured-controls {
+  margin-top: 5px;
+}
+
+// Place all the styles related to the Datasets controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+.mainTitleText {
+  font-style: italic;
+  font-weight: bold;
+  font-size: large;
+}
+
+.info-box {
+  background-color: $color__lightest-grey;
+}
+
+.metadata-label {
+  font-weight: bold;
+}
+
+.metadata-value {
+  font-style: normal;
+}
+
+.metadata-note {
+  font-style: italic;
+}
+
+div.citation-block {
+  background-color: $color__lightest-grey;
+  border: 1px solid $color__light-grey;
+  padding: 5px;
+}
+
+.metadata-block {
+  background-color: $color__background-main-column;
+  border: 1px solid $color__light-grey;
+  padding-left: 25px;
+}
+
+.form-group.required .control-label:after {
+  content: "*";
+  color: $color__red;
+}
+
+.file-description-textfield {
+  width: 100%;
+}
+
+.dropdown-menu.login-form {
+  z-index: 100;
+  padding-top: 5px;
+  padding-right: 10px;
+  padding-bottom: 0;
+  padding-left: 10px;
+}
+
+.blank-page {
+  height: 550px;
+}
+
+.border {
+  border: 1px solid $color__light-grey;
+  padding-left: 10px;
+}
+
+fieldset.metadata-border {
+  border: 1px groove $color__medium-grey !important;
+  padding: 0 1.4em 1.4em 1.4em !important;
+  margin: 0 0 1.5em 0 !important;
+  background-color: $color__light-grey;
+}
+
+legend.metadata-border {
+  width: inherit; /* Or auto */
+  padding: 0 10px; /* To give a bit of padding on the left and right */
+  border-bottom: none;
+  background-color: $color__text-light;
+}
+
+.deposit-agreement-warning, .deposit-agreement-selection-warning {
+  color: $color__red;
+  font-weight: bold;
+  font-style: italic;
+  // padding-bottom: 20px;
+  //font-size: 120%;
+}
+
+.request-review-response {
+  color: $color__yellow-background;
+}
+
+.drop-area {
+  background-color: $color__text-light;
+  margin: 50px;
+}
+
+.modal-dialog {
+  position: relative;
+  width: auto;
+  max-width: 600px;
+  margin: 10px;
+}
+
+.modal-sm {
+  max-width: 300px;
+}
+
+.modal-lg {
+  max-width: 900px;
+}
+
+.modal-xl{
+  max-width: 1200px;
+}
+
+@media (min-width: 768px) {
+  .modal-dialog {
+    margin: 30px auto;
+  }
+}
+
+@media (min-width: 320px) {
+  .modal-sm {
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+@media (min-width: 620px) {
+  .modal-dialog {
+    margin-right: auto;
+    margin-left: auto;
+  }
+  .modal-lg {
+    margin-right: 10px;
+    margin-left: 10px;
+  }
+}
+
+@media (min-width: 920px) {
+  .modal-lg {
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+.tooltip-inner {
+  text-align: left;
+}
+
+.curator-only {
+  padding: 5px;
+  border: 1px solid black;
+  background-color: $color__highlight-orange;
+}
+
+#creator_table {
+  border: 1px solid $color__medium-grey;
+}
+#contributor_table {
+  border: 1px solid $color__medium-grey;
+}
+
+.form-heading-required:after {
+  content: "*";
+  color: $color__red;
+}
+
+.input-field-required {
+  background-color: $color__yellow !important;
+}
+
+.test {
+  border: 2px solid $color__red;
+}
+
+.highlight {
+  color: $color__red;
+  font-weight: bold;
+}
+
+.control-label.required:after {
+  content: "*";
+  color: $color__red;
+}
+
+.license-info-column-header {
+  border-radius: 5px 5px 0 0;
+  border: 1px solid $color__dark-moderate-blue;
+  //min-height: 125px;
+  background-color: $color__dark-moderate-blue;
+  color: $color__text-light;
+  padding: 5px;
+}
+
+.license-info-column-middle-section {
+  border-radius: 0;
+  border-right: 1px solid $color__dark-moderate-blue;
+  border-left: 1px solid $color__dark-moderate-blue;
+  border-top: 1px solid $color__dark-moderate-blue;
+  //min-height: 175px;
+  padding: 5px;
+  background-color: $color__background-main-column;
+}
+
+.license-info-column-bottom-section {
+  border-radius: 0 0 5px 5px;
+  border: 1px solid $color__dark-moderate-blue;
+  //min-height: 200px;
+  padding: 5px;
+  background-color: $color__background-main-column;
+}
+
+.embargo-info-column-header {
+  border-radius: 5px 5px 0 0;
+  border: 1px solid $color__dark-moderate-blue;
+  background-color: $color__dark-moderate-blue;
+  color: $color__text-light;
+  padding: 10px;
+}
+
+.embargo-info-column-middle-section {
+  border-radius: 0;
+  border-right: 1px solid $color__dark-moderate-blue;
+  border-left: 1px solid $color__dark-moderate-blue;
+  border-top: 1px solid $color__dark-moderate-blue;
+  padding: 10px;
+  min-height: 125px;
+  background-color: $color__background-main-column;
+}
+
+.embargo-info-column-bottom-section {
+  border-radius: 0 0 5px 5px;
+  border: 1px solid #003dac;
+  padding: 10px;
+  min-height: 145px;
+  background-color: $color__background-main-column;
+}
+
+.idb-dashboard .panel-body {
+  background-color: $color__background-main-column;
+}
+
+.idb-dashboard .panel-heading {
+  color: black;
+}
+
+.panel-heading .accordion-toggle:after {
+  /* symbol for "opening" panels */
+  //font-family: 'FontAwesome';
+  //content: "[\f068]";
+  font-family: Helvetica, Arial, sans-serif;
+  content: "[-]";
+  float: left;
+  color: black;
+  margin-right: 10px;
+  /* don't rotate icon - override framework defaults  */
+  -webkit-transform: rotate(0);
+  -moz-transform: rotate(0);
+  -ms-transform: rotate(0);
+  -o-transform: rotate(0);
+  transform: rotate(0);
+}
+
+.panel-heading .accordion-toggle.collapsed:after {
+  font-family: Helvetica, Arial, sans-serif;
+  content: "[+]";
+  float: left;
+  color: black;
+  margin-right: 10px;
+  /* don't rotate icon - override framework defaults  */
+  -webkit-transform: rotate(0);
+  -moz-transform: rotate(0);
+  -ms-transform: rotate(0);
+  -o-transform: rotate(0);
+  transform: rotate(0);
+}
+
+.invalid-email {
+  border: 2px solid $color__red;
+}
+
+.dashboard-unicorn-image {
+  -moz-transform: scaleX(-1);
+  -o-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+  filter: FlipH;
+  -ms-filter: "FlipH";
+}
+
+.availability-msg {
+  padding: 10px;
+  background-color: $color__lightest-grey;
+  font-weight: bold;
+}
+
+.confirm-modal-text li {
+  font-size: 16px;
+  line-height: 22px;
+  margin: 10px;
+}
+
+.embargo-placeholder {
+  padding: 35px;
+  border: 15px solid $color__burnt-orange;
+  background-color: $color__yellow-background;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.dataset-title {
+  display: block;
+  font-size: 2em;
+}
+
+#creator_table > thead {
+  background-color: $color__lightest-grey;
+}
+
+#contributor_table > thead {
+  background-color: $color__lightest-grey;
+}
+
+.idb-infographic-header{
+  background-color: $color__dark-moderate-blue;
+  color: $color__text-light;
+}
+
+#upload-table{
+  border-collapse: collapse;
+  text-align: center;
+  margin-left: 20%;
+}
+
+#upload-table td {
+  vertical-align: middle;
+  text-align: center;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border: 1px solid $color__light-grey;
+}
+
+.upload-key td {
+  border: 1px solid $color__light-grey;
+  padding: 5px;
+  text-align: left !important;
+}
+
+.upload-form{
+  margin: 5px;
+}
+
+.tooltip-inner{
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  max-width: 350px;
+}
+.tooltip-arrow{
+  background-color: white;
+}
+
+.highlight-background{
+  background-color: $color__yellow-background;
+}
+
+.search-control{
+  padding-left: 0;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+//.preview{
+//
+//
+//}
+
+.preview{
+
+  padding-left: 15px;
+
+  background-color: $color__lightest-grey;
+
+  font-family: monospace;
+
+  margin-right: 15px;
+
+  max-height: 400px;
+  max-width: 10in;
+
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+//div#box-select{
+//  top: 15px !important;
+//}
+
+a.morelink {
+  text-decoration:none;
+  outline: none;
+}
+.morecontent span {
+  display: none;
+}
+
+.record {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 5px;
+  border-left: 3px solid $color__light-grey;
+
+}
+.selected-version{
+  background-color: $color__yellow-background !important;
+  font-weight: bold;
+}
+.boxed-alert{
+  margin: 2px;
+  padding: 3px;
+  border: 1px solid $color__burnt-orange;
+}
+
+#g-recaptcha-response {
+  display: block !important;
+  position: absolute;
+  margin: -78px 0 0 0 !important;
+  width: 302px !important;
+  height: 76px !important;
+  z-index: -999999;
+  opacity: 0;
+}
+
+@media print {
+  * { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; min-height: 0 !important;} /* Black prints faster: h5bp.com/s */
+  .hide-when-printing {visibility: hidden;}
+  a, a:visited { text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }  /* Don't show links for images, or javascript/internal links */
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  thead { display: table-header-group; } /* h5bp.com/t */
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page { margin: 0.5cm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
