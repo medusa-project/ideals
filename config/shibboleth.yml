@@ -14,7 +14,7 @@ development:
     email: mail
 
 aws-demo:
-  host: demo.databank.illinois.edu
+  host: demo.ideals.illinois.edu
   uid_field: eppn
   extra_fields:
     - eppn
@@ -29,7 +29,7 @@ aws-demo:
     email: mail
 
 aws-production:
-  host: databank.illinois.edu
+  host: ideals.illinois.edu
   uid_field: eppn
   extra_fields:
     - eppn
