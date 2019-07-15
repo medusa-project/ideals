@@ -1,5 +1,8 @@
 class SessionsController < ApplicationController
 
+  require 'lib/user'
+  require 'lib/user/shibboleth'
+
   def new
     session[:login_return_referer] = request.env['HTTP_REFERER']
     redirect_to(shibboleth_login_path(Ideals::Application.shibboleth_host))
