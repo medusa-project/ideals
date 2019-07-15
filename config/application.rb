@@ -17,6 +17,13 @@ require "rails/test_unit/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+class UserRole
+  ADMIN = 'admin'
+  DEPOSITOR = 'depositor'
+  GUEST = 'guest'
+  NO_DEPOSIT = 'no_deposit'
+end
+
 module Ideals
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
