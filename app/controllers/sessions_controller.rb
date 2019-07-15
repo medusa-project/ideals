@@ -1,7 +1,7 @@
 class SessionsController < ApplicationController
 
-  require 'lib/user'
-  require 'lib/user/shibboleth'
+  require '../lib/user'
+  require '../lib/user/shibboleth'
 
   def new
     session[:login_return_referer] = request.env['HTTP_REFERER']
