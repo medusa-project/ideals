@@ -10,26 +10,26 @@ default: &default
 # Do not set this db to the same as development or production.
 test: &test
   <<: *default
-  database: databank_test
+  database: ideals_test
   host: localhost
 
 development:
   <<: *default
-  database: databank
+  database: ideals
   username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>
   password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
-  host: localhost
+  host: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:host] %>
 
 aws-production:
   <<: *default
-  database: databank
+  database: ideals
   username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>
   password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
   host: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:host] %>
 
 aws-demo:
   <<: *default
-  database: databank
+  database: ideals
   username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>
   password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
   host: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:host] %>
