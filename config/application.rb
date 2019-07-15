@@ -40,6 +40,7 @@ module Ideals
     attr_accessor :aws_client
 
     config.autoload_paths << File.join(Rails.root, 'lib')
+    config.autoload_paths << File.join(Rails.root, 'lib', 'user')
 
   end
 end
