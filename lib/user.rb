@@ -20,30 +20,6 @@ module User
       self.role == requested_role.to_s
     end
 
-    def self.create_system_user
-      create! do |user|
-        user.provider = "system"
-        user.uid = IDEALS_CONFIG[:system_user_email]
-        user.name = IDEALS_CONFIG[:system_user_name]
-        user.email = IDEALS_CONFIG[:system_user_email]
-        user.username = IDEALS_CONFIG[:system_user_name]
-        user.role = "admin"
-      end
-    end
-
-    def self.reserve_doi_user()
-
-      user = User::User.new(provider: "system",
-                      uid: IDEALS_CONFIG[:reserve_doi_netid],
-                      email: "#{IDEALS_CONFIG[:reserve_doi_netid]}@illinois.edu",
-                      username: IDEALS_CONFIG[:reserve_doi_netid],
-                      name: IDEALS_CONFIG[:reserve_doi_netid],
-                      role: "admin")
-
-      user
-
-    end
-
     # Converts email to all lower-case.
     def downcase_email
       self.email = email.downcase

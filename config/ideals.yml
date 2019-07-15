@@ -1,0 +1,2 @@
+:admin:
+  :netids: <%= Rails.application.credentials[Rails.env.to_sym][:admin][:netids] %>
