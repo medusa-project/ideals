@@ -68,7 +68,7 @@ gem 'roda'
 gem "figaro"
 
 # Use bootstrap for layout framework
-gem 'bootstrap-sass', '~> 3.3.4.1'
+gem 'bootstrap-sass', '~> 3.4.1'
 gem 'font-awesome-sass', '~> 5.6.1'
 gem 'autoprefixer-rails'
 
