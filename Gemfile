@@ -111,6 +111,8 @@ gem 'valid_email'
 gem 'omniauth-identity'
 gem 'omniauth-shibboleth'
 
+gem 'omniauth-rails_csrf_protection'
+
 # Use Boxr to interact with Box API
 gem 'boxr'
 

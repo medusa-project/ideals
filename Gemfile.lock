@@ -993,6 +993,9 @@ GEM
     omniauth-identity (1.1.1)
       bcrypt-ruby (~> 3.0)
       omniauth (~> 1.0)
+    omniauth-rails_csrf_protection (0.1.2)
+      actionpack (>= 4.2)
+      omniauth (>= 1.3.1)
     omniauth-shibboleth (1.3.0)
       omniauth (>= 1.0.0)
     open_uri_redirections (0.2.1)
@@ -1191,6 +1194,7 @@ DEPENDENCIES
   nokogiri
   nokogiri-diff
   omniauth-identity
+  omniauth-rails_csrf_protection
   omniauth-shibboleth
   open_uri_redirections
   passenger (>= 5.0.25)
