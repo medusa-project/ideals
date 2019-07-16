@@ -158,6 +158,11 @@ gem 'capistrano-bundler'
 gem 'capistrano-rbenv'
 gem 'capistrano-passenger'
 
+# use rubocop linter to support consisitent style
+gem 'rubocop', require: false
+gem 'rubocop-rails'
+gem 'rubocop-performance'
+
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
