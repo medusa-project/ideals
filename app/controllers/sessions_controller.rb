@@ -1,22 +1,22 @@
-class SessionsController < ApplicationController
+# frozen_string_literal: true
 
-  require_relative '../../lib/user.rb'
-  require_relative '../../lib/user/shibboleth'
+class SessionsController < ApplicationController
+  require_relative "../../lib/user.rb"
+  require_relative "../../lib/user/shibboleth"
 
   def new
-    session[:login_return_referer] = request.env['HTTP_REFERER']
+    session[:login_return_referer] = request.env["HTTP_REFERER"]
     redirect_to(shibboleth_login_path(Ideals::Application.shibboleth_host))
   end
 
   def create
-
     auth = request.env["omniauth.auth"]
 
     user = nil
 
-    if auth[:provider] && auth[:provider] == 'shibboleth'
+    if auth[:provider] && auth[:provider] == "shibboleth"
       user = User::Shibboleth.from_omniauth(auth)
-    elsif auth[:provider] && auth[:provider] == 'identity'
+    elsif auth[:provider] && auth[:provider] == "identity"
       user = User::Identity.from_omniauth(auth)
     else
       unauthorized
@@ -28,7 +28,6 @@ class SessionsController < ApplicationController
     else
       redirect_to root_url
     end
-
   end
 
   def destroy
@@ -46,9 +45,7 @@ class SessionsController < ApplicationController
     session[:login_return_uri] || session[:login_return_referer] || root_url
   end
 
-
   def shibboleth_login_path(host)
     "/Shibboleth.sso/Login?target=https://#{host}/auth/shibboleth/callback"
   end
-
 end

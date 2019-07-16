@@ -1,23 +1,24 @@
-require 'open-uri'
-require 'json'
+# frozen_string_literal: true
+
+require "open-uri"
+require "json"
 
 module User
-
   # This is an abstract class to represent a User
   # Class methods used because Shibboleth identities are not persistent in ideals
 
-  class User < ActiveRecord::Base
+  class User < ApplicationRecord
     include ActiveModel::Serialization
 
     validates_uniqueness_of :uid, allow_blank: false
     before_save :downcase_email
     validates :name,  presence: true
-    validates :email, presence: true, length: { maximum: 255 },
-              format: { with: VALID_EMAIL_REGEX },
-              uniqueness: { case_sensitive: false }
+    validates :email, presence: true, length: {maximum: 255},
+              format: {with: VALID_EMAIL_REGEX},
+              uniqueness: {case_sensitive: false}
 
-    def is? (requested_role)
-      self.role == requested_role.to_s
+    def is?(requested_role)
+      role == requested_role.to_s
     end
 
     # Converts email to all lower-case.
@@ -26,42 +27,38 @@ module User
     end
 
     def group
-      if self.provider == 'shibboleth'
-        self.provider
-      elsif self.provider == 'identity'
-        invitee = Invitee.find_by_email(self.email)
-        if invitee
-          invitee.group
-        else
-          raise("no invitation found for identity: #{self.email}")
-        end
+      if provider == "shibboleth"
+        provider
+      elsif provider == "identity"
+        invitee = Invitee.find_by(email: email)
+        raise("no invitation found for identity: #{email}") unless invitee
+
+        invitee.group
       end
     end
 
-    def self.from_omniauth(auth)
+    def self.from_omniauth(_auth)
       raise "subclass responsibility"
     end
 
-    def self.create_with_omniauth(auth)
+    def self.create_with_omniauth(_auth)
       raise "subclass responsibility"
     end
 
-    def update_with_omniauth(auth)
+    def update_with_omniauth(_auth)
       raise "subclass responsibility"
     end
 
-    def self.user_role(email)
+    def self.user_role(_email)
       raise "subclass responsibility"
     end
 
-    def self.can_deposit(email)
+    def self.can_deposit(_email)
       raise "subclass responsibility"
     end
 
-    def self.display_name(email)
+    def self.display_name(_email)
       raise "subclass responsibility"
     end
-
   end
-
 end
