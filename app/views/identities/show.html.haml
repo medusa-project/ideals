@@ -1,0 +1,33 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @identity.name
+%p
+  %b Email:
+  = @identity.email
+%p
+  %b Password digest:
+  = @identity.password_digest
+%p
+  %b Activation digest:
+  = @identity.activation_digest
+%p
+  %b Activated:
+  = @identity.activated
+%p
+  %b Activated at:
+  = @identity.activated_at
+%p
+  %b Reset digest:
+  = @identity.reset_digest
+%p
+  %b Invitee:
+  = @identity.invitee_id
+%p
+  %b Reset sent at:
+  = @identity.reset_sent_at
+
+= link_to 'Edit', edit_identity_path(@identity)
+\|
+= link_to 'Back', identities_path

@@ -6,6 +6,79 @@ class ApplicationController < ActionController::Base
 
   include CanCan::ControllerAdditions
 
+  rescue_from StandardError, with: :error_occurred
+  rescue_from ActionView::MissingTemplate do |_exception|
+    render json: {}, status: :unprocessable_entity
+  end
+
+  after_action :store_location
+
+  def store_location
+    return nil unless request.get?
+
+    if request.path != "/login" &&
+        request.path != "/logout" &&
+        !request.xhr? # don't store ajax calls
+      session[:previous_url] = request.fullpath
+    end
+  end
+
+  def redirect_path
+    session[:previous_url] || main_app.root_url
+  end
+
+  protected
+
+  def error_occurred(exception)
+    if exception.class == CanCan::AccessDenied
+      respond_to do |format|
+        format.html {
+          redirect_to redirect_path,
+                      alert:  "You are not authorized to access the requested resource.",
+                      status: :forbidden
+        }
+        format.json { render nothing: true, status: :forbidden }
+        format.xml { render xml: {error: "unauthorized"}.to_xml, status: :forbidden }
+      end
+
+    elsif exception.class == ActiveRecord::RecordNotFound
+      respond_to do |format|
+        format.html { render "errors/error404", status: :not_found }
+        format.json { render nothing: true, status: :not_found }
+        format.all { render "errors/error404", status: :not_found }
+      end
+
+    else
+      exception_string = "*** Standard Error caught in application_controller.rb on #{IDEALS_CONFIG[:root_url_text]} ***\nclass: #{exception.class}\nmessage: #{exception.message}\n"
+      exception_string += Time.now.utc.iso8601
+
+      exception_string += "\nstack:\n"
+      exception.backtrace.each do |line|
+        exception_string += line
+        exception_string += "\n"
+      end
+
+      Rails.logger.warn(exception_string)
+
+      exception_string += "\nCurrent User: #{current_user.name} | #{current_user.email}" if current_user
+
+      notification = IdealsMailer.error(exception_string)
+      notification.deliver_now
+      respond_to do |format|
+        format.html { render "errors/error500", status: :internal_server_error }
+        format.json { render nothing: true, status: :internal_server_error }
+        format.xml { render xml: {status: 500}.to_xml }
+      end
+
+    end
+  end
+
+  def record_not_found(exception)
+    Rails.logger.warn exception
+
+    redirect_to redirect_path, alert: "An error occurred and has been logged for review by Research Data Service Staff."
+  end
+
   private
 
   def current_user

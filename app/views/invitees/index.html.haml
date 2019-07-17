@@ -1,0 +1,27 @@
+%h1 Manage non-NetID Accounts
+
+%table
+  %thead
+    %tr
+      %th Email
+      %th Role
+      %th Expires at
+      %th Approved
+      %th
+      %th
+      %th
+
+  %tbody
+    - @invitees.each do |invitee|
+      %tr
+        %td= invitee.email
+        %td= invitee.role
+        %td= invitee.expires_at
+        %td= invitee.approved
+        %td= link_to 'Show', invitee
+        %td= link_to 'Edit', edit_invitee_path(invitee)
+        %td= link_to 'Destroy', invitee, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Invitee', new_invitee_path

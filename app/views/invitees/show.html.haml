@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Email:
+  = @invitee.email
+%p
+  %b Role:
+  = @invitee.role
+%p
+  %b Expires at:
+  = @invitee.expires_at
+%p
+  %b Approved:
+  = @invitee.approved
+
+= link_to 'Edit', edit_invitee_path(@invitee)
+\|
+= link_to 'Back', invitees_path

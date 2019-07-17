@@ -34,9 +34,11 @@
               =current_user.name
           %li
             %a{href: "/logout"}
+              %span.glyphicon.glyphicon-log-out
               Log out
         - else
           %li
-            %a{href: "/login"}
-              Log in with NetID
+            %a{href: "/login_choice"}
+              %span.glyphicon.glyphicon-log-in
+              Log in options
   / /.nav-collapse

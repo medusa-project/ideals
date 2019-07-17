@@ -21,9 +21,9 @@ module Ideals
   
   class UserRole
     ADMIN = 'admin'
+    MANAGER = 'manager'
     DEPOSITOR = 'depositor'
     GUEST = 'guest'
-    NO_DEPOSIT = 'no_deposit'
   end
 
   class Application < Rails::Application

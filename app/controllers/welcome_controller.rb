@@ -9,7 +9,15 @@ class WelcomeController < ApplicationController
 
   def policies; end
 
-  def dashboard; end
+  def dashboard
+    @pending_identity_request_count = Invitee.where(approved: nil).count.to_s
+  end
 
   def deposit; end
+
+  def login_choice; end
+
+  def on_failed_registration
+  end
+
 end

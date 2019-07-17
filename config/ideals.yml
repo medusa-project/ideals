@@ -1,2 +1,9 @@
+:recaptcha:
+  :site_key: <%= Rails.application.credentials[:recaptcha][:site_key] %>
+  :secret_key: <%= Rails.application.credentials[:recaptcha][:secret_key] %>
+
 :admin:
   :netids: <%= Rails.application.credentials[Rails.env.to_sym][:admin][:netids] %>
+  :localpass: <%= Rails.application.credentials[Rails.env.to_sym][:admin][:localpass] %>
+  :tech_mail_list: <%= Rails.application.credentials[Rails.env.to_sym][:admin][:tech_mail_list] %>
+:root_url_text: <%= Rails.application.credentials[Rails.env.to_sym][:root_url_text] %>
