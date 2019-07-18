@@ -2,7 +2,7 @@
 
 class IdentitiesController < ApplicationController
   load_and_authorize_resource
-  skip_authorize_resource only: [:new, :login, :register]
+  skip_authorize_resource only: [:login, :register]
   before_action :set_identity, only: [:show, :edit, :update, :destroy]
 
   # GET /identities
@@ -17,7 +17,7 @@ class IdentitiesController < ApplicationController
 
   # GET /identities/new
   def new
-    redirect_to action: :register
+    @identity = Identity.new
   end
 
   def register; end
@@ -76,6 +76,6 @@ class IdentitiesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def identity_params
-    params.require(:identity).permit(:name, :email)
+    params.fetch(:identity, {})
   end
 end
