@@ -53,10 +53,6 @@ module User
       raise "subclass responsibility"
     end
 
-    def self.can_deposit(_email)
-      raise "subclass responsibility"
-    end
-
     def self.display_name(_email)
       raise "subclass responsibility"
     end

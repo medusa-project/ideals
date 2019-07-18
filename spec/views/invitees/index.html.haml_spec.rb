@@ -6,16 +6,16 @@ RSpec.describe "invitees/index", type: :view do
   before(:each) do
     assign(:invitees, [
              Invitee.create!(
-               email:      "Email",
-               role:       "Role",
-               expires_at: "",
-               approved:   false
+               email:          "Email",
+               role:           "Role",
+               expires_at:     "",
+               approval_state: Ideals::ApprovalState::PENDING
              ),
              Invitee.create!(
-               email:      "Email",
-               role:       "Role",
-               expires_at: "",
-               approved:   false
+               email:          "Email",
+               role:           "Role",
+               expires_at:     "",
+               approval_state: Ideals::ApprovalState::PENDING
              )
            ])
   end

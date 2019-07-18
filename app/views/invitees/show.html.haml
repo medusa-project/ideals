@@ -1,3 +1,5 @@
+%h2 Non-NetID IDEALS identity invitee
+
 %p#notice= notice
 
 %p
@@ -7,11 +9,14 @@
   %b Role:
   = @invitee.role
 %p
+  %b Purpose:
+  = @invitee.note
+%p
   %b Expires at:
   = @invitee.expires_at
 %p
-  %b Approved:
-  = @invitee.approved
+  %b Approval:
+  = @invitee.approval_state
 
 = link_to 'Edit', edit_invitee_path(@invitee)
 \|

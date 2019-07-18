@@ -21,14 +21,11 @@
       = f.label :email, class: "control-label"
     .col-md-4
       = f.text_field :email, class: "form-control"
-
-  = f.fields_for :invitee_notes do |note_form|
-    .form-group.required.row
-      .col-md-1.col-md-offset-3
-        = note_form.hidden_field :source, value: "request form"
-        = note_form.label :note, "Purpose", class: "control-label"
-      .col-md-4
-        = note_form.text_field :note, class: "form-control"
+  .form-group.required.row
+    .col-md-1.col-md-offset-3
+      = f.label :note, "Purpose", class: "control-label"
+    .col-md-4
+      = f.text_field :note, class: "form-control"
   .row
     .col-md-4.col-md-offset-4
       =recaptcha_tags

@@ -5,10 +5,10 @@ require "rails_helper"
 RSpec.describe "invitees/edit", type: :view do
   before(:each) do
     @invitee = assign(:invitee, Invitee.create!(
-                                  email:      "MyString",
-                                  role:       "MyString",
-                                  expires_at: "",
-                                  approved:   false
+                                  email:          "MyString",
+                                  role:           "MyString",
+                                  expires_at:     "",
+                                  approval_state: Ideals::ApprovalState::PENDING
                                 ))
   end
 
@@ -22,7 +22,7 @@ RSpec.describe "invitees/edit", type: :view do
 
       assert_select "input[name=?]", "invitee[expires_at]"
 
-      assert_select "input[name=?]", "invitee[approved]"
+      assert_select "input[name=?]", "invitee[approval_state]"
     end
   end
 end

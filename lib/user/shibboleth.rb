@@ -49,7 +49,7 @@ class User::Shibboleth < User::User
       netid = email.split("@").first
 
       if netid.respond_to?(:length) && !netid.empty?
-        admins = IDEALS_CONFIG[:admin][:netids].split(",").collect{|x| x.strip || x }
+        admins = IDEALS_CONFIG[:admin][:netids].split(",").map {|x| x.strip || x }
         role = Ideals::UserRole::ADMIN if admins.include?(netid)
       end
     end

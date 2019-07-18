@@ -92,6 +92,6 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
 
   def set_invitee
     @invitee = Invitee.find_by(email: email)
-    self.invitee_id = @invitee.id if @invitee && @invitee.expires_at && @invitee.expires_at > Time.zone.now
+    self.invitee_id = @invitee.id if @invitee&.expires_at && @invitee.expires_at > Time.zone.now
   end
 end

@@ -22,8 +22,16 @@ module Ideals
   class UserRole
     ADMIN = 'admin'
     MANAGER = 'manager'
-    DEPOSITOR = 'depositor'
+    SUBMITTER = 'submitter'
     GUEST = 'guest'
+    ARRAY = [Ideals::UserRole::GUEST, Ideals::UserRole::SUBMITTER, Ideals::UserRole::MANAGER, Ideals::UserRole::ADMIN]
+  end
+
+  class ApprovalState
+    PENDING = 'pending'
+    APPROVED = 'approved'
+    REJECTED = 'rejected'
+    ARRAY = [Ideals::ApprovalState::PENDING, Ideals::ApprovalState::APPROVED, Ideals::ApprovalState::REJECTED]
   end
 
   class Application < Rails::Application

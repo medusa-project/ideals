@@ -1,27 +1,73 @@
-%h1 Manage non-NetID Accounts
+-if can? :manage, Invitee
+  %h2 Non-NetID IDEALS identity invitees
+  .row
+    .col-md-2.col-md-offset-10
+      %button{type: "button", class: "btn btn-primary btn-block", onclick: "window.open('/invitee/new')"}
+        Add new Invitee
+  .panel-group(id="pendingInvitee" role="tablist" aria-multiselectable="true")
+    .panel.panel-default
+      .panel-heading(role="tab" id="pendingInviteeHeading")
+        %h4(class="panel-title")
+          %a(role="button" data-toggle="collapse" data-parent="#contact" href="#pendingInviteePanel" aria-expanded="false" aria-controls="pendingInviteePanel" class="accordion-toggle collapsed" )
+            %span.metadata-label
+              Pending
+              %span.badge
+                =@pending_invitees.count
+              (click to expand)
+      .panel-collapse.collapse(id="pendingInviteePanel" role="tabpanel" aria-labelledby="pendingInviteeHeading" )
+        .panel-body
+          -if @pending_invitees.count > 0
+            %table.table.table-stripped
+              =render "thead"
+              %tbody
+                -@pending_invitees.each do |invitee|
+                  =render "row", invitee: invitee
+          -else
+            .info-box
+              No Pending non-NetID identity invitation requests
+  .panel-group(id="approvedInvitee" role="tablist" aria-multiselectable="true")
+    .panel.panel-default
+      .panel-heading(role="tab" id="approvedInviteeHeading")
+        %h4(class="panel-title")
+          %a(role="button" data-toggle="collapse" data-parent="#contact" href="#approvedInviteePanel" aria-expanded="false" aria-controls="approvedInviteePanel" class="accordion-toggle collapsed" )
+            %span( class="metadata-label" )
+              Approved
+              %span.badge
+                =@approved_invitees.count
+              (click to expand)
+      .panel-collapse.collapse(id="approvedInviteePanel" role="tabpanel" aria-labelledby="approvedInviteeHeading" )
+        .panel-body
+          -if @approved_invitees.count > 0
+            %table.table.table-stripped
+              =render "thead"
+              %tbody
+                -@approved_invitees.each do |invitee|
+                  =render "row", invitee: invitee
+          -else
+            .info-box
+              No approved non-NetID identity invitation requests
 
-%table
-  %thead
-    %tr
-      %th Email
-      %th Role
-      %th Expires at
-      %th Approved
-      %th
-      %th
-      %th
-
-  %tbody
-    - @invitees.each do |invitee|
-      %tr
-        %td= invitee.email
-        %td= invitee.role
-        %td= invitee.expires_at
-        %td= invitee.approved
-        %td= link_to 'Show', invitee
-        %td= link_to 'Edit', edit_invitee_path(invitee)
-        %td= link_to 'Destroy', invitee, method: :delete, data: { confirm: 'Are you sure?' }
-
-%br
-
-= link_to 'New Invitee', new_invitee_path
+  .panel-group(id="rejectedInvitee" role="tablist" aria-multiselectable="true")
+    .panel.panel-default
+      .panel-heading(role="tab" id="rejectedInviteeHeading")
+        %h4(class="panel-title")
+          %a(role="button" data-toggle="collapse" data-parent="#contact" href="#rejectedInviteePanel" aria-expanded="false" aria-controls="rejectedInviteePanel" class="accordion-toggle collapsed" )
+            %span( class="metadata-label" )
+              Rejected
+              %span.badge
+                =@rejected_invitees.count
+              (click to expand)
+      .panel-collapse.collapse(id="rejectedInviteePanel" role="tabpanel" aria-labelledby="rejectedInviteeHeading" )
+        .panel-body
+          -if @rejected_invitees.count > 0
+            %table.table.table-stripped
+              =render "thead"
+              %tbody
+                -@rejected_invitees.each do |invitee|
+                  =render "row", invitee: invitee
+          -else
+            .info-box
+              No rejected non-NetID Identity requests
+-else
+  .jumbotron
+    This page is for managing non-NetID IDEALS indentity invitations. If you are an administrator, log in to manage invitations.

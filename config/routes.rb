@@ -25,7 +25,6 @@ Rails.application.routes.draw do
     end
   end
   resources :invitees do
-    resources :invitee_notes
     collection do
       get 'petition'
       get 'pending'

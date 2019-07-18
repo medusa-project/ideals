@@ -6,11 +6,9 @@ class InviteesController < ApplicationController
   # GET /invitees
   # GET /invitees.json
   def index
-    @invitees = Invitee.all
-  end
-
-  def pending
-    @invitees = Invitee.where(approved: nil)
+    @pending_invitees = Invitee.where(approval_state: Ideals::ApprovalState::PENDING)
+    @approved_invitees = Invitee.where(approval_state: Ideals::ApprovalState::APPROVED)
+    @rejected_invitees = Invitee.where(approval_state: Ideals::ApprovalState::REJECTED)
   end
 
   # GET /invitees/1
@@ -20,11 +18,12 @@ class InviteesController < ApplicationController
   # GET /invitees/new
   def new
     @invitee = Invitee.new
+    @invitee.expires_at = Time.zone.now + 1.year
   end
 
   def petition
     @invitee = Invitee.new
-    @invitee.invitee_notes.build
+    @invitee.expires_at = Time.zone.now + 1.year
   end
 
   # GET /invitees/1/edit
@@ -79,6 +78,6 @@ class InviteesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def invitee_params
-    params.require(:invitee).permit(:email, :role, :expires_at, :approved, invitee_notes_attributes: [:id, :note, :source, :_destroy])
+    params.require(:invitee).permit(:email, :role, :note, :expires_at, :approval_state)
   end
 end

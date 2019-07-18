@@ -5,10 +5,10 @@ require "rails_helper"
 RSpec.describe "invitees/show", type: :view do
   before(:each) do
     @invitee = assign(:invitee, Invitee.create!(
-                                  email:      "Email",
-                                  role:       "Role",
-                                  expires_at: "",
-                                  approved:   false
+                                  email:          "Email",
+                                  role:           "Role",
+                                  expires_at:     "",
+                                  approval_state: Ideals::ApprovalState::PENDING
                                 ))
   end
 

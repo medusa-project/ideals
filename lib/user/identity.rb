@@ -3,8 +3,8 @@
 # This type of user comes from the identity authentication strategy
 
 require_relative "../user"
-require_relative '../../app/models/identity'
-require_relative '../../app/models/invitee'
+require_relative "../../app/models/identity"
+require_relative "../../app/models/invitee"
 
 class User::Identity < User::User
   def self.from_omniauth(auth)
@@ -54,16 +54,6 @@ class User::Identity < User::User
     return Ideals::UserRole::GUEST unless invitee
 
     invitee.role
-  end
-
-  def self.can_deposit(email)
-    if rails_env.test? || rails_env.development?
-      # admin permission is handled elsewhere
-      user_role(email) == Ideals::UserRole::DEPOSITOR
-    else
-      # in production and demo systems, only Shibboleth users can deposit
-      false
-    end
   end
 
   def self.display_name(email)
