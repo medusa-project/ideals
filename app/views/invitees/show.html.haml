@@ -2,22 +2,28 @@
 
 %p#notice= notice
 
-%p
-  %b Email:
-  = @invitee.email
-%p
-  %b Role:
-  = @invitee.role
-%p
-  %b Purpose:
-  = @invitee.note
-%p
-  %b Expires at:
-  = @invitee.expires_at
-%p
-  %b Approval:
-  = @invitee.approval_state
+-if can? :manage, @invitee
 
-= link_to 'Edit', edit_invitee_path(@invitee)
-\|
-= link_to 'Back', invitees_path
+  %p
+    %b Email:
+    = @invitee.email
+  %p
+    %b Role:
+    = @invitee.role
+  %p
+    %b Purpose:
+    = @invitee.note
+  %p
+    %b Expires at:
+    = @invitee.expires_at
+  %p
+    %b Approval:
+    = @invitee.approval_state
+
+  = link_to 'Edit', edit_invitee_path(@invitee)
+  \|
+  = link_to 'List All', invitees_path
+-else
+  .jumbotron
+    This request for a Non-NetID IDEALS identity has been received.
+    Any additional notification will be sent to the email address provided.

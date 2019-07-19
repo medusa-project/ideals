@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class InviteesController < ApplicationController
+  load_and_authorize_resource
+  skip_authorize_resource only: [:petition]
   before_action :set_invitee, only: [:show, :edit, :update, :destroy]
 
   # GET /invitees
@@ -36,7 +38,11 @@ class InviteesController < ApplicationController
 
     respond_to do |format|
       if @invitee.save
-        format.html { redirect_to @invitee, notice: "Invitee was successfully created." }
+        if current_user&role == Ideals::UserRole::ADMIN
+          format.html { redirect_to invitees_path, notice: "Request for non-NetID IDEALS identity submitted." }
+        else
+          format.html { render :petition, notice: "Request for non-NetID IDEALS identity submitted." }
+        end
         format.json { render :show, status: :created, location: @invitee }
       else
         format.html { render :new }

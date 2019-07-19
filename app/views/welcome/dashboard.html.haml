@@ -1,11 +1,12 @@
 %h1 Dashboard
 %hr
 -if(can? :manage, Invitee)
-  .row
-    .col-md-3
-      Pending non-NetID requests
-      %span.badge
-        = @pending_identity_request_count
-    .col-md-4
-      %button{type: "button", class: "btn btn-primary btn-block", onclick: "window.open('/invitees')"}
-        Manage non-NetID identity requests
+  .table.table-bordered
+    %tr.row
+      %td.col-md-3
+        Pending non-NetID requests
+        %span.badge
+          = @pending_identity_request_count
+      %td.col-md-4
+        %button{type: "button", class: "btn btn-primary btn-block", onclick: "window.open('/invitees')"}
+          Manage non-NetID identity requests
