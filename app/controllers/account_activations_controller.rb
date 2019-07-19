@@ -9,7 +9,7 @@ class AccountActivationsController < ApplicationController
       invitee = Invitee.find_by(email: identity.email)
       raise CanCan::AccessDenied.new unless invitee
 
-      identity.update_attribute(invitee_id: invitee.id)
+      identity.update_attribute('invitee_id', invitee.id)
       redirect_to "/", alert: "Account activated!"
     else
       redirect_to root_url, alert: "Invalid activation link"
