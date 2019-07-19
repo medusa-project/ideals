@@ -1,5 +1,13 @@
 -if can? :manage, Invitee
   %h2 Non-NetID IDEALS identity invitees
+  %hr
+    %strong Invited > Approved > Registered > Activated
+      %ul
+        %li Non-NetID IDEALS identities start with an invitation, either requested by anyone using a public web form, or created by an IDEALS administrator.
+        %li If requested using the web form, the request must be approved.
+        %li Once approved by an IDEALS administrator at the time of creation or later, the email address can be used to register a non-NetID IDEALS identity.
+        %li After the registration form is submitted, the IDEALS system sends an activation link to the email address to verify control of the email address. Once activated, the email address can be used, along with the password established during registration as IDEALS credentials.
+  %hr
   .row
     .col-md-2.col-md-offset-10
       %button{type: "button", class: "btn btn-primary btn-block", onclick: "window.open('/invitees/new')"}
