@@ -27,9 +27,9 @@ module User
     end
 
     def group
-      if provider == "shibboleth"
+      if provider == Ideals::AuthProvider::SHIBBOLETH
         provider
-      elsif provider == "identity"
+      elsif provider == Ideals::AuthProvider::IDENTITY
         invitee = Invitee.find_by(email: email)
         raise("no invitation found for identity: #{email}") unless invitee
 

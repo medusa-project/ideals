@@ -1,0 +1,23 @@
+%h1 Listing managers
+
+%table
+  %thead
+    %tr
+      %th Uid
+      %th Provider
+      %th
+      %th
+      %th
+
+  %tbody
+    - @managers.each do |manager|
+      %tr
+        %td= manager.uid
+        %td= manager.provider
+        %td= link_to 'Show', manager
+        %td= link_to 'Edit', edit_manager_path(manager)
+        %td= link_to 'Destroy', manager, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'Add Manager', new_manager_path

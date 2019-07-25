@@ -34,6 +34,12 @@ module Ideals
     ARRAY = [Ideals::ApprovalState::PENDING, Ideals::ApprovalState::APPROVED, Ideals::ApprovalState::REJECTED]
   end
 
+  class AuthProvider
+    SHIBBOLETH = 'shibboleth'
+    IDENTITY = 'identity'
+    ARRAY = [Ideals::AuthProvider::SHIBBOLETH, Ideals::AuthProvider::IDENTITY]
+  end
+
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.2

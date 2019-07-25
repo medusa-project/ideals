@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :collections
+  resources :managers
   # You can have the root of your site routed with "root"
   root 'welcome#index'
   get '/', to: 'welcome#index'

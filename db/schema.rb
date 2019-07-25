@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_18_145940) do
+ActiveRecord::Schema.define(version: 2019_07_25_174744) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "collections", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "collections_managers", id: false, force: :cascade do |t|
+    t.bigint "manager_id", null: false
+    t.bigint "collection_id", null: false
+  end
 
   create_table "identities", force: :cascade do |t|
     t.string "name"
@@ -37,6 +49,13 @@ ActiveRecord::Schema.define(version: 2019_07_18_145940) do
     t.datetime "updated_at", null: false
     t.text "note"
     t.string "approval_state", default: "pending"
+  end
+
+  create_table "managers", force: :cascade do |t|
+    t.string "uid"
+    t.string "provider"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "sessions", force: :cascade do |t|

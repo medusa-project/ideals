@@ -13,9 +13,9 @@ class SessionsController < ApplicationController
 
     user = nil
 
-    if auth[:provider] && auth[:provider] == "shibboleth"
+    if auth[:provider] && auth[:provider] == Ideals::AuthProvider::SHIBBOLETH
       user = User::Shibboleth.from_omniauth(auth)
-    elsif auth[:provider] && auth[:provider] == "identity"
+    elsif auth[:provider] && auth[:provider] == Ideals::AuthProvider::IDENTITY
       user = User::Identity.from_omniauth(auth)
     else
       unauthorized

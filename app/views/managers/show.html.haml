@@ -1,0 +1,13 @@
+%p#notice= notice
+
+%p
+  %b Provider:
+  = @manager.provider
+
+%p
+  %b Uid:
+  = @manager.uid
+
+= link_to 'Edit', edit_manager_path(@manager)
+\|
+= link_to 'Back', managers_path
