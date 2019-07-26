@@ -1,11 +1,13 @@
 -# frozen_string_literal: true
-= simple_form_for(@collection) do |f|
-  = f.error_notification
-  = f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present?
-
+= form_for(@collection) do |f|
   .form-inputs
-    = f.input :title
-    = f.input :description
+    .form-group
+      = f.label :title, "Title", class: "control-label"
+      = f.text_field :title, class: "form-control"
+    .form-group
+      =f.label :description, "Description", class: "control-label"
+      = f.text_field :description, class: "form-control"
 
   .form-actions
-    = f.button :submit
+    .pull-right
+      = f.submit "Create Collection", class: "btn btn-primary"

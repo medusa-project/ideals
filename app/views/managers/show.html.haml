@@ -1,13 +1,37 @@
-%p#notice= notice
-
-%p
-  %b Provider:
+%h3
+  Manager
+  = @manager.uid
+  \|
   = @manager.provider
 
-%p
-  %b Uid:
-  = @manager.uid
+%h4 Collections Managed
+%table.table
+  %thead
+    %tr.row
+      %th.col-md-3 Title
+      %th.col-md-5 Description
+      %th.col-md-2
+      %th.col-md-2
 
-= link_to 'Edit', edit_manager_path(@manager)
-\|
-= link_to 'Back', managers_path
+  %tbody
+    - @manager.collections.each do |collection|
+      %tr.row
+        %td.col-md-3
+          = collection.title
+        %td.col-md-5
+          = collection.description
+        %td.col-md-2
+          = link_to 'Show', collection, class: "btn btn-success btn-block idb"
+        %td.col-md-2
+          = form_for @manager, url_for(controller: 'managers', action: 'release_collection') do |f|
+            = f.hidden_field :collection_id, value collection.id
+            = f.submit "Remove", class: "btn btn-danger btn block"
+%br
+-if (can? :manage, @manager)
+  %strong Select Collection to Add:
+  = form_for @manager, url_for(controller: 'managers', action: 'take_on_collection') do |f|
+    = f.collection_select :collection_id, Collection.all, :id, :title, prompt: true
+    = f.submit "Add"
+
+= link_to 'New Collection', new_collection_path
+

@@ -1,7 +1,18 @@
 Rails.application.routes.draw do
 
-  resources :collections
-  resources :managers
+  resources :collections do
+    resources :managers
+  end
+
+  resources :managers do
+    resources :collections
+  end
+
+  post '/collections/:id/add_manager', to: 'collections#add_manager'
+  post '/collections/:id/remove_manager', to: 'collections#remove_manager'
+  post '/managers/:id/take_on_collection', to: 'managers#take_on_collection'
+  post '/managers/:id/release_collection', to: 'managers#release_collection'
+
   # You can have the root of your site routed with "root"
   root 'welcome#index'
   get '/', to: 'welcome#index'

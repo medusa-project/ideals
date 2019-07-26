@@ -1,11 +1,44 @@
-%p#notice= notice
-
-%p
-  %b Title:
+%h3
   = @collection.title
-%p
-  %b Description:
-  = @collection.description
+
+%h4 Collection Description:
+= @collection.description
+
+%hr
+
+%h4 Collection Managers
+
+-if @collection.managers.empty?
+  .info-box
+    %p No managers assigned
+-else
+  %table.table
+    %thead
+      %tr.row
+        %th.col-md-5 Email
+        %th.col-md-3 Identity Authentication Provider
+        %th.col-md-2
+        %th.col-md-2
+
+    %tbody
+      - @collection.managers.each do |manager|
+        %tr.row
+          %td.col-md-5
+            = manager.uid
+          %td.col-md-3
+            = manager.provider
+          %td.col-md-2
+            = link_to 'Show', manager
+          %td.col-md-2
+            = form_for @collection, url_for(controller: 'collections', action: 'remove_manager') do |f|
+              = f.hidden_field :manager_id, value: manager.id
+              = f.submit "Remove"
+
+%strong Select Manager to Add:
+= form_for @collection, url_for(controller: 'collections', action: 'add_manager') do |f|
+  = f.collection_select :manager_id, Manager.all, :id, :provider_uid, prompt: true
+  = f.submit "Add"
+%hr
 
 = link_to 'Edit', edit_collection_path(@collection)
 \|

@@ -1,23 +1,27 @@
-%h1 Listing managers
-
-%table
+%h1 Managers
+.row
+  .col-md-2.col-md-offset-10
+    = link_to 'Add Manager', new_manager_path, class: "btn btn-primary btn-block idb"
+%table.table
   %thead
-    %tr
-      %th Uid
-      %th Provider
-      %th
-      %th
-      %th
+    %tr.row
+      %th.col-md-3 Email
+      %th.col-md-3 Authentication Identity Provider
+      %th.col-md-2
+      %th.col-md-2
+      %th.col-md-2
 
   %tbody
     - @managers.each do |manager|
-      %tr
-        %td= manager.uid
-        %td= manager.provider
-        %td= link_to 'Show', manager
-        %td= link_to 'Edit', edit_manager_path(manager)
-        %td= link_to 'Destroy', manager, method: :delete, data: { confirm: 'Are you sure?' }
+      %tr.row
+        %td.col-md-3
+          = manager.uid
+        %td.col-md-3
+          = manager.provider
+        %td.col-md-2
+          = link_to 'Show', manager, class: "btn btn-success btn-block idb"
+        %td.col-md-2
+          = link_to 'Edit', edit_manager_path(manager), class: "btn btn-info btn-block idb"
+        %td.col-md-2
+          = link_to 'Destroy', manager, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger btn-block idb"
 
-%br
-
-= link_to 'Add Manager', new_manager_path

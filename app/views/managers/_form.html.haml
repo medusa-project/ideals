@@ -1,11 +1,13 @@
 -# frozen_string_literal: true
-= simple_form_for(@manager) do |f|
-  = f.error_notification
-  = f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present?
-
+= form_for(@manager) do |f|
   .form-inputs
-    = f.input :provider, collection: Ideals::AuthProvider::ARRAY
-    = f.input :uid, "Email address", placeholder: "netid@illinois.edu"
+    .form-group
+      = f.label :provider, "Authentication Identity Provider", class: "control-label"
+      = f.select :provider, options_for_select(Ideals::AuthProvider::ARRAY), {}, {class: "form-control"}
+    .form-group
+      = f.label :uid, "Email Address"
+      = f.text_field :uid, placeholder: "netid@illinois.edu", class: "form-control"
 
   .form-actions
-    = f.button :submit
+    .pull-right
+      = f.submit "Create Manager", class: "btn btn-primary"

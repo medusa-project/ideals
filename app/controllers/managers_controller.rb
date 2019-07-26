@@ -1,5 +1,7 @@
 class ManagersController < ApplicationController
-  before_action :set_manager, only: [:show, :edit, :update, :destroy]
+  load_and_authorize_resource
+  before_action :set_manager, only: [:show, :edit, :update, :destroy, :take_on_collection, :collection_id]
+  helper_method :current_user, :logged_in?
 
   # GET /managers
   # GET /managers.json
@@ -61,6 +63,34 @@ class ManagersController < ApplicationController
     end
   end
 
+  # POST /managers/1/take_on_collection
+  def take_on_collection
+    respond_to do |format|
+      if params.has_key?(:collection_id) && @manager.add_collection(params[:collection_id])
+        format.html { redirect_to @manager, notice: 'Collection was successfully taken on.' }
+        format.json { render :show, status: :ok, location: @manager }
+      else
+        format.html { render :show, notice: 'Error when attempting to take on collection. Details have been logged.' }
+        format.json { render json: @manager.errors, status: :unprocessable_entity }
+      end
+    end
+
+  end
+
+  # POST /managers/1/release_collection
+  def release_collection
+    respond_to do |format|
+      if params.has_key?(:collection_id) && @manager.remove_collection(params[:collection_id])
+        format.html { redirect_to @manager, notice: 'Collection was successfully released.' }
+        format.json { render :show, status: :ok, location: @manager }
+      else
+        format.html { render :show, notice: 'Error when attempting to release collection. Details have been logged.' }
+        format.json { render json: @manager.errors, status: :unprocessable_entity }
+      end
+    end
+
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_manager
@@ -69,6 +99,6 @@ class ManagersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def manager_params
-      params.require(:manager).permit(:uid, :provider)
+      params.require(:manager).permit(:uid, :provider, :collection_id)
     end
 end
