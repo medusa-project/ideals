@@ -994,6 +994,14 @@ a.morelink {
   opacity: 0;
 }
 
+a.morelink {
+  text-decoration:none;
+  outline: none;
+}
+.morecontent span {
+  display: none;
+}
+
 @media print {
   * { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; min-height: 0 !important;} /* Black prints faster: h5bp.com/s */
   .hide-when-printing {visibility: hidden;}
