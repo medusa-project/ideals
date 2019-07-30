@@ -1,24 +1,6 @@
-# README
+# Ideals
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Ideals is the Ruby on Rails web application component of IDEALS, the Illinois Digital Environment for Access to Learning and Scholarship, which publishes research and scholarship from the University of Illinois at Urbana-Champaign.
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Application documentation is hosted in the
+[SCARS Wiki](https://wiki.illinois.edu/wiki/display/scrs/SCARS+Home).
