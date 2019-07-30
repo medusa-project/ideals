@@ -41,7 +41,7 @@ class InviteesController < ApplicationController
         if current_user&.role == Ideals::UserRole::ADMIN
           format.html { redirect_to invitees_path, notice: "Request for non-NetID IDEALS identity submitted." }
         else
-          format.html { render :petition, notice: "Request for non-NetID IDEALS identity submitted." }
+          format.html { redirect_to :root_url, notice: "Request for non-NetID IDEALS identity submitted." }
         end
         format.json { render :show, status: :created, location: @invitee }
       else
