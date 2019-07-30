@@ -4,6 +4,7 @@ class InviteesController < ApplicationController
   load_and_authorize_resource
   skip_authorize_resource only: [:petition]
   before_action :set_invitee, only: [:show, :edit, :update, :destroy]
+  helper_method :current_user, :logged_in?
 
   # GET /invitees
   # GET /invitees.json
@@ -39,7 +40,7 @@ class InviteesController < ApplicationController
     respond_to do |format|
       if @invitee.save
         if current_user && current_user.role == Ideals::UserRole::ADMIN
-          format.html { redirect_to invitees_path, notice: "Request for non-NetID IDEALS identity submitted." }
+          format.html { redirect_to invitees_path, notice: "New non-NetID IDEALS identity created." }
           format.json { render :show, status: :created, location: @invitee }
         else
           format.html { redirect_to :root_url, notice: "Request for non-NetID IDEALS identity submitted." }

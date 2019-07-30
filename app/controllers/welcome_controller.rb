@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class WelcomeController < ApplicationController
+
+  helper_method :current_user, :logged_in?
+
   def index; end
 
   def items; end
@@ -10,7 +13,9 @@ class WelcomeController < ApplicationController
   def policies; end
 
   def dashboard
-    @pending_identity_request_count = Invitee.where(approval_state: Ideals::ApprovalState::PENDING).count.to_s
+    if current_user && current_user.role == Ideals::UserRole::ADMIN
+      @pending_identity_request_count = Invitee.where(approval_state: Ideals::ApprovalState::PENDING).count.to_s
+    end
   end
 
   def deposit; end

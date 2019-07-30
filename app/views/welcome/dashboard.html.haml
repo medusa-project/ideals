@@ -1,5 +1,6 @@
 %h1 Dashboard
 -if(can? :manage, Invitee)
+  %h2 Admin Section
   %table.table.table-bordered
     %tr.row
       %td.col-md-3
@@ -23,10 +24,13 @@
           Managers
       %td.col-md-3
       %td.col-md-6
-
+-if(can? :create, Collection)
+  %h2 Manager Section
+  %table.table.table-bordered
     %tr.row
       %td.col-md-3
         %button{type: "button", class: "btn btn-primary btn-block", onclick: "window.open('/collections')"}
           Collections
       %td.col-md-3
       %td.col-md-6
+%h2 Submitter Section
