@@ -8,6 +8,18 @@ class Invitee < ApplicationRecord
   before_create :handle_manager
   before_update :handle_manager
 
+  def self.pendings
+    Invitee.where(approval_state: Ideals::ApprovalState::PENDING)
+  end
+
+  def self.approveds
+    Invitee.where(approval_state: Ideals::ApprovalState::APPROVED)
+  end
+
+  def self.rejecteds
+    Invitee.where(approval_state: Ideals::ApprovalState::REJECTED)
+  end
+
   def destroy_identity
     identity = Identity.find_by(email: email)
     identity&.destroy!

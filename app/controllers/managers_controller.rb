@@ -1,18 +1,15 @@
 class ManagersController < ApplicationController
   load_and_authorize_resource
-  before_action :set_manager, only: [:show, :edit, :update, :destroy, :take_on_collection, :collection_id]
+  skip_load_resource only: [:new, :create]
   helper_method :current_user, :logged_in?
 
   # GET /managers
   # GET /managers.json
-  def index
-    @managers = Manager.all
-  end
+  def index; end
 
   # GET /managers/1
   # GET /managers/1.json
-  def show
-  end
+  def show; end
 
   # GET /managers/new
   def new

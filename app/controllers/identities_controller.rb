@@ -2,14 +2,13 @@
 
 class IdentitiesController < ApplicationController
   load_and_authorize_resource
-  skip_authorization_check :only => [:login, :register]
-  before_action :set_identity, only: [:show, :edit, :update, :destroy]
+  skip_load_resource only: [:login, :register, :new, :create]
+  skip_authorize_resource only: [:login, :register, :new, :create]
 
   # GET /identities
   # GET /identities.json
-  def index
-    @identities = Identity.all
-  end
+  # # @identities is already loaded with all identities the user is authorized to read
+  def index; end
 
   # GET /identities/1
   # GET /identities/1.json
@@ -20,8 +19,10 @@ class IdentitiesController < ApplicationController
     @identity = Identity.new
   end
 
+  # GET /identities/register
   def register; end
 
+  # GET /identities/login
   def login; end
 
   # GET /identities/1/edit

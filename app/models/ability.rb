@@ -21,6 +21,9 @@ class Ability
       can [:view, :release_collection], Manager do |viewable_manager|
         viewable_manager.try(manager_from_user == viewable_manager)
       end
+    else
+      can [:register, :create], Identity
+      can :create, Invitee
     end
   end
 end

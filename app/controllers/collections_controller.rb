@@ -1,6 +1,6 @@
 class CollectionsController < ApplicationController
   load_and_authorize_resource
-  before_action :set_collection, only: [:show, :edit, :update, :destroy, :add_manager, :collections]
+  skip_load_resource only: [:new, :create]
 
   # GET /collections
   # GET /collections.json
@@ -19,8 +19,7 @@ class CollectionsController < ApplicationController
   end
 
   # GET /collections/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /collections
   # POST /collections.json

@@ -3,16 +3,12 @@
 class InviteesController < ApplicationController
   load_and_authorize_resource
   skip_authorize_resource only: [:new, :create]
-  before_action :set_invitee, only: [:show, :edit, :update, :destroy]
+  skip_load_resource only: [:new, :create]
   helper_method :current_user, :logged_in?
 
   # GET /invitees
   # GET /invitees.json
-  def index
-    @pending_invitees = Invitee.where(approval_state: Ideals::ApprovalState::PENDING)
-    @approved_invitees = Invitee.where(approval_state: Ideals::ApprovalState::APPROVED)
-    @rejected_invitees = Invitee.where(approval_state: Ideals::ApprovalState::REJECTED)
-  end
+  def index; end
 
   # GET /invitees/1
   # GET /invitees/1.json
