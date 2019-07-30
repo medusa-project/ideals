@@ -1,6 +1,10 @@
-%h2 New non-NetID IDEALS identity invitee
-%hr
+-if (can? :manage, Invitee)
 
-= render 'form', invitee: @invitee
+  %h2 New non-NetID IDEALS identity invitee
+  %hr
 
-= link_to 'Back', invitees_path
+  = render 'form', invitee: @invitee
+
+  = link_to 'Back', invitees_path
+-else
+  = render 'petition', invitee: @invitee

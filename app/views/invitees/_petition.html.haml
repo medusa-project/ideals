@@ -15,7 +15,7 @@
     =succeed(".") do
       %a(href="mailto:ideals-gen@illinois.edu") ideals-gen@illinois.edu
 %br
-= form_for(@invitee) do |f|
+= form_for(invitee) do |f|
   .form-group.required.row
     .col-md-1.col-md-offset-3
       = f.label :email, class: "control-label"

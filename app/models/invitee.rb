@@ -8,7 +8,6 @@ class Invitee < ApplicationRecord
   before_create :handle_manager
   before_update :handle_manager
 
-
   def destroy_identity
     identity = Identity.find_by(email: email)
     identity&.destroy!

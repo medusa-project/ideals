@@ -2,7 +2,7 @@
 
 class InviteesController < ApplicationController
   load_and_authorize_resource
-  skip_authorize_resource only: [:petition]
+  skip_authorize_resource only: [:new]
   before_action :set_invitee, only: [:show, :edit, :update, :destroy]
   helper_method :current_user, :logged_in?
 
@@ -20,11 +20,6 @@ class InviteesController < ApplicationController
 
   # GET /invitees/new
   def new
-    @invitee = Invitee.new
-    @invitee.expires_at = Time.zone.now + 1.year
-  end
-
-  def petition
     @invitee = Invitee.new
     @invitee.expires_at = Time.zone.now + 1.year
   end

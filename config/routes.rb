@@ -37,13 +37,7 @@ Rails.application.routes.draw do
       get 'register'
     end
   end
-  resources :invitees do
-    collection do
-      get 'petition'
-      get 'pending'
-    end
-  end
-
+  resources :invitees
   resources :password_resets, only: [:new, :create, :edit, :update]
   resources :account_activations, only: [:edit]
 
