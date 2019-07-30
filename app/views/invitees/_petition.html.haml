@@ -42,24 +42,26 @@
   .col-md-4.col-md-offset-2
     Have an Illinois NetID?
   .col-md-4
-    %a{class: "btn btn-primary btn-block idb", href: "/login"}
-      %span.pull-left
-        =image_tag 'favicon.ico'
-        %span.glyphicon.glyphicon-log-in
-        &nbsp;
-        Log in with Illinois NetID
+    %button{type: "button", class: "btn btn-primary btn-block"}
+      %a{href: "/login", class: "idb"}
+        %span.pull-left
+          =image_tag 'favicon.ico'
+          %span.glyphicon.glyphicon-log-in
+          &nbsp;
+          Log in with Illinois NetID
 %br
 
 .row
   .col-md-4.col-md-offset-2
     Already registered a non-NetID IDEALS identity?
   .col-md-4
-    %a{class: "btn btn-info btn-block idb", href: "/identities/login"}
-      %span.pull-left
-        %span.glyphicon.glyphicon-user
-        %span.glyphicon.glyphicon-log-in
-        &nbsp;
-        Log in with non-NetID identity
+    %button{type: "button", class: "btn btn-info btn-block"}
+      %a{href: "/identities/login", class: "idb"}
+        %span.pull-left
+          %span.glyphicon.glyphicon-user
+          %span.glyphicon.glyphicon-log-in
+          &nbsp;
+          Log in with non-NetID identity
 %br
 
 .row

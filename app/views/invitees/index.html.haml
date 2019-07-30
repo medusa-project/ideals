@@ -10,8 +10,9 @@
   %hr
   .row
     .col-md-2.col-md-offset-10
-      %a{class: "btn btn-primary btn-block idb", href: "/invitees/new"}
-        Add new Invitee
+      %button{type: "button", class: "btn btn-primary btn-block"}
+        %a{href: "/invitees/new", class: "idb"}
+          Add new Invitee
   .panel-group(id="pendingInvitee" role="tablist" aria-multiselectable="true")
     .panel.panel-default
       .panel-heading(role="tab" id="pendingInviteeHeading")
