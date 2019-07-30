@@ -42,6 +42,7 @@ class InviteesController < ApplicationController
           format.json { render json: {status: :created}, status: :created}
         end
       else
+        raise("not saving for some reason")
         format.html { render :new }
         format.json { render json: @invitee.errors, status: :unprocessable_entity }
       end
