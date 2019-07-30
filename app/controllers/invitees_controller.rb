@@ -38,7 +38,7 @@ class InviteesController < ApplicationController
 
     respond_to do |format|
       if @invitee.save
-        if current_user  && current_user.role == Ideals::UserRole::ADMIN
+        if current_user && current_user.role == Ideals::UserRole::ADMIN
           format.html { redirect_to invitees_path, notice: "Request for non-NetID IDEALS identity submitted." }
           format.json { render :show, status: :created, location: @invitee }
         else
