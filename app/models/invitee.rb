@@ -4,6 +4,7 @@ class Invitee < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   before_destroy :destroy_identity
   before_destroy :destroy_user
+  before_destroy :destroy_manager
   before_create :handle_manager
   before_update :handle_manager
 
@@ -29,7 +30,7 @@ class Invitee < ApplicationRecord
   end
 
   def handle_manager
-    if role == Ideals::UserRole::MANAGER
+    if role == Ideals::UserRole::MANAGER && approval_state == Ideals::ApprovalState::APPROVED
       ensure_manager
     else
       destroy_manager
