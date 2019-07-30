@@ -2,7 +2,7 @@
 
 class IdentitiesController < ApplicationController
   load_and_authorize_resource
-  skip_authorization_check :only => [:new, :create]
+  skip_authorization_check :only => [:login, :register]
   before_action :set_identity, only: [:show, :edit, :update, :destroy]
 
   # GET /identities
