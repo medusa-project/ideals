@@ -4,7 +4,7 @@
   %table.table.table-bordered
     %tr.row
       %td.col-md-3
-        %button{type: "button", class: "btn btn-primary btn-block", onclick: "window.open('/invitees')"}
+        %a{class: "btn btn-primary btn-block idb", href: "/invitees"}
           Non-NetID Identity Requests
       %td.col-md-3
         Pending non-NetID requests
@@ -20,7 +20,7 @@
           After the registration form is submitted, the IDEALS system sends an activation link to the email address to verify control of the email address. Once activated, the email address can be used, along with the password established during registration as IDEALS credentials.
     %tr.row
       %td.col-md-3
-        %button{type: "button", class: "btn btn-primary btn-block", onclick: "window.open('/managers')"}
+        %a{class: "btn btn-primary btn-block idb", href: "managers"}
           Managers
       %td.col-md-3
       %td.col-md-6
@@ -29,7 +29,7 @@
   %table.table.table-bordered
     %tr.row
       %td.col-md-3
-        %button{type: "button", class: "btn btn-primary btn-block", onclick: "window.open('/collections')"}
+        %a{ class: "btn btn-primary btn-block idb", href: "/collections"}
           Collections
       %td.col-md-3
       %td.col-md-6

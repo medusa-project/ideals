@@ -38,7 +38,7 @@
   .col-md-4.col-md-offset-2
     Have an Illinois NetID?
   .col-md-4
-    %button{type: "button", class: "btn btn-primary btn-block", onclick: "window.open('/login')"}
+    %a{class: "btn btn-primary btn-block", href: "/login"}
       =image_tag 'favicon.ico'
       %span.glyphicon.glyphicon-log-in
       &nbsp;
@@ -48,7 +48,7 @@
   .col-md-4.col-md-offset-2
     No Illinois NetID or registered identity?
   .col-md-4
-    %button{type: "button", class: "btn btn-success btn-block", onclick: "window.open('/invitees/new')"}
+    %a{class: "btn btn-success btn-block", href: "/invitees/new"}
       %span.pull-left
         %span.glyphicon.glyphicon-user
         %span.badge
@@ -59,7 +59,7 @@
   .col-md-4.col-md-offset-2
     Non-NetID identity approved, not yet registered?
   .col-md-4
-    %button{type: "button", class: "btn btn-success btn-block", onclick: "window.open('/identities/register')"}
+    %a{class: "btn btn-success btn-block", href: "/identities/register"}
       %span.pull-left
         %span.glyphicon.glyphicon-user
         %span.badge
