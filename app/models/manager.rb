@@ -14,7 +14,7 @@ class Manager < ApplicationRecord
   end
 
   def self.from_user(user)
-    Manager.find_by(user_provider: user.provider, user_uid: user.uid)
+    Manager.find_by(provider: user.provider, uid: user.uid)
   end
 
 end
