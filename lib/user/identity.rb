@@ -32,7 +32,7 @@ class User::Identity < User::User
 
     create! do |user|
       user.provider = auth["provider"]
-      user.uid = auth["uid"]
+      user.uid = auth["info"]["email"]
       user.email = auth["info"]["email"]
       user.name = auth["info"]["name"]
       user.username = user.email
@@ -42,7 +42,7 @@ class User::Identity < User::User
 
   def update_with_omniauth(auth)
     update!(provider: auth["provider"],
-            uid:      auth["uid"],
+            uid:      auth["info"]["email"],
             email:    auth["info"]["email"],
             username: email.split("@").first,
             name:     auth["info"]["name"],
