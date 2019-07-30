@@ -11,11 +11,11 @@ class User::Identity < User::User
     return nil unless auth && auth[:uid] && auth["info"]["email"]
 
     email = auth["info"]["email"].strip
-    identity = Identity.find_by(email: email)
+    identity = Identity.find_by(uid: email)
 
     return nil unless identity&.activated
 
-    user = User::Identity.find_by(provider: auth["provider"], uid: auth["uid"])
+    user = User::Identity.find_by(provider: Ideals::AuthProvider::IDENTITY, uid: email)
     if user
       user.update_with_omniauth(auth)
     else
@@ -25,25 +25,33 @@ class User::Identity < User::User
   end
 
   def self.create_with_omniauth(auth)
-    invitee = Invitee.find_by(email: auth["info"]["email"])
+
+    email = auth["info"]["email"].strip
+    return nil unless email
+
+    invitee = Invitee.find_by(email: email)
     return nil unless invitee&.expires_at
 
     return nil unless invitee.expires_at >= Time.current
 
     create! do |user|
       user.provider = auth["provider"]
-      user.uid = auth["info"]["email"]
-      user.email = auth["info"]["email"]
+      user.uid = email
+      user.email = email
       user.name = auth["info"]["name"]
-      user.username = user.email
-      user.role = user_role(user.email)
+      user.username = email
+      user.role = user_role(email)
     end
   end
 
   def update_with_omniauth(auth)
-    update!(provider: auth["provider"],
-            uid:      auth["info"]["email"],
-            email:    auth["info"]["email"],
+
+    email = auth["info"]["email"].strip
+    return nil unless email
+
+    update!(provider: Ideals::AuthProvider::IDENTITY,
+            uid:      email,
+            email:    email,
             username: email.split("@").first,
             name:     auth["info"]["name"],
             role:     User::Identity.user_role(email))
