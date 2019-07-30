@@ -38,12 +38,13 @@ class InviteesController < ApplicationController
 
     respond_to do |format|
       if @invitee.save
-        if current_user&.role == Ideals::UserRole::ADMIN
+        if current_user  && current_user.role == Ideals::UserRole::ADMIN
           format.html { redirect_to invitees_path, notice: "Request for non-NetID IDEALS identity submitted." }
+          format.json { render :show, status: :created, location: @invitee }
         else
           format.html { redirect_to :root_url, notice: "Request for non-NetID IDEALS identity submitted." }
+          format.json { render json: {status: :created}, status: :created}
         end
-        format.json { render :show, status: :created, location: @invitee }
       else
         format.html { render :new }
         format.json { render json: @invitee.errors, status: :unprocessable_entity }
