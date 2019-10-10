@@ -1,0 +1,12 @@
+class Handle < ApplicationRecord
+
+  def klass_name
+    Ideals::ResourceType::HASH[resource_type_id]
+  end
+
+  def resource
+    resource_klass = klass_name.classify.safe_constantize
+    resource_klass.find(resource_id)
+  end
+
+end

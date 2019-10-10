@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
 
+  resources :items
+  resources :handles
+  resources :collection_groups
   resources :collections do
     resources :managers
   end
@@ -27,8 +30,13 @@ Rails.application.routes.draw do
   match '/auth/:provider/callback', to: 'sessions#create', via: [:get, :post]
   match '/login', to: 'sessions#new', as: :login, via: [:get, :post]
   match '/logout', to: 'sessions#destroy', as: :logout, via: [:get, :post]
-
   match '/auth/failure', to: 'sessions#unauthorized', as: :unauthorized, via: [:get, :post]
+
+  # handle routing
+  get '/handle/:prefix/:suffix', to: 'handles#resolve'
+
+  # academic unit routing
+  get '/academic_units', to: "collection_groups#academic_units"
 
   # resources
   resources :identities do

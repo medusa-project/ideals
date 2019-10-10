@@ -11,11 +11,11 @@ class User::Identity < User::User
     return nil unless auth && auth[:uid] && auth["info"]["email"]
 
     email = auth["info"]["email"].strip
-    identity = Identity.find_by(uid: email)
+    identity = Identity.find_by(email: email)
 
     return nil unless identity&.activated
 
-    user = User::Identity.find_by(provider: Ideals::AuthProvider::IDENTITY, uid: email)
+    user = User::Identity.find_by(provider: Ideals::AuthProvider::IDENTITY, email: email)
     if user
       user.update_with_omniauth(auth)
     else

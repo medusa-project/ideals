@@ -13,9 +13,9 @@ module User
     validates_uniqueness_of :uid, allow_blank: false
     before_save :downcase_email
     validates :name,  presence: true
+    validates_uniqueness_of :email, scope: :provider
     validates :email, presence: true, length: {maximum: 255},
-              format: {with: VALID_EMAIL_REGEX},
-              uniqueness: {case_sensitive: false}
+              format: {with: VALID_EMAIL_REGEX}
 
     def is?(requested_role)
       role == requested_role.to_s

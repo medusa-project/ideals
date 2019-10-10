@@ -27,16 +27,20 @@
     = render partial: 'shared/mini_navbar'
     = render partial: 'shared/library_header'
     = render partial: 'shared/header_navbar'
-    #main-content{"aria-label" => "Accessibility Note: IDEALS staff at ideals-gen@illinois.edu are happy to assist with data deposit or access."}
-      - flash.each do |key, value|
-        %div{:class => "alert alert-#{key}"}
-          = sanitize(value)
+    .container-fluid
+      .row
+        .col-sm-12
+          - flash.each do |key, value|
+            %div{:class => "alert alert-#{key}"}
+              = sanitize(value)
+      - if @breadcrumbable
+        = render 'shared/breadcrumbs'
+      .clearfix
       - if current_page?(root_path)
         #welcome-image.hidden-xs
           #welcome-overlay
             %p IDEALS, the Illinois Digital Environment for Access to Learning and Scholarship, publishes research and scholarship from the University of Illinois at Urbana-Champaign.
-      .container-fluid
-        = yield
+      = yield
     = render partial: "shared/library_footer"
     =javascript_tag do
       window.rails_env = "#{Rails.env}";

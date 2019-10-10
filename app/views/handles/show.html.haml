@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Handle:
+  = @handle.handle
+%p
+  %b Resource type:
+  = @handle.resource_type_id
+%p
+  %b Resource:
+  = @handle.resource_id
+
+= link_to 'Edit', edit_handle_path(@handle)
+\|
+= link_to 'Back', handles_path

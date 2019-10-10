@@ -1,1 +1,1 @@
-json.array! @collections, partial: "collections/collection", as: :collection
+json.array! @resources, partial: "collections/collection", as: :collection

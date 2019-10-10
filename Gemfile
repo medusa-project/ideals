@@ -29,6 +29,14 @@ gem "highcharts-rails"
 gem "jquery-rails"
 gem "jquery-ui-rails"
 
+# Use sunspot for solr
+gem 'sunspot_rails'
+gem 'sunspot_solr'
+
+# use will_paginate for pagination of search results
+gem "will_paginate"
+gem "will_paginate-bootstrap"
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", ">= 1.1.0", require: false
 

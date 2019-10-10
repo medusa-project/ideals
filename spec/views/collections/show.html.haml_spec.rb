@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "collections/show", type: :view do
   before(:each) do
-    @collection = assign(:collection, Collection.create!(
+    @resource = assign(:collection, Collection.create!(
       :title => "Title",
       :description => "MyText"
     ))

@@ -1,0 +1,26 @@
+%hr
+
+%p#notice= notice
+
+%p
+  %b Title:
+  = @resource.title
+%p
+  %b Submitter email:
+  = @resource.submitter_email
+%p
+  %b Submitter auth provider:
+  = @resource.submitter_auth_provider
+%p
+  %b In archive:
+  = @resource.in_archive
+%p
+  %b Withdrawn:
+  = @resource.withdrawn
+%p
+  %b Discoverable:
+  = @resource.discoverable
+
+= link_to 'Edit', edit_item_path(@resource)
+\|
+= link_to 'Back', items_path
