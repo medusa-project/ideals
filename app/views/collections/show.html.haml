@@ -1,4 +1,4 @@
 %h1
   = @resource.title
 -if @resource.items.count.positive?
-  =render partial: "items/listing", locals:{search: @item_search, form_action: "/collections/#{@resource.id}", search_prompt: "search for items within collection"}
+  =render partial: "items/listing", locals:{search: @search, form_action: "/collections/#{@resource.id}", search_prompt: "search for items within collection"}

@@ -13,6 +13,10 @@ class Item < ApplicationRecord
     title
   end
 
+  def default_search
+    nil
+  end
+
   def relative_handle
     handle = Handle.find_by(resource_type_id: Ideals::ResourceType::ITEM, resource_id: id)
     return nil unless handle

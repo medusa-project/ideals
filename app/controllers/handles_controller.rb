@@ -70,6 +70,7 @@ class HandlesController < ApplicationController
     klass_name = handle.klass_name
 
     @breadcrumbable = @resource = handle.resource
+    @search = @resource.default_search
 
     render "#{klass_name.downcase.pluralize(2)}/show"
   end

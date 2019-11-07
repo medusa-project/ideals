@@ -22,4 +22,8 @@ class CollectionGroup < ApplicationRecord
     CollectionGroup.where(parent_group_id: id)
   end
 
+  def default_search
+    nil
+  end
+
 end

@@ -16,12 +16,13 @@
     .col-md-2
       = select_tag :per_page, options_for_select([['25 per page', '25'], ['50 per page', '50'], ['Show All', '500']], params[:per_page]), onchange: 'set_per_page()', class: "form-control search-control"
 
-.row
-  .col-sm-12
-    =page_entries_info(search.results)
+-if search
+  .row
+    .col-sm-12
+      =page_entries_info(search.results)
 
-%ul
-  -search.each_hit_with_result do |hit, item|
-    %li
-      %a(href="#{IDEALS_CONFIG[:root_url_text]}/handle/#{item.relative_handle}")
-        =item.title
+  %ul
+    -search.each_hit_with_result do |hit, item|
+      %li
+        %a(href="#{IDEALS_CONFIG[:root_url_text]}/handle/#{item.relative_handle}")
+          =item.title

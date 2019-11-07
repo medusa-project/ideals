@@ -12,7 +12,7 @@ class CollectionsController < ApplicationController
   def show
     if @resource.items.count.positive?
       resource_id = @resource.id
-      @item_search = Item.search do
+      @search = Item.search do
         with :collection_id, resource_id
         fulltext params[:q]
         if params.has_key?(:per_page)

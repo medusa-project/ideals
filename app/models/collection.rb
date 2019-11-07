@@ -12,6 +12,13 @@ class Collection < ApplicationRecord
     title
   end
 
+  def default_search
+    Item.search do
+      with :collection_id, id
+      paginate(page: 1, per_page: 25)
+    end
+  end
+
   def relative_handle
     handle = Handle.find_by(resource_type_id: Ideals::ResourceType::COLLECTION, resource_id: id)
     return nil unless handle
