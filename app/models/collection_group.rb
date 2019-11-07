@@ -7,7 +7,7 @@ class CollectionGroup < ApplicationRecord
   scope :bottom, -> { where(child_groups.count == 0) }
   has_many :collections, dependent: :restrict_with_exception
   has_many :collection_groups, dependent: :restrict_with_exception
-  
+
   def label
     title
   end
@@ -19,7 +19,7 @@ class CollectionGroup < ApplicationRecord
   end
 
   def child_groups
-    CollectionGroup.where(parent_group_id: group_id)
+    CollectionGroup.where(parent_group_id: id)
   end
 
 end
