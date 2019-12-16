@@ -20,6 +20,7 @@ class ItemsController < ApplicationController
   # GET /items/1.json
   def show
     raise ActiveRecord::RecordNotFound unless @resource
+    @breadcrumbable = @resource
   end
 
   # GET /items/new

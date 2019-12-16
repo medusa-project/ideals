@@ -11,6 +11,7 @@ class CollectionGroupsController < ApplicationController
   # GET /collection_groups/1.json
   def show
     raise ActiveRecord::RecordNotFound unless @resource
+    @breadcrumbable = @resource
   end
 
   # GET /collection_groups/new

@@ -23,6 +23,7 @@ class CollectionsController < ApplicationController
         paginate(page: params[:page] || 1, per_page: per_page)
       end
     end
+    @breadcrumbable = @resource
   end
 
   # GET /collections/new
