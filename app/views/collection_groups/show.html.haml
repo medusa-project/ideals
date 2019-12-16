@@ -1,9 +1,7 @@
-%h1
-  = "#{@resource.title}"
 -if @resource.child_groups.count.positive?
-  %h2 Sub Units
+  Sub Units
   =render partial: "collection_groups/listing", locals:{resources: @resource.child_groups}
 -if @resource.collections.count.positive?
-  %h2 Collections
+  Collections
   =render partial: "collections/listing", locals:{resources: @resource.collections}
 
