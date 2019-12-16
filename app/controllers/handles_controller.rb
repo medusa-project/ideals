@@ -72,7 +72,11 @@ class HandlesController < ApplicationController
     @breadcrumbable = @resource = handle.resource
     @search = @resource.default_search
 
-    render "#{klass_name.downcase.pluralize(2)}/show"
+    if klass_name == 'CollectionGroup'
+      render "#{collection_group.downcase.pluralize(2)}/show"
+    else
+      render "#{klass_name.downcase.pluralize(2)}/show"
+    end
   end
 
   private
