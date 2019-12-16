@@ -55,3 +55,49 @@ set :assets_roles, [:web, :app]
 # If you use Rails 4+ and you'd like to clean up old assets after each deploy,
 # set this to the number of versions to keep
 set :keep_assets, 2
+
+# support reindexing of sunspot as part of deploy
+namespace :sunspot do
+  desc "Reindex sunspot indexes"
+  task :reindex do
+    execute_rake 'sunspot:reindex'
+  end
+end
+
+namespace :ideals do
+  desc "Clear rails cache"
+  task :clear_rails_cache do
+    execute_rake "databank:rails_cache:clear"
+  end
+
+  def execute_rake(task)
+    on roles(:app) do
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          execute :rake, task
+        end
+      end
+    end
+  end
+end
+
+namespace :deploy do
+
+  after :restart, :clear_cache do
+    on roles(:web), in: :groups, limit: 3, wait: 10 do
+      # Here we can do anything such as:
+      # within release_path do
+      #   execute :rake, 'cache:clear'
+      # end
+    end
+  end
+
+  task :restart do
+    on roles(:app) do
+      execute "~/bin/stop-rails"
+      execute "~/bin/start-rails"
+    end
+  end
+
+  after 'deploy:publishing', 'deploy:restart'
+end
