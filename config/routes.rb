@@ -2,7 +2,7 @@ Rails.application.routes.draw do
 
   resources :items
   resources :handles
-  resources :collection_groups, path: :academic_units, as: :academic_units
+  resources :collection_groups
   resources :collections
 
   # You can have the root of your site routed with "root"
