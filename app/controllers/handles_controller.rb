@@ -73,7 +73,7 @@ class HandlesController < ApplicationController
     @search = @resource.default_search
 
     if klass_name == 'CollectionGroup'
-      render "#{collection_group.downcase.pluralize(2)}/show"
+      render "#{collection_groups.downcase.pluralize(2)}/show"
     else
       render "#{klass_name.downcase.pluralize(2)}/show"
     end
