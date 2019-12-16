@@ -6,7 +6,8 @@ module BreadcrumbsHelper
       link_to(breadcrumb.breadcrumb_label, breadcrumb)
     end
     if object.instance_of? Item
-      links.last = "View Item"
+      links.pop
+      links << "View Item"
     end
     links.join(' > ').html_safe
   end
