@@ -5,6 +5,9 @@ module BreadcrumbsHelper
     links = breadcrumbs.collect do |breadcrumb|
       link_to(breadcrumb.breadcrumb_label, breadcrumb)
     end
+    if object.instance_of? Item
+      links.last = "View Item"
+    end
     links.join(' > ').html_safe
   end
 
