@@ -2,7 +2,7 @@ Rails.application.routes.draw do
 
   resources :items
   resources :handles
-  resources :collection_groups
+  resources :collection_groups, path: :academic_units, as: :academic_units
   resources :collections
 
   # You can have the root of your site routed with "root"
@@ -23,9 +23,6 @@ Rails.application.routes.draw do
 
   # handle routing
   get '/handle/:prefix/:suffix', to: 'handles#resolve'
-
-  # academic unit routing
-  resources :academic_units, path: :collection_groups, as: :collection_groups
 
   # resources
   resources :identities do
