@@ -19,21 +19,3 @@
           If requested using the web form, the request must be approved.
           Once approved by an IDEALS administrator at the time of creation or later, the email address can be used to register a non-NetID IDEALS identity.
           After the registration form is submitted, the IDEALS system sends an activation link to the email address to verify control of the email address. Once activated, the email address can be used, along with the password established during registration as IDEALS credentials.
-    %tr.row
-      %td.col-md-3
-        %button{type: "button", class: "btn btn-primary btn-block"}
-          %a{href: "managers", class: "idb"}
-            Managers
-      %td.col-md-3
-      %td.col-md-6
--if(can? :create, Collection)
-  %h2 Manager Section
-  %table.table.table-bordered
-    %tr.row
-      %td.col-md-3
-        %button{type: "button", class: "btn btn-primary btn-block"}
-          %a{href: "/collections", class: "idb"}
-            Collections
-      %td.col-md-3
-      %td.col-md-6
-%h2 Submitter Section

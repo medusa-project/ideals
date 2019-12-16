@@ -19,6 +19,27 @@ class User::Shibboleth < User::User
     user
   end
 
+  # used in assignment of permissions to NetID users, but not using Active Directory.
+  # HERE BE DRAGONS
+  # such as the fire-breathing "This person's role in the org changed, but we did not change permission in IDEALS"
+  def self.no_omniauth(email:, role: Ideals::UserRole::GUEST)
+    email_string = email.to_s.strip
+    raise ArgumentError, "email address required" unless email && !email_string.empty?
+
+    raise ArgumentError, "valid email address required" unless email_string.match(URI::MailTo::EMAIL_REGEXP)
+
+    raise ArgumentError unless Ideals::UserRole::ARRAY.include?(role)
+
+    user = User.find_by(email: email, provider: Ideals::AuthProvider::SHIBBOLETH)
+    if user
+      user.role = role
+      user.save!
+    else
+      user = User::Shibboleth.create_no_omniauth(email: email_string, role: role)
+    end
+    user
+  end
+
   def self.create_with_omniauth(auth)
     create! do |user|
       user.provider = auth["provider"]
@@ -27,6 +48,17 @@ class User::Shibboleth < User::User
       user.username = (auth["info"]["email"]).split("@").first
       user.name = display_name((auth["info"]["email"]).split("@").first)
       user.role = user_role(auth["uid"])
+    end
+  end
+
+  def self.create_no_omniauth(email:, role: Ideals::UserRole::GUEST)
+    create! do |user|
+      user.provider = Ideals::AuthProvider::SHIBBOLETH
+      user.uid = email
+      user.email = email
+      user.username = email.split("@").first
+      user.name = email.split("@").first
+      user.role = role
     end
   end
 

@@ -4,8 +4,6 @@ class Collection < ApplicationRecord
   belongs_to :parent, class_name: 'CollectionGroup', foreign_key: 'collection_group_id'
   breadcrumbs parent: :collection_group, label: :title
   has_many :items, dependent: :restrict_with_exception
-  has_and_belongs_to_many :managers, inverse_of: :collections
-  accepts_nested_attributes_for :managers
   validates_uniqueness_of :title, scope: :collection_group
 
   def label
@@ -24,13 +22,4 @@ class Collection < ApplicationRecord
     return nil unless handle
     handle.handle
   end
-
-  def add_manager(manager)
-    managers << manager
-  end
-
-  def remove_manager(manager)
-    managers.delete(manager)
-  end
-
 end

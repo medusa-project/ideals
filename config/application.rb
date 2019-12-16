@@ -21,10 +21,9 @@ module Ideals
   
   class UserRole
     ADMIN = 'admin'
-    MANAGER = 'manager'
     SUBMITTER = 'submitter'
     GUEST = 'guest'
-    ARRAY = [Ideals::UserRole::GUEST, Ideals::UserRole::SUBMITTER, Ideals::UserRole::MANAGER, Ideals::UserRole::ADMIN]
+    ARRAY = [Ideals::UserRole::GUEST, Ideals::UserRole::SUBMITTER, Ideals::UserRole::ADMIN]
   end
 
   class ApprovalState

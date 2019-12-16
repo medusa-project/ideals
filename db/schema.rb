@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_19_200143) do
+ActiveRecord::Schema.define(version: 2019_12_16_172742) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,11 +29,6 @@ ActiveRecord::Schema.define(version: 2019_09_19_200143) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "collection_group_id"
-  end
-
-  create_table "collections_managers", id: false, force: :cascade do |t|
-    t.bigint "manager_id", null: false
-    t.bigint "collection_id", null: false
   end
 
   create_table "handles", force: :cascade do |t|
@@ -78,13 +73,6 @@ ActiveRecord::Schema.define(version: 2019_09_19_200143) do
     t.boolean "withdrawn"
     t.integer "collection_id"
     t.boolean "discoverable"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "managers", force: :cascade do |t|
-    t.string "uid"
-    t.string "provider"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

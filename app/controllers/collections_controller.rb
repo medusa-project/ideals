@@ -1,5 +1,5 @@
 class CollectionsController < ApplicationController
-  before_action :set_collection, only: [:show, :edit, :update, :destroy, :add_manager, :remove_manager]
+  before_action :set_collection, only: [:show, :edit, :update, :destroy]
 
   # GET /collections
   # GET /collections.json
@@ -43,44 +43,10 @@ class CollectionsController < ApplicationController
 
     respond_to do |format|
       if @resource.save
-
-        if current_user&.role == Ideals::UserRole::MANAGER
-          manager = Manager.from_user(user)
-          raise "user with manager role not found in manager query #{user.provider} | #{user.uid}" unless manager
-          @resource.managers << manager
-        end
         format.html { redirect_to @resource, notice: 'Collection was successfully created.' }
         format.json { render :show, status: :created, location: @resource }
       else
         format.html { render :new }
-        format.json { render json: @resource.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # POST /collections/1/add_manager
-  def add_manager
-    authorize!
-    respond_to do |format|
-      if params.has_key?(:manager_id) && @resource.add_manager(params[:manager_id])
-        format.html { redirect_to @resource, notice: 'Manager was successfully assigned.' }
-        format.json { render :show, status: :ok, location: @resource }
-      else
-        format.html { render :show, notice: 'Error when attempting to assign manager. Details have been logged.' }
-        format.json { render json: @resource.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # POST /collections/1/remove_manager
-  def remove_manager
-    authorize!
-    respond_to do |format|
-      if params.has_key?(:manager_id) && @resource.remove_manager(params[:manager_id])
-        format.html { redirect_to @resource, notice: 'Manager was successfully removed.' }
-        format.json { render :show, status: :ok, location: @resource }
-      else
-        format.html { render :show, notice: 'Error when attempting to remove manager. Details have been logged.' }
         format.json { render json: @resource.errors, status: :unprocessable_entity }
       end
     end
@@ -125,6 +91,6 @@ class CollectionsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def collection_params
-      params.require(:collection).permit(:title, :description, :manager_id)
+      params.require(:collection).permit(:title, :description)
     end
 end
