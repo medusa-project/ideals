@@ -5,8 +5,7 @@ RSpec.describe "collection_groups/new", type: :view do
     assign(:collection_group, CollectionGroup.new(
       :title => "MyString",
       :group_id => 1,
-      :parent_group_id => 1,
-      :group_type => "MyString"
+      :parent_group_id => 1
     ))
   end
 
@@ -21,7 +20,6 @@ RSpec.describe "collection_groups/new", type: :view do
 
       assert_select "input[name=?]", "collection_group[parent_group_id]"
 
-      assert_select "input[name=?]", "collection_group[group_type]"
     end
   end
 end

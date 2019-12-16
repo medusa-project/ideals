@@ -1,5 +1,5 @@
 %h1
-  = "#{@resource.group_type.titleize}]: #{@resource.title}"
+  = #{@resource.title}"
 -if @resource.child_groups.count.positive?
   %h2 Sub Units
   =render partial: "collection_groups/listing", locals:{resources: @resource.child_groups}

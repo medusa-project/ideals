@@ -7,10 +7,6 @@ class CollectionGroupsController < ApplicationController
     @resources = CollectionGroup.top
   end
 
-  def academic_units
-    @resources=CollectionGroup.top.academic_unit
-  end
-
   # GET /collection_groups/1
   # GET /collection_groups/1.json
   def show
@@ -79,6 +75,6 @@ class CollectionGroupsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def collection_group_params
-      params.require(:collection_group).permit(:title, :group_id, :parent_group_id, :group_type)
+      params.require(:collection_group).permit(:title, :group_id, :parent_group_id)
     end
 end

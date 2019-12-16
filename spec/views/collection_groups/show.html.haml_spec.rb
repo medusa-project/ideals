@@ -5,8 +5,7 @@ RSpec.describe "collection_groups/show", type: :view do
     @resource = assign(:collection_group, CollectionGroup.create!(
       :title => "Title",
       :group_id => 2,
-      :parent_group_id => 3,
-      :group_type => "Group Type"
+      :parent_group_id => 3
     ))
   end
 

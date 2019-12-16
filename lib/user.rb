@@ -5,7 +5,7 @@ require "json"
 
 module User
   # This is an abstract class to represent a User
-  # Class methods used because Shibboleth identities are not persistent in ideals
+  # Class methods used because Shibboleth identity details are not persistent in ideals
 
   class User < ApplicationRecord
     include ActiveModel::Serialization
@@ -62,11 +62,6 @@ module User
         user.save!
       elsif domain == "illinois.edu"
       end
-
-
-
-
-
     end
 
     def self.from_omniauth(_auth)

@@ -55,8 +55,7 @@ namespace :import do
     communities.each do |community|
       CollectionGroup.create(title: community[1],
                              id: community[0],
-                             parent_group_id: community2community[community[0]],
-                             group_type: Ideals::CollectionGroupType::ACADEMIC_UNIT)
+                             parent_group_id: community2community[community[0]])
     end
   end
 

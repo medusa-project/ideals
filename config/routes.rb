@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   get '/handle/:prefix/:suffix', to: 'handles#resolve'
 
   # academic unit routing
-  get '/academic_units', to: "collection_groups#academic_units"
+  resources :academic_units, path: :collection_groups, as: :collection_groups
 
   # resources
   resources :identities do
