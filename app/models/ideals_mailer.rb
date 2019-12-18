@@ -4,7 +4,7 @@ require "open-uri"
 require "open_uri_redirections"
 
 # defines and sends email
-class IdealsMailer < ActionMailer::Base
+class IdealsMailer < ApplicationMailer
   default from: "ideals-gen@illinois.edu"
 
   def contact_help(params)

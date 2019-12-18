@@ -28,18 +28,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def error_occurred(exception)
-    if exception.class == CanCan::AccessDenied
-      respond_to do |format|
-        format.html {
-          redirect_to redirect_path,
-                      alert:  "You are not authorized to access the requested resource.",
-                      status: :forbidden
-        }
-        format.json { render nothing: true, status: :forbidden }
-        format.xml { render xml: {error: "unauthorized"}.to_xml, status: :forbidden }
-      end
-
-    elsif exception.class == ActiveRecord::RecordNotFound
+    if exception.class == ActiveRecord::RecordNotFound
       respond_to do |format|
         format.html { render "errors/error404", status: :not_found }
         format.json { render nothing: true, status: :not_found }
@@ -47,9 +36,10 @@ class ApplicationController < ActionController::Base
       end
 
     else
-      exception_string = "*** Standard Error caught in application_controller.rb on #{IDEALS_CONFIG[:root_url_text]} ***\nclass: #{exception.class}\nmessage: #{exception.message}\n"
+      exception_string = "Error on #{IDEALS_CONFIG[:root_url_text]}"
+      exception_string += "\nclass: #{exception.class}"
+      exception_string += "\nmessage: #{exception.message}\n"
       exception_string += Time.now.utc.iso8601
-
       exception_string += "\nstack:\n"
       exception.backtrace.each do |line|
         exception_string += line

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class IdentitiesController < ApplicationController
-
   # GET /identities
   # GET /identities.json
   # # @identities is already loaded with all identities the user is authorized to read

@@ -27,8 +27,8 @@ class InviteesController < ApplicationController
 
     respond_to do |format|
       if @invitee.save
-         format.html { redirect_to :root_url, notice: "Invitee created." }
-         format.json { render json: {status: :created}, status: :created}
+        format.html { redirect_to :root_url, notice: "Invitee created." }
+        format.json { render json: {status: :created}, status: :created }
       else
         format.html { render :new, notice: "Invitee not created." }
         format.json { render json: @invitee.errors, status: :unprocessable_entity }

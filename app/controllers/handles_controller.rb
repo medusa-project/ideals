@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class HandlesController < ApplicationController
   before_action :set_handle, only: [:show, :edit, :update, :destroy]
 
@@ -9,8 +11,7 @@ class HandlesController < ApplicationController
 
   # GET /handles/1
   # GET /handles/1.json
-  def show
-  end
+  def show; end
 
   # GET /handles/new
   def new
@@ -18,8 +19,7 @@ class HandlesController < ApplicationController
   end
 
   # GET /handles/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /handles
   # POST /handles.json
@@ -28,7 +28,7 @@ class HandlesController < ApplicationController
 
     respond_to do |format|
       if @handle.save
-        format.html { redirect_to @handle, notice: 'Handle was successfully created.' }
+        format.html { redirect_to @handle, notice: "Handle was successfully created." }
         format.json { render :show, status: :created, location: @handle }
       else
         format.html { render :new }
@@ -42,7 +42,7 @@ class HandlesController < ApplicationController
   def update
     respond_to do |format|
       if @handle.update(handle_params)
-        format.html { redirect_to @handle, notice: 'Handle was successfully updated.' }
+        format.html { redirect_to @handle, notice: "Handle was successfully updated." }
         format.json { render :show, status: :ok, location: @handle }
       else
         format.html { render :edit }
@@ -56,14 +56,13 @@ class HandlesController < ApplicationController
   def destroy
     @handle.destroy
     respond_to do |format|
-      format.html { redirect_to handles_url, notice: 'Handle was successfully destroyed.' }
+      format.html { redirect_to handles_url, notice: "Handle was successfully destroyed." }
       format.json { head :no_content }
     end
   end
 
   # GET /handle/:prefix/:suffix
   def resolve
-
     handle = Handle.find_by(prefix: params[:prefix], suffix: params[:suffix])
     raise ActiveRecord::RecordNotFound unless handle
 
@@ -76,13 +75,14 @@ class HandlesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_handle
-      @handle = Handle.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def handle_params
-      params.require(:handle).permit(:handle, :prefix, :suffix, :resource_type_id, :resource_id)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_handle
+    @handle = Handle.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def handle_params
+    params.require(:handle).permit(:handle, :prefix, :suffix, :resource_type_id, :resource_id)
+  end
 end

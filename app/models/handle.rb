@@ -1,5 +1,6 @@
-class Handle < ApplicationRecord
+# frozen_string_literal: true
 
+class Handle < ApplicationRecord
   def klass_name
     Ideals::ResourceType::HASH[resource_type_id]
   end
@@ -8,5 +9,4 @@ class Handle < ApplicationRecord
     resource_klass = klass_name.classify.safe_constantize
     resource_klass.find(resource_id)
   end
-
 end

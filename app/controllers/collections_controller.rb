@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CollectionsController < ApplicationController
   before_action :set_collection, only: [:show, :edit, :update, :destroy]
 
@@ -15,11 +17,11 @@ class CollectionsController < ApplicationController
       @search = Item.search do
         with :collection_id, resource_id
         fulltext params[:q]
-        if params.has_key?(:per_page)
-          per_page = params[:per_page].to_i
-        else
-          per_page = 25
-        end
+        per_page = if params.has_key?(:per_page)
+                     params[:per_page].to_i
+                   else
+                     25
+                   end
         paginate(page: params[:page] || 1, per_page: per_page)
       end
     end
@@ -32,8 +34,7 @@ class CollectionsController < ApplicationController
   end
 
   # GET /collections/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /collections
   # POST /collections.json
@@ -42,7 +43,7 @@ class CollectionsController < ApplicationController
 
     respond_to do |format|
       if @resource.save
-        format.html { redirect_to @resource, notice: 'Collection was successfully created.' }
+        format.html { redirect_to @resource, notice: "Collection was successfully created." }
         format.json { render :show, status: :created, location: @resource }
       else
         format.html { render :new }
@@ -56,7 +57,7 @@ class CollectionsController < ApplicationController
   def update
     respond_to do |format|
       if @resource.update(collection_params)
-        format.html { redirect_to @resource, notice: 'Collection was successfully updated.' }
+        format.html { redirect_to @resource, notice: "Collection was successfully updated." }
         format.json { render :show, status: :ok, location: @resource }
       else
         format.html { render :edit }
@@ -70,24 +71,25 @@ class CollectionsController < ApplicationController
   def destroy
     @resource.destroy
     respond_to do |format|
-      format.html { redirect_to collections_url, notice: 'Collection was successfully destroyed.' }
+      format.html { redirect_to collections_url, notice: "Collection was successfully destroyed." }
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_collection
-      if params.has_key?(:id)
-        @resource = Collection.find_by(id: params[:id])
-      elsif params.has_key?(:suffix)
-        @resource = Handle.find_by(prefix: params[:prefix], suffix: params[:suffix]).resource
-      end
-      @breadcrumbable = @resource
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def collection_params
-      params.require(:collection).permit(:title, :description)
+  # Use callbacks to share common setup or constraints between actions.
+  def set_collection
+    if params.has_key?(:id)
+      @resource = Collection.find_by(id: params[:id])
+    elsif params.has_key?(:suffix)
+      @resource = Handle.find_by(prefix: params[:prefix], suffix: params[:suffix]).resource
     end
+    @breadcrumbable = @resource
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def collection_params
+    params.require(:collection).permit(:title, :description)
+  end
 end

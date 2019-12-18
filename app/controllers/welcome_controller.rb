@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class WelcomeController < ApplicationController
-
   helper_method :current_user, :logged_in?
 
   def index; end

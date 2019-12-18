@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class Unit < ApplicationRecord
   include Breadcrumb
-  belongs_to :parent, class_name: 'Unit', foreign_key: 'parent_unit_id', optional: true
+  belongs_to :parent, class_name: "Unit", foreign_key: "parent_unit_id", optional: true
   breadcrumbs parent: nil, label: :title
   scope :top, -> { where(parent_unit_id: nil) }
   scope :bottom, -> { where(child_units.count == 0) }
@@ -33,5 +35,4 @@ class Unit < ApplicationRecord
   def default_search
     nil
   end
-
 end

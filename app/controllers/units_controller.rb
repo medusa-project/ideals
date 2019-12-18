@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UnitsController < ApplicationController
   before_action :set_unit, only: [:show, :edit, :update, :destroy]
 
@@ -11,6 +13,7 @@ class UnitsController < ApplicationController
   # GET /units/1.json
   def show
     raise ActiveRecord::RecordNotFound unless @resource
+
     @breadcrumbable = @resource
   end
 
@@ -20,8 +23,7 @@ class UnitsController < ApplicationController
   end
 
   # GET /units/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /units
   # POST /units.json
@@ -30,7 +32,7 @@ class UnitsController < ApplicationController
 
     respond_to do |format|
       if @resource.save
-        format.html { redirect_to @resource, notice: 'Unit was successfully created.' }
+        format.html { redirect_to @resource, notice: "Unit was successfully created." }
         format.json { render :show, status: :created, location: @resource }
       else
         format.html { render :new }
@@ -44,7 +46,7 @@ class UnitsController < ApplicationController
   def update
     respond_to do |format|
       if @resource.update(unit_params)
-        format.html { redirect_to @resource, notice: 'Collection group was successfully updated.' }
+        format.html { redirect_to @resource, notice: "Collection group was successfully updated." }
         format.json { render :show, status: :ok, location: @resource }
       else
         format.html { render :edit }
@@ -58,24 +60,25 @@ class UnitsController < ApplicationController
   def destroy
     @resource.destroy
     respond_to do |format|
-      format.html { redirect_to units_url, notice: 'Unit was successfully destroyed.' }
+      format.html { redirect_to units_url, notice: "Unit was successfully destroyed." }
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_unit
-      if params.has_key?(:id)
-        @resource = Unit.find_by(id: params[:id])
-      elsif params.has_key?(:suffix)
-        @resource = Handle.find_by(prefix: params[:prefix], suffix: params[:suffix]).resource
-      end
-      @breadcrumbable = @resource
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def unit_params
-      params.require(:unit).permit(:title, :parent_unit_id)
+  # Use callbacks to share common setup or constraints between actions.
+  def set_unit
+    if params.has_key?(:id)
+      @resource = Unit.find_by(id: params[:id])
+    elsif params.has_key?(:suffix)
+      @resource = Handle.find_by(prefix: params[:prefix], suffix: params[:suffix]).resource
     end
+    @breadcrumbable = @resource
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def unit_params
+    params.require(:unit).permit(:title, :parent_unit_id)
+  end
 end

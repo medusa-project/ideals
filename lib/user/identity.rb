@@ -25,7 +25,6 @@ class User::Identity < User::User
   end
 
   def self.create_with_omniauth(auth)
-
     email = auth["info"]["email"].strip
     return nil unless email
 
@@ -45,7 +44,6 @@ class User::Identity < User::User
   end
 
   def update_with_omniauth(auth)
-
     email = auth["info"]["email"].strip
     return nil unless email
 

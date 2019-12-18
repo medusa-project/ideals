@@ -47,7 +47,7 @@ Style/SymbolArray:
   Enabled: false
 
 # Most readable form.
-Layout/AlignHash:
+Layout/HashAlignment:
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
 

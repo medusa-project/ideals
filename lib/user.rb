@@ -21,7 +21,11 @@ module User
               format: {with: VALID_EMAIL_REGEX}
 
     def role?(role)
-      roles.any? { |r| r.name.underscore.to_sym == role }
+      roles.any? {|r| r.name.underscore.to_sym == role }
+    end
+
+    def sysadmin?
+      role? :sysadmin
     end
 
     # Converts email to all lower-case.
@@ -30,7 +34,6 @@ module User
     end
 
     def self.create_or_update(email)
-
       email_string = email.to_s.strip
       raise ArgumentError, "email address required" unless email && !email_string.empty?
 
@@ -51,9 +54,9 @@ module User
         end
       end
       user = if domain == "illinois.edu"
-        User.find_by(email: email, provider: Ideals::AuthProvider::SHIBBOLETH)
-      else
-        User.find_by(email: email, provider: Ideals::AuthProvider::IDENTITY)
+               User.find_by(email: email, provider: Ideals::AuthProvider::SHIBBOLETH)
+             else
+               User.find_by(email: email, provider: Ideals::AuthProvider::IDENTITY)
              end
       user
     end
