@@ -29,10 +29,6 @@ gem "highcharts-rails"
 gem "jquery-rails"
 gem "jquery-ui-rails"
 
-# Use sunspot for solr
-gem 'sunspot_rails'
-gem 'sunspot_solr'
-
 # use will_paginate for pagination of search results
 gem "will_paginate"
 gem "will_paginate-bootstrap"
@@ -106,10 +102,6 @@ gem "nokogiri-diff"
 gem "progress_bar"
 gem "sunspot_rails"
 gem "sunspot_solr"
-
-# use will_paginate for pagination of search results
-gem "will_paginate"
-gem "will_paginate-bootstrap"
 
 # Use Passenger standalone
 gem "passenger", ">= 5.0.25", require: "phusion_passenger/rack_handler"

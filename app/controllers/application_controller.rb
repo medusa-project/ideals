@@ -4,8 +4,6 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
   helper_method :current_user, :logged_in?
 
-  include CanCan::ControllerAdditions
-
   rescue_from StandardError, with: :error_occurred
   rescue_from ActionView::MissingTemplate do |_exception|
     render json: {}, status: :unprocessable_entity
