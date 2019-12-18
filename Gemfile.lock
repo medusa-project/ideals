@@ -1150,6 +1150,8 @@ GEM
       delayed_job
     public_suffix (4.0.1)
     puma (3.12.2)
+    pundit (2.1.0)
+      activesupport (>= 3.0.0)
     rack (2.0.7)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
@@ -1352,6 +1354,7 @@ DEPENDENCIES
   progress_bar
   progress_job
   puma (~> 3.11)
+  pundit
   rails (~> 5.2.3)
   rchardet
   recaptcha

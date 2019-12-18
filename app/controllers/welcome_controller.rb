@@ -12,11 +12,7 @@ class WelcomeController < ApplicationController
 
   def policies; end
 
-  def dashboard
-    if current_user && current_user.role == Ideals::UserRole::ADMIN
-      @pending_identity_request_count = Invitee.where(approval_state: Ideals::ApprovalState::PENDING).count.to_s
-    end
-  end
+  def dashboard; end
 
   def deposit; end
 

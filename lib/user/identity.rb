@@ -57,13 +57,6 @@ class User::Identity < User::User
             role:     User::Identity.user_role(email))
   end
 
-  def self.user_role(email)
-    invitee = Invitee.find_by(email: email)
-    return Ideals::UserRole::GUEST unless invitee
-
-    invitee.role
-  end
-
   def self.display_name(email)
     identity = find_by(email: email)
     return email unless identity

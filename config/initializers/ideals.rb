@@ -9,7 +9,6 @@ if Rails.env.development?
     email = "#{netid}@illinois.edu"
     name = "admin #{netid}"
     invitee = Invitee.find_by_email(email) || Invitee.create!(email: email, approval_state: Ideals::ApprovalState::APPROVED)
-    invitee.role = Ideals::UserRole::ADMIN
     invitee.expires_at = Time.zone.now + 1.years
     invitee.save!
     identity = Identity.find_or_create_by(email: email)

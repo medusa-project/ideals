@@ -20,10 +20,6 @@
       .col-md-10
         =f.date_field :expires_at, class: "form-control"
     .form-group.row
-      = f.label :role, "Role", class: "col-md-2 col-form-label"
-      .col-md-10
-        = f.select(:role, Ideals::UserRole::ARRAY, {prompt: true}, {class: "form-control"})
-    .form-group.row
       = f.label :approval_state, "Approval", class: "col-md-2 col-form-label"
       .col-md-10
         = f.select(:approval_state, Ideals::ApprovalState::ARRAY, {prompt: true}, {class: "form-control"})

@@ -18,13 +18,6 @@ require "rails/test_unit/railtie"
 Bundler.require(*Rails.groups)
 
 module Ideals
-  
-  class UserRole
-    ADMIN = 'admin'
-    SUBMITTER = 'submitter'
-    GUEST = 'guest'
-    ARRAY = [Ideals::UserRole::GUEST, Ideals::UserRole::SUBMITTER, Ideals::UserRole::ADMIN]
-  end
 
   class ApprovalState
     PENDING = 'pending'

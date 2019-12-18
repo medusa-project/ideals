@@ -27,16 +27,10 @@ class InviteesController < ApplicationController
 
     respond_to do |format|
       if @invitee.save
-        if current_user && current_user.role == Ideals::UserRole::ADMIN
-          format.html { redirect_to invitees_path, notice: "New non-NetID IDEALS identity created." }
-          format.json { render :show, status: :created, location: @invitee }
-        else
-          format.html { redirect_to :root_url, notice: "Request for non-NetID IDEALS identity submitted." }
-          format.json { render json: {status: :created}, status: :created}
-        end
+         format.html { redirect_to :root_url, notice: "Invitee created." }
+         format.json { render json: {status: :created}, status: :created}
       else
-        raise("not saving for some reason")
-        format.html { render :new }
+        format.html { render :new, notice: "Invitee not created." }
         format.json { render json: @invitee.errors, status: :unprocessable_entity }
       end
     end
@@ -75,6 +69,6 @@ class InviteesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def invitee_params
-    params.require(:invitee).permit(:email, :role, :note, :expires_at, :approval_state)
+    params.require(:invitee).permit(:email, :note, :expires_at, :approval_state)
   end
 end

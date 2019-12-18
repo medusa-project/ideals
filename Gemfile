@@ -18,6 +18,9 @@ gem "jbuilder", "~> 2.5"
 # Use ActiveModel has_secure_password
 gem "bcrypt", "~> 3.1.7"
 
+# Use pundit for authorization
+gem "pundit"
+
 # Use SCSS for stylesheets
 gem "sass-rails", "~> 5.0"
 

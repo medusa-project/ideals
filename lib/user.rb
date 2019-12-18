@@ -10,6 +10,9 @@ module User
   class User < ApplicationRecord
     include ActiveModel::Serialization
 
+    has_many :assignments
+    has_many :roles, through: :assignments
+
     validates_uniqueness_of :uid, allow_blank: false
     before_save :downcase_email
     validates :name, presence: true
@@ -17,8 +20,8 @@ module User
     validates :email, presence: true, length: {maximum: 255},
               format: {with: VALID_EMAIL_REGEX}
 
-    def is?(requested_role)
-      role == requested_role.to_s
+    def role?(role)
+      roles.any? { |r| r.name.underscore.to_sym == role }
     end
 
     # Converts email to all lower-case.
@@ -26,29 +29,24 @@ module User
       self.email = email.downcase
     end
 
-    def self.create_or_update(email:, role: Ideals::UserRole::GUEST)
+    def self.create_or_update(email)
 
       email_string = email.to_s.strip
       raise ArgumentError, "email address required" unless email && !email_string.empty?
 
       raise ArgumentError, "valid email address required" unless email_string.match(URI::MailTo::EMAIL_REGEXP)
 
-      raise ArgumentError unless Ideals::UserRole::ARRAY.include?(role)
-
       domain = email_string.split("@").last
 
       if domain == "illinois.edu"
         user = User.find_by(email: email, provider: Ideals::AuthProvider::SHIBBOLETH)
-        if user
-          user.role = role
-        else
+        unless user
           create! do |user|
             user.provider = Ideals::AuthProvider::SHIBBOLETH
             user.uid = email_string
             user.email = email_string
             user.username = email_string.split("@").first
             user.name = email_string.split("@").first
-            user.role = role
           end
         end
       end
@@ -56,12 +54,8 @@ module User
         User.find_by(email: email, provider: Ideals::AuthProvider::SHIBBOLETH)
       else
         User.find_by(email: email, provider: Ideals::AuthProvider::IDENTITY)
-                      end
-      if user
-        user.role = role
-        user.save!
-      elsif domain == "illinois.edu"
-      end
+             end
+      user
     end
 
     def self.from_omniauth(_auth)
