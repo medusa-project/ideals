@@ -132,10 +132,7 @@ gem "delayed_job_active_record"
 gem "progress_job"
 # gem 'delayed_job_heartbeat_plugin'
 
-# Use canan to restrict what resources a given user is allowed to access
-gem "cancancan"
-
-# User bunny to handle RabbitMQ messages
+# Use bunny to handle RabbitMQ messages
 gem "bunny", "2.8.1"
 
 # Use builder to support sitemaps generator

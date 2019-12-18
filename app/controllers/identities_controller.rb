@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class IdentitiesController < ApplicationController
-  load_and_authorize_resource
-  skip_load_resource only: [:login, :register, :new, :create]
-  skip_authorize_resource only: [:login, :register, :new, :create]
 
   # GET /identities
   # GET /identities.json

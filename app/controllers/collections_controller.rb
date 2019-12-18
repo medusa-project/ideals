@@ -33,13 +33,11 @@ class CollectionsController < ApplicationController
 
   # GET /collections/1/edit
   def edit
-    authorize!
   end
 
   # POST /collections
   # POST /collections.json
   def create
-    authorize!
     @resource = Collection.new(collection_params)
 
     respond_to do |format|
@@ -56,7 +54,6 @@ class CollectionsController < ApplicationController
   # PATCH/PUT /collections/1
   # PATCH/PUT /collections/1.json
   def update
-    authorize!
     respond_to do |format|
       if @resource.update(collection_params)
         format.html { redirect_to @resource, notice: 'Collection was successfully updated.' }
@@ -71,7 +68,6 @@ class CollectionsController < ApplicationController
   # DELETE /collections/1
   # DELETE /collections/1.json
   def destroy
-    authorize!
     @resource.destroy
     respond_to do |format|
       format.html { redirect_to collections_url, notice: 'Collection was successfully destroyed.' }

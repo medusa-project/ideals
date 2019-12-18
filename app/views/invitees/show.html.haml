@@ -2,7 +2,7 @@
 
 %p#notice= notice
 
--if can? :manage, @invitee
+.sysadmin
 
   %p
     %b Email:
@@ -23,7 +23,7 @@
   = link_to 'Edit', edit_invitee_path(@invitee)
   \|
   = link_to 'List All', invitees_path
--else
+.public
   .jumbotron
     This request for a Non-NetID IDEALS identity has been received.
     Any additional notification will be sent to the email address provided.
