@@ -39,7 +39,6 @@ class User::Identity < User::User
       user.email = email
       user.name = auth["info"]["name"]
       user.username = email
-      user.role = user_role(email)
     end
   end
 
@@ -51,8 +50,7 @@ class User::Identity < User::User
             uid:      email,
             email:    email,
             username: email.split("@").first,
-            name:     auth["info"]["name"],
-            role:     User::Identity.user_role(email))
+            name:     auth["info"]["name"])
   end
 
   def self.display_name(email)

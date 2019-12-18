@@ -1,5 +1,9 @@
 Academic Unit:
 =@resource.title
+%h2 Ancestors
+=DEBUG(@resource.ancestor_units)
+%h2 Descendants
+=DEBUG(@resource.descendant_units)
 
 -if @resource.child_units.count.positive?
   Sub Units

@@ -9,15 +9,15 @@ class ApplicationPolicy
   end
 
   def index?
-    false
+    user.sysadmin?
   end
 
   def show?
-    false
+    user.sysadmin?
   end
 
   def create?
-    false
+    user.sysadmin?
   end
 
   def new?
@@ -25,7 +25,7 @@ class ApplicationPolicy
   end
 
   def update?
-    false
+    user.sysadmin?
   end
 
   def edit?
@@ -33,7 +33,7 @@ class ApplicationPolicy
   end
 
   def destroy?
-    false
+    user.sysadmin?
   end
 
   class Scope

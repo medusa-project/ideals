@@ -45,7 +45,6 @@ class User::Shibboleth < User::User
       user.email = auth["info"]["email"]
       user.username = (auth["info"]["email"]).split("@").first
       user.name = display_name((auth["info"]["email"]).split("@").first)
-      user.role = user_role(auth["uid"])
     end
   end
 
@@ -56,7 +55,6 @@ class User::Shibboleth < User::User
       user.email = email
       user.username = email.split("@").first
       user.name = email.split("@").first
-      user.role = role
     end
   end
 
@@ -66,8 +64,7 @@ class User::Shibboleth < User::User
       uid:      auth["uid"],
       email:    auth["info"]["email"],
       username: (auth["info"]["email"]).split("@").first,
-      name:     User::Shibboleth.display_name((auth["info"]["email"]).split("@").first),
-      role:     User::Shibboleth.user_role(auth["uid"])
+      name:     User::Shibboleth.display_name((auth["info"]["email"]).split("@").first)
     )
   end
 

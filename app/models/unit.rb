@@ -24,12 +24,16 @@ class Unit < ApplicationRecord
     Unit.where(parent_unit_id: id)
   end
 
+  def parent_unit
+    Unit.where(id: self.parent_unit_id)
+  end
+
   def descendant_units
-    raise("not yet implemented")
+    self.child_units | self.child_units.map(&:descendant_units).flatten
   end
 
   def ancestor_units
-    raise("not yet implemented")
+    self.parent_unit | self.parent_unit.map(&:ancestor_units).flatten
   end
 
   def default_search

@@ -33,32 +33,19 @@ module User
       self.email = email.downcase
     end
 
-    def self.create_or_update(email)
-      email_string = email.to_s.strip
-      raise ArgumentError, "email address required" unless email && !email_string.empty?
+    def self.no_omniauth(email, provider)
+      User.create_no_omniauth(email, provider) unless User.exists?(email: email, provider: provider)
+      User.find_by(email: email, provider: provider)
+    end
 
-      raise ArgumentError, "valid email address required" unless email_string.match(URI::MailTo::EMAIL_REGEXP)
-
-      domain = email_string.split("@").last
-
-      if domain == "illinois.edu"
-        user = User.find_by(email: email, provider: Ideals::AuthProvider::SHIBBOLETH)
-        unless user
-          create! do |user|
-            user.provider = Ideals::AuthProvider::SHIBBOLETH
-            user.uid = email_string
-            user.email = email_string
-            user.username = email_string.split("@").first
-            user.name = email_string.split("@").first
-          end
-        end
+    def self.create_no_omniauth(email, provider)
+      create! do |user|
+        user.provider = provider
+        user.uid = email
+        user.email = email
+        user.username = email
+        user.name = email
       end
-      user = if domain == "illinois.edu"
-               User.find_by(email: email, provider: Ideals::AuthProvider::SHIBBOLETH)
-             else
-               User.find_by(email: email, provider: Ideals::AuthProvider::IDENTITY)
-             end
-      user
     end
 
     def self.from_omniauth(_auth)
@@ -70,10 +57,6 @@ module User
     end
 
     def update_with_omniauth(_auth)
-      raise "subclass responsibility"
-    end
-
-    def self.user_role(_email)
       raise "subclass responsibility"
     end
 
