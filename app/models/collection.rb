@@ -1,10 +1,10 @@
 class Collection < ApplicationRecord
   include Breadcrumb
-  belongs_to :collection_group
-  belongs_to :parent, class_name: 'CollectionGroup', foreign_key: 'collection_group_id'
-  breadcrumbs parent: :collection_group, label: :title
+  belongs_to :unit
+  belongs_to :parent, class_name: 'Unit', foreign_key: 'parent_unit_id'
+  breadcrumbs parent: :unit, label: :title
   has_many :items, dependent: :restrict_with_exception
-  validates_uniqueness_of :title, scope: :collection_group
+  validates_uniqueness_of :title, scope: :unit
 
   def label
     title

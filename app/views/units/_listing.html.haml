@@ -1,0 +1,5 @@
+%ul(id="unitBrowser")
+-resources.each do |group|
+  %li
+    %a(href="#{IDEALS_CONFIG[:root_url_text]}/handle/#{group.relative_handle}")
+      =group.title

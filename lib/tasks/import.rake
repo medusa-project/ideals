@@ -1,9 +1,9 @@
 require 'csv'
 namespace :import do
 
-  desc "delete all collection groups"
-  task :delete_collection_groups => :environment do
-    CollectionGroup.all.destroy_all
+  desc "delete all units"
+  task :delete_units => :environment do
+    Unit.all.destroy_all
   end
 
   desc "delete all collections"
@@ -22,9 +22,9 @@ namespace :import do
   end
 
   # \copy (SELECT t.community_id, v.text_value FROM community t INNER JOIN metadatavalue v on (t.community_id = v.resource_id and v.resource_type_id = 4) INNER JOIN metadatafieldregistry r on (v.metadata_field_id = r.metadata_field_id) WHERE r.element = 'title' ORDER BY t.community_id) to '/tmp/communities.csv' WITH DELIMITER '|' CSV HEADER
-  # \copy (SELECT child_comm_id as group_id, parent_comm_id as parent_group_id FROM community2community ORDER BY child_comm_id) to '/tmp/community2community.csv' WITH DELIMITER '|' CSV HEADER
-  desc "import communities from csv files into collection groups"
-  task :collection_groups => :environment do
+  # \copy (SELECT child_comm_id as group_id, parent_comm_id as parent_unit_id FROM community2community ORDER BY child_comm_id) to '/tmp/community2community.csv' WITH DELIMITER '|' CSV HEADER
+  desc "import communities from csv files into units"
+  task :units => :environment do
 
     communities = []
     community2community = {}
@@ -48,14 +48,14 @@ namespace :import do
       next if row_num == 1
       row_arr = line.split("|")
       group_id = row_arr[0].to_i
-      parent_group_id = row_arr[1].to_i
-      community2community[group_id] = parent_group_id
+      parent_unit_id = row_arr[1].to_i
+      community2community[group_id] = parent_unit_id
     end
 
     communities.each do |community|
-      CollectionGroup.create(title: community[1],
+      Unit.create(title: community[1],
                              id: community[0],
-                             parent_group_id: community2community[community[0]])
+                             parent_unit_id: community2community[community[0]])
     end
   end
 
@@ -122,7 +122,7 @@ namespace :import do
 
 
 
-  # \copy (SELECT collection_id, community_id as collection_group_id FROM community2collection ORDER BY collection_id) to '/tmp/collection2community.csv' WITH DELIMITER '|' CSV HEADER
+  # \copy (SELECT collection_id, community_id as unit_id FROM community2collection ORDER BY collection_id) to '/tmp/collection2community.csv' WITH DELIMITER '|' CSV HEADER
   # \copy (SELECT c.collection_id, v.text_value as title FROM collection c INNER JOIN metadatavalue v on (c.collection_id = v.resource_id AND v.resource_type_id=3) INNER JOIN metadatafieldregistry r on (v.metadata_field_id = r.metadata_field_id) WHERE r.element = 'title' ORDER BY c.collection_id) to '/tmp/collections.csv' WITH DELIMITER '|' CSV HEADER
   desc "import collections from csv file"
   task :collections => :environment do
@@ -156,7 +156,7 @@ namespace :import do
     collections.each do |collection|
       Collection.create(id: collection[0],
                         title: collection[1],
-                        collection_group_id: collection2group[collection[0]])
+                        unit_id: collection2group[collection[0]])
     end
 
   end

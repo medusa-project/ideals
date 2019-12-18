@@ -10,24 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_16_181458) do
+ActiveRecord::Schema.define(version: 2019_12_16_214259) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "collection_groups", force: :cascade do |t|
-    t.string "title"
-    t.integer "parent_group_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "collections", force: :cascade do |t|
     t.string "title"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "collection_group_id"
+    t.integer "unit_id"
   end
 
   create_table "handles", force: :cascade do |t|
@@ -83,6 +76,13 @@ ActiveRecord::Schema.define(version: 2019_12_16_181458) do
     t.datetime "updated_at", null: false
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
+  end
+
+  create_table "units", force: :cascade do |t|
+    t.string "title"
+    t.integer "parent_unit_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|

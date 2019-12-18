@@ -1,7 +1,0 @@
--if @resource.child_groups.count.positive?
-  Sub Units
-  =render partial: "collection_groups/listing", locals:{resources: @resource.child_groups}
--if @resource.collections.count.positive?
-  Collections
-  =render partial: "collections/listing", locals:{resources: @resource.collections}
-

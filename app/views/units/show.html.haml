@@ -1,0 +1,10 @@
+Academic Unit:
+=@resource.title
+
+-if @resource.child_units.count.positive?
+  Sub Units
+  =render partial: "units/listing", locals:{resources: @resource.child_units}
+-if @resource.collections.count.positive?
+  Collections
+  =render partial: "collections/listing", locals:{resources: @resource.collections}
+

@@ -2,7 +2,7 @@ Rails.application.routes.draw do
 
   resources :items
   resources :handles
-  resources :collection_groups
+  resources :units
   resources :collections
 
   # You can have the root of your site routed with "root"
