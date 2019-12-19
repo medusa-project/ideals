@@ -4,8 +4,10 @@ require_relative '../../lib/user'
 
 IDEALS_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, 'config', 'ideals.yml'))).result)
 
-# ensure sysadmin role
-Role.create(name: "sysadmin") unless Role.exists?(name: "sysadmin")
+# ensure sysadmin role (table existence check is for database migration flexibility)
+if ActiveRecord::Base.connection.table_exists? 'roles'
+  Role.create(name: "sysadmin") unless Role.exists?(name: "sysadmin")
+end
 
 if Rails.env.development?
   # create local identity accounts for admins
