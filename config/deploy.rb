@@ -67,7 +67,7 @@ end
 namespace :ideals do
   desc "Clear rails cache"
   task :clear_rails_cache do
-    execute_rake "databank:rails_cache:clear"
+    execute_rake "ideals:rails_cache:clear"
   end
 
   def execute_rake(task)
