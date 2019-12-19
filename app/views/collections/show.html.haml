@@ -1,2 +1,7 @@
+%h2 Ancestors
+  =render partial: "collections/listing", locals:{resources: @resource.ancestors}
+%h2 Descendants
+  =render partial: "collections/listing", locals:{resources: @resource.descendants}
+
 -if @resource.items.count.positive?
   =render partial: "items/listing", locals:{search: @search, form_action: "/collections/#{@resource.id}", search_prompt: "search for items within collection"}

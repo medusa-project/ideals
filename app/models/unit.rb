@@ -5,7 +5,7 @@ class Unit < ApplicationRecord
   belongs_to :parent, class_name: "Unit", foreign_key: "parent_unit_id", optional: true
   breadcrumbs parent: nil, label: :title
   scope :top, -> { where(parent_unit_id: nil) }
-  scope :bottom, -> { where(child_units.count == 0) }
+  scope :bottom, -> { where(children.count == 0) }
   has_many :collections, dependent: :restrict_with_exception
   has_many :units, dependent: :restrict_with_exception
 
@@ -20,20 +20,20 @@ class Unit < ApplicationRecord
     handle.handle
   end
 
-  def child_units
+  def children
     Unit.where(parent_unit_id: id)
   end
 
-  def parent_unit
+  def parents
     Unit.where(id: self.parent_unit_id)
   end
 
-  def descendant_units
-    self.child_units | self.child_units.map(&:descendant_units).flatten
+  def descendants
+    self.children | self.children.map(&:descendants).flatten
   end
 
-  def ancestor_units
-    self.parent_unit | self.parent_unit.map(&:ancestor_units).flatten
+  def ancestors
+    self.parents | self.parents.map(&:ancestors).flatten
   end
 
   def default_search

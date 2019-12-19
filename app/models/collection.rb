@@ -25,4 +25,21 @@ class Collection < ApplicationRecord
 
     handle.handle
   end
+
+  def children
+    Collection.where(parent_collection_id: id)
+  end
+
+  def parents
+    Collection.where(id: self.parent_collection_id)
+  end
+
+  def descendants
+    self.children | self.children.map(&:descendants).flatten
+  end
+
+  def ancestors
+    self.parents | self.parents.map(&:ancestors).flatten
+  end
+
 end
