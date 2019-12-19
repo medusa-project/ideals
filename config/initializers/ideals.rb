@@ -9,8 +9,9 @@ if ActiveRecord::Base.connection.table_exists? 'roles'
   Role.create(name: "sysadmin") unless Role.exists?(name: "sysadmin")
 end
 
-if Rails.env.development?
-  # create local identity accounts for admins
+case Rails.env
+when "development", "test"
+  # create local identity accounts and sysadmin role for system administrators defined in config file
   admins = IDEALS_CONFIG[:admin][:netids].split(",").collect {|x| x.strip || x}
   admins.each do |netid|
     email = "#{netid}@illinois.edu"
@@ -33,4 +34,14 @@ if Rails.env.development?
     user.save!
   end
 
+when "aws-demo", "aws-production"
+  # create sysadmin role for system administrators defined in config file
+  admins = IDEALS_CONFIG[:admin][:netids].split(",").collect {|x| x.strip || x}
+  admins.each do |netid|
+    email = "#{netid}@illinois.edu"
+    user = User::User.no_omniauth(email, Ideals::AuthProvider::IDENTITY)
+    user.roles << Role.find_by(name: "sysadmin") unless user.sysadmin?
+    user.save!
+  end
 end
+
