@@ -39,7 +39,7 @@ when "aws-demo", "aws-production"
   admins = IDEALS_CONFIG[:admin][:netids].split(",").collect {|x| x.strip || x}
   admins.each do |netid|
     email = "#{netid}@illinois.edu"
-    user = User::User.no_omniauth(email, Ideals::AuthProvider::IDENTITY)
+    user = User::User.no_omniauth(email, Ideals::AuthProvider::SHIBBOLETH)
     user.roles << Role.find_by(name: "sysadmin") unless user.sysadmin?
     user.save!
   end
