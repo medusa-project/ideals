@@ -28,6 +28,22 @@ module User
       role? :sysadmin
     end
 
+    def unit_admin?
+
+    end
+
+    def collection_mgr?
+
+    end
+
+    def unit_admin?(unit_id)
+
+    end
+
+    def collection_mgr?(collection_id)
+
+    end
+
     # Converts email to all lower-case.
     def downcase_email
       self.email = email.downcase

@@ -7,6 +7,7 @@ class Collection < ApplicationRecord
   breadcrumbs parent: :unit, label: :title
   has_many :items, dependent: :restrict_with_exception
   validates :title, uniqueness: {scope: :unit}
+  has_many :roles, through: :managers
 
   def label
     title

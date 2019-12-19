@@ -8,6 +8,7 @@ class Unit < ApplicationRecord
   scope :bottom, -> { where(children.count == 0) }
   has_many :collections, dependent: :restrict_with_exception
   has_many :units, dependent: :restrict_with_exception
+  has many :roles, through: :administrators
 
   def label
     title

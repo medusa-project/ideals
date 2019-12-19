@@ -633,10 +633,27 @@ legend.metadata-border {
   text-align: left;
 }
 
-.curator-only {
+.sys_admin, .unit_admin, .collection_mgr, .submitter {
   padding: 5px;
   border: 1px solid black;
+}
+
+.sys_admin {
+  padding: 5px;
+  border: 1px solid black;
+  background-color: $color__highlight-red;
+}
+
+.unit_admin {
   background-color: $color__highlight-orange;
+}
+
+.collection_mgr {
+  background-color: $color__highlight-green;
+}
+
+.submitter {
+  background-color: $color__light-blue-background;
 }
 
 #creator_table {
