@@ -1,10 +1,10 @@
 Academic Unit:
 =@resource.title
 %h2 Ancestors
-=debug(@resource.ancestor_units)
+=render partial: "units/listing", locals:{resources: @resource.ancestor_units}
 %h2 Descendants
-=debug(@resource.descendant_units)
-
+=render partial: "units/listing", locals:{resources: @resource.descendant_units}
+  
 -if @resource.child_units.count.positive?
   Sub Units
   =render partial: "units/listing", locals:{resources: @resource.child_units}
