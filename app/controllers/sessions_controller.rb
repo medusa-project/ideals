@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class SessionsController < ApplicationController
-  require_relative "../../lib/user.rb"
-  require_relative "../../lib/user/shibboleth"
+  require_relative "../models/user/shibboleth"
 
   def new
     redirect_to(shibboleth_login_path(Ideals::Application.shibboleth_host))

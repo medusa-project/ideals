@@ -2,8 +2,6 @@
 
 # This type of user comes from the shibboleth authentication strategy
 
-require_relative "../user"
-
 class User::Shibboleth < User::User
   def self.from_omniauth(auth)
     return nil unless auth && auth[:uid]

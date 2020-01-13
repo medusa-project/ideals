@@ -2,10 +2,6 @@
 
 # This type of user comes from the identity authentication strategy
 
-require_relative "../user"
-require_relative "../../app/models/identity"
-require_relative "../../app/models/invitee"
-
 class User::Identity < User::User
   def self.from_omniauth(auth)
     return nil unless auth && auth[:uid] && auth["info"]["email"]

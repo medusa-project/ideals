@@ -1,7 +1,5 @@
 VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 
-require_relative '../../lib/user'
-
 IDEALS_CONFIG = YAML.load(ERB.new(File.read(File.join(Rails.root, 'config', 'ideals.yml'))).result)
 
 # ensure sysadmin role (table existence check is for database migration flexibility)
