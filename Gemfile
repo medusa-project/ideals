@@ -6,11 +6,9 @@ git_source(:github) {|repo| "https://github.com/#{repo}.git" }
 ruby "2.6.3"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem "rails", "~> 5.2.3"
+gem "rails", "~> 6.0.2.1"
 # Use postgresql as the database for Active Record
 gem "pg", ">= 0.18", "< 2.0"
-# Use Puma as the app server
-gem "puma", "~> 3.11"
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem "jbuilder", "~> 2.5"
 # Use Redis adapter to run Action Cable in production
@@ -35,9 +33,6 @@ gem "jquery-ui-rails"
 # use will_paginate for pagination of search results
 gem "will_paginate"
 gem "will_paginate-bootstrap"
-
-# Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", ">= 1.1.0", require: false
 
 # Use in-house storage gem to manage flexible storage on filesystems and s3 buckets
 gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "master"
@@ -95,8 +90,6 @@ gem "mime-types", require: "mime/types/full"
 # Use 'rest-client' to interaction with file processor api
 gem "rest-client"
 
-# gem 'httpclient', git: 'git://github.com/medusa-project/httpclient.git'
-
 gem "equivalent-xml"
 gem "nokogiri"
 gem "nokogiri-diff"
@@ -105,9 +98,6 @@ gem "nokogiri-diff"
 gem "progress_bar"
 gem "sunspot_rails"
 gem "sunspot_solr"
-
-# Use Passenger standalone
-gem "passenger", ">= 5.0.25", require: "phusion_passenger/rack_handler"
 
 # Use email validator for model
 gem "valid_email"
@@ -139,28 +129,21 @@ gem "curb", "~> 0.9.4"
 # Use modernizr-rails to handle different browsers differently
 gem "modernizr-rails"
 
-# Use mocha to support stubs for testing
-gem "mocha", "~> 1.1"
-
-# Use rspec-rails to support testing
-gem "rspec-rails", "~> 3.5"
-
-# Use factory girl for fixtures
-# gem 'factory_girl_rails'
-
-# Use Cucumber for behavior testing
-gem "cucumber-rails", require: false
-
-# Use Capistrano for deployment
-gem "capistrano-bundler"
-gem "capistrano-passenger"
-gem "capistrano-rails"
-gem "capistrano-rbenv"
-
 # use rubocop linter to support consisitent style
 gem "rubocop", require: false
 gem "rubocop-performance"
 gem "rubocop-rails"
+
+group :development do
+  # Reduces boot times through caching; required in config/boot.rb
+  gem "bootsnap", ">= 1.1.0", require: false
+  # Use Capistrano for deployment
+  gem "capistrano-bundler"
+  gem "capistrano-passenger"
+  gem "capistrano-rails"
+  gem "capistrano-rbenv"
+  gem "puma"
+end
 
 group :test do
   # Adds support for Capybara system testing and selenium driver
@@ -170,6 +153,17 @@ group :test do
   gem "chromedriver-helper"
   # Use DatabaseCleaner to clean the database (because transactional fixtures do not work with Selenium)
   gem "database_cleaner"
+  # Use mocha to support stubs for testing
+  gem "mocha", "~> 1.1"
+  # Use rspec-rails to support testing
+  gem "rspec-rails", "~> 3.5"
+  # Use Cucumber for behavior testing
+  gem "cucumber-rails", require: false
+end
+
+group :production do
+  # Use Passenger standalone
+  gem "passenger", require: "phusion_passenger/rack_handler"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
