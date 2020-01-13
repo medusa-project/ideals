@@ -22,7 +22,7 @@
     .form-group.row
       = f.label :approval_state, "Approval", class: "col-md-2 col-form-label"
       .col-md-10
-        = f.select(:approval_state, Ideals::ApprovalState::ARRAY, {prompt: true}, {class: "form-control"})
+        = f.select(:approval_state, ApprovalState::ARRAY, {prompt: true}, {class: "form-control"})
     .form-group.row.actions
       .col-md-2.col-md-offset-10
         =f.submit invitee.new_record? ? "Add" : "Save Changes", class: "btn btn-primary btn-block"

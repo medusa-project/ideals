@@ -15,7 +15,7 @@ class Unit < ApplicationRecord
   end
 
   def relative_handle
-    handle = Handle.find_by(resource_type_id: Ideals::ResourceType::UNIT, resource_id: id)
+    handle = Handle.find_by(resource_type_id: ResourceType::UNIT, resource_id: id)
     return nil unless handle
 
     handle.handle

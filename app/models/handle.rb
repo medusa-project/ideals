@@ -2,7 +2,7 @@
 
 class Handle < ApplicationRecord
   def klass_name
-    Ideals::ResourceType::HASH[resource_type_id]
+    ResourceType::HASH[resource_type_id]
   end
 
   def resource

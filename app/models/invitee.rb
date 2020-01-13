@@ -6,15 +6,15 @@ class Invitee < ApplicationRecord
   before_destroy :destroy_user
 
   def self.pendings
-    Invitee.where(approval_state: Ideals::ApprovalState::PENDING)
+    Invitee.where(approval_state: ApprovalState::PENDING)
   end
 
   def self.approveds
-    Invitee.where(approval_state: Ideals::ApprovalState::APPROVED)
+    Invitee.where(approval_state: ApprovalState::APPROVED)
   end
 
   def self.rejecteds
-    Invitee.where(approval_state: Ideals::ApprovalState::REJECTED)
+    Invitee.where(approval_state: ApprovalState::REJECTED)
   end
 
   def destroy_identity

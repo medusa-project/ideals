@@ -18,33 +18,6 @@ require "rails/test_unit/railtie"
 Bundler.require(*Rails.groups)
 
 module Ideals
-
-  class ApprovalState
-    PENDING = 'pending'
-    APPROVED = 'approved'
-    REJECTED = 'rejected'
-    ARRAY = [Ideals::ApprovalState::PENDING, Ideals::ApprovalState::APPROVED, Ideals::ApprovalState::REJECTED]
-  end
-
-  class AuthProvider
-    SHIBBOLETH = 'shibboleth'
-    IDENTITY = 'identity'
-    ARRAY = [Ideals::AuthProvider::SHIBBOLETH, Ideals::AuthProvider::IDENTITY]
-  end
-
-  class ResourceType
-    ResourceTypeInfo = Struct.new(:klass_name, :code)
-    BITSTREAM = 0
-    ITEM = 2
-    COLLECTION = 3
-    UNIT = 4
-    HASH = {0 => 'Bitstream', 2 => 'Item', 3 => 'Collection', 4 => 'Unit'}
-    Array = [ResourceTypeInfo.new('Bitstream', 0),
-             ResourceTypeInfo.new('Item', 2),
-             ResourceTypeInfo.new('Collection', 3),
-             ResourceTypeInfo.new('Unit', 4)]
-  end
-
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.2

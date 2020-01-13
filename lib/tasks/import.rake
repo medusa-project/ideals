@@ -103,9 +103,9 @@ namespace :import do
       # When this is for real, not just toy records, blank submitter_email is a problem
       email_parts = submitter_email.split("@")
       submitter_auth_provider = if ["illinois.edu", "uis.edu", "uic.edu"].include?(email_parts[-1])
-                                  Ideals::AuthProvider::SHIBBOLETH
+                                  AuthProvider::SHIBBOLETH
                                 else
-                                  Ideals::AuthProvider::IDENTITY
+                                  AuthProvider::IDENTITY
                                 end
       in_archive = row[2] == "t"
       withdrawn = row[3] == "t"

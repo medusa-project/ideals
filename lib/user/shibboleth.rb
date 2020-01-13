@@ -28,7 +28,7 @@ class User::Shibboleth < User::User
 
     raise ArgumentError, "valid email address required" unless email_string.match(URI::MailTo::EMAIL_REGEXP)
 
-    user = User.find_by(email: email, provider: Ideals::AuthProvider::SHIBBOLETH)
+    user = User.find_by(email: email, provider: AuthProvider::SHIBBOLETH)
     if user
       user.role = role
       user.save!
@@ -50,7 +50,7 @@ class User::Shibboleth < User::User
 
   def self.create_no_omniauth(email)
     create! do |user|
-      user.provider = Ideals::AuthProvider::SHIBBOLETH
+      user.provider = AuthProvider::SHIBBOLETH
       user.uid = email
       user.email = email
       user.username = email.split("@").first
