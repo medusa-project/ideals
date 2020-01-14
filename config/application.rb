@@ -17,22 +17,5 @@ module Ideals
     # the framework and any gems in your application.
 
     attr_accessor :shibboleth_host
-
-    attr_accessor :file_mode
-
-    attr_accessor :settings
-
-    attr_accessor :storage_manager
-
-    attr_accessor :aws_signer
-
-    attr_accessor :aws_client
-
-    config.autoload_paths << File.join(Rails.root, 'lib')
-    config.autoload_paths << File.join(Rails.root, 'lib', 'user')
-
   end
 end
-
-#establish a short cut for the Application object
-Application = Ideals::Application
