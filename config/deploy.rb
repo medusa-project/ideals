@@ -22,7 +22,11 @@ set :passenger_restart_with_touch, true
 # set :pty, true
 
 # Default value for :linked_files is []
-set :linked_files, fetch(:linked_files, []).push('config/master.key', 'public/robots.txt', 'nginx.conf.erb')
+set :linked_files, fetch(:linked_files, []).push(
+    'config/credentials/demo.key',
+    'config/credentials/production.key',
+    'public/robots.txt',
+    'nginx.conf.erb')
 
 # Default value for linked_dirs is []
 set :linked_dirs, fetch(:linked_dirs, []).push('log',

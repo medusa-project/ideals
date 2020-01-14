@@ -13,7 +13,22 @@ development:
     name: displayName
     email: mail
 
-aws-demo:
+test:
+  host: localhost
+  uid_field: eppn
+  extra_fields:
+    - eppn
+    - unscoped-affiliation
+    - uid
+    - sn
+    - nickname
+    - givenName
+  request_type: header
+  info_fields:
+    name: displayName
+    email: mail
+
+demo:
   host: demo.ideals.illinois.edu
   uid_field: eppn
   extra_fields:
@@ -28,23 +43,8 @@ aws-demo:
     name: displayName
     email: mail
 
-aws-production:
+production:
   host: ideals.illinois.edu
-  uid_field: eppn
-  extra_fields:
-    - eppn
-    - unscoped-affiliation
-    - uid
-    - sn
-    - nickname
-    - givenName
-  request_type: header
-  info_fields:
-    name: displayName
-    email: mail
-
-test:
-  host: localhost
   uid_field: eppn
   extra_fields:
     - eppn

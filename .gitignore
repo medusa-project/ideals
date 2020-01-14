@@ -21,18 +21,23 @@
 # Ignore local files.
 .idea
 ideals.iml
-config/master.key
 nginx.conf.erb
 out
+
+# Ignore master keys for decrypting credentials.
+/config/master.key
+/config/credentials/demo.key
+/config/credentials/production.key
+
+# Ignore developer-specific unencrypted credentials.
+/config/credentials/development.yml
+/config/credentials/test.yml
 
 /node_modules
 /yarn-error.log
 
 /public/assets
 .byebug_history
-
-# Ignore master key for decrypting credentials and more.
-/config/master.key
 
 # Ignore import csvs
 /lib/assets/import_sources

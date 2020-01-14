@@ -19,7 +19,8 @@ class IdealsMailer < ApplicationMailer
   def error(error_text)
     @error_text = error_text
     subject = prepend_system_code("IDEALS] System Error")
-    mail(to: IDEALS_CONFIG[:admin][:tech_mail_list].to_s, subject: subject)
+    mail(to: ::Configuration.instance.admin['tech_mail_list'].to_s,
+         subject: subject)
   end
 
   def account_activation(identity)
@@ -33,9 +34,10 @@ class IdealsMailer < ApplicationMailer
   end
 
   def prepend_system_code(subject)
-    if IDEALS_CONFIG[:root_url_text].include?("demo")
+    config = ::Configuration.instance
+    if config.root_url_text.include?("demo")
       "[DEMO: " + subject
-    elsif IDEALS_CONFIG[:root_url_text].include?("localhost")
+    elsif config.root_url_text.include?("localhost")
       "[LOCAL: " + subject
     else
       "[" + subject

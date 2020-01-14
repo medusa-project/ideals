@@ -1,38 +1,57 @@
+##
+# N.B.: Connection settings should not be edited in this file; edit the
+# main application configuration instead.
+#
+
+<%
+path        = File.join(Rails.root, 'config', 'credentials', 'development.yml')
+dev_config  = YAML.load(File.read(path))
+path        = File.join(Rails.root, 'config', 'credentials', 'test.yml')
+test_config = YAML.load(File.read(path))
+%>
+
 default: &default
-  adapter: postgresql
-  encoding: unicode
-  # For details on connection pooling, see Rails configuration guide
-  # http://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  adapter:      postgresql
+  encoding:     unicode
+  pool:         <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout:      5000
+  min_messages: warning
+  template:     template0
+
+development: &development
+  <<: *default
+  host:     <%= dev_config['primary_db']['host'] %>
+  port:     <%= dev_config['primary_db']['port'] %>
+  database: <%= dev_config['primary_db']['database'] %>
+  username: <%= dev_config['primary_db']['username'] %>
+  password: <%= dev_config['primary_db']['password'] %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test: &test
   <<: *default
-  database: ideals_test
-  host: localhost
-
-development:
-  <<: *default
-  database: ideals
-  username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>
-  password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
-  host: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:host] %>
-
-aws-production:
-  <<: *default
-  database: ideals
-  username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>
-  password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
-  host: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:host] %>
-
-aws-demo:
-  <<: *default
-  database: ideals
-  username: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:username] %>
-  password: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:password] %>
-  host: <%= Rails.application.credentials[Rails.env.to_sym][:primary_db][:host] %>
+  host:     <%= test_config['primary_db']['host'] %>
+  port:     <%= test_config['primary_db']['port'] %>
+  database: <%= test_config['primary_db']['database'] %>
+  username: <%= test_config['primary_db']['username'] %>
+  password: <%= test_config['primary_db']['password'] %>
 
 cucumber:
   <<: *test
+
+demo: &demo
+  <<: *default
+  host:     <%= Rails.application.credentials.dig(:primary_db)&['host'] %>
+  port:     <%= Rails.application.credentials.dig(:primary_db)&['port'] %>
+  database: <%= Rails.application.credentials.dig(:primary_db)&['database'] %>
+  username: <%= Rails.application.credentials.dig(:primary_db)&['username'] %>
+  password: <%= Rails.application.credentials.dig(:primary_db)&['password'] %>
+
+production: &production
+  <<: *default
+  host:     <%= Rails.application.credentials.dig(:primary_db)&['host'] %>
+  port:     <%= Rails.application.credentials.dig(:primary_db)&['port'] %>
+  database: <%= Rails.application.credentials.dig(:primary_db)&['database'] %>
+  username: <%= Rails.application.credentials.dig(:primary_db)&['username'] %>
+  password: <%= Rails.application.credentials.dig(:primary_db)&['password'] %>

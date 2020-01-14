@@ -1,5 +1,5 @@
 %ul
 -resources.each do |collection|
   %li
-    %a(href="#{IDEALS_CONFIG[:root_url_text]}/handle/#{collection.relative_handle}")
+    %a(href="#{::Configuration.instance.root_url_text}/handle/#{collection.relative_handle}")
       =collection.title

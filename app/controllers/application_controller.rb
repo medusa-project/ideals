@@ -36,7 +36,7 @@ class ApplicationController < ActionController::Base
       end
 
     else
-      exception_string = "Error on #{IDEALS_CONFIG[:root_url_text]}"
+      exception_string = "Error on #{::Configuration.instance.root_url_text}"
       exception_string += "\nclass: #{exception.class}"
       exception_string += "\nmessage: #{exception.message}\n"
       exception_string += Time.now.utc.iso8601

@@ -8,7 +8,7 @@
 # server 'db.example.com', user: 'deploy', roles: %w{db}
 server 'aws-ideals-prod.library.illinois.edu', user: 'ideals', roles: %w{app db web}
 
-set :rails_env, 'aws-production'
+set :rails_env, 'production'
 
 set :ssh_options, {
     forward_agent: true,
