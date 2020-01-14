@@ -4,10 +4,64 @@ Ideals is the Ruby on Rails web application component of IDEALS, the Illinois
 Digital Environment for Access to Learning and Scholarship, which publishes
 research and scholarship from the University of Illinois at Urbana-Champaign.
 
-Application documentation is hosted in the
-[SCARS Wiki](https://wiki.illinois.edu/wiki/display/scrs/SCARS+Home).
+This is a getting-started guide for developers.
 
-# Configuration
+# Quick Links
+
+* [JIRA Project](https://bugs.library.illinois.edu/projects/IR)
+
+# Requirements
+
+* PostgreSQL >= 9.x
+
+# Installation
+
+## Install everything
+```sh
+# Install rbenv
+$ brew install rbenv
+$ brew install ruby-build
+$ brew install rbenv-gemset --HEAD
+$ rbenv init
+$ rbenv rehash
+
+# Clone the repository
+$ git clone https://github.com/medusa-project/ideals.git
+$ cd ideals
+
+# Install Ruby into rbenv
+$ rbenv install "$(< .ruby-version)"
+
+# Install Bundler
+$ gem install bundler
+
+# Install application gems
+$ bundle install
+```
+
+## Configure the application
+
+```sh
+$ cd config/credentials
+$ cp template.yml development.yml
+$ cp template.yml test.yml
+```
+Edit both as necessary.
+
+## Create and seed the database
+
+```
+$ rails db:create
+$ rails db:seed
+```
+
+## Add a user for yourself
+
+```
+$ rails "ideals:users:create[my_username,my_password]"
+```
+
+# Configuration System
 
 See the class documentation in `app/config/configuration.rb` for a detailed
 explanation of how the configurarion system works. TLDR:
