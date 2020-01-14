@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class Identity < OmniAuth::Identity::Models::ActiveRecord
+
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+
   attr_accessor :activation_token, :reset_token
   before_create :set_invitee
   before_create :create_activation_digest

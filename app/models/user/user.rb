@@ -8,6 +8,8 @@ module User
   # Class methods used because Shibboleth identity details are not persistent in ideals
 
   class User < ApplicationRecord
+    VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+
     include ActiveModel::Serialization
 
     has_many :assignments
