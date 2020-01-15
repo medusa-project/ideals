@@ -8,7 +8,6 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'welcome#index'
   get '/', to: 'welcome#index'
-  get '/login_choice', to: 'welcome#login_choice'
   get '/dashboard', to: 'welcome#dashboard'
   get '/deposit', to: "welcome#deposit"
   get '/help', to: 'welcome#help'
@@ -18,7 +17,7 @@ Rails.application.routes.draw do
   # authentication routes
   match '/auth/:provider/callback', to: 'sessions#create', via: [:get, :post]
   match '/login', to: 'sessions#new', as: :login, via: [:get, :post]
-  match '/logout', to: 'sessions#destroy', as: :logout, via: :delete
+  match '/logout', to: 'sessions#destroy', as: :logout, via: :all
   match '/auth/failure', to: 'sessions#unauthorized', as: :unauthorized, via: [:get, :post]
 
   # handle routing

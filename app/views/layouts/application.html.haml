@@ -20,12 +20,12 @@
     .container-fluid
       = render partial: 'layouts/header'
       .page-content
-        - flash.each do |key, value|
-          %div{:class => "alert alert-#{key}"}
-            = sanitize(value)
+        = render partial: 'shared/flashes'
         - if @breadcrumbable
           = render 'shared/breadcrumbs'
         = yield
       = render partial: "layouts/footer"
+    = hidden_field_tag :root_path, root_path
+    = hidden_field_tag :root_url, root_url.chomp('/')
     =javascript_tag do
       window.rails_env = "#{Rails.env}";

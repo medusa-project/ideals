@@ -4,13 +4,22 @@
   #welcome-overlay
     %p IDEALS, the Illinois Digital Environment for Access to Learning and Scholarship, publishes research and scholarship from the University of Illinois at Urbana-Champaign.
 
-.row
-  .col-sm-12
-    %h1 Welcome to IDEALS
-    %ul
-      %li
-        Faculty, staff, and graduate students can deposit their research and scholarship&mdash;unpublished and, in many cases, published&mdash;directly into IDEALS.
-      %li
-        Departments can use IDEALS to distribute their working papers, technical reports, or other research material.
-      %li
-        IDEALS also includes all electronic theses and dissertations deposited from Fall 2010 onward.
+- if current_user
+  = render partial: 'welcome'
+- else
+  .row
+    .col-8
+      = render partial: 'welcome'
+    .col-4
+      %br
+      = link_to(login_path, role: 'button', class: 'btn btn-primary btn-block') do
+        = image_tag 'library_wordmark_horizontal_1.png', style: 'height: 1em'
+        %i.fa.fa-sign-in-alt
+        &nbsp;Log in with Illinois NetID
+      %br
+      %button.btn.btn-primary.btn-block{"data-target": "#non-netid-login-modal", "data-toggle": "modal", type: "button"}
+        %i.fa.fa-user
+        %i.fa.fa-sign-in-alt
+        &nbsp;Log in with non-NetID identity
+
+= render partial: 'identities/login_modal'

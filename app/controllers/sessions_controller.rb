@@ -22,9 +22,9 @@ class SessionsController < ApplicationController
 
     if user&.id
       session[:user_id] = user.id
-      redirect_to return_url
+      render plain: 'Login succeeded.', status: :created
     else
-      redirect_to root_url
+      unauthorized
     end
   end
 
@@ -34,7 +34,7 @@ class SessionsController < ApplicationController
   end
 
   def unauthorized
-    redirect_to root_url, notice: "The supplied credentials could not be authenciated."
+    render plain: 'Login failed.', status: :forbidden
   end
 
   protected

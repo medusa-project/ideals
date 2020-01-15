@@ -1,0 +1,55 @@
+#non-netid-login-modal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "non-netid-login-modal-label", role: "dialog", tabindex: "-1"}
+  .modal-dialog.modal-lg{role: "document"}
+    .modal-content
+      = form_tag '/auth/identity/callback' do
+        .modal-header
+          %h5#non-netid-login-modal-label.modal-title Log in with non-NetID identity
+          %button.close{"aria-label" => "Close", "data-dismiss" => "modal", type: "button"}
+            %span{"aria-hidden" => "true"} &times;
+        .modal-body
+          .alert{style: "display: none"}
+          .form-group.row
+            .col-sm-2
+              %label{for: :auth_key}
+                Email
+            .col-sm-4
+              =email_field_tag :auth_key, nil, class: 'form-control'
+          .form-group.row
+            .col-sm-2
+              %label{for: :password}
+                Password
+            .col-sm-4
+              =password_field_tag :password, nil, class: 'form-control'
+              %br
+              =link_to "(forgot password)", new_password_reset_path
+          %button.btn.btn-primary{type: "submit"}
+            %i.fa.fa-sign-in-alt
+            &nbsp;Log In
+          %br
+          %br
+          %h5
+            Other Options
+          %hr
+          .row
+            .col-md-6
+              Have an Illinois NetID?
+            .col-md-6
+              = link_to(login_path, class: "btn btn-primary btn-block") do
+                %i.fa.fa-sign-in-alt
+                &nbsp;Log in with Illinois NetID
+          %br
+          .row
+            .col-md-6
+              No Illinois NetID or registered identity?
+            .col-md-6
+              = link_to(new_invitee_path, class: "btn btn-primary btn-block") do
+                %i.fa.fa-user
+                &nbsp;Request non-NetID identity
+          %br
+          .row
+            .col-md-6
+              Non-NetID identity approved, not yet registered?
+            .col-md-6
+              = link_to(register_identities_path, class: "btn btn-primary btn-block") do
+                %i.fa.fa-user
+                &nbsp;Register Approved non-NetID identity

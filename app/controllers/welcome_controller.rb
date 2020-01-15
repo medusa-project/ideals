@@ -15,9 +15,7 @@ class WelcomeController < ApplicationController
 
   def deposit; end
 
-  def login_choice
-    session[:login_return_referer] = request.env["HTTP_REFERER"]
-  end
+  def login_choice; end
 
   def on_failed_registration; end
 end
