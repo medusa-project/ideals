@@ -73,8 +73,9 @@ gem "figaro"
 
 # Use bootstrap for layout framework
 gem "autoprefixer-rails"
-gem "bootstrap-sass", "~> 3.4.1"
+gem 'bootstrap', '~> 4.4'
 gem "font-awesome-sass", "~> 5.6.1"
+gem 'scars-bootstrap-theme', github: 'medusa-project/scars-bootstrap-theme'
 
 gem "haml"
 gem "haml-rails"

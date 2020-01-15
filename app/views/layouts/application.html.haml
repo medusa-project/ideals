@@ -6,41 +6,26 @@
     %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
     / Mobile viewport optimization h5bp.com/ad
     %meta{:content => "True", :name => "HandheldFriendly"}/
-    %meta{:content => "width=device-width,initial-scale=1.0", :name => "viewport"}/
+    %meta{:content => "width=device-width,initial-scale=1.0,shrink-to-fit=no", :name => "viewport"}/
     / Internet Explorer use the highest version available
     %meta{:content => "IE=edge", "http-equiv" => "X-UA-Compatible"}/
-    / Mobile IE allows us to activate ClearType technology for smoothing fonts for easy reading
-    /[if IEMobile]
-      <meta http-equiv="cleartype" content="on">
     %title IDEALS
     = favicon_link_tag 'favicon.ico'
     = stylesheet_link_tag 'application', media: 'all'
     = javascript_include_tag 'application'
     = csrf_meta_tags
-    / Le HTML5 shim, for IE6-8 support of HTML5 elements
-    /[if lt IE 9]
-      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    / support import from box
 
-  %body
-    #page-top.idb-anchor
-    = render partial: 'shared/mini_navbar'
-    = render partial: 'shared/library_header'
-    = render partial: 'shared/header_navbar'
+  %body{:id => yield(:body_id).present? ? yield(:body_id) : nil,
+        :'data-nav' => yield(:active_nav)}
     .container-fluid
-      .row
-        .col-sm-12
-          - flash.each do |key, value|
-            %div{:class => "alert alert-#{key}"}
-              = sanitize(value)
-      - if @breadcrumbable
-        = render 'shared/breadcrumbs'
-      .clearfix
-      - if current_page?(root_path)
-        #welcome-image.hidden-xs
-          #welcome-overlay
-            %p IDEALS, the Illinois Digital Environment for Access to Learning and Scholarship, publishes research and scholarship from the University of Illinois at Urbana-Champaign.
-      = yield
-    = render partial: "shared/library_footer"
+      = render partial: 'layouts/header'
+      .page-content
+        - flash.each do |key, value|
+          %div{:class => "alert alert-#{key}"}
+            = sanitize(value)
+        - if @breadcrumbable
+          = render 'shared/breadcrumbs'
+        = yield
+      = render partial: "layouts/footer"
     =javascript_tag do
       window.rails_env = "#{Rails.env}";

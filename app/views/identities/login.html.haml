@@ -24,8 +24,7 @@
   .row
     .col-md-2.col-md-offset-7.actions
       %button(type="submit" id="login" class="btn btn-primary btn-block")
-        %span.glyphicon.glyphicon-user
-        %span.glyphicon.glyphicon-log-in
+        %i.fa.fa-sign-in-alt
         &nbsp;
         Log In
 
@@ -41,7 +40,7 @@
     %button{type: "button", class: "btn btn-primary btn-block"}
       %a{href: "/login", class: "idb"}
         =image_tag 'favicon.ico'
-        %span.glyphicon.glyphicon-log-in
+        %i.fa.fa-sign-in-alt
         &nbsp;
         Log in with Illinois NetID
 %br
@@ -52,9 +51,7 @@
     %button{type: "button", class: "btn btn-success btn-block"}
       %a{href: "/invitees/new", class: "idb"}
         %span.pull-left
-          %span.glyphicon.glyphicon-user
-          %span.badge
-            1
+          %i.fa.fa-user
           Request non-NetID identity
 %br
 .row
@@ -64,9 +61,7 @@
     %button{type: "button", class: "btn btn-success btn-block" }
       %a{href: "/identities/register", class: "idb"}
         %span.pull-left
-          %span.glyphicon.glyphicon-user
-          %span.badge
-            2
+          %i.fa.fa-user
           Register Approved non-NetID identity
 
 %hr

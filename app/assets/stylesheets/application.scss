@@ -12,13 +12,10 @@
  *
  */
 
-@import "libguide-style";
-@import "bootstrap-sprockets";
+@import "scars-bootstrap-theme/variables";
 @import "bootstrap";
-@import "jasny-bootstrap";
+@import "scars-bootstrap-theme/theme";
+
 @import "font-awesome-sprockets";
 @import "font-awesome";
-@import "sidenav";
-@import "repository";
-@import "ideals";
-
+@import "welcome";

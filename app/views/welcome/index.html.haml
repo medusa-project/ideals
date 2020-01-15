@@ -1,2 +1,16 @@
-.welcome-div
-  = render partial: 'welcome'
+= provide :body_id, 'welcome'
+
+#welcome-image.hidden-xs
+  #welcome-overlay
+    %p IDEALS, the Illinois Digital Environment for Access to Learning and Scholarship, publishes research and scholarship from the University of Illinois at Urbana-Champaign.
+
+.row
+  .col-sm-12
+    %h1 Welcome to IDEALS
+    %ul
+      %li
+        Faculty, staff, and graduate students can deposit their research and scholarship&mdash;unpublished and, in many cases, published&mdash;directly into IDEALS.
+      %li
+        Departments can use IDEALS to distribute their working papers, technical reports, or other research material.
+      %li
+        IDEALS also includes all electronic theses and dissertations deposited from Fall 2010 onward.

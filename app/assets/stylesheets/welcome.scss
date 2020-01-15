@@ -1,0 +1,34 @@
+body#welcome {
+  #navbarColor01 {
+    margin-bottom: -14px;
+  }
+  #welcome-image {
+    background-image: url("blue_filter.png");
+    margin: -16px -16px 1em -16px;
+    padding: 0;
+    position: relative;
+    background-size: cover;
+    height: 200px;
+    border-bottom: 3px solid $uiuc-orange;
+  }
+  #welcome-overlay {
+    position: absolute;
+    left: 30px;
+    top: 60px;
+    background-color: white;
+    padding: 1em;
+    border: 1px solid $uiuc-orange;
+    width: 50%;
+    p {
+      color: $gray-700;
+      margin: 0;
+      padding: 0;
+    }
+  }
+  ul {
+    line-height: 1.5em;
+    li {
+      margin-bottom: 0.75em;
+    }
+  }
+}

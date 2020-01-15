@@ -1,0 +1,24 @@
+%header
+  = render partial: 'layouts/library_header'
+  %nav.navbar.navbar-expand-md{role: "navigation"}
+    = link_to 'IDEALS', root_path, class: 'navbar-brand'
+    %button.navbar-toggler{"aria-controls" => "navbarColor01", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarColor01", "data-toggle" => "collapse", type: "button"}
+      %span.navbar-toggler-icon
+    #navbarColor01.collapse.navbar-collapse
+      %ul.navbar-nav.mr-auto
+        %li#deposit-nav.nav-item
+          = link_to deposit_path, class: 'nav-link' do
+            %i.fa.fa-plus
+            Deposit
+        %li#find-nav.nav-item
+          = link_to items_path, class: 'nav-link' do
+            %i.fa.fa-search
+            Find
+        %li#policies-nav.nav-item
+          = link_to policies_path, class: 'nav-link' do
+            %i.fa.fa-info-circle
+            Policies
+        %li#help-nav.nav-item
+          = link_to help_path, class: 'nav-link' do
+            %i.fa.fa-question-circle
+            Help
