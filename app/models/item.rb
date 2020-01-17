@@ -65,6 +65,24 @@ class Item < ApplicationRecord
   end
 
   ##
+  # N.B.: Orphaned documents are not deleted; for that, use
+  # {delete_orphaned_documents}.
+  #
+  # @param index [String] Index name. If omitted, the default index is used.
+  # @return [void]
+  #
+  def self.reindex_all(index = nil)
+    count = Item.count
+    start_time = Time.now
+    Item.uncached do
+      Item.all.find_each.with_index do |item, i|
+        item.reindex(index)
+        StringUtils.print_progress(start_time, i, count, 'Indexing items')
+      end
+    end
+  end
+
+  ##
   # @return [Hash] Indexable JSON representation of the instance.
   #
   def as_indexed_json

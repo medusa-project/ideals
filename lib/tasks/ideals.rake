@@ -143,6 +143,11 @@ namespace :ideals do
         end
       end
     end
+
+    desc 'Reindex all items'
+    task :reindex, [:index_name] => :environment do |task, args|
+      Item.reindex_all(args[:index_name])
+    end
   end
 
   namespace :units do
