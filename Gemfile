@@ -91,8 +91,6 @@ gem "equivalent-xml"
 gem "nokogiri"
 gem "nokogiri-diff"
 
-gem "progress_bar"
-
 # Use email validator for model
 gem "valid_email"
 
