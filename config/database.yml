@@ -44,16 +44,16 @@ cucumber:
 
 demo: &demo
   <<: *default
-  host:     <%= db ? db['host'] : nil %>
-  port:     <%= db ? db['port'] : nil %>
-  database: <%= db ? db['database'] : nil %>
-  username: <%= db ? db['username'] : nil %>
-  password: <%= db ? db['password'] : nil%>
+  host:     <%= db ? db[:host] : nil %>
+  port:     <%= db ? db[:port] : nil %>
+  database: <%= db ? db[:database] : nil %>
+  username: <%= db ? db[:username] : nil %>
+  password: <%= db ? db[:password] : nil%>
 
 production: &production
   <<: *default
-  host:     <%= db ? db['host'] : nil %>
-  port:     <%= db ? db['port'] : nil %>
-  database: <%= db ? db['database'] : nil %>
-  username: <%= db ? db['username'] : nil %>
-  password: <%= db ? db['password'] : nil%>
+  host:     <%= db ? db[:host] : nil %>
+  port:     <%= db ? db[:port] : nil %>
+  database: <%= db ? db[:database] : nil %>
+  username: <%= db ? db[:username] : nil %>
+  password: <%= db ? db[:password] : nil%>
