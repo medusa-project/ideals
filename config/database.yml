@@ -5,9 +5,9 @@
 
 <%
 path        = File.join(Rails.root, 'config', 'credentials', 'development.yml')
-dev_config  = YAML.load(File.read(path))
+dev_config  = File.exists?(path) ? YAML.load(File.read(path)) : {}
 path        = File.join(Rails.root, 'config', 'credentials', 'test.yml')
-test_config = YAML.load(File.read(path))
+test_config = File.exists?(path) ? YAML.load(File.read(path)) : {}
 %>
 
 default: &default
@@ -20,38 +20,40 @@ default: &default
 
 development: &development
   <<: *default
-  host:     <%= dev_config['primary_db']['host'] %>
-  port:     <%= dev_config['primary_db']['port'] %>
-  database: <%= dev_config['primary_db']['database'] %>
-  username: <%= dev_config['primary_db']['username'] %>
-  password: <%= dev_config['primary_db']['password'] %>
+  host:     <%= dev_config['primary_db'] ? dev_config['primary_db']['host'] : nil %>
+  port:     <%= dev_config['primary_db'] ? dev_config['primary_db']['port'] : nil %>
+  database: <%= dev_config['primary_db'] ? dev_config['primary_db']['database'] : nil %>
+  username: <%= dev_config['primary_db'] ? dev_config['primary_db']['username'] : nil %>
+  password: <%= dev_config['primary_db'] ? dev_config['primary_db']['password'] : nil %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test: &test
   <<: *default
-  host:     <%= test_config['primary_db']['host'] %>
-  port:     <%= test_config['primary_db']['port'] %>
-  database: <%= test_config['primary_db']['database'] %>
-  username: <%= test_config['primary_db']['username'] %>
-  password: <%= test_config['primary_db']['password'] %>
+  host:     <%= test_config['primary_db'] ? test_config['primary_db']['host'] : nil %>
+  port:     <%= test_config['primary_db'] ? test_config['primary_db']['port'] : nil %>
+  database: <%= test_config['primary_db'] ? test_config['primary_db']['database'] : nil %>
+  username: <%= test_config['primary_db'] ? test_config['primary_db']['username'] : nil %>
+  password: <%= test_config['primary_db'] ? test_config['primary_db']['password'] : nil %>
 
 cucumber:
   <<: *test
 
+<% db = Rails.application.credentials.dig(:primary_db) %>
+
 demo: &demo
   <<: *default
-  host:     <%= Rails.application.credentials.dig(:primary_db)&['host'] %>
-  port:     <%= Rails.application.credentials.dig(:primary_db)&['port'] %>
-  database: <%= Rails.application.credentials.dig(:primary_db)&['database'] %>
-  username: <%= Rails.application.credentials.dig(:primary_db)&['username'] %>
-  password: <%= Rails.application.credentials.dig(:primary_db)&['password'] %>
+  host:     <%= db ? db['host'] : nil %>
+  port:     <%= db ? db['port'] : nil %>
+  database: <%= db ? db['database'] : nil %>
+  username: <%= db ? db['username'] : nil %>
+  password: <%= db ? db['password'] : nil%>
 
 production: &production
   <<: *default
-  host:     <%= Rails.application.credentials.dig(:primary_db)&['host'] %>
-  port:     <%= Rails.application.credentials.dig(:primary_db)&['port'] %>
-  database: <%= Rails.application.credentials.dig(:primary_db)&['database'] %>
-  username: <%= Rails.application.credentials.dig(:primary_db)&['username'] %>
-  password: <%= Rails.application.credentials.dig(:primary_db)&['password'] %>
+  host:     <%= db ? db['host'] : nil %>
+  port:     <%= db ? db['port'] : nil %>
+  database: <%= db ? db['database'] : nil %>
+  username: <%= db ? db['username'] : nil %>
+  password: <%= db ? db['password'] : nil%>
