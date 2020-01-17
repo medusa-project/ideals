@@ -1,6 +1,6 @@
-# Ideals
+# IDEALS
 
-Ideals is the Ruby on Rails web application component of IDEALS, the Illinois
+This is the Ruby on Rails web application component of IDEALS, the Illinois
 Digital Environment for Access to Learning and Scholarship, which publishes
 research and scholarship from the University of Illinois at Urbana-Champaign.
 
@@ -13,6 +13,7 @@ This is a getting-started guide for developers.
 # Requirements
 
 * PostgreSQL >= 9.x
+* Elasticsearch >= 7.x
 
 # Installation
 
@@ -48,10 +49,18 @@ $ cp template.yml test.yml
 ```
 Edit both as necessary.
 
-## Create and seed the database
+## Create the Elasticsearch indexes
+
+```sh
+rails "elasticsearch:indexes:create[ideals_development]"
+rails "elasticsearch:indexes:create[ideals_test]"
+```
+
+## Create and seed the databases
 
 ```
 $ rails db:create
+$ rails db:create -e test
 $ rails db:seed
 ```
 
@@ -59,6 +68,12 @@ $ rails db:seed
 
 ```
 $ rails "ideals:users:create[my_username,my_password]"
+```
+
+## Run
+
+```
+$ rails server
 ```
 
 # Configuration System

@@ -30,10 +30,6 @@ gem "highcharts-rails"
 gem "jquery-rails"
 gem "jquery-ui-rails"
 
-# use will_paginate for pagination of search results
-gem "will_paginate"
-gem "will_paginate-bootstrap"
-
 # Use in-house storage gem to manage flexible storage on filesystems and s3 buckets
 gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "master"
 
@@ -95,10 +91,7 @@ gem "equivalent-xml"
 gem "nokogiri"
 gem "nokogiri-diff"
 
-# use solr for searching
 gem "progress_bar"
-gem "sunspot_rails"
-gem "sunspot_solr"
 
 # Use email validator for model
 gem "valid_email"

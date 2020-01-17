@@ -41,10 +41,3 @@ out
 
 # Ignore import csvs
 /lib/assets/import_sources
-
-# Ignore local solr
-solr/data
-solr/test/data
-solr/development/data
-solr/default/data
-solr/pids

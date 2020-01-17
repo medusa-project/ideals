@@ -60,14 +60,6 @@ set :assets_roles, [:web, :app]
 # set this to the number of versions to keep
 set :keep_assets, 2
 
-# support reindexing of sunspot as part of deploy
-namespace :sunspot do
-  desc "Reindex sunspot indexes"
-  task :reindex do
-    execute_rake 'sunspot:reindex'
-  end
-end
-
 namespace :ideals do
   desc "Clear rails cache"
   task :clear_rails_cache do

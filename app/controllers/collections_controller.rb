@@ -13,17 +13,16 @@ class CollectionsController < ApplicationController
   # GET /collections/1.json
   def show
     if @resource.items.count.positive?
-      resource_id = @resource.id
-      @search = Item.search do
-        with :collection_id, resource_id
-        fulltext params[:q]
-        per_page = if params.has_key?(:per_page)
-                     params[:per_page].to_i
-                   else
-                     25
-                   end
-        paginate(page: params[:page] || 1, per_page: per_page)
-      end
+      @start = params[:start].to_i
+      @limit = params[:per_page]&.to_i || 25
+      finder = ItemFinder.new.
+          collection(params[:id]).
+          start(@start).
+          limit(@limit)
+      @count            = finder.count
+      @resources        = finder.to_a
+      @current_page     = finder.page
+      @permitted_params = params.permit(:q, :start)
     end
     @breadcrumbable = @resource
   end

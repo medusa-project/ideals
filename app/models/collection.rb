@@ -3,7 +3,7 @@
 class Collection < ApplicationRecord
   include Breadcrumb
   belongs_to :unit
-  belongs_to :parent, class_name: "Unit", foreign_key: "parent_unit_id"
+  belongs_to :parent, class_name: "Unit", foreign_key: "parent_unit_id", optional: true
   breadcrumbs parent: :unit, label: :title
   has_many :items, dependent: :restrict_with_exception
   validates :title, uniqueness: {scope: :unit}

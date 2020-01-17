@@ -6,16 +6,16 @@ class ItemsController < ApplicationController
   # GET /items
   # GET /items.json
   def index
-    @resources = Item.all
-    @search = Item.search do
-      fulltext(params[:q])
-      per_page = if params.has_key?(:per_page)
-                   params[:per_page].to_i
-                 else
-                   25
-                 end
-      paginate(page: params[:page] || 1, per_page: per_page)
-    end
+    @start = params[:start].to_i
+    @limit = params[:per_page]&.to_i || 25
+    finder = ItemFinder.new.
+        query_all(params[:q]).
+        start(@start).
+        limit(@limit)
+    @count            = finder.count
+    @resources        = finder.to_a
+    @current_page     = finder.page
+    @permitted_params = params.permit(:q, :start)
   end
 
   # GET /items/1

@@ -11,18 +11,16 @@
             %i(class="fa fa-search" aria-hidden="true" )
           %button(type="button" class="btn btn-danger" onclick="clearSearchTerm()" )
             %i(class="fa fa-trash" aria-hidden="true" )
-    .col-md-5
-      = will_paginate search.results, previous_label: "<".html_safe, next_label: ">".html_safe, renderer: BootstrapPagination::Rails
-    .col-md-2
-      = select_tag :per_page, options_for_select([['25 per page', '25'], ['50 per page', '50'], ['Show All', '500']], params[:per_page]), onchange: 'set_per_page()', class: "form-control search-control"
+    .col-md-7
+      = paginate(@count, @limit, @current_page, @permitted_params)
 
--if search
+-if resources.any?
   .row
     .col-sm-12
-      =page_entries_info(search.results)
+      = search_status(@count, @start, @limit, "item")
 
   %ul
-    -search.each_hit_with_result do |hit, item|
+    -resources.each do |item|
       %li
         %a(href="#{::Configuration.instance.root_url_text}/handle/#{item.relative_handle}")
           =item.title
