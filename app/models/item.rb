@@ -91,7 +91,7 @@ class Item < ApplicationRecord
   # @return [void]
   #
   def reindex(index = nil)
-    index ||= Configuration.instance.elasticsearch['index']
+    index ||= Configuration.instance.elasticsearch[:index]
     ElasticsearchClient.instance.index_document(index,
                                                 self.id,
                                                 self.as_indexed_json)

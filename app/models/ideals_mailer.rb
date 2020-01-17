@@ -19,7 +19,7 @@ class IdealsMailer < ApplicationMailer
   def error(error_text)
     @error_text = error_text
     subject = prepend_system_code("IDEALS] System Error")
-    mail(to: ::Configuration.instance.admin['tech_mail_list'].to_s,
+    mail(to: ::Configuration.instance.admin[:tech_mail_list].to_s,
          subject: subject)
   end
 

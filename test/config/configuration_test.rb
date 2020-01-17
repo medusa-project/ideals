@@ -20,6 +20,11 @@ class ConfigurationTest < ActiveSupport::TestCase
     assert_not_nil @config.get(:root_url_text)
   end
 
+  test 'get() indifferent hash access' do
+    assert_not_nil @config.get(:elasticsearch)['endpoint']
+    assert_not_nil @config.get(:elasticsearch)[:endpoint]
+  end
+
   # method_missing()
 
   test 'method_missing() with a bogus key returns nil' do

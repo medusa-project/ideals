@@ -29,7 +29,7 @@ class ElasticsearchClient
   def create_index(index_name)
     LOGGER.info('create_index(): creating %s...', index_name)
     url = sprintf('%s/%s',
-                  Configuration.instance.elasticsearch['endpoint'],
+                  Configuration.instance.elasticsearch[:endpoint],
                   index_name)
     body = JSON.pretty_generate(ElasticsearchIndex::SCHEMA)
     response = @http_client.put(url, body, 'Content-Type': CONTENT_TYPE)
@@ -48,7 +48,7 @@ class ElasticsearchClient
   # @return [void]
   #
   def create_index_alias(index_name, alias_name)
-    url = sprintf('%s/_aliases', Configuration.instance.elasticsearch['endpoint'])
+    url = sprintf('%s/_aliases', Configuration.instance.elasticsearch[:endpoint])
     body = JSON.generate({
                              actions: [
                                  {
@@ -76,8 +76,8 @@ class ElasticsearchClient
   def delete_by_query(query)
     config = Configuration.instance
     url = sprintf('%s/%s/_delete_by_query?pretty&conflicts=proceed&refresh',
-                  config.elasticsearch['endpoint'],
-                  config.elasticsearch['index'])
+                  config.elasticsearch[:endpoint],
+                  config.elasticsearch[:index])
     LOGGER.debug('delete_by_query(): %s', query)
 
     response = @http_client.post(url, query,
@@ -98,7 +98,7 @@ class ElasticsearchClient
   def delete_index(index_name, raise_on_not_found = true)
     LOGGER.info('delete_index(): deleting %s...', index_name)
     url = sprintf('%s/%s',
-                  Configuration.instance.elasticsearch['endpoint'],
+                  Configuration.instance.elasticsearch[:endpoint],
                   index_name)
     response = @http_client.delete(url, nil,
                                    'Content-Type': CONTENT_TYPE)
@@ -117,7 +117,7 @@ class ElasticsearchClient
   def delete_index_alias(index_name, alias_name)
     LOGGER.info('delete_index_alias(): deleting %s...', alias_name)
     url = sprintf('%s/%s/_alias/%s',
-                  Configuration.instance.elasticsearch['endpoint'],
+                  Configuration.instance.elasticsearch[:endpoint],
                   index_name,
                   alias_name)
     response = @http_client.delete(url, nil,
@@ -138,7 +138,7 @@ class ElasticsearchClient
   def get_document(index_name, id)
     LOGGER.debug('get_document(): %s/%s', index_name, id)
     url = sprintf('%s/%s/%s',
-                  Configuration.instance.elasticsearch['endpoint'],
+                  Configuration.instance.elasticsearch[:endpoint],
                   index_name, id)
     response = @http_client.get(url, nil, 'Content-Type': CONTENT_TYPE)
     case response.status
@@ -161,7 +161,7 @@ class ElasticsearchClient
   def index_document(index, id, doc)
     LOGGER.debug('index_document(): %s/%s', index, id)
     url = sprintf('%s/%s/_doc/%s',
-                  Configuration.instance.elasticsearch['endpoint'],
+                  Configuration.instance.elasticsearch[:endpoint],
                   index, id)
     response = @http_client.put(url,
                                 JSON.generate(doc),
@@ -177,7 +177,7 @@ class ElasticsearchClient
   #
   def index_exists?(name)
     url = sprintf('%s/%s',
-                  Configuration.instance.elasticsearch['endpoint'],
+                  Configuration.instance.elasticsearch[:endpoint],
                   name)
     response = @http_client.head(url, nil, 'Content-Type': CONTENT_TYPE)
     response.status == 200
@@ -189,7 +189,7 @@ class ElasticsearchClient
   #
   def indexes
     url = sprintf('%s/_aliases?pretty',
-                  Configuration.instance.elasticsearch['endpoint'])
+                  Configuration.instance.elasticsearch[:endpoint])
     response = @http_client.get(url, nil, 'Content-Type': CONTENT_TYPE)
     response.body
   end
@@ -201,8 +201,8 @@ class ElasticsearchClient
   def query(query)
     config = Configuration.instance
     url = sprintf('%s/%s/_search',
-                  config.elasticsearch['endpoint'],
-                  config.elasticsearch['index'])
+                  config.elasticsearch[:endpoint],
+                  config.elasticsearch[:index])
     body = query.force_encoding('UTF-8')
     response = @http_client.post(url, body, 'Content-Type': CONTENT_TYPE)
 
@@ -218,7 +218,7 @@ class ElasticsearchClient
   #
   def reindex(from_index, to_index)
     url = sprintf('%s/_refresh',
-                  Configuration.instance.elasticsearch['endpoint'])
+                  Configuration.instance.elasticsearch[:endpoint])
     body = JSON.generate({
                              source: {
                                  index: from_index
@@ -243,7 +243,7 @@ class ElasticsearchClient
   #
   def refresh(index)
     url = sprintf('%s/%s/_refresh',
-                  Configuration.instance.elasticsearch['endpoint'],
+                  Configuration.instance.elasticsearch[:endpoint],
                   index)
     response = @http_client.post(url, nil, 'Content-Type': CONTENT_TYPE)
 

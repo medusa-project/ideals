@@ -50,7 +50,7 @@ namespace :elasticsearch do
 
     curl_cmd = sprintf('curl -X POST -H "Content-Type: application/json" '\
         '"%s/%s/_search?pretty&size=0" -d @"%s"',
-            Configuration.instance.elasticsearch['endpoint'],
+            Configuration.instance.elasticsearch[:endpoint],
             index,
             file_path)
     puts 'cURL equivalent: ' + curl_cmd
