@@ -6,12 +6,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build & run containers
+      - name: Run tests
         run: |
           docker pull postgres:12
           docker pull elasticsearch:7.5.1
           docker build -t ideals/tests .
           docker run --rm -p 5432:5432 --name ideals-postgres -d postgres:12
           docker run --rm -p 9200:9200 -p 9300:9300 --name ideals-elasticsearch -e "discovery.type=single-node" -d elasticsearch:7.5.1
-          docker run -e RAILS_ENV=ci ideals/tests /bin/sh -c "bin/rails db:migrate -e ci; bin/rails test -e ci"
-        # TODO: add bin/rails zeitwerk:check to the command above once migrated to rails 6.0.3
+          docker run -e RAILS_ENV=ci ideals/tests /bin/sh -c "RAILS_ENV=ci bin/rails db:migrate; RAILS_ENV=ci bin/rails test"
+      # TODO: enable this once migrated to rails 6.0.3
+      #- name: Run zeitwerk check
+      #  run: |
+      #    docker build -t ideals/tests .
+      #    docker run -e RAILS_ENV=ci ideals/tests /bin/sh -c "bin/rails zeitwerk:check -e ci"
