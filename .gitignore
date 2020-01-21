@@ -25,9 +25,8 @@ nginx.conf.erb
 out
 
 # Ignore master keys for decrypting credentials.
-/config/master.key
-/config/credentials/demo.key
-/config/credentials/production.key
+/config/*.key
+/config/credentials/*.key
 
 # Ignore developer-specific unencrypted credentials.
 /config/credentials/development.yml

@@ -1046,7 +1046,6 @@ GEM
       railties (>= 4.2, < 7)
     cucumber-tag_expressions (1.1.1)
     cucumber-wire (0.0.1)
-    curb (0.9.10)
     daemons (1.3.1)
     database_cleaner (1.7.0)
     delayed_job (4.1.8)
@@ -1107,6 +1106,7 @@ GEM
       railties (>= 3.2.16)
     json (2.3.0)
     jwt (2.2.1)
+    libv8 (7.3.492.27.1)
     loofah (2.4.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -1123,6 +1123,8 @@ GEM
     mimemagic (0.3.3)
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
+    mini_racer (0.2.9)
+      libv8 (>= 6.9.411)
     minitar (0.6.1)
     minitest (5.14.0)
     mocha (1.11.2)
@@ -1197,9 +1199,6 @@ GEM
       thor (>= 0.20.3, < 2.0)
     rainbow (3.0.0)
     rake (13.0.1)
-    rb-fsevent (0.10.3)
-    rb-inotify (0.10.1)
-      ffi (~> 1.0)
     rchardet (1.8.0)
     recaptcha (5.3.0)
       json
@@ -1228,17 +1227,6 @@ GEM
     ruby_parser (3.14.1)
       sexp_processor (~> 4.9)
     rubyzip (2.0.0)
-    sass (3.7.4)
-      sass-listen (~> 4.0.0)
-    sass-listen (4.0.0)
-      rb-fsevent (~> 0.9, >= 0.9.4)
-      rb-inotify (~> 0.9, >= 0.9.7)
-    sass-rails (5.1.0)
-      railties (>= 5.2.0)
-      sass (~> 3.1)
-      sprockets (>= 2.8, < 4.0)
-      sprockets-rails (>= 2.0, < 4.0)
-      tilt (>= 1.1, < 3)
     sassc (2.2.1)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
@@ -1317,7 +1305,6 @@ DEPENDENCIES
   capybara (>= 2.15)
   chromedriver-helper
   cucumber-rails
-  curb (~> 0.9.4)
   daemons
   database_cleaner
   delayed_job_active_record
@@ -1332,6 +1319,7 @@ DEPENDENCIES
   jquery-ui-rails
   medusa_storage!
   mime-types
+  mini_racer
   minitar (~> 0.6.1)
   mocha (~> 1.1)
   modernizr-rails
@@ -1356,13 +1344,12 @@ DEPENDENCIES
   rubocop-rails
   ruby-filemagic (~> 0.7.2)
   rubyzip
-  sass-rails (~> 5.0)
+  sassc
   scars-bootstrap-theme!
   selenium-webdriver
   seven_zip_ruby (~> 1.2, >= 1.2.5)
   simple_form
   tus-server
-  tzinfo-data
   uglifier (>= 2.7.2)
   uuid
   valid_email

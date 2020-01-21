@@ -98,21 +98,34 @@ $ rails "ideals:users:create[my_username,my_password]"
 $ rails server
 ```
 
-# Configuration System
+# Branches & Environments
+
+| Rails Environment | Git Branch   | Machine               | Configuration File                      |
+|-------------------|--------------|-----------------------|-----------------------------------------|
+| `development`     |              |                       | `config/credentials/development.yml`    |
+| `test`            |              |                       | `config/credentials/test.yml`           |
+| `ci`              | all branches | GitHub Actions        | `config/credentials/ci.yml.enc`         |
+| `demo`            | `demo`       | aws-ideals-demo       | `config/credentials/demo.yml.enc`       |
+| `production`      | `production` | aws-ideals-production | `config/credentials/production.yml.enc` |
+
+Files that end in `.enc` are encrypted. Obtain the encryption key for the
+corresponding file and then use `rails credentials:edit -e <environment>` to
+edit it.
+
+`config/credentials/template.yml` contains the canonical configuration
+structure.
 
 See the class documentation in `app/config/configuration.rb` for a detailed
-explanation of how the configurarion system works. TLDR:
+explanation of how the configurarion system works.
 
-* development
-    1. Copy `config/credentials/template.yml` to
-      `config/credentials/development.yml`
-    2. Edit that
-* test
-    1. Copy `config/credentials/template.yml` to `config/credentials/test.yml`
-    2. Edit that
-* demo
-    1. Obtain `config/credentials/demo.key`
-    2. `rails credentials:edit -e demo`
-* production
-    1. Obtain `config/credentials/production.key`
-    2. `rails credentials:edit -e production`
+# Tests & Continuous Integration
+
+Minitest is used for unit tests. Some tests depend on Elasticsearch and most
+depend on PostgreSQL. Tests can be run as usual using `rails test`.
+
+There is also a continuous integration setup using
+[GitHub Actions](https://github.com/features/actions). The CI environment is
+containerized. The `.github/workflows/ci.yml` file defines the container fleet,
+including all dependent services such as Elasticsearch and PostgreSQL, which
+run in separate containers. `/Dockerfile` defines the Rails application
+container.

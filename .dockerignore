@@ -1,0 +1,11 @@
+# Git
+/.git
+
+# Docker
+/Dockerfile
+
+# Application
+/log
+/storage
+/tmp
+README.*

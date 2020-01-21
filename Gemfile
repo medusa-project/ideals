@@ -20,7 +20,10 @@ gem "bcrypt", "~> 3.1.7"
 gem "pundit"
 
 # Use SCSS for stylesheets
-gem "sass-rails", "~> 5.0"
+gem "sassc"
+
+# JavaScript runtime
+gem 'mini_racer', platforms: :ruby
 
 # Use Uglifier as compressor for JavaScript assets
 gem "uglifier", ">= 2.7.2"
@@ -115,16 +118,8 @@ gem "bunny", "2.8.1"
 # Use builder to support sitemaps generator
 gem "builder", "~> 3.2", ">= 3.2.2"
 
-# Use curb to wrap curl
-gem "curb", "~> 0.9.4"
-
 # Use modernizr-rails to handle different browsers differently
 gem "modernizr-rails"
-
-# use rubocop linter to support consisitent style
-gem "rubocop", require: false
-gem "rubocop-performance"
-gem "rubocop-rails"
 
 group :development do
   # Reduces boot times through caching; required in config/boot.rb
@@ -135,6 +130,10 @@ group :development do
   gem "capistrano-rails"
   gem "capistrano-rbenv"
   gem "puma"
+  # use rubocop linter to support consisitent style
+  gem "rubocop", require: false
+  gem "rubocop-performance"
+  gem "rubocop-rails"
 end
 
 group :test do
@@ -157,4 +156,4 @@ group :production do
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+#gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
