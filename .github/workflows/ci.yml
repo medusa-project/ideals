@@ -15,7 +15,8 @@ jobs:
         ports:
           - 9200:9200
           - 9300:9300
-        options: discovery.type=single-node
+        env:
+          - discovery.type=single-node
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
