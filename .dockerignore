@@ -5,6 +5,7 @@
 /Dockerfile
 
 # Application
+/Capfile
 /log
 /storage
 /tmp
