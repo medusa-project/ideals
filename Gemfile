@@ -147,8 +147,6 @@ group :test do
   gem "database_cleaner"
   # Use mocha to support stubs for testing
   gem "mocha", "~> 1.1"
-  # Use rspec-rails to support testing
-  gem "rspec-rails", "~> 3.5"
   # Use Cucumber for behavior testing
   gem "cucumber-rails", require: false
 end
