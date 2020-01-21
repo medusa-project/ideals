@@ -198,6 +198,11 @@ namespace :ideals do
         end
       end
     end
+
+    desc 'Reindex all units'
+    task :reindex, [:index_name] => :environment do |task, args|
+      Unit.reindex_all(args[:index_name])
+    end
   end
 
   namespace :users do

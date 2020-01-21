@@ -104,6 +104,16 @@ mappings:
         type: text
         copy_to: search_all
         store: false
+        fields:
+          keyword:
+            type: keyword
+          sort:
+            type: icu_collation_keyword
+            index: false
+            numeric: true
+            language: en
+            strength: quaternary
+            alternate: shifted
   properties:
     search_all:
       type: text

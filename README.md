@@ -55,6 +55,28 @@ Edit both as necessary.
 rails "elasticsearch:indexes:create[ideals_development]"
 rails "elasticsearch:indexes:create[ideals_test]"
 ```
+Note: the index schema may change from time to time. Index schemas can't
+generally be changed in place, so a new index has to be created with the new
+schema, and then existing documents migrated into it. For the development index,
+instead of the above, you may prefer to have separate "blue" and "green"
+indexes and to switch back-and-forth between them as needed, like:
+```sh
+rails "elasticsearch:indexes:create[ideals_blue_development]"
+rails "elasticsearch:indexes:create_alias[ideals_blue_development,ideals_development]"
+```
+Then when you need to create a new index, you switch to the "green" one:
+```sh
+rails "elasticsearch:indexes:create[ideals_green_development]"
+rails "elasticsearch:indexes:copy[ideals_blue_development,ideals_green_development]"
+rails "elasticsearch:indexes:delete_alias[ideals_blue_development,ideals_development]"
+rails "elasticsearch:indexes:create_alias[ideals_green_development,ideals_development]"
+rails "elasticsearch:indexes:delete[ideals_blue_development]"
+```
+(Instead of using aliases, you could change the `elasticsearch/index` key in
+your `development.yml` config file. Your choice.)
+
+Note 2: the above does not apply to the test index. This index will be
+recreated automatically when the tests are run.
 
 ## Create and seed the databases
 

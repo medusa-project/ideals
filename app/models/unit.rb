@@ -2,6 +2,17 @@
 
 class Unit < ApplicationRecord
   include Breadcrumb
+
+  class IndexFields
+    CLASS         = ElasticsearchIndex::StandardFields::CLASS
+    CREATED       = 'd_created'
+    ID            = ElasticsearchIndex::StandardFields::ID
+    LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    PARENT        = 'i_parent'
+    TITLE         = 't_title'
+  end
+
   belongs_to :parent, class_name: "Unit", foreign_key: "parent_unit_id", optional: true
   breadcrumbs parent: nil, label: :title
   scope :top, -> { where(parent_unit_id: nil) }
@@ -9,6 +20,63 @@ class Unit < ApplicationRecord
   has_many :collections, dependent: :restrict_with_exception
   has_many :units, dependent: :restrict_with_exception
   has_many :roles, through: :administrators
+
+  after_commit :reindex, on: [:create, :update]
+  after_commit -> { self.class.delete_document(self.id) }, on: :destroy
+
+  ##
+  # Normally this method should not be used except to delete "orphaned"
+  # documents with no database counterpart. See the class documentation for
+  # information about correct document deletion.
+  #
+  def self.delete_document(id)
+    query = {
+        query: {
+            bool: {
+                filter: [
+                    {
+                        term: {
+                            Unit::IndexFields::ID => id
+                        }
+                    }
+                ]
+            }
+        }
+    }
+    ElasticsearchClient.instance.delete_by_query(JSON.generate(query))
+  end
+
+  ##
+  # N.B.: Orphaned documents are not deleted; for that, use
+  # {delete_orphaned_documents}.
+  #
+  # @param index [String] Index name. If omitted, the default index is used.
+  # @return [void]
+  #
+  def self.reindex_all(index = nil)
+    count = Unit.count
+    start_time = Time.now
+    Unit.uncached do
+      Unit.all.find_each.with_index do |unit, i|
+        unit.reindex(index)
+        StringUtils.print_progress(start_time, i, count, 'Indexing units')
+      end
+    end
+  end
+
+  ##
+  # @return [Hash] Indexable JSON representation of the instance.
+  #
+  def as_indexed_json
+    doc = {}
+    doc[IndexFields::CLASS]         = self.class.to_s
+    doc[IndexFields::CREATED]       = self.created_at.utc.iso8601
+    doc[IndexFields::LAST_INDEXED]  = Time.now.utc.iso8601
+    doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
+    doc[IndexFields::PARENT]        = self.parent&.id
+    doc[IndexFields::TITLE]         = self.title
+    doc
+  end
 
   def label
     title
@@ -40,4 +108,16 @@ class Unit < ApplicationRecord
   def default_search
     nil
   end
+
+  ##
+  # @param index [String] Index name. If omitted, the default index is used.
+  # @return [void]
+  #
+  def reindex(index = nil)
+    index ||= Configuration.instance.elasticsearch[:index]
+    ElasticsearchClient.instance.index_document(index,
+                                                self.id,
+                                                self.as_indexed_json)
+  end
+
 end

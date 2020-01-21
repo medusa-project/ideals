@@ -8,5 +8,16 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-  # Add more helper methods to be used by all tests here...
+  def refresh_elasticsearch
+    client = ElasticsearchClient.instance
+    client.refresh(Configuration.instance.elasticsearch[:index])
+  end
+
+  def setup_elasticsearch
+    index = Configuration.instance.elasticsearch[:index]
+    client = ElasticsearchClient.instance
+    client.delete_index(index, false)
+    client.create_index(index)
+  end
+
 end
