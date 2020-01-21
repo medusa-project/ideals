@@ -1,5 +1,11 @@
-%ul(id="unitBrowser")
--resources.each do |group|
-  %li
-    %a(href="#{::Configuration.instance.root_url_text}/handle/#{group.relative_handle}")
-      =group.title
+%ul
+  -resources.each do |unit|
+    %li
+      %a(href="#{::Configuration.instance.root_url_text}/handle/#{unit.relative_handle}")
+        =unit.title
+      -if unit.collections.any?
+        %ul
+          -unit.collections.each do |col|
+            %li
+              %a(href="#{::Configuration.instance.root_url_text}/handle/#{col.relative_handle}")
+                =col.title
