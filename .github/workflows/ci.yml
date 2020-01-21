@@ -16,7 +16,7 @@ jobs:
           - 9200:9200
           - 9300:9300
         env:
-          - discovery.type=single-node
+          - "discovery.type=single-node"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
