@@ -60,9 +60,8 @@ class CollectionFinder < AbstractFinder
 
   protected
 
-  def get_response
-    result = @client.query(build_query)
-    JSON.parse(result)
+  def get_class
+    Collection
   end
 
   private

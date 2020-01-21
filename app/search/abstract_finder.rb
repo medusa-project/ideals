@@ -127,6 +127,13 @@ class AbstractFinder
   end
 
   ##
+  # @return [Class]
+  #
+  def get_class
+    raise 'Subclasses must override get_class()'
+  end
+
+  ##
   # @return [Integer]
   #
   def get_limit
@@ -151,9 +158,10 @@ class AbstractFinder
   end
 
   ##
-  # @param orders [Enumerable<String>, Enumerable<Hash<String,Symbol>>, Boolean]
-  #               Enumerable of string field names and/or hashes with field
-  #               name => direction pairs (`:asc` or `:desc`). Supply false to
+  # @param orders [String, Enumerable<String>, Enumerable<Hash<String,Symbol>>, Boolean]
+  #               Either a field name to sort ascending, or an Enumerable of
+  #               string field names and/or hashes with `field name =>
+  #               direction` pairs (`:asc` or `:desc`). Supply false to
   #               disable ordering.
   # @return [self]
   #
@@ -224,11 +232,21 @@ class AbstractFinder
   end
 
   ##
-  # @return [Enumerable<Item>]
+  # @return [Relation<Item>]
   #
   def to_a
-    raise "Subclasses must override to_a() and map the return value of "\
-        "to_id_a() to a Relation"
+    entities = to_id_a.map do |id|
+      begin
+        get_class.find(id)
+      rescue ActiveRecord::RecordNotFound
+        LOGGER.warn("to_a(): #{get_class} #{id} is missing from the database")
+      end
+    end
+    Relation.new(entities.select(&:present?),
+                 count,
+                 (get_start / get_limit.to_f).floor,
+                 get_limit,
+                 get_start)
   end
 
   ##
@@ -249,15 +267,17 @@ class AbstractFinder
     end
   end
 
+  def get_response
+    @request_json = build_query
+    result = @client.query(@request_json)
+    JSON.parse(result)
+  end
+
   ##
   # @return [String] Query that is safe to pass to Elasticsearch.
   #
   def sanitized_query
     @query[:query].gsub(/[\[\]\(\)]/, "").gsub("/", " ")
-  end
-
-  def get_response
-    raise "Subclasses must override get_response()"
   end
 
   def load

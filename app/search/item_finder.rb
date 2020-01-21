@@ -24,24 +24,6 @@ class ItemFinder < AbstractFinder
   end
 
   ##
-  # @return [Relation<Item>]
-  #
-  def to_a
-    items = to_id_a.map do |id|
-      begin
-        Item.find(id)
-      rescue ActiveRecord::RecordNotFound
-        LOGGER.warn("to_a(): #{id} is missing from the database")
-      end
-    end
-    Relation.new(items.select(&:present?),
-                 count,
-                 (get_start / get_limit.to_f).floor,
-                 get_limit,
-                 get_start)
-  end
-
-  ##
   # @return [Integer]
   #
   def total_byte_size
@@ -51,10 +33,8 @@ class ItemFinder < AbstractFinder
 
   protected
 
-  def get_response
-    @request_json = build_query
-    result = @client.query(@request_json)
-    JSON.parse(result)
+  def get_class
+    Item
   end
 
   def load
