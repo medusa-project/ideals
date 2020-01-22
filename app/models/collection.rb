@@ -2,12 +2,10 @@
 
 class Collection < ApplicationRecord
   include Breadcrumb
-  belongs_to :unit
   belongs_to :primary_unit, class_name: "Unit", foreign_key: "primary_unit_id", optional: true
   breadcrumbs parent: :primary_unit, label: :title
   has_and_belongs_to_many :items
   has_and_belongs_to_many :units
-  validates :title, uniqueness: {scope: :unit}
   has_many :roles, through: :managers
 
   def label

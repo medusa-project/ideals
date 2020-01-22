@@ -5,6 +5,8 @@
 #
 class AbstractFinder
 
+  LOGGER = CustomLogger.new(AbstractFinder)
+
   ##
   # Similar to {ActiveRecord::Relation}, for compatibility with the
   # will_paginate gem.

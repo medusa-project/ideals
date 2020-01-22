@@ -82,7 +82,7 @@ recreated automatically when the tests are run.
 
 ```
 $ rails db:create
-$ rails db:create -e test
+$ rails db:migrate
 $ rails db:seed
 ```
 
@@ -100,23 +100,23 @@ $ rails server
 
 # Branches & Environments
 
-| Rails Environment | Git Branch   | Machine               | Configuration File                      |
-|-------------------|--------------|-----------------------|-----------------------------------------|
-| `development`     |              |                       | `config/credentials/development.yml`    |
-| `test`            |              |                       | `config/credentials/test.yml`           |
-| `ci`              | all branches | GitHub Actions        | `config/credentials/ci.yml.enc`         |
-| `demo`            | `demo`       | aws-ideals-demo       | `config/credentials/demo.yml.enc`       |
-| `production`      | `production` | aws-ideals-production | `config/credentials/production.yml.enc` |
+| Rails Environment | Git Branch                 | Machine               | Configuration File                      |
+|-------------------|----------------------------|-----------------------|-----------------------------------------|
+| `development`     | any (usually `develop`)    |                       | `config/credentials/development.yml`    |
+| `test`            | any                        |                       | `config/credentials/test.yml`           |
+| `ci`              | all                        | GitHub Actions        | `config/credentials/ci.yml.enc`         |
+| `demo`            | `demo`                     | aws-ideals-demo       | `config/credentials/demo.yml.enc`       |
+| `production`      | `production`               | aws-ideals-production | `config/credentials/production.yml.enc` |
 
 Files that end in `.enc` are encrypted. Obtain the encryption key for the
 corresponding file and then use `rails credentials:edit -e <environment>` to
 edit it.
 
 `config/credentials/template.yml` contains the canonical configuration
-structure.
+structure that all config files must use.
 
 See the class documentation in `app/config/configuration.rb` for a detailed
-explanation of how the configurarion system works.
+explanation of how the configuration system works.
 
 # Tests & Continuous Integration
 

@@ -27,9 +27,9 @@ class Item < ApplicationRecord
 
   has_and_belongs_to_many :collections
   belongs_to :primary_collection, class_name: 'Collection', optional: true
-  belongs_to :parent, class_name: "Unit", foreign_key: "collection_id",
+  belongs_to :parent, class_name: "Unit", foreign_key: "primary_collection_id",
              optional: true
-  breadcrumbs parent: :collection, label: :title
+  breadcrumbs parent: :primary_collection, label: :title
 
   ##
   # @return [Hash] Indexable JSON representation of the instance.

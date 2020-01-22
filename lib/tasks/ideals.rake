@@ -51,9 +51,9 @@ namespace :ideals do
 
       ActiveRecord::Base.transaction do
         collections.each do |collection|
-          Collection.create!(id:      collection[0],
-                             title:   collection[1],
-                             unit_id: collection2group[collection[0]])
+          Collection.create!(id:              collection[0],
+                             title:           collection[1],
+                             primary_unit_id: collection2group[collection[0]])
         end
       end
     end
@@ -138,7 +138,7 @@ namespace :ideals do
                        submitter_auth_provider: submitter_auth_provider,
                        in_archive:              in_archive,
                        withdrawn:               withdrawn,
-                       collection_id:           collection_id,
+                       primary_collection_id:   collection_id,
                        discoverable:            discoverable)
         end
       end
