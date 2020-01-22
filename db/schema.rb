@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_14_210636) do
+ActiveRecord::Schema.define(version: 2020_01_22_150446) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,7 +80,7 @@ ActiveRecord::Schema.define(version: 2020_01_14_210636) do
     t.string "submitter_auth_provider"
     t.boolean "in_archive"
     t.boolean "withdrawn"
-    t.integer "collection_id"
+    t.integer "primary_collection_id"
     t.boolean "discoverable"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

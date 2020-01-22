@@ -25,16 +25,16 @@ class Item < ApplicationRecord
   # metadata fields may also be present.
   #
   class IndexFields
-    CLASS         = ElasticsearchIndex::StandardFields::CLASS
-    COLLECTION    = 'k_collection'
-    CREATED       = 'd_created'
-    ID            = ElasticsearchIndex::StandardFields::ID
-    LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
-    LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
-    PARENT        = 'i_parent'
+    CLASS              = ElasticsearchIndex::StandardFields::CLASS
+    CREATED            = 'd_created'
+    ID                 = ElasticsearchIndex::StandardFields::ID
+    LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    PARENT             = 'i_parent'
+    PRIMARY_COLLECTION = 'k_collection'
   end
 
-  belongs_to :collection, optional: true
+  belongs_to :primary_collection, class_name: 'Collection', optional: true
   belongs_to :parent, class_name: "Unit", foreign_key: "collection_id",
              optional: true
   breadcrumbs parent: :collection, label: :title
@@ -87,12 +87,12 @@ class Item < ApplicationRecord
   #
   def as_indexed_json
     doc = {}
-    doc[IndexFields::CLASS]         = self.class.to_s
-    doc[IndexFields::COLLECTION]    = self.collection&.id
-    doc[IndexFields::CREATED]       = self.created_at.utc.iso8601
-    doc[IndexFields::LAST_INDEXED]  = Time.now.utc.iso8601
-    doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
-    doc[IndexFields::PARENT]        = self.parent&.id
+    doc[IndexFields::CLASS]              = self.class.to_s
+    doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
+    doc[IndexFields::LAST_INDEXED]       = Time.now.utc.iso8601
+    doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
+    doc[IndexFields::PARENT]             = self.parent&.id
+    doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection&.id
     doc
   end
 
