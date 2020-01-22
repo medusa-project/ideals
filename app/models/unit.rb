@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
+##
+# See the documentation of {Indexed} for a detailed explanation of how indexing
+# works.
+#
 class Unit < ApplicationRecord
   include Breadcrumb
+  include Indexed
 
   class IndexFields
     CLASS         = ElasticsearchIndex::StandardFields::CLASS
@@ -21,48 +26,7 @@ class Unit < ApplicationRecord
   has_many :units, dependent: :restrict_with_exception
   has_many :roles, through: :administrators
 
-  after_commit :reindex, on: [:create, :update]
-  after_commit -> { self.class.delete_document(self.id) }, on: :destroy
 
-  ##
-  # Normally this method should not be used except to delete "orphaned"
-  # documents with no database counterpart. See the class documentation for
-  # information about correct document deletion.
-  #
-  def self.delete_document(id)
-    query = {
-        query: {
-            bool: {
-                filter: [
-                    {
-                        term: {
-                            Unit::IndexFields::ID => id
-                        }
-                    }
-                ]
-            }
-        }
-    }
-    ElasticsearchClient.instance.delete_by_query(JSON.generate(query))
-  end
-
-  ##
-  # N.B.: Orphaned documents are not deleted; for that, use
-  # {delete_orphaned_documents}.
-  #
-  # @param index [String] Index name. If omitted, the default index is used.
-  # @return [void]
-  #
-  def self.reindex_all(index = nil)
-    count = Unit.count
-    start_time = Time.now
-    Unit.uncached do
-      Unit.all.find_each.with_index do |unit, i|
-        unit.reindex(index)
-        StringUtils.print_progress(start_time, i, count, 'Indexing units')
-      end
-    end
-  end
 
   ##
   # @return [Hash] Indexable JSON representation of the instance.
@@ -107,17 +71,6 @@ class Unit < ApplicationRecord
 
   def default_search
     nil
-  end
-
-  ##
-  # @param index [String] Index name. If omitted, the default index is used.
-  # @return [void]
-  #
-  def reindex(index = nil)
-    index ||= Configuration.instance.elasticsearch[:index]
-    ElasticsearchClient.instance.index_document(index,
-                                                self.id,
-                                                self.as_indexed_json)
   end
 
 end
