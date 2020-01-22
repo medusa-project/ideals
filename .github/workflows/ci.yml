@@ -14,15 +14,20 @@ jobs:
         image: elasticsearch:7.5.1
         ports:
           - 9200:9200
-          - 9300:9300
+        env:
+          discovery.type: single-node
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Run tests
+        timeout-minutes: 60
+        env:
+          RAILS_ENV: ci
+        shell: bash
         run: |
           docker build -t ideals/tests .
-          docker run -e RAILS_ENV=ci ideals/tests "bin/rails" "db:migrate"
-          docker run -e RAILS_ENV=ci ideals/tests "bin/rails" "test" "-e" "ci"
+          docker run -e "RAILS_ENV=$RAILS_ENV" ideals/tests "bin/rails" "db:migrate"
+          docker run -e "RAILS_ENV=$RAILS_ENV" ideals/tests "bin/rails" "test"
       # TODO: enable this once migrated to rails 6.0.3
       #- name: Run zeitwerk check
       #  run: |
