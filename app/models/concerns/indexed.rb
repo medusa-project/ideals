@@ -57,8 +57,10 @@ module Indexed
       ActiveRecord::Base.uncached do
         all.find_each.with_index do |item, i|
           item.reindex(index)
-          StringUtils.print_progress(start_time, i, count_, 'Indexing items')
+          StringUtils.print_progress(start_time, i, count_,
+                                     "Indexing #{name.downcase.pluralize}")
         end
+        puts ""
       end
     end
   end
@@ -68,7 +70,8 @@ module Indexed
     after_commit -> { delete_document(id) }, on: :destroy
 
     ##
-    # @return [Hash] Indexable JSON representation of the instance.
+    # @return [Hash] Indexable JSON representation of the instance. Does not
+    #                need to include the model's ID.
     #
     def as_indexed_json
       raise 'Including classes must override as_indexed_json()'
