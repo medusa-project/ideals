@@ -22,11 +22,9 @@ class Unit < ApplicationRecord
   breadcrumbs parent: nil, label: :title
   scope :top, -> { where(parent_unit_id: nil) }
   scope :bottom, -> { where(children.count == 0) }
-  has_many :collections, dependent: :restrict_with_exception
+  has_and_belongs_to_many :collections
   has_many :units, dependent: :restrict_with_exception
   has_many :roles, through: :administrators
-
-
 
   ##
   # @return [Hash] Indexable JSON representation of the instance.
