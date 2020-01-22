@@ -5,7 +5,7 @@ class Collection < ApplicationRecord
   belongs_to :unit
   belongs_to :parent, class_name: "Unit", foreign_key: "parent_unit_id", optional: true
   breadcrumbs parent: :unit, label: :title
-  has_many :items, foreign_key: "primary_collection_id", dependent: :restrict_with_exception
+  has_and_belongs_to_many :items
   validates :title, uniqueness: {scope: :unit}
   has_many :roles, through: :managers
 

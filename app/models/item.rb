@@ -34,6 +34,7 @@ class Item < ApplicationRecord
     PRIMARY_COLLECTION = 'k_collection'
   end
 
+  has_and_belongs_to_many :collections
   belongs_to :primary_collection, class_name: 'Collection', optional: true
   belongs_to :parent, class_name: "Unit", foreign_key: "collection_id",
              optional: true
