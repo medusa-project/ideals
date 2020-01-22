@@ -10,7 +10,7 @@ class Unit < ApplicationRecord
 
   class IndexFields
     CLASS         = ElasticsearchIndex::StandardFields::CLASS
-    CREATED       = 'd_created'
+    CREATED       = ElasticsearchIndex::StandardFields::CREATED
     ID            = ElasticsearchIndex::StandardFields::ID
     LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED

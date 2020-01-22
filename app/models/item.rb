@@ -17,7 +17,7 @@ class Item < ApplicationRecord
   class IndexFields
     CLASS              = ElasticsearchIndex::StandardFields::CLASS
     COLLECTIONS        = "i_collection_ids"
-    CREATED            = "d_created"
+    CREATED            = ElasticsearchIndex::StandardFields::CREATED
     ID                 = ElasticsearchIndex::StandardFields::ID
     LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
