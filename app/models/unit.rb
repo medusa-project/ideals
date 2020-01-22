@@ -18,9 +18,9 @@ class Unit < ApplicationRecord
     TITLE         = 't_title'
   end
 
-  belongs_to :parent, class_name: "Unit", foreign_key: "parent_unit_id", optional: true
+  belongs_to :parent, class_name: "Unit", foreign_key: "parent_id", optional: true
   breadcrumbs parent: nil, label: :title
-  scope :top, -> { where(parent_unit_id: nil) }
+  scope :top, -> { where(parent_id: nil) }
   scope :bottom, -> { where(children.count == 0) }
   has_and_belongs_to_many :collections
   has_many :units, dependent: :restrict_with_exception
@@ -52,11 +52,11 @@ class Unit < ApplicationRecord
   end
 
   def children
-    Unit.where(parent_unit_id: id)
+    Unit.where(parent_id: id)
   end
 
   def parents
-    Unit.where(id: self.parent_unit_id)
+    Unit.where(id: self.parent_id)
   end
 
   def descendants

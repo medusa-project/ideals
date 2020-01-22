@@ -192,9 +192,9 @@ namespace :ideals do
 
       ActiveRecord::Base.transaction do
         communities.each do |community|
-          Unit.create!(title:          community[1],
-                       id:             community[0],
-                       parent_unit_id: community2community[community[0]])
+          Unit.create!(title:     community[1],
+                       id:        community[0],
+                       parent_id: community2community[community[0]])
         end
       end
     end
