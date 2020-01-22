@@ -1,15 +1,30 @@
 # frozen_string_literal: true
 
 module BreadcrumbsHelper
+
+  ##
+  # @param object [ApplicationRecord] Model object.
+  # @return [String] HTML string.
+  #
   def breadcrumbs(object)
+    html = StringIO.new
+    html << "<nav aria-label=\"breadcrumb\">"
+    html <<   "<ol class=\"breadcrumb\">"
     breadcrumbs = object.breadcrumbs
-    links = breadcrumbs.map do |breadcrumb|
-      link_to(breadcrumb.breadcrumb_label, breadcrumb)
+    breadcrumbs.each do |crumb|
+      html << "<li class=\"breadcrumb-item\">"
+      if crumb.kind_of?(Item)
+        html <<   "View Item"
+      elsif crumb == breadcrumbs.last
+        html <<   crumb.breadcrumb_label
+      else
+        html <<   link_to(crumb.breadcrumb_label, crumb)
+      end
+      html << "</li>"
     end
-    if object.instance_of? Item
-      links.pop
-      links << "View Item"
-    end
-    links.join(" > ").html_safe
+    html <<   "</ol>"
+    html << "</nav>"
+    raw(html.string)
   end
+
 end

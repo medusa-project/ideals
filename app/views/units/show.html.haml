@@ -1,14 +1,11 @@
-Academic Unit:
-=@resource.title
-%h2 Ancestors
-=render partial: "units/listing", locals:{resources: @resource.ancestors}
-%h2 Descendants
-=render partial: "units/listing", locals:{resources: @resource.descendants}
+%h1
+  =icon_for(@resource)
+  =@resource.title
 
--if @resource.children.count.positive?
-  Sub Units
-  =render partial: "units/listing", locals:{resources: @resource.children}
+-if @resource.units.count.positive?
+  %h2 Sub-Units
+  =render partial: "units/listing", locals:{resources: @resource.units}
 -if @resource.collections.count.positive?
-  Collections
+  %h2 Collections
   =render partial: "collections/listing", locals:{resources: @resource.collections}
 

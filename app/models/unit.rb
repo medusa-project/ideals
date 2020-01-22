@@ -18,13 +18,14 @@ class Unit < ApplicationRecord
     TITLE         = 't_title'
   end
 
+  has_and_belongs_to_many :collections
   belongs_to :parent, class_name: "Unit", foreign_key: "parent_id", optional: true
-  breadcrumbs parent: nil, label: :title
   scope :top, -> { where(parent_id: nil) }
   scope :bottom, -> { where(children.count == 0) }
-  has_and_belongs_to_many :collections
-  has_many :units, dependent: :restrict_with_exception
   has_many :roles, through: :administrators
+  has_many :units, foreign_key: "parent_id", dependent: :restrict_with_exception
+
+  breadcrumbs parent: :parent, label: :title
 
   ##
   # @return [Hash] Indexable JSON representation of the instance.
@@ -49,22 +50,6 @@ class Unit < ApplicationRecord
     return nil unless handle
 
     handle.handle
-  end
-
-  def children
-    Unit.where(parent_id: id)
-  end
-
-  def parents
-    Unit.where(id: self.parent_id)
-  end
-
-  def descendants
-    self.children | self.children.map(&:descendants).flatten
-  end
-
-  def ancestors
-    self.parents | self.parents.map(&:ancestors).flatten
   end
 
   def default_search

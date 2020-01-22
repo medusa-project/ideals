@@ -3,6 +3,24 @@ module ApplicationHelper
   MAX_PAGINATION_LINKS = 5
 
   ##
+  # @param entity [Object] Any model object or class.
+  # @return [String] HTML icon tag.
+  #
+  def icon_for(entity)
+    case entity.class.to_s
+    when "Collection"
+      icon = "fa fa-folder"
+    when "Item"
+      icon = "fa fa-cube"
+    when "Unit"
+      icon = "fa fa-university"
+    else
+      icon = "fa fa-cube"
+    end
+    raw("<i class=\"#{icon}\"></i>")
+  end
+
+  ##
   # @param total_entities [Integer]
   # @param per_page [Integer]
   # @param permitted_params [ActionController::Parameters]
