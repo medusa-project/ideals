@@ -14,7 +14,7 @@ class Unit < ApplicationRecord
     ID            = ElasticsearchIndex::StandardFields::ID
     LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
-    PARENT        = 'i_parent'
+    PARENT        = 'i_parent_id'
     TITLE         = 't_title'
   end
 

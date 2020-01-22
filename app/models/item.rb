@@ -16,12 +16,13 @@ class Item < ApplicationRecord
   #
   class IndexFields
     CLASS              = ElasticsearchIndex::StandardFields::CLASS
-    CREATED            = 'd_created'
+    COLLECTIONS        = "i_collection_ids"
+    CREATED            = "d_created"
     ID                 = ElasticsearchIndex::StandardFields::ID
     LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
-    PARENT             = 'i_parent'
-    PRIMARY_COLLECTION = 'k_collection'
+    PARENT             = "i_parent_id"
+    PRIMARY_COLLECTION = "i_primary_collection_id"
   end
 
   has_and_belongs_to_many :collections
@@ -36,6 +37,7 @@ class Item < ApplicationRecord
   def as_indexed_json
     doc = {}
     doc[IndexFields::CLASS]              = self.class.to_s
+    doc[IndexFields::COLLECTIONS]        = self.collection_ids
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
     doc[IndexFields::LAST_INDEXED]       = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601

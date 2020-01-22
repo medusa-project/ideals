@@ -1,0 +1,8 @@
+item1:
+  title: My Great Item
+  submitter_email: bill@example.org
+  submitter_auth_provider:
+  in_archive: true
+  withdrawn: false
+  primary_collection:
+  discoverable: true
