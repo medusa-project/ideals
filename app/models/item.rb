@@ -21,7 +21,6 @@ class Item < ApplicationRecord
     ID                 = ElasticsearchIndex::StandardFields::ID
     LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
-    PARENT             = "i_parent_id"
     PRIMARY_COLLECTION = "i_primary_collection_id"
   end
 
@@ -45,7 +44,6 @@ class Item < ApplicationRecord
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
     doc[IndexFields::LAST_INDEXED]       = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
-    doc[IndexFields::PARENT]             = self.parent&.id
     doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection&.id
     doc
   end

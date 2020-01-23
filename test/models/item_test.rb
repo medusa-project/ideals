@@ -58,7 +58,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_empty doc[Item::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Item::IndexFields::LAST_MODIFIED]
-    assert_nil doc[Item::IndexFields::PARENT]
     assert_nil doc[Item::IndexFields::PRIMARY_COLLECTION]
   end
 
