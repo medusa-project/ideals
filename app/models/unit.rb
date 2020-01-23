@@ -18,7 +18,8 @@ class Unit < ApplicationRecord
     TITLE         = 't_title'
   end
 
-  has_and_belongs_to_many :collections
+  has_many :collection_unit_relationships
+  has_many :collections, through: :collection_unit_relationships
   belongs_to :parent, class_name: "Unit", foreign_key: "parent_id", optional: true
   scope :top, -> { where(parent_id: nil) }
   scope :bottom, -> { where(children.count == 0) }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_22_183748) do
+ActiveRecord::Schema.define(version: 2020_01_22_200228) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,22 +33,25 @@ ActiveRecord::Schema.define(version: 2020_01_22_183748) do
     t.index ["user_id"], name: "index_assignments_on_user_id"
   end
 
+  create_table "collection_unit_relationships", force: :cascade do |t|
+    t.integer "collection_id"
+    t.integer "unit_id"
+    t.boolean "primary", default: false, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["id", "primary"], name: "index_collection_unit_relationships_on_id_and_primary"
+  end
+
   create_table "collections", force: :cascade do |t|
     t.string "title"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "primary_unit_id"
   end
 
   create_table "collections_items", id: false, force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "item_id", null: false
-  end
-
-  create_table "collections_units", id: false, force: :cascade do |t|
-    t.bigint "collection_id", null: false
-    t.bigint "unit_id", null: false
   end
 
   create_table "handles", force: :cascade do |t|
@@ -132,6 +135,8 @@ ActiveRecord::Schema.define(version: 2020_01_22_183748) do
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "roles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "collection_unit_relationships", "collections"
+  add_foreign_key "collection_unit_relationships", "units"
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "roles", on_update: :cascade, on_delete: :cascade
 end

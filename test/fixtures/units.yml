@@ -4,3 +4,6 @@ unit1:
 subunit1:
   title: Sub-Unit One
   parent: unit1
+
+unit2:
+  title: Unit Two
