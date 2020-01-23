@@ -23,8 +23,8 @@ jobs:
         shell: bash
         run: |
           docker build -t ideals/tests .
-          docker run -e RAILS_ENV=ci ideals/tests "bin/rails" "db:migrate"
-          docker run -e RAILS_ENV=ci ideals/tests "bin/rails" "test"
+          docker run -e RAILS_ENV=ci -e SECRET_KEY_BASE=whatever ideals/tests "bin/rails" "db:migrate"
+          docker run -e RAILS_ENV=ci -e SECRET_KEY_BASE=whatever ideals/tests "bin/rails" "test"
       # TODO: enable this once migrated to rails 6.0.3
       #- name: Run zeitwerk check
       #  run: |

@@ -104,7 +104,7 @@ $ rails server
 |-------------------|----------------------------|-----------------------|-----------------------------------------|
 | `development`     | any (usually `develop`)    |                       | `config/credentials/development.yml`    |
 | `test`            | any                        |                       | `config/credentials/test.yml`           |
-| `ci`              | all                        | GitHub Actions        | `config/credentials/ci.yml.enc`         |
+| `ci`              | all                        | GitHub Actions        | `config/credentials/ci.yml`             |
 | `demo`            | `demo`                     | aws-ideals-demo       | `config/credentials/demo.yml.enc`       |
 | `production`      | `production`               | aws-ideals-production | `config/credentials/production.yml.enc` |
 

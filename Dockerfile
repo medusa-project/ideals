@@ -27,6 +27,5 @@ RUN gem install bundler \
 # the credentials.
 COPY . ./
 
-RUN bin/rails assets:precompile
-
-EXPOSE 3000
+#RUN bin/rails assets:precompile
+#EXPOSE 3000

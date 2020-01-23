@@ -38,11 +38,11 @@ class Configuration
   # @return [Object]
   #
   def get(key)
-    if Rails.env.development? or Rails.env.test?
-      read_unencrypted_config
-      return @config[key.to_sym]
+    if Rails.env.demo? or Rails.env.production?
+      return Rails.application.credentials.dig(key)
     end
-    Rails.application.credentials.dig(key)
+    read_unencrypted_config
+    @config[key.to_sym]
   end
 
   def method_missing(m, *args, &block)
