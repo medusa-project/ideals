@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_23_195559) do
+ActiveRecord::Schema.define(version: 2020_01_23_204851) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 2020_01_23_195559) do
     t.integer "item_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["key"], name: "index_bitstreams_on_key", unique: true
   end
 
   create_table "collection_unit_relationships", force: :cascade do |t|
@@ -48,7 +49,7 @@ ActiveRecord::Schema.define(version: 2020_01_23_195559) do
     t.boolean "primary", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["id", "primary"], name: "index_collection_unit_relationships_on_id_and_primary"
+    t.index ["unit_id", "primary"], name: "index_collection_units_on_unit_id_and_primary"
   end
 
   create_table "collections", force: :cascade do |t|
@@ -56,11 +57,6 @@ ActiveRecord::Schema.define(version: 2020_01_23_195559) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "collections_items", id: false, force: :cascade do |t|
-    t.bigint "collection_id", null: false
-    t.bigint "item_id", null: false
   end
 
   create_table "handles", force: :cascade do |t|
@@ -102,7 +98,7 @@ ActiveRecord::Schema.define(version: 2020_01_23_195559) do
     t.boolean "primary", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["id", "primary"], name: "index_item_collection_relationships_on_id_and_primary"
+    t.index ["collection_id", "primary"], name: "index_item_collections_on_collection_id_and_primary"
   end
 
   create_table "items", force: :cascade do |t|
