@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_22_200228) do
+ActiveRecord::Schema.define(version: 2020_01_23_183857) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -87,13 +87,21 @@ ActiveRecord::Schema.define(version: 2020_01_22_200228) do
     t.string "approval_state", default: "pending"
   end
 
+  create_table "item_collection_relationships", force: :cascade do |t|
+    t.integer "collection_id"
+    t.integer "item_id"
+    t.boolean "primary", default: false, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["id", "primary"], name: "index_item_collection_relationships_on_id_and_primary"
+  end
+
   create_table "items", force: :cascade do |t|
     t.string "title"
     t.string "submitter_email"
     t.string "submitter_auth_provider"
     t.boolean "in_archive"
     t.boolean "withdrawn"
-    t.integer "primary_collection_id"
     t.boolean "discoverable"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -137,6 +145,8 @@ ActiveRecord::Schema.define(version: 2020_01_22_200228) do
   add_foreign_key "assignments", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_unit_relationships", "collections"
   add_foreign_key "collection_unit_relationships", "units"
+  add_foreign_key "item_collection_relationships", "collections"
+  add_foreign_key "item_collection_relationships", "items"
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "roles", on_update: :cascade, on_delete: :cascade
 end

@@ -33,7 +33,6 @@ class Collection < ApplicationRecord
   belongs_to :primary_unit, class_name: "Unit",
              foreign_key: "primary_unit_id", optional: true
   breadcrumbs parent: :primary_unit, label: :title
-  has_and_belongs_to_many :items
   has_many :collection_unit_relationships
   has_one :primary_collection_unit_relationship, -> { where(primary: true) },
           class_name: "CollectionUnitRelationship"

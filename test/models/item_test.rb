@@ -21,6 +21,19 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal count - 1, ItemFinder.new.count
   end
 
+  # primary_collection=()
+
+  test "primary_collection=() updates the primary collection" do
+    collection2 = collections(:collection2)
+    assert_not_equal collection2, @instance.primary_collection
+    assert_equal 1, @instance.collections.count
+
+    @instance.primary_collection = collection2
+    @instance.reload
+    assert_equal collection2, @instance.primary_collection
+    assert_equal 2, @instance.collections.count
+  end
+
   # reindex_all()
 
   test 'reindex_all() reindexes all items' do

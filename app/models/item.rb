@@ -25,10 +25,13 @@ class Item < ApplicationRecord
     PRIMARY_COLLECTION = "i_primary_collection_id"
   end
 
-  has_and_belongs_to_many :collections
-  belongs_to :primary_collection, class_name: 'Collection', optional: true
-  belongs_to :parent, class_name: "Unit", foreign_key: "primary_collection_id",
-             optional: true
+  has_many :item_collection_relationships
+  has_one :primary_item_collection_relationship, -> { where(primary: true) },
+          class_name: "ItemCollectionRelationship"
+  has_one :primary_collection, through: :primary_item_collection_relationship,
+          source: :collection
+  has_many :collections, through: :item_collection_relationships
+
   breadcrumbs parent: :primary_collection, label: :title
 
   ##
@@ -52,6 +55,18 @@ class Item < ApplicationRecord
 
   def default_search
     nil
+  end
+
+  ##
+  # Sets the primary collection, but does not remove the current primary
+  # collection from {collections}.
+  #
+  # @param collection [Collection] New primary collection.
+  #
+  def primary_collection=(collection)
+    self.item_collection_relationships.update_all(primary: false)
+    self.item_collection_relationships.build(collection: collection,
+                                             primary: true).save!
   end
 
   def relative_handle

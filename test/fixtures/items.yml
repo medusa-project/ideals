@@ -4,5 +4,12 @@ item1:
   submitter_auth_provider:
   in_archive: true
   withdrawn: false
-  primary_collection:
   discoverable: true
+
+item2:
+  title: Another Great Item
+  submitter_email: bill@example.org
+  submitter_auth_provider:
+  in_archive: true
+  withdrawn: false
+  discoverable:

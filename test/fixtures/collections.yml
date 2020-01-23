@@ -5,3 +5,7 @@ collection1:
 collection1_1:
   title: My Great Subcollection
   description: Subcollection of collection1 full of even more great stuff.
+
+collection2:
+  title: My Other Great Collection
+  description: Another great collection full of great stuff.

@@ -1,0 +1,9 @@
+collection1_item1:
+  collection: collection1
+  item: item1
+  primary: true
+
+collection1_item2:
+  collection: collection1
+  item: item2
+  primary: false
