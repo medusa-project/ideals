@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_23_195127) do
+ActiveRecord::Schema.define(version: 2020_01_23_195559) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -153,10 +153,10 @@ ActiveRecord::Schema.define(version: 2020_01_23_195127) do
   add_foreign_key "assignments", "roles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "collection_unit_relationships", "collections"
-  add_foreign_key "collection_unit_relationships", "units"
-  add_foreign_key "item_collection_relationships", "collections"
-  add_foreign_key "item_collection_relationships", "items"
+  add_foreign_key "collection_unit_relationships", "collections", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "collection_unit_relationships", "units", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "item_collection_relationships", "collections", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "item_collection_relationships", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "roles", on_update: :cascade, on_delete: :cascade
 end
