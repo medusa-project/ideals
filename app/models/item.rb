@@ -25,6 +25,7 @@ class Item < ApplicationRecord
     PRIMARY_COLLECTION = "i_primary_collection_id"
   end
 
+  has_many :bitstreams
   has_many :item_collection_relationships
   has_one :primary_item_collection_relationship, -> { where(primary: true) },
           class_name: "ItemCollectionRelationship"

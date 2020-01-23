@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_23_183857) do
+ActiveRecord::Schema.define(version: 2020_01_23_195127) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,15 @@ ActiveRecord::Schema.define(version: 2020_01_23_183857) do
     t.datetime "updated_at", null: false
     t.index ["role_id"], name: "index_assignments_on_role_id"
     t.index ["user_id"], name: "index_assignments_on_user_id"
+  end
+
+  create_table "bitstreams", force: :cascade do |t|
+    t.string "key", null: false
+    t.bigint "length"
+    t.string "media_type"
+    t.integer "item_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "collection_unit_relationships", force: :cascade do |t|
@@ -143,6 +152,7 @@ ActiveRecord::Schema.define(version: 2020_01_23_183857) do
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "roles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_unit_relationships", "collections"
   add_foreign_key "collection_unit_relationships", "units"
   add_foreign_key "item_collection_relationships", "collections"
