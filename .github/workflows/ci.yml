@@ -39,6 +39,6 @@ jobs:
           RAILS_ENV: ci
           SECRET_KEY_BASE: whateverdoesntmatter
         run: |
-          bin/rails db:prepare -e ci
+          bin/rails db:prepare
           bin/rails test -e ci
       # TODO: do zeitwerk:check once migrated to rails 6.0.3
