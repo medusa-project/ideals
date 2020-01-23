@@ -3,11 +3,17 @@
 # main application configuration instead.
 #
 
+#############################################################################
+#                  ENVIRONMENTS USING PLAIN TEXT CONFIG                     #
+#############################################################################
+
 <%
-path        = File.join(Rails.root, 'config', 'credentials', 'development.yml')
+path        = File.join(Rails.root, "config", "credentials", "development.yml")
 dev_config  = File.exists?(path) ? YAML.load(File.read(path)) : {}
-path        = File.join(Rails.root, 'config', 'credentials', 'test.yml')
+path        = File.join(Rails.root, "config", "credentials", "test.yml")
 test_config = File.exists?(path) ? YAML.load(File.read(path)) : {}
+path        = File.join(Rails.root, "config", "credentials", "ci.yml")
+ci_config   = File.exists?(path) ? YAML.load(File.read(path)) : {}
 %>
 
 default: &default
@@ -37,18 +43,22 @@ test: &test
   username: <%= test_config['primary_db'] ? test_config['primary_db']['username'] : nil %>
   password: <%= test_config['primary_db'] ? test_config['primary_db']['password'] : nil %>
 
+ci: &ci
+  <<: *default
+  host:     <%= ci_config['primary_db'] ? ci_config['primary_db']['host'] : nil %>
+  port:     <%= ci_config['primary_db'] ? ci_config['primary_db']['port'] : nil %>
+  database: <%= ci_config['primary_db'] ? ci_config['primary_db']['database'] : nil %>
+  username: <%= ci_config['primary_db'] ? ci_config['primary_db']['username'] : nil %>
+  password: <%= ci_config['primary_db'] ? ci_config['primary_db']['password'] : nil %>
+
 cucumber:
   <<: *test
 
-<% db = Rails.application.credentials.dig(:primary_db) %>
+#############################################################################
+#                   ENVIRONMENTS USING ENCRYPTED CONFIG                     #
+#############################################################################
 
-ci: &ci
-  <<: *default
-  host:     <%= db ? db[:host] : nil %>
-  port:     <%= db ? db[:port] : nil %>
-  database: <%= db ? db[:database] : nil %>
-  username: <%= db ? db[:username] : nil %>
-  password: <%= db ? db[:password] : nil%>
+<% db = Rails.application.credentials.dig(:primary_db) %>
 
 demo: &demo
   <<: *default
