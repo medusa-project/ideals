@@ -19,14 +19,22 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Run tests
-        shell: bash
+      - name: Install Ruby
+        # This will install the version specified in `.ruby-version`
+        uses: eregon/use-ruby-action@master
+      - name: Install system dependencies
+        run: sudo apt-get -y install build-essential libmagic-dev libpq-dev curl
+      - name: Install gems
         run: |
-          docker build -t ideals/tests .
-          docker run --net host -e RAILS_ENV=ci -e SECRET_KEY_BASE=whatever ideals/tests "bin/rails" "db:migrate"
-          docker run --net host -e RAILS_ENV=ci -e SECRET_KEY_BASE=whatever ideals/tests "bin/rails" "test"
-      # TODO: enable this once migrated to rails 6.0.3
-      #- name: Run zeitwerk check
-      #  run: |
-      #    docker build -t ideals/tests .
-      #    docker run -e RAILS_ENV=ci ideals/tests /bin/sh -c "bin/rails zeitwerk:check -e ci"
+          gem install bundler
+          bundle config path vendor/bundle
+          bundle config set without "development test"
+          bundle install --jobs 4 --retry 3
+      - name: Run the tests
+        env:
+          RAILS_ENV: ci
+          SECRET_KEY_BASE: whateverdoesntmatter
+        run: |
+          bin/rails db:prepare
+          bin/rails test
+      # TODO: do zeitwerk:check once migrated to rails 6.0.3
