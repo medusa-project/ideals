@@ -6,65 +6,11 @@ class CollectionFinder < AbstractFinder
 
   LOGGER = CustomLogger.new(CollectionFinder)
 
-  def initialize
-    super
-    @include_unpublished = false
-    @parent_collection   = nil
-    @search_children     = false
-  end
-
-  ##
-  # @param bool [Boolean]
-  # @return [self]
-  #
-  def search_children(bool)
-    @search_children = bool
-    self
-  end
-
-  ##
-  # @param bool [Boolean]
-  # @return [self]
-  #
-  def include_unpublished(bool)
-    @include_unpublished = bool
-    self
-  end
-
-  ##
-  # @param collection [Collection]
-  # @return [self]
-  #
-  def parent_collection(collection)
-    @parent_collection = collection
-    self
-  end
-
-  ##
-  # @return [Relation<Collection>]
-  #
-  def to_a
-    cols = to_id_a.map do |id|
-      begin
-        Collection.find(id)
-      rescue ActiveRecord::RecordNotFound
-        LOGGER.warn("to_a(): #{id} is missing from the database")
-      end
-    end
-    Relation.new(cols.select(&:present?),
-                 count,
-                 (get_start / get_limit.to_f).floor,
-                 get_limit,
-                 get_start)
-  end
-
   protected
 
   def get_class
     Collection
   end
-
-  private
 
   def load
     return if @loaded
@@ -90,7 +36,7 @@ class CollectionFinder < AbstractFinder
     end
 =end
     if @response_json['hits']
-      @result_count = @result_count['value']
+      @result_count = @response_json['hits']['total']['value']
     else
       @result_count = 0
       raise IOError, "#{@response_json['error']['type']}: "\
@@ -137,49 +83,6 @@ class CollectionFinder < AbstractFinder
                     j.set! field, value
                   end
                 end
-              end
-            end
-
-            if @parent_collection
-              j.child! do
-                j.term do
-                  j.set! Collection::IndexFields::PARENT_COLLECTIONS,
-                         @parent_collection.repository_id
-                end
-              end
-            end
-
-            unless @include_unpublished
-              j.child! do
-                j.term do
-                  j.set! Collection::IndexFields::PUBLICLY_ACCESSIBLE, true
-                end
-              end
-            end
-          end
-
-          if !@search_children
-            j.must_not do
-              unless @search_children
-                j.child! do
-                  j.exists do
-                    j.field Collection::IndexFields::PARENT_COLLECTIONS
-                  end
-                end
-              end
-            end
-          end
-        end
-      end
-
-      # Aggregations
-      if @aggregations
-        j.aggregations do
-          Collection.facet_fields.each do |facet|
-            j.set! facet[:name] do
-              j.terms do
-                j.field facet[:name]
-                j.size @bucket_limit
               end
             end
           end

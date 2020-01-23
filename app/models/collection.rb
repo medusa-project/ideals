@@ -9,8 +9,27 @@
 # relationship to {Unit}s is through the {CollectionUnitRelationship} model
 # which enables designation of one of them as primary.
 #
+# # Indexing
+#
+# See the documentation of {Indexed} for a detailed explanation of how indexing
+# works.
+#
 class Collection < ApplicationRecord
   include Breadcrumb
+  include Indexed
+
+  class IndexFields
+    CLASS         = ElasticsearchIndex::StandardFields::CLASS
+    CREATED       = ElasticsearchIndex::StandardFields::CREATED
+    DESCRIPTION   = "t_description"
+    ID            = ElasticsearchIndex::StandardFields::ID
+    LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    PRIMARY_UNIT  = "i_primary_unit_id"
+    TITLE         = "t_title"
+    UNITS         = "i_units"
+  end
+
   belongs_to :primary_unit, class_name: "Unit",
              foreign_key: "primary_unit_id", optional: true
   breadcrumbs parent: :primary_unit, label: :title
@@ -22,6 +41,22 @@ class Collection < ApplicationRecord
           source: :unit
   has_many :units, through: :collection_unit_relationships
   has_many :roles, through: :managers
+
+  ##
+  # @return [Hash] Indexable JSON representation of the instance.
+  #
+  def as_indexed_json
+    doc = {}
+    doc[IndexFields::CLASS]         = self.class.to_s
+    doc[IndexFields::CREATED]       = self.created_at.utc.iso8601
+    doc[IndexFields::DESCRIPTION]   = self.description
+    doc[IndexFields::LAST_INDEXED]  = Time.now.utc.iso8601
+    doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
+    doc[IndexFields::PRIMARY_UNIT]  = self.primary_unit&.id
+    doc[IndexFields::TITLE]         = self.title
+    doc[IndexFields::UNITS]         = self.unit_ids
+    doc
+  end
 
   def label
     title

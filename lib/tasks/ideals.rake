@@ -57,6 +57,11 @@ namespace :ideals do
         end
       end
     end
+
+    desc 'Reindex all collections'
+    task :reindex, [:index_name] => :environment do |task, args|
+      Collection.reindex_all(args[:index_name])
+    end
   end
 
   namespace :handles do

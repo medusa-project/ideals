@@ -60,6 +60,7 @@ namespace :elasticsearch do
   task reindex: :environment do
     ActiveRecord::Base.uncached do
       Unit.reindex_all
+      Collection.reindex_all
       Item.reindex_all
     end
     # TODO: delete indexed docs whose database rows have been deleted
