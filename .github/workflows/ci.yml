@@ -24,15 +24,15 @@ jobs:
     steps:
       - name: Install Elasticsearch plugins
         run: docker exec ideals-elasticsearch bin/elasticsearch-plugin install --silent analysis-icu
-      - name: Install Ruby
-        # This will install the version specified in `.ruby-version`
-        uses: eregon/use-ruby-action@master
       - name: Install system dependencies
         run: sudo apt-get -y install build-essential libmagic-dev libpq-dev curl
       - name: Checkout the repository
         uses: actions/checkout@v2
       - name: Prepare the configuration
         run: cp config/credentials/ci.yml config/credentials/test.yml
+      - name: Install Ruby
+        # This will install the version specified in `.ruby-version`
+        uses: eregon/use-ruby-action@master
       - name: Install gems
         run: |
           gem install bundler
