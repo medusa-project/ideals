@@ -135,7 +135,7 @@ class ItemFinder < AbstractFinder
             if @collection_id
               j.child! do
                 j.term do
-                  j.set! Item::IndexFields::COLLECTION,
+                  j.set! Item::IndexFields::COLLECTIONS,
                          @collection_id
                 end
               end

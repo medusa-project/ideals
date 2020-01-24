@@ -34,6 +34,8 @@ class Collection < ApplicationRecord
              foreign_key: "primary_unit_id", optional: true
   breadcrumbs parent: :primary_unit, label: :title
   has_many :collection_unit_relationships
+  has_many :item_collection_relationships
+  has_many :items, through: :item_collection_relationships
   has_one :primary_collection_unit_relationship, -> { where(primary: true) },
           class_name: "CollectionUnitRelationship"
   has_one :primary_unit, through: :primary_collection_unit_relationship,

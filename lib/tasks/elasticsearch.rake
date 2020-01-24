@@ -46,13 +46,14 @@ namespace :elasticsearch do
     index     = args[:index]
     file_path = File.expand_path(args[:file])
     json      = File.read(file_path)
-    puts ElasticsearchClient.instance.query(index, json)
+    puts ElasticsearchClient.instance.query(json)
 
+    config = Configuration.instance
     curl_cmd = sprintf('curl -X POST -H "Content-Type: application/json" '\
         '"%s/%s/_search?pretty&size=0" -d @"%s"',
-            Configuration.instance.elasticsearch[:endpoint],
-            index,
-            file_path)
+                       config.elasticsearch[:endpoint],
+                       config.elasticsearch[:index],
+                       file_path)
     puts 'cURL equivalent: ' + curl_cmd
   end
 
