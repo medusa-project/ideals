@@ -9,7 +9,7 @@ class ItemTest < ActiveSupport::TestCase
 
   # delete_document()
 
-  test 'delete_document() deletes a document' do
+  test "delete_document() deletes a document" do
     items = Item.all.limit(5)
     items.each(&:reindex)
     refresh_elasticsearch
@@ -36,7 +36,7 @@ class ItemTest < ActiveSupport::TestCase
 
   # reindex_all()
 
-  test 'reindex_all() reindexes all items' do
+  test "reindex_all() reindexes all items" do
     setup_elasticsearch
     assert_equal 0, ItemFinder.new.count
 
@@ -50,20 +50,21 @@ class ItemTest < ActiveSupport::TestCase
 
   # as_indexed_json()
 
-  test 'as_indexed_json() returns the correct structure' do
+  test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
     assert_equal "Item", doc[Item::IndexFields::CLASS]
-    assert_empty doc[Item::IndexFields::COLLECTIONS]
+    assert_not_empty doc[Item::IndexFields::COLLECTIONS]
     assert_not_empty doc[Item::IndexFields::CREATED]
     assert_not_empty doc[Item::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Item::IndexFields::LAST_MODIFIED]
-    assert_nil doc[Item::IndexFields::PRIMARY_COLLECTION]
+    assert_equal @instance.primary_collection.id,
+                 doc[Item::IndexFields::PRIMARY_COLLECTION]
   end
 
   # reindex()
 
-  test 'reindex reindexes the instance' do
+  test "reindex reindexes the instance" do
     assert_equal 0, ItemFinder.new.
         filter(Item::IndexFields::ID, @instance.id).count
 
