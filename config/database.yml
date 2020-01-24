@@ -12,8 +12,6 @@ path        = File.join(Rails.root, "config", "credentials", "development.yml")
 dev_config  = File.exists?(path) ? YAML.load(File.read(path)) : {}
 path        = File.join(Rails.root, "config", "credentials", "test.yml")
 test_config = File.exists?(path) ? YAML.load(File.read(path)) : {}
-path        = File.join(Rails.root, "config", "credentials", "ci.yml")
-ci_config   = File.exists?(path) ? YAML.load(File.read(path)) : {}
 %>
 
 default: &default
@@ -42,14 +40,6 @@ test: &test
   database: <%= test_config['primary_db'] ? test_config['primary_db']['database'] : nil %>
   username: <%= test_config['primary_db'] ? test_config['primary_db']['username'] : nil %>
   password: <%= test_config['primary_db'] ? test_config['primary_db']['password'] : nil %>
-
-ci: &ci
-  <<: *default
-  host:     <%= ci_config['primary_db'] ? ci_config['primary_db']['host'] : nil %>
-  port:     <%= ci_config['primary_db'] ? ci_config['primary_db']['port'] : nil %>
-  database: <%= ci_config['primary_db'] ? ci_config['primary_db']['database'] : nil %>
-  username: <%= ci_config['primary_db'] ? ci_config['primary_db']['username'] : nil %>
-  password: <%= ci_config['primary_db'] ? ci_config['primary_db']['password'] : nil %>
 
 cucumber:
   <<: *test

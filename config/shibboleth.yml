@@ -28,21 +28,6 @@ test:
     name: displayName
     email: mail
 
-ci:
-  host: ci.example.org
-  uid_field: eppn
-  extra_fields:
-    - eppn
-    - unscoped-affiliation
-    - uid
-    - sn
-    - nickname
-    - givenName
-  request_type: header
-  info_fields:
-    name: displayName
-    email: mail
-
 demo:
   host: demo.ideals.illinois.edu
   uid_field: eppn

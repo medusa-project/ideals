@@ -22,15 +22,17 @@ jobs:
           discovery.type: single-node
         options: --name ideals-elasticsearch
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
       - name: Install Elasticsearch plugins
-        run: docker exec ideals-elasticsearch bin/elasticsearch-plugin install analysis-icu
+        run: docker exec ideals-elasticsearch bin/elasticsearch-plugin install --silent analysis-icu
       - name: Install Ruby
         # This will install the version specified in `.ruby-version`
         uses: eregon/use-ruby-action@master
       - name: Install system dependencies
         run: sudo apt-get -y install build-essential libmagic-dev libpq-dev curl
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Prepare the configuration
+        run: cp config/credentials/ci.yml config/credentials/test.yml
       - name: Install gems
         run: |
           gem install bundler
@@ -39,9 +41,10 @@ jobs:
           bundle install --jobs 4 --retry 3
       - name: Run the tests
         env:
-          RAILS_ENV: ci
           SECRET_KEY_BASE: whateverdoesntmatter
         run: |
           bin/rails db:prepare
-          bin/rails test -e ci
-      # TODO: do zeitwerk:check once migrated to rails 6.0.3
+          bin/rails test
+      # TODO: Rails 6.0.2 has a bug that causes this to fail. Enable it once migrated to rails 6.0.3.
+      #- name: Check class names
+      #  run: bin/rails zeitwerk:check
