@@ -20,9 +20,12 @@ jobs:
           - 9200:9200
         env:
           discovery.type: single-node
+        options: --name ideals-elasticsearch
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Install Elasticsearch plugins
+        run: docker exec ideals-elasticsearch bin/elasticsearch-plugin install analysis-icu
       - name: Install Ruby
         # This will install the version specified in `.ruby-version`
         uses: eregon/use-ruby-action@master
