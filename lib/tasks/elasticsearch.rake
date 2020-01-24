@@ -41,9 +41,13 @@ namespace :elasticsearch do
 
   end
 
-  desc 'Execute an arbitrary query'
-  task :query, [:index, :file] => :environment do |task, args|
-    index     = args[:index]
+  desc 'Purge all documents from the current index'
+  task :purge => :environment do
+    ElasticsearchClient.instance.purge
+  end
+
+  desc 'Execute an arbitrary query against the default index'
+  task :query, [:file] => :environment do |task, args|
     file_path = File.expand_path(args[:file])
     json      = File.read(file_path)
     puts ElasticsearchClient.instance.query(json)
@@ -59,11 +63,9 @@ namespace :elasticsearch do
 
   desc 'Reindex all database entities'
   task reindex: :environment do
-    ActiveRecord::Base.uncached do
-      Unit.reindex_all
-      Collection.reindex_all
-      Item.reindex_all
-    end
+    Unit.reindex_all
+    Collection.reindex_all
+    Item.reindex_all
     # TODO: delete indexed docs whose database rows have been deleted
   end
 

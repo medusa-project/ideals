@@ -195,6 +195,15 @@ class ElasticsearchClient
   end
 
   ##
+  # Deletes all documents from the index.
+  #
+  # @return [String] Response body.
+  #
+  def purge
+    delete_by_query(JSON.generate({ query: { match_all: {} }}))
+  end
+
+  ##
   # @param query [String] JSON query string.
   # @return [String] Response body.
   #
