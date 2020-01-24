@@ -41,6 +41,7 @@ jobs:
           bundle install --jobs 4 --retry 3
       - name: Run the tests
         env:
+          RAILS_ENV: test
           SECRET_KEY_BASE: whateverdoesntmatter
         run: |
           bin/rails db:prepare
