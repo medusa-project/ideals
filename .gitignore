@@ -37,6 +37,3 @@ out
 
 /public/assets
 .byebug_history
-
-# Ignore import csvs
-/lib/assets/import_sources

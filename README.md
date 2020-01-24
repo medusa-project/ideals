@@ -13,7 +13,9 @@ This is a getting-started guide for developers.
 # Requirements
 
 * PostgreSQL >= 9.x
-* Elasticsearch >= 7.x
+* Elasticsearch >= 7.x with the
+  [ICU analysis plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html)
+  installed
 
 # Installation
 
@@ -57,14 +59,15 @@ rails "elasticsearch:indexes:create[ideals_test]"
 ```
 Note: the index schema may change from time to time. Index schemas can't
 generally be changed in place, so a new index has to be created with the new
-schema, and then existing documents migrated into it. For the development index,
-instead of the above, you may prefer to have separate "blue" and "green"
-indexes and to switch back-and-forth between them as needed, like:
+schema, and then either existing documents migrated into it, or new documents
+loaded into it. For the development index, you may prefer to have separate
+"blue" and "green" indexes and to switch back-and-forth between them as needed:
 ```sh
 rails "elasticsearch:indexes:create[ideals_blue_development]"
 rails "elasticsearch:indexes:create_alias[ideals_blue_development,ideals_development]"
 ```
-Then when you need to create a new index, you switch to the "green" one:
+Then when you need to create a new index, you can switch to the "green" one and
+delete the blue one:
 ```sh
 rails "elasticsearch:indexes:create[ideals_green_development]"
 rails "elasticsearch:indexes:copy[ideals_blue_development,ideals_green_development]"
@@ -72,8 +75,8 @@ rails "elasticsearch:indexes:delete_alias[ideals_blue_development,ideals_develop
 rails "elasticsearch:indexes:create_alias[ideals_green_development,ideals_development]"
 rails "elasticsearch:indexes:delete[ideals_blue_development]"
 ```
-(Instead of using aliases, you could change the `elasticsearch/index` key in
-your `development.yml` config file. Your choice.)
+(Instead of using aliases, you could also change the `elasticsearch/index` key
+in your `development.yml`.)
 
 Note 2: the above does not apply to the test index. This index will be
 recreated automatically when the tests are run.
@@ -92,7 +95,16 @@ $ rails db:seed
 $ rails "ideals:users:create[my_username,my_password]"
 ```
 
-## Run
+## Migrate content from IDEALS-DSpace into the application
+
+These steps assume you have a dump of the IDEALS-DSpace database loaded into
+your development PostgreSQL instance and named `dbname`.
+
+```
+$ rails ideals_dspace:migrate[dbname]
+```
+
+## Run the web app
 
 ```
 $ rails server
