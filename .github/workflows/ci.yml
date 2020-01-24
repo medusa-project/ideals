@@ -47,7 +47,8 @@ jobs:
         run: |
           docker build -t ideals-elasticsearch -f .github/Dockerfile-elasticsearch .
           docker run -d -p 9200:9200 -e "discovery.type=single-node" ideals-elasticsearch
-          bin/rails "elasticsearch:indexes:create[ideals]"
+          sleep 30
+          bin/rails "elasticsearch:indexes:create[ideals_test]"
           bin/rails test
       # TODO: Rails 6.0.2 has a bug that causes this to fail. Enable it once migrated to rails 6.0.3.
       #- name: Check class names
