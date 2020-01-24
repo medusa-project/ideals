@@ -37,8 +37,13 @@ jobs:
         run: |
           gem install bundler
           bundle config path vendor/bundle
-          bundle config set without "development test"
+          bundle config set without "production"
           bundle install --jobs 4 --retry 3
+      - name: Create the Elasticsearch index
+        env:
+          RAILS_ENV: test
+          SECRET_KEY_BASE: whateverdoesntmatter
+        run: bin/rails "elasticsearch:indexes:create[ideals_test]"
       - name: Run the tests
         env:
           RAILS_ENV: test
