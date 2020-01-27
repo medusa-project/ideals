@@ -15,8 +15,8 @@
     = javascript_include_tag 'application'
     = csrf_meta_tags
 
-  %body{:id => yield(:body_id).present? ? yield(:body_id) : nil,
-        :'data-nav' => yield(:active_nav)}
+  %body{id: yield(:body_id).present? ? yield(:body_id) : nil,
+        'data-nav': yield(:active_nav)}
     .container-fluid
       = render partial: 'layouts/header'
       .page-content
@@ -25,6 +25,9 @@
           = breadcrumbs(@breadcrumbable)
         = yield
       = render partial: "layouts/footer"
+
+    - unless logged_in?
+      = render partial: 'identities/login_modal'
     = hidden_field_tag :root_path, root_path
     = hidden_field_tag :root_url, root_url.chomp('/')
     =javascript_tag do

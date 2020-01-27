@@ -14,6 +14,8 @@ module ApplicationHelper
       icon = "fa fa-cube"
     when "Unit"
       icon = "fa fa-university"
+    when "User::Shibboleth"
+      icon = "fa fa-user"
     else
       icon = "fa fa-cube"
     end
