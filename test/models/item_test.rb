@@ -60,6 +60,15 @@ class ItemTest < ActiveSupport::TestCase
                  doc[Item::IndexFields::LAST_MODIFIED]
     assert_equal @instance.primary_collection.id,
                  doc[Item::IndexFields::PRIMARY_COLLECTION]
+    assert_equal @instance.primary_collection.primary_unit.id,
+                 doc[Item::IndexFields::PRIMARY_UNIT]
+  end
+
+  # primary_unit()
+
+  test "primary_unit() returns the primary unit" do
+    assert_same @instance.primary_collection.primary_unit,
+                @instance.primary_unit
   end
 
   # reindex()
