@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+title:
+  name: title
+  scope_note:
+
+subject:
+  name: subject
+  scope_note:

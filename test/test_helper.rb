@@ -20,4 +20,15 @@ class ActiveSupport::TestCase
     client.create_index(index)
   end
 
+  def log_in_as(user)
+    post '/auth/identity/callback', params: {
+        auth_key: "#{user.username}@illinois.edu",
+        password: "password"
+    }
+  end
+
+  def sign_out
+    delete logout_path
+  end
+
 end

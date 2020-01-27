@@ -1,0 +1,5 @@
+admin_identity:
+  name: admin
+  email: admin@illinois.edu
+  activated: true
+  password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>

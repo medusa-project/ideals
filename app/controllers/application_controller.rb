@@ -14,8 +14,8 @@ class ApplicationController < ActionController::Base
   def store_location
     return nil unless request.get?
 
-    if request.path != "/login" &&
-        request.path != "/logout" &&
+    if request.path != login_path and
+        request.path != logout_path and
         !request.xhr? # don't store ajax calls
       session[:previous_url] = request.fullpath
     end
@@ -26,6 +26,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+
+  def authorize_user
+    redirect_to login_path unless logged_in?
+  end
 
   def error_occurred(exception)
     if exception.class == ActiveRecord::RecordNotFound

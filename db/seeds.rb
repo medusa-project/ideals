@@ -7,3 +7,5 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 Role.create!(name: "sysadmin")
+RegisteredElement.create!(name: "title")
+RegisteredElement.create!(name: "description")

@@ -1,0 +1,6 @@
+admin:
+  provider: identity
+  uid: admin@illinois.edu
+  name: admin
+  email: admin@illinois.edu
+  username: admin

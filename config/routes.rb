@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :handles
   resources :units
   resources :collections
+  resources :registered_elements, path: 'elements'
 
   # You can have the root of your site routed with "root"
   root 'welcome#index'

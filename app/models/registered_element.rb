@@ -1,0 +1,3 @@
+class RegisteredElement < ApplicationRecord
+
+end
