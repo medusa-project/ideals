@@ -1,3 +1,6 @@
+.float-right
+  = item_search_field(@resource, Item::IndexFields::PRIMARY_UNIT)
+
 %h1
   =icon_for(@resource)
   =@resource.title
@@ -8,4 +11,3 @@
 -if @resource.collections.count.positive?
   %h2 Collections
   =render partial: "collections/listing", locals:{resources: @resource.collections}
-

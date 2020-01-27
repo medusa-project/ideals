@@ -1,2 +1,9 @@
+.float-right
+  = item_search_field(@resource, Item::IndexFields::PRIMARY_COLLECTION)
+
+%h1
+  =icon_for(@resource)
+  =@resource.title
+
 -if @resource.items.count.positive?
   =render partial: "collections/listing", locals:{resources: @resources, form_action: "/collections/#{@resource.id}", search_prompt: "search for items within collection"}
