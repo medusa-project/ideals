@@ -1330,7 +1330,7 @@ DEPENDENCIES
   omniauth-shibboleth
   open_uri_redirections
   passenger
-  pg (>= 0.18, < 2.0)
+  pg
   progress_job
   puma
   pundit
