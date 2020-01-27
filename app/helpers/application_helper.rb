@@ -9,7 +9,7 @@ module ApplicationHelper
   def icon_for(entity)
     case entity.class.to_s
     when "Collection"
-      icon = "fa fa-folder"
+      icon = "far fa-folder-open"
     when "Item"
       icon = "fa fa-cube"
     when "Unit"
