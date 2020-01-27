@@ -3,27 +3,15 @@ body#welcome {
     margin-bottom: -14px;
   }
   #welcome-image {
+    /* https://digital.library.illinois.edu/items/f07734a0-4b72-0134-1da8-0050569601ca-f */
     background-image: url("blue_filter.png");
     margin: -16px -16px 1em -16px;
-    padding: 0;
-    position: relative;
-    background-size: cover;
-    height: 200px;
+    background-position: center;
     border-bottom: 3px solid $uiuc-orange;
-  }
-  #welcome-overlay {
-    position: absolute;
-    left: 30px;
-    top: 60px;
-    background-color: white;
-    padding: 1em;
-    border: 1px solid $uiuc-orange;
-    width: 50%;
-    p {
-      color: $gray-700;
-      margin: 0;
-      padding: 0;
-    }
+    display: flex;
+    height: 200px;
+    flex-flow: column nowrap;
+    justify-content: center;
   }
   ul {
     line-height: 1.5em;

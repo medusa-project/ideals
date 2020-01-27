@@ -3,7 +3,9 @@
 class WelcomeController < ApplicationController
   helper_method :current_user, :logged_in?
 
-  def index; end
+  def index
+    @item_count = Item.count
+  end
 
   def items; end
 
