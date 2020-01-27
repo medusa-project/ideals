@@ -6,7 +6,7 @@ class UnitsController < ApplicationController
   # GET /units
   # GET /units.json
   def index
-    finder = UnitFinder.new.
+    finder = Unit.search.
         include_children(false).
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(9999)

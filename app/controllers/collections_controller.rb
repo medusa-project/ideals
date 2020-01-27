@@ -15,7 +15,7 @@ class CollectionsController < ApplicationController
     if @resource.items.count.positive?
       @start = params[:start].to_i
       @limit = params[:per_page]&.to_i || 25
-      finder = ItemFinder.new.
+      finder = Item.search.
           collection(params[:id]).
           start(@start).
           limit(@limit)

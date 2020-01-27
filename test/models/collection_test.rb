@@ -7,18 +7,24 @@ class CollectionTest < ActiveSupport::TestCase
     @instance = collections(:collection1)
   end
 
-  # delete_document()
+  # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
     collections = Collection.all.limit(5)
     collections.each(&:reindex)
     refresh_elasticsearch
-    count = CollectionFinder.new.count
+    count = Collection.search.count
     assert count > 0
 
     Collection.delete_document(collections.first.id)
     refresh_elasticsearch
-    assert_equal count - 1, CollectionFinder.new.count
+    assert_equal count - 1, Collection.search.count
+  end
+
+  # search() (Indexed concern)
+
+  test "search() returns a CollectionFinder" do
+    assert_kind_of CollectionFinder, Collection.search
   end
 
   # primary_unit=()
@@ -34,16 +40,16 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal 2, @instance.units.count
   end
 
-  # reindex_all()
+  # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
     setup_elasticsearch
-    assert_equal 0, CollectionFinder.new.count
+    assert_equal 0, Collection.search.count
 
     Collection.reindex_all
     refresh_elasticsearch
 
-    actual = CollectionFinder.new.count
+    actual = Collection.search.count
     assert actual > 0
     assert_equal Collection.count, actual
   end
@@ -67,16 +73,16 @@ class CollectionTest < ActiveSupport::TestCase
         doc[Collection::IndexFields::UNITS].length
   end
 
-  # reindex()
+  # reindex() (Indexed concern)
 
   test "reindex reindexes the instance" do
-    assert_equal 0, CollectionFinder.new.
+    assert_equal 0, Collection.search.
         filter(Collection::IndexFields::ID, @instance.id).count
 
     @instance.reindex
     refresh_elasticsearch
 
-    assert_equal 1, CollectionFinder.new.
+    assert_equal 1, Collection.search.
         filter(Collection::IndexFields::ID, @instance.id).count
   end
 

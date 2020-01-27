@@ -8,7 +8,7 @@ class ItemsController < ApplicationController
   def index
     @start = params[:start].to_i
     @limit = params[:per_page]&.to_i || 25
-    finder = ItemFinder.new.
+    finder = Item.search.
         query_all(params[:q]).
         start(@start).
         limit(@limit)

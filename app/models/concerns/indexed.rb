@@ -55,13 +55,21 @@ module Indexed
       count_ = count
       start_time = Time.now
       ActiveRecord::Base.uncached do
-        all.find_each.with_index do |item, i|
-          item.reindex(index)
+        all.find_each.with_index do |model, i|
+          model.reindex(index)
           StringUtils.print_progress(start_time, i, count_,
                                      "Indexing #{name.downcase.pluralize}")
         end
         puts ""
       end
+    end
+
+    ##
+    # @return [AbstractFinder] Instance of one of the {AbstractFinder}
+    #                          subclasses.
+    #
+    def search
+      "#{name}Finder".constantize.new
     end
   end
 

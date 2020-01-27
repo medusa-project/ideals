@@ -7,30 +7,36 @@ class UnitTest < ActiveSupport::TestCase
     @instance = units(:unit1)
   end
 
-  # delete_document()
+  # delete_document() (Indexed concern)
 
   test 'delete_document() deletes a document' do
     units = Unit.all.limit(5)
     units.each(&:reindex)
     refresh_elasticsearch
-    count = UnitFinder.new.count
+    count = Unit.search.count
     assert count > 0
 
     Unit.delete_document(units.first.id)
     refresh_elasticsearch
-    assert_equal count - 1, UnitFinder.new.count
+    assert_equal count - 1, Unit.search.count
   end
 
-  # reindex_all()
+  # search() (Indexed concern)
+
+  test "search() returns a UnitFinder" do
+    assert_kind_of UnitFinder, Unit.search
+  end
+
+  # reindex_all() (Indexed concern)
 
   test 'reindex_all() reindexes all units' do
     setup_elasticsearch
-    assert_equal 0, UnitFinder.new.include_children(true).count
+    assert_equal 0, Unit.search.include_children(true).count
 
     Unit.reindex_all
     refresh_elasticsearch
 
-    actual = UnitFinder.new.include_children(true).count
+    actual = Unit.search.include_children(true).count
     assert actual > 0
     assert_equal Unit.count, actual
   end
@@ -48,16 +54,16 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal @instance.title, doc[Unit::IndexFields::TITLE]
   end
 
-  # reindex()
+  # reindex() (Indexed concern)
 
   test 'reindex reindexes the instance' do
-    assert_equal 0, UnitFinder.new.
+    assert_equal 0, Unit.search.
         filter(Unit::IndexFields::ID, @instance.id).count
 
     @instance.reindex
     refresh_elasticsearch
 
-    assert_equal 1, UnitFinder.new.
+    assert_equal 1, Unit.search.
         filter(Unit::IndexFields::ID, @instance.id).count
   end
 

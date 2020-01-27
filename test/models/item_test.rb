@@ -7,18 +7,18 @@ class ItemTest < ActiveSupport::TestCase
     @instance = items(:item1)
   end
 
-  # delete_document()
+  # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
     items = Item.all.limit(5)
     items.each(&:reindex)
     refresh_elasticsearch
-    count = ItemFinder.new.count
+    count = Item.search.count
     assert count > 0
 
     Item.delete_document(items.first.id)
     refresh_elasticsearch
-    assert_equal count - 1, ItemFinder.new.count
+    assert_equal count - 1, Item.search.count
   end
 
   # primary_collection=()
@@ -34,18 +34,24 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 2, @instance.collections.count
   end
 
-  # reindex_all()
+  # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
     setup_elasticsearch
-    assert_equal 0, ItemFinder.new.count
+    assert_equal 0, Item.search.count
 
     Item.reindex_all
     refresh_elasticsearch
 
-    actual = ItemFinder.new.count
+    actual = Item.search.count
     assert actual > 0
     assert_equal Item.count, actual
+  end
+
+  # search() (Indexed concern)
+
+  test "search() returns an ItemFinder" do
+    assert_kind_of ItemFinder, Item.search
   end
 
   # as_indexed_json()
@@ -71,17 +77,15 @@ class ItemTest < ActiveSupport::TestCase
                 @instance.primary_unit
   end
 
-  # reindex()
+  # reindex() (Indexed concern)
 
   test "reindex reindexes the instance" do
-    assert_equal 0, ItemFinder.new.
-        filter(Item::IndexFields::ID, @instance.id).count
+    assert_equal 0, Item.search.filter(Item::IndexFields::ID, @instance.id).count
 
     @instance.reindex
     refresh_elasticsearch
 
-    assert_equal 1, ItemFinder.new.
-        filter(Item::IndexFields::ID, @instance.id).count
+    assert_equal 1, Item.search.filter(Item::IndexFields::ID, @instance.id).count
   end
 
 end
