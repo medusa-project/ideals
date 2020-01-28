@@ -8,6 +8,12 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() redirects to login page for unauthorized users" do
+    log_out
+    post registered_elements_path, {}
+    assert_redirected_to login_path
+  end
+
   test "create() returns HTTP 200" do
     post registered_elements_path, {
         xhr: true,
@@ -49,6 +55,12 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() redirects to login path for unauthorized users" do
+    log_out
+    delete "/elements/bogus"
+    assert_redirected_to login_path
+  end
+
   test "destroy() destroys the element" do
     element = registered_elements(:title)
     delete "/elements/#{element.name}"
@@ -70,12 +82,24 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
-  test "index() returns HTTP 200" do
+  test "index() redirects to login page for unauthorized users" do
+    log_out
+    get registered_elements_path
+    assert_redirected_to login_path
+  end
+
+  test "index() returns HTTP 200 for authorized users" do
     get registered_elements_path
     assert_response :ok
   end
 
   # update()
+
+  test "update() redirects to login path for unauthorized users" do
+    log_out
+    patch "/elements/bogus", {}
+    assert_redirected_to login_path
+  end
 
   test "update() updates an element" do
     element = registered_elements(:title)
