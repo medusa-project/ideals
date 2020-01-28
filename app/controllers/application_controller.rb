@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
     render json: {}, status: :unprocessable_entity
   end
 
-  after_action :store_location
+  after_action :copy_flash_to_response_headers, :store_location
 
   def store_location
     return nil unless request.get?
@@ -72,6 +72,22 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  ##
+  # Stores the flash message and type (`error` or `success`) in the response
+  # headers, where they can be accessed by a JavaScript ajax callback.
+  #
+  def copy_flash_to_response_headers
+    if request.xhr?
+      if flash['error'].present?
+        response.headers['X-Ideals-Message-Type'] = 'error'
+        response.headers['X-Ideals-Message']      = flash['error']
+      elsif flash['success'].present?
+        response.headers['X-Ideals-Message-Type'] = 'success'
+        response.headers['X-Ideals-Message']      = flash['success']
+      end
+    end
+  end
 
   def current_user
     if session[:user_id]

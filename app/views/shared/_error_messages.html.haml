@@ -1,8 +1,10 @@
-- if object.errors.any?
-  .card.text-white.bg-danger.mb-3.submission-error
-    .card-header
-      Error
-    .card-body
+.card.text-white.bg-danger.mb-3.submission-error
+  .card-header
+    Error
+  .card-body
+    - if object.kind_of?(Exception)
+      = object.message
+    - elsif object.errors.any?
       %ul
         - object.errors.full_messages.each do |msg|
           %li= msg

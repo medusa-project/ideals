@@ -1,0 +1,3 @@
+// Refresh error messages after a failed XHR edit.
+$('.error-messages').html("<%= j render partial: 'shared/error_messages',
+                                        locals: { object: object } %>");

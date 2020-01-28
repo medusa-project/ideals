@@ -1,15 +1,40 @@
+- provide :body_id, "registered_elements"
+
+.btn-group.float-right{role: "group"}
+  / Add Element button
+  %button.btn.btn-light{"data-target": "#add-element-modal",
+                        "data-toggle": "modal", type: "button"}
+    %i.fa.fa-plus
+    Add Element
+
 %h1 Element Registry
 
-%table.table.table-striped
+%table.table
   %thead
     %tr
-      %th
-      %th
+      %th{style: "width: 1px"}
+      %th{style: "width: 1px"}
       %th Name
       %th Scope Note
   %tbody
     - @elements.each do |element|
-      %td
-      %td
-      %td= element.name
-      %td= element.scope_note
+      %tr
+        %td{style: "white-space: nowrap"}
+          %button.btn.btn-light.btn-sm.edit-element{"data-element-name": element.name,
+                                                    "data-target": "#edit-element-modal",
+                                                    "data-toggle": "modal",
+                                                    type: "button"}
+            %i.fas.fa-pencil-alt
+            Edit
+        %td{style: "white-space: nowrap"}
+          = link_to(registered_element_path(element), class: 'btn btn-danger btn-sm',
+                                                      method: :delete,
+                                                      data: { confirm: 'Are you sure you want to delete this element?' }) do
+            %i.fa.fa-trash
+            Delete
+        %td
+          %code= element.name
+        %td= simple_format(element.scope_note)
+
+= render partial: 'add_modal'
+= render partial: 'edit_modal'

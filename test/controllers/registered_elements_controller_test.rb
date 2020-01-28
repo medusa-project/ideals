@@ -6,11 +6,123 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(user_identity(:admin))
   end
 
+  # create()
+
+  test "create() returns HTTP 200" do
+    post registered_elements_path, {
+        xhr: true,
+        params: {
+            registered_element: {
+                name: "cats",
+                scope_note: "Mammals"
+            }
+        }
+    }
+    assert_response :ok
+  end
+
+  test "create() creates an element" do
+    post registered_elements_path, {
+        xhr: true,
+        params: {
+            registered_element: {
+                name: "cats",
+                scope_note: "Mammals"
+            }
+        }
+    }
+    element =  RegisteredElement.find_by_name("cats")
+    assert_equal "Mammals", element.scope_note
+  end
+
+  test "create() returns HTTP 400 for illegal arguments" do
+    post registered_elements_path, {
+        xhr: true,
+        params: {
+            registered_element: {
+                name: ""
+            }
+        }
+    }
+    assert_response :bad_request
+  end
+
+  # destroy()
+
+  test "destroy() destroys the element" do
+    element = registered_elements(:title)
+    delete "/elements/#{element.name}"
+    assert_raises ActiveRecord::RecordNotFound do
+      RegisteredElement.find(element.id)
+    end
+  end
+
+  test "destroy() returns HTTP 302 for an existing element" do
+    element = registered_elements(:title)
+    delete "/elements/#{element.name}"
+    assert_redirected_to registered_elements_path
+  end
+
+  test "destroy() returns HTTP 404 for a missing element" do
+    delete "/elements/bogus"
+    assert_response :not_found
+  end
+
   # index()
 
   test "index() returns HTTP 200" do
     get registered_elements_path
     assert_response :ok
+  end
+
+  # update()
+
+  test "update() updates an element" do
+    element = registered_elements(:title)
+    patch "/elements/#{element.name}", {
+        xhr: true,
+        params: {
+            registered_element: {
+                name: "cats",
+                scope_note: "Mammals"
+            }
+        }
+    }
+    element.reload
+    assert_equal "cats", element.name
+    assert_equal "Mammals", element.scope_note
+  end
+
+  test "update() returns HTTP 200" do
+    element = registered_elements(:title)
+    patch "/elements/#{element.name}", {
+        xhr: true,
+        params: {
+            registered_element: {
+                name: "cats",
+                scope_note: "Mammals"
+            }
+        }
+    }
+    assert_response :ok
+  end
+
+  test "update() returns HTTP 400 for illegal arguments" do
+    element = registered_elements(:title)
+    patch "/elements/#{element.name}", {
+        xhr: true,
+        params: {
+            registered_element: {
+                name: "" # invalid
+            }
+        }
+    }
+    assert_response :bad_request
+  end
+
+  test "update() returns HTTP 404 for nonexistent elements" do
+    patch "/elements/bogus", {}
+    assert_response :not_found
   end
 
 end
