@@ -10,9 +10,6 @@ Rails.application.routes.draw do
   get '/', to: 'welcome#index'
   get '/dashboard', to: 'welcome#dashboard'
   get '/deposit', to: "welcome#deposit"
-  get '/help', to: 'welcome#help'
-  get '/items', to: 'welcome#items'
-  get '/policies', to: 'welcome#policies'
 
   # authentication routes
   match '/auth/:provider/callback', to: 'sessions#create', via: [:get, :post]

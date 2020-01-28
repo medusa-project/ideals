@@ -19,20 +19,16 @@
             %i.fa.fa-university
             Academic Units
         %li#policies-nav.nav-item
-          = link_to policies_path, class: 'nav-link' do
+          = link_to "https://wiki.illinois.edu//wiki/display/IDEALS/IDEALS+Resources+and+Information", class: 'nav-link' do
             %i.fa.fa-info-circle
-            Policies
-        %li#help-nav.nav-item
-          = link_to help_path, class: 'nav-link' do
-            %i.fa.fa-question-circle
-            Help
+            About
       - if logged_in?
         %ul.navbar-nav.my-2.my-lg-0
-          %li#administer-nav.nav-item.dropdown
-            %a#administer-dropdown.nav-link.dropdown-toggle{href: "#", role: "button", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"}
+          %li#administration-nav.nav-item.dropdown
+            %a#administration-dropdown.nav-link.dropdown-toggle{href: "#", role: "button", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"}
               %i.fa.fa-lock-open
-              Administer
-            .dropdown-menu.dropdown-menu-right{"aria-labelledby": "administer-dropdown"}
+              Administration
+            .dropdown-menu.dropdown-menu-right{"aria-labelledby": "administration-dropdown"}
               = link_to registered_elements_path, class: 'dropdown-item' do
                 %i.fa.fa-bars
                 Element Registry

@@ -22,7 +22,7 @@ class SessionsController < ApplicationController
 
     if user&.id
       session[:user_id] = user.id
-      render plain: 'Login succeeded.', status: :created
+      redirect_back fallback_location: return_url
     else
       unauthorized
     end
@@ -34,7 +34,7 @@ class SessionsController < ApplicationController
   end
 
   def unauthorized
-    render plain: 'Login failed.', status: :forbidden
+    redirect_to root_url, notice: "Login failed."
   end
 
   protected

@@ -12,6 +12,9 @@ body#welcome {
     height: 200px;
     flex-flow: column nowrap;
     justify-content: center;
+    .input-group {
+      margin: 0px !important;
+    }
   }
   ul {
     line-height: 1.5em;

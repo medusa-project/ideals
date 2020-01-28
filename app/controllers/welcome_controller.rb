@@ -7,12 +7,6 @@ class WelcomeController < ApplicationController
     @item_count = Item.count
   end
 
-  def items; end
-
-  def help; end
-
-  def policies; end
-
   def dashboard; end
 
   def deposit; end
