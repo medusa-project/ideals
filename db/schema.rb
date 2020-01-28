@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_27_185514) do
+ActiveRecord::Schema.define(version: 2020_01_28_202030) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,13 +33,22 @@ ActiveRecord::Schema.define(version: 2020_01_27_185514) do
     t.index ["user_id"], name: "index_assignments_on_user_id"
   end
 
+  create_table "bitstream_formats", force: :cascade do |t|
+    t.string "media_type", null: false
+    t.text "short_description", null: false
+    t.text "description", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["media_type"], name: "index_bitstream_formats_on_media_type", unique: true
+  end
+
   create_table "bitstreams", force: :cascade do |t|
     t.string "key", null: false
     t.bigint "length"
-    t.string "media_type"
     t.integer "item_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "bitstream_format_id"
     t.index ["key"], name: "index_bitstreams_on_key", unique: true
   end
 
@@ -156,6 +165,7 @@ ActiveRecord::Schema.define(version: 2020_01_27_185514) do
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "roles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "bitstreams", "bitstream_formats", on_update: :cascade, on_delete: :restrict
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_unit_relationships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_unit_relationships", "units", on_update: :cascade, on_delete: :cascade

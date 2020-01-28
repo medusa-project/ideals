@@ -30,9 +30,4 @@ class BitstreamTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
-  test "media_type must be a correct format" do
-    @instance.media_type = 'bogus'
-    assert !@instance.valid?
-  end
-
 end

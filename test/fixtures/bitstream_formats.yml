@@ -1,7 +1,6 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-item1_jpg:
-  key: jpg
-  length: 500
-  item: item1
-  bitstream_format: jpeg
+jpeg:
+  media_type: image/jpeg
+  short_description: JPEG image
+  description: JPEG image
