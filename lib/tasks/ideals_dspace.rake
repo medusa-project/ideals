@@ -52,12 +52,23 @@ namespace :ideals_dspace do
     end
   end
 
+  namespace :metadata do
+    desc "Migrate metadata from IDEALS-DSpace into the application"
+    task :migrate, [:source_db_name] => :custom_environment do |task, args|
+      do_migrate(args[:source_db_name],
+                 File.join(Rails.root, "scripts", "export_metadata.sql"),
+                 :import_metadata,
+                 %w(/tmp/metadata_registry.csv))
+    end
+  end
+
   desc "Migrate all content from IDEALS-DSpace into the application"
   task :migrate, [:source_db_name] => :custom_environment do |task, args|
     Rake::Task["ideals_dspace:handles:migrate"].invoke(args[:source_db_name])
     Rake::Task["ideals_dspace:communities:migrate"].invoke(args[:source_db_name])
     Rake::Task["ideals_dspace:collections:migrate"].invoke(args[:source_db_name])
     Rake::Task["ideals_dspace:items:migrate"].invoke(args[:source_db_name])
+    Rake::Task["ideals_dspace:metadata:migrate"].invoke(args[:source_db_name])
   end
 
   def do_migrate(source_db_name, sql_file, import_method, csv_files)

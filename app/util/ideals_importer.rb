@@ -123,6 +123,27 @@ class IdealsImporter
     end
   end
 
+  def import_metadata
+    pathname = File.join(@pathname, "metadata_registry.csv")
+    LOGGER.debug("import_metadata(): importing %s (1/1)", pathname)
+    row_num = 0
+    ActiveRecord::Base.transaction do
+      RegisteredElement.destroy_all
+      File.open(pathname, "r").each_line do |line|
+        row_num += 1
+        next if row_num == 1 # skip header row
+
+        row_arr = line.split("|")
+        name = "#{row_arr[1]}:#{row_arr[2]}"
+        name += ":#{row_arr[3]}" if row_arr[3].present?
+
+        RegisteredElement.create!(id:         row_arr[0],
+                                  name:       name,
+                                  scope_note: row_arr[4])
+      end
+    end
+  end
+
   def import_units
     communities = []
     community2community = {}
