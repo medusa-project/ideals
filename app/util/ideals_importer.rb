@@ -53,6 +53,7 @@ class IdealsImporter
                                  title: collection[1])
         col.primary_unit = Unit.find(collection2group[collection[0]])
       end
+      update_pkey_sequence("collections")
     end
   end
 
@@ -75,6 +76,7 @@ class IdealsImporter
                        resource_type_id: row[2].to_i,
                        resource_id:      row[3].to_i)
       end
+      update_pkey_sequence("handles")
     end
   end
 
@@ -103,11 +105,11 @@ class IdealsImporter
                                   else
                                     AuthProvider::IDENTITY
                                   end
-        in_archive = row[2] == "t"
-        withdrawn = row[3] == "t"
+        in_archive    = row[2] == "t"
+        withdrawn     = row[3] == "t"
         collection_id = row[4].present? ? row[4].to_i : nil
-        discoverable = row[5] == "t"
-        title = row[6]
+        discoverable  = row[5] == "t"
+        title         = row[6]
 
         item = Item.create!(id:                      id,
                             title:                   title,
@@ -120,6 +122,7 @@ class IdealsImporter
           item.primary_collection = Collection.find(collection_id)
         end
       end
+      update_pkey_sequence("items")
     end
   end
 
@@ -141,6 +144,7 @@ class IdealsImporter
                                   name:       name,
                                   scope_note: row_arr[4])
       end
+      update_pkey_sequence("registered_elements")
     end
   end
 
@@ -184,7 +188,23 @@ class IdealsImporter
                      id:        community[0],
                      parent_id: community2community[community[0]])
       end
+      update_pkey_sequence("units")
     end
+  end
+
+  private
+
+  ##
+  # Updates a table's primary key sequence to one greater than the largest
+  # existing primary key.
+  #
+  # @param table [String] Table name.
+  #
+  def update_pkey_sequence(table)
+    sql = "SELECT setval(pg_get_serial_sequence('#{table}', 'id'),
+                  COALESCE(MAX(id), 1), MAX(id) IS NOT null)
+    FROM #{table};"
+    ActiveRecord::Base.connection.execute(sql)
   end
 
 end
