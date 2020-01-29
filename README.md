@@ -101,7 +101,7 @@ These steps assume you have a dump of the IDEALS-DSpace database loaded into
 your development PostgreSQL instance and named `dbname`.
 
 ```
-$ rails ideals_dspace:migrate[dbname]
+$ rails "ideals_dspace:migrate[dbname]"
 ```
 
 ## Run the web app
@@ -134,12 +134,11 @@ explanation of how the configuration system works.
 
 # Tests & Continuous Integration
 
-Minitest is used for unit tests. Some tests depend on Elasticsearch and most
-depend on PostgreSQL. Tests can be run as usual using `rails test`.
+Minitest is used for model and controller tests. Some tests depend on
+Elasticsearch and most depend on PostgreSQL. `rails test` runs the tests.
 
 There is also a continuous integration setup using
-[GitHub Actions](https://github.com/features/actions). The CI environment is
-containerized. The `.github/workflows/ci.yml` file defines the container fleet,
-including all dependent services such as Elasticsearch and PostgreSQL, which
-run in separate containers. `/Dockerfile` defines the Rails application
-container.
+[GitHub Actions](https://github.com/features/actions). The
+`.github/workflows/ci.yml` file defines the container fleet, including all
+required services such as Elasticsearch and PostgreSQL, which run in separate
+containers.
