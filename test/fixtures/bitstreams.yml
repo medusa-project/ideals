@@ -3,5 +3,5 @@
 item1_jpg:
   key: jpg
   length: 500
+  media_type: image/jpeg
   item: item1
-  bitstream_format: jpeg
