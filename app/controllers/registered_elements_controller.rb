@@ -12,12 +12,12 @@ class RegisteredElementsController < ApplicationController
     begin
       @element.save!
     rescue
-      render partial: 'shared/validation_messages',
+      render partial: "shared/validation_messages",
              locals: { object: @element },
              status: :bad_request
     else
       flash['success'] = "Element \"#{@element.name}\" created."
-      render 'create' # create.js.erb will reload the page
+      render "shared/reload"
     end
   end
 
@@ -66,12 +66,12 @@ class RegisteredElementsController < ApplicationController
     begin
       element.update!(sanitized_params)
     rescue
-      render partial: 'shared/validation_messages',
+      render partial: "shared/validation_messages",
              locals: { object: element },
              status: :bad_request
     else
       flash['success'] = "Element \"#{element.name}\" updated."
-      render 'update' # update.js.erb will reload the page
+      render "shared/reload" # update.js.erb will reload the page
     end
   end
 
