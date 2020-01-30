@@ -1,1 +1,1 @@
-copy (select * FROM handle) to '/tmp/handles.csv' csv header;
+copy (select * FROM handle) to STDOUT CSV HEADER;

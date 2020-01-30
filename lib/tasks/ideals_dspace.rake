@@ -2,83 +2,68 @@ require 'rake'
 
 namespace :ideals_dspace do
 
-  ##
-  # "Initializer" that configures the logger to log to stdout. All tasks that
-  # want log output to be visible in the console should inherit from this.
-  #
-  task :custom_environment => :environment do
-    logger       = Logger.new(STDOUT)
-    logger.level = Logger::DEBUG
-    Rails.logger = logger
-  end
-
   namespace :collections do
     desc "Migrate collections from IDEALS-DSpace into the application"
-    task :migrate, [:source_db_name] => :custom_environment do |task, args|
+    task :migrate, [:source_db_name] => :environment do |task, args|
       do_migrate(args[:source_db_name],
-                 File.join(Rails.root, "scripts", "export_collections.sql"),
-                 :import_collections,
-                 %w(/tmp/collections.csv /tmp/collection2community.csv))
+                 "export_collections.sql",
+                 :import_collections)
+      do_migrate(args[:source_db_name],
+                 "export_collections_2_communities.sql",
+                 :import_collections_2_communities)
     end
   end
 
   namespace :communities do
     desc "Migrate communities from IDEALS-DSpace into the application"
-    task :migrate, [:source_db_name] => :custom_environment do |task, args|
+    task :migrate, [:source_db_name] => :environment do |task, args|
       do_migrate(args[:source_db_name],
-                 File.join(Rails.root, "scripts", "export_communities.sql"),
-                 :import_units,
-                 %w(/tmp/communities.csv /tmp/community2community.csv))
+                 "export_communities.sql",
+                 :import_communities)
+      do_migrate(args[:source_db_name],
+                 "export_communities_2_communities.sql",
+                 :import_communities_2_communities)
     end
   end
 
   namespace :handles do
     desc "Migrate handles from IDEALS-DSpace into the application"
-    task :migrate, [:source_db_name] => :custom_environment do |task, args|
-      do_migrate(args[:source_db_name],
-                 File.join(Rails.root, "scripts", "export_handles.sql"),
-                 :import_handles,
-                 %w(/tmp/handles.csv))
+    task :migrate, [:source_db_name] => :environment do |task, args|
+      do_migrate(args[:source_db_name], "export_handles.sql", :import_handles)
     end
   end
 
   namespace :items do
     desc "Migrate items from IDEALS-DSpace into the application"
-    task :migrate, [:source_db_name] => :custom_environment do |task, args|
-      do_migrate(args[:source_db_name],
-                 File.join(Rails.root, "scripts", "export_items.sql"),
-                 :import_items,
-                 %w(/tmp/items.csv))
+    task :migrate, [:source_db_name] => :environment do |task, args|
+      do_migrate(args[:source_db_name], "export_items.sql", :import_items)
     end
   end
 
   namespace :metadata do
     desc "Migrate metadata from IDEALS-DSpace into the application"
-    task :migrate, [:source_db_name] => :custom_environment do |task, args|
-      do_migrate(args[:source_db_name],
-                 File.join(Rails.root, "scripts", "export_metadata.sql"),
-                 :import_metadata,
-                 %w(/tmp/metadata_registry.csv))
+    task :migrate, [:source_db_name] => :environment do |task, args|
+      do_migrate(args[:source_db_name], "export_metadata.sql", :import_metadata)
     end
   end
 
   desc "Migrate all content from IDEALS-DSpace into the application"
-  task :migrate, [:source_db_name] => :custom_environment do |task, args|
-    Rake::Task["ideals_dspace:handles:migrate"].invoke(args[:source_db_name])
-    Rake::Task["ideals_dspace:communities:migrate"].invoke(args[:source_db_name])
-    Rake::Task["ideals_dspace:collections:migrate"].invoke(args[:source_db_name])
-    Rake::Task["ideals_dspace:items:migrate"].invoke(args[:source_db_name])
-    Rake::Task["ideals_dspace:metadata:migrate"].invoke(args[:source_db_name])
+  task :migrate, [:source_db_name] => :environment do |task, args|
+    dbname = args[:source_db_name]
+    Rake::Task["ideals_dspace:communities:migrate"].invoke(dbname)
+    Rake::Task["ideals_dspace:collections:migrate"].invoke(dbname)
+    Rake::Task["ideals_dspace:items:migrate"].invoke(dbname)
+    Rake::Task["ideals_dspace:handles:migrate"].invoke(dbname)
+    Rake::Task["ideals_dspace:metadata:migrate"].invoke(dbname)
   end
 
-  def do_migrate(source_db_name, sql_file, import_method, csv_files)
-    begin
-      CustomLogger.new(Rake).info("Creating CSV using %s", sql_file)
-      `psql -d #{source_db_name} -f "#{sql_file}"`
-      IdealsImporter.new("/tmp").send(import_method)
-    ensure
-      csv_files.select{ |f| File.exists?(f) }.
-          each{ |f| FileUtils.rm(f) }
+  def do_migrate(source_db_name, in_sql_file, import_method)
+    out_csv_file = in_sql_file.gsub(/.sql$/i, ".csv")
+    in_sql_file = File.join(Rails.root, "scripts", in_sql_file)
+    Dir.mktmpdir do |dir|
+      out_csv_file = File.join(dir, out_csv_file)
+      system "psql -d #{source_db_name} -f '#{in_sql_file}' > '#{out_csv_file}'"
+      IdealsImporter.new.send(import_method, out_csv_file)
     end
   end
 
