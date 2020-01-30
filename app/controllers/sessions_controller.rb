@@ -22,7 +22,7 @@ class SessionsController < ApplicationController
 
     if user&.id
       session[:user_id] = user.id
-      redirect_back fallback_location: return_url
+      redirect_to return_url
     else
       unauthorized
     end
