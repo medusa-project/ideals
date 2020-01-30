@@ -97,11 +97,32 @@ $ rails "ideals:users:create[my_username,my_password]"
 
 ## Migrate content from IDEALS-DSpace into the application
 
-These steps assume you have a dump of the IDEALS-DSpace database loaded into
-your development PostgreSQL instance and named `dbname`.
+Currently the migration process requires dropping the existing database and
+starting over with a new one.
+
+A prerequisite is a dump of the IDEALS-DSpace database loaded into a PostgreSQL
+instance and named `dbname`.
+
+### In development
 
 ```
-$ rails "ideals_dspace:migrate[dbname]"
+rails elasticsearch:purge
+rails db:reset
+rails "ideals_dspace:migrate[dbname,dbhost,dbuser]"
+rails "ideals:users:create[username,password]"
+```
+(`dbhost` and `dbuser`) are only required if the database is on a different
+host and/or the database user is different from the default.
+
+TODO: maybe ideals_dspace:migrate should do all of these steps automatically?
+
+### In demo
+
+```
+~/bin/stop-rails
+rails elasticsearch:purge
+rails db:reset
+rails "ideals_dspace:migrate[dbname,dbhost,dbuser]"
 ```
 
 ## Run the web app
