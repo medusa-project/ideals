@@ -247,12 +247,14 @@ class ElasticsearchClient
   ##
   # Refreshes an index.
   #
-  # @param index [String]
+  # @param index [String] Index name. Supply nil to refresh the current index.
   # @return [void]
   #
-  def refresh(index)
+  def refresh(index = nil)
+    config = Configuration.instance
+    index ||= config.elasticsearch[:index]
     url = sprintf('%s/%s/_refresh',
-                  Configuration.instance.elasticsearch[:endpoint],
+                  config.elasticsearch[:endpoint],
                   index)
     response = @http_client.post(url, nil, 'Content-Type': CONTENT_TYPE)
 
