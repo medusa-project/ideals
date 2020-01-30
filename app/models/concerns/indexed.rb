@@ -34,6 +34,11 @@ module Indexed
                   filter: [
                       {
                           term: {
+                              ElasticsearchIndex::StandardFields::CLASS => name
+                          }
+                      },
+                      {
+                          term: {
                               ElasticsearchIndex::StandardFields::ID => id
                           }
                       }
