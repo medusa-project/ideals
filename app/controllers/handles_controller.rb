@@ -66,13 +66,7 @@ class HandlesController < ApplicationController
     handle = Handle.find_by(prefix: params[:prefix], suffix: params[:suffix])
     raise ActiveRecord::RecordNotFound unless handle
 
-    klass_name = handle.klass_name
-
-    @breadcrumbable = @resource = handle.resource
-    #@search = @resource.default_search
-    @resources = []
-
-    render "#{klass_name.downcase.pluralize(2)}/show"
+    redirect_to handle.resource
   end
 
   private
