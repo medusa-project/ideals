@@ -1,5 +1,4 @@
 %ul
 -resources.each do |collection|
   %li
-    %a(href="#{::Configuration.instance.root_url_text}/handle/#{collection.relative_handle}")
-      =collection.title
+    =link_to(collection.title, collection)

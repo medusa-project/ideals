@@ -22,5 +22,4 @@
   %ul
     -resources.each do |item|
       %li
-        %a(href="#{::Configuration.instance.root_url_text}/handle/#{item.relative_handle}")
-          =item.title
+        =link_to(item.title, item)
