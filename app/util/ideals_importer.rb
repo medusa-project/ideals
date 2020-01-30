@@ -29,7 +29,7 @@ class IdealsImporter
                                    "Importing collections")
         Collection.create!(id: collection_id, title: title)
       end
-      puts "Reindexing..."
+      puts "\nReindexing..."
       update_pkey_sequence("collections")
     end
   end
@@ -57,7 +57,7 @@ class IdealsImporter
         col = Collection.find(collection_id)
         col.primary_unit = Unit.find(group_id)
       end
-      puts "Reindexing..."
+      puts "\nReindexing..."
       update_pkey_sequence("collections")
     end
   end
@@ -84,7 +84,7 @@ class IdealsImporter
                                    "Importing communities")
         Unit.create!(id: community_id, title: title)
       end
-      puts "Reindexing..."
+      puts "\nReindexing..."
       update_pkey_sequence("units")
     end
   end
@@ -112,7 +112,7 @@ class IdealsImporter
         unit = Unit.find(group_id)
         unit.update!(parent_id: parent_unit_id)
       end
-      puts "Reindexing..."
+      puts "\nReindexing..."
       update_pkey_sequence("units")
     end
   end
@@ -144,7 +144,7 @@ class IdealsImporter
                        resource_type_id: row[2].to_i,
                        resource_id:      row[3].to_i)
       end
-      puts ""
+      puts "\n"
       update_pkey_sequence("handles")
     end
   end
@@ -198,7 +198,7 @@ class IdealsImporter
           item.primary_collection = Collection.find(collection_id)
         end
       end
-      puts "Reindexing..."
+      puts "\nReindexing..."
       update_pkey_sequence("items")
     end
   end
@@ -228,7 +228,7 @@ class IdealsImporter
                                   name:       name,
                                   scope_note: row_arr[4])
       end
-      puts ""
+      puts "\n"
       update_pkey_sequence("registered_elements")
     end
   end
