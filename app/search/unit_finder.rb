@@ -7,15 +7,29 @@ class UnitFinder < AbstractFinder
 
   def initialize
     super
-    @include_children = false
+    @include_children = true
+    @parent_unit      = nil
   end
 
   ##
+  # Whether to include child units in the results.
+  #
   # @param bool [Boolean]
   # @return [UnitFinder] self
   #
   def include_children(bool)
     @include_children = bool
+    self
+  end
+
+  ##
+  # Limits the results to children of the given parent.
+  #
+  # @param unit [Unit]
+  # @return [UnitFinder] self
+  #
+  def parent_unit(unit)
+    @parent_unit = unit
     self
   end
 
@@ -92,8 +106,15 @@ class UnitFinder < AbstractFinder
                 end
               end
             end
+            if @parent_unit
+              j.child! do
+                j.term do
+                  j.set! Unit::IndexFields::PARENT, @parent_unit.id
+                end
+              end
+            end
           end
-          if !@include_children
+          if !@include_children && !@parent_unit
             j.must_not do
               j.child! do
                 j.exists do
