@@ -16,7 +16,7 @@ class CollectionTest < ActiveSupport::TestCase
     count = Collection.search.count
     assert count > 0
 
-    Collection.delete_document(collections.first.id)
+    Collection.delete_document(collections.first.index_id)
     refresh_elasticsearch
     assert_equal count - 1, Collection.search.count
   end
@@ -77,13 +77,13 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "reindex reindexes the instance" do
     assert_equal 0, Collection.search.
-        filter(Collection::IndexFields::ID, @instance.id).count
+        filter(Collection::IndexFields::ID, @instance.index_id).count
 
     @instance.reindex
     refresh_elasticsearch
 
     assert_equal 1, Collection.search.
-        filter(Collection::IndexFields::ID, @instance.id).count
+        filter(Collection::IndexFields::ID, @instance.index_id).count
   end
 
 end

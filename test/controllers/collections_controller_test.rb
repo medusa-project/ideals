@@ -22,8 +22,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     post collections_path, {
         xhr: true,
         params: {
+            primary_unit_id: units(:unit1).id,
             collection: {
-                primary_unit_id: units(:unit1),
                 title: "New Collection"
             }
         }
@@ -35,8 +35,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     post collections_path, {
         xhr: true,
         params: {
+            primary_unit_id: units(:unit1).id,
             collection: {
-                primary_unit_id: units(:unit1),
                 title: "New Collection"
             }
         }
@@ -60,7 +60,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() redirects to login path for unauthorized users" do
     log_out
-    delete "/collections/bogus"
+    delete "/collections/#{collections(:collection1).id}"
     assert_redirected_to login_path
   end
 
@@ -73,21 +73,15 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing collection" do
+    collection = collections(:collection1)
+    primary_unit = collection.primary_unit
     delete "/collections/#{collection.id}"
-    assert_redirected_to collections_path
+    assert_redirected_to primary_unit
   end
 
   test "destroy() returns HTTP 404 for a missing element" do
     delete "/elements/bogus"
     assert_response :not_found
-  end
-
-  # index()
-
-  test "index() returns HTTP 200" do
-    log_out
-    get registered_elements_path
-    assert_response :ok
   end
 
   # update()

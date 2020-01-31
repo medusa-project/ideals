@@ -16,7 +16,7 @@ class ItemTest < ActiveSupport::TestCase
     count = Item.search.count
     assert count > 0
 
-    Item.delete_document(items.first.id)
+    Item.delete_document(items.first.index_id)
     refresh_elasticsearch
     assert_equal count - 1, Item.search.count
   end
@@ -80,12 +80,12 @@ class ItemTest < ActiveSupport::TestCase
   # reindex() (Indexed concern)
 
   test "reindex reindexes the instance" do
-    assert_equal 0, Item.search.filter(Item::IndexFields::ID, @instance.id).count
+    assert_equal 0, Item.search.filter(Item::IndexFields::ID, @instance.index_id).count
 
     @instance.reindex
     refresh_elasticsearch
 
-    assert_equal 1, Item.search.filter(Item::IndexFields::ID, @instance.id).count
+    assert_equal 1, Item.search.filter(Item::IndexFields::ID, @instance.index_id).count
   end
 
 end

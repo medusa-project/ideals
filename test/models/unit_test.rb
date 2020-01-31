@@ -16,7 +16,7 @@ class UnitTest < ActiveSupport::TestCase
     count = Unit.search.count
     assert count > 0
 
-    Unit.delete_document(units.first.id)
+    Unit.delete_document(units.first.index_id)
     refresh_elasticsearch
     assert_equal count - 1, Unit.search.count
   end
@@ -58,13 +58,13 @@ class UnitTest < ActiveSupport::TestCase
 
   test 'reindex reindexes the instance' do
     assert_equal 0, Unit.search.
-        filter(Unit::IndexFields::ID, @instance.id).count
+        filter(Unit::IndexFields::ID, @instance.index_id).count
 
     @instance.reindex
     refresh_elasticsearch
 
     assert_equal 1, Unit.search.
-        filter(Unit::IndexFields::ID, @instance.id).count
+        filter(Unit::IndexFields::ID, @instance.index_id).count
   end
 
 end

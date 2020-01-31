@@ -41,8 +41,8 @@ class CollectionsController < ApplicationController
   #
   def create
     begin
+      @resource = Collection.new(collection_params)
       ActiveRecord::Base.transaction do
-        @resource = Collection.new(collection_params)
         @resource.save!
         @resource.primary_unit = Unit.find(params[:primary_unit_id])
         @resource.save!
@@ -105,6 +105,6 @@ class CollectionsController < ApplicationController
   end
 
   def collection_params
-    params.require(:collection).permit(:title, :primary_unit_id)
+    params.require(:collection).permit(:title)
   end
 end
