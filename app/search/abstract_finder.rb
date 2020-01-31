@@ -239,7 +239,7 @@ class AbstractFinder
   def to_a
     entities = to_id_a.map do |id|
       begin
-        get_class.find(id)
+        get_class.find(get_class.to_model_id(id))
       rescue ActiveRecord::RecordNotFound
         LOGGER.warn("to_a(): #{get_class} #{id} is missing from the database")
       end

@@ -34,11 +34,6 @@ module Indexed
                   filter: [
                       {
                           term: {
-                              ElasticsearchIndex::StandardFields::CLASS => name
-                          }
-                      },
-                      {
-                          term: {
                               ElasticsearchIndex::StandardFields::ID => id
                           }
                       }
@@ -70,7 +65,7 @@ module Indexed
       while start < count do
         ids = finder.start(start).limit(limit).to_id_a
         ids.each do |id|
-          unless class_.exists?(id: id)
+          unless class_.exists?(id: to_model_id(id))
             class_.delete_document(id)
             num_deleted += 1
           end
@@ -110,11 +105,19 @@ module Indexed
     def search
       "#{name}Finder".constantize.new
     end
+
+    ##
+    # @param index_id [String] Indexed document ID.
+    # @return [Integer] ID of the instance in the database.
+    #
+    def to_model_id(index_id)
+      index_id.split(":").last
+    end
   end
 
   included do
     after_commit :reindex, on: [:create, :update]
-    after_commit -> { delete_document(id) }, on: :destroy
+    after_commit -> { self.class.delete_document(index_id) }, on: :destroy
 
     ##
     # @return [Hash] Indexable JSON representation of the instance. Does not
@@ -125,13 +128,20 @@ module Indexed
     end
 
     ##
+    # @return [String] ID of the instance's indexed document.
+    #
+    def index_id
+      "#{self.class.name.downcase}:#{self.id}"
+    end
+
+    ##
     # @param index [String] Index name. If omitted, the default index is used.
     # @return [void]
     #
     def reindex(index = nil)
       index ||= Configuration.instance.elasticsearch[:index]
       ElasticsearchClient.instance.index_document(index,
-                                                  self.id,
+                                                  self.index_id,
                                                   self.as_indexed_json)
     end
   end
