@@ -244,7 +244,7 @@ class AbstractFinder
         LOGGER.warn("to_a(): #{get_class} #{id} is missing from the database")
       end
     end
-    Relation.new(entities.select(&:present?),
+    Relation.new(entities.select{ |e| e.present? && e != true },
                  count,
                  (get_start / get_limit.to_f).floor,
                  get_limit,
