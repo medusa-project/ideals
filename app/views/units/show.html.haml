@@ -7,10 +7,12 @@
   =icon_for(@resource)
   =@resource.title
 
+%br
+
 -if @subunits.any?
   %h2 Sub-Units
   =resource_list(@subunits)
--if @resource.collections.count.positive?
+-if @collections.count.positive?
   -if current_user
     .btn-group.float-right{role: "group"}
       / Add Collection button

@@ -2,6 +2,7 @@
 
 class CollectionsController < ApplicationController
   before_action :set_collection, only: [:show, :edit, :update, :destroy]
+  before_action :authorize_user, only: [:create, :edit, :destroy, :update]
 
   # GET /collections
   # GET /collections.json
@@ -44,7 +45,7 @@ class CollectionsController < ApplicationController
         @resource = Collection.new(collection_params)
         @resource.save!
         @resource.primary_unit = Unit.find(params[:primary_unit_id])
-        @resource.reindex
+        @resource.save!
       end
     rescue
       render partial: "shared/validation_messages",
@@ -71,13 +72,23 @@ class CollectionsController < ApplicationController
     end
   end
 
-  # DELETE /collections/1
-  # DELETE /collections/1.json
+  ##
+  # Responds to DELETE /collections/:id
+  #
   def destroy
-    @resource.destroy
-    respond_to do |format|
-      format.html { redirect_to collections_url, notice: "Collection was successfully destroyed." }
-      format.json { head :no_content }
+    collection = Collection.find(params[:id])
+    primary_unit = collection.primary_unit
+    begin
+      ActiveRecord::Base.transaction do
+        collection.destroy!
+      end
+    rescue => e
+      flash['error'] = "#{e}"
+    else
+      ElasticsearchClient.instance.refresh
+      flash['success'] = "Collection \"#{collection.title}\" deleted."
+    ensure
+      redirect_to primary_unit
     end
   end
 
@@ -86,7 +97,7 @@ class CollectionsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_collection
     if params.has_key?(:id)
-      @resource = Collection.find_by(id: params[:id])
+      @resource = Collection.find(params[:id])
     elsif params.has_key?(:suffix)
       @resource = Handle.find_by(prefix: params[:prefix], suffix: params[:suffix]).resource
     end
