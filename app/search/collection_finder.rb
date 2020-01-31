@@ -6,6 +6,20 @@ class CollectionFinder < AbstractFinder
 
   LOGGER = CustomLogger.new(CollectionFinder)
 
+  def initialize
+    super
+    @primary_unit = nil
+  end
+
+  ##
+  # @param primary_unit [Unit]
+  # @return [CollectionFinder] self
+  #
+  def primary_unit(primary_unit)
+    @primary_unit = primary_unit
+    self
+  end
+
   protected
 
   def get_class
@@ -82,6 +96,14 @@ class CollectionFinder < AbstractFinder
                   j.term do
                     j.set! field, value
                   end
+                end
+              end
+            end
+
+            if @primary_unit
+              j.child! do
+                j.term do
+                  j.set! Collection::IndexFields::PRIMARY_UNIT, @primary_unit.id
                 end
               end
             end
