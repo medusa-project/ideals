@@ -1,0 +1,12 @@
+/ Add-collection modal
+#add-collection-modal.modal.fade{"aria-labelledby": "add-collection-modal-label", role: "dialog", tabindex: "-1"}
+  .modal-dialog{role: "document"}
+    .modal-content
+      .modal-header
+        %h4#add-collection-modal-label.modal-title Add Collection
+        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+          %span{"aria-hidden": "true"} &times;
+      .modal-body
+        = render partial: 'collections/form', locals: { collection: collection,
+                                                        primary_unit: primary_unit,
+                                                        context: :new }

@@ -1,0 +1,12 @@
+/ Edit-collection modal
+#edit-collection-modal.modal.fade{"aria-labelledby": "edit-collection-modal-label",
+                                  role: "dialog",
+                                  tabindex: "-1"}
+  .modal-dialog{role: "document"}
+    .modal-content
+      .modal-header
+        %h4#edit-collection-modal-label.modal-title Edit Collection
+        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+          %span{"aria-hidden": "true"} &times;
+      .modal-body
+        - # will be populated via XHR

@@ -1,10 +1,21 @@
 -# frozen_string_literal: true
-= form_for(@resource) do |f|
-  .form-inputs
-    .form-group
-      = f.label :title, "Title", class: "control-label"
-      = f.text_field :title, class: "form-control"
+//
+// Required arguments:
+//
+// collection [Collection]
+// primary_unit [Unit]
+//
+= form_for(collection, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
 
-  .form-actions
-    .pull-right
-      = f.submit "Create Collection", class: "btn btn-primary"
+  = hidden_field_tag "primary_unit_id", primary_unit.id
+  .form-group
+    = f.label :title
+    = f.text_field :title, class: "form-control"
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit(context == :new ? 'Create Collection' : 'Edit Collection',
+                 class: 'btn btn-primary')

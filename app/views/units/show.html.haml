@@ -1,3 +1,5 @@
+= provide :body_id, "show_unit"
+
 .float-right
   = item_search_field(@resource, Item::IndexFields::PRIMARY_UNIT)
 
@@ -9,5 +11,17 @@
   %h2 Sub-Units
   =render partial: "units/listing", locals:{resources: @resource.units}
 -if @resource.collections.count.positive?
+  -if current_user
+    .btn-group.float-right{role: "group"}
+      / Add Collection button
+      %button.btn.btn-light{"data-target": "#add-collection-modal",
+                            "data-toggle": "modal", type: "button"}
+        %i.fa.fa-plus
+        Add Collection
+
   %h2 Collections
-  =render partial: "collections/listing", locals:{resources: @resource.collections}
+  =render partial: "collections/listing", locals:{resources: @collections}
+
+= render partial: "collections/add_modal", locals: { collection: @new_collection,
+                                                     primary_unit: @resource,
+                                                     context: :new }

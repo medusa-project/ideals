@@ -35,19 +35,25 @@ class CollectionsController < ApplicationController
   # GET /collections/1/edit
   def edit; end
 
-  # POST /collections
-  # POST /collections.json
+  ##
+  # Responds to `POST /collections`
+  #
   def create
-    @resource = Collection.new(collection_params)
-
-    respond_to do |format|
-      if @resource.save
-        format.html { redirect_to @resource, notice: "Collection was successfully created." }
-        format.json { render :show, status: :created, location: @resource }
-      else
-        format.html { render :new }
-        format.json { render json: @resource.errors, status: :unprocessable_entity }
+    begin
+      ActiveRecord::Base.transaction do
+        @resource = Collection.new(collection_params)
+        @resource.save!
+        @resource.primary_unit = Unit.find(params[:primary_unit_id])
+        @resource.reindex
       end
+    rescue
+      render partial: "shared/validation_messages",
+             locals: { object: @resource },
+             status: :bad_request
+    else
+      ElasticsearchClient.instance.refresh
+      flash['success'] = "Collection \"#{@resource.title}\" created."
+      render 'shared/reload' # create.js.erb will reload the page
     end
   end
 
@@ -87,8 +93,7 @@ class CollectionsController < ApplicationController
     @breadcrumbable = @resource
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
   def collection_params
-    params.require(:collection).permit(:title, :description)
+    params.require(:collection).permit(:title, :primary_unit_id)
   end
 end

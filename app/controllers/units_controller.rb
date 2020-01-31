@@ -19,6 +19,12 @@ class UnitsController < ApplicationController
     raise ActiveRecord::RecordNotFound unless @resource
 
     @breadcrumbable = @resource
+    @collections = Collection.search.
+        primary_unit(@resource).
+        order("#{Collection::IndexFields::TITLE}.sort").
+        limit(9999).
+        to_a
+    @new_collection = Collection.new
   end
 
   # GET /units/new
