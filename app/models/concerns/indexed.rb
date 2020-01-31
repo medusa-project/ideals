@@ -50,6 +50,40 @@ module Indexed
     end
 
     ##
+    # Iterates through all of the model's indexed documents and deletes any for
+    # which no counterpart exists in the database.
+    #
+    # This is very expensive and ideally the application should be written in
+    # a way that never requires it to be called.
+    #
+    def delete_orphaned_documents
+      class_ = name.constantize
+      start_time = Time.now
+
+      # Get the document count.
+      finder = search.limit(0)
+      count = finder.count
+
+      # Retrieve document IDs in batches.
+      index = start = num_deleted = 0
+      limit = 1000
+      while start < count do
+        ids = finder.start(start).limit(limit).to_id_a
+        ids.each do |id|
+          unless class_.exists?(id: id)
+            class_.delete_document(id)
+            num_deleted += 1
+          end
+          index += 1
+          StringUtils.print_progress(start_time, index, count,
+                                     'Deleting stale documents')
+        end
+        start += limit
+      end
+      puts "\nDeleted #{num_deleted} documents"
+    end
+
+    ##
     # N.B.: Orphaned documents are not deleted; for that, use
     # {delete_orphaned_documents}.
     #
