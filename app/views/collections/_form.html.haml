@@ -9,10 +9,18 @@
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
-  = hidden_field_tag "primary_unit_id", primary_unit.id
   .form-group
     = f.label :title
     = f.text_field :title, class: "form-control"
+
+  - if context == :edit
+    .form-group
+      = label_tag :primary_unit_id, "Primary Unit"
+      = select_tag(:primary_unit_id,
+          unit_tree_options_for_select(primary_unit),
+          class: 'custom-select')
+  - else
+    = hidden_field_tag "primary_unit_id", primary_unit.id
 
   .clearfix
     .float-right

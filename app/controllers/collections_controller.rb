@@ -4,6 +4,39 @@ class CollectionsController < ApplicationController
   before_action :set_collection, only: [:show, :edit, :update, :destroy]
   before_action :authorize_user, only: [:create, :edit, :destroy, :update]
 
+  ##
+  # Responds to `POST /collections`
+  #
+  def create
+    begin
+      @resource = Collection.new(collection_params)
+      ActiveRecord::Base.transaction do
+        @resource.save!
+        @resource.primary_unit = Unit.find(params[:primary_unit_id])
+        @resource.save!
+      end
+    rescue
+      render partial: "shared/validation_messages",
+             locals: { object: @resource },
+             status: :bad_request
+    else
+      ElasticsearchClient.instance.refresh
+      flash['success'] = "Collection \"#{@resource.title}\" created."
+      render 'shared/reload'
+    end
+  end
+
+  ##
+  # Responds to GET /collections/:id/edit (XHR only)
+  #
+  def edit
+    collection = Collection.find(params[:id])
+    render partial: 'collections/form',
+           locals: { collection: collection,
+                     primary_unit: collection.primary_unit,
+                     context: :edit }
+  end
+
   # GET /collections/1
   # GET /collections/1.json
   def show
@@ -27,18 +60,17 @@ class CollectionsController < ApplicationController
     @resource = Collection.new
   end
 
-  # GET /collections/1/edit
-  def edit; end
-
   ##
-  # Responds to `POST /collections`
+  # Responds to PATCH/PUT /collections/:id
   #
-  def create
+  def update
     begin
-      @resource = Collection.new(collection_params)
+      @resource = Collection.find(params[:id])
       ActiveRecord::Base.transaction do
-        @resource.save!
-        @resource.primary_unit = Unit.find(params[:primary_unit_id])
+        @resource.update!(collection_params)
+        if params[:primary_unit_id]
+          @resource.primary_unit = Unit.find(params[:primary_unit_id])
+        end
         @resource.save!
       end
     rescue
@@ -47,22 +79,8 @@ class CollectionsController < ApplicationController
              status: :bad_request
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = "Collection \"#{@resource.title}\" created."
-      render 'shared/reload' # create.js.erb will reload the page
-    end
-  end
-
-  # PATCH/PUT /collections/1
-  # PATCH/PUT /collections/1.json
-  def update
-    respond_to do |format|
-      if @resource.update(collection_params)
-        format.html { redirect_to @resource, notice: "Collection was successfully updated." }
-        format.json { render :show, status: :ok, location: @resource }
-      else
-        format.html { render :edit }
-        format.json { render json: @resource.errors, status: :unprocessable_entity }
-      end
+      flash['success'] = "Collection \"#{@resource.title}\" updated."
+      render 'shared/reload'
     end
   end
 

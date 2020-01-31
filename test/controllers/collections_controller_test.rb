@@ -85,10 +85,11 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
-=begin
+
   test "update() redirects to login path for unauthorized users" do
     log_out
-    patch "/elements/bogus", {}
+    collection = collections(:collection1)
+    patch "/collections/#{collection.id}", {}
     assert_redirected_to login_path
   end
 
@@ -136,5 +137,5 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     patch "/collections/bogus", {}
     assert_response :not_found
   end
-=end
+
 end

@@ -1,6 +1,15 @@
+- provide :body_id, "show_collection"
+
 -if current_user
   .btn-group.float-right{role: "group"}
-    / Delete button
+    // Edit button
+    %button.btn.btn-light.edit-collection{"data-collection-id": @resource.id,
+                                          "data-target": "#edit-collection-modal",
+                                          "data-toggle": "modal",
+                                          type: "button"}
+      %i.fas.fa-pencil-alt
+      Edit
+    // Delete button
     = link_to(collection_path(@resource), class: 'btn btn-danger',
                                           method: :delete,
                                           "data-confirm": "Are you sure you want to delete this collection?") do
@@ -16,3 +25,5 @@
     = item_search_field(@resource, Item::IndexFields::PRIMARY_COLLECTION)
   %h2 Items
   = resource_list(@resources)
+
+= render partial: 'edit_modal'
