@@ -7,9 +7,9 @@
   =icon_for(@resource)
   =@resource.title
 
--if @resource.units.count.positive?
+-if @subunits.any?
   %h2 Sub-Units
-  =render partial: "units/listing", locals:{resources: @resource.units}
+  =unit_list(@subunits)
 -if @resource.collections.count.positive?
   -if current_user
     .btn-group.float-right{role: "group"}
