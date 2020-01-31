@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   resources :items
   resources :handles
   resources :units
-  resources :collections
+  resources :collections, except: :index
   resources :registered_elements, param: :name, path: 'elements'
 
   root 'welcome#index'

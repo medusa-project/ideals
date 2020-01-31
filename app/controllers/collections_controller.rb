@@ -4,12 +4,6 @@ class CollectionsController < ApplicationController
   before_action :set_collection, only: [:show, :edit, :update, :destroy]
   before_action :authorize_user, only: [:create, :edit, :destroy, :update]
 
-  # GET /collections
-  # GET /collections.json
-  def index
-    @resources = Collection.all
-  end
-
   # GET /collections/1
   # GET /collections/1.json
   def show
