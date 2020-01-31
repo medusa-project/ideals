@@ -18,6 +18,7 @@ class ApplicationController < ActionController::Base
         request.path != logout_path and
         !request.xhr? # don't store ajax calls
       session[:previous_url] = request.fullpath
+      session[:login_return_uri] = request.env["REQUEST_URI"]
     end
   end
 
@@ -68,14 +69,14 @@ class ApplicationController < ActionController::Base
   def record_not_found(exception)
     Rails.logger.warn exception
 
-    redirect_to redirect_path, alert: "An error occurred and has been logged for review by Research Data Service Staff."
+    redirect_to redirect_path, alert: "An error occurred and has been logged for review by library staff."
   end
 
   private
 
   ##
   # Stores the flash message and type (`error` or `success`) in the response
-  # headers, where they can be accessed by a JavaScript ajax callback.
+  # headers, where they can be accessed from a JavaScript AJAX callback.
   #
   def copy_flash_to_response_headers
     if request.xhr?
@@ -101,10 +102,4 @@ class ApplicationController < ActionController::Base
     current_user.present?
   end
 
-  def require_logged_in
-    unless logged_in?
-      session[:login_return_uri] = request.env["REQUEST_URI"]
-      redirect_to(login_path)
-    end
-  end
 end

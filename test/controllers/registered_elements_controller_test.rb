@@ -6,6 +6,10 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(user_identity(:admin))
   end
 
+  teardown do
+    log_out
+  end
+
   # create()
 
   test "create() redirects to login page for unauthorized users" do

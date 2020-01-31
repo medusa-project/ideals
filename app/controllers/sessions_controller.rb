@@ -40,7 +40,7 @@ class SessionsController < ApplicationController
   protected
 
   def return_url
-    session[:login_return_uri] || session[:login_return_referer] || root_url
+    session[:login_return_uri] || root_url
   end
 
   def shibboleth_login_path(host)
