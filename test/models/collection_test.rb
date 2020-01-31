@@ -5,6 +5,7 @@ class CollectionTest < ActiveSupport::TestCase
   setup do
     setup_elasticsearch
     @instance = collections(:collection1)
+    assert @instance.valid?
   end
 
   # delete_document() (Indexed concern)
@@ -84,6 +85,15 @@ class CollectionTest < ActiveSupport::TestCase
 
     assert_equal 1, Collection.search.
         filter(Collection::IndexFields::ID, @instance.index_id).count
+  end
+
+  # title
+
+  test "title must be present" do
+    @instance.title = nil
+    assert !@instance.valid?
+    @instance.title = ""
+    assert !@instance.valid?
   end
 
 end

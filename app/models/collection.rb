@@ -43,6 +43,8 @@ class Collection < ApplicationRecord
   has_many :units, through: :collection_unit_relationships
   has_many :roles, through: :managers
 
+  validates :title, presence: true
+
   ##
   # @return [Hash] Indexable JSON representation of the instance.
   #
