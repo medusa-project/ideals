@@ -1,9 +1,0 @@
-%ul
-  -resources.each do |unit|
-    %li
-      =link_to(unit.title, unit)
-      -if unit.collections.any?
-        %ul
-          -unit.collections.each do |col|
-            %li
-              =link_to(col.title, col)

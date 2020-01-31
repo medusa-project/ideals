@@ -105,6 +105,39 @@ module ApplicationHelper
   end
 
   ##
+  # @param resources [Enumerable<Object>]
+  # @return [String] HTML listing.
+  #
+  def resource_list(resources)
+    html = StringIO.new
+    resources.each do |resource|
+      html << "<div class=\"media resource-list\">"
+      html <<   "<div class=\"thumbnail\">"
+      html <<     link_to(resource) do
+                    icon_for(resource)
+                  end
+      html <<   "</div>"
+      html <<   "<div class=\"media-body\">"
+      html <<     "<h5 class=\"mt-0\">"
+      html <<       link_to(resource.title, resource)
+      html <<     "</h5>"
+      html <<     "<br><br>"
+      if resources.first.kind_of?(Unit)
+        child_finder = Unit.search.
+            parent_unit(resource).
+            order("#{Unit::IndexFields::TITLE}.sort").
+            limit(999)
+        if child_finder.count > 0
+          html << resource_list(child_finder.to_a)
+        end
+      end
+      html <<   "</div>"
+      html << "</div>"
+    end
+    raw(html.string)
+  end
+
+  ##
   # Returns the status of a search or browse action, e.g. "Showing n of n
   # items".
   #

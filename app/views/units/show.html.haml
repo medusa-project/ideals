@@ -9,7 +9,7 @@
 
 -if @subunits.any?
   %h2 Sub-Units
-  =unit_list(@subunits)
+  =resource_list(@subunits)
 -if @resource.collections.count.positive?
   -if current_user
     .btn-group.float-right{role: "group"}
@@ -20,7 +20,7 @@
         Add Collection
 
   %h2 Collections
-  =render partial: "collections/listing", locals:{resources: @collections}
+  = resource_list(@collections)
 
 = render partial: "collections/add_modal", locals: { collection: @new_collection,
                                                      primary_unit: @resource,

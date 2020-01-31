@@ -1,8 +1,0 @@
-%ul.resource-list.list-unstyled
-  -resources.each do |collection|
-    %li.media
-      .thumbnail
-        =link_to collection do
-          =icon_for(collection)
-      .media-body
-        %h5.mt-0= link_to(collection.title, collection)

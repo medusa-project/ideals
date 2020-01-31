@@ -6,6 +6,4 @@
   .float-right
     = item_search_field(@resource, Item::IndexFields::PRIMARY_COLLECTION)
   %h2 Items
-  =render partial: "collections/listing", locals: { resources: @resources,
-                                                    form_action: "/collections/#{@resource.id}",
-                                                    search_prompt: "search for items within collection"}
+  = resource_list(@resources)
