@@ -29,6 +29,8 @@ class Unit < ApplicationRecord
   has_many :roles, through: :administrators
   has_many :units, foreign_key: "parent_id", dependent: :restrict_with_exception
 
+  validates :title, presence: true
+
   breadcrumbs parent: :parent, label: :title
 
   ##

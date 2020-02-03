@@ -67,4 +67,13 @@ class UnitTest < ActiveSupport::TestCase
         filter(Unit::IndexFields::ID, @instance.index_id).count
   end
 
+  # title
+
+  test "title must be present" do
+    @instance.title = nil
+    assert !@instance.valid?
+    @instance.title = ""
+    assert !@instance.valid?
+  end
+
 end
