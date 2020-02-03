@@ -2,7 +2,7 @@
 
 class CollectionsController < ApplicationController
   before_action :set_collection, only: [:show, :edit, :update, :destroy]
-  before_action :authorize_user, only: [:create, :edit, :destroy, :update]
+  before_action :ensure_logged_in, except: :show
 
   ##
   # Responds to `POST /collections`

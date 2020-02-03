@@ -2,7 +2,7 @@ class RegisteredElementsController < ApplicationController
 
   PERMITTED_PARAMS = [:name, :scope_note]
 
-  before_action :authorize_user
+  before_action :ensure_logged_in
 
   ##
   # Responds to POST /elements XHR only)
