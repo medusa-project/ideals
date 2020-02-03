@@ -1,11 +1,19 @@
 unit1:
-  title: Unit One
+  title: Unit1
   primary_administrator: admin
 
-subunit1:
-  title: Sub-Unit One
+unit1_unit1:
+  title: Unit1 Subunit1
   parent: unit1
 
+unit1_unit2:
+  title: Unit1 Subunit2
+  parent: unit1
+
+unit1_unit2_unit1:
+  title: Unit1 Subunit2 Unit1
+  parent: unit1_unit2
+
 unit2:
-  title: Unit Two
+  title: Unit2
   primary_administrator: admin

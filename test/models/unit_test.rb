@@ -41,6 +41,12 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal Unit.count, actual
   end
 
+  # all_children()
+
+  test 'all_children() returns the correct units' do
+    assert_equal 3, units(:unit1).all_children.count
+  end
+
   # as_indexed_json()
 
   test 'as_indexed_json returns the correct structure' do
@@ -52,6 +58,22 @@ class UnitTest < ActiveSupport::TestCase
                  doc[Unit::IndexFields::LAST_MODIFIED]
     assert_nil doc[Unit::IndexFields::PARENT]
     assert_equal @instance.title, doc[Unit::IndexFields::TITLE]
+  end
+
+  # parent_id
+
+  test "parent_id cannot be set to the instance ID" do
+    @instance.parent_id = @instance.id
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.save!
+    end
+  end
+
+  test "parent_id cannot be set to a child ID" do
+    @instance.parent_id = @instance.units.first.id
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.save!
+    end
   end
 
   # reindex() (Indexed concern)

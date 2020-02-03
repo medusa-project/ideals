@@ -30,8 +30,38 @@ class Unit < ApplicationRecord
   has_many :units, foreign_key: "parent_id", dependent: :restrict_with_exception
 
   validates :title, presence: true
+  validate :validate_parent
 
   breadcrumbs parent: :parent, label: :title
+
+  ##
+  # @return [Enumerable<Unit>] All units that are children of the instance, at
+  #                            any level in the tree.
+  # @see walk_tree
+  #
+  def all_children
+    # N.B.: a custom query is much faster than walking the tree via
+    # ActiveRecord.
+    sql = 'WITH RECURSIVE q AS (
+        SELECT h, 1 AS level, ARRAY[id] AS breadcrumb
+        FROM units h
+        WHERE id = $1
+        UNION ALL
+        SELECT hi, q.level + 1 AS level, breadcrumb || id
+        FROM q
+        JOIN units hi
+          ON hi.parent_id = (q.h).id
+      )
+      SELECT (q.h).id
+      FROM q
+      ORDER BY breadcrumb'
+    values = [[ nil, self.id ]]
+
+    results = ActiveRecord::Base.connection.exec_query(sql, 'SQL', values)
+    Unit.where('id IN (?)', results.
+        select{ |row| row['id'] != self.id }.
+        map{ |row| row['id'] })
+  end
 
   ##
   # @return [Hash] Indexable JSON representation of the instance.
@@ -61,6 +91,22 @@ class Unit < ApplicationRecord
 
   def default_search
     nil
+  end
+
+  private
+
+  ##
+  # Ensures that {parent_id} is not set to the instance ID nor any of the IDs
+  # of its children.
+  #
+  def validate_parent
+    if self.parent_id.present?
+      if self.id.present? && self.parent_id == self.id
+        errors.add(:parent_id, "cannot be set to the same unit")
+      elsif all_children.map(&:id).include?(self.parent_id)
+        errors.add(:parent_id, "cannot be set to a child unit")
+      end
+    end
   end
 
 end
