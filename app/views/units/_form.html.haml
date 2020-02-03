@@ -1,11 +1,33 @@
 -# frozen_string_literal: true
-= simple_form_for(@resource) do |f|
-  = f.error_notification
-  = f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present?
+//
+// Required locals:
+//
+// unit [Unit]
+// context [Symbol] `:new` or `:edit`
+//
+= form_for(unit, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
 
-  .form-inputs
-    = f.input :title
-    = f.input :parent_id
+  .form-group
+    = f.label :title
+    = f.text_field :title, class: "form-control"
 
-  .form-actions
-    = f.button :submit
+  .form-group
+    = label_tag :parent_id, "Parent Unit"
+    = f.select(:parent_id,
+        unit_tree_options_for_select(unit.parent, true),
+        {}, { class: "custom-select" })
+
+  .form-group
+    = f.label :primary_administrator_id, "Primary Administrator"
+    = f.select(:primary_administrator_id,
+        options_for_select(User::User.all.order(:name).map{ |u| [u.name, u.id] },
+                           f.object.primary_administrator_id),
+        {}, { class: "custom-select" })
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit(context == :new ? 'Create Unit' : 'Edit Unit',
+                 class: 'btn btn-primary')

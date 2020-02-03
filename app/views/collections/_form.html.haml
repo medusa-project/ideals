@@ -17,7 +17,7 @@
     .form-group
       = label_tag :primary_unit_id, "Primary Unit"
       = select_tag(:primary_unit_id,
-          unit_tree_options_for_select(primary_unit),
+          unit_tree_options_for_select(primary_unit, false),
           class: 'custom-select')
   - else
     = hidden_field_tag "primary_unit_id", primary_unit.id

@@ -1,0 +1,12 @@
+/ Edit-unit modal
+#edit-unit-modal.modal.fade{"aria-labelledby": "edit-unit-modal-label",
+                            role: "dialog",
+                            tabindex: "-1"}
+  .modal-dialog{role: "document"}
+    .modal-content
+      .modal-header
+        %h4#edit-unit-modal-label.modal-title Edit Unit
+        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+          %span{"aria-hidden": "true"} &times;
+      .modal-body
+        - # will be populated via XHR

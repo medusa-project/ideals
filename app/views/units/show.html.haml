@@ -1,13 +1,21 @@
 = provide :body_id, "show_unit"
 
-.float-right
-  = item_search_field(@resource, Item::IndexFields::PRIMARY_UNIT)
+= render partial: "show_button_group"
+
+
 
 %h1
   =icon_for(@resource)
   =@resource.title
 
-%br
+.float-right
+  = item_search_field(@resource, Item::IndexFields::PRIMARY_UNIT)
+
+- if current_user
+  %h2 Info
+  %dl
+    %dt Primary Administrator
+    %dd= link_to(@resource.primary_administrator&.name, "mailto:#{@resource.primary_administrator&.email}")
 
 -if @subunits.any?
   %h2 Sub-Units
@@ -27,3 +35,7 @@
 = render partial: "collections/add_modal", locals: { collection: @new_collection,
                                                      primary_unit: @resource,
                                                      context: :new }
+= render partial: "units/add_modal", locals: { unit: @new_unit,
+                                               context: :new }
+= render partial: "units/edit_modal", locals: { unit: @resource,
+                                                context: :edit}

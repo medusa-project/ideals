@@ -1,3 +1,14 @@
+-if current_user
+  .btn-group.float-right{role: "group"}
+    / Add Unit button
+    %button.btn.btn-light{"data-target": "#add-unit-modal",
+                          "data-toggle": "modal", type: "button"}
+      %i.fa.fa-plus
+      Add Unit
+
 %h1 Academic Units
 
 =resource_list(@resources)
+
+= render partial: "units/add_modal", locals: { unit: @new_unit,
+                                               context: :new}

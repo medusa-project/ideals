@@ -2,19 +2,23 @@
 
 class UnitsController < ApplicationController
   before_action :set_unit, only: [:show, :edit, :update, :destroy]
+  before_action :ensure_logged_in, except: :show
 
-  # GET /units
-  # GET /units.json
+  ##
+  # Responds to `GET /units`
+  #
   def index
     finder = Unit.search.
         include_children(false).
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(9999)
     @resources = finder.to_a
+    @new_unit = Unit.new
   end
 
-  # GET /units/1
-  # GET /units/1.json
+  ##
+  # Responds to GET /units/:id
+  #
   def show
     raise ActiveRecord::RecordNotFound unless @resource
 
@@ -29,71 +33,95 @@ class UnitsController < ApplicationController
         order("#{Collection::IndexFields::TITLE}.sort").
         limit(999).
         to_a
+    @new_unit       = Unit.new
     @new_collection = Collection.new
   end
 
-  # GET /units/new
+  ##
+  # Responds to `GET /units/new`
+  #
   def new
     @resource = Unit.new
   end
 
-  # GET /units/1/edit
-  def edit; end
+  ##
+  # Responds to `GET /units/:id/edit`
+  #
+  def edit
+    render partial: "units/form",
+           locals: { unit: @resource, context: :edit }
+  end
 
-  # POST /units
-  # POST /units.json
+  ##
+  # Responds to `POST /units`
+  #
   def create
-    @resource = Unit.new(unit_params)
-
-    respond_to do |format|
-      if @resource.save
-        format.html { redirect_to @resource, notice: "Unit was successfully created." }
-        format.json { render :show, status: :created, location: @resource }
-      else
-        format.html { render :new }
-        format.json { render json: @resource.errors, status: :unprocessable_entity }
+    begin
+      @resource = Unit.new(unit_params)
+      ActiveRecord::Base.transaction do
+        @resource.save!
       end
+    rescue
+      render partial: "shared/validation_messages",
+             locals: { object: @resource },
+             status: :bad_request
+    else
+      ElasticsearchClient.instance.refresh
+      flash['success'] = "Unit \"#{@resource.title}\" created."
+      render "create", locals: { unit: @resource }
     end
   end
 
-  # PATCH/PUT /units/1
-  # PATCH/PUT /units/1.json
+  ##
+  # Responds to `PATCH/PUT /units/:id`
+  #
   def update
-    respond_to do |format|
-      if @resource.update(unit_params)
-        format.html { redirect_to @resource, notice: "Collection group was successfully updated." }
-        format.json { render :show, status: :ok, location: @resource }
-      else
-        format.html { render :edit }
-        format.json { render json: @resource.errors, status: :unprocessable_entity }
+    begin
+      ActiveRecord::Base.transaction do
+        @resource.update!(unit_params)
       end
+    rescue
+      render partial: "shared/validation_messages",
+             locals: { object: @resource },
+             status: :bad_request
+    else
+      ElasticsearchClient.instance.refresh
+      flash['success'] = "Unit \"#{@resource.title}\" updated."
+      render 'shared/reload'
     end
   end
 
-  # DELETE /units/1
-  # DELETE /units/1.json
+  ##
+  # Responds to `DELETE /units/:id`
+  #
   def destroy
-    @resource.destroy
-    respond_to do |format|
-      format.html { redirect_to units_url, notice: "Unit was successfully destroyed." }
-      format.json { head :no_content }
+    begin
+      ActiveRecord::Base.transaction do
+        @resource.destroy!
+      end
+    rescue => e
+      flash['error'] = "#{e}"
+    else
+      ElasticsearchClient.instance.refresh
+      flash['success'] = "Unit \"#{@resource.title}\" deleted."
+    ensure
+      redirect_to units_path
     end
   end
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_unit
     if params.has_key?(:id)
-      @resource = Unit.find_by(id: params[:id])
+      @resource = Unit.find(params[:id])
     elsif params.has_key?(:suffix)
-      @resource = Handle.find_by(prefix: params[:prefix], suffix: params[:suffix]).resource
+      @resource = Handle.find_by(prefix: params[:prefix],
+                                 suffix: params[:suffix]).resource
     end
     @breadcrumbable = @resource
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
   def unit_params
-    params.require(:unit).permit(:title, :parent_id)
+    params.require(:unit).permit(:title, :parent_id, :primary_administrator_id)
   end
 end
