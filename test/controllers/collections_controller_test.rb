@@ -81,8 +81,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to primary_unit
   end
 
-  test "destroy() returns HTTP 404 for a missing element" do
-    delete "/elements/bogus"
+  test "destroy() returns HTTP 404 for a missing collectiont" do
+    delete "/collections/bogus"
     assert_response :not_found
   end
 
