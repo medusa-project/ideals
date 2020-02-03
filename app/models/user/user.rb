@@ -12,6 +12,8 @@ module User
 
     include ActiveModel::Serialization
 
+    has_many :administering_units, class_name: "Unit",
+             inverse_of: :primary_administrator
     has_many :assignments
     has_many :managing_collections, class_name: "Collection",
              inverse_of: :manager
