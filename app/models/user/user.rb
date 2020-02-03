@@ -13,6 +13,8 @@ module User
     include ActiveModel::Serialization
 
     has_many :assignments
+    has_many :managing_collections, class_name: "Collection",
+             inverse_of: :manager
     has_many :roles, through: :assignments
 
     validates_uniqueness_of :uid, allow_blank: false

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_29_182037) do
+ActiveRecord::Schema.define(version: 2020_02_03_185227) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(version: 2020_01_29_182037) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "manager_id"
   end
 
   create_table "handles", force: :cascade do |t|
@@ -159,6 +160,7 @@ ActiveRecord::Schema.define(version: 2020_01_29_182037) do
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_unit_relationships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_unit_relationships", "units", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "collections", "users", column: "manager_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "item_collection_relationships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "item_collection_relationships", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade

@@ -22,6 +22,15 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal count - 1, Collection.search.count
   end
 
+  # manager
+
+  test "manager is required" do
+    collection = Collection.new(title: "Test")
+    assert !collection.save
+    collection.manager = user_identity(:admin)
+    assert collection.save
+  end
+
   # search() (Indexed concern)
 
   test "search() returns a CollectionFinder" do

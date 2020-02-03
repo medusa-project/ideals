@@ -24,7 +24,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
         params: {
             primary_unit_id: units(:unit1).id,
             collection: {
-                title: "New Collection"
+                title: "New Collection",
+                manager_id: user_identity(:admin).id
             }
         }
     }
@@ -37,7 +38,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
         params: {
             primary_unit_id: units(:unit1).id,
             collection: {
-                title: "New Collection"
+                title: "New Collection",
+                manager_id: user_identity(:admin).id
             }
         }
     }
@@ -113,7 +115,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             collection: {
-                title: "cats"
+                title: "cats",
+                manager_id: user_identity(:admin).id
             }
         }
     }

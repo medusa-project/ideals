@@ -25,11 +25,13 @@ class Collection < ApplicationRecord
     ID            = ElasticsearchIndex::StandardFields::ID
     LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    MANAGER       = "i_manager_id"
     PRIMARY_UNIT  = "i_primary_unit_id"
     TITLE         = "t_title"
     UNITS         = "i_units"
   end
 
+  belongs_to :manager, class_name: "User::User", foreign_key: "manager_id"
   belongs_to :primary_unit, class_name: "Unit",
              foreign_key: "primary_unit_id", optional: true
   breadcrumbs parent: :primary_unit, label: :title
@@ -55,6 +57,7 @@ class Collection < ApplicationRecord
     doc[IndexFields::DESCRIPTION]   = self.description
     doc[IndexFields::LAST_INDEXED]  = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
+    doc[IndexFields::MANAGER]       = self.manager&.id
     doc[IndexFields::PRIMARY_UNIT]  = self.primary_unit&.id
     doc[IndexFields::TITLE]         = self.title
     doc[IndexFields::UNITS]         = self.unit_ids
