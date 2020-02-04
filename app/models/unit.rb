@@ -64,6 +64,19 @@ class Unit < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<Unit>] All parents in order from closest to farthest.
+  #
+  def all_parents
+    parents = []
+    p = self.parent
+    while p
+      parents << p
+      p = p.parent
+    end
+    parents
+  end
+
+  ##
   # @return [Hash] Indexable JSON representation of the instance.
   #
   def as_indexed_json

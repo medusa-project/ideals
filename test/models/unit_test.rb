@@ -29,7 +29,7 @@ class UnitTest < ActiveSupport::TestCase
 
   # reindex_all() (Indexed concern)
 
-  test 'reindex_all() reindexes all units' do
+  test "reindex_all() reindexes all units" do
     setup_elasticsearch
     assert_equal 0, Unit.search.include_children(true).count
 
@@ -43,13 +43,22 @@ class UnitTest < ActiveSupport::TestCase
 
   # all_children()
 
-  test 'all_children() returns the correct units' do
+  test "all_children() returns the correct units" do
     assert_equal 3, units(:unit1).all_children.count
+  end
+
+  # all_parents()
+
+  test "all_parents() returns the parents" do
+    result = units(:unit1_unit2_unit1).all_parents
+    assert_equal 2, result.count
+    assert_equal units(:unit1_unit2), result[0]
+    assert_equal units(:unit1), result[1]
   end
 
   # as_indexed_json()
 
-  test 'as_indexed_json returns the correct structure' do
+  test "as_indexed_json returns the correct structure" do
     doc = @instance.as_indexed_json
     assert_equal 'Unit', doc[Unit::IndexFields::CLASS]
     assert_not_empty doc[Unit::IndexFields::CREATED]
@@ -78,7 +87,7 @@ class UnitTest < ActiveSupport::TestCase
 
   # reindex() (Indexed concern)
 
-  test 'reindex reindexes the instance' do
+  test "reindex reindexes the instance" do
     assert_equal 0, Unit.search.
         filter(Unit::IndexFields::ID, @instance.index_id).count
 
