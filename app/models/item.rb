@@ -77,10 +77,4 @@ class Item < ApplicationRecord
     self.primary_collection&.primary_unit
   end
 
-  def relative_handle
-    handle = Handle.find_by(resource_type_id: ResourceType::ITEM, resource_id: id)
-    return nil unless handle
-
-    handle.handle
-  end
 end

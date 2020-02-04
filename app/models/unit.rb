@@ -129,13 +129,6 @@ class Unit < ApplicationRecord
     end
   end
 
-  def relative_handle
-    handle = Handle.find_by(resource_type_id: ResourceType::UNIT, resource_id: id)
-    return nil unless handle
-
-    handle.handle
-  end
-
   def default_search
     nil
   end

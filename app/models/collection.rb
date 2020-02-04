@@ -86,10 +86,4 @@ class Collection < ApplicationRecord
     self.collection_unit_relationships.build(unit: unit, primary: true).save!
   end
 
-  def relative_handle
-    handle = Handle.find_by(resource_type_id: ResourceType::COLLECTION, resource_id: id)
-    return nil unless handle
-
-    handle.handle
-  end
 end
