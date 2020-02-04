@@ -60,6 +60,11 @@ class UnitsController < ApplicationController
       @resource = Unit.new(unit_params)
       ActiveRecord::Base.transaction do
         @resource.save!
+        if params[:primary_administrator_id]
+          @resource.primary_administrator =
+              User::User.find(params[:primary_administrator_id])
+        end
+        @resource.save!
       end
     rescue
       render partial: "shared/validation_messages",
@@ -79,6 +84,11 @@ class UnitsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         @resource.update!(unit_params)
+        if params[:primary_administrator_id]
+          @resource.primary_administrator =
+              User::User.find(params[:primary_administrator_id])
+        end
+        @resource.save!
       end
     rescue
       render partial: "shared/validation_messages",
@@ -122,6 +132,7 @@ class UnitsController < ApplicationController
   end
 
   def unit_params
-    params.require(:unit).permit(:title, :parent_id, :primary_administrator_id)
+    params.require(:unit).permit({ administering_user_ids: [] },
+                                 :title, :parent_id)
   end
 end

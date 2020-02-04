@@ -10,18 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_03_194221) do
+ActiveRecord::Schema.define(version: 2020_02_04_155335) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "administrators", force: :cascade do |t|
-    t.bigint "role_id"
+    t.bigint "user_id"
     t.bigint "unit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["role_id"], name: "index_administrators_on_role_id"
+    t.boolean "primary", default: false, null: false
+    t.index ["unit_id", "user_id"], name: "index_administrators_on_unit_id_and_user_id", unique: true
     t.index ["unit_id"], name: "index_administrators_on_unit_id"
+    t.index ["user_id", "unit_id", "primary"], name: "index_administrators_on_user_id_and_unit_id_and_primary"
+    t.index ["user_id"], name: "index_administrators_on_user_id"
   end
 
   create_table "assignments", force: :cascade do |t|
@@ -141,7 +144,6 @@ ActiveRecord::Schema.define(version: 2020_02_03_194221) do
     t.integer "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "primary_administrator_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -154,8 +156,8 @@ ActiveRecord::Schema.define(version: 2020_02_03_194221) do
     t.string "username"
   end
 
-  add_foreign_key "administrators", "roles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "administrators", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "roles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
@@ -166,5 +168,4 @@ ActiveRecord::Schema.define(version: 2020_02_03_194221) do
   add_foreign_key "item_collection_relationships", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "roles", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "units", "users", column: "primary_administrator_id", on_update: :cascade, on_delete: :restrict
 end

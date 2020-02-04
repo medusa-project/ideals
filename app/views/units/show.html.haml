@@ -11,11 +11,19 @@
 .float-right
   = item_search_field(@resource, Item::IndexFields::PRIMARY_UNIT)
 
-- if current_user
-  %h2 Info
-  %dl
-    %dt Primary Administrator
-    %dd= link_to(@resource.primary_administrator&.name, "mailto:#{@resource.primary_administrator&.email}")
+%h2 Info
+%dl
+  %dt Direct Administrators
+  %dd
+    %ul
+      - @resource.administering_users.each do |user|
+        %li= link_to(raw("#{user.name}#{user == @resource.primary_administrator ? " <span class=\"badge badge-primary\">PRIMARY</span>" : ""}"),
+        "mailto:#{user.email}")
+  %dt Effective Administrators (including administrators of parent units)
+  %dd
+    %ul
+      - @resource.all_administrators.each do |user|
+        %li= link_to(user.name, "mailto:#{user.email}")
 
 -if @subunits.any?
   %h2 Sub-Units

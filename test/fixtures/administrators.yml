@@ -1,0 +1,14 @@
+unit1_admin:
+  unit: unit1
+  user: admin
+  primary: true
+
+unit2_admin:
+  unit: unit2
+  user: admin
+  primary: true
+
+unit1_unit2_unit1:
+  unit: unit1_unit2_unit1
+  user: unit1_unit2_unit1_admin
+  primary: true

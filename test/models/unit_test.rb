@@ -41,6 +41,13 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal Unit.count, actual
   end
 
+  # all_administrators()
+
+  test "all_administrators() returns the correct users" do
+    admins = units(:unit1_unit2_unit1).all_administrators
+    assert_equal 2, admins.length
+  end
+
   # all_children()
 
   test "all_children() returns the correct units" do
@@ -58,14 +65,18 @@ class UnitTest < ActiveSupport::TestCase
 
   # as_indexed_json()
 
-  test "as_indexed_json returns the correct structure" do
+  test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
-    assert_equal 'Unit', doc[Unit::IndexFields::CLASS]
+    assert_equal 8, doc.length
+    assert_not_empty doc[Unit::IndexFields::ADMINISTRATORS]
+    assert_equal "Unit", doc[Unit::IndexFields::CLASS]
     assert_not_empty doc[Unit::IndexFields::CREATED]
     assert_not_empty doc[Unit::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Unit::IndexFields::LAST_MODIFIED]
     assert_nil doc[Unit::IndexFields::PARENT]
+    assert_equal @instance.primary_administrator.id,
+                 doc[Unit::IndexFields::PRIMARY_ADMINISTRATOR]
     assert_equal @instance.title, doc[Unit::IndexFields::TITLE]
   end
 
@@ -83,6 +94,34 @@ class UnitTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::RecordInvalid do
       @instance.save!
     end
+  end
+
+  # primary_administrator=()
+
+  test "primary_administrator=() sets the primary administrator to a user who
+  is not already an administrator" do
+    user = user_identity(:sally)
+    assert_not_equal user, @instance.primary_administrator
+    assert_equal 1, @instance.administrators.count
+
+    @instance.primary_administrator = user
+    @instance.reload
+    # TODO: this should work if User is moved out of the User module
+    #assert_equal user, @instance.primary_administrator
+    assert_equal 2, @instance.administrators.count
+  end
+
+  test "primary_administrator=() sets the primary administrator to a user who
+  is already an administrator" do
+    user = user_identity(:sally)
+    @instance.administering_users << user
+    @instance.save!
+
+    @instance.primary_administrator = user
+    @instance.reload
+    # TODO: this should work if User is moved out of the User module
+    #assert_equal user, @instance.primary_administrator
+    assert_equal 2, @instance.administrators.count
   end
 
   # reindex() (Indexed concern)

@@ -1,6 +1,5 @@
 unit1:
   title: Unit1
-  primary_administrator: admin
 
 unit1_unit1:
   title: Unit1 Subunit1
@@ -16,4 +15,3 @@ unit1_unit2_unit1:
 
 unit2:
   title: Unit2
-  primary_administrator: admin

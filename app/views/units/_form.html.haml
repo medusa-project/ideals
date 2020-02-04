@@ -14,17 +14,28 @@
     = f.text_field :title, class: "form-control"
 
   .form-group
-    = label_tag :parent_id, "Parent Unit"
+    = f.label :parent_id, "Parent Unit"
     = f.select(:parent_id,
         unit_tree_options_for_select(unit.parent, true),
         {}, { class: "custom-select" })
 
   .form-group
-    = f.label :primary_administrator_id, "Primary Administrator"
-    = f.select(:primary_administrator_id,
+    = label_tag :primary_administrator_id, "Primary Administrator"
+    = select_tag(:primary_administrator_id,
         options_for_select(User::User.all.order(:name).map{ |u| [u.name, u.id] },
-                           f.object.primary_administrator_id),
-        {}, { class: "custom-select" })
+                           f.object.primary_administrator&.id),
+          class: 'custom-select')
+
+  .form-group
+    = label_tag "Other Administrators"
+    = hidden_field_tag "unit[administering_user_ids][]"
+    - User::User.all.order(:name).each do |user|
+      .form-check
+        = check_box_tag "unit[administering_user_ids][]", user.id,
+          f.object.administering_users.include?(user),
+          { id: "unit_administering_user_ids_#{user.id}", class: "form-check-input" }
+        = label_tag "unit_administering_user_ids_#{user.id}",
+          user.name, class: "form-check-label"
 
   .clearfix
     .float-right

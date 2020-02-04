@@ -4,3 +4,17 @@ admin:
   name: admin
   email: admin@illinois.edu
   username: admin
+
+sally:
+  provider: identity
+  uid: sally@illinois.edu
+  name: Sally
+  email: sally@illinois.edu
+  username: sally
+
+unit1_unit2_unit1_admin:
+  provider: identity
+  uid: bob@illinois.edu
+  name: bob
+  email: bob@illinois.edu
+  username: bob
