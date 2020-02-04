@@ -25,7 +25,7 @@
   .form-group
     = f.label :manager_id, "Manager"
     = f.select(:manager_id,
-        options_for_select(User::User.all.order(:name).map{ |u| [u.name, u.id] }, f.object.manager&.id),
+        options_for_select(User.all.order(:name).map{ |u| [u.name, u.id] }, f.object.manager&.id),
         {}, { class: 'custom-select' })
 
   .clearfix

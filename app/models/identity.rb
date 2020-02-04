@@ -89,7 +89,7 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   end
 
   def destroy_user
-    user = User::Identity.find_by(email: email)
+    user = IdentityUser.find_by(email: email)
     user&.destroy!
   end
 

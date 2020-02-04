@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class SessionsController < ApplicationController
-  require_relative "../models/user/shibboleth"
 
   def new
     redirect_to(shibboleth_login_path(Ideals::Application.shibboleth_host))
@@ -13,9 +12,9 @@ class SessionsController < ApplicationController
     user = nil
 
     if auth[:provider] && auth[:provider] == AuthProvider::SHIBBOLETH
-      user = User::Shibboleth.from_omniauth(auth)
+      user = ShibbolethUser.from_omniauth(auth)
     elsif auth[:provider] && auth[:provider] == AuthProvider::IDENTITY
-      user = User::Identity.from_omniauth(auth)
+      user = IdentityUser.from_omniauth(auth)
     else
       unauthorized
     end

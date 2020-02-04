@@ -27,7 +27,7 @@ class CollectionTest < ActiveSupport::TestCase
   test "manager is required" do
     collection = Collection.new(title: "Test")
     assert !collection.save
-    collection.manager = user_identity(:admin)
+    collection.manager = users(:admin)
     assert collection.save
   end
 

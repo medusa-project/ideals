@@ -100,27 +100,27 @@ class UnitTest < ActiveSupport::TestCase
 
   test "primary_administrator=() sets the primary administrator to a user who
   is not already an administrator" do
-    user = user_identity(:sally)
+    user = users(:sally)
     assert_not_equal user, @instance.primary_administrator
     assert_equal 1, @instance.administrators.count
 
     @instance.primary_administrator = user
     @instance.reload
-    # TODO: this should work if User is moved out of the User module
-    #assert_equal user, @instance.primary_administrator
+
+    assert_equal user, @instance.primary_administrator
     assert_equal 2, @instance.administrators.count
   end
 
   test "primary_administrator=() sets the primary administrator to a user who
   is already an administrator" do
-    user = user_identity(:sally)
+    user = users(:sally)
     @instance.administering_users << user
     @instance.save!
 
     @instance.primary_administrator = user
     @instance.reload
-    # TODO: this should work if User is moved out of the User module
-    #assert_equal user, @instance.primary_administrator
+
+    assert_equal user, @instance.primary_administrator
     assert_equal 2, @instance.administrators.count
   end
 

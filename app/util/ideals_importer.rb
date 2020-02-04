@@ -28,7 +28,7 @@ class IdealsImporter
         StringUtils.print_progress(start_time, row_num, line_count,
                                    "Importing collections")
         Collection.create!(id: collection_id, title: title,
-                           manager: User::User.all.find(&:sysadmin?)) # TODO: assign the correct user; this is just some slop to get the import working
+                           manager: User.all.find(&:sysadmin?)) # TODO: assign the correct user; this is just some slop to get the import working
       end
       puts "\nReindexing..."
       update_pkey_sequence("collections")

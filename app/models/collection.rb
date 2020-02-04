@@ -31,7 +31,7 @@ class Collection < ApplicationRecord
     UNITS         = "i_units"
   end
 
-  belongs_to :manager, class_name: "User::User", foreign_key: "manager_id"
+  belongs_to :manager, class_name: "User", foreign_key: "manager_id"
   belongs_to :primary_unit, class_name: "Unit",
              foreign_key: "primary_unit_id", optional: true
   breadcrumbs parent: :primary_unit, label: :title

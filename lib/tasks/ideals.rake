@@ -68,7 +68,7 @@ namespace :ideals do
       ActiveRecord::Base.transaction do
         case Rails.env
         when "demo", "production"
-          user = User::User.no_omniauth(email, AuthProvider::SHIBBOLETH)
+          user = ShibbolethUser.no_omniauth(email)
           user.roles << Role.find_by(name: "sysadmin") unless user.sysadmin?
           user.save!
         else
@@ -86,7 +86,7 @@ namespace :ideals do
           identity.activated = true
           identity.activated_at = Time.zone.now
           identity.save!
-          user = User::User.no_omniauth(email, AuthProvider::IDENTITY)
+          user = IdentityUser.no_omniauth(email)
           user.roles << Role.find_by(name: "sysadmin") unless user.sysadmin?
           user.save!
         end
@@ -100,7 +100,7 @@ namespace :ideals do
       ActiveRecord::Base.transaction do
         Identity.destroy_by(name: netid)
         Invitee.destroy_by(email: email)
-        User::User.destroy_by(email: email)
+        User.destroy_by(email: email)
       end
     end
   end

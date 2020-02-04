@@ -2,7 +2,7 @@
 
 class UnitsController < ApplicationController
   before_action :set_unit, only: [:show, :edit, :update, :destroy]
-  before_action :ensure_logged_in, except: :show
+  before_action :ensure_logged_in, except: [:index, :show]
 
   ##
   # Responds to `GET /units`
@@ -62,7 +62,7 @@ class UnitsController < ApplicationController
         @resource.save!
         if params[:primary_administrator_id]
           @resource.primary_administrator =
-              User::User.find(params[:primary_administrator_id])
+              User.find(params[:primary_administrator_id])
         end
         @resource.save!
       end
@@ -86,7 +86,7 @@ class UnitsController < ApplicationController
         @resource.update!(unit_params)
         if params[:primary_administrator_id]
           @resource.primary_administrator =
-              User::User.find(params[:primary_administrator_id])
+              User.find(params[:primary_administrator_id])
         end
         @resource.save!
       end

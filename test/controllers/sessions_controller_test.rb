@@ -9,7 +9,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test 'create() with valid credentials' do
-    user = user_identity(:admin)
+    user = users(:admin)
     post '/auth/identity/callback', params: {
         auth_key: "#{user.username}@illinois.edu",
         password: "password"

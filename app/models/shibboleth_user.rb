@@ -1,23 +1,27 @@
 # frozen_string_literal: true
 
-# This type of user comes from the shibboleth authentication strategy
+##
+# This type of user comes from the shibboleth authentication strategy.
+#
+class ShibbolethUser < User
 
-class User::Shibboleth < User::User
   def self.from_omniauth(auth)
     return nil unless auth && auth[:uid]
 
-    user = User::Shibboleth.find_by(provider: auth["provider"], uid: auth["uid"])
+    user = ShibbolethUser.find_by(uid: auth["uid"])
 
     if user
       user.update_with_omniauth(auth)
     else
-      user = User::Shibboleth.create_with_omniauth(auth)
+      user = ShibbolethUser.create_with_omniauth(auth)
     end
 
     user
   end
 
-  # used in assignment of permissions to NetID users, but not using Active Directory.
+  ##
+  # Used in assignment of permissions to NetID users, but not using Active
+  # Directory.
   # HERE BE DRAGONS
   # such as the fire-breathing "This person's role in the org changed, but we did not change permission in IDEALS"
   def self.no_omniauth(email)
@@ -26,43 +30,40 @@ class User::Shibboleth < User::User
 
     raise ArgumentError, "valid email address required" unless email_string.match(URI::MailTo::EMAIL_REGEXP)
 
-    user = User.find_by(email: email, provider: AuthProvider::SHIBBOLETH)
+    user = ShibbolethUser.find_by(email: email)
     if user
       user.role = role
       user.save!
     else
-      user = User::Shibboleth.create_no_omniauth(email: email_string, role: role)
+      user = ShibbolethUser.create_no_omniauth(email: email_string, role: role)
     end
     user
   end
 
   def self.create_with_omniauth(auth)
     create! do |user|
-      user.provider = auth["provider"]
-      user.uid = auth["uid"]
-      user.email = auth["info"]["email"]
+      user.uid      = auth["uid"]
+      user.email    = auth["info"]["email"]
       user.username = (auth["info"]["email"]).split("@").first
-      user.name = display_name((auth["info"]["email"]).split("@").first)
+      user.name     = display_name((auth["info"]["email"]).split("@").first)
     end
   end
 
   def self.create_no_omniauth(email)
     create! do |user|
-      user.provider = AuthProvider::SHIBBOLETH
-      user.uid = email
-      user.email = email
+      user.uid      = email
+      user.email    = email
       user.username = email.split("@").first
-      user.name = email.split("@").first
+      user.name     = email.split("@").first
     end
   end
 
   def update_with_omniauth(auth)
     update!(
-      provider: auth["provider"],
       uid:      auth["uid"],
       email:    auth["info"]["email"],
       username: (auth["info"]["email"]).split("@").first,
-      name:     User::Shibboleth.display_name((auth["info"]["email"]).split("@").first)
+      name:     ShibbolethUser.display_name((auth["info"]["email"]).split("@").first)
     )
   end
 

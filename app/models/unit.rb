@@ -22,7 +22,7 @@ class Unit < ApplicationRecord
 
   has_many :administrators
   has_many :administering_users, through: :administrators,
-           class_name: "User::User", source: :user
+           class_name: "User", source: :user
   has_many :collection_unit_relationships
   has_many :collections, through: :collection_unit_relationships
   belongs_to :parent, class_name: "Unit", foreign_key: "parent_id", optional: true

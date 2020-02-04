@@ -2,5 +2,5 @@
 
 class Administrator < ApplicationRecord
   belongs_to :unit
-  belongs_to :user, class_name: "User::User"
+  belongs_to :user
 end

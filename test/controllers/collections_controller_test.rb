@@ -3,7 +3,7 @@ require 'test_helper'
 class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    log_in_as(user_identity(:admin))
+    log_in_as(users(:admin))
   end
 
   teardown do
@@ -25,7 +25,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
             primary_unit_id: units(:unit1).id,
             collection: {
                 title: "New Collection",
-                manager_id: user_identity(:admin).id
+                manager_id: users(:admin).id
             }
         }
     }
@@ -39,7 +39,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
             primary_unit_id: units(:unit1).id,
             collection: {
                 title: "New Collection",
-                manager_id: user_identity(:admin).id
+                manager_id: users(:admin).id
             }
         }
     }
@@ -116,7 +116,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
         params: {
             collection: {
                 title: "cats",
-                manager_id: user_identity(:admin).id
+                manager_id: users(:admin).id
             }
         }
     }

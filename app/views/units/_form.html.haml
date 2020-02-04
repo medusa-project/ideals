@@ -22,14 +22,14 @@
   .form-group
     = label_tag :primary_administrator_id, "Primary Administrator"
     = select_tag(:primary_administrator_id,
-        options_for_select(User::User.all.order(:name).map{ |u| [u.name, u.id] },
+        options_for_select(User.all.order(:name).map{ |u| [u.name, u.id] },
                            f.object.primary_administrator&.id),
           class: 'custom-select')
 
   .form-group
     = label_tag "Other Administrators"
     = hidden_field_tag "unit[administering_user_ids][]"
-    - User::User.all.order(:name).each do |user|
+    - User.all.order(:name).each do |user|
       .form-check
         = check_box_tag "unit[administering_user_ids][]", user.id,
           f.object.administering_users.include?(user),

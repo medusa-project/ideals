@@ -3,7 +3,7 @@ require 'test_helper'
 class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    log_in_as(user_identity(:admin))
+    log_in_as(users(:admin))
   end
 
   teardown do

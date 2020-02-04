@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-# This type of user comes from the identity authentication strategy
+##
+# This type of user comes from the identity authentication strategy.
+#
+class IdentityUser < User
 
-class User::Identity < User::User
   def self.from_omniauth(auth)
     return nil unless auth && auth[:uid] && auth["info"]["email"]
 
@@ -11,13 +13,22 @@ class User::Identity < User::User
 
     return nil unless identity&.activated
 
-    user = User::Identity.find_by(provider: AuthProvider::IDENTITY, email: email)
+    user = IdentityUser.find_by(email: email)
     if user
       user.update_with_omniauth(auth)
     else
-      user = User::Identity.create_with_omniauth(auth)
+      user = IdentityUser.create_with_omniauth(auth)
     end
     user
+  end
+
+  def self.create_no_omniauth(email)
+    create! do |user|
+      user.uid      = email
+      user.email    = email
+      user.username = email
+      user.name     = email
+    end
   end
 
   def self.create_with_omniauth(auth)
@@ -26,24 +37,26 @@ class User::Identity < User::User
 
     invitee = Invitee.find_by(email: email)
     return nil unless invitee&.expires_at
-
     return nil unless invitee.expires_at >= Time.current
 
     create! do |user|
-      user.provider = auth["provider"]
-      user.uid = email
-      user.email = email
-      user.name = auth["info"]["name"]
+      user.uid      = email
+      user.email    = email
+      user.name     = auth["info"]["name"]
       user.username = email
     end
+  end
+
+  def self.no_omniauth(email)
+    IdentityUser.create_no_omniauth(email) unless IdentityUser.exists?(email: email)
+    IdentityUser.find_by(email: email)
   end
 
   def update_with_omniauth(auth)
     email = auth["info"]["email"].strip
     return nil unless email
 
-    update!(provider: AuthProvider::IDENTITY,
-            uid:      email,
+    update!(uid:      email,
             email:    email,
             username: email.split("@").first,
             name:     auth["info"]["name"])
