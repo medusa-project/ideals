@@ -36,7 +36,7 @@ class Unit < ApplicationRecord
   has_many :units, foreign_key: "parent_id", dependent: :restrict_with_exception
 
   validates :title, presence: true
-  validate :validate_parent
+  validate :validate_parent, :validate_primary_administrator
 
   breadcrumbs parent: :parent, label: :title
 
@@ -114,10 +114,10 @@ class Unit < ApplicationRecord
   end
 
   ##
-  # Sets the primary administrator, but does not remove the current primary
-  # administrator from {administrators}.
+  # Sets the primary administrator. The previous primary administrator is not
+  # removed from {administrators}.
   #
-  # @param user [User] Primary administrator.
+  # @param user [User] Primary administrator to set.
   #
   def primary_administrator=(user)
     self.administrators.update_all(primary: false)
@@ -146,6 +146,16 @@ class Unit < ApplicationRecord
       elsif all_children.map(&:id).include?(self.parent_id)
         errors.add(:parent_id, "cannot be set to a child unit")
       end
+    end
+  end
+
+  ##
+  # Ensures that only top-level units can have a primary administrator
+  # assigned.
+  #
+  def validate_primary_administrator
+    if self.parent_id.present? and self.primary_administrator.present?
+      errors.add(:primary_administrator, "cannot be set on child units")
     end
   end
 

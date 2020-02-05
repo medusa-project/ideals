@@ -19,15 +19,16 @@
         unit_tree_options_for_select(unit.parent, true),
         {}, { class: "custom-select" })
 
-  .form-group
-    = label_tag :primary_administrator_id, "Primary Administrator"
-    = select_tag(:primary_administrator_id,
-        options_for_select(User.all.order(:name).map{ |u| [u.name, u.id] },
-                           f.object.primary_administrator&.id),
-          class: 'custom-select')
+  - unless f.object.parent
+    .form-group
+      = label_tag :primary_administrator_id, "Primary Administrator"
+      = select_tag(:primary_administrator_id,
+          options_for_select(User.all.order(:name).map{ |u| [u.name, u.id] },
+                             f.object.primary_administrator&.id),
+            class: "custom-select")
 
   .form-group
-    = label_tag "Other Administrators"
+    = label_tag "Administrators"
     = hidden_field_tag "unit[administering_user_ids][]"
     - User.all.order(:name).each do |user|
       .form-check

@@ -96,7 +96,7 @@ class UnitTest < ActiveSupport::TestCase
     end
   end
 
-  # primary_administrator=()
+  # primary_administrator
 
   test "primary_administrator=() sets the primary administrator to a user who
   is not already an administrator" do
@@ -122,6 +122,14 @@ class UnitTest < ActiveSupport::TestCase
 
     assert_equal user, @instance.primary_administrator
     assert_equal 2, @instance.administrators.count
+  end
+
+  test "primary_administrator cannot be set on child units" do
+    unit = units(:unit1_unit2)
+    assert unit.valid?
+    unit.primary_administrator = users(:admin)
+    unit.reload
+    assert !unit.valid?
   end
 
   # reindex() (Indexed concern)
