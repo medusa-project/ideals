@@ -70,6 +70,8 @@ class CollectionTest < ActiveSupport::TestCase
                  doc[Collection::IndexFields::MANAGERS]
     assert_equal @instance.primary_unit.id,
                doc[Collection::IndexFields::PRIMARY_UNIT]
+    assert_equal [@instance.submitting_users.first.id],
+                 doc[Collection::IndexFields::SUBMITTERS]
     assert_equal @instance.title,
                  doc[Collection::IndexFields::TITLE]
     assert_equal @instance.units.count,

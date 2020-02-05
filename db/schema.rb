@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_05_161402) do
+ActiveRecord::Schema.define(version: 2020_02_05_161918) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -139,6 +139,14 @@ ActiveRecord::Schema.define(version: 2020_02_05_161402) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "submitters", force: :cascade do |t|
+    t.bigint "collection_id"
+    t.bigint "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["collection_id", "user_id"], name: "index_submitters_on_collection_id_and_user_id", unique: true
+  end
+
   create_table "units", force: :cascade do |t|
     t.string "title"
     t.bigint "parent_id"
@@ -167,4 +175,6 @@ ActiveRecord::Schema.define(version: 2020_02_05_161402) do
   add_foreign_key "item_collection_relationships", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "submitters", "collections", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "submitters", "users", on_update: :cascade, on_delete: :cascade
 end

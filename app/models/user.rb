@@ -15,6 +15,7 @@ class User < ApplicationRecord
   has_many :primary_administering_units, class_name: "Unit",
            inverse_of: :primary_administrator
   has_many :roles, through: :assignments
+  has_many :submitting_collections, through: :submitters, source: :collection
 
   validates :name, presence: true
   validates_uniqueness_of :email, scope: :type

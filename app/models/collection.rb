@@ -27,6 +27,7 @@ class Collection < ApplicationRecord
     LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     MANAGERS      = "i_manager_id"
     PRIMARY_UNIT  = "i_primary_unit_id"
+    SUBMITTERS    = "i_submitter_id"
     TITLE         = "t_title"
     UNITS         = "i_units"
   end
@@ -38,11 +39,15 @@ class Collection < ApplicationRecord
   has_many :item_collection_relationships
   has_many :items, through: :item_collection_relationships
   has_many :managers
-  has_many :managing_users, through: :managers, class_name: "User", source: :user
+  has_many :managing_users, through: :managers,
+           class_name: "User", source: :user
   has_one :primary_collection_unit_relationship, -> { where(primary: true) },
           class_name: "CollectionUnitRelationship"
   has_one :primary_unit, through: :primary_collection_unit_relationship,
           source: :unit
+  has_many :submitters
+  has_many :submitting_users, through: :submitters,
+           class_name: "User", source: :user
   has_many :units, through: :collection_unit_relationships
 
   validates :title, presence: true
@@ -59,6 +64,7 @@ class Collection < ApplicationRecord
     doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
     doc[IndexFields::MANAGERS]      = self.managers.pluck(:user_id)
     doc[IndexFields::PRIMARY_UNIT]  = self.primary_unit&.id
+    doc[IndexFields::SUBMITTERS]    = self.submitters.pluck(:user_id)
     doc[IndexFields::TITLE]         = self.title
     doc[IndexFields::UNITS]         = self.unit_ids
     doc

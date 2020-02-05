@@ -117,6 +117,7 @@ class CollectionsController < ApplicationController
   end
 
   def collection_params
-    params.require(:collection).permit({managing_user_ids: [] }, :title)
+    params.require(:collection).permit({ managing_user_ids: [] },
+                                       { submitting_user_ids: [] }, :title)
   end
 end

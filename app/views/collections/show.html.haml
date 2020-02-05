@@ -27,6 +27,11 @@
     %ul
       - @resource.managing_users.each do |user|
         %li= link_to(user.name, "mailto:#{user.email}")
+  %dt Submitters
+  %dd
+    %ul
+      - @resource.submitting_users.each do |user|
+        %li= link_to(user.name, "mailto:#{user.email}")
 
 -if @resource.items.count.positive?
   .float-right

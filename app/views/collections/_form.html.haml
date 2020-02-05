@@ -23,6 +23,17 @@
     = hidden_field_tag "primary_unit_id", primary_unit.id
 
   .form-group
+    = label_tag "Submitters"
+    = hidden_field_tag "collection[submitting_user_ids][]"
+    - User.all.order(:name).each do |user|
+      .form-check
+        = check_box_tag "collection[submitting_user_ids][]", user.id,
+          f.object.submitting_users.include?(user),
+          { id: "unit_submitting_user_ids_#{user.id}", class: "form-check-input" }
+        = label_tag "unit_submitting_user_ids_#{user.id}",
+          user.name, class: "form-check-label"
+
+  .form-group
     = label_tag "Managers"
     = hidden_field_tag "collection[managing_user_ids][]"
     - User.all.order(:name).each do |user|
