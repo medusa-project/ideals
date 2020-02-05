@@ -4,7 +4,7 @@ class RedesignAdministratorsTable < ActiveRecord::Migration[6.0]
     rename_column :administrators, :role_id, :user_id
     add_foreign_key :administrators, :users,
                     on_update: :cascade, on_delete: :cascade
-    #add_index :administrators, [:unit_id, :user_id], unique: true
+    add_index :administrators, [:unit_id, :user_id], unique: true
 
     add_column :administrators, :primary, :boolean, default: false, null: false
     add_index :administrators, [:user_id, :unit_id, :primary]
@@ -14,7 +14,7 @@ class RedesignAdministratorsTable < ActiveRecord::Migration[6.0]
   def down
     add_column :units, :primary_administrator_id, :integer
 
-    #remove_index :administrators, [:unit_id, :user_id]
+    remove_index :administrators, [:unit_id, :user_id]
     remove_index :administrators, name: "index_administrators_on_unit_id_and_user_id_uniq"
 
     execute "delete from administrators;"
