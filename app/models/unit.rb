@@ -109,6 +109,13 @@ class Unit < ApplicationRecord
     doc
   end
 
+  ##
+  # @return [Boolean] Whether the instance if a child of another {Unit}.
+  #
+  def child?
+    self.parent_id.present?
+  end
+
   def label
     title
   end
@@ -131,6 +138,14 @@ class Unit < ApplicationRecord
 
   def default_search
     nil
+  end
+
+  ##
+  # @return [Unit] The root parent unit, which may the instance itself if it is
+  #                a root unit.
+  #
+  def root_parent
+    self.parent ? all_parents.last : self
   end
 
   private

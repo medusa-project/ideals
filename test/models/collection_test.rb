@@ -28,6 +28,12 @@ class CollectionTest < ActiveSupport::TestCase
     assert_kind_of CollectionFinder, Collection.search
   end
 
+  # all_units()
+
+  test "all_units() returns the expected units" do
+    assert_equal 1, @instance.all_units.length
+  end
+
   # primary_unit=()
 
   test "primary_unit=() updates the primary unit" do

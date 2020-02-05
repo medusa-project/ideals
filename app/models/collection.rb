@@ -48,9 +48,24 @@ class Collection < ApplicationRecord
   has_many :submitters
   has_many :submitting_users, through: :submitters,
            class_name: "User", source: :user
+  # N.B.: this association includes only directly associated units--not any of
+  # their parents or children. See {all_units}.
   has_many :units, through: :collection_unit_relationships
 
   validates :title, presence: true
+
+  ##
+  # @return [Enumerable<Unit>] All directly associated units, as well as all of
+  #         those units' parents, in undefined order.
+  #
+  def all_units
+    bucket = []
+    units.each do |unit|
+      bucket << unit
+      bucket += unit.all_parents
+    end
+    bucket
+  end
 
   ##
   # @return [Hash] Indexable JSON representation of the instance.

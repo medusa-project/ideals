@@ -27,15 +27,42 @@ class User < ApplicationRecord
 
   before_save -> { email.downcase! }
 
+  ##
+  # For compatibility with breadcrumbs.
+  #
   def label
     name
   end
 
+  ##
+  # @param collection [Collection]
+  # @return [Boolean] Whether the instance is a manager of the given collection.
+  #
+  def manager?(collection)
+    collection.managers.where(user_id: self.id).count > 0
+  end
+
+  ##
+  # @param role [Symbol] Role name. TODO: accept a Role
+  # @return [Boolean] Whether the instance is a member of the given role.
+  #
   def role?(role)
     roles.any? {|r| r.name.underscore.to_sym == role }
   end
 
+  ##
+  # @return [Boolean] Whether the instance is a member of the `sysadmin` role.
+  #
   def sysadmin?
     role? :sysadmin
+  end
+
+  ##
+  # @param unit [Unit]
+  # @return [Boolean] Whether the instance is an administrator of the given
+  #                   unit.
+  #
+  def unit_admin?(unit)
+    unit.administrators.where(user_id: self.id).count > 0
   end
 end

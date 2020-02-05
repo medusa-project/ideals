@@ -80,6 +80,16 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal @instance.title, doc[Unit::IndexFields::TITLE]
   end
 
+  # child?()
+
+  test "child?() returns false for root units" do
+    assert !@instance.child?
+  end
+
+  test "child?() returns true for child units" do
+    assert units(:unit1_unit2).child?
+  end
+
   # parent_id
 
   test "parent_id cannot be set to the instance ID" do
@@ -143,6 +153,16 @@ class UnitTest < ActiveSupport::TestCase
 
     assert_equal 1, Unit.search.
         filter(Unit::IndexFields::ID, @instance.index_id).count
+  end
+
+  # root_parent()
+
+  test "root_parent() returns the instance for root units" do
+    assert_same @instance, @instance.root_parent
+  end
+
+  test "root_parent() returns the root parent for child units" do
+    assert_equal @instance, units(:unit1_unit2).root_parent
   end
 
   # title
