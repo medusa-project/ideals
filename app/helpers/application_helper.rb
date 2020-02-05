@@ -10,13 +10,11 @@ module ApplicationHelper
     case entity.class.to_s
     when "Collection"
       icon = "far fa-folder-open"
-    when "IdentityUser"
-      icon = "fa fa-user"
     when "Item"
       icon = "fa fa-cube"
     when "Unit"
       icon = "fa fa-university"
-    when "ShibbolethUser"
+    when "User", "IdentityUser", "ShibbolethUser"
       icon = "fa fa-user"
     else
       icon = "fa fa-cube"

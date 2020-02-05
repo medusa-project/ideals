@@ -8,6 +8,8 @@
 class User < ApplicationRecord
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 
+  include Breadcrumb
+
   has_many :administrators
   has_many :administering_units, through: :administrators, source: :unit
   has_many :assignments
@@ -24,6 +26,10 @@ class User < ApplicationRecord
   validates_uniqueness_of :uid, allow_blank: false
 
   before_save -> { email.downcase! }
+
+  def label
+    name
+  end
 
   def role?(role)
     roles.any? {|r| r.name.underscore.to_sym == role }

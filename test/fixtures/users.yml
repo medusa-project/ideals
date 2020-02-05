@@ -5,6 +5,13 @@ admin:
   email: admin@illinois.edu
   username: admin
 
+norights:
+  type: IdentityUser
+  uid: norights@illinois.edu
+  name: I have no rights
+  email: norights@illinois.edu
+  username: norights
+
 sally:
   type: IdentityUser
   uid: sally@illinois.edu

@@ -1,0 +1,30 @@
+= provide :body_id, "show_user"
+
+= render partial: "show_button_group"
+
+%h1
+  =icon_for(@resource)
+  =@resource.name
+
+.row
+  .col-sm-6
+    %h2 Account
+    %dl
+      %dt UID
+      %dd= @resource.uid
+      %dt Username
+      %dd= @resource.username
+      %dt Email
+      %dd= @resource.email
+      %dt Type
+      %dd= @resource.type
+      %dt Created
+      %dd= @resource.created_at
+  .col-sm-6
+    %h2 Roles
+    %ul
+      - @resource.roles.order(:name).each do |role|
+        %li= role.name
+
+= render partial: "users/edit_modal", locals: { user: @resource,
+                                                context: :edit}

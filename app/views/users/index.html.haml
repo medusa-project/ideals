@@ -1,0 +1,13 @@
+%h1 Users
+
+- @resources.each do |user|
+  - user = user.becomes(User)
+  .media.resource-list
+    .thumbnail
+      = link_to(user) do
+        = icon_for(user)
+    .media-body
+      %h5.mt-0
+        = link_to(user.name, user)
+      = user.roles.order(:name).map(&:name).join(", ")
+      %br

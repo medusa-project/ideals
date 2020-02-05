@@ -1,0 +1,12 @@
+/ Edit-user modal
+#edit-user-modal.modal.fade{"aria-labelledby": "edit-user-modal-label",
+                            role: "dialog",
+                            tabindex: "-1"}
+  .modal-dialog{role: "document"}
+    .modal-content
+      .modal-header
+        %h4#edit-user-modal-label.modal-title Edit User
+        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+          %span{"aria-hidden": "true"} &times;
+      .modal-body
+        - # will be populated via XHR
