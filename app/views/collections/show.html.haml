@@ -20,6 +20,14 @@
   =icon_for(@resource)
   =@resource.title
 
+%h2 Info
+%dl
+  %dt Managers
+  %dd
+    %ul
+      - @resource.managing_users.each do |user|
+        %li= link_to(user.name, "mailto:#{user.email}")
+
 -if @resource.items.count.positive?
   .float-right
     = item_search_field(@resource, Item::IndexFields::PRIMARY_COLLECTION)

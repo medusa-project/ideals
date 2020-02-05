@@ -11,8 +11,7 @@ class User < ApplicationRecord
   has_many :administrators
   has_many :administering_units, through: :administrators, source: :unit
   has_many :assignments
-  has_many :managing_collections, class_name: "Collection",
-           foreign_key: "manager_id", inverse_of: :manager
+  has_many :managing_collections, through: :managers, source: :collection
   has_many :primary_administering_units, class_name: "Unit",
            inverse_of: :primary_administrator
   has_many :roles, through: :assignments

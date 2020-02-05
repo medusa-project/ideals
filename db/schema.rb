@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_04_203209) do
+ActiveRecord::Schema.define(version: 2020_02_05_154542) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -117,12 +117,13 @@ ActiveRecord::Schema.define(version: 2020_02_04_203209) do
   end
 
   create_table "managers", force: :cascade do |t|
-    t.bigint "role_id"
+    t.bigint "user_id"
     t.bigint "collection_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["collection_id", "user_id"], name: "index_managers_on_collection_id_and_user_id", unique: true
     t.index ["collection_id"], name: "index_managers_on_collection_id"
-    t.index ["role_id"], name: "index_managers_on_role_id"
+    t.index ["user_id"], name: "index_managers_on_user_id"
   end
 
   create_table "registered_elements", force: :cascade do |t|
@@ -167,5 +168,5 @@ ActiveRecord::Schema.define(version: 2020_02_04_203209) do
   add_foreign_key "item_collection_relationships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "item_collection_relationships", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "managers", "roles", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "managers", "users", on_update: :cascade, on_delete: :cascade
 end

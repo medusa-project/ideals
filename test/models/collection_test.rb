@@ -22,15 +22,6 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal count - 1, Collection.search.count
   end
 
-  # manager
-
-  test "manager is required" do
-    collection = Collection.new(title: "Test")
-    assert !collection.save
-    collection.manager = users(:admin)
-    assert collection.save
-  end
-
   # search() (Indexed concern)
 
   test "search() returns a CollectionFinder" do
@@ -75,6 +66,8 @@ class CollectionTest < ActiveSupport::TestCase
     assert_not_empty doc[Collection::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Collection::IndexFields::LAST_MODIFIED]
+    assert_equal [@instance.managing_users.first.id],
+                 doc[Collection::IndexFields::MANAGERS]
     assert_equal @instance.primary_unit.id,
                doc[Collection::IndexFields::PRIMARY_UNIT]
     assert_equal @instance.title,
