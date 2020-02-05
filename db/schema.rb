@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_05_154542) do
+ActiveRecord::Schema.define(version: 2020_02_05_161402) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 2020_02_05_154542) do
   create_table "bitstreams", force: :cascade do |t|
     t.string "key", null: false
     t.bigint "length"
-    t.integer "item_id"
+    t.bigint "item_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "media_type", null: false
@@ -47,8 +47,8 @@ ActiveRecord::Schema.define(version: 2020_02_05_154542) do
   end
 
   create_table "collection_unit_relationships", force: :cascade do |t|
-    t.integer "collection_id"
-    t.integer "unit_id"
+    t.bigint "collection_id"
+    t.bigint "unit_id"
     t.boolean "primary", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -60,7 +60,6 @@ ActiveRecord::Schema.define(version: 2020_02_05_154542) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "manager_id"
   end
 
   create_table "handles", force: :cascade do |t|
@@ -81,7 +80,7 @@ ActiveRecord::Schema.define(version: 2020_02_05_154542) do
     t.boolean "activated", default: false
     t.datetime "activated_at"
     t.string "reset_digest"
-    t.integer "invitee_id"
+    t.bigint "invitee_id"
     t.datetime "reset_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -97,8 +96,8 @@ ActiveRecord::Schema.define(version: 2020_02_05_154542) do
   end
 
   create_table "item_collection_relationships", force: :cascade do |t|
-    t.integer "collection_id"
-    t.integer "item_id"
+    t.bigint "collection_id"
+    t.bigint "item_id"
     t.boolean "primary", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -142,7 +141,7 @@ ActiveRecord::Schema.define(version: 2020_02_05_154542) do
 
   create_table "units", force: :cascade do |t|
     t.string "title"
-    t.integer "parent_id"
+    t.bigint "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -164,7 +163,6 @@ ActiveRecord::Schema.define(version: 2020_02_05_154542) do
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_unit_relationships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_unit_relationships", "units", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "collections", "users", column: "manager_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "item_collection_relationships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "item_collection_relationships", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
