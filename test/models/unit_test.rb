@@ -90,6 +90,24 @@ class UnitTest < ActiveSupport::TestCase
     assert units(:unit1_unit2).child?
   end
 
+  # destroy()
+
+  test "destroy() raises an error when there are dependent units" do
+    assert_raises ActiveRecord::DeleteRestrictionError do
+      units(:unit1_unit2).destroy!
+    end
+  end
+
+  test "destroy() raises an error when there are dependent collections" do
+    assert_raises ActiveRecord::DeleteRestrictionError do
+      @instance.destroy!
+    end
+  end
+
+  test "destroy() succeeds when there are no dependent units or collections" do
+    assert units(:unit2).destroy
+  end
+
   # parent_id
 
   test "parent_id cannot be set to the instance ID" do

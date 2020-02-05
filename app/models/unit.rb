@@ -38,6 +38,8 @@ class Unit < ApplicationRecord
   validates :title, presence: true
   validate :validate_parent, :validate_primary_administrator
 
+  before_destroy :validate_empty
+
   breadcrumbs parent: :parent, label: :title
 
   ##
@@ -149,6 +151,19 @@ class Unit < ApplicationRecord
   end
 
   private
+
+  ##
+  # Ensures that the unit cannot be destroyed unless it is empty.
+  #
+  def validate_empty
+    if self.units.count > 0
+      errors.add(:units, "must not exist in order for a unit to be deleted")
+      throw(:abort)
+    elsif self.collections.count > 0
+      errors.add(:collections, "must not exist in order for a unit to be deleted")
+      throw(:abort)
+    end
+  end
 
   ##
   # Ensures that {parent_id} is not set to the instance ID nor any of the IDs
