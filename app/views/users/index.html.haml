@@ -1,13 +1,19 @@
 %h1 Users
 
-- @resources.each do |user|
-  - user = user.becomes(User)
-  .media.resource-list
-    .thumbnail
-      = link_to(user) do
-        = icon_for(user)
-    .media-body
-      %h5.mt-0
-        = link_to(user.name, user)
-      = user.roles.order(:name).map(&:name).join(", ")
-      %br
+%table.table
+  %thead
+    %tr
+      %th Username
+      %th Name
+      %th Email
+      %th Authentication Type
+      %th Roles
+  %tbody
+    - @resources.each do |user|
+      - user = user.becomes(User)
+      %tr
+        %td= link_to(user.username, user)
+        %td= user.name
+        %td= link_to(user.email, "mailto:#{user.email}")
+        %td= user.type
+        %td= user.roles.order(:name).map(&:name).join(", ")
