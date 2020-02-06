@@ -1,8 +1,61 @@
 # frozen_string_literal: true
 
 class UnitsController < ApplicationController
-  before_action :set_unit, only: [:show, :edit, :update, :destroy]
   before_action :ensure_logged_in, except: [:index, :show]
+  before_action :set_unit, only: [:show, :edit, :update, :destroy]
+  before_action :authorize_unit, only: [:show, :edit, :update, :destroy]
+
+  ##
+  # Responds to `POST /units`
+  #
+  def create
+    begin
+      @resource = Unit.new(unit_params)
+      authorize @resource
+      ActiveRecord::Base.transaction do
+        @resource.save!
+        if params[:primary_administrator_id]
+          @resource.primary_administrator =
+              User.find(params[:primary_administrator_id])
+        end
+        @resource.save!
+      end
+    rescue
+      render partial: "shared/validation_messages",
+             locals: { object: @resource },
+             status: :bad_request
+    else
+      ElasticsearchClient.instance.refresh
+      flash['success'] = "Unit \"#{@resource.title}\" created."
+      render "create", locals: { unit: @resource }
+    end
+  end
+
+  ##
+  # Responds to `DELETE /units/:id`
+  #
+  def destroy
+    begin
+      ActiveRecord::Base.transaction do
+        @resource.destroy!
+      end
+    rescue => e
+      flash['error'] = "#{e}"
+    else
+      ElasticsearchClient.instance.refresh
+      flash['success'] = "Unit \"#{@resource.title}\" deleted."
+    ensure
+      redirect_to units_path
+    end
+  end
+
+  ##
+  # Responds to `GET /units/:id/edit`
+  #
+  def edit
+    render partial: "units/form",
+           locals: { unit: @resource, context: :edit }
+  end
 
   ##
   # Responds to `GET /units`
@@ -14,6 +67,14 @@ class UnitsController < ApplicationController
         limit(9999)
     @resources = finder.to_a
     @new_unit = Unit.new
+  end
+
+  ##
+  # Responds to `GET /units/new`
+  #
+  def new
+    @resource = Unit.new
+    authorize @resource
   end
 
   ##
@@ -35,46 +96,6 @@ class UnitsController < ApplicationController
         to_a
     @new_unit       = Unit.new
     @new_collection = Collection.new
-  end
-
-  ##
-  # Responds to `GET /units/new`
-  #
-  def new
-    @resource = Unit.new
-  end
-
-  ##
-  # Responds to `GET /units/:id/edit`
-  #
-  def edit
-    render partial: "units/form",
-           locals: { unit: @resource, context: :edit }
-  end
-
-  ##
-  # Responds to `POST /units`
-  #
-  def create
-    begin
-      @resource = Unit.new(unit_params)
-      ActiveRecord::Base.transaction do
-        @resource.save!
-        if params[:primary_administrator_id]
-          @resource.primary_administrator =
-              User.find(params[:primary_administrator_id])
-        end
-        @resource.save!
-      end
-    rescue
-      render partial: "shared/validation_messages",
-             locals: { object: @resource },
-             status: :bad_request
-    else
-      ElasticsearchClient.instance.refresh
-      flash['success'] = "Unit \"#{@resource.title}\" created."
-      render "create", locals: { unit: @resource }
-    end
   end
 
   ##
@@ -101,24 +122,6 @@ class UnitsController < ApplicationController
     end
   end
 
-  ##
-  # Responds to `DELETE /units/:id`
-  #
-  def destroy
-    begin
-      ActiveRecord::Base.transaction do
-        @resource.destroy!
-      end
-    rescue => e
-      flash['error'] = "#{e}"
-    else
-      ElasticsearchClient.instance.refresh
-      flash['success'] = "Unit \"#{@resource.title}\" deleted."
-    ensure
-      redirect_to units_path
-    end
-  end
-
   private
 
   def set_unit
@@ -129,6 +132,10 @@ class UnitsController < ApplicationController
                                  suffix: params[:suffix]).resource
     end
     @breadcrumbable = @resource
+  end
+
+  def authorize_unit
+    @resource ? authorize(@resource) : skip_authorization
   end
 
   def unit_params

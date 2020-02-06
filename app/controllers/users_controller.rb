@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   before_action :ensure_logged_in
   before_action :set_user, only: [:show, :edit, :update]
+  before_action :authorize_user, only: [:show, :edit, :update]
 
   ##
   # Responds to `GET /users/:id/edit`
@@ -14,6 +15,7 @@ class UsersController < ApplicationController
   # Responds to `GET /users`
   #
   def index
+    authorize(User)
     @resources = User.all.order(:name)
   end
 
@@ -30,7 +32,6 @@ class UsersController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         @resource.update!(user_params)
-        @resource.save!
       end
     rescue
       render partial: "shared/validation_messages",
@@ -47,6 +48,12 @@ class UsersController < ApplicationController
   def set_user
     @resource = User.find(params[:id])
     @breadcrumbable = @resource
+  end
+
+  def authorize_user
+    # N.B.: with becomes() here, Pundit will require separate
+    # IdentityUserPolicy and ShibbolethUserPolicy classes.
+    @resource ? authorize(@resource.becomes(User)) : skip_authorization
   end
 
   def user_params

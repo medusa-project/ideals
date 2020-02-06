@@ -2,8 +2,6 @@
 
 = render partial: "show_button_group"
 
-
-
 %h1
   =icon_for(@resource)
   =@resource.title
@@ -28,14 +26,14 @@
 -if @subunits.any?
   %h2 Sub-Units
   =resource_list(@subunits)
--if @collections.count.positive?
-  -if current_user
-    .btn-group.float-right{role: "group"}
-      / Add Collection button
-      %button.btn.btn-light{"data-target": "#add-collection-modal",
-                            "data-toggle": "modal", type: "button"}
-        %i.fa.fa-plus
-        Add Collection
+
+-if policy(Collection).new?
+  .btn-group.float-right{role: "group"}
+    / Add Collection button
+    %button.btn.btn-light{"data-target": "#add-collection-modal",
+                          "data-toggle": "modal", type: "button"}
+      %i.fa.fa-plus
+      Add Collection
 
   %h2 Collections
   = resource_list(@collections)

@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 class CollectionsController < ApplicationController
-  before_action :set_collection, only: [:show, :edit, :update, :destroy]
   before_action :ensure_logged_in, except: :show
+  before_action :set_collection,
+                only: [:show, :edit, :update, :destroy]
+  before_action :authorize_collection,
+                only: [:show, :edit, :update, :destroy]
 
   ##
   # Responds to `POST /collections`
@@ -10,6 +13,7 @@ class CollectionsController < ApplicationController
   def create
     begin
       @resource = Collection.new(collection_params)
+      authorize @resource
       ActiveRecord::Base.transaction do
         @resource.save!
         @resource.primary_unit = Unit.find(params[:primary_unit_id])
@@ -27,18 +31,45 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Responds to GET /collections/:id/edit (XHR only)
+  # Responds to `DELETE /collections/:id`
+  #
+  def destroy
+    primary_unit = @resource.primary_unit
+    begin
+      ActiveRecord::Base.transaction do
+        @resource.destroy!
+      end
+    rescue => e
+      flash['error'] = "#{e}"
+    else
+      ElasticsearchClient.instance.refresh
+      flash['success'] = "Collection \"#{@resource.title}\" deleted."
+    ensure
+      redirect_to primary_unit
+    end
+  end
+
+  ##
+  # Responds to GET `/collections/:id/edit` (XHR only)
   #
   def edit
-    collection = Collection.find(params[:id])
     render partial: 'collections/form',
-           locals: { collection: collection,
-                     primary_unit: collection.primary_unit,
+           locals: { collection: @resource,
+                     primary_unit: @resource.primary_unit,
                      context: :edit }
   end
 
-  # GET /collections/1
-  # GET /collections/1.json
+  ##
+  # Responds to `GET /collections/new`
+  #
+  def new
+    @resource = Collection.new
+    authorize @resource
+  end
+
+  ##
+  # Responds to `GET /collections/:id`
+  #
   def show
     if @resource.items.count.positive?
       @start = params[:start].to_i
@@ -55,17 +86,11 @@ class CollectionsController < ApplicationController
     @breadcrumbable = @resource
   end
 
-  # GET /collections/new
-  def new
-    @resource = Collection.new
-  end
-
   ##
-  # Responds to PATCH/PUT /collections/:id
+  # Responds to `PATCH/PUT /collections/:id`
   #
   def update
     begin
-      @resource = Collection.find(params[:id])
       ActiveRecord::Base.transaction do
         @resource.update!(collection_params)
         if params[:primary_unit_id]
@@ -84,26 +109,6 @@ class CollectionsController < ApplicationController
     end
   end
 
-  ##
-  # Responds to DELETE /collections/:id
-  #
-  def destroy
-    collection = Collection.find(params[:id])
-    primary_unit = collection.primary_unit
-    begin
-      ActiveRecord::Base.transaction do
-        collection.destroy!
-      end
-    rescue => e
-      flash['error'] = "#{e}"
-    else
-      ElasticsearchClient.instance.refresh
-      flash['success'] = "Collection \"#{collection.title}\" deleted."
-    ensure
-      redirect_to primary_unit
-    end
-  end
-
   private
 
   # Use callbacks to share common setup or constraints between actions.
@@ -111,9 +116,14 @@ class CollectionsController < ApplicationController
     if params.has_key?(:id)
       @resource = Collection.find(params[:id])
     elsif params.has_key?(:suffix)
-      @resource = Handle.find_by(prefix: params[:prefix], suffix: params[:suffix]).resource
+      @resource = Handle.find_by(prefix: params[:prefix],
+                                 suffix: params[:suffix]).resource
     end
     @breadcrumbable = @resource
+  end
+
+  def authorize_collection
+    @resource ? authorize(@resource) : skip_authorization
   end
 
   def collection_params

@@ -2,23 +2,25 @@ require 'test_helper'
 
 class UnitsControllerTest < ActionDispatch::IntegrationTest
 
-  setup do
-    log_in_as(users(:admin))
-  end
-
   teardown do
     log_out
   end
 
   # create()
 
+  test "create() redirects to login page for logged-out users" do
+    post units_path, {}
+    assert_redirected_to login_path
+  end
+
   test "create() redirects to login page for unauthorized users" do
-    log_out
+    log_in_as(users(:norights))
     post units_path, {}
     assert_redirected_to login_path
   end
 
   test "create() returns HTTP 200 for authorized users" do
+    log_in_as(users(:admin))
     post units_path, {
         xhr: true,
         params: {
@@ -31,6 +33,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates a unit" do
+    log_in_as(users(:admin))
     post units_path, {
         xhr: true,
         params: {
@@ -43,6 +46,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:admin))
     post units_path, {
         xhr: true,
         params: {
@@ -56,13 +60,19 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() redirects to login path for logged-out users" do
+    delete "/units/#{units(:unit1).id}"
+    assert_redirected_to login_path
+  end
+
   test "destroy() redirects to login path for unauthorized users" do
-    log_out
+    log_in_as(users(:norights))
     delete "/units/#{units(:unit1).id}"
     assert_redirected_to login_path
   end
 
   test "destroy() destroys the unit" do
+    log_in_as(users(:admin))
     # choose a unit with no dependent collections or units to make setup easier
     unit = units(:unit1_unit2_unit1)
     delete "/units/#{unit.id}"
@@ -72,26 +82,35 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing unit" do
+    log_in_as(users(:admin))
     unit = units(:unit1)
     delete "/units/#{unit.id}"
     assert_redirected_to units_path
   end
 
   test "destroy() returns HTTP 404 for a missing unit" do
+    log_in_as(users(:admin))
     delete "/units/bogus"
     assert_response :not_found
   end
 
   # update()
 
+  test "update() redirects to login path for logged-out users" do
+    unit = units(:unit1)
+    patch "/units/#{unit.id}", {}
+    assert_redirected_to login_path
+  end
+
   test "update() redirects to login path for unauthorized users" do
-    log_out
+    log_in_as(users(:norights))
     unit = units(:unit1)
     patch "/units/#{unit.id}", {}
     assert_redirected_to login_path
   end
 
   test "update() updates a unit" do
+    log_in_as(users(:admin))
     unit = units(:unit1)
     patch "/units/#{unit.id}", {
         xhr: true,
@@ -106,6 +125,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
+    log_in_as(users(:admin))
     unit = units(:unit1)
     patch "/units/#{unit.id}", {
         xhr: true,
@@ -119,6 +139,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:admin))
     unit = units(:unit1)
     patch "/units/#{unit.id}", {
         xhr: true,
@@ -132,6 +153,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent units" do
+    log_in_as(users(:admin))
     patch "/units/bogus", {}
     assert_response :not_found
   end

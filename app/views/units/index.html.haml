@@ -1,4 +1,4 @@
--if current_user
+-if policy(Unit).new?
   .btn-group.float-right{role: "group"}
     / Add Unit button
     %button.btn.btn-light{"data-target": "#add-unit-modal",

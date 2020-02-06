@@ -2,23 +2,25 @@ require 'test_helper'
 
 class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
-  setup do
-    log_in_as(users(:admin))
-  end
-
   teardown do
     log_out
   end
 
   # create()
 
+  test "create() redirects to login page for logged-out users" do
+    post collections_path, {}
+    assert_redirected_to login_path
+  end
+
   test "create() redirects to login page for unauthorized users" do
-    log_out
+    log_in_as(users(:norights))
     post collections_path, {}
     assert_redirected_to login_path
   end
 
   test "create() returns HTTP 200 for authorized users" do
+    log_in_as(users(:admin))
     post collections_path, {
         xhr: true,
         params: {
@@ -33,6 +35,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates a collection" do
+    log_in_as(users(:admin))
     post collections_path, {
         xhr: true,
         params: {
@@ -47,6 +50,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:admin))
     post collections_path, {
         xhr: true,
         params: {
@@ -60,13 +64,19 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() redirects to login path for logged-out users" do
+    delete "/collections/#{collections(:collection1).id}"
+    assert_redirected_to login_path
+  end
+
   test "destroy() redirects to login path for unauthorized users" do
-    log_out
+    log_in_as(users(:norights))
     delete "/collections/#{collections(:collection1).id}"
     assert_redirected_to login_path
   end
 
   test "destroy() destroys the collection" do
+    log_in_as(users(:admin))
     collection = collections(:collection1)
     delete "/collections/#{collection.id}"
     assert_raises ActiveRecord::RecordNotFound do
@@ -75,6 +85,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing collection" do
+    log_in_as(users(:admin))
     collection = collections(:collection1)
     primary_unit = collection.primary_unit
     delete "/collections/#{collection.id}"
@@ -82,20 +93,28 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 404 for a missing collectiont" do
+    log_in_as(users(:admin))
     delete "/collections/bogus"
     assert_response :not_found
   end
 
   # update()
 
+  test "update() redirects to login path for logged-out users" do
+    collection = collections(:collection1)
+    patch "/collections/#{collection.id}", {}
+    assert_redirected_to login_path
+  end
+
   test "update() redirects to login path for unauthorized users" do
-    log_out
+    log_in_as(users(:norights))
     collection = collections(:collection1)
     patch "/collections/#{collection.id}", {}
     assert_redirected_to login_path
   end
 
   test "update() updates a collection" do
+    log_in_as(users(:admin))
     collection = collections(:collection1)
     patch "/collections/#{collection.id}", {
         xhr: true,
@@ -110,6 +129,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
+    log_in_as(users(:admin))
     collection = collections(:collection1)
     patch "/collections/#{collection.id}", {
         xhr: true,
@@ -124,6 +144,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:admin))
     collection = collections(:collection1)
     patch "/collections/#{collection.id}", {
         xhr: true,
@@ -137,6 +158,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent collections" do
+    log_in_as(users(:admin))
     patch "/collections/bogus", {}
     assert_response :not_found
   end

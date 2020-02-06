@@ -22,7 +22,7 @@
           = link_to "https://wiki.illinois.edu//wiki/display/IDEALS/IDEALS+Resources+and+Information", class: 'nav-link' do
             %i.fa.fa-info-circle
             About
-      - if logged_in?
+      - if current_user&.sysadmin?
         %ul.navbar-nav.my-2.my-lg-0
           %li#administration-nav.nav-item.dropdown
             %a#administration-dropdown.nav-link.dropdown-toggle{href: "#", role: "button", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"}
