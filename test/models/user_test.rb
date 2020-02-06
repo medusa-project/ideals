@@ -29,6 +29,22 @@ class UserTest < ActiveSupport::TestCase
     assert !@instance.role?(:sysadmin)
   end
 
+  # roles
+
+  test "roles can be empty" do
+    @instance.roles = []
+    assert @instance.save
+  end
+
+  test "user cannot be added to multiple instances of the same role" do
+    @instance.roles = []
+    role = roles(:sysadmin)
+    @instance.roles << role
+    assert_raises ActiveRecord::RecordNotUnique do
+      @instance.roles << role
+    end
+  end
+
   # sysadmin?()
 
   test "sysadmin?() returns true when the user is a member of the sysadmin role" do
