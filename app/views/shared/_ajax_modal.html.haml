@@ -1,3 +1,19 @@
-#ajax-modal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "modal menu", :role => "dialog", :tabindex => "-1"}
-  .modal-dialog
+// Requires the following locals:
+//
+// id [String] Modal panel ID.
+// title [String] Modal panel title.
+
+.modal.fade{id: id,
+            "aria-hidden": "true",
+            "aria-labelledby": "#{id}-modal-label",
+            role: "dialog",
+            tabindex: "-1"}
+  .modal-dialog{role: "document"}
     .modal-content
+      .modal-header
+        %h4.modal-title{id: "#{id}-modal-label"}
+          = title
+        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+          %span{"aria-hidden": "true"} &times;
+      .modal-body
+        - # will be populated via XHR

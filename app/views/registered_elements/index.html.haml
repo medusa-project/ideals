@@ -37,4 +37,6 @@
         %td= simple_format(element.scope_note)
 
 = render partial: 'add_modal'
-= render partial: 'edit_modal'
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-element-modal", title: "Edit Element" }
+

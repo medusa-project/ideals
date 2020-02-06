@@ -26,5 +26,5 @@
       - @resource.roles.order(:name).each do |role|
         %li= role.name
 
-= render partial: "users/edit_modal", locals: { user: @resource,
-                                                context: :edit}
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-user-modal", title: "Edit User" }

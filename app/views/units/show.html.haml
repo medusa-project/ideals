@@ -43,5 +43,6 @@
                                                      context: :new }
 = render partial: "units/add_modal", locals: { unit: @new_unit,
                                                context: :new }
-= render partial: "units/edit_modal", locals: { unit: @resource,
-                                                context: :edit}
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-unit-modal", title: "Edit Unit" }

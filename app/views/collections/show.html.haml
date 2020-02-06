@@ -25,4 +25,5 @@
   %h2 Items
   = resource_list(@resources)
 
-= render partial: 'edit_modal'
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-collection-modal", title: "Edit Collection" }
