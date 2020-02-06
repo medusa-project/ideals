@@ -123,6 +123,7 @@ class CollectionsController < ApplicationController
   def collection_params
     params.require(:collection).permit(:primary_unit_id, :title,
                                        managing_user_ids: [],
-                                       submitting_user_ids: [])
+                                       submitting_user_ids: [],
+                                       unit_ids: [])
   end
 end

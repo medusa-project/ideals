@@ -6,24 +6,62 @@
   =icon_for(@resource)
   =@resource.title
 
-%h2 Info
-%dl
-  %dt Managers
-  %dd
+%ul.nav.nav-tabs{role: "tablist"}
+  %li.nav-item
+    %a#items-tab.nav-link.active{href: "#items-tab-content",
+                                 "data-toggle": "tab",
+                                 role: "tab",
+                                 "aria-controls": "items-tab-content",
+                                 "aria-selected": "true"} Items
+  %li.nav-item
+    %a#unit-membership-tab.nav-link{href: "#unit-membership-tab-content",
+                                    "data-toggle": "tab",
+                                    role: "tab",
+                                    "aria-controls": "unit-membership-tab-content",
+                                    "aria-selected": "true"} Unit Membership
+  %li.nav-item
+    %a#access-tab.nav-link{href: "#access-tab-content",
+                           "data-toggle": "tab",
+                           role: "tab",
+                           "aria-controls": "access-tab-content",
+                           "aria-selected": "true"} Access
+
+.tab-content
+  #items-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                               "aria-labelledby": "items-tab"}
+    -if @resource.items.count.positive?
+      .float-right
+        = item_search_field(@resource, Item::IndexFields::PRIMARY_COLLECTION)
+      %h2 Items
+      = resource_list(@resources)
+    -else
+      There are no items in this collection.
+
+  #unit-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                  "aria-labelledby": "unit-membership-tab"}
+    - @resource.all_units.sort{ |u| u.title <=> u.title }.each do |unit|
+      .media.resource-list
+        .thumbnail
+          = link_to(unit) do
+            = icon_for(unit)
+        .media-body
+          %h5.mt-0
+            = link_to(unit.title, unit)
+            - if @resource.primary_unit_id == unit.id
+              %span.badge.badge-primary PRIMARY
+          %br
+          %br
+
+  #access-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                         "aria-labelledby": "access-tab"}
+    %h3 Managers
     %ul
       - @resource.managing_users.each do |user|
         %li= link_to(user.name, "mailto:#{user.email}")
-  %dt Submitters
-  %dd
+    %h3 Submitters
     %ul
       - @resource.submitting_users.each do |user|
         %li= link_to(user.name, "mailto:#{user.email}")
-
--if @resource.items.count.positive?
-  .float-right
-    = item_search_field(@resource, Item::IndexFields::PRIMARY_COLLECTION)
-  %h2 Items
-  = resource_list(@resources)
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-collection-modal", title: "Edit Collection" }

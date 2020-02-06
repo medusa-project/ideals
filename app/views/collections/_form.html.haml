@@ -13,6 +13,8 @@
     = f.label :title
     = f.text_field :title, class: "form-control"
 
+  %hr
+
   - if context == :edit
     .form-group
       = f.label :primary_unit_id, "Primary Unit"
@@ -23,7 +25,13 @@
     = f.hidden_field :primary_unit_id, primary_unit.id
 
   .form-group
-    = label_tag "Submitters"
+    = label_tag "Other Units", "Other Units"
+    %div{style: "height: 18em; overflow-y: scroll"}
+      = unit_tree_checkboxes(f.object.units.pluck(:unit_id))
+  %hr
+
+  .form-group
+    %h5 Submitters
     = hidden_field_tag "collection[submitting_user_ids][]"
     - User.all.order(:name).each do |user|
       .form-check
@@ -34,7 +42,7 @@
           user.name, class: "form-check-label"
 
   .form-group
-    = label_tag "Managers"
+    %h5 Managers
     = hidden_field_tag "collection[managing_user_ids][]"
     - User.all.order(:name).each do |user|
       .form-check
