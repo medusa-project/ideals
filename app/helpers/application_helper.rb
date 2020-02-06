@@ -7,7 +7,8 @@ module ApplicationHelper
   # @return [String] HTML icon tag.
   #
   def icon_for(entity)
-    case entity.class.to_s
+    entity = entity.kind_of?(Class) ? entity : entity.class
+    case entity.to_s
     when "Collection"
       icon = "far fa-folder-open"
     when "Item"
