@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_06_191915) do
+ActiveRecord::Schema.define(version: 2020_02_06_212538) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,21 +47,18 @@ ActiveRecord::Schema.define(version: 2020_02_06_191915) do
     t.index ["key"], name: "index_bitstreams_on_key", unique: true
   end
 
-  create_table "collection_unit_relationships", force: :cascade do |t|
-    t.bigint "collection_id"
-    t.bigint "unit_id"
-    t.boolean "primary", default: false, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["unit_id", "collection_id"], name: "index_curs_on_unit_id_and_collection_id", unique: true
-    t.index ["unit_id", "primary"], name: "index_collection_units_on_unit_id_and_primary"
-  end
-
   create_table "collections", force: :cascade do |t|
     t.string "title"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "primary_unit_id"
+  end
+
+  create_table "collections_units", id: false, force: :cascade do |t|
+    t.bigint "collection_id", null: false
+    t.bigint "unit_id", null: false
+    t.index ["collection_id", "unit_id"], name: "index_collections_units_on_collection_id_and_unit_id", unique: true
   end
 
   create_table "handles", force: :cascade do |t|
@@ -171,8 +168,9 @@ ActiveRecord::Schema.define(version: 2020_02_06_191915) do
   add_foreign_key "assignments", "roles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "collection_unit_relationships", "collections", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "collection_unit_relationships", "units", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "collections", "units", column: "primary_unit_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "collections_units", "collections", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "collections_units", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "item_collection_relationships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "item_collection_relationships", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade

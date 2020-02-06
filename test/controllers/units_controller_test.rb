@@ -74,7 +74,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "destroy() destroys the unit" do
     log_in_as(users(:admin))
     # choose a unit with no dependent collections or units to make setup easier
-    unit = units(:unit1_unit2_unit1)
+    unit = units(:empty)
     delete "/units/#{unit.id}"
     assert_raises ActiveRecord::RecordNotFound do
       Unit.find(unit.id)

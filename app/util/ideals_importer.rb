@@ -57,6 +57,7 @@ class IdealsImporter
                                    "Importing collection-community joins")
         col = Collection.find(collection_id)
         col.primary_unit = Unit.find(group_id)
+        col.save!
       end
       puts "\nReindexing..."
       update_pkey_sequence("collections")

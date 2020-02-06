@@ -15,12 +15,12 @@
 
   - if context == :edit
     .form-group
-      = label_tag :primary_unit_id, "Primary Unit"
-      = select_tag(:primary_unit_id,
+      = f.label :primary_unit_id, "Primary Unit"
+      = f.select(:primary_unit_id,
           unit_tree_options_for_select(primary_unit, false),
-          class: 'custom-select')
+          {}, class: 'custom-select')
   - else
-    = hidden_field_tag "primary_unit_id", primary_unit.id
+    = f.hidden_field :primary_unit_id, primary_unit.id
 
   .form-group
     = label_tag "Submitters"

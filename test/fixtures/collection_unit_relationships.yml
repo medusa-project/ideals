@@ -1,9 +1,0 @@
-unit1_collection1:
-  unit: unit1
-  collection: collection1
-  primary: true
-
-unit1_collection1_1:
-  unit: unit1
-  collection: collection1_1
-  primary: false

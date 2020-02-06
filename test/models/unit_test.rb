@@ -105,7 +105,7 @@ class UnitTest < ActiveSupport::TestCase
   end
 
   test "destroy() succeeds when there are no dependent units or collections" do
-    assert units(:unit2).destroy
+    assert units(:empty).destroy
   end
 
   # parent_id

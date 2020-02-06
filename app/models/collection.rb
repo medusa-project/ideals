@@ -5,9 +5,7 @@
 #
 # # Relationships
 #
-# Collections have a many-to-many relationship with {Item}s and {Unit}s. The
-# relationship to {Unit}s is through the {CollectionUnitRelationship} model
-# which enables designation of one of them as primary.
+# Collections have many-to-many relationships with {Item}s and {Unit}s.
 #
 # # Indexing
 #
@@ -35,22 +33,18 @@ class Collection < ApplicationRecord
   belongs_to :primary_unit, class_name: "Unit",
              foreign_key: "primary_unit_id", optional: true
   breadcrumbs parent: :primary_unit, label: :title
-  has_many :collection_unit_relationships
   has_many :item_collection_relationships
   has_many :items, through: :item_collection_relationships
   has_many :managers
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user
-  has_one :primary_collection_unit_relationship, -> { where(primary: true) },
-          class_name: "CollectionUnitRelationship"
-  has_one :primary_unit, through: :primary_collection_unit_relationship,
-          source: :unit
   has_many :submitters
   has_many :submitting_users, through: :submitters,
            class_name: "User", source: :user
   # N.B.: this association includes only directly associated units--not any of
-  # their parents or children. See {all_units}.
-  has_many :units, through: :collection_unit_relationships
+  # their parents or children--and it also doesn't include the primary unit.
+  # See {all_units} and {primary_unit}.
+  has_and_belongs_to_many :units
 
   validates :title, presence: true
 
@@ -59,7 +53,8 @@ class Collection < ApplicationRecord
   #         those units' parents, in undefined order.
   #
   def all_units
-    bucket = []
+    bucket = Set.new
+    bucket << self.primary_unit if self.primary_unit_id
     units.each do |unit|
       bucket << unit
       bucket += unit.all_parents
@@ -78,7 +73,7 @@ class Collection < ApplicationRecord
     doc[IndexFields::LAST_INDEXED]  = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
     doc[IndexFields::MANAGERS]      = self.managers.pluck(:user_id)
-    doc[IndexFields::PRIMARY_UNIT]  = self.primary_unit&.id
+    doc[IndexFields::PRIMARY_UNIT]  = self.primary_unit_id
     doc[IndexFields::SUBMITTERS]    = self.submitters.pluck(:user_id)
     doc[IndexFields::TITLE]         = self.title
     doc[IndexFields::UNITS]         = self.unit_ids
@@ -87,17 +82,6 @@ class Collection < ApplicationRecord
 
   def label
     title
-  end
-
-  ##
-  # Sets the primary unit, but does not remove the current primary unit from
-  # {units}.
-  #
-  # @param unit [Unit] New primary unit.
-  #
-  def primary_unit=(unit)
-    self.collection_unit_relationships.update_all(primary: false)
-    self.collection_unit_relationships.build(unit: unit, primary: true).save!
   end
 
 end

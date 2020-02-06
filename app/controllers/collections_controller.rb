@@ -16,8 +16,6 @@ class CollectionsController < ApplicationController
       authorize @resource
       ActiveRecord::Base.transaction do
         @resource.save!
-        @resource.primary_unit = Unit.find(params[:primary_unit_id])
-        @resource.save!
       end
     rescue
       render partial: "shared/validation_messages",
@@ -93,10 +91,6 @@ class CollectionsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         @resource.update!(collection_params)
-        if params[:primary_unit_id]
-          @resource.primary_unit = Unit.find(params[:primary_unit_id])
-        end
-        @resource.save!
       end
     rescue
       render partial: "shared/validation_messages",
@@ -127,7 +121,8 @@ class CollectionsController < ApplicationController
   end
 
   def collection_params
-    params.require(:collection).permit({ managing_user_ids: [] },
-                                       { submitting_user_ids: [] }, :title)
+    params.require(:collection).permit(:primary_unit_id, :title,
+                                       managing_user_ids: [],
+                                       submitting_user_ids: [])
   end
 end

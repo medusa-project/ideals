@@ -31,20 +31,7 @@ class CollectionTest < ActiveSupport::TestCase
   # all_units()
 
   test "all_units() returns the expected units" do
-    assert_equal 1, @instance.all_units.length
-  end
-
-  # primary_unit=()
-
-  test "primary_unit=() updates the primary unit" do
-    unit2 = units(:unit2)
-    assert_not_equal unit2, @instance.primary_unit
-    assert_equal 1, @instance.units.count
-
-    @instance.primary_unit = unit2
-    @instance.reload
-    assert_equal unit2, @instance.primary_unit
-    assert_equal 2, @instance.units.count
+    assert_equal 2, @instance.all_units.length
   end
 
   # reindex_all() (Indexed concern)
@@ -74,7 +61,7 @@ class CollectionTest < ActiveSupport::TestCase
                  doc[Collection::IndexFields::LAST_MODIFIED]
     assert_equal [@instance.managing_users.first.id],
                  doc[Collection::IndexFields::MANAGERS]
-    assert_equal @instance.primary_unit.id,
+    assert_equal @instance.primary_unit_id,
                doc[Collection::IndexFields::PRIMARY_UNIT]
     assert_equal [@instance.submitting_users.first.id],
                  doc[Collection::IndexFields::SUBMITTERS]
