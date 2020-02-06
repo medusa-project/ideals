@@ -14,3 +14,7 @@ collection1_1:
 collection2:
   title: My Other Great Collection
   description: Another great collection full of great stuff.
+
+empty:
+  title: Empty Collection
+  description: Great big collection full of nothing.

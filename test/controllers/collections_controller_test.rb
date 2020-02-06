@@ -77,7 +77,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() destroys the collection" do
     log_in_as(users(:admin))
-    collection = collections(:collection1)
+    collection = collections(:empty)
     delete "/collections/#{collection.id}"
     assert_raises ActiveRecord::RecordNotFound do
       Collection.find(collection.id)
