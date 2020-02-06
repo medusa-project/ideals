@@ -89,13 +89,6 @@ class Collection < ApplicationRecord
     title
   end
 
-  def default_search
-    Item.search do
-      with :collection_id, id
-      paginate(page: 1, per_page: 25)
-    end
-  end
-
   ##
   # Sets the primary unit, but does not remove the current primary unit from
   # {units}.

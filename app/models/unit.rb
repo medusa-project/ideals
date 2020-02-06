@@ -138,10 +138,6 @@ class Unit < ApplicationRecord
     end
   end
 
-  def default_search
-    nil
-  end
-
   ##
   # @return [Unit] The root parent unit, which may the instance itself if it is
   #                a root unit.

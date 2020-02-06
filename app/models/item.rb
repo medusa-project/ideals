@@ -54,10 +54,6 @@ class Item < ApplicationRecord
     title
   end
 
-  def default_search
-    nil
-  end
-
   ##
   # Sets the primary collection, but does not remove the current primary
   # collection from {collections}.
