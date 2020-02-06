@@ -106,4 +106,20 @@ class CollectionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # units
+
+  test "units can be empty" do
+    @instance.units = []
+    assert @instance.save
+  end
+
+  test "collection cannot be added to multiple instances of the same unit" do
+    @instance.units = []
+    unit = units(:unit1)
+    @instance.units << unit
+    assert_raises ActiveRecord::RecordNotUnique do
+      @instance.units << unit
+    end
+  end
+
 end

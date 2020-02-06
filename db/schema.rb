@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_06_154347) do
+ActiveRecord::Schema.define(version: 2020_02_06_191915) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,7 @@ ActiveRecord::Schema.define(version: 2020_02_06_154347) do
     t.boolean "primary", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["unit_id", "collection_id"], name: "index_curs_on_unit_id_and_collection_id", unique: true
     t.index ["unit_id", "primary"], name: "index_collection_units_on_unit_id_and_primary"
   end
 
