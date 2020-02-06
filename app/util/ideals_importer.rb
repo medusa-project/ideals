@@ -189,16 +189,14 @@ class IdealsImporter
 
         StringUtils.print_progress(start_time, row_num, line_count,
                                    "Importing items")
-        item = Item.create!(id:                      id,
-                            title:                   title,
-                            submitter_email:         submitter_email,
-                            submitter_auth_provider: submitter_auth_provider,
-                            in_archive:              in_archive,
-                            withdrawn:               withdrawn,
-                            discoverable:            discoverable)
-        if collection_id.present?
-          item.primary_collection = Collection.find(collection_id)
-        end
+        Item.create!(id:                      id,
+                     title:                   title,
+                     submitter_email:         submitter_email,
+                     submitter_auth_provider: submitter_auth_provider,
+                     in_archive:              in_archive,
+                     withdrawn:               withdrawn,
+                     discoverable:            discoverable,
+                     primary_collection_id:   collection_id)
       end
       puts "\nReindexing..."
       update_pkey_sequence("items")

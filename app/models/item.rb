@@ -26,12 +26,9 @@ class Item < ApplicationRecord
   end
 
   has_many :bitstreams
-  has_many :item_collection_relationships
-  has_one :primary_item_collection_relationship, -> { where(primary: true) },
-          class_name: "ItemCollectionRelationship"
-  has_one :primary_collection, through: :primary_item_collection_relationship,
-          source: :collection
-  has_many :collections, through: :item_collection_relationships
+  has_and_belongs_to_many :collections
+  belongs_to :primary_collection, class_name: "Collection",
+             foreign_key: "primary_collection_id", optional: true
 
   breadcrumbs parent: :primary_collection, label: :title
 
@@ -45,25 +42,13 @@ class Item < ApplicationRecord
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
     doc[IndexFields::LAST_INDEXED]       = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
-    doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection&.id
+    doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection_id
     doc[IndexFields::PRIMARY_UNIT]       = self.primary_unit&.id
     doc
   end
 
   def label
     title
-  end
-
-  ##
-  # Sets the primary collection, but does not remove the current primary
-  # collection from {collections}.
-  #
-  # @param collection [Collection] New primary collection.
-  #
-  def primary_collection=(collection)
-    self.item_collection_relationships.update_all(primary: false)
-    self.item_collection_relationships.build(collection: collection,
-                                             primary: true).save!
   end
 
   ##

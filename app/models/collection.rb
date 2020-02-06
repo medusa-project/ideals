@@ -30,11 +30,10 @@ class Collection < ApplicationRecord
     UNITS         = "i_units"
   end
 
+  has_and_belongs_to_many :items
   belongs_to :primary_unit, class_name: "Unit",
              foreign_key: "primary_unit_id", optional: true
   breadcrumbs parent: :primary_unit, label: :title
-  has_many :item_collection_relationships
-  has_many :items, through: :item_collection_relationships
   has_many :managers
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user

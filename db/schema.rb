@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_06_212538) do
+ActiveRecord::Schema.define(version: 2020_02_06_224016) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,12 @@ ActiveRecord::Schema.define(version: 2020_02_06_212538) do
     t.bigint "primary_unit_id"
   end
 
+  create_table "collections_items", id: false, force: :cascade do |t|
+    t.bigint "collection_id", null: false
+    t.bigint "item_id", null: false
+    t.index ["collection_id", "item_id"], name: "index_collections_items_on_collection_id_and_item_id", unique: true
+  end
+
   create_table "collections_units", id: false, force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "unit_id", null: false
@@ -94,15 +100,6 @@ ActiveRecord::Schema.define(version: 2020_02_06_212538) do
     t.string "approval_state", default: "pending"
   end
 
-  create_table "item_collection_relationships", force: :cascade do |t|
-    t.bigint "collection_id"
-    t.bigint "item_id"
-    t.boolean "primary", default: false, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["collection_id", "primary"], name: "index_item_collections_on_collection_id_and_primary"
-  end
-
   create_table "items", force: :cascade do |t|
     t.string "title"
     t.string "submitter_email"
@@ -112,6 +109,7 @@ ActiveRecord::Schema.define(version: 2020_02_06_212538) do
     t.boolean "discoverable"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "primary_collection_id"
   end
 
   create_table "managers", force: :cascade do |t|
@@ -169,10 +167,11 @@ ActiveRecord::Schema.define(version: 2020_02_06_212538) do
   add_foreign_key "assignments", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections", "units", column: "primary_unit_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "collections_items", "collections", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "collections_items", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections_units", "collections", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections_units", "units", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "item_collection_relationships", "collections", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "item_collection_relationships", "items", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "items", "collections", column: "primary_collection_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "collections", on_update: :cascade, on_delete: :cascade

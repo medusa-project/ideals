@@ -21,19 +21,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal count - 1, Item.search.count
   end
 
-  # primary_collection=()
-
-  test "primary_collection=() updates the primary collection" do
-    collection2 = collections(:collection2)
-    assert_not_equal collection2, @instance.primary_collection
-    assert_equal 1, @instance.collections.count
-
-    @instance.primary_collection = collection2
-    @instance.reload
-    assert_equal collection2, @instance.primary_collection
-    assert_equal 2, @instance.collections.count
-  end
-
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
@@ -64,7 +51,7 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_empty doc[Item::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Item::IndexFields::LAST_MODIFIED]
-    assert_equal @instance.primary_collection.id,
+    assert_equal @instance.primary_collection_id,
                  doc[Item::IndexFields::PRIMARY_COLLECTION]
     assert_equal @instance.primary_collection.primary_unit.id,
                  doc[Item::IndexFields::PRIMARY_UNIT]

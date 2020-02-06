@@ -5,6 +5,9 @@ item1:
   in_archive: true
   withdrawn: false
   discoverable: true
+  primary_collection: collection1
+  collections:
+    - collection1
 
 item2:
   title: Another Great Item
@@ -13,3 +16,5 @@ item2:
   in_archive: true
   withdrawn: false
   discoverable:
+  collections:
+    - collection1
