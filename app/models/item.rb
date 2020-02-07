@@ -69,8 +69,13 @@ class Item < ApplicationRecord
     self.primary_collection&.primary_unit
   end
 
+  ##
+  # @return [String] Value of the title [AscribedElement] in the {elements}
+  #                  association, or an empty string if not found.
+  #
   def title
-    self.elements.find{ |e| e.name == "title" }&.string
+    config = ::Configuration.instance
+    self.elements.find{ |e| e.name == config.title_element }&.string || ""
   end
 
 end

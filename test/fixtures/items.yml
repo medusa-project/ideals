@@ -25,3 +25,12 @@ described:
   discoverable:
   collections:
     - collection1
+
+undescribed:
+  submitter_email: sally@example.org
+  submitter_auth_provider:
+  in_archive: true
+  withdrawn: false
+  discoverable:
+  collections:
+    - collection1

@@ -1,11 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 title:
-  name: title
+  name: dc:title
   scope_note:
 
 subject:
-  name: subject
+  name: dc:subject
   scope_note:
 
 unused:

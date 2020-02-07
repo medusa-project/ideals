@@ -67,7 +67,13 @@ class ItemTest < ActiveSupport::TestCase
                  doc[Item::IndexFields::PRIMARY_COLLECTION]
     assert_equal @instance.primary_collection.primary_unit.id,
                  doc[Item::IndexFields::PRIMARY_UNIT]
-    # TODO: metadata
+
+    item = items(:described)
+    doc = item.as_indexed_json
+    assert_equal 2, item.elements.length
+    title = item.elements.find{ |e| e.name == Configuration.instance.title_element }
+    assert_equal [title.string],
+                 doc[title.registered_element.indexed_name]
   end
 
   # primary_unit()
@@ -93,6 +99,11 @@ class ItemTest < ActiveSupport::TestCase
   test "title() returns the title element value" do
     item = items(:described)
     assert_equal "Some title", item.title
+  end
+
+  test "title() returns an empty string when there is no title element" do
+    item = items(:undescribed)
+    assert_equal "", item.title
   end
 
 end

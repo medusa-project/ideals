@@ -77,7 +77,13 @@ class CollectionTest < ActiveSupport::TestCase
                  doc[Collection::IndexFields::SUBMITTERS]
     assert_equal @instance.units.count,
         doc[Collection::IndexFields::UNITS].length
-    # TODO: metadata
+
+    collection = collections(:described)
+    doc = collection.as_indexed_json
+    assert_equal 2, collection.elements.length
+    title = collection.elements.find{ |e| e.name == Configuration.instance.title_element }
+    assert_equal [title.string],
+                 doc[title.registered_element.indexed_name]
   end
 
   # reindex() (Indexed concern)
@@ -98,6 +104,11 @@ class CollectionTest < ActiveSupport::TestCase
   test "title() returns the title element value" do
     collection = collections(:described)
     assert_equal "Some title", collection.title
+  end
+
+  test "title() returns an empty string when there is no title element" do
+    collection = collections(:undescribed)
+    assert_equal "", collection.title
   end
 
   # units
