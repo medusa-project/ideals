@@ -25,7 +25,8 @@ class IdealsImporter
     start_time = Time.now
     line_count = count_lines(csv_pathname)
 
-    AscribedElement.where("collection_id IS NOT NULL").destroy_all
+    # destroy_all is excruciatingly slow and we don't need callbacks
+    AscribedElement.where("collection_id IS NOT NULL").delete_all
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
@@ -186,7 +187,8 @@ class IdealsImporter
     start_time = Time.now
     line_count = count_lines(csv_pathname)
 
-    AscribedElement.where("item_id IS NOT NULL").destroy_all
+    # N.B.: destroy_all is excruciatingly slow and we don't need callbacks
+    AscribedElement.where("item_id IS NOT NULL").delete_all
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
@@ -204,6 +206,9 @@ class IdealsImporter
         AscribedElement.create!(registered_element: reg_elem,
                                 item_id: item_id,
                                 string: string)
+      rescue ActiveRecord::RecordInvalid
+        # This is probably caused by a nonexistent RegisteredElement. Not much
+        # we can do.
       rescue ActiveRecord::InvalidForeignKey
         # IDEALS-DSpace does not have a hard elements-items foreign key and
         # there is some inconsistency, which we have not much choice but to
@@ -271,7 +276,7 @@ class IdealsImporter
     start_time = Time.now
     line_count = count_lines(csv_pathname)
 
-    RegisteredElement.destroy_all
+    RegisteredElement.delete_all
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
