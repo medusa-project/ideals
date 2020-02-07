@@ -4,11 +4,13 @@
 #
 class AscribedElement < ApplicationRecord
   belongs_to :registered_element
-  # N.B.: `touch: true` ensures that the owning resource is updated (its
+  # N.B.: "Touching" ensures that the owning resource is updated (its
   # `updated_at` column is updated and it is reindexed) when the instance is
-  # updated.
-  belongs_to :collection, optional: true, touch: true
-  belongs_to :item, optional: true, touch: true
+  # updated. In general, we desire this. However, it happens to make bulk-
+  # importing item metadata excruciatingly slow, so it is disabled during
+  # imports.
+  belongs_to :collection, optional: true, touch: !IdealsImporter.instance.running?
+  belongs_to :item, optional: true, touch: !IdealsImporter.instance.running?
 
   validates :string, presence: true
 

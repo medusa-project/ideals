@@ -120,7 +120,7 @@ namespace :ideals_dspace do
                        in_sql_file,
                        out_csv_file)
       end
-      IdealsImporter.new.send(import_method, out_csv_file)
+      IdealsImporter.instance.send(import_method, out_csv_file)
     end
   end
 

@@ -1,7 +1,9 @@
 ##
 # Imports content from "Old IDEALS" (IDEALS-DSpace) into the application.
 #
-# This class is intended to be used with a fresh, empty database.
+# This class is intended to be used with a fresh, empty database. It is a
+# Singleton because other application component(s) may need to know when it is
+# running.
 #
 # N.B.: methods must be invoked in a certain order. See the
 # `ideals_dspace:migrate` rake task.
@@ -15,10 +17,13 @@ class IdealsImporter
 
   LOGGER = CustomLogger.new(IdealsImporter)
 
+  include Singleton
+
   ##
   # @param csv_pathname [String]
   #
   def import_collection_metadata(csv_pathname)
+    @running = true
     LOGGER.debug("import_collection_metadata(): importing %s", csv_pathname)
 
     # Enables progress reporting.
@@ -45,6 +50,8 @@ class IdealsImporter
                               collection_id: collection_id,
                               string: string)
     end
+  ensure
+    @running = false
     puts "\n"
   end
 
@@ -52,6 +59,7 @@ class IdealsImporter
   # @param csv_pathname [String]
   #
   def import_collections(csv_pathname)
+    @running = true
     LOGGER.debug("import_collections(): importing %s", csv_pathname)
 
     # Enables progress reporting.
@@ -68,12 +76,15 @@ class IdealsImporter
       Collection.create!(id: row_arr[0].to_i)
     end
     update_pkey_sequence("collections")
+  ensure
+    @running = false
   end
 
   ##
   # @param csv_pathname [String]
   #
   def import_collections_2_communities(csv_pathname)
+    @running = true
     LOGGER.debug("import_collections_2_communities(): importing %s",
                  csv_pathname)
     # Enables progress reporting.
@@ -95,12 +106,15 @@ class IdealsImporter
       col.save!
     end
     update_pkey_sequence("collections")
+  ensure
+    @running = false
   end
 
   ##
   # @param csv_pathname [String]
   #
   def import_communities(csv_pathname)
+    @running = true
     LOGGER.debug("import_communities(): importing %s", csv_pathname)
 
     # Enables progress reporting.
@@ -119,12 +133,15 @@ class IdealsImporter
       Unit.create!(id: community_id, title: title)
     end
     update_pkey_sequence("units")
+  ensure
+    @running = false
   end
 
   ##
   # @param csv_pathname [String]
   #
   def import_communities_2_communities(csv_pathname)
+    @running = true
     LOGGER.debug("import_communities_2_communities(): importing %s", csv_pathname)
 
     # Enables progress reporting.
@@ -144,12 +161,15 @@ class IdealsImporter
       unit.update!(parent_id: parent_unit_id)
     end
     update_pkey_sequence("units")
+  ensure
+    @running = false
   end
 
   ##
   # @param csv_pathname [String]
   #
   def import_handles(csv_pathname)
+    @running = true
     LOGGER.debug("import_handles(): importing %s", csv_pathname)
 
     # Enables progress reporting.
@@ -173,14 +193,17 @@ class IdealsImporter
                      resource_type_id: row[2].to_i,
                      resource_id:      row[3].to_i)
     end
-    puts "\n"
     update_pkey_sequence("handles")
+  ensure
+    puts "\n"
+    @running = false
   end
 
   ##
   # @param csv_pathname [String]
   #
   def import_item_metadata(csv_pathname)
+    @running = true
     LOGGER.debug("import_item_metadata(): importing %s", csv_pathname)
 
     # Enables progress reporting.
@@ -215,13 +238,16 @@ class IdealsImporter
         # ignore.
       end
     end
+  ensure
     puts "\n"
+    @running = false
   end
 
   ##
   # @param csv_pathname [String]
   #
   def import_items(csv_pathname)
+    @running = true
     LOGGER.debug("import_items(): importing %s", csv_pathname)
 
     # Enables progress reporting.
@@ -251,7 +277,6 @@ class IdealsImporter
       withdrawn     = row[3] == "t"
       collection_id = row[4].present? ? row[4].to_i : nil
       discoverable  = row[5] == "t"
-      title         = row[6]
 
       StringUtils.print_progress(start_time, row_num, line_count,
                                  "Importing items")
@@ -264,12 +289,15 @@ class IdealsImporter
                    primary_collection_id:   collection_id)
     end
     update_pkey_sequence("items")
+  ensure
+    @running = false
   end
 
   ##
   # @param csv_pathname [String]
   #
   def import_metadata_registry(csv_pathname)
+    @running = true
     LOGGER.debug("import_metadata(): importing %s", csv_pathname)
 
     # Enables progress reporting.
@@ -290,8 +318,14 @@ class IdealsImporter
                                 name:       name,
                                 scope_note: row_arr[4])
     end
-    puts "\n"
     update_pkey_sequence("registered_elements")
+  ensure
+    puts "\n"
+    @running = false
+  end
+
+  def running?
+    @running
   end
 
   private
