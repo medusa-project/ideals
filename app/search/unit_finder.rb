@@ -89,7 +89,7 @@ class UnitFinder < AbstractFinder
           j.filter do
             j.child! do
               j.term do
-                j.set! Item::IndexFields::CLASS, get_class.to_s
+                j.set! ElasticsearchIndex::StandardFields::CLASS, get_class.to_s
               end
             end
 

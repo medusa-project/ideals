@@ -82,8 +82,10 @@ class CollectionFinder < AbstractFinder
           end
 
           j.filter do
-            j.term do
-              j.set! Collection::IndexFields::CLASS, 'Collection'
+            j.child! do
+              j.term do
+                j.set! ElasticsearchIndex::StandardFields::CLASS, get_class.to_s
+              end
             end
 
             @filters.each do |field, value|
