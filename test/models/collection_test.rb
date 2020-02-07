@@ -86,6 +86,17 @@ class CollectionTest < ActiveSupport::TestCase
                  doc[title.registered_element.indexed_name]
   end
 
+  # element() (Describable concern)
+
+  test "element() returns a matching element" do
+    assert_equal "Some title", collections(:described).element("dc:title").string
+    assert_equal "Some title", collections(:described).element(:"dc:title").string
+  end
+
+  test "element() returns nil if no such element exists" do
+    assert_nil @instance.element("bogus")
+  end
+
   # reindex() (Indexed concern)
 
   test "reindex reindexes the instance" do
