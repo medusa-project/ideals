@@ -7,6 +7,14 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # indexed_name()
+
+  test "indexed_name() returns the expected name" do
+    assert_equal "metadata_title", @instance.indexed_name
+  end
+
+  # name
+
   test "name must be present" do
     @instance.name = nil
     assert !@instance.valid?
