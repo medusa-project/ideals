@@ -19,6 +19,13 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert registered_elements(:unused).destroy
   end
 
+  # sortable_field()
+
+  test "sortable_field() returns the expected name" do
+    assert_equal "metadata_title.sort",
+                 RegisteredElement.sortable_field("title")
+  end
+
   # indexed_name()
 
   test "indexed_name() returns the expected name" do
