@@ -110,6 +110,7 @@ rails elasticsearch:purge
 rails db:reset
 rails "ideals_dspace:migrate[dbname,dbhost,dbuser]"
 rails "ideals:users:create[username,password]"
+rails elasticsearch:reindex
 ```
 (`dbhost` and `dbuser`) are only required if the database is on a different
 host and/or the database user is different from the default.
@@ -123,6 +124,7 @@ TODO: maybe ideals_dspace:migrate should do all of these steps automatically?
 rails elasticsearch:purge
 rails db:reset
 rails "ideals_dspace:migrate[dbname,dbhost,dbuser]"
+rails elasticsearch:reindex
 ```
 
 ## Run the web app

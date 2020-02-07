@@ -1,8 +1,15 @@
 ##
 # Imports content from "Old IDEALS" (IDEALS-DSpace) into the application.
 #
-# Methods must be invoked in a certain order. See the `ideals_dspace:migrate`
-# rake task.
+# This class is intended to be used with a fresh, empty database.
+#
+# N.B.: methods must be invoked in a certain order. See the
+# `ideals_dspace:migrate` rake task.
+#
+# N.B. 2: methods do not create or update objects within transactions, which
+# means that they don't get reindexed. This is in order to save time by
+# avoiding multiple indexings of the same object. Resources should be reindexed
+# manually after import, perhaps using the `elasticsearch:reindex` rake task.
 #
 class IdealsImporter
 
@@ -18,27 +25,26 @@ class IdealsImporter
     start_time = Time.now
     line_count = count_lines(csv_pathname)
 
-    ActiveRecord::Base.transaction do
-      AscribedElement.where("collection_id IS NOT NULL").destroy_all
-      File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
-        next if row_num == 0 # skip header row
+    AscribedElement.where("collection_id IS NOT NULL").destroy_all
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
 
-        row_arr = line.split("|")
-        collection_id = row_arr[4].to_i
-        next if row_arr[4].to_i == 0
-        elem_name = "#{row_arr[0]}:#{row_arr[1]}"
-        elem_name += ":#{row_arr[2]}" if row_arr[2].present?
-        reg_elem = RegisteredElement.find_by_name(elem_name)
+      row_arr = line.split("|")
+      collection_id = row_arr[4].to_i
+      next if collection_id == 0
+      elem_name = "#{row_arr[0]}:#{row_arr[1]}"
+      elem_name += ":#{row_arr[2]}" if row_arr[2].present?
+      reg_elem = RegisteredElement.find_by_name(elem_name)
+      string = row_arr[3].strip
 
-        StringUtils.print_progress(start_time, row_num, line_count,
-                                   "Importing collection metadata")
+      StringUtils.print_progress(start_time, row_num, line_count,
+                                 "Importing collection metadata")
 
-        AscribedElement.create!(registered_element: reg_elem,
-                                collection_id: collection_id,
-                                string: row_arr[3])
-      end
-      puts "\n"
+      AscribedElement.create!(registered_element: reg_elem,
+                              collection_id: collection_id,
+                              string: string)
     end
+    puts "\n"
   end
 
   ##
@@ -51,24 +57,16 @@ class IdealsImporter
     start_time = Time.now
     line_count = count_lines(csv_pathname)
 
-    ActiveRecord::Base.transaction do
-      File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
-        next if row_num == 0 # skip header row
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
 
-        row_arr = line.split("|")
-        collection_id = row_arr[0].to_i
-        # remove any double quotes from beginning or end of title because messy data
-        title = row_arr[1]
-        title.strip!
+      row_arr = line.split("|")
 
-        StringUtils.print_progress(start_time, row_num, line_count,
-                                   "Importing collections")
-        Collection.create!(id: collection_id, title: title,
-                           manager: User.all.find(&:sysadmin?)) # TODO: assign the correct user; this is just some slop to get the import working
-      end
-      puts "\nReindexing..."
-      update_pkey_sequence("collections")
+      StringUtils.print_progress(start_time, row_num, line_count,
+                                 "Importing collections")
+      Collection.create!(id: row_arr[0].to_i)
     end
+    update_pkey_sequence("collections")
   end
 
   ##
@@ -81,23 +79,21 @@ class IdealsImporter
     start_time = Time.now
     line_count = count_lines(csv_pathname)
 
-    ActiveRecord::Base.transaction do
-      File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
-        next if row_num == 0 # skip header row
 
-        row_arr = line.split("|")
-        collection_id = row_arr[0].to_i
-        group_id = row_arr[1].to_i
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
 
-        StringUtils.print_progress(start_time, row_num, line_count,
-                                   "Importing collection-community joins")
-        col = Collection.find(collection_id)
-        col.primary_unit = Unit.find(group_id)
-        col.save!
-      end
-      puts "\nReindexing..."
-      update_pkey_sequence("collections")
+      row_arr = line.split("|")
+      collection_id = row_arr[0].to_i
+      group_id = row_arr[1].to_i
+
+      StringUtils.print_progress(start_time, row_num, line_count,
+                                 "Importing collection-community joins")
+      col = Collection.find(collection_id)
+      col.primary_unit_id = group_id
+      col.save!
     end
+    update_pkey_sequence("collections")
   end
 
   ##
@@ -110,21 +106,18 @@ class IdealsImporter
     start_time = Time.now
     line_count = count_lines(csv_pathname)
 
-    ActiveRecord::Base.transaction do
-      File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
-        next if row_num == 0 # skip header row
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
 
-        row_arr = line.split("|")
-        community_id = row_arr[0].to_i
-        title = row_arr[1].strip
+      row_arr = line.split("|")
+      community_id = row_arr[0].to_i
+      title = row_arr[1].strip
 
-        StringUtils.print_progress(start_time, row_num, line_count,
-                                   "Importing communities")
-        Unit.create!(id: community_id, title: title)
-      end
-      puts "\nReindexing..."
-      update_pkey_sequence("units")
+      StringUtils.print_progress(start_time, row_num, line_count,
+                                 "Importing communities")
+      Unit.create!(id: community_id, title: title)
     end
+    update_pkey_sequence("units")
   end
 
   ##
@@ -137,22 +130,19 @@ class IdealsImporter
     start_time = Time.now
     line_count = count_lines(csv_pathname)
 
-    ActiveRecord::Base.transaction do
-      File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
-        next if row_num == 0 # skip header row
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
 
-        row_arr = line.split("|")
-        group_id = row_arr[0].to_i
-        parent_unit_id = row_arr[1].to_i
+      row_arr = line.split("|")
+      group_id = row_arr[0].to_i
+      parent_unit_id = row_arr[1].to_i
 
-        StringUtils.print_progress(start_time, row_num, line_count,
-                                   "Importing community-community joins")
-        unit = Unit.find(group_id)
-        unit.update!(parent_id: parent_unit_id)
-      end
-      puts "\nReindexing..."
-      update_pkey_sequence("units")
+      StringUtils.print_progress(start_time, row_num, line_count,
+                                 "Importing community-community joins")
+      unit = Unit.find(group_id)
+      unit.update!(parent_id: parent_unit_id)
     end
+    update_pkey_sequence("units")
   end
 
   ##
@@ -165,26 +155,62 @@ class IdealsImporter
     start_time = Time.now
     line_count = count_lines(csv_pathname)
 
-    ActiveRecord::Base.transaction do
-      File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
-        next if row_num == 0 # skip header row
 
-        row = line.split(",")
-        handle = row[1]
-        handle_parts = handle.split("/")
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
 
-        StringUtils.print_progress(start_time, row_num, line_count,
-                                   "Importing handles")
-        Handle.create!(id:               row[0].to_i,
-                       handle:           handle,
-                       prefix:           handle_parts[0].to_i,
-                       suffix:           handle_parts[1].to_i,
-                       resource_type_id: row[2].to_i,
-                       resource_id:      row[3].to_i)
-      end
-      puts "\n"
-      update_pkey_sequence("handles")
+      row = line.split(",")
+      handle = row[1]
+      handle_parts = handle.split("/")
+
+      StringUtils.print_progress(start_time, row_num, line_count,
+                                 "Importing handles")
+      Handle.create!(id:               row[0].to_i,
+                     handle:           handle,
+                     prefix:           handle_parts[0].to_i,
+                     suffix:           handle_parts[1].to_i,
+                     resource_type_id: row[2].to_i,
+                     resource_id:      row[3].to_i)
     end
+    puts "\n"
+    update_pkey_sequence("handles")
+  end
+
+  ##
+  # @param csv_pathname [String]
+  #
+  def import_item_metadata(csv_pathname)
+    LOGGER.debug("import_item_metadata(): importing %s", csv_pathname)
+
+    # Enables progress reporting.
+    start_time = Time.now
+    line_count = count_lines(csv_pathname)
+
+    AscribedElement.where("item_id IS NOT NULL").destroy_all
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
+
+      row_arr = line.split("|")
+      item_id = row_arr[4].to_i
+      elem_name = "#{row_arr[0]}:#{row_arr[1]}"
+      elem_name += ":#{row_arr[2]}" if row_arr[2].present?
+      reg_elem = RegisteredElement.find_by_name(elem_name)
+      string = row_arr[3]&.strip
+      next unless string.present?
+
+      StringUtils.print_progress(start_time, row_num, line_count,
+                                 "Importing item metadata")
+      begin
+        AscribedElement.create!(registered_element: reg_elem,
+                                item_id: item_id,
+                                string: string)
+      rescue ActiveRecord::InvalidForeignKey
+        # IDEALS-DSpace does not have a hard elements-items foreign key and
+        # there is some inconsistency, which we have not much choice but to
+        # ignore.
+      end
+    end
+    puts "\n"
   end
 
   ##
@@ -198,45 +224,41 @@ class IdealsImporter
     line_count = count_lines(csv_pathname)
 
     item_ids = Set.new
-    ActiveRecord::Base.transaction do
-      File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
-        next if row_num == 0 # skip header row
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
 
-        row = line.split("|")
-        id = row[0].to_i
-        next if item_ids.include?(id)
+      row = line.split("|")
+      id = row[0].to_i
+      next if item_ids.include?(id)
 
-        item_ids.add(id)
-        submitter_email = row[1]
-        next unless submitter_email
+      item_ids.add(id)
+      submitter_email = row[1]
+      next unless submitter_email
 
-        # TODO: When this is for real, not just toy records, blank submitter_email is a problem
-        email_parts = submitter_email.split("@")
-        submitter_auth_provider = if %w(illinois.edu uis.edu uic.edu).include?(email_parts[-1])
-                                    AuthProvider::SHIBBOLETH
-                                  else
-                                    AuthProvider::IDENTITY
-                                  end
-        in_archive    = row[2] == "t"
-        withdrawn     = row[3] == "t"
-        collection_id = row[4].present? ? row[4].to_i : nil
-        discoverable  = row[5] == "t"
-        title         = row[6]
+      # TODO: When this is for real, not just toy records, blank submitter_email is a problem
+      email_parts = submitter_email.split("@")
+      submitter_auth_provider = if %w(illinois.edu uis.edu uic.edu).include?(email_parts[-1])
+                                  AuthProvider::SHIBBOLETH
+                                else
+                                  AuthProvider::IDENTITY
+                                end
+      in_archive    = row[2] == "t"
+      withdrawn     = row[3] == "t"
+      collection_id = row[4].present? ? row[4].to_i : nil
+      discoverable  = row[5] == "t"
+      title         = row[6]
 
-        StringUtils.print_progress(start_time, row_num, line_count,
-                                   "Importing items")
-        Item.create!(id:                      id,
-                     title:                   title,
-                     submitter_email:         submitter_email,
-                     submitter_auth_provider: submitter_auth_provider,
-                     in_archive:              in_archive,
-                     withdrawn:               withdrawn,
-                     discoverable:            discoverable,
-                     primary_collection_id:   collection_id)
-      end
-      puts "\nReindexing..."
-      update_pkey_sequence("items")
+      StringUtils.print_progress(start_time, row_num, line_count,
+                                 "Importing items")
+      Item.create!(id:                      id,
+                   submitter_email:         submitter_email,
+                   submitter_auth_provider: submitter_auth_provider,
+                   in_archive:              in_archive,
+                   withdrawn:               withdrawn,
+                   discoverable:            discoverable,
+                   primary_collection_id:   collection_id)
     end
+    update_pkey_sequence("items")
   end
 
   ##
@@ -249,24 +271,22 @@ class IdealsImporter
     start_time = Time.now
     line_count = count_lines(csv_pathname)
 
-    ActiveRecord::Base.transaction do
-      RegisteredElement.destroy_all
-      File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
-        next if row_num == 0 # skip header row
+    RegisteredElement.destroy_all
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
 
-        row_arr = line.split("|")
-        name = "#{row_arr[1]}:#{row_arr[2]}"
-        name += ":#{row_arr[3]}" if row_arr[3].present?
+      row_arr = line.split("|")
+      name = "#{row_arr[1]}:#{row_arr[2]}"
+      name += ":#{row_arr[3]}" if row_arr[3].present?
 
-        StringUtils.print_progress(start_time, row_num, line_count,
-                                   "Importing registered elements")
-        RegisteredElement.create!(id:         row_arr[0],
-                                  name:       name,
-                                  scope_note: row_arr[4])
-      end
-      puts "\n"
-      update_pkey_sequence("registered_elements")
+      StringUtils.print_progress(start_time, row_num, line_count,
+                                 "Importing registered elements")
+      RegisteredElement.create!(id:         row_arr[0],
+                                name:       name,
+                                scope_note: row_arr[4])
     end
+    puts "\n"
+    update_pkey_sequence("registered_elements")
   end
 
   private
