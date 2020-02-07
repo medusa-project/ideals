@@ -29,7 +29,7 @@ class RegisteredElementTest < ActiveSupport::TestCase
   # indexed_name()
 
   test "indexed_name() returns the expected name" do
-    assert_equal "metadata_title", @instance.indexed_name
+    assert_equal "metadata_dc:title", @instance.indexed_name
   end
 
   # name
@@ -42,8 +42,9 @@ class RegisteredElementTest < ActiveSupport::TestCase
   end
 
   test "name must be unique" do
+    element = RegisteredElement.all.first
     assert_raises ActiveRecord::RecordInvalid do
-      RegisteredElement.create!(name: "title")
+      RegisteredElement.create!(name: element.name)
     end
   end
 

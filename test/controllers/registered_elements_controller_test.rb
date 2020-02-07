@@ -76,10 +76,9 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() destroys the element" do
     log_in_as(users(:admin))
-    element = registered_elements(:title)
-    delete "/elements/#{element.name}"
-    assert_raises ActiveRecord::RecordNotFound do
-      RegisteredElement.find(element.id)
+    element = registered_elements(:unused)
+    assert_difference "RegisteredElement.count", -1 do
+      delete "/elements/#{element.name}"
     end
   end
 

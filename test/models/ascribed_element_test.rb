@@ -54,7 +54,7 @@ class AscribedElementTest < ActiveSupport::TestCase
   # name()
 
   test "name() returns the associated RegisteredElement name" do
-    assert_equal "title", @instance.name
+    assert_equal "dc:title", @instance.name
   end
 
 end

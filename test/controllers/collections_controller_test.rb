@@ -26,7 +26,6 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
         params: {
             primary_unit_id: units(:unit1).id,
             collection: {
-                title: "New Collection",
                 manager_id: users(:admin).id
             }
         }
@@ -36,17 +35,17 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() creates a collection" do
     log_in_as(users(:admin))
-    post collections_path, {
-        xhr: true,
-        params: {
-            primary_unit_id: units(:unit1).id,
-            collection: {
-                title: "New Collection",
-                manager_id: users(:admin).id
-            }
-        }
-    }
-    assert_not_nil Collection.find_by_title("New Collection")
+    assert_difference "Collection.count" do
+      post collections_path, {
+          xhr: true,
+          params: {
+              primary_unit_id: units(:unit1).id,
+              collection: {
+                  manager_id: users(:admin).id
+              }
+          }
+      }
+    end
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
@@ -55,7 +54,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             collection: {
-                title: ""
+                primary_unit_id: 99999
             }
         }
     }
@@ -120,12 +119,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             collection: {
-                title: "cats"
+                managing_user_ids: [ users(:admin).id ]
             }
         }
     }
     collection.reload
-    assert_equal "cats", collection.title
+    assert_equal 1, collection.managing_users.length
+    assert_equal users(:admin), collection.managing_users.first
   end
 
   test "update() returns HTTP 200" do
@@ -135,7 +135,6 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             collection: {
-                title: "cats",
                 manager_id: users(:admin).id
             }
         }
@@ -150,7 +149,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             collection: {
-                title: "" # invalid
+                primary_unit_id: 99999
             }
         }
     }
