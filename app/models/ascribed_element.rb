@@ -4,8 +4,11 @@
 #
 class AscribedElement < ApplicationRecord
   belongs_to :registered_element
-  belongs_to :collection, optional: true
-  belongs_to :item, optional: true
+  # N.B.: `touch: true` ensures that the owning resource is updated (its
+  # `updated_at` column is updated and it is reindexed) when the instance is
+  # updated.
+  belongs_to :collection, optional: true, touch: true
+  belongs_to :item, optional: true, touch: true
 
   validates :string, presence: true
 
