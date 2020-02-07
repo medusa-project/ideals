@@ -14,6 +14,7 @@
 #
 class Collection < ApplicationRecord
   include Breadcrumb
+  include Describable
   include Indexed
 
   class IndexFields
@@ -87,15 +88,6 @@ class Collection < ApplicationRecord
 
   def label
     title
-  end
-
-  ##
-  # @return [String] Value of the title [AscribedElement] in the {elements}
-  #                  association, or an empty string if not found.
-  #
-  def title
-    config = ::Configuration.instance
-    self.elements.find{ |e| e.name == config.title_element }&.string || ""
   end
 
 end

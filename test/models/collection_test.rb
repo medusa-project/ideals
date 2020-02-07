@@ -99,7 +99,7 @@ class CollectionTest < ActiveSupport::TestCase
         filter(Collection::IndexFields::ID, @instance.index_id).count
   end
 
-  # title()
+  # title() (Describable concern)
 
   test "title() returns the title element value" do
     collection = collections(:described)

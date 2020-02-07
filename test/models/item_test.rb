@@ -94,7 +94,7 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 1, Item.search.filter(Item::IndexFields::ID, @instance.index_id).count
   end
 
-  # title()
+  # title() (Describable concern)
 
   test "title() returns the title element value" do
     item = items(:described)
