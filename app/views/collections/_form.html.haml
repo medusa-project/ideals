@@ -22,7 +22,7 @@
           unit_tree_options_for_select(primary_unit, false),
           {}, class: 'custom-select')
   - else
-    = f.hidden_field :primary_unit_id, primary_unit.id
+    = f.hidden_field :primary_unit_id, value: primary_unit.id
 
   .form-group
     = label_tag "Other Units", "Other Units"

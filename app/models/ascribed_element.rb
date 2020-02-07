@@ -27,7 +27,7 @@ class AscribedElement < ApplicationRecord
   def validate_ascription
     if item_id.blank? and collection_id.blank?
       errors.add(:base, "Element must be attached to a resource.")
-    elsif item.id.present? and collection_id.present?
+    elsif item_id.present? and collection_id.present?
       errors.add(:base, "Element cannot be attached to multiple resources.")
     end
   end
