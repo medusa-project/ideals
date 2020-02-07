@@ -20,7 +20,7 @@ module Describable
     #                  association, or an empty string if not found.
     #
     def title
-      self.element(::Configuration.instance.title_element)&.string || ""
+      self.element(::Configuration.instance.elements[:title])&.string || ""
     end
 
   end

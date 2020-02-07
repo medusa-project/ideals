@@ -71,7 +71,7 @@ class ItemTest < ActiveSupport::TestCase
     item = items(:described)
     doc = item.as_indexed_json
     assert_equal 2, item.elements.length
-    title = item.elements.find{ |e| e.name == Configuration.instance.title_element }
+    title = item.elements.find{ |e| e.name == Configuration.instance.elements[:title] }
     assert_equal [title.string],
                  doc[title.registered_element.indexed_name]
   end
