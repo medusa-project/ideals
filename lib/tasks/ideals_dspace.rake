@@ -57,13 +57,13 @@ namespace :ideals_dspace do
   end
 
   namespace :metadata do
-    desc "Migrate metadata from IDEALS-DSpace into the application"
-    task :migrate, [:source_db_name, :source_db_host, :source_db_user] => :environment do |task, args|
+    desc "Migrate metadata registry from IDEALS-DSpace into the application"
+    task :migrate_registry, [:source_db_name, :source_db_host, :source_db_user] => :environment do |task, args|
       do_migrate(args[:source_db_name],
                  args[:source_db_host],
                  args[:source_db_user],
-                 "export_metadata.sql",
-                 :import_metadata)
+                 "export_metadata_registry.sql",
+                 :import_metadata_registry)
     end
   end
 

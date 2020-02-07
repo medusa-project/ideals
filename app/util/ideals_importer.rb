@@ -206,7 +206,7 @@ class IdealsImporter
   ##
   # @param csv_pathname [String]
   #
-  def import_metadata(csv_pathname)
+  def import_metadata_registry(csv_pathname)
     LOGGER.debug("import_metadata(): importing %s", csv_pathname)
 
     # Enables progress reporting.
