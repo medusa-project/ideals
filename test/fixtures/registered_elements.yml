@@ -7,3 +7,7 @@ title:
 subject:
   name: subject
   scope_note:
+
+unused:
+  name: unused
+  scope_note: This element is not attached to any resources.

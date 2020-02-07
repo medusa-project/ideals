@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+collection_title:
+  string: Some title
+  registered_element: title
+  collection: described
+
+collection_subject:
+  string: Some subject
+  registered_element: subject
+  collection: described
+
+item_title:
+  string: Some title
+  registered_element: title
+  item: described
+
+item_subject:
+  string: Some subject
+  registered_element: subject
+  item: described

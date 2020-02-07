@@ -7,6 +7,18 @@ class ItemTest < ActiveSupport::TestCase
     @instance = items(:item1)
   end
 
+  # base-level tests
+
+  test "destroying an instance destroys its dependent AscribedElements" do
+    item = items(:described)
+    elements = item.elements
+    assert elements.count > 0
+    item.destroy!
+    elements.each do |element|
+      assert element.destroyed?
+    end
+  end
+
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do

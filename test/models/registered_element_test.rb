@@ -7,6 +7,18 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # base-level tests
+
+  test "instances with attached AscribedElements cannot be destroyed" do
+    assert_raises ActiveRecord::InvalidForeignKey do
+      @instance.destroy!
+    end
+  end
+
+  test "instances without attached AscribedElements can be destroyed" do
+    assert registered_elements(:unused).destroy
+  end
+
   # indexed_name()
 
   test "indexed_name() returns the expected name" do

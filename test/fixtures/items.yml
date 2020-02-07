@@ -18,3 +18,13 @@ item2:
   discoverable:
   collections:
     - collection1
+
+described:
+  title: Item With Metadata
+  submitter_email: sally@example.org
+  submitter_auth_provider:
+  in_archive: true
+  withdrawn: false
+  discoverable:
+  collections:
+    - collection1

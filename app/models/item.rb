@@ -27,6 +27,7 @@ class Item < ApplicationRecord
 
   has_many :bitstreams
   has_and_belongs_to_many :collections
+  has_many :elements, class_name: "AscribedElement"
   belongs_to :primary_collection, class_name: "Collection",
              foreign_key: "primary_collection_id", optional: true
 
@@ -44,6 +45,16 @@ class Item < ApplicationRecord
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
     doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection_id
     doc[IndexFields::PRIMARY_UNIT]       = self.primary_unit&.id
+
+    # Index ascribed metadata elements into dynamic fields.
+    self.elements.each do |element|
+      field = element.registered_element.indexed_name
+      unless doc[field]&.respond_to?(:each)
+        doc[field] = []
+      end
+      doc[field] << element.string[0..ElasticsearchClient::MAX_KEYWORD_FIELD_LENGTH]
+    end
+
     doc
   end
 

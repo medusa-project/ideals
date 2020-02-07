@@ -8,6 +8,18 @@ class CollectionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # base-level tests
+
+  test "destroying an instance destroys its dependent AscribedElements" do
+    collection = collections(:described)
+    elements = collection.elements
+    assert elements.count > 0
+    collection.destroy!
+    elements.each do |element|
+      assert element.destroyed?
+    end
+  end
+
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do

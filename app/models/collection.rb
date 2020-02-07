@@ -30,6 +30,7 @@ class Collection < ApplicationRecord
     UNITS         = "i_units"
   end
 
+  has_many :elements, class_name: "AscribedElement"
   has_and_belongs_to_many :items
   belongs_to :primary_unit, class_name: "Unit",
              foreign_key: "primary_unit_id", optional: true
@@ -76,6 +77,16 @@ class Collection < ApplicationRecord
     doc[IndexFields::SUBMITTERS]    = self.submitters.pluck(:user_id)
     doc[IndexFields::TITLE]         = self.title
     doc[IndexFields::UNITS]         = self.unit_ids
+
+    # Index ascribed metadata elements into dynamic fields.
+    self.elements.each do |element|
+      field = element.registered_element.indexed_name
+      unless doc[field]&.respond_to?(:each)
+        doc[field] = []
+      end
+      doc[field] << element.string[0..ElasticsearchClient::MAX_KEYWORD_FIELD_LENGTH]
+    end
+
     doc
   end
 

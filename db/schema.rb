@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_06_224016) do
+ActiveRecord::Schema.define(version: 2020_02_07_135944) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,15 @@ ActiveRecord::Schema.define(version: 2020_02_06_224016) do
     t.index ["unit_id"], name: "index_administrators_on_unit_id"
     t.index ["user_id", "unit_id", "primary"], name: "index_administrators_on_user_id_and_unit_id_and_primary"
     t.index ["user_id"], name: "index_administrators_on_user_id"
+  end
+
+  create_table "ascribed_elements", force: :cascade do |t|
+    t.text "string", null: false
+    t.bigint "registered_element_id", null: false
+    t.bigint "collection_id"
+    t.bigint "item_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "assignments", force: :cascade do |t|
@@ -163,6 +172,9 @@ ActiveRecord::Schema.define(version: 2020_02_06_224016) do
 
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrators", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "ascribed_elements", "collections", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "ascribed_elements", "items", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "ascribed_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "assignments", "roles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "assignments", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
