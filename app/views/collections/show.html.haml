@@ -8,11 +8,17 @@
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item
-    %a#items-tab.nav-link.active{href: "#items-tab-content",
-                                 "data-toggle": "tab",
-                                 role: "tab",
-                                 "aria-controls": "items-tab-content",
-                                 "aria-selected": "true"} Items
+    %a#metadata-tab.nav-link.active{href: "#metadata-tab-content",
+                                    "data-toggle": "tab",
+                                    role: "tab",
+                                    "aria-controls": "metadata-tab-content",
+                                    "aria-selected": "true"} Metadata
+  %li.nav-item
+    %a#items-tab.nav-link{href: "#items-tab-content",
+                          "data-toggle": "tab",
+                          role: "tab",
+                          "aria-controls": "items-tab-content",
+                          "aria-selected": "true"} Items
   %li.nav-item
     %a#unit-membership-tab.nav-link{href: "#unit-membership-tab-content",
                                     "data-toggle": "tab",
@@ -27,8 +33,15 @@
                            "aria-selected": "true"} Access
 
 .tab-content
-  #items-tab-content.tab-pane.fade.show.active{role: "tabpanel",
-                                               "aria-labelledby": "items-tab"}
+  #metadata-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                                  "aria-labelledby": "metadata-tab"}
+    %dl
+      - @resource.elements.each do |element|
+        %dt= element.name
+        %dd= sanitize(element.string)
+
+  #items-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                        "aria-labelledby": "items-tab"}
     -if @resource.items.count.positive?
       .float-right
         = item_search_field(@resource, Item::IndexFields::PRIMARY_COLLECTION)
