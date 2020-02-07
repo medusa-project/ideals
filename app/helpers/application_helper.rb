@@ -122,7 +122,16 @@ module ApplicationHelper
       html <<     "<h5 class=\"mt-0\">"
       html <<       link_to(resource.title, resource)
       html <<     "</h5>"
-      html <<     "<br><br>"
+
+      if resources.first.kind_of?(Item)
+        html << resource.elements.
+            select{ |e| e.name == ::Configuration.instance.elements[:creator] }.
+            map(&:string).
+            join(", ")
+      else
+        html << "<br><br>"
+      end
+
       if resources.first.kind_of?(Unit)
         child_finder = Unit.search.
             parent_unit(resource).

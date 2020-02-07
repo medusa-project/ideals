@@ -1,31 +1,39 @@
-%hr
-
 %p#notice= notice
 
-%p
-  %b Title:
-  = @resource.title
-%p
-  %b Submitter email:
-  = @resource.submitter_email
-%p
-  %b Submitter auth provider:
-  = @resource.submitter_auth_provider
-%p
-  %b In archive:
-  = @resource.in_archive
-%p
-  %b Withdrawn:
-  = @resource.withdrawn
-%p
-  %b Discoverable:
-  = @resource.discoverable
+%h1= @resource.title
 
-%dl
-  - @resource.elements.each do |element|
-    %dt= element.name
-    %dd= sanitize(element.string)
+%ul.nav.nav-tabs{role: "tablist"}
+  %li.nav-item
+    %a#properties-tab.nav-link.active{href: "#properties-tab-content",
+                                      "data-toggle": "tab",
+                                      role: "tab",
+                                      "aria-controls": "properties-tab-content",
+                                      "aria-selected": "true"} Properties
+  %li.nav-item
+    %a#metadata-tab.nav-link{href: "#metadata-tab-content",
+                             "data-toggle": "tab",
+                             role: "tab",
+                             "aria-controls": "metadata-tab-content",
+                             "aria-selected": "true"} Metadata
 
-= link_to 'Edit', edit_item_path(@resource)
-\|
-= link_to 'Back', items_path
+.tab-content
+  #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                                    "aria-labelledby": "properties-tab"}
+    %dl
+      %dt Submitter email
+      %dd= @resource.submitter_email
+      %dt Submitter auth provider
+      %dd= @resource.submitter_auth_provider
+      %dt In archive
+      %dd= @resource.in_archive
+      %dt Withdrawn
+      %dd= @resource.withdrawn
+      %dt Discoverable
+      %dd= @resource.discoverable
+
+  #metadata-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                           "aria-labelledby": "metadata-tab"}
+    %dl
+      - @resource.elements.each do |element|
+        %dt= element.name
+        %dd= sanitize(element.string)
