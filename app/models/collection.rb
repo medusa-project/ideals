@@ -19,14 +19,12 @@ class Collection < ApplicationRecord
   class IndexFields
     CLASS         = ElasticsearchIndex::StandardFields::CLASS
     CREATED       = ElasticsearchIndex::StandardFields::CREATED
-    DESCRIPTION   = "t_description"
     ID            = ElasticsearchIndex::StandardFields::ID
     LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     MANAGERS      = "i_manager_id"
     PRIMARY_UNIT  = "i_primary_unit_id"
     SUBMITTERS    = "i_submitter_id"
-    TITLE         = "t_title"
     UNITS         = "i_units"
   end
 
@@ -34,7 +32,6 @@ class Collection < ApplicationRecord
   has_and_belongs_to_many :items
   belongs_to :primary_unit, class_name: "Unit",
              foreign_key: "primary_unit_id", optional: true
-  breadcrumbs parent: :primary_unit, label: :title
   has_many :managers
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user
@@ -46,7 +43,7 @@ class Collection < ApplicationRecord
   # See {all_units} and {primary_unit}.
   has_and_belongs_to_many :units
 
-  validates :title, presence: true
+  breadcrumbs parent: :primary_unit, label: :title
 
   ##
   # @return [Enumerable<Unit>] All directly associated units, as well as all of
@@ -69,13 +66,11 @@ class Collection < ApplicationRecord
     doc = {}
     doc[IndexFields::CLASS]         = self.class.to_s
     doc[IndexFields::CREATED]       = self.created_at.utc.iso8601
-    doc[IndexFields::DESCRIPTION]   = self.description
     doc[IndexFields::LAST_INDEXED]  = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
     doc[IndexFields::MANAGERS]      = self.managers.pluck(:user_id)
     doc[IndexFields::PRIMARY_UNIT]  = self.primary_unit_id
     doc[IndexFields::SUBMITTERS]    = self.submitters.pluck(:user_id)
-    doc[IndexFields::TITLE]         = self.title
     doc[IndexFields::UNITS]         = self.unit_ids
 
     # Index ascribed metadata elements into dynamic fields.
@@ -92,6 +87,10 @@ class Collection < ApplicationRecord
 
   def label
     title
+  end
+
+  def title
+    self.elements.find{ |e| e.name == "title" }&.string
   end
 
 end

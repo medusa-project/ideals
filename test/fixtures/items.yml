@@ -1,5 +1,4 @@
 item1:
-  title: My Great Item
   submitter_email: bill@example.org
   submitter_auth_provider:
   in_archive: true
@@ -10,7 +9,6 @@ item1:
     - collection1
 
 item2:
-  title: Another Great Item
   submitter_email: bill@example.org
   submitter_auth_provider:
   in_archive: true
@@ -20,7 +18,6 @@ item2:
     - collection1
 
 described:
-  title: Item With Metadata
   submitter_email: sally@example.org
   submitter_auth_provider:
   in_archive: true

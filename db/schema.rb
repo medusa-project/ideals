@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_07_135944) do
+ActiveRecord::Schema.define(version: 2020_02_07_155429) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,8 +57,6 @@ ActiveRecord::Schema.define(version: 2020_02_07_135944) do
   end
 
   create_table "collections", force: :cascade do |t|
-    t.string "title"
-    t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "primary_unit_id"
@@ -110,7 +108,6 @@ ActiveRecord::Schema.define(version: 2020_02_07_135944) do
   end
 
   create_table "items", force: :cascade do |t|
-    t.string "title"
     t.string "submitter_email"
     t.string "submitter_auth_provider"
     t.boolean "in_archive"

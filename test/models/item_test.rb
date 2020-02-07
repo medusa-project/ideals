@@ -67,6 +67,7 @@ class ItemTest < ActiveSupport::TestCase
                  doc[Item::IndexFields::PRIMARY_COLLECTION]
     assert_equal @instance.primary_collection.primary_unit.id,
                  doc[Item::IndexFields::PRIMARY_UNIT]
+    # TODO: metadata
   end
 
   # primary_unit()
@@ -85,6 +86,13 @@ class ItemTest < ActiveSupport::TestCase
     refresh_elasticsearch
 
     assert_equal 1, Item.search.filter(Item::IndexFields::ID, @instance.index_id).count
+  end
+
+  # title()
+
+  test "title() returns the title element value" do
+    item = items(:described)
+    assert_equal "Some title", item.title
   end
 
 end

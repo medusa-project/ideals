@@ -66,8 +66,6 @@ class CollectionTest < ActiveSupport::TestCase
     doc = @instance.as_indexed_json
     assert_equal "Collection", doc[Collection::IndexFields::CLASS]
     assert_not_empty doc[Collection::IndexFields::CREATED]
-    assert_equal @instance.description,
-                 doc[Collection::IndexFields::DESCRIPTION]
     assert_not_empty doc[Collection::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Collection::IndexFields::LAST_MODIFIED]
@@ -77,10 +75,9 @@ class CollectionTest < ActiveSupport::TestCase
                doc[Collection::IndexFields::PRIMARY_UNIT]
     assert_equal [@instance.submitting_users.first.id],
                  doc[Collection::IndexFields::SUBMITTERS]
-    assert_equal @instance.title,
-                 doc[Collection::IndexFields::TITLE]
     assert_equal @instance.units.count,
         doc[Collection::IndexFields::UNITS].length
+    # TODO: metadata
   end
 
   # reindex() (Indexed concern)
@@ -96,13 +93,11 @@ class CollectionTest < ActiveSupport::TestCase
         filter(Collection::IndexFields::ID, @instance.index_id).count
   end
 
-  # title
+  # title()
 
-  test "title must be present" do
-    @instance.title = nil
-    assert !@instance.valid?
-    @instance.title = ""
-    assert !@instance.valid?
+  test "title() returns the title element value" do
+    collection = collections(:described)
+    assert_equal "Some title", collection.title
   end
 
   # units

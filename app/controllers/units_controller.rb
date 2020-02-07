@@ -91,7 +91,7 @@ class UnitsController < ApplicationController
         to_a
     @collections = Collection.search.
         primary_unit(@resource).
-        order("#{Collection::IndexFields::TITLE}.sort").
+        order(RegisteredElement.sortable_field("title")).
         limit(999).
         to_a
     @new_unit       = Unit.new

@@ -69,4 +69,8 @@ class Item < ApplicationRecord
     self.primary_collection&.primary_unit
   end
 
+  def title
+    self.elements.find{ |e| e.name == "title" }&.string
+  end
+
 end
