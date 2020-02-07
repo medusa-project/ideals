@@ -65,6 +65,15 @@ namespace :ideals_dspace do
                  "export_metadata_registry.sql",
                  :import_metadata_registry)
     end
+
+    desc "Migrate collection metadata from IDEALS-DSpace into the application"
+    task :migrate_collection_values, [:source_db_name, :source_db_host, :source_db_user] => :environment do |task, args|
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 "export_collection_metadata.sql",
+                 :import_collection_metadata)
+    end
   end
 
   desc "Migrate all content from IDEALS-DSpace into the application"
@@ -77,6 +86,7 @@ namespace :ideals_dspace do
     Rake::Task["ideals_dspace:items:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:handles:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:metadata:migrate"].invoke(dbname, dbhost, dbuser)
+    Rake::Task["ideals_dspace:metadata:migrate_collection_values"].invoke(dbname, dbhost, dbuser)
   end
 
   def do_migrate(source_db_name, source_db_host, source_db_user,

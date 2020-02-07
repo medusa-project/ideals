@@ -1,9 +1,45 @@
 ##
 # Imports content from "Old IDEALS" (IDEALS-DSpace) into the application.
 #
+# Methods must be invoked in a certain order. See the `ideals_dspace:migrate`
+# rake task.
+#
 class IdealsImporter
 
   LOGGER = CustomLogger.new(IdealsImporter)
+
+  ##
+  # @param csv_pathname [String]
+  #
+  def import_collection_metadata(csv_pathname)
+    LOGGER.debug("import_collection_metadata(): importing %s", csv_pathname)
+
+    # Enables progress reporting.
+    start_time = Time.now
+    line_count = count_lines(csv_pathname)
+
+    ActiveRecord::Base.transaction do
+      AscribedElement.where("collection_id IS NOT NULL").destroy_all
+      File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+        next if row_num == 0 # skip header row
+
+        row_arr = line.split("|")
+        collection_id = row_arr[4].to_i
+        next if row_arr[4].to_i == 0
+        elem_name = "#{row_arr[0]}:#{row_arr[1]}"
+        elem_name += ":#{row_arr[2]}" if row_arr[2].present?
+        reg_elem = RegisteredElement.find_by_name(elem_name)
+
+        StringUtils.print_progress(start_time, row_num, line_count,
+                                   "Importing collection metadata")
+
+        AscribedElement.create!(registered_element: reg_elem,
+                                collection_id: collection_id,
+                                string: row_arr[3])
+      end
+      puts "\n"
+    end
+  end
 
   ##
   # @param csv_pathname [String]
