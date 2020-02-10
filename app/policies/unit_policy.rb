@@ -13,10 +13,12 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def create?
-    user.sysadmin? || unit.administrators.where(user_id: user.id).count > 0
+    return false if unit == Unit
+    user&.sysadmin? || unit.administrators.where(user_id: user.id).count > 0
   end
 
   def destroy?
+    return false if unit == Unit
     # user is sysadmin
     user.sysadmin? ||
         # unit is a child unit and user is primary admin of its root unit.

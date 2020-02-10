@@ -13,6 +13,11 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
+  test "create?() returns false when the target object is a Unit" do
+    policy = UnitPolicy.new(users(:admin), Unit)
+    assert !policy.create?
+  end
+
   test "create?() authorizes sysadmins" do
     policy = UnitPolicy.new(users(:admin), @unit)
     assert policy.create?
@@ -25,6 +30,11 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
+  test "destroy?() returns false when the target object is a Unit" do
+    policy = UnitPolicy.new(users(:admin), Unit)
+    assert !policy.destroy?
+  end
+
   test "destroy?() authorizes sysadmins" do
     policy = UnitPolicy.new(users(:admin), @unit)
     assert policy.destroy?
@@ -34,6 +44,11 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "edit?() is restrictive by default" do
     policy = UnitPolicy.new(users(:norights), @unit)
+    assert !policy.edit?
+  end
+
+  test "edit?() returns false when the target object is a Unit" do
+    policy = UnitPolicy.new(users(:admin), Unit)
     assert !policy.edit?
   end
 
@@ -56,6 +71,11 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
+  test "new?() returns false when the target object is a Unit" do
+    policy = UnitPolicy.new(users(:admin), Unit)
+    assert !policy.new?
+  end
+
   test "new?() authorizes sysadmins" do
     policy = UnitPolicy.new(users(:admin), @unit)
     assert policy.new?
@@ -72,6 +92,11 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "update?() is restrictive by default" do
     policy = UnitPolicy.new(users(:norights), @unit)
+    assert !policy.update?
+  end
+
+  test "update?() returns false when the target object is a Unit" do
+    policy = UnitPolicy.new(users(:admin), Unit)
     assert !policy.update?
   end
 
