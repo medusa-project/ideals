@@ -68,12 +68,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def record_not_found(exception)
-    Rails.logger.warn exception
-
-    redirect_to redirect_path, alert: "An error occurred and has been logged for review by library staff."
-  end
-
   ##
   # @return [Integer] Effective window size a.k.a. results limit based on the
   #                   application configuration and `window` query argument.
