@@ -56,8 +56,9 @@ module Indexed
       start_time = Time.now
 
       # Get the document count.
-      finder = search.limit(0)
-      count = finder.count
+      finder   = search.limit(0)
+      count    = finder.count
+      progress = Progress.new(count)
 
       # Retrieve document IDs in batches.
       index = start = num_deleted = 0
@@ -70,8 +71,7 @@ module Indexed
             num_deleted += 1
           end
           index += 1
-          StringUtils.print_progress(start_time, index, count,
-                                     'Deleting stale documents')
+          progress.report(index, "Deleting stale documents")
         end
         start += limit
       end
@@ -87,12 +87,11 @@ module Indexed
     #
     def reindex_all(index = nil)
       count_ = count
-      start_time = Time.now
+      progress = Progress.new(count_)
       ActiveRecord::Base.uncached do
         all.find_each.with_index do |model, i|
           model.reindex(index)
-          StringUtils.print_progress(start_time, i, count_,
-                                     "Indexing #{name.downcase.pluralize}")
+          progress.report(i, "Indexing #{name.downcase.pluralize}")
         end
         puts ""
       end

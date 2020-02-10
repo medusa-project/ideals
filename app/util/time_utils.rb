@@ -22,4 +22,32 @@ class TimeUtils
     end
   end
 
+  ##
+  # @param seconds [Integer] Duration in seconds.
+  # @return [String] String in `HHh MMm SSs` format.
+  #
+  def self.seconds_to_hms(seconds)
+    if seconds.to_f != seconds
+      raise ArgumentError, "#{seconds} is not in a supported format."
+    end
+    seconds = seconds.to_f
+    # hours
+    hr    = seconds / 60.0 / 60.0
+    floor = hr.floor
+    rem   = hr - floor
+    hr    = floor
+    # minutes
+    min   = rem * 60
+    floor = min.floor
+    rem   = min - floor
+    min   = floor
+    # seconds
+    sec = rem * 60
+
+    sprintf("%sh %sm %ss",
+            hr.round.to_s.rjust(2, "0"),
+            min.round.to_s.rjust(2, "0"),
+            sec.round.to_s.rjust(2, "0"))
+  end
+
 end
