@@ -36,14 +36,15 @@ class TimeUtilsTest < ActiveSupport::TestCase
 
   test "seconds_to_hms() with an illegal argument raises an ArgumentError" do
     assert_raises ArgumentError do
+      #noinspection RubyYardParamTypeMatch
       TimeUtils.seconds_to_hms("23:12")
     end
   end
 
   test "seconds_to_hms() works" do
-    assert_equal "00:00:30", TimeUtils.seconds_to_hms(30)
-    assert_equal "00:05:00", TimeUtils.seconds_to_hms(300)
-    assert_equal "01:15:02", TimeUtils.seconds_to_hms(4502)
+    assert_equal "00h 00m 30s", TimeUtils.seconds_to_hms(30)
+    assert_equal "00h 05m 00s", TimeUtils.seconds_to_hms(300)
+    assert_equal "01h 15m 02s", TimeUtils.seconds_to_hms(4502)
   end
 
 end
