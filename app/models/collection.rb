@@ -31,6 +31,7 @@ class Collection < ApplicationRecord
 
   has_many :elements, class_name: "AscribedElement"
   has_and_belongs_to_many :items
+  belongs_to :metadata_profile, inverse_of: :collections, optional: true
   belongs_to :primary_unit, class_name: "Unit",
              foreign_key: "primary_unit_id", optional: true
   has_many :managers

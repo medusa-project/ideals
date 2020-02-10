@@ -1,16 +1,22 @@
 collection1:
+  metadata_profile: default
   primary_unit: unit1
   units:
     - unit1
     - unit2
 
 collection1_1:
+  metadata_profile: default
   primary_unit: unit1
 
-collection2: {}
+collection2:
+  metadata_profile: default
 
-described: {}
+described:
+  metadata_profile: default
 
-empty: {}
+empty:
+  metadata_profile: default
 
-undescribed: {}
+undescribed:
+  metadata_profile: default
