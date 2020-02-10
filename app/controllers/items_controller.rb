@@ -3,15 +3,16 @@
 class ItemsController < ApplicationController
   before_action :set_item, only: [:show, :edit, :update, :destroy]
 
-  # GET /items
-  # GET /items.json
+  ##
+  # Responds to `GET /items`
+  #
   def index
     @start = params[:start].to_i
-    @limit = params[:per_page]&.to_i || 25
+    @window = window_size
     finder = Item.search.
         query_all(params[:q]).
         start(@start).
-        limit(@limit)
+        limit(@window)
     @count            = finder.count
     @resources        = finder.to_a
     @current_page     = finder.page

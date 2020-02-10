@@ -71,11 +71,11 @@ class CollectionsController < ApplicationController
   def show
     if @resource.items.count.positive?
       @start = params[:start].to_i
-      @limit = params[:per_page]&.to_i || 25
+      @window = window_size
       finder = Item.search.
           collection(params[:id]).
           start(@start).
-          limit(@limit)
+          limit(@window)
       @count            = finder.count
       @resources        = finder.to_a
       @current_page     = finder.page

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 json.start @start
-json.limit @limit
+json.window @window
 json.numResults @count
 json.results do
   json.array! @items do |item|

@@ -74,6 +74,22 @@ class ApplicationController < ActionController::Base
     redirect_to redirect_path, alert: "An error occurred and has been logged for review by library staff."
   end
 
+  ##
+  # @return [Integer] Effective window size a.k.a. results limit based on the
+  #                   application configuration and `window` query argument.
+  #
+  def window_size
+    config  = ::Configuration.instance
+    default = config.website[:window][:default_size]
+    min     = config.website[:window][:min_size]
+    max     = config.website[:window][:max_size]
+    client  = params[:window].to_i
+    if client < min || client > max
+      return default
+    end
+    client
+  end
+
   private
 
   ##
