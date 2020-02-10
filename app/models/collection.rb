@@ -87,6 +87,14 @@ class Collection < ApplicationRecord
     doc
   end
 
+  ##
+  # @return [MetadataProfile] The metadata profile assigned to the instance, or
+  #         the default profile if no profile is assigned.
+  #
+  def effective_metadata_profile
+    self.metadata_profile || MetadataProfile.find_by_default(true)
+  end
+
   def label
     title
   end
