@@ -46,11 +46,11 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   end
 
   def activation_url
-    "#{::Configuration.instance.root_url_text}/account_activations/#{activation_token}/edit?email=#{CGI.escape(email)}"
+    "#{::Configuration.instance.website[:base_url]}/account_activations/#{activation_token}/edit?email=#{CGI.escape(email)}"
   end
 
   def password_reset_url
-    "#{::Configuration.instance.root_url_text}/password_reset/#{reset_token}/edit?email=#{CGI.escape(email)}"
+    "#{::Configuration.instance.website[:base_url]}/password_reset/#{reset_token}/edit?email=#{CGI.escape(email)}"
   end
 
   def send_activation_email
