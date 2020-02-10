@@ -5,17 +5,5 @@
     Facets will go here
   .col-sm-8.col-lg-9.col.xl-10
     = item_search_field
-
-    .card.search-status
-      .card-body
-        = search_status(@count, @start, @limit, "item")
-
-    .row.justify-content-md-center
-      .col-md-auto
-        = paginate(@count, @limit, @current_page, @permitted_params)
-
-    =resource_list(@resources)
-
-    .row.justify-content-md-center
-      .col-md-auto
-        = paginate(@count, @limit, @current_page, @permitted_params)
+    #listing
+      = render partial: "listing"

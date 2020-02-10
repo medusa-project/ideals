@@ -7,8 +7,7 @@ module ItemsHelper
   #                                 or {Item::IndexFields::PRIMARY_COLLECTION_ID}.
   #
   def item_search_field(container = nil, container_field = nil)
-    html = StringIO.new
-    html << form_tag(items_path, method: :get) do
+    html = form_tag(items_path, method: :get, class: "filter") do
       form = StringIO.new
       form << "<div class=\"input-group mb-4 filter-field\">"
       form <<   hidden_field_tag(container_field, container.id) if container
@@ -17,15 +16,20 @@ module ItemsHelper
       form <<   "</div>"
       placeholder = container ?
                         "Search within this #{container.class.to_s.downcase}&hellip;" :
-                        "Filter&hellip;"
+                        ""
       form <<   search_field_tag(:q, "",
                                  placeholder: raw(placeholder),
                                  'aria-label': 'Search',
                                  class: 'form-control')
+      form <<   "<div class=\"input-group-append\">"
+      form <<     submit_tag(container ? "Search" : "Filter",
+                             name: "",
+                             class: "btn btn-outline-secondary")
+      form <<   "</div>"
+      form << "</div>"
       raw(form.string)
     end
-    html << "</div>"
-    raw(html.string)
+    raw(html)
   end
 
 end
