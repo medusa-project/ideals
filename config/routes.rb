@@ -5,7 +5,8 @@ Rails.application.routes.draw do
   resources :units
   resources :users, except: [:create, :delete]
   resources :collections, except: :index
-  resources :registered_elements, param: :name, path: 'elements'
+  resources :metadata_profiles, path: "metadata-profiles"
+  resources :registered_elements, param: :name, path: "elements"
 
   root 'welcome#index'
   get '/', to: 'welcome#index'

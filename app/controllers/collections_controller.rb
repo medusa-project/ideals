@@ -81,7 +81,8 @@ class CollectionsController < ApplicationController
       @current_page     = finder.page
       @permitted_params = params.permit(:q, :start)
     end
-    @breadcrumbable = @resource
+    @metadata_profile = @resource.effective_metadata_profile
+    @breadcrumbable   = @resource
   end
 
   ##
@@ -121,7 +122,8 @@ class CollectionsController < ApplicationController
   end
 
   def collection_params
-    params.require(:collection).permit(:primary_unit_id,
+    params.require(:collection).permit(:metadata_profile_id,
+                                       :primary_unit_id,
                                        managing_user_ids: [],
                                        submitting_user_ids: [],
                                        unit_ids: [])

@@ -35,6 +35,15 @@
 .tab-content
   #metadata-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                   "aria-labelledby": "metadata-tab"}
+    - if current_user&.manager?(@resource)
+      %dl
+        %dt Metadata Profile
+        %dd
+          - if policy(@metadata_profile).show?
+            = link_to(@metadata_profile.name, @metadata_profile)
+          - else
+            = @metadata_profile.name
+
     %dl
       - @resource.elements.each do |element|
         %dt= element.name

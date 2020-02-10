@@ -1,0 +1,9 @@
+%h1= @profile.name
+
+%h2 Collections
+- if @profile.collections.count > 0
+  %ul
+    - @profile.collections.each do |collection|
+      %li= link_to(collection.title, collection)
+- else
+  None

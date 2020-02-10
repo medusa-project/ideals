@@ -31,6 +31,14 @@
   %hr
 
   .form-group
+    = f.label :metadata_profile_id, "Metadata Profile"
+    = f.select(:metadata_profile_id,
+        options_for_select(MetadataProfile.all.order(:name).map{ |p| [p.name, p.id] }),
+        {}, class: 'custom-select')
+
+  %hr
+
+  .form-group
     %h5 Submitters
     = hidden_field_tag "collection[submitting_user_ids][]"
     - User.all.order(:name).each do |user|
