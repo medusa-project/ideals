@@ -239,7 +239,26 @@ class AbstractFinder
   def to_a
     entities = to_id_a.map do |id|
       begin
-        get_class.find(get_class.to_model_id(id))
+        # Unoptimized version with typical results:
+        # Completed 200 OK in 2955ms (Views: 429.6ms | ActiveRecord: 2510.6ms | Allocations: 344778)
+        # get_class.find(get_class.to_model_id(id))
+        #
+        # And here is an alternative whereby we preload associated
+        # AscribedElements and the RegisteredElements with which they are
+        # associated:
+        # Completed 200 OK in 2795ms (Views: 28.7ms | ActiveRecord: 2580.8ms | Allocations: 143549)
+        if get_class.method_defined?(:elements)
+          get_class.
+              where(id: get_class.to_model_id(id)).
+              preload(elements: :registered_element).
+              limit(1).
+              first
+        else
+          get_class.find(get_class.to_model_id(id))
+        end
+        # Better but still not great. For best performance we ought to add
+        # everything we need to the indexed document and read it from there,
+        # not even touching the database.
       rescue ActiveRecord::RecordNotFound
         LOGGER.warn("to_a(): #{get_class} #{id} is missing from the database")
       end
