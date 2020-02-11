@@ -26,10 +26,19 @@ class RegisteredElementTest < ActiveSupport::TestCase
                  RegisteredElement.sortable_field("title")
   end
 
+  test "sortable_field() replaces reserved characters" do
+    assert_equal "metadata_dc_title.sort",
+                 RegisteredElement.sortable_field("dc:title")
+  end
+
   # indexed_name()
 
   test "indexed_name() returns the expected name" do
-    assert_equal "metadata_dc:title", @instance.indexed_name
+    assert_equal "metadata_dc_title", @instance.indexed_name
+  end
+
+  test "indexed_name() replaces reserved characters" do
+    assert_equal "metadata_dc_title", @instance.indexed_name
   end
 
   # name

@@ -14,7 +14,9 @@ class RegisteredElement < ApplicationRecord
   #                  document.
   #
   def self.sortable_field(name)
-    [METADATA_FIELD_PREFIX, name, SORTABLE_FIELD_SUFFIX].join
+    [METADATA_FIELD_PREFIX,
+     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_"),
+     SORTABLE_FIELD_SUFFIX].join
   end
 
   ##
@@ -22,8 +24,10 @@ class RegisteredElement < ApplicationRecord
   #                  indexed documents.
   #
   def indexed_name
-    # N.B.: changing this requires changing the index schema.
-    [METADATA_FIELD_PREFIX, name].join
+    # N.B.: changing this probably requires changing the index schema and/or
+    # reindexing.
+    [METADATA_FIELD_PREFIX,
+     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join
   end
 
   def to_param
