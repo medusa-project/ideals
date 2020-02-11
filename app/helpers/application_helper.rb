@@ -3,6 +3,17 @@ module ApplicationHelper
   MAX_PAGINATION_LINKS = 5
 
   ##
+  # Formats a boolean for display.
+  #
+  # @param boolean [Boolean]
+  # @return [String]
+  #
+  def boolean(boolean)
+    raw(boolean ? '<span class="text-success">&check;</span>' :
+            '<span class="text-danger">&times;</span>')
+  end
+
+  ##
   # @param entity [Object] Any model object or class.
   # @return [String] HTML icon tag.
   #

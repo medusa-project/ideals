@@ -4,6 +4,10 @@ default:
   name: Default Profile
   default: true
 
+empty:
+  name: Empty Profile
+  default: false
+
 unused:
   name: Unused Profile
   default: false

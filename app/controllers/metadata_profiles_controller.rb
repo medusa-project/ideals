@@ -58,6 +58,7 @@ class MetadataProfilesController < ApplicationController
   # Responds to `GET /metadata-profiles/:id`
   #
   def show
+    @new_element = MetadataProfileElement.new
   end
 
   ##
