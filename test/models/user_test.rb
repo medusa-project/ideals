@@ -6,6 +6,35 @@ class UserTest < ActiveSupport::TestCase
     @instance = users(:norights)
   end
 
+  # effective_manager?()
+
+  test "effective_manager?() returns true when the user is a manager of the given collection" do
+    collection = collections(:collection1)
+    collection.managing_users << @instance
+    collection.save!
+    assert @instance.effective_manager?(collection)
+  end
+
+  test "effective_manager?() returns true when the user is an administrator of
+  one of the collection's units" do
+    collection = collections(:collection1)
+    unit = collection.primary_unit
+    unit.administering_users << @instance
+    unit.save!
+    assert @instance.effective_manager?(collection)
+  end
+
+  test "effective_manager?() returns true when the user is a sysadmin" do
+    @instance = users(:admin)
+    collection = collections(:collection1)
+    assert @instance.effective_manager?(collection)
+  end
+
+  test "effective_manager?() returns false when the user is not a manager of
+  the given collection, nor a unit admin, nor a sysadmin" do
+    assert !@instance.effective_manager?(collections(:collection1))
+  end
+
   # manager?()
 
   test "manager?() returns true when the user is a manager of the given collection" do

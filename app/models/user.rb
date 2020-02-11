@@ -28,6 +28,24 @@ class User < ApplicationRecord
   before_save -> { email.downcase! }
 
   ##
+  # @param collection [Collection]
+  # @return [Boolean] Whether the instance is an effective manager of the given
+  #                   collection, either directly or as a unit or system
+  #                   administrator.
+  # @see #manager?
+  #
+  def effective_manager?(collection)
+    # check for sysadmin
+    return true if sysadmin?
+    # check for unit admin
+    collection.units.each do |unit|
+      return true if unit_admin?(unit)
+    end
+    # check for collection manager
+    manager?(collection)
+  end
+
+  ##
   # For compatibility with breadcrumbs.
   #
   def label
@@ -36,7 +54,9 @@ class User < ApplicationRecord
 
   ##
   # @param collection [Collection]
-  # @return [Boolean] Whether the instance is a manager of the given collection.
+  # @return [Boolean] Whether the instance is a direct manager of the given
+  #                   collection.
+  # @see #effective_manager?
   #
   def manager?(collection)
     collection.managers.where(user_id: self.id).count > 0
