@@ -47,17 +47,11 @@ class Progress
   #
   def progress_str(iteration)
     pct         = iteration / @count.to_f
-    pct_str     = (pct * 100).round(2)
-    elapsed_i   = Time.now.to_i - @start_time.to_i
-    elapsed_s   = TimeUtils.seconds_to_hms(elapsed_i)
-    progress_s  = "#{pct_str}% [ELAPSED: #{elapsed_s}]"
-    if iteration + 1 < @count
-      eta         = TimeUtils.eta(@start_time, pct)
-      remaining_i = eta.to_i - Time.now.to_i
-      remaining_s = TimeUtils.seconds_to_hms(remaining_i)
-      progress_s  += " >>> [REMAINING: #{remaining_s}]"
-    end
-    progress_s
+    pct_str     = "#{(pct * 100).round(2)}%".ljust(6, " ")
+    eta         = TimeUtils.eta(@start_time, pct)
+    remaining_i = eta.to_i - Time.now.to_i
+    remaining_s = TimeUtils.seconds_to_hms(remaining_i)
+    "#{pct_str} [#{remaining_s} remaining]"
   end
 
 end

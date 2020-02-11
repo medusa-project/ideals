@@ -24,7 +24,7 @@ class TimeUtils
 
   ##
   # @param seconds [Integer] Duration in seconds.
-  # @return [String] String in `HHh MMm SSs` format.
+  # @return [String] String in `HH:MM:SS` format.
   #
   def self.seconds_to_hms(seconds)
     if seconds.to_f != seconds
@@ -44,7 +44,7 @@ class TimeUtils
     # seconds
     sec = rem * 60
 
-    sprintf("%sh %sm %ss",
+    sprintf("%s:%s:%s",
             hr.round.to_s.rjust(2, "0"),
             min.round.to_s.rjust(2, "0"),
             sec.round.to_s.rjust(2, "0"))
