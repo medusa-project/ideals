@@ -4,6 +4,10 @@ title:
   name: dc:title
   scope_note:
 
+description:
+  name: dc:description
+  scope_note:
+
 subject:
   name: dc:subject
   scope_note:

@@ -3,6 +3,8 @@ class RegisteredElement < ApplicationRecord
   METADATA_FIELD_PREFIX = "metadata_"
   SORTABLE_FIELD_SUFFIX = ".sort"
 
+  has_many :metadata_profile_elements, inverse_of: :registered_element
+
   validates_format_of :name, with: /\A[A-Za-z0-9_\-:]+\z/, allow_blank: false
   validates_uniqueness_of :name
 
