@@ -74,9 +74,9 @@ class ApplicationController < ActionController::Base
   #
   def window_size
     config  = ::Configuration.instance
-    default = config.website[:window][:default_size]
-    min     = config.website[:window][:min_size]
-    max     = config.website[:window][:max_size]
+    default = config.website[:window][:default]
+    min     = config.website[:window][:min]
+    max     = config.website[:window][:max]
     client  = params[:window].to_i
     if client < min || client > max
       return default
