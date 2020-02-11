@@ -112,6 +112,25 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show()
+
+  test "show() redirects to login page for logged-out users" do
+    get metadata_profile_path(metadata_profiles(:default))
+    assert_redirected_to login_path
+  end
+
+  test "show() redirects to login page for unauthorized users" do
+    log_in_as(users(:norights))
+    get metadata_profile_path(metadata_profiles(:default))
+    assert_redirected_to login_path
+  end
+
+  test "show() returns HTTP 200 for authorized users" do
+    log_in_as(users(:admin))
+    get metadata_profile_path(metadata_profiles(:default))
+    assert_response :ok
+  end
+
   # update()
 
   test "update() redirects to login path for logged-out users" do

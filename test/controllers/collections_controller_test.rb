@@ -97,6 +97,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # show()
+
+  test "show() returns HTTP 200" do
+    get collection_path(collections(:collection1))
+    assert_response :ok
+  end
+
   # update()
 
   test "update() redirects to login path for logged-out users" do

@@ -13,6 +13,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def create?
+    return false unless user
     user.sysadmin? or                                                  # user is sysadmin
         collection.all_units.find{ |unit| @user.unit_admin?(unit) } or # user is unit admin
         user.manager?(collection)                                      # user is collection manager

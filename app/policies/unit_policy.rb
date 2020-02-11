@@ -13,11 +13,13 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def create?
+    return false unless user
     return false if unit == Unit
     user&.sysadmin? || unit.administrators.where(user_id: user.id).count > 0
   end
 
   def destroy?
+    return false unless user
     return false if unit == Unit
     # user is sysadmin
     user.sysadmin? ||

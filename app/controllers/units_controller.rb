@@ -81,8 +81,6 @@ class UnitsController < ApplicationController
   # Responds to GET /units/:id
   #
   def show
-    raise ActiveRecord::RecordNotFound unless @resource
-
     @breadcrumbable = @resource
     @subunits = Unit.search.
         parent_unit(@resource).
