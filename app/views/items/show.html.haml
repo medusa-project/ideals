@@ -33,7 +33,5 @@
 
   #metadata-tab-content.tab-pane.fade.show{role: "tabpanel",
                                            "aria-labelledby": "metadata-tab"}
-    %dl
-      - @resource.elements.each do |element|
-        %dt= element.name
-        %dd= sanitize(element.string)
+    = metadata_as_dl(@resource.primary_collection.effective_metadata_profile,
+                     @resource.elements)

@@ -35,6 +35,37 @@ module ApplicationHelper
   end
 
   ##
+  # @param profile [MetadataProfile]
+  # @param elements [Enumerable<AscribedElement>]
+  # @return [String] HTML definition list.
+  #
+  def metadata_as_dl(profile, elements)
+    html = StringIO.new
+    html << "<dl>"
+    profile.elements.each do |profile_element|
+      matching_elements = elements.select{ |e| e.name == profile_element.name }
+      if matching_elements.any?
+        html << "<dt>"
+        html <<   profile_element.label
+        html << "</dt>"
+        html << "<dd>"
+        if matching_elements.length > 1
+          html << "<ul>"
+          matching_elements.each do |element|
+            html << "<li>"
+            html <<   sanitize(element.string)
+            html << "</li>"
+          end
+        else
+          html << sanitize(matching_elements.first.string)
+        end
+      end
+    end
+    html << "</dl>"
+    raw(html.string)
+  end
+
+  ##
   # @param total_entities [Integer]
   # @param per_page [Integer]
   # @param permitted_params [ActionController::Parameters]

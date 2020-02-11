@@ -35,19 +35,19 @@
 .tab-content
   #metadata-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                   "aria-labelledby": "metadata-tab"}
-    - if current_user&.manager?(@resource)
+    - if current_user&.effective_manager?(@resource)
       %dl
         %dt Metadata Profile
         %dd
-          - if policy(@metadata_profile).show?
-            = link_to(@metadata_profile.name, @metadata_profile)
+          - if @resource.metadata_profile
+            - if policy(@metadata_profile).show?
+              = link_to(@metadata_profile.name, @metadata_profile)
+            - else
+              = @metadata_profile.name
           - else
-            = @metadata_profile.name
-
-    %dl
-      - @resource.elements.each do |element|
-        %dt= element.name
-        %dd= sanitize(element.string)
+            = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
+    %hr
+    = metadata_as_dl(@metadata_profile, @resource.elements)
 
   #items-tab-content.tab-pane.fade.show{role: "tabpanel",
                                         "aria-labelledby": "items-tab"}
@@ -76,14 +76,25 @@
 
   #access-tab-content.tab-pane.fade.show{role: "tabpanel",
                                          "aria-labelledby": "access-tab"}
+    %h3 Unit Administrators
+    %ul
+      - @resource.all_units.each do |unit|
+        - unit.all_administrators.each do |user|
+          %li= link_to(user.name, "mailto:#{user.email}")
     %h3 Managers
-    %ul
-      - @resource.managing_users.each do |user|
-        %li= link_to(user.name, "mailto:#{user.email}")
+    - if @resource.managing_users.any?
+      %ul
+        - @resource.managing_users.each do |user|
+          %li= link_to(user.name, "mailto:#{user.email}")
+    - else
+      None
     %h3 Submitters
-    %ul
-      - @resource.submitting_users.each do |user|
-        %li= link_to(user.name, "mailto:#{user.email}")
+    - if @resource.submitters.any?
+      %ul
+        - @resource.submitting_users.each do |user|
+          %li= link_to(user.name, "mailto:#{user.email}")
+    - else
+      None
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-collection-modal", title: "Edit Collection" }
