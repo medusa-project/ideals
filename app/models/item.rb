@@ -64,6 +64,14 @@ class Item < ApplicationRecord
   end
 
   ##
+  # @return [MetadataProfile] Effective metadata profile of the primary
+  #                           {Collection}.
+  #
+  def metadata_profile
+    primary_collection.effective_metadata_profile
+  end
+
+  ##
   # @return [Unit]
   #
   def primary_unit

@@ -87,6 +87,12 @@ class ItemTest < ActiveSupport::TestCase
     assert_nil @instance.element("bogus")
   end
 
+  # metadata_profile()
+
+  test "metadata_profile() returns the primary collection's effective metadata profile" do
+    assert_equal metadata_profiles(:default), @instance.metadata_profile
+  end
+
   # primary_unit()
 
   test "primary_unit() returns the primary unit" do
