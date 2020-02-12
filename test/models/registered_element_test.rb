@@ -31,6 +31,16 @@ class RegisteredElementTest < ActiveSupport::TestCase
                  RegisteredElement.sortable_field("dc:title")
   end
 
+  # indexed_keyword_field()
+
+  test "indexed_keyword_field() returns the expected name" do
+    assert_equal "metadata_dc_title.keyword", @instance.indexed_keyword_field
+  end
+
+  test "indexed_keyword_field() replaces reserved characters" do
+    assert_equal "metadata_dc_title.keyword", @instance.indexed_keyword_field
+  end
+
   # indexed_name()
 
   test "indexed_name() returns the expected name" do
@@ -39,6 +49,16 @@ class RegisteredElementTest < ActiveSupport::TestCase
 
   test "indexed_name() replaces reserved characters" do
     assert_equal "metadata_dc_title", @instance.indexed_name
+  end
+
+  # indexed_sort_field()
+
+  test "indexed_sort_field() returns the expected name" do
+    assert_equal "metadata_dc_title.sort", @instance.indexed_sort_field
+  end
+
+  test "indexed_sort_field() replaces reserved characters" do
+    assert_equal "metadata_dc_title.sort", @instance.indexed_sort_field
   end
 
   # name
