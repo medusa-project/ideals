@@ -4,13 +4,10 @@
 class ItemFinder < AbstractFinder
 
   LOGGER = CustomLogger.new(ItemFinder)
-  BYTE_SIZE_AGGREGATION = 'byte_size'
 
   def initialize
     super
     @collection_id = nil
-
-    @result_byte_size = 0
   end
 
   ##
@@ -21,14 +18,6 @@ class ItemFinder < AbstractFinder
     @collection_id = collection.kind_of?(Collection) ?
                          collection.id : collection
     self
-  end
-
-  ##
-  # @return [Integer]
-  #
-  def total_byte_size
-    load
-    @result_byte_size
   end
 
   protected
@@ -44,29 +33,24 @@ class ItemFinder < AbstractFinder
 
     # Assemble the response aggregations into Facets. The order of the facets
     # should be the same as the order of elements in the metadata profile.
-=begin
-    metadata_profile.facet_elements.each do |element|
-      agg = @response_json['aggregations']&.
-          find{ |a| a[0] == element.indexed_keyword_field }
+    metadata_profile.facetable_elements.each do |profile_element|
+      keyword_field = profile_element.registered_element.indexed_keyword_field
+      agg = @response_json['aggregations']&.find{ |a| a[0] == keyword_field }
       if agg
-        facet = Facet.new
-        facet.name = element.label
-        facet.field = element.indexed_keyword_field
+        facet = Facet.new.tap do |f|
+          f.name  = profile_element.label
+          f.field = keyword_field
+        end
         agg[1]['buckets'].each do |bucket|
-          term = FacetTerm.new
-          term.name = bucket['key'].to_s
-          term.label = bucket['key'].to_s
-          term.count = bucket['doc_count']
-          term.facet = facet
-          facet.terms << term
+          facet.terms << FacetTerm.new.tap do |t|
+            t.name  = bucket['key'].to_s
+            t.label = bucket['key'].to_s
+            t.count = bucket['doc_count']
+            t.facet = facet
+          end
         end
         @result_facets << facet
       end
-    end
-=end
-    agg = @response_json['aggregations']&.find{ |a| a[0] == BYTE_SIZE_AGGREGATION }
-    if agg
-      @result_byte_size = agg[1]['value'].to_i
     end
 
     if @response_json['hits']
@@ -78,6 +62,15 @@ class ItemFinder < AbstractFinder
     end
 
     @loaded = true
+  end
+
+  def metadata_profile
+    profile = nil
+    if @collection_id
+      profile = Collection.find(@collection_id)&.effective_metadata_profile
+    end
+    profile ||=  MetadataProfile.default
+    profile
   end
 
   private
@@ -147,28 +140,20 @@ class ItemFinder < AbstractFinder
       end
 
       # Aggregations
-=begin
       j.aggregations do
         if @aggregations
-          # Facetable elements in the metadata profile
-          metadata_profile.facet_elements.each do |field|
-            j.set! field.indexed_keyword_field do
+          metadata_profile.facetable_elements.each do |profile_element|
+            keyword_field = profile_element.registered_element.indexed_keyword_field
+            j.set! keyword_field do
               j.terms do
-                j.field field.indexed_keyword_field
+                j.field keyword_field
                 j.size @bucket_limit
               end
             end
           end
         end
-
-        # Total byte size
-        j.set! BYTE_SIZE_AGGREGATION do
-          j.sum do
-            j.field Item::IndexFields::TOTAL_BYTE_SIZE
-          end
-        end
       end
-=end
+
       # Ordering
       # Order by explicit orders, if provided; otherwise sort by the metadata
       # profile's default order, if @orders is set to true; otherwise don't

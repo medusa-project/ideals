@@ -7,16 +7,18 @@ class ItemsController < ApplicationController
   # Responds to `GET /items`
   #
   def index
-    @start = params[:start].to_i
+    @start  = results_params[:start].to_i
     @window = window_size
     finder = Item.search.
-        query_all(params[:q]).
+        query_all(results_params[:q]).
+        facet_filters(results_params[:fq]).
         start(@start).
         limit(@window)
     @count            = finder.count
     @resources        = finder.to_a
+    @facets           = finder.facets
     @current_page     = finder.page
-    @permitted_params = params.permit(:q, :start)
+    @permitted_params = results_params
   end
 
   # GET /items/1
@@ -77,7 +79,6 @@ class ItemsController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_item
     if params.has_key?(:id)
       @resource = Item.find_by(id: params[:id])
@@ -87,7 +88,6 @@ class ItemsController < ApplicationController
     @breadcrumbable = @resource
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
   def item_params
     params.require(:item).permit(:title,
                                  :submitter_email,
@@ -96,4 +96,9 @@ class ItemsController < ApplicationController
                                  :collection_id,
                                  :discoverable)
   end
+
+  def results_params
+    params.permit(:q, :start, fq: [])
+  end
+
 end

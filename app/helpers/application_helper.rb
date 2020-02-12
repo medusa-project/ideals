@@ -14,6 +14,20 @@ module ApplicationHelper
   end
 
   ##
+  # @param facets [Enumerable<Facet>]
+  # @param permitted_params [ActionController::Parameters]
+  # @return [String] HTML string.
+  #
+  def facets_as_cards(facets, permitted_params)
+    return nil unless facets
+    html = StringIO.new
+    facets.select{ |f| f.terms.any? }.each do |facet|
+      html << facet_card(facet, permitted_params)
+    end
+    raw(html.string)
+  end
+
+  ##
   # @param entity [Object] Any model object or class.
   # @return [String] HTML icon tag.
   #
@@ -85,10 +99,7 @@ module ApplicationHelper
     prev_start = (prev_page - 1) * per_page
     next_start = (next_page - 1) * per_page
     last_start = (num_pages - 1) * per_page
-    unless permitted_params.kind_of?(ActionController::Parameters)
-      permitted_params = params.permit(permitted_params)
-    end
-    remote = false
+    remote     = false
 
     first_link = link_to(permitted_params.except(:start),
                          remote: remote, class: 'page-link', 'aria-label': 'First') do
@@ -206,6 +217,45 @@ module ApplicationHelper
                 start + 1, last,
                 number_with_delimiter(total_num_results),
                 (total_num_results == 1) ? noun : noun.pluralize))
+  end
+
+  private
+
+  ##
+  # @param facet [Facet]
+  # @param permitted_params [ActionController::Parameters]
+  #
+  def facet_card(facet, permitted_params)
+    panel = StringIO.new
+    panel << "<div class=\"card facet\" id=\"#{facet.field}\">"
+    panel <<   "<h5 class=\"card-header\">#{facet.name}</h5>"
+    panel <<     '<div class="card-body">'
+    panel <<       '<ul>'
+    facet.terms.each do |term|
+      checked          = (permitted_params[:fq]&.include?(term.query)) ? "checked" : nil
+      checked_params   = term.removed_from_params(permitted_params.deep_dup).except(:start)
+      unchecked_params = term.added_to_params(permitted_params.deep_dup).except(:start)
+      term_label       = truncate(term.label, length: 80)
+
+      panel << '<li class="term">'
+      panel <<   '<div class="checkbox">'
+      panel <<     '<label>'
+      query =        term.query.gsub('"', '&quot;')
+      panel <<       "<input type=\"checkbox\" name=\"fq[]\" #{checked} "\
+                         "data-query=\"#{query}\" "\
+                         "data-checked-href=\"#{url_for(unchecked_params)}\" "\
+                         "data-unchecked-href=\"#{url_for(checked_params)}\" "\
+                         "value=\"#{query}\"> "
+      panel <<         "<span class=\"term-name\">#{term_label}</span> "
+      panel <<         "<span class=\"count\">#{term.count}</span>"
+      panel <<     '</label>'
+      panel <<   '</div>'
+      panel << '</li>'
+    end
+    panel <<     '</ul>'
+    panel <<   '</div>'
+    panel << '</div>'
+    raw(panel.string)
   end
 
 end

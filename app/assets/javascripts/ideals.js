@@ -2,6 +2,22 @@
  * Namespace for componenents that are shared across views.
  */
 const IDEALS = {
+
+    FacetSet: function() {
+        /**
+         * Enables the facets returned by one of the facets_as_x() helpers.
+         */
+        this.init = function() {
+            $("[name='fq[]']").off().on("change", function () {
+                if ($(this).prop("checked")) {
+                    window.location = $(this).data("checked-href");
+                } else {
+                    window.location = $(this).data("unchecked-href");
+                }
+            });
+        }
+    },
+
     NonNetIDLoginForm: function() {
         const root_url = $('input[name=root_url]').val();
         const modal    = $('#non-netid-login-modal');

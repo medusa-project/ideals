@@ -17,6 +17,32 @@
   }
 }
 
+.facet {
+  margin-bottom: 1em;
+  .card-body {
+    padding: 0.75em;
+    ul {
+      list-style-type: none;
+      margin-bottom: 0;
+      margin-left: 0;
+      padding-left: 0;
+    }
+    .term {
+      font-size: 0.9em;
+      text-indent: -1.2em;
+      margin-left: 2.4em;
+    }
+    .count {
+      background-color: #a0a0a0;
+      color: white;
+      font-weight: bold;
+      font-size: 0.8em;
+      border-radius: 0.8em;
+      padding: 0.1em 0.3em;
+    }
+  }
+}
+
 .nav {
   margin-bottom: 1em;
 }

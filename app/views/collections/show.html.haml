@@ -53,7 +53,8 @@
                                         "aria-labelledby": "items-tab"}
     -if @resource.items.count.positive?
       .float-right
-        = item_search_field(@resource, Item::IndexFields::PRIMARY_COLLECTION)
+        = form_tag(items_path, method: :get, class: "filter") do
+          = item_search_field(@resource, Item::IndexFields::PRIMARY_COLLECTION)
       %h2 Items
       = resource_list(@resources)
     -else
