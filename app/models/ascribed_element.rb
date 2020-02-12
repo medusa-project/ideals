@@ -17,10 +17,24 @@ class AscribedElement < ApplicationRecord
   validate :validate_ascription
 
   ##
-  # @return [String]
+  # @return [String] Label of the associated {RegisteredElement}.
+  #
+  def label
+    registered_element.label
+  end
+
+  ##
+  # @return [String] Name of the associated {RegisteredElement}.
   #
   def name
     registered_element.name
+  end
+
+  ##
+  # @return [String] URI of the associated {RegisteredElement}.
+  #
+  def uri
+    registered_element.uri
   end
 
   private

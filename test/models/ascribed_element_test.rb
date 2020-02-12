@@ -51,10 +51,22 @@ class AscribedElementTest < ActiveSupport::TestCase
     assert new_updated_at > original_updated_at
   end
 
+  # label()
+
+  test "label() returns the associated RegisteredElement label" do
+    assert_equal "Title", @instance.label
+  end
+
   # name()
 
   test "name() returns the associated RegisteredElement name" do
     assert_equal "dc:title", @instance.name
+  end
+
+  # uri()
+
+  test "uri() returns the associated RegisteredElement URI" do
+    assert_equal "http://purl.org/dc/terms/title", @instance.uri
   end
 
 end
