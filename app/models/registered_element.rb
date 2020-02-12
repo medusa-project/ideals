@@ -1,3 +1,9 @@
+##
+# An element available for use in the application.
+#
+# Instances comprise a simple list. {AscribedElement} attaches them to entities
+# and {MetadataProfileElement} attaches them to {MetadataProfile}s.
+#
 class RegisteredElement < ApplicationRecord
 
   METADATA_FIELD_PREFIX = "metadata_"

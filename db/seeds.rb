@@ -9,9 +9,12 @@
 Role.create!(name: "sysadmin")
 
 elements = {
-    title: RegisteredElement.create!(name: "title"),
-    description: RegisteredElement.create!(name: "description"),
-    subject: RegisteredElement.create!(name: "subject")
+    title: RegisteredElement.create!(name: "title",
+                                     uri: "http://example.org/title"),
+    description: RegisteredElement.create!(name: "description",
+                                           uri: "http://example.org/description"),
+    subject: RegisteredElement.create!(name: "subject",
+                                       uri: "http://example.org/subject")
 }
 
 profile = MetadataProfile.create!(name: "Default Profile", default: true)

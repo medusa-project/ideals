@@ -88,4 +88,13 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # uri
+
+  test "uri must be unique" do
+    element = RegisteredElement.all.first
+    assert_raises ActiveRecord::RecordInvalid do
+      RegisteredElement.create!(name: "new name", uri: element.uri)
+    end
+  end
+
 end

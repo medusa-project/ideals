@@ -73,7 +73,7 @@ class RegisteredElementsController < ApplicationController
   private
 
   def registered_element_params
-    params.require(:registered_element).permit(:name, :scope_note)
+    params.require(:registered_element).permit(:name, :scope_note, :uri)
   end
 
   def set_element

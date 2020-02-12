@@ -7,15 +7,18 @@
   .form-group
     = f.label :name
     - if context == :new
-      = f.text_field :name, class: 'form-control'
+      = f.text_field :name, class: "form-control"
     - else
       %br
       %code= element.name
   .form-group
+    = f.label :uri, "URI"
+    = f.text_field :uri, class: "form-control"
+  .form-group
     = f.label :scope_note
-    = f.text_area :scope_note, class: 'form-control'
+    = f.text_area :scope_note, class: "form-control"
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
-      = f.submit(context == :new ? 'Create Element' : 'Edit Element',
-                 class: 'btn btn-primary')
+      = f.submit(context == :new ? "Create Element" : "Edit Element",
+                 class: "btn btn-primary")

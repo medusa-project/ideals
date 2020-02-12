@@ -1,4 +1,14 @@
 body#registered_elements {
+  table {
+    tr td:first-child {
+      width: 1px;
+      white-space: nowrap;
+    }
+    table tr th:first-child {
+      text-align: right;
+      width: 7em;
+    }
+  }
   #add-element-modal, #edit-element-modal {
     textarea {
       height: 15em;

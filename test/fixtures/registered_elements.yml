@@ -2,16 +2,20 @@
 
 title:
   name: dc:title
+  uri: http://purl.org/dc/terms/title
   scope_note:
 
 description:
   name: dc:description
+  uri: http://purl.org/dc/terms/description
   scope_note:
 
 subject:
   name: dc:subject
+  uri: http://purl.org/dc/terms/subject
   scope_note:
 
 unused:
   name: unused
+  uri: http://example.org/unused
   scope_note: This element is not attached to any resources.
