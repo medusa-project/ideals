@@ -10,34 +10,58 @@
   = form_tag(items_path, method: :get, class: "filter") do
     = item_search_field(@resource, Item::IndexFields::PRIMARY_UNIT)
 
-%h2 Info
-%dl
-  %dt Direct Administrators
-  %dd
-    %ul
-      - @resource.administering_users.each do |user|
-        %li= link_to(raw("#{user.name}#{user == @resource.primary_administrator ? " <span class=\"badge badge-primary\">PRIMARY</span>" : ""}"),
-        "mailto:#{user.email}")
-  %dt Effective Administrators (including administrators of parent units)
-  %dd
-    %ul
-      - @resource.all_administrators.each do |user|
-        %li= link_to(user.name, "mailto:#{user.email}")
 
--if @subunits.any?
-  %h2 Sub-Units
-  =resource_list(@subunits)
 
--if policy(Collection).new?
-  .btn-group.float-right{role: "group"}
-    / Add Collection button
-    %button.btn.btn-light{"data-target": "#add-collection-modal",
-                          "data-toggle": "modal", type: "button"}
-      %i.fa.fa-plus
-      Add Collection
 
-%h2 Collections
-= resource_list(@collections)
+%ul.nav.nav-tabs{role: "tablist"}
+  %li.nav-item
+    %a#units-tab.nav-link.active{"aria-controls": "units",
+                                 "aria-selected": "false",
+                                 "data-toggle": "tab",
+                                 href: "#units",
+                                 role: "tab"} Sub-Units
+  %li.nav-item
+    %a#collections-tab.nav-link{"aria-controls": "collections",
+                                "aria-selected": "false",
+                                "data-toggle": "tab",
+                                href: "#collections",
+                                role: "tab"} Collections
+  %li.nav-item
+    %a#access-tab.nav-link{"aria-controls": "access",
+                           "aria-selected": "false",
+                           "data-toggle": "tab",
+                           href: "#access",
+                           role: "tab"} Access
+
+
+.tab-content
+  #units.tab-pane.fade.show.active{"aria-labelledby": "units-tab",
+                                   role: "tabpanel"}
+    =resource_list(@subunits)
+  #collections.tab-pane.fade{"aria-labelledby": "collections-tab",
+                             role: "tabpanel"}
+    -if policy(Collection).new?
+      .btn-group.float-right{role: "group"}
+        / Add Collection button
+        %button.btn.btn-light{"data-target": "#add-collection-modal",
+                              "data-toggle": "modal", type: "button"}
+          %i.fa.fa-plus
+          Add Collection
+    = resource_list(@collections)
+  #access.tab-pane.fade{"aria-labelledby": "access-tab",
+                        role: "tabpanel"}
+    %dl
+      %dt Direct Administrators
+      %dd
+        %ul
+          - @resource.administering_users.each do |user|
+            %li= link_to(raw("#{user.name}#{user == @resource.primary_administrator ? " <span class=\"badge badge-primary\">PRIMARY</span>" : ""}"),
+            "mailto:#{user.email}")
+      %dt Effective Administrators (including administrators of parent units)
+      %dd
+        %ul
+          - @resource.all_administrators.each do |user|
+            %li= link_to(user.name, "mailto:#{user.email}")
 
 = render partial: "collections/add_modal", locals: { collection: @new_collection,
                                                      primary_unit: @resource,
