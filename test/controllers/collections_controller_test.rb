@@ -99,8 +99,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() returns HTTP 200" do
+  test "show() returns HTTP 200 for HTML" do
     get collection_path(collections(:collection1))
+    assert_response :ok
+  end
+
+  test "show() returns HTTP 200 for JSON" do
+    get collection_path(collections(:collection1), format: :json)
     assert_response :ok
   end
 
