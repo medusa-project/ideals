@@ -38,7 +38,7 @@ class AbstractFinder
     @aggregations = true
     @bucket_limit = DEFAULT_BUCKET_LIMIT
     @exact_match  = false
-    @filters      = {} # Hash<String,Object>
+    @filters      = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @limit        = ElasticsearchClient::MAX_RESULT_WINDOW
     @orders       = [] # Array<Hash<Symbol,String>> with :field and :direction keys
     @query        = nil # Hash<Symbol,String> Hash with :field and :query keys
@@ -83,7 +83,7 @@ class AbstractFinder
   def facet_filters(filters)
     if filters.present?
       if filters.respond_to?(:keys) # check if it's a hash
-        @filters = filters
+        @filters = filters.keys.map{ |k| [k, filters[k]] }
       elsif filters.respond_to?(:each) # check if it's an Enumerable
         filters.each do |filter|
           add_facet_filter_string(filter)
@@ -123,7 +123,7 @@ class AbstractFinder
   # @return [self]
   #
   def filter(field, value)
-    @filters.merge!({ field => value })
+    @filters << [field, value]
     @loaded = false
     self
   end
@@ -256,9 +256,9 @@ class AbstractFinder
         else
           get_class.find(get_class.to_model_id(id))
         end
-        # Better but still not great. For best performance we ought to add
-        # everything we need to the indexed document and read it from there,
-        # not even touching the database.
+          # Better but still not great. For best performance we ought to add
+          # everything we need to the indexed document and read it from there,
+          # not even touching the database.
       rescue ActiveRecord::RecordNotFound
         LOGGER.warn("to_a(): #{get_class} #{id} is missing from the database")
       end
@@ -284,7 +284,7 @@ class AbstractFinder
   def add_facet_filter_string(str)
     parts = str.split(":")
     if parts.length == 2
-      @filters[parts[0]] = parts[1]
+      @filters << [parts[0], parts[1]]
     end
   end
 

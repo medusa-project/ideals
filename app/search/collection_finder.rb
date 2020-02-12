@@ -82,30 +82,34 @@ class CollectionFinder < AbstractFinder
           end
 
           j.filter do
-            j.child! do
-              j.term do
-                j.set! ElasticsearchIndex::StandardFields::CLASS, get_class.to_s
-              end
-            end
-
-            @filters.each do |field, value|
-              j.child! do
-                if value.respond_to?(:each)
-                  j.terms do
-                    j.set! field, value
-                  end
-                else
+            j.bool do
+              j.must do
+                j.child! do
                   j.term do
-                    j.set! field, value
+                    j.set! ElasticsearchIndex::StandardFields::CLASS, get_class.to_s
                   end
                 end
-              end
-            end
 
-            if @primary_unit
-              j.child! do
-                j.term do
-                  j.set! Collection::IndexFields::PRIMARY_UNIT, @primary_unit.id
+                @filters.each do |key_value|
+                  j.child! do
+                    if key_value[0].respond_to?(:each)
+                      j.terms do
+                        j.set! key_value[0], key_value[1]
+                      end
+                    else
+                      j.term do
+                        j.set! key_value[0], key_value[1]
+                      end
+                    end
+                  end
+                end
+
+                if @primary_unit
+                  j.child! do
+                    j.term do
+                      j.set! Collection::IndexFields::PRIMARY_UNIT, @primary_unit.id
+                    end
+                  end
                 end
               end
             end

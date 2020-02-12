@@ -112,31 +112,33 @@ class ItemFinder < AbstractFinder
           end
 
           j.filter do
-            j.child! do
-              j.term do
-                j.set! Item::IndexFields::CLASS, 'Item'
-              end
-            end
+            j.bool do
+              j.must do
+                j.term do
+                  j.set! Item::IndexFields::CLASS, 'Item'
+                end
 
-            @filters.each do |field, value|
-              j.child! do
-                if value.respond_to?(:each)
-                  j.terms do
-                    j.set! field, value
-                  end
-                else
-                  j.term do
-                    j.set! field, value
+                @filters.each do |key_value|
+                  j.child! do
+                    if key_value[0].respond_to?(:each)
+                      j.terms do
+                        j.set! key_value[0], key_value[1]
+                      end
+                    else
+                      j.term do
+                        j.set! key_value[0], key_value[1]
+                      end
+                    end
                   end
                 end
-              end
-            end
 
-            if @collection_id
-              j.child! do
-                j.term do
-                  j.set! Item::IndexFields::COLLECTIONS,
-                         @collection_id
+                if @collection_id
+                  j.child! do
+                    j.term do
+                      j.set! Item::IndexFields::COLLECTIONS,
+                             @collection_id
+                    end
+                  end
                 end
               end
             end
