@@ -35,8 +35,8 @@
       %i.fa.fa-plus
       Add Collection
 
-  %h2 Collections
-  = resource_list(@collections)
+%h2 Collections
+= resource_list(@collections)
 
 = render partial: "collections/add_modal", locals: { collection: @new_collection,
                                                      primary_unit: @resource,
