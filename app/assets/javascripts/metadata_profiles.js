@@ -23,6 +23,13 @@ const MetadataProfilesView = function() {
 const MetadataProfileView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
+    $('button.edit-profile').on("click", function() {
+        const profile_id = $(this).data("profile-id");
+        const url = ROOT_URL + "/metadata-profiles/" + profile_id + "/edit";
+        $.get(url, function(data) {
+            $("#edit-profile-modal .modal-body").html(data);
+        });
+    });
     $("button.edit-element").on("click", function() {
         const profile_id = $(this).data("profile-id");
         const element_id = $(this).data("element-id");

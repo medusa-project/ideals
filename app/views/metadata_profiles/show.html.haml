@@ -1,5 +1,14 @@
 = provide :body_id, "show_metadata_profile"
 
+.btn-group.float-right{role: "group"}
+  / Edit button
+  %button.btn.btn-light.edit-profile{"data-target": "#edit-profile-modal",
+                                     "data-toggle": "modal",
+                                     "data-profile-id": @profile.id,
+                                     type: "button"}
+    %i.fa.fa-pencil-alt
+    Edit
+
 %h1= @profile.name
 
 %ul.nav.nav-tabs{role: "tablist"}
@@ -74,6 +83,8 @@
     - else
       This metadata profile is not in use by any collections.
 
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-profile-modal", title: "Edit Profile" }
 = render partial: "metadata_profile_elements/add_modal"
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-element-modal", title: "Edit Element" }
