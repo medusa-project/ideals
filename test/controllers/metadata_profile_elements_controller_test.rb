@@ -64,8 +64,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
             metadata_profile_element: {
                 registered_element_id: registered_elements(:title).id,
                 metadata_profile_id: @profile.id,
-                label: "", # invalid
-                index: 0
+                index: -1 # invalid
             }
         }
     }
@@ -150,13 +149,12 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
             metadata_profile_element: {
                 registered_element_id: registered_elements(:title).id,
                 metadata_profile_id: @profile.id,
-                label: "New Label",
-                index: 0
+                index: 2
             }
         }
     }
     element.reload
-    assert_equal "New Label", element.label
+    assert_equal 2, element.index
   end
 
   test "update() returns HTTP 200" do
@@ -185,8 +183,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
             metadata_profile_element: {
                 registered_element_id: registered_elements(:title).id,
                 metadata_profile_id: @profile.id,
-                label: "", # invalid
-                index: 0
+                index: -1 # invalid
             }
         }
     }

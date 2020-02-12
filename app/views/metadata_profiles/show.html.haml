@@ -28,10 +28,7 @@
     %table.table
       %thead
         %th
-        %th
-        %th
-          Label
-          %br Element
+        %th Element
         %th Visible
         %th Searchable
         %th Sortable
@@ -49,7 +46,6 @@
                                                         "data-element-id": element.id}
                 %i.fa.fa-pencil-alt
                 Edit
-            %td{style: "width: 1px; white-space: nowrap"}
               = link_to(metadata_profile_metadata_profile_element_path(@profile, element),
                         class: 'btn btn-danger btn-sm',
                         method: :delete,
@@ -58,8 +54,6 @@
                 Delete
             %td
               = element.label
-              %br
-              %code= element.name
             %td{class: element.visible? ? "bg-success" : "bg-danger"}
               = boolean(element.visible)
             %td{class: element.searchable? ? "bg-success" : "bg-danger"}

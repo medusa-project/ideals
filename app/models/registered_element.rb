@@ -4,6 +4,14 @@
 # Instances comprise a simple list. {AscribedElement} attaches them to entities
 # and {MetadataProfileElement} attaches them to {MetadataProfile}s.
 #
+# # Attributes
+#
+# * `created_at` Managed by ActiveRecord.
+# * `label`      Element label. Often overrides {name} for end-user display.
+# * `name`       Element name.
+# * `updated_at` Managed by ActiveRecord.
+# * `uri`        Linked Data URI.
+#
 class RegisteredElement < ApplicationRecord
 
   METADATA_FIELD_PREFIX = "metadata_"
@@ -11,6 +19,10 @@ class RegisteredElement < ApplicationRecord
   SORTABLE_FIELD_SUFFIX = ".sort"
 
   has_many :metadata_profile_elements, inverse_of: :registered_element
+
+  # label
+  validates_presence_of :label
+  validates_uniqueness_of :label
 
   validates_format_of :name, with: /\A[A-Za-z0-9_\-:]+\z/, allow_blank: false
   validates_uniqueness_of :name

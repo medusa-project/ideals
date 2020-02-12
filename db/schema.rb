@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_12_194143) do
+ActiveRecord::Schema.define(version: 2020_02_12_201317) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -133,7 +133,6 @@ ActiveRecord::Schema.define(version: 2020_02_12_194143) do
     t.bigint "metadata_profile_id", null: false
     t.bigint "registered_element_id", null: false
     t.integer "index", null: false
-    t.string "label", null: false
     t.boolean "visible", default: true, null: false
     t.boolean "facetable", default: false, null: false
     t.boolean "searchable", default: false, null: false
@@ -165,6 +164,7 @@ ActiveRecord::Schema.define(version: 2020_02_12_194143) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "uri"
+    t.string "label", null: false
     t.index ["name"], name: "index_registered_elements_on_name", unique: true
     t.index ["uri"], name: "index_registered_elements_on_uri", unique: true
   end

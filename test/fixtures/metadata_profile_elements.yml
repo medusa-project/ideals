@@ -4,7 +4,6 @@ default_title:
   metadata_profile: default
   registered_element: title
   index: 0
-  label: Title
   visible: true
   facetable: false
   searchable: true
@@ -16,7 +15,6 @@ default_description:
   metadata_profile: default
   registered_element: description
   index: 1
-  label: Description
   visible: true
   facetable: false
   searchable: true
@@ -28,7 +26,6 @@ default_subject:
   metadata_profile: default
   registered_element: subject
   index: 2
-  label: Subject
   visible: true
   facetable: true
   searchable: true

@@ -40,7 +40,7 @@ class MetadataProfileTest < ActiveSupport::TestCase
   # facetable_elements()
 
   test "facetable_elements() returns only facetable elements" do
-    assert_equal ["Subject"], @instance.facetable_elements.pluck(:label)
+    assert_equal ["Subject"], @instance.facetable_elements.map(&:label)
   end
 
   # name

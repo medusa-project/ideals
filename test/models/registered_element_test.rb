@@ -61,6 +61,23 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert_equal "metadata_dc_title.sort", @instance.indexed_sort_field
   end
 
+  # label
+
+  test "label must be present" do
+    @instance.label = nil
+    assert !@instance.valid?
+    @instance.label = ""
+    assert !@instance.valid?
+  end
+
+  test "label must be unique" do
+    element = RegisteredElement.all.first
+    assert_raises ActiveRecord::RecordInvalid do
+      RegisteredElement.create!(name: "new name",
+                                label: element.label)
+    end
+  end
+
   # name
 
   test "name must be present" do
@@ -73,7 +90,8 @@ class RegisteredElementTest < ActiveSupport::TestCase
   test "name must be unique" do
     element = RegisteredElement.all.first
     assert_raises ActiveRecord::RecordInvalid do
-      RegisteredElement.create!(name: element.name)
+      RegisteredElement.create!(name: element.name,
+                                label: "new label")
     end
   end
 
@@ -93,7 +111,9 @@ class RegisteredElementTest < ActiveSupport::TestCase
   test "uri must be unique" do
     element = RegisteredElement.all.first
     assert_raises ActiveRecord::RecordInvalid do
-      RegisteredElement.create!(name: "new name", uri: element.uri)
+      RegisteredElement.create!(label: "new label",
+                                name: "new name",
+                                uri: element.uri)
     end
   end
 

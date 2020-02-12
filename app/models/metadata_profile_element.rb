@@ -9,8 +9,6 @@
 #                           results views.
 # * `index`                 Zero-based position within the owning
 #                           {MetadataProfile}.
-# * `label`                 Element label. Often overrides {name} for end-user
-#                           display.
 # * `metadata_profile_id`   ID of the associated metadata profile. Foreign key.
 # * `registered_element_id` ID of the associated {RegisteredElement}. Foreign
 #                           key.
@@ -33,10 +31,6 @@ class MetadataProfileElement < ApplicationRecord
                                     greater_than_or_equal_to: 0 }
   validates_presence_of :index
 
-  # label
-  validates_presence_of :label
-  validates_uniqueness_of :label, scope: :metadata_profile_id
-
   # registered_element_id
   validates_presence_of :registered_element_id
   validates_uniqueness_of :registered_element_id, scope: :metadata_profile_id
@@ -44,6 +38,13 @@ class MetadataProfileElement < ApplicationRecord
   before_create :shift_element_indexes_before_create
   before_update :shift_element_indexes_before_update
   after_destroy :shift_element_indexes_after_destroy
+
+  ##
+  # @return [String] Label of the associated {RegisteredElement}.
+  #
+  def label
+    self.registered_element.label
+  end
 
   ##
   # @return [String] Name of the associated {RegisteredElement}.

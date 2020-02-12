@@ -11,9 +11,6 @@
     = f.select(:registered_element_id, RegisteredElement.all.order(:name).pluck(:name, :id),
       { selected: f.object.registered_element_id },
       class: "custom-select")
-  .form-group
-    = f.label :label
-    = f.text_field :label, class: "form-control"
   - if profile.elements.any?
     .form-group
       = f.label :index, "Position After"

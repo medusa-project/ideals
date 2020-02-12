@@ -26,6 +26,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
         params: {
             registered_element: {
                 name: "cats",
+                label: "Cats",
                 scope_note: "Mammals"
             }
         }
@@ -35,17 +36,18 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() creates an element" do
     log_in_as(users(:admin))
-    post registered_elements_path, {
-        xhr: true,
-        params: {
-            registered_element: {
-                name: "cats",
-                scope_note: "Mammals"
-            }
-        }
-    }
-    element =  RegisteredElement.find_by_name("cats")
-    assert_equal "Mammals", element.scope_note
+    assert_difference "RegisteredElement.count" do
+      post registered_elements_path, {
+          xhr: true,
+          params: {
+              registered_element: {
+                  name: "cats",
+                  label: "Cats",
+                  scope_note: "Mammals"
+              }
+          }
+      }
+    end
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
@@ -135,6 +137,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
         params: {
             registered_element: {
                 name: "cats",
+                label: "Cats",
                 scope_note: "Mammals"
             }
         }

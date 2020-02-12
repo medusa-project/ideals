@@ -294,6 +294,8 @@ class IdealsImporter
       progress.report(row_num, "Importing registered elements")
       RegisteredElement.create!(id:         row_arr[0],
                                 name:       name,
+                                uri:        "http://example.org/#{name}",
+                                label:      "Label For #{name}",
                                 scope_note: row_arr[4])
     end
     update_pkey_sequence("registered_elements")
