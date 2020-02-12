@@ -65,7 +65,7 @@ class UnitsController < ApplicationController
         include_children(false).
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(9999)
-    @resources = finder.to_a
+    @units    = finder.to_a
     @new_unit = Unit.new
   end
 

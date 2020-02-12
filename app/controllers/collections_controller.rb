@@ -77,7 +77,7 @@ class CollectionsController < ApplicationController
           start(@start).
           limit(@window)
       @count            = finder.count
-      @resources        = finder.to_a
+      @collections      = finder.to_a
       @current_page     = finder.page
       @permitted_params = params.permit(:q, :start)
     end

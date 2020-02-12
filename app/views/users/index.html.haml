@@ -9,7 +9,7 @@
       %th Authentication Type
       %th Roles
   %tbody
-    - @resources.each do |user|
+    - @users.each do |user|
       - user = user.becomes(User)
       %tr
         %td= link_to(user.username, user)

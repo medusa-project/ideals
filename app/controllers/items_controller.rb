@@ -15,7 +15,7 @@ class ItemsController < ApplicationController
         start(@start).
         limit(@window)
     @count            = finder.count
-    @resources        = finder.to_a
+    @items            = finder.to_a
     @facets           = finder.facets
     @current_page     = finder.page
     @permitted_params = results_params

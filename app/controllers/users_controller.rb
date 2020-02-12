@@ -16,7 +16,7 @@ class UsersController < ApplicationController
   #
   def index
     authorize(User)
-    @resources = User.all.order(:name)
+    @users = User.all.order(:name)
   end
 
   ##
