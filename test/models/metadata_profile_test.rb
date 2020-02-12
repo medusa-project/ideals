@@ -23,6 +23,12 @@ class MetadataProfileTest < ActiveSupport::TestCase
     end
   end
 
+  # default()
+
+  test "default() returns the default metadata profile" do
+    assert_equal metadata_profiles(:default).id, MetadataProfile.default.id
+  end
+
   # default
 
   test "setting a profile as the default sets all other instances to not-default" do

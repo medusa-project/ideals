@@ -42,6 +42,13 @@ class MetadataProfile < ApplicationRecord
   after_save :ensure_default_uniqueness
 
   ##
+  # @return [MetadataProfile] Default metadata profile.
+  #
+  def self.default
+    MetadataProfile.find_by_default(true)
+  end
+
+  ##
   # @return [Enumerable<MetadataProfileElement>]
   #
   def facetable_elements
