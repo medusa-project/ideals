@@ -8,7 +8,7 @@
 
 .float-right
   = form_tag(items_path, method: :get, class: "filter") do
-    = item_search_field(@resource, Item::IndexFields::PRIMARY_UNIT)
+    = filter_field(@resource, Item::IndexFields::PRIMARY_UNIT)
 
 
 

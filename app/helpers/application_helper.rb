@@ -28,6 +28,37 @@ module ApplicationHelper
   end
 
   ##
+  # @param container [Unit,Collection] Container a.k.a. owning object to limit
+  #                                    results to.
+  # @param container_field [String] Index field, such as
+  #                                 {Item::IndexFields::PRIMARY_UNIT_ID},
+  #                                 corresponding to `container`.
+  # @return [String] HTML element.
+  #
+  def filter_field(container = nil, container_field = nil)
+    html = StringIO.new
+    html << "<div class=\"input-group mb-4 filter-field\">"
+    html <<   hidden_field_tag(container_field, container.id) if container
+    html <<   "<div class=\"input-group-prepend input-group-text\">"
+    html <<     "<i class=\"fa fa-filter\"></i>"
+    html <<   "</div>"
+    placeholder = container ?
+                      "Search within this #{container.class.to_s.downcase}&hellip;" :
+                      ""
+    html <<   search_field_tag(:q, "",
+                               placeholder: raw(placeholder),
+                               'aria-label': 'Search',
+                               class: 'form-control')
+    html <<   "<div class=\"input-group-append\">"
+    html <<     submit_tag(container ? "Search" : "Filter",
+                           name: "",
+                           class: "btn btn-outline-primary")
+    html <<   "</div>"
+    html << "</div>"
+    raw(html.string)
+  end
+
+  ##
   # @param entity [Object] Any model object or class.
   # @return [String] HTML icon tag.
   #
