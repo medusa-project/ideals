@@ -20,9 +20,7 @@ class CollectionsController < ApplicationController
         # Save now in order to obtain an ID with which to associate
         # AscribedElements in the next step.
         @resource.save!
-        system_title_element = ::Configuration.instance.elements[:title]
-        @resource.elements.build(registered_element: RegisteredElement.find_by_name(system_title_element),
-                                 string: params[:elements][:title])
+        build_metadata
         @resource.save!
       end
     rescue
@@ -112,13 +110,7 @@ class CollectionsController < ApplicationController
   def update
     begin
       ActiveRecord::Base.transaction do
-        system_title_element = ::Configuration.instance.elements[:title]
-        if params[:elements]
-          title_id = RegisteredElement.find_by_name(system_title_element)
-          @resource.elements.where(registered_element_id: title_id).destroy_all
-          @resource.elements.build(registered_element: title_id,
-                                   string: params[:elements][:title])
-        end
+        build_metadata
         @resource.update!(collection_params)
       end
     rescue
@@ -133,6 +125,25 @@ class CollectionsController < ApplicationController
   end
 
   private
+
+  ##
+  # Builds and ascribes {AscribedElement}s to the collection based on user
+  # input. This is done manually because to do it using Rails nested attributes
+  # would be a PITA.
+  #
+  def build_metadata
+    config                  = ::Configuration.instance
+    reg_title_element       = RegisteredElement.find_by_name(config.elements[:title])
+    reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
+    @resource.elements.where(registered_element_id: [reg_title_element.id,
+                                                     reg_description_element.id]).destroy_all
+    @resource.elements.build(registered_element: reg_title_element,
+                             string: params[:elements][:title])
+    if params[:elements][:description].present?
+      @resource.elements.build(registered_element: reg_description_element,
+                               string: params[:elements][:description])
+    end
+  end
 
   def set_collection
     # N.B.: the `||` supports nested routes.

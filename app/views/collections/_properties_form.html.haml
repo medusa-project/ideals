@@ -13,7 +13,11 @@
 
   .form-group
     = label_tag "elements_title", "Title"
-    = text_field_tag "elements[title]", nil, class: "form-control"
+    = text_field_tag "elements[title]", f.object.title, class: "form-control"
+
+  .form-group
+    = label_tag "elements_description", "Description"
+    = text_area_tag "elements[description]", f.object.description, class: "form-control"
 
   .clearfix
     .float-right

@@ -14,6 +14,10 @@
     = label_tag "elements_title", "Title"
     = text_field_tag "elements[title]", nil, class: "form-control"
 
+  .form-group
+    = label_tag "elements_description", "Description"
+    = text_area_tag "elements[description]", nil, class: "form-control"
+
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
