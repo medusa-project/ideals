@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 json.set! "class", @resource.class.to_s
+json.uri collection_url(@resource, format: :json)
 json.extract! @resource, :id, :created_at, :updated_at
-json.url collection_url(@resource, format: :json)
 
 json.primary_unit do
   json.id @resource.primary_unit_id
@@ -12,7 +12,7 @@ json.units do
   @resource.unit_ids.each do |unit_id|
     json.child! do
       json.id unit_id
-      json.uri unit_url(unit_id)
+      json.uri unit_url(unit_id, format: :json)
     end
   end
 end
