@@ -12,25 +12,10 @@
 %table.table
   %thead
     %tr
-      %th{style: "width: 1px"}
-      %th{style: "width: 1px"}
       %th Name
   %tbody
     - @profiles.each do |profile|
       %tr
-        %td{style: "white-space: nowrap"}
-          %button.btn.btn-light.btn-sm.edit-profile{"data-profile-id": profile.id,
-                                                    "data-target": "#edit-profile-modal",
-                                                    "data-toggle": "modal",
-                                                    type: "button"}
-            %i.fas.fa-pencil-alt
-            Edit
-        %td{style: "white-space: nowrap"}
-          = link_to(metadata_profile_path(profile), class: 'btn btn-danger btn-sm',
-                                                    method: :delete,
-                                                    data: { confirm: 'Are you sure you want to delete this profile?' }) do
-            %i.fa.fa-trash
-            Delete
         %td
           = link_to(profile.name, profile)
           - if profile.default
