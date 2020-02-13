@@ -92,8 +92,7 @@ class UnitsController < ApplicationController
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999).
         to_a
-    @new_unit       = Unit.new
-    @new_collection = Collection.new
+    @new_unit = Unit.new
   end
 
   ##

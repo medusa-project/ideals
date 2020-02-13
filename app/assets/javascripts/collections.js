@@ -5,11 +5,25 @@ const CollectionsView = function() {
 
     const ROOT_URL = $('input[name="root_url"]').val();
 
-    $('button.edit-collection').on('click', function() {
-        var id = $(this).data('collection-id');
-        var url = ROOT_URL + '/collections/' + id + '/edit';
+    $('.edit-collection-access').on("click", function() {
+        const id = $(this).data("collection-id");
+        const url = ROOT_URL + "/collections/" + id + "/edit-access";
         $.get(url, function(data) {
-            $('#edit-collection-modal .modal-body').html(data);
+            $("#edit-collection-access-modal .modal-body").html(data);
+        });
+    });
+    $('.edit-collection-membership').on("click", function() {
+        const id = $(this).data("collection-id");
+        const url = ROOT_URL + "/collections/" + id + "/edit-membership";
+        $.get(url, function(data) {
+            $("#edit-collection-membership-modal .modal-body").html(data);
+        });
+    });
+    $('.edit-collection-properties').on("click", function() {
+        const id = $(this).data("collection-id");
+        const url = ROOT_URL + "/collections/" + id + "/edit-properties";
+        $.get(url, function(data) {
+            $("#edit-collection-properties-modal .modal-body").html(data);
         });
     });
 

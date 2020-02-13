@@ -23,7 +23,15 @@ class CollectionPolicy < ApplicationPolicy
     create?
   end
 
-  def edit?
+  def edit_access?
+    update?
+  end
+
+  def edit_membership?
+    update?
+  end
+
+  def edit_properties?
     update?
   end
 

@@ -2,19 +2,27 @@
 
 class CollectionsController < ApplicationController
   before_action :ensure_logged_in, except: :show
-  before_action :set_collection,
-                only: [:show, :edit, :update, :destroy]
-  before_action :authorize_collection,
-                only: [:show, :edit, :update, :destroy]
+  before_action :set_collection, only: [:show, :edit_access, :edit_membership,
+                                        :edit_properties, :update, :destroy]
+  before_action :authorize_collection, only: [:show, :edit_access,
+                                              :edit_membership,
+                                              :edit_properties, :update,
+                                              :destroy]
 
   ##
-  # Responds to `POST /collections`
+  # Responds to `POST /collections`.
   #
   def create
     begin
       @resource = Collection.new(collection_params)
       authorize @resource
       ActiveRecord::Base.transaction do
+        # Save now in order to obtain an ID with which to associate
+        # AscribedElements in the next step.
+        @resource.save!
+        system_title_element = ::Configuration.instance.elements[:title]
+        @resource.elements.build(registered_element: RegisteredElement.find_by_name(system_title_element),
+                                 string: params[:elements][:title])
         @resource.save!
       end
     rescue
@@ -48,21 +56,34 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Responds to GET `/collections/:id/edit` (XHR only)
+  # Used for editing access control.
   #
-  def edit
-    render partial: 'collections/form',
-           locals: { collection: @resource,
-                     primary_unit: @resource.primary_unit,
-                     context: :edit }
+  # Responds to `GET /collections/:id/edit-membership` (XHR only)
+  #
+  def edit_access
+    render partial: 'collections/access_form',
+           locals: { collection: @resource }
   end
 
   ##
-  # Responds to `GET /collections/new`
+  # Used for editing unit membership.
   #
-  def new
-    @resource = Collection.new
-    authorize @resource
+  # Responds to `GET /collections/:id/edit-membership` (XHR only)
+  #
+  def edit_membership
+    render partial: 'collections/membership_form',
+           locals: { collection: @resource,
+                     primary_unit: @resource.primary_unit }
+  end
+
+  ##
+  # Used for editing basic properties.
+  #
+  # Responds to GET `/collections/:id/edit` (XHR only)
+  #
+  def edit_properties
+    render partial: 'collections/properties_form',
+           locals: { collection: @resource }
   end
 
   ##
@@ -91,6 +112,13 @@ class CollectionsController < ApplicationController
   def update
     begin
       ActiveRecord::Base.transaction do
+        system_title_element = ::Configuration.instance.elements[:title]
+        if params[:elements]
+          title_id = RegisteredElement.find_by_name(system_title_element)
+          @resource.elements.where(registered_element_id: title_id).destroy_all
+          @resource.elements.build(registered_element: title_id,
+                                   string: params[:elements][:title])
+        end
         @resource.update!(collection_params)
       end
     rescue
@@ -106,14 +134,9 @@ class CollectionsController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_collection
-    if params.has_key?(:id)
-      @resource = Collection.find(params[:id])
-    elsif params.has_key?(:suffix)
-      @resource = Handle.find_by(prefix: params[:prefix],
-                                 suffix: params[:suffix]).resource
-    end
+    # N.B.: the `||` supports nested routes.
+    @resource = Collection.find(params[:id] || params[:collection_id])
     @breadcrumbable = @resource
   end
 

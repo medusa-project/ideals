@@ -39,16 +39,40 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.destroy?
   end
 
-  # edit?()
+  # edit_access?()
 
-  test "edit?() is restrictive by default" do
+  test "edit_access?() is restrictive by default" do
     policy = CollectionPolicy.new(users(:norights), @collection)
-    assert !policy.edit?
+    assert !policy.edit_access?
   end
 
-  test "edit?() authorizes sysadmins" do
+  test "edit_access?() authorizes sysadmins" do
     policy = CollectionPolicy.new(users(:admin), @collection)
-    assert policy.edit?
+    assert policy.edit_access?
+  end
+
+  # edit_membership?()
+
+  test "edit_membership?() is restrictive by default" do
+    policy = CollectionPolicy.new(users(:norights), @collection)
+    assert !policy.edit_membership?
+  end
+
+  test "edit_membership?() authorizes sysadmins" do
+    policy = CollectionPolicy.new(users(:admin), @collection)
+    assert policy.edit_membership?
+  end
+
+  # edit_properties?()
+
+  test "edit_properties?() is restrictive by default" do
+    policy = CollectionPolicy.new(users(:norights), @collection)
+    assert !policy.edit_properties?
+  end
+
+  test "edit_properties?() authorizes sysadmins" do
+    policy = CollectionPolicy.new(users(:admin), @collection)
+    assert policy.edit_properties?
   end
 
   # index?()

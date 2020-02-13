@@ -1,0 +1,20 @@
+-# frozen_string_literal: true
+//
+// Required arguments:
+//
+// primary_unit [Unit]
+//
+= form_for(Collection.new, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  = f.hidden_field :primary_unit_id, value: primary_unit.id
+
+  .form-group
+    = label_tag "elements_title", "Title"
+    = text_field_tag "elements[title]", nil, class: "form-control"
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Create", class: 'btn btn-primary')

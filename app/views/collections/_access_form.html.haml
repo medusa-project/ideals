@@ -1,0 +1,36 @@
+-# frozen_string_literal: true
+//
+// Required arguments:
+//
+// collection [Collection]
+//
+= form_for(collection, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    %h5 Managers
+    = hidden_field_tag "collection[managing_user_ids][]"
+    - User.all.order(:name).each do |user|
+      .form-check
+        = check_box_tag "collection[managing_user_ids][]", user.id,
+          f.object.managing_users.include?(user),
+          { id: "unit_managing_user_ids_#{user.id}", class: "form-check-input" }
+        = label_tag "unit_managing_user_ids_#{user.id}",
+          user.name, class: "form-check-label"
+
+  .form-group
+    %h5 Submitters
+    = hidden_field_tag "collection[submitting_user_ids][]"
+    - User.all.order(:name).each do |user|
+      .form-check
+        = check_box_tag "collection[submitting_user_ids][]", user.id,
+          f.object.submitting_users.include?(user),
+          { id: "unit_submitting_user_ids_#{user.id}", class: "form-check-input" }
+        = label_tag "unit_submitting_user_ids_#{user.id}",
+          user.name, class: "form-check-label"
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Edit", class: "btn btn-primary")

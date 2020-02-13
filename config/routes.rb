@@ -4,7 +4,11 @@ Rails.application.routes.draw do
   resources :handles
   resources :units
   resources :users, except: [:create, :delete]
-  resources :collections, except: :index
+  resources :collections, except: [:index, :edit, :new] do
+    match "/edit-access", to: "collections#edit_access", via: :get
+    match "/edit-membership", to: "collections#edit_membership", via: :get
+    match "/edit-properties", to: "collections#edit_properties", via: :get
+  end
   resources :metadata_profiles, path: "metadata-profiles" do
     match "/clone", to: "metadata_profiles#clone", via: :post
     resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]

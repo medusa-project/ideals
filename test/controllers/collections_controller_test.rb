@@ -24,9 +24,12 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     post collections_path, {
         xhr: true,
         params: {
-            primary_unit_id: units(:unit1).id,
             collection: {
-                manager_id: users(:admin).id
+                manager_id: users(:admin).id,
+                primary_unit_id: units(:unit1).id
+            },
+            elements: {
+                title: "New Collection"
             }
         }
     }
@@ -39,9 +42,12 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
       post collections_path, {
           xhr: true,
           params: {
-              primary_unit_id: units(:unit1).id,
               collection: {
-                  manager_id: users(:admin).id
+                  manager_id: users(:admin).id,
+                  primary_unit_id: units(:unit1).id
+              },
+              elements: {
+                  title: "New Collection"
               }
           }
       }
@@ -95,6 +101,72 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     delete "/collections/bogus"
     assert_response :not_found
+  end
+
+  # edit_access()
+
+  test "edit_access() redirects to login path for logged-out users" do
+    collection = collections(:collection1)
+    get "/collections/#{collection.id}/edit-access", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_access() redirects to login path for unauthorized users" do
+    log_in_as(users(:norights))
+    collection = collections(:collection1)
+    get "/collections/#{collection.id}/edit-access", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_access() returns HTTP 200" do
+    log_in_as(users(:admin))
+    collection = collections(:collection1)
+    get "/collections/#{collection.id}/edit-access"
+    assert_response :ok
+  end
+
+  # edit_membership()
+
+  test "edit_membership() redirects to login path for logged-out users" do
+    collection = collections(:collection1)
+    get "/collections/#{collection.id}/edit-membership", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_membership() redirects to login path for unauthorized users" do
+    log_in_as(users(:norights))
+    collection = collections(:collection1)
+    get "/collections/#{collection.id}/edit-membership", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_membership() returns HTTP 200" do
+    log_in_as(users(:admin))
+    collection = collections(:collection1)
+    get "/collections/#{collection.id}/edit-membership"
+    assert_response :ok
+  end
+
+  # edit_properties()
+
+  test "edit_properties() redirects to login path for logged-out users" do
+    collection = collections(:collection1)
+    get "/collections/#{collection.id}/edit-properties", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_properties() redirects to login path for unauthorized users" do
+    log_in_as(users(:norights))
+    collection = collections(:collection1)
+    get "/collections/#{collection.id}/edit-properties", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_properties() returns HTTP 200" do
+    log_in_as(users(:admin))
+    collection = collections(:collection1)
+    get collection_edit_properties_path(collection)
+    assert_response :ok
   end
 
   # show()

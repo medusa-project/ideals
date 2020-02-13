@@ -1,0 +1,21 @@
+-# frozen_string_literal: true
+//
+// Required arguments:
+//
+// collection [Collection]
+// primary_unit [Unit]
+//
+= form_for(collection, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :primary_unit_id, "Primary Unit"
+    = f.select(:primary_unit_id,
+        unit_tree_options_for_select(primary_unit, false),
+        {}, class: 'custom-select')
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Change", class: "btn btn-primary")

@@ -63,11 +63,9 @@
           - @resource.all_administrators.each do |user|
             %li= link_to(user.name, "mailto:#{user.email}")
 
-= render partial: "collections/add_modal", locals: { collection: @new_collection,
-                                                     primary_unit: @resource,
-                                                     context: :new }
-= render partial: "units/add_modal", locals: { unit: @new_unit,
-                                               context: :new }
-
+= render partial: "collections/add_modal",
+         locals: { primary_unit: @resource }
+= render partial: "units/add_modal",
+         locals: { unit: @new_unit, context: :new }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-unit-modal", title: "Edit Unit" }

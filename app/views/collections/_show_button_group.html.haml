@@ -1,12 +1,36 @@
 .btn-group.float-right{role: "group"}
   // Edit button
-  -if policy(@resource).edit?
-    %button.btn.btn-light.edit-collection{"data-collection-id": @resource.id,
-                                          "data-target": "#edit-collection-modal",
-                                          "data-toggle": "modal",
-                                          type: "button"}
+
+  .btn-group{role: "group"}
+    %button#edit-dropdown.btn.btn-light.dropdown-toggle{type: "button",
+                                                            "data-toggle": "dropdown",
+                                                            "aria-haspopup": true,
+                                                            "aria-expanded": false}
       %i.fas.fa-pencil-alt
       Edit
+    .dropdown-menu.dropdown-menu-right{"aria-labelledby": "edit-dropdown"}
+      - if policy(@resource).edit_properties?
+        %a.dropdown-item.edit-collection-properties{"data-collection-id": @resource.id,
+                                                    "data-target": "#edit-collection-properties-modal",
+                                                    "data-toggle": "modal",
+                                                    type: "button"}
+          %i.fa.fa-bars
+          Properties
+      - if policy(@resource).edit_membership?
+        %a.dropdown-item.edit-collection-membership{"data-collection-id": @resource.id,
+                                                    "data-target": "#edit-collection-membership-modal",
+                                                    "data-toggle": "modal",
+                                                    type: "button"}
+          = icon_for(Unit)
+          Unit Membership
+      - if policy(@resource).edit_access?
+        %a.dropdown-item.edit-collection-access{"data-collection-id": @resource.id,
+                                                "data-target": "#edit-collection-access-modal",
+                                                "data-toggle": "modal",
+                                                type: "button"}
+          %i.fa.fa-lock
+          Access
+
   // Delete button
   -if policy(@resource).destroy?
     = link_to(collection_path(@resource), class: 'btn btn-danger',

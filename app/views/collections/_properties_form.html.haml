@@ -1,0 +1,21 @@
+-# frozen_string_literal: true
+//
+// Required arguments:
+//
+// collection [Collection]
+//
+= form_for(collection, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  / Include this only because `collection` is required in the params.
+  = f.hidden_field :primary_unit_id, value: f.object.primary_unit_id
+
+  .form-group
+    = label_tag "elements_title", "Title"
+    = text_field_tag "elements[title]", nil, class: "form-control"
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Edit", class: 'btn btn-primary')
