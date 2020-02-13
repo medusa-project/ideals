@@ -13,9 +13,9 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
-  test "create?() returns false when the target object is a Unit" do
+  test "create?() returns true when the target object is a Unit" do
     policy = UnitPolicy.new(users(:admin), Unit)
-    assert !policy.create?
+    assert policy.create?
   end
 
   test "create?() authorizes sysadmins" do
@@ -71,9 +71,9 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
-  test "new?() returns false when the target object is a Unit" do
+  test "new?() returns true when the target object is a Unit" do
     policy = UnitPolicy.new(users(:admin), Unit)
-    assert !policy.new?
+    assert policy.new?
   end
 
   test "new?() authorizes sysadmins" do

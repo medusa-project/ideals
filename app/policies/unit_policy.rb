@@ -14,8 +14,11 @@ class UnitPolicy < ApplicationPolicy
 
   def create?
     return false unless user
-    return false if unit == Unit
-    user&.sysadmin? || unit.administrators.where(user_id: user.id).count > 0
+    return true if user.sysadmin?
+    if unit != Unit
+      return user.sysadmin? || unit.administrators.where(user_id: user.id).count > 0
+    end
+    false
   end
 
   def destroy?
@@ -46,6 +49,8 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def update?
-    create?
+    return false unless user
+    return false if unit == Unit
+    user.sysadmin? || unit.administrators.where(user_id: user.id).count > 0
   end
 end
