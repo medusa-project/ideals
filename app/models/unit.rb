@@ -82,6 +82,13 @@ class Unit < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<Collection>]
+  #
+  def all_collections
+    self.collections + Collection.where(primary_unit: self)
+  end
+
+  ##
   # @return [Enumerable<Unit>] All parents in order from closest to farthest.
   #
   def all_parents
