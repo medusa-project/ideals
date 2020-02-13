@@ -115,6 +115,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() returns HTTP 200 for JSON" do
+    collections(:described).reindex # this is needed to fully initialize the schema
     get unit_path(units(:unit1), format: :json)
     assert_response :ok
   end
