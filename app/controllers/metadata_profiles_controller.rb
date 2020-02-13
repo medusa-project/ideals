@@ -1,8 +1,24 @@
 class MetadataProfilesController < ApplicationController
 
   before_action :ensure_logged_in
-  before_action :set_profile, only: [:edit, :show, :update, :destroy]
-  before_action :authorize_profile, only: [:edit, :show, :update, :destroy]
+  before_action :set_profile, only: [:clone, :edit, :show, :update, :destroy]
+  before_action :authorize_profile, only: [:clone, :edit, :show, :update, :destroy]
+
+  ##
+  # Responds to POST /admin/metadata-profiles/:id/clone
+  #
+  def clone
+    begin
+      clone = @profile.dup
+      clone.save!
+    rescue => e
+      handle_error(e)
+      redirect_back fallback_location: metadata_profile_path(@profile)
+    else
+      flash['success'] = "Cloned #{@profile.name} as \"#{clone.name}\"."
+      redirect_to metadata_profile_path(clone)
+    end
+  end
 
   ##
   # Responds to `POST /metadata-profiles` (XHR only)
@@ -84,7 +100,7 @@ class MetadataProfilesController < ApplicationController
   end
 
   def set_profile
-    @profile = MetadataProfile.find(params[:id])
+    @profile = MetadataProfile.find(params[:id] || params[:metadata_profile_id])
     @breadcrumbable = @profile
   end
 

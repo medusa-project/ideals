@@ -6,6 +6,36 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
+  # clone()
+
+  test "clone() redirects to login page for logged-out users" do
+    profile = metadata_profiles(:default)
+    post metadata_profile_clone_path(profile), {}
+    assert_redirected_to login_path
+  end
+
+  test "clone() redirects to login page for unauthorized users" do
+    log_in_as(users(:norights))
+    profile = metadata_profiles(:default)
+    post metadata_profile_clone_path(profile), {}
+    assert_redirected_to login_path
+  end
+
+  test "clone() redirects to the clone upon success" do
+    log_in_as(users(:admin))
+    profile = metadata_profiles(:default)
+    post metadata_profile_clone_path(profile), {}
+    assert_redirected_to metadata_profile_path(MetadataProfile.order(created_at: :desc).first)
+  end
+
+  test "clone() clones a profile" do
+    log_in_as(users(:admin))
+    profile = metadata_profiles(:default)
+    assert_difference "MetadataProfile.count" do
+      post metadata_profile_clone_path(profile), {}
+    end
+  end
+
   # create()
 
   test "create() redirects to login page for logged-out users" do

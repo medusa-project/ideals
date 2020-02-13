@@ -8,6 +8,10 @@
                                      type: "button"}
     %i.fa.fa-pencil-alt
     Edit
+  / Clone button
+  = link_to(metadata_profile_clone_path(@profile), method: "post", type: "button", class: "btn btn-light") do
+    %i.fa.fa-copy
+    Clone
 
 %h1= @profile.name
 

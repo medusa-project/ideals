@@ -6,6 +6,18 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     @user = users(:sally)
   end
 
+  # clone?()
+
+  test "clone?() does not authorize non-sysadmins" do
+    policy = MetadataProfilePolicy.new(users(:norights), @user)
+    assert !policy.clone?
+  end
+
+  test "clone?() authorizes sysadmins" do
+    policy = MetadataProfilePolicy.new(users(:admin), @user)
+    assert policy.clone?
+  end
+
   # create?()
 
   test "create?() does not authorize non-sysadmins" do

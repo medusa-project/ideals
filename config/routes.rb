@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :users, except: [:create, :delete]
   resources :collections, except: :index
   resources :metadata_profiles, path: "metadata-profiles" do
+    match "/clone", to: "metadata_profiles#clone", via: :post
     resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]
   end
   resources :registered_elements, param: :name, path: "elements"

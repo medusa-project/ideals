@@ -37,6 +37,15 @@ class MetadataProfileTest < ActiveSupport::TestCase
     assert_equal 1, MetadataProfile.where(default: true).count
   end
 
+  # dup()
+
+  test "dup() returns a correct clone of an instance" do
+    dup = @instance.dup
+    assert_equal "Clone of #{@instance.name}", dup.name
+    assert !dup.default
+    assert_equal @instance.elements.length, dup.elements.length
+  end
+
   # facetable_elements()
 
   test "facetable_elements() returns only facetable elements" do

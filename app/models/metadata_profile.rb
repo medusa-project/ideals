@@ -49,6 +49,22 @@ class MetadataProfile < ApplicationRecord
   end
 
   ##
+  # Overrides parent to intelligently clone an instance including all of its
+  # elements.
+  #
+  # @return [MetadataProfile]
+  #
+  def dup
+    clone = super
+    clone.name = "Clone of #{self.name}"
+    clone.default = false
+    # The instance requires an ID for MetadataProfileElement validations.
+    clone.save!
+    self.elements.each { |e| clone.elements << e.dup }
+    clone
+  end
+
+  ##
   # @return [Enumerable<MetadataProfileElement>]
   #
   def facetable_elements

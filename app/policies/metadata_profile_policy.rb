@@ -12,6 +12,10 @@ class MetadataProfilePolicy < ApplicationPolicy
     @metadata_profile = metadata_profile
   end
 
+  def clone?
+    create?
+  end
+
   def create?
     user.sysadmin?
   end
