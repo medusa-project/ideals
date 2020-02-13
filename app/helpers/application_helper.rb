@@ -185,15 +185,6 @@ module ApplicationHelper
         html << "<br><br>"
       end
 
-      if resources.first.kind_of?(Unit)
-        child_finder = Unit.search.
-            parent_unit(resource).
-            order("#{Unit::IndexFields::TITLE}.sort").
-            limit(999)
-        if child_finder.count > 0
-          html << resource_list(child_finder.to_a)
-        end
-      end
       html <<   "</div>"
       html << "</div>"
     end

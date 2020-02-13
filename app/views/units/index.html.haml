@@ -8,7 +8,7 @@
 
 %h1 Academic Units
 
-=resource_list(@units)
+= unit_list(@units)
 
 = render partial: "units/add_modal", locals: { unit: @new_unit,
                                                context: :new}

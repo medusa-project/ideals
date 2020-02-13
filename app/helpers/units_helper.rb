@@ -1,6 +1,37 @@
 module UnitsHelper
 
   ##
+  # @param units [Enumerable<Object>]
+  # @return [String] HTML listing.
+  #
+  def unit_list(units)
+    html = StringIO.new
+    units.each do |unit|
+      html << "<div class=\"media resource-list\">"
+      html <<   "<div class=\"thumbnail\">"
+      html <<     link_to(unit) do
+        icon_for(unit)
+      end
+      html <<   "</div>"
+      html <<   "<div class=\"media-body\">"
+      html <<     "<h5 class=\"mt-0\">"
+      html <<       link_to(unit.title, unit)
+      html <<     "</h5>"
+      html << "<br><br>"
+      child_finder = Unit.search.
+          parent_unit(unit).
+          order("#{Unit::IndexFields::TITLE}.sort").
+          limit(999)
+      if child_finder.count > 0
+        html << resource_list(child_finder.to_a)
+      end
+      html <<   "</div>"
+      html << "</div>"
+    end
+    raw(html.string)
+  end
+
+  ##
   # @param selected_unit_ids [Enumerable<Integer>] IDs of units to check.
   # @param parent_unit [Unit] Not part of the public contract--ignore.
   # @param io [StringIO]      Not part of the public contract--ignore.
