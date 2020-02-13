@@ -12,9 +12,6 @@ const RegisteredElementsView = function() {
             $('#edit-element-modal .modal-body').html(data);
         });
     });
-    $('a[disabled="disabled"]').on('click', function() {
-        return false;
-    });
 
 };
 

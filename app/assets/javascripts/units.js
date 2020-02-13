@@ -12,9 +12,6 @@ const UnitsView = function() {
             $('#edit-unit-modal .modal-body').html(data);
         });
     });
-    $('a[disabled="disabled"]').on('click', function() {
-        return false;
-    });
 
 };
 

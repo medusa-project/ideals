@@ -12,9 +12,6 @@ const CollectionsView = function() {
             $('#edit-collection-modal .modal-body').html(data);
         });
     });
-    $('a[disabled="disabled"]').on('click', function() {
-        return false;
-    });
 
 };
 

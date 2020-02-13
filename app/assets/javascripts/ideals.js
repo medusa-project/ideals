@@ -88,6 +88,10 @@ const ideals_ready = function () {
         $(this).prev().toggle();
         return false;
     });
-}
+
+    $("a[disabled='disabled']").on("click", function() {
+        return false;
+    });
+};
 $(document).ready(ideals_ready);
 $(document).on('page:load', ideals_ready);

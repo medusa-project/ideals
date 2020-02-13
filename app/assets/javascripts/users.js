@@ -12,9 +12,6 @@ const UsersView = function() {
             $('#edit-user-modal .modal-body').html(data);
         });
     });
-    $('a[disabled="disabled"]').on('click', function() {
-        return false;
-    });
 
 };
 
