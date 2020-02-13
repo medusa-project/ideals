@@ -219,7 +219,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             collection: {
-                manager_id: users(:admin).id
+                managing_user_ids: [ users(:admin).id ]
             }
         }
     }

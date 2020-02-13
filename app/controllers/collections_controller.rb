@@ -135,13 +135,17 @@ class CollectionsController < ApplicationController
     config                  = ::Configuration.instance
     reg_title_element       = RegisteredElement.find_by_name(config.elements[:title])
     reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
-    @resource.elements.where(registered_element_id: [reg_title_element.id,
-                                                     reg_description_element.id]).destroy_all
-    @resource.elements.build(registered_element: reg_title_element,
-                             string: params[:elements][:title])
-    if params[:elements][:description].present?
-      @resource.elements.build(registered_element: reg_description_element,
-                               string: params[:elements][:description])
+    if params[:elements].present?
+      @resource.elements.where(registered_element_id: [reg_title_element.id,
+                                                       reg_description_element.id]).destroy_all
+      if params[:elements][:title].present?
+        @resource.elements.build(registered_element: reg_title_element,
+                                 string: params[:elements][:title])
+      end
+      if params[:elements][:description].present?
+        @resource.elements.build(registered_element: reg_description_element,
+                                 string: params[:elements][:description])
+      end
     end
   end
 

@@ -80,7 +80,7 @@ class CollectionTest < ActiveSupport::TestCase
 
     collection = collections(:described)
     doc = collection.as_indexed_json
-    assert_equal 2, collection.elements.length
+    assert_equal 3, collection.elements.length
     title = collection.elements.find{ |e| e.name == Configuration.instance.elements[:title] }
     assert_equal [title.string],
                  doc[title.registered_element.indexed_name]
