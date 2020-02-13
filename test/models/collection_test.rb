@@ -100,6 +100,18 @@ class CollectionTest < ActiveSupport::TestCase
                  @instance.effective_metadata_profile
   end
 
+  # description() (Describable concern)
+
+  test "description() returns the description element value" do
+    collection = collections(:described)
+    assert_equal "Some description", collection.description
+  end
+
+  test "description() returns an empty string when there is no description element" do
+    collection = collections(:undescribed)
+    assert_equal "", collection.description
+  end
+
   # element() (Describable concern)
 
   test "element() returns a matching element" do

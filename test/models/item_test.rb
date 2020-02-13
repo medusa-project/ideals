@@ -33,6 +33,18 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal count - 1, Item.search.count
   end
 
+  # description() (Describable concern)
+
+  test "description() returns the description element value" do
+    item = items(:described)
+    assert_equal "Some description", item.description
+  end
+
+  test "description() returns an empty string when there is no description element" do
+    item = items(:undescribed)
+    assert_equal "", item.description
+  end
+
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
@@ -70,7 +82,7 @@ class ItemTest < ActiveSupport::TestCase
 
     item = items(:described)
     doc = item.as_indexed_json
-    assert_equal 2, item.elements.length
+    assert_equal 3, item.elements.length
     title = item.elements.find{ |e| e.name == Configuration.instance.elements[:title] }
     assert_equal [title.string],
                  doc[title.registered_element.indexed_name]

@@ -5,6 +5,11 @@ collection_title:
   registered_element: title
   collection: described
 
+collection_description:
+  string: Some description
+  registered_element: description
+  collection: described
+
 collection_subject:
   string: Some subject
   registered_element: subject
@@ -13,6 +18,11 @@ collection_subject:
 item_title:
   string: Some title
   registered_element: title
+  item: described
+
+item_description:
+  string: Some description
+  registered_element: description
   item: described
 
 item_subject:

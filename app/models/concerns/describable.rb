@@ -13,6 +13,14 @@ module Describable
   included do
 
     ##
+    # @return [String] Value of the description [AscribedElement] in the
+    #                  {elements} association, or an empty string if not found.
+    #
+    def description
+      self.element(::Configuration.instance.elements[:description])&.string || ""
+    end
+
+    ##
     # @param name [String] Name of a {RegisteredElement}.
     # @return [AscribedElement] Any element matching the given name, or `nil`
     #         if no such element exists.
