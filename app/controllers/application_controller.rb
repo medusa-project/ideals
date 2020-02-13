@@ -68,6 +68,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def results_params
+    params.permit(:q, :start, fq: [])
+  end
+
   ##
   # @return [Integer] Effective window size a.k.a. results limit based on the
   #                   application configuration and `window` query argument.

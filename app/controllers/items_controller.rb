@@ -97,8 +97,4 @@ class ItemsController < ApplicationController
                                  :discoverable)
   end
 
-  def results_params
-    params.permit(:q, :start, fq: [])
-  end
-
 end
