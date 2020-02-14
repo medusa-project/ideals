@@ -1,4 +1,4 @@
--if current_user
+- if policy(@resource.becomes(User)).edit?
   .btn-group.float-right{role: "group"}
     // Edit button
     %button.btn.btn-light.edit-user{"data-user-id": @resource.id,
