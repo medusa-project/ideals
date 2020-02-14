@@ -27,7 +27,7 @@ class ElasticsearchClient
   ##
   # These characters should not be used in queries (or field names, which may
   # be specified in queries). See
-  # [Query string query]()https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html).
+  # [Query string query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html).
   #
   RESERVED_CHARACTERS = /[+-=&|><!(){}\[\]^"~*?:\\]/
 
@@ -41,14 +41,14 @@ class ElasticsearchClient
   # @raises [IOError]
   #
   def create_index(index_name)
-    LOGGER.info('create_index(): creating %s...', index_name)
-    url = sprintf('%s/%s',
+    LOGGER.info("create_index(): creating %s...", index_name)
+    url = sprintf("%s/%s",
                   Configuration.instance.elasticsearch[:endpoint],
                   index_name)
     body = JSON.pretty_generate(ElasticsearchIndex::SCHEMA)
     response = @http_client.put(url, body, 'Content-Type': CONTENT_TYPE)
     if response.status == 200
-      LOGGER.info('create_index(): created %s', index_name)
+      LOGGER.info("create_index(): created %s", index_name)
     else
       raise IOError, "Got HTTP #{response.status} for PUT #{url}:\n"\
           "Request: #{body}\n"\
@@ -62,7 +62,8 @@ class ElasticsearchClient
   # @return [void]
   #
   def create_index_alias(index_name, alias_name)
-    url = sprintf('%s/_aliases', Configuration.instance.elasticsearch[:endpoint])
+    url = sprintf("%s/_aliases",
+                  Configuration.instance.elasticsearch[:endpoint])
     body = JSON.generate({
                              actions: [
                                  {
@@ -76,7 +77,7 @@ class ElasticsearchClient
     response = @http_client.post(url, body,
                                  'Content-Type': CONTENT_TYPE)
     if response.status == 200
-      LOGGER.info('create_index_alias(): %s -> %s', alias_name, index_name)
+      LOGGER.info("create_index_alias(): %s -> %s", alias_name, index_name)
     else
       raise IOError, "Got HTTP #{response.status}:\n"\
           "#{JSON.pretty_generate(JSON.parse(response.body))}"
@@ -89,15 +90,15 @@ class ElasticsearchClient
   #
   def delete_by_query(query)
     config = Configuration.instance
-    url = sprintf('%s/%s/_delete_by_query?pretty&conflicts=proceed&refresh',
+    url = sprintf("%s/%s/_delete_by_query?pretty&conflicts=proceed&refresh",
                   config.elasticsearch[:endpoint],
                   config.elasticsearch[:index])
-    LOGGER.debug('delete_by_query(): %s', query)
+    LOGGER.debug("delete_by_query(): %s", query)
 
     response = @http_client.post(url, query,
                                  'Content-Type': CONTENT_TYPE)
     if response.status == 200
-      LOGGER.info('delete_by_query(): %s', response.body)
+      LOGGER.info("delete_by_query(): %s", response.body)
     else
       raise IOError, "Got HTTP #{response.status} for POST #{url}\n#{response.body}"
     end
@@ -110,14 +111,14 @@ class ElasticsearchClient
   # @raises [IOError]
   #
   def delete_index(index_name, raise_on_not_found = true)
-    LOGGER.info('delete_index(): deleting %s...', index_name)
-    url = sprintf('%s/%s',
+    LOGGER.info("delete_index(): deleting %s...", index_name)
+    url = sprintf("%s/%s",
                   Configuration.instance.elasticsearch[:endpoint],
                   index_name)
     response = @http_client.delete(url, nil,
                                    'Content-Type': CONTENT_TYPE)
     if response.status == 200
-      LOGGER.info('delete_index(): deleted %s', index_name)
+      LOGGER.info("delete_index(): deleted %s", index_name)
     elsif response.status != 404 or (response.status == 404 and raise_on_not_found)
       raise IOError, "Got HTTP #{response.status} for #{index_name}"
     end
@@ -129,15 +130,15 @@ class ElasticsearchClient
   # @return [void]
   #
   def delete_index_alias(index_name, alias_name)
-    LOGGER.info('delete_index_alias(): deleting %s...', alias_name)
-    url = sprintf('%s/%s/_alias/%s',
+    LOGGER.info("delete_index_alias(): deleting %s...", alias_name)
+    url = sprintf("%s/%s/_alias/%s",
                   Configuration.instance.elasticsearch[:endpoint],
                   index_name,
                   alias_name)
     response = @http_client.delete(url, nil,
                                    'Content-Type': CONTENT_TYPE)
     if response.status == 200
-      LOGGER.info('delete_index_alias(): deleted %s', alias_name)
+      LOGGER.info("delete_index_alias(): deleted %s", alias_name)
     else
       raise IOError, "Got #{response.status} for DELETE #{url}\n"\
           "#{JSON.pretty_generate(JSON.parse(response.body))}"
@@ -150,8 +151,8 @@ class ElasticsearchClient
   # @return [Hash, nil]
   #
   def get_document(index_name, id)
-    LOGGER.debug('get_document(): %s/%s', index_name, id)
-    url = sprintf('%s/%s/%s',
+    LOGGER.debug("get_document(): %s/%s", index_name, id)
+    url = sprintf("%s/%s/_doc/%s",
                   Configuration.instance.elasticsearch[:endpoint],
                   index_name, id)
     response = @http_client.get(url, nil, 'Content-Type': CONTENT_TYPE)
@@ -173,8 +174,8 @@ class ElasticsearchClient
   # @raises [IOError]     If Elasticsearch returns an error response.
   #
   def index_document(index, id, doc)
-    LOGGER.debug('index_document(): %s/%s', index, id)
-    url = sprintf('%s/%s/_doc/%s',
+    LOGGER.debug("index_document(): %s/%s", index, id)
+    url = sprintf("%s/%s/_doc/%s",
                   Configuration.instance.elasticsearch[:endpoint],
                   index, id)
     response = @http_client.put(url,
@@ -190,7 +191,7 @@ class ElasticsearchClient
   # @return [Boolean]
   #
   def index_exists?(name)
-    url = sprintf('%s/%s',
+    url = sprintf("%s/%s",
                   Configuration.instance.elasticsearch[:endpoint],
                   name)
     response = @http_client.head(url, nil, 'Content-Type': CONTENT_TYPE)
@@ -202,7 +203,7 @@ class ElasticsearchClient
   #                  Elasticsearch.
   #
   def indexes
-    url = sprintf('%s/_aliases?pretty',
+    url = sprintf("%s/_aliases?pretty",
                   Configuration.instance.elasticsearch[:endpoint])
     response = @http_client.get(url, nil, 'Content-Type': CONTENT_TYPE)
     response.body
@@ -223,7 +224,7 @@ class ElasticsearchClient
   #
   def query(query)
     config = Configuration.instance
-    url = sprintf('%s/%s/_search',
+    url = sprintf("%s/%s/_search",
                   config.elasticsearch[:endpoint],
                   config.elasticsearch[:index])
     body = query.force_encoding('UTF-8')
@@ -240,7 +241,7 @@ class ElasticsearchClient
   # @param to_index [String]
   #
   def reindex(from_index, to_index)
-    url = sprintf('%s/_refresh',
+    url = sprintf("%s/_refresh",
                   Configuration.instance.elasticsearch[:endpoint])
     body = JSON.generate({
                              source: {
@@ -267,7 +268,7 @@ class ElasticsearchClient
   def refresh(index = nil)
     config = Configuration.instance
     index ||= config.elasticsearch[:index]
-    url = sprintf('%s/%s/_refresh',
+    url = sprintf("%s/%s/_refresh",
                   config.elasticsearch[:endpoint],
                   index)
     response = @http_client.post(url, nil, 'Content-Type': CONTENT_TYPE)
