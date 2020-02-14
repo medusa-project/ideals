@@ -3,8 +3,39 @@
 ##
 # Encapsulates a unit of intellectual content.
 #
+# # Indexing
+#
 # See the documentation of {Indexed} for a detailed explanation of how indexing
 # works.
+#
+# # Attributes
+#
+# * `created_at`              Managed by ActiveRecord.
+# * `discoverable`            If false, the submitter has indicated during
+#                             submission that the item should be private, which
+#                             means it should not be included in search
+#                             results, and its metadata should not be available
+#                             except to administrators.
+# * `in_archive`              Like a published state, sort of, but can be
+#                             overridden by `discoverable`. If false, it means
+#                             the item is currently in the submission process
+#                             (a draft) or has been withdrawn.
+# * `primary_collection_id`   Foreign key to {Collection}.
+# * `submitter_auth_provider` Deprecated.
+# * `submitter_email`         Deprecated.
+# * `updated_at`              Managed by ActiveRecord.
+# * `withdrawn`               An administrator has made the item inaccessible,
+#                             but not totally deleted it. Requests for
+#                             withdrawn items return HTTP 410 Gone.
+#
+# # Relationships
+#
+# * `bitstreams`         References all associated {Bitstream}s.
+# * `collections`        References all owning {Collections}.
+# * `elements`           References zero-to-many {AscribedElement}s used to
+#                        describe an instance.
+# * `primary_collection` References the primary {Collection} in which the
+#                        instance resides.
 #
 class Item < ApplicationRecord
   include Breadcrumb
@@ -63,6 +94,15 @@ class Item < ApplicationRecord
     end
 
     doc
+  end
+
+  ##
+  # @return [MetadataProfile] The primary collection's metadata profile, or the
+  #                           {MetadataProfile#default default profile} if not
+  #                           set.
+  #
+  def effective_metadata_profile
+    self.primary_collection&.effective_metadata_profile || MetadataProfile.default
   end
 
   def label

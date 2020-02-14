@@ -54,9 +54,12 @@ class ItemTest < ActiveSupport::TestCase
     Item.reindex_all
     refresh_elasticsearch
 
+    expected = Item.where(discoverable: true,
+                          in_archive: true,
+                          withdrawn: false).count
     actual = Item.search.count
     assert actual > 0
-    assert_equal Item.count, actual
+    assert_equal expected, actual
   end
 
   # search() (Indexed concern)
@@ -89,6 +92,21 @@ class ItemTest < ActiveSupport::TestCase
     title = item.elements.find{ |e| e.name == Configuration.instance.elements[:title] }
     assert_equal [title.string],
                  doc[title.registered_element.indexed_name]
+  end
+
+  # effective_metadata_profile()
+
+  test "effective_metadata_profile() returns the metadata profile assigned to
+  the primary collection" do
+    assert_equal @instance.primary_collection.metadata_profile,
+                 @instance.effective_metadata_profile
+  end
+
+  test "effective_metadata_profile() falls back to the default profile if there
+  is no primary collection assigned" do
+    @instance.primary_collection_id = nil
+    assert_equal metadata_profiles(:default),
+                 @instance.effective_metadata_profile
   end
 
   # element() (Describable concern)
