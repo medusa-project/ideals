@@ -32,6 +32,10 @@ out
 /config/credentials/development.yml
 /config/credentials/test.yml
 
+# Ignore generated documentation.
+/.yardoc
+/doc/*
+
 /node_modules
 /yarn-error.log
 

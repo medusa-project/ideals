@@ -20,6 +20,7 @@ This is a getting-started guide for developers.
 # Installation
 
 ## Install everything
+
 ```sh
 # Install rbenv
 $ brew install rbenv
@@ -62,12 +63,14 @@ generally be changed in place, so a new index has to be created with the new
 schema, and then either existing documents migrated into it, or new documents
 loaded into it. For the development index, you may prefer to have separate
 "blue" and "green" indexes and to switch back-and-forth between them as needed:
+
 ```sh
 rails "elasticsearch:indexes:create[ideals_blue_development]"
 rails "elasticsearch:indexes:create_alias[ideals_blue_development,ideals_development]"
 ```
 Then when you need to create a new index, you can switch to the "green" one and
 delete the blue one:
+
 ```sh
 rails "elasticsearch:indexes:create[ideals_green_development]"
 rails "elasticsearch:indexes:copy[ideals_blue_development,ideals_green_development]"
@@ -83,7 +86,7 @@ recreated automatically when the tests are run.
 
 ## Create and seed the databases
 
-```
+```sh
 $ rails db:create
 $ rails db:migrate
 $ rails db:seed
@@ -91,7 +94,7 @@ $ rails db:seed
 
 ## Add a user for yourself
 
-```
+```sh
 $ rails "ideals:users:create[my_username,my_password]"
 ```
 
@@ -105,7 +108,7 @@ instance and named `dbname`.
 
 ### In development
 
-```
+```sh
 rails elasticsearch:purge
 rails db:reset
 rails "ideals_dspace:migrate[dbname,dbhost,dbuser]"
@@ -117,7 +120,7 @@ different host and/or the database user is different from the default.
 
 ### In demo
 
-```
+```sh
 ~/bin/stop-rails
 rails elasticsearch:purge
 rails db:reset
@@ -127,7 +130,7 @@ rails elasticsearch:reindex
 
 ## Run the web app
 
-```
+```sh
 $ rails server
 ```
 
@@ -152,6 +155,11 @@ structure that all config files must use.
 
 See the class documentation in `app/config/configuration.rb` for a detailed
 explanation of how the configuration system works.
+
+# Documentation
+
+Code documentation uses YARD/Markdown syntax. The `rails doc:generate` command
+invokes YARD to generate HTML documentation for the code base.
 
 # Tests & Continuous Integration
 
