@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_12_201317) do
+ActiveRecord::Schema.define(version: 2020_02_14_151350) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -111,12 +111,15 @@ ActiveRecord::Schema.define(version: 2020_02_12_201317) do
   create_table "items", force: :cascade do |t|
     t.string "submitter_email"
     t.string "submitter_auth_provider"
-    t.boolean "in_archive"
-    t.boolean "withdrawn"
-    t.boolean "discoverable"
+    t.boolean "in_archive", default: false, null: false
+    t.boolean "withdrawn", default: false, null: false
+    t.boolean "discoverable", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "primary_collection_id"
+    t.index ["discoverable"], name: "index_items_on_discoverable"
+    t.index ["in_archive"], name: "index_items_on_in_archive"
+    t.index ["withdrawn"], name: "index_items_on_withdrawn"
   end
 
   create_table "managers", force: :cascade do |t|

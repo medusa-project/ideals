@@ -19,11 +19,14 @@ class Item < ApplicationRecord
     CLASS              = ElasticsearchIndex::StandardFields::CLASS
     COLLECTIONS        = "i_collection_ids"
     CREATED            = ElasticsearchIndex::StandardFields::CREATED
+    DISCOVERABLE       = "b_discoverable"
     ID                 = ElasticsearchIndex::StandardFields::ID
+    IN_ARCHIVE         = "b_in_archive"
     LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     PRIMARY_COLLECTION = "i_primary_collection_id"
     PRIMARY_UNIT       = "i_primary_unit_id"
+    WITHDRAWN          = "b_withdrawn"
   end
 
   has_many :bitstreams
@@ -42,10 +45,13 @@ class Item < ApplicationRecord
     doc[IndexFields::CLASS]              = self.class.to_s
     doc[IndexFields::COLLECTIONS]        = self.collection_ids
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
+    doc[IndexFields::DISCOVERABLE]       = self.discoverable
+    doc[IndexFields::IN_ARCHIVE]         = self.in_archive
     doc[IndexFields::LAST_INDEXED]       = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
     doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection_id
     doc[IndexFields::PRIMARY_UNIT]       = self.primary_unit&.id
+    doc[IndexFields::WITHDRAWN]          = self.withdrawn
 
     # Index ascribed metadata elements into dynamic fields.
     self.elements.each do |element|
@@ -75,6 +81,7 @@ class Item < ApplicationRecord
   # @return [Unit]
   #
   def primary_unit
+    #noinspection RubyYardReturnMatch
     self.primary_collection&.primary_unit
   end
 

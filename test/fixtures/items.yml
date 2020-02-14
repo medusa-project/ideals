@@ -13,7 +13,7 @@ item2:
   submitter_auth_provider:
   in_archive: true
   withdrawn: false
-  discoverable:
+  discoverable: true
   collections:
     - collection1
 
@@ -22,7 +22,7 @@ described:
   submitter_auth_provider:
   in_archive: true
   withdrawn: false
-  discoverable:
+  discoverable: true
   collections:
     - collection1
 
@@ -31,6 +31,6 @@ undescribed:
   submitter_auth_provider:
   in_archive: true
   withdrawn: false
-  discoverable:
+  discoverable: true
   collections:
     - collection1
