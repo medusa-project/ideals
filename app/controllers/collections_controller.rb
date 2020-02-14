@@ -90,17 +90,16 @@ class CollectionsController < ApplicationController
   def index
     @start  = results_params[:start].to_i
     @window = window_size
-    relation = Collection.search.
+    @collections = Collection.search.
         aggregations(true).
         query_all(results_params[:q]).
         facet_filters(results_params[:fq]).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         start(@start).
         limit(@window)
-    @count            = relation.count
-    @collections      = relation.to_a
-    @facets           = relation.facets
-    @current_page     = relation.page
+    @count            = @collections.count
+    @facets           = @collections.facets
+    @current_page     = @collections.page
     @permitted_params = results_params
   end
 
