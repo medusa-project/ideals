@@ -2,30 +2,36 @@
 
 collection_title:
   string: Some title
+  uri:
   registered_element: title
   collection: described
 
 collection_description:
   string: Some description
+  uri:
   registered_element: description
   collection: described
 
 collection_subject:
   string: Some subject
+  uri:
   registered_element: subject
   collection: described
 
 item_title:
   string: Some title
+  uri:
   registered_element: title
   item: described
 
 item_description:
   string: Some description
+  uri:
   registered_element: description
   item: described
 
 item_subject:
   string: Some subject
+  uri:
   registered_element: subject
   item: described
