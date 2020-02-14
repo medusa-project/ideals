@@ -1,0 +1,13 @@
+.card.search-status
+  #search-status.card-body
+    = search_status(@count, @start, @window, "collection")
+
+.row.justify-content-md-center
+  .col-md-auto
+    = paginate(@count, @window, @current_page, @permitted_params)
+
+= resource_list(@collections)
+
+.row.justify-content-md-center
+  .col-md-auto
+    = paginate(@count, @window, @current_page, @permitted_params)

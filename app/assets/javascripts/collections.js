@@ -1,8 +1,25 @@
 /**
+ * Handles list-collections view.
+ *
  * @constructor
  */
 const CollectionsView = function() {
+    new IDEALS.FacetSet().init();
 
+    // Copy the URL "q" argument into the filter field, as the browser won't do
+    // this automatically.
+    const queryArgs = new URLSearchParams(location.search);
+    if (queryArgs.has("q")) {
+        $("input[name=q]").val(queryArgs.get("q"));
+    }
+};
+
+/**
+ * Handles show-collection view.
+ *
+ * @constructor
+ */
+const CollectionView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
     $('.edit-collection-access').on("click", function() {
@@ -29,10 +46,10 @@ const CollectionsView = function() {
 
 };
 
-var ready = function() {
-    if ($('body#show_collection').length) {
+$(document).ready(function() {
+    if ($('body#collections_index').length) {
         new CollectionsView();
+    } else if ($('body#show_collection').length) {
+        new CollectionView();
     }
-};
-
-$(document).ready(ready);
+});

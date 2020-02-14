@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   resources :handles
   resources :units
   resources :users, except: [:create, :delete]
-  resources :collections, except: [:index, :edit, :new] do
+  resources :collections, except: [:edit, :new] do
     match "/edit-access", to: "collections#edit_access", via: :get
     match "/edit-membership", to: "collections#edit_membership", via: :get
     match "/edit-properties", to: "collections#edit_properties", via: :get

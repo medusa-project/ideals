@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CollectionsController < ApplicationController
-  before_action :ensure_logged_in, except: :show
+  before_action :ensure_logged_in, except: [:index, :show]
   before_action :set_collection, only: [:show, :edit_access, :edit_membership,
                                         :edit_properties, :update, :destroy]
   before_action :authorize_collection, only: [:show, :edit_access,
@@ -82,6 +82,25 @@ class CollectionsController < ApplicationController
   def edit_properties
     render partial: 'collections/properties_form',
            locals: { collection: @resource }
+  end
+
+  ##
+  # Responds to `GET /collections`
+  #
+  def index
+    @start  = results_params[:start].to_i
+    @window = window_size
+    finder = Collection.search.
+        query_all(results_params[:q]).
+        facet_filters(results_params[:fq]).
+        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+        start(@start).
+        limit(@window)
+    @count            = finder.count
+    @collections      = finder.to_a
+    @facets           = finder.facets
+    @current_page     = finder.page
+    @permitted_params = results_params
   end
 
   ##

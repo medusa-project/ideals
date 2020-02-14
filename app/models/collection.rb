@@ -26,6 +26,7 @@ class Collection < ApplicationRecord
     MANAGERS      = "i_manager_id"
     PRIMARY_UNIT  = "i_primary_unit_id"
     SUBMITTERS    = "i_submitter_id"
+    UNIT_TITLES   = "s_unit_titles"
     UNITS         = "i_units"
   end
 
@@ -73,6 +74,7 @@ class Collection < ApplicationRecord
     doc[IndexFields::MANAGERS]      = self.managers.pluck(:user_id)
     doc[IndexFields::PRIMARY_UNIT]  = self.primary_unit_id
     doc[IndexFields::SUBMITTERS]    = self.submitters.pluck(:user_id)
+    doc[IndexFields::UNIT_TITLES]   = self.all_units.map(&:title)
     doc[IndexFields::UNITS]         = self.unit_ids
 
     # Index ascribed metadata elements into dynamic fields.

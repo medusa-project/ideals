@@ -294,6 +294,10 @@ class AbstractFinder
     JSON.parse(result)
   end
 
+  def metadata_profile
+    MetadataProfile.default
+  end
+
   ##
   # @return [String] Query that is safe to pass to Elasticsearch.
   #

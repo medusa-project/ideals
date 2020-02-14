@@ -31,24 +31,28 @@ class CollectionFinder < AbstractFinder
 
     @response_json = get_response
 
-    # Assemble the response aggregations into Facets.
-=begin
-    @response_json['aggregations']&.each do |agg|
-      facet = Facet.new
-      facet.name = Collection.facet_fields.select{ |f| f[:name] == agg[0] }.
-          first[:label]
-      facet.field = agg[0]
-      agg[1]['buckets'].each do |bucket|
-        term = FacetTerm.new
-        term.name = bucket['key'].to_s
-        term.label = bucket['key'].to_s
-        term.count = bucket['doc_count']
-        term.facet = facet
-        facet.terms << term
+    # Assemble the response aggregations into Facets. The order of the facets
+    # should be the same as the order of elements in the metadata profile.
+    facet_elements.each do |element|
+      field = element[:field]
+      agg = @response_json['aggregations']&.find{ |a| a[0] == field }
+      if agg
+        facet = Facet.new.tap do |f|
+          f.name  = element[:label]
+          f.field = field
+        end
+        agg[1]['buckets'].each do |bucket|
+          facet.terms << FacetTerm.new.tap do |t|
+            t.name  = bucket['key'].to_s
+            t.label = bucket['key'].to_s
+            t.count = bucket['doc_count']
+            t.facet = facet
+          end
+        end
+        @result_facets << facet
       end
-      @result_facets << facet
     end
-=end
+
     if @response_json['hits']
       @result_count = @response_json['hits']['total']['value']
     else
@@ -58,6 +62,30 @@ class CollectionFinder < AbstractFinder
     end
 
     @loaded = true
+  end
+
+  ##
+  # @return [Enumerable<Hash>] Enumerable of hashes with `label` and `field`
+  #                            keys.
+  #
+  def facet_elements
+    # Ideally we would just return the result of facetable_elements() from the
+    # metadata profile. But we want to include a unit facet, for which there is
+    # no corresponding MetadataProfileElement. So instead, we build and use an
+    # array of pseudo-elements.
+    elements = [
+        {
+            label: "Academic Unit",
+            field: "#{Collection::IndexFields::UNIT_TITLES}.keyword"
+        }
+    ]
+    elements += metadata_profile.facetable_elements.map do |e|
+      {
+          label: e.label,
+          field: e.registered_element.indexed_keyword_field
+      }
+    end
+    elements
   end
 
   ##
@@ -111,6 +139,20 @@ class CollectionFinder < AbstractFinder
                     end
                   end
                 end
+              end
+            end
+          end
+        end
+      end
+
+      # Aggregations
+      j.aggregations do
+        if @aggregations
+          facet_elements.each do |element|
+            j.set! element[:field] do
+              j.terms do
+                j.field element[:field]
+                j.size @bucket_limit
               end
             end
           end

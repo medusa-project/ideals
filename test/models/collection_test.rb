@@ -75,6 +75,8 @@ class CollectionTest < ActiveSupport::TestCase
                doc[Collection::IndexFields::PRIMARY_UNIT]
     assert_equal [@instance.submitting_users.first.id],
                  doc[Collection::IndexFields::SUBMITTERS]
+    assert_equal %w(Unit1 Unit2),
+                 doc[Collection::IndexFields::UNIT_TITLES]
     assert_equal @instance.units.count,
         doc[Collection::IndexFields::UNITS].length
 
