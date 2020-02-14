@@ -1,24 +1,23 @@
-##
-# Provides a convenient ActiveRecord-style Builder interface for Item retrieval.
-#
-class ItemFinder < AbstractFinder
+class ItemRelation < AbstractRelation
 
-  LOGGER = CustomLogger.new(ItemFinder)
+  LOGGER = CustomLogger.new(ItemRelation)
 
   def initialize
     super
     @collection_id = nil
 
-    # Initialize filters to include only publicly accessible items by default.
-    # Clients may override where necessary.
+    # Initialize filters to include only publicly accessible items by
+    # default. Clients may override where necessary.
     filter(Item::IndexFields::DISCOVERABLE, true)
     filter(Item::IndexFields::IN_ARCHIVE, true)
     filter(Item::IndexFields::WITHDRAWN, false)
   end
 
   ##
+  # Limits results to items in the given collection.
+  #
   # @param collection [Collection,Integer] Instance or ID.
-  # @return [ItemFinder] self
+  # @return [ItemRelation] self
   #
   def collection(collection)
     @collection_id = collection.kind_of?(Collection) ?
@@ -30,44 +29,6 @@ class ItemFinder < AbstractFinder
 
   def get_class
     Item
-  end
-
-  def load
-    return if @loaded
-
-    @response_json = get_response
-
-    # Assemble the response aggregations into Facets. The order of the facets
-    # should be the same as the order of elements in the metadata profile.
-    metadata_profile.facetable_elements.each do |profile_element|
-      keyword_field = profile_element.registered_element.indexed_keyword_field
-      agg = @response_json['aggregations']&.find{ |a| a[0] == keyword_field }
-      if agg
-        facet = Facet.new.tap do |f|
-          f.name  = profile_element.label
-          f.field = keyword_field
-        end
-        agg[1]['buckets'].each do |bucket|
-          facet.terms << FacetTerm.new.tap do |t|
-            t.name  = bucket['key'].to_s
-            t.label = bucket['key'].to_s
-            t.count = bucket['doc_count']
-            t.facet = facet
-          end
-        end
-        @result_facets << facet
-      end
-    end
-
-    if @response_json['hits']
-      @result_count = @response_json['hits']['total']['value']
-    else
-      @result_count = 0
-      raise IOError, "#{@response_json['error']['type']}: "\
-          "#{@response_json['error']['root_cause'][0]['reason']}"
-    end
-
-    @loaded = true
   end
 
   def metadata_profile
@@ -175,15 +136,15 @@ class ItemFinder < AbstractFinder
         end
       elsif @orders
 =begin
-        el = metadata_profile.default_sortable_element
-        if el
-          j.sort do
-            j.set! el.indexed_sort_field do
-              j.order 'asc'
-              j.unmapped_type 'keyword'
-            end
-          end
-        end
+           el = metadata_profile.default_sortable_element
+           if el
+             j.sort do
+               j.set! el.indexed_sort_field do
+                 j.order 'asc'
+                 j.unmapped_type 'keyword'
+               end
+             end
+           end
 =end
       end
 
@@ -198,5 +159,4 @@ class ItemFinder < AbstractFinder
       end
     end
   end
-
 end

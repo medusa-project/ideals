@@ -23,8 +23,8 @@ class UnitTest < ActiveSupport::TestCase
 
   # search() (Indexed concern)
 
-  test "search() returns a UnitFinder" do
-    assert_kind_of UnitFinder, Unit.search
+  test "search() returns a UnitRelation" do
+    assert_kind_of UnitRelation, Unit.search
   end
 
   # reindex_all() (Indexed concern)

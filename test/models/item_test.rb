@@ -61,8 +61,8 @@ class ItemTest < ActiveSupport::TestCase
 
   # search() (Indexed concern)
 
-  test "search() returns an ItemFinder" do
-    assert_kind_of ItemFinder, Item.search
+  test "search() returns an ItemRelation" do
+    assert_kind_of ItemRelation, Item.search
   end
 
   # as_indexed_json()

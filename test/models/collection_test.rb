@@ -36,8 +36,8 @@ class CollectionTest < ActiveSupport::TestCase
 
   # search() (Indexed concern)
 
-  test "search() returns a CollectionFinder" do
-    assert_kind_of CollectionFinder, Collection.search
+  test "search() returns a CollectionRelation" do
+    assert_kind_of CollectionRelation, Collection.search
   end
 
   # all_units()

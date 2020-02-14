@@ -9,15 +9,14 @@ class ItemsController < ApplicationController
   def index
     @start  = results_params[:start].to_i
     @window = window_size
-    finder = Item.search.
+    @items = Item.search.
         query_all(results_params[:q]).
         facet_filters(results_params[:fq]).
         start(@start).
         limit(@window)
-    @count            = finder.count
-    @items            = finder.to_a
-    @facets           = finder.facets
-    @current_page     = finder.page
+    @count            = @items.count
+    @facets           = @items.facets
+    @current_page     = @items.page
     @permitted_params = results_params
   end
 

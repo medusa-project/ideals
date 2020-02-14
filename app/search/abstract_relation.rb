@@ -1,32 +1,20 @@
 ##
-# Abstract base class for type-specific "finders," which are objects that
-# simplify Elasticsearch querying (which can be pretty complicated and awkward)
-# using the Builder pattern.
+# Abstract base class for type-specific "relations." These are inspired by, and
+# conceptually the same as, {ActiveRecord::Relation}, and serve the dual
+# purpose of simplifying Elasticsearch querying (which can be pretty
+# complicated and awkward) by wrapping it up into an ActiveRecord-style Builder
+# pattern, and marshalling the results into an object that behaves the same way
+# as the one returned from ActiveRecord's querying methods.
 #
-class AbstractFinder
+# TLDR: it makes interacting with Elasticsearch more like ActiveRecord.
+#
+# The normal way of obtaining an instance is via {Indexed#search}.
+#
+class AbstractRelation
 
-  LOGGER = CustomLogger.new(AbstractFinder)
+  include Enumerable
 
-  ##
-  # Similar to {ActiveRecord::Relation}, for compatibility with the
-  # will_paginate gem.
-  #
-  class Relation
-    attr_reader :results, :total_entries, :current_page, :offset
-    def initialize(results, count, current_page, window_size, offset)
-      @results       = results
-      @total_entries = count
-      @current_page  = current_page
-      @window_size   = window_size
-      @offset        = offset
-    end
-    def total_pages
-      (@total_entries / @window_size.to_f).ceil
-    end
-    def method_missing(m, *args, &block)
-      @results.send(m, *args, &block)
-    end
-  end
+  LOGGER = CustomLogger.new(AbstractRelation)
 
   DEFAULT_BUCKET_LIMIT = 10
 
@@ -41,7 +29,10 @@ class AbstractFinder
     @filters      = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @limit        = ElasticsearchClient::MAX_RESULT_WINDOW
     @orders       = [] # Array<Hash<Symbol,String>> with :field and :direction keys
-    @query        = nil # Hash<Symbol,String> Hash with :field and :query keys
+    # Hash<Symbol,String> Hash with :field and :query keys
+    # Note to subclass implementations: the raw value should not be passed to
+    # Elasticsearch. Use {sanitized_query} instead.
+    @query        = nil
     @start        = 0
 
     @loaded = false
@@ -53,6 +44,11 @@ class AbstractFinder
     @result_instances   = []
     @result_suggestions = []
   end
+
+  ###########################################################################
+  # BUILDER METHODS
+  # These methods initialize the query.
+  ###########################################################################
 
   ##
   # @param boolean [Boolean] Whether to compile aggregations (for faceting) in
@@ -67,11 +63,14 @@ class AbstractFinder
   end
 
   ##
-  # @return [Integer]
+  # @param limit [Integer] Maximum number of buckets that will be returned in a
+  #                        facet.
+  # @return [self]
   #
-  def count
-    load
-    @result_count
+  def bucket_limit(limit)
+    @bucket_limit = limit
+    @loaded = false
+    self
   end
 
   ##
@@ -97,25 +96,6 @@ class AbstractFinder
   end
 
   ##
-  # @param limit [Integer] Maximum number of buckets that will be returned in a
-  #                        facet.
-  # @return [self]
-  #
-  def bucket_limit(limit)
-    @bucket_limit = limit
-    @loaded = false
-    self
-  end
-
-  ##
-  # @return [Enumerable<Facet>] Result facets.
-  #
-  def facets
-    load
-    @result_facets
-  end
-
-  ##
   # Adds an arbitrary filter to limit results to.
   #
   # @param field [String]
@@ -126,27 +106,6 @@ class AbstractFinder
     @filters << [field, value]
     @loaded = false
     self
-  end
-
-  ##
-  # @return [Class]
-  #
-  def get_class
-    raise 'Subclasses must override get_class()'
-  end
-
-  ##
-  # @return [Integer]
-  #
-  def get_limit
-    @limit
-  end
-
-  ##
-  # @return [Integer]
-  #
-  def get_start
-    @start
   end
 
   ##
@@ -181,13 +140,6 @@ class AbstractFinder
       @orders = false
     end
     self
-  end
-
-  ##
-  # @return [Integer]
-  #
-  def page
-    ((@start / @limit.to_f).ceil + 1 if @limit > 0) || 1
   end
 
   ##
@@ -226,18 +178,50 @@ class AbstractFinder
     self
   end
 
+  ###########################################################################
+  # RESULT METHODS
+  # These methods retrieve results.
+  ###########################################################################
+
   ##
-  # @return [Enumerable<String>] Result suggestions.
+  # @return [Integer]
   #
-  def suggestions
-    [] # TODO: write this
+  def count
+    load
+    @result_count
   end
 
   ##
-  # @return [Relation<Item>]
+  # Required by the {Enumerable} contract.
+  #
+  def each(&block)
+    to_a.each(&block)
+  end
+
+  ##
+  # @return [Enumerable<Facet>] Result facets.
+  #
+  def facets
+    load
+    @result_facets
+  end
+
+  def method_missing(m, *args, &block)
+    result_instances.send(m, *args, &block)
+  end
+
+  ##
+  # @return [Integer]
+  #
+  def page
+    ((@start / @limit.to_f).ceil + 1 if @limit > 0) || 1
+  end
+
+  ##
+  # @return [Relation<Object>]
   #
   def to_a
-    entities = to_id_a.map do |id|
+    @result_instances = to_id_a.map do |id|
       begin
         # Unoptimized version with typical results:
         # Completed 200 OK in 2955ms (Views: 429.6ms | ActiveRecord: 2510.6ms | Allocations: 344778)
@@ -263,20 +247,7 @@ class AbstractFinder
         LOGGER.warn("to_a(): #{get_class} #{id} is missing from the database")
       end
     end
-    Relation.new(entities.select{ |e| e.present? && e != true },
-                 count,
-                 (get_start / get_limit.to_f).floor,
-                 get_limit,
-                 get_start)
-  end
-
-  ##
-  # @return [Enumerable<String>] Enumerable of Item repository IDs.
-  #
-  def to_id_a
-    load
-    @response_json['hits']['hits']
-        .map{ |r| r[ElasticsearchIndex::StandardFields::ID] }
+    @result_instances
   end
 
   protected
@@ -288,12 +259,17 @@ class AbstractFinder
     end
   end
 
-  def get_response
-    @request_json = build_query
-    result = @client.query(@request_json)
-    JSON.parse(result)
+  ##
+  # @return [Class]
+  #
+  def get_class
+    raise "Subclasses must override get_class()"
   end
 
+  ##
+  # @return [MetadataProfile] The return value of {MetadataProfile#default}.
+  #                           Subclasses can override this to use a different
+  #                           profile.
   def metadata_profile
     MetadataProfile.default
   end
@@ -310,29 +286,32 @@ class AbstractFinder
 
     @response_json = get_response
 
-    # Assemble the response aggregations into Facets.
-=begin
-    metadata_profile.facet_elements.each do |element|
-      agg = @response_json['aggregations']&.
-          find{ |a| a[0] == element.indexed_keyword_field }
-      if agg
-        facet = Facet.new
-        facet.name = element.label
-        facet.field = element.indexed_keyword_field
-        agg[1]['buckets'].each do |bucket|
-          term = FacetTerm.new
-          term.name = bucket['key'].to_s
-          term.label = bucket['key'].to_s
-          term.count = bucket['doc_count']
-          term.facet = facet
-          facet.terms << term
+    # Assemble the response aggregations into Facets. The order of the facets
+    # should be the same as the order of elements in the metadata profile.
+    if @aggregations
+      metadata_profile.facetable_elements.each do |profile_element|
+        keyword_field = profile_element.registered_element.indexed_keyword_field
+        agg = @response_json['aggregations']&.find{ |a| a[0] == keyword_field }
+        if agg
+          facet = Facet.new.tap do |f|
+            f.name  = profile_element.label
+            f.field = keyword_field
+          end
+          agg[1]['buckets'].each do |bucket|
+            facet.terms << FacetTerm.new.tap do |t|
+              t.name  = bucket['key'].to_s
+              t.label = bucket['key'].to_s
+              t.count = bucket['doc_count']
+              t.facet = facet
+            end
+          end
+          @result_facets << facet
         end
-        @result_facets << facet
       end
     end
-=end
+
     if @response_json['hits']
-      @result_count = @result_count['value']
+      @result_count = @response_json['hits']['total']['value']
     else
       @result_count = 0
       raise IOError, "#{@response_json['error']['type']}: "\
@@ -340,6 +319,23 @@ class AbstractFinder
     end
 
     @loaded = true
+  end
+
+  private
+
+  def get_response
+    @request_json = build_query
+    result = @client.query(@request_json)
+    JSON.parse(result)
+  end
+
+  ##
+  # @return [Enumerable<String>] Enumerable of entity IDs.
+  #
+  def to_id_a
+    load
+    @response_json['hits']['hits']
+        .map{ |r| r[ElasticsearchIndex::StandardFields::ID] }
   end
 
 end

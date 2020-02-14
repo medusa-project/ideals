@@ -18,12 +18,12 @@ module UnitsHelper
       html <<       link_to(unit.title, unit)
       html <<     "</h5>"
       html << "<br><br>"
-      child_finder = Unit.search.
+      children = Unit.search.
           parent_unit(unit).
           order("#{Unit::IndexFields::TITLE}.sort").
           limit(999)
-      if child_finder.count > 0
-        html << resource_list(child_finder.to_a)
+      if children.count > 0
+        html << resource_list(children)
       end
       html <<   "</div>"
       html << "</div>"

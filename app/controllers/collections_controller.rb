@@ -90,16 +90,16 @@ class CollectionsController < ApplicationController
   def index
     @start  = results_params[:start].to_i
     @window = window_size
-    finder = Collection.search.
+    relation = Collection.search.
         query_all(results_params[:q]).
         facet_filters(results_params[:fq]).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         start(@start).
         limit(@window)
-    @count            = finder.count
-    @collections      = finder.to_a
-    @facets           = finder.facets
-    @current_page     = finder.page
+    @count            = relation.count
+    @collections      = relation.to_a
+    @facets           = relation.facets
+    @current_page     = relation.page
     @permitted_params = results_params
   end
 
@@ -110,13 +110,12 @@ class CollectionsController < ApplicationController
     if @resource.items.count.positive?
       @start = params[:start].to_i
       @window = window_size
-      finder = Item.search.
+      @collections = Item.search.
           collection(params[:id]).
           start(@start).
           limit(@window)
-      @count            = finder.count
-      @collections      = finder.to_a
-      @current_page     = finder.page
+      @count            = @collections.count
+      @current_page     = @collections.page
       @permitted_params = params.permit(:q, :start)
     end
     @metadata_profile = @resource.effective_metadata_profile

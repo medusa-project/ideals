@@ -1,10 +1,6 @@
-##
-# Provides a convenient ActiveRecord-style Builder interface for Collection
-# retrieval.
-#
-class CollectionFinder < AbstractFinder
+class CollectionRelation < AbstractRelation
 
-  LOGGER = CustomLogger.new(CollectionFinder)
+  LOGGER = CustomLogger.new(CollectionRelation)
 
   def initialize
     super
@@ -13,7 +9,7 @@ class CollectionFinder < AbstractFinder
 
   ##
   # @param primary_unit [Unit]
-  # @return [CollectionFinder] self
+  # @return [CollectionRelation] self
   #
   def primary_unit(primary_unit)
     @primary_unit = primary_unit
@@ -87,6 +83,8 @@ class CollectionFinder < AbstractFinder
     end
     elements
   end
+
+  private
 
   ##
   # @return [String] JSON string.

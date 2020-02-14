@@ -61,11 +61,10 @@ class UnitsController < ApplicationController
   # Responds to `GET /units`
   #
   def index
-    finder = Unit.search.
+    @units = Unit.search.
         include_children(false).
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(9999)
-    @units    = finder.to_a
     @new_unit = Unit.new
   end
 

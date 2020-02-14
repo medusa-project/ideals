@@ -7,8 +7,8 @@
 #
 # A low-level interface to Elasticsearch is provided by ElasticsearchClient, but
 # in most cases, it's better to use the higher-level query interface provided
-# by {ItemFinder}, which is easier to use, and takes public accessibility etc.
-# into account.
+# by the various {AbstractRelation} subclasses, which are easier to use, and
+# take public accessibility etc. into account.
 #
 # # Persistence Callbacks
 #
@@ -56,15 +56,15 @@ module Indexed
       start_time = Time.now
 
       # Get the document count.
-      finder   = search.limit(0)
-      count    = finder.count
+      relation = search.limit(0)
+      count    = relation.count
       progress = Progress.new(count)
 
       # Retrieve document IDs in batches.
       index = start = num_deleted = 0
       limit = 1000
       while start < count do
-        ids = finder.start(start).limit(limit).to_id_a
+        ids = relation.start(start).limit(limit).to_id_a
         ids.each do |id|
           unless class_.exists?(id: to_model_id(id))
             class_.delete_document(id)
@@ -120,11 +120,11 @@ module Indexed
     end
 
     ##
-    # @return [AbstractFinder] Instance of one of the {AbstractFinder}
-    #                          subclasses.
+    # @return [AbstractRelation] Instance of one of the {AbstractRelation}
+    #                            subclasses.
     #
     def search
-      "#{name}Finder".constantize.new
+      "#{name}Relation".constantize.new
     end
 
     ##

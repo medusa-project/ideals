@@ -1,9 +1,6 @@
-##
-# Provides a convenient ActiveRecord-style Builder interface for Unit retrieval.
-#
-class UnitFinder < AbstractFinder
+class UnitRelation < AbstractRelation
 
-  LOGGER = CustomLogger.new(UnitFinder)
+  LOGGER = CustomLogger.new(UnitRelation)
 
   def initialize
     super
@@ -15,7 +12,7 @@ class UnitFinder < AbstractFinder
   # Whether to include child units in the results.
   #
   # @param bool [Boolean]
-  # @return [UnitFinder] self
+  # @return [UnitRelation] self
   #
   def include_children(bool)
     @include_children = bool
@@ -26,7 +23,7 @@ class UnitFinder < AbstractFinder
   # Limits the results to children of the given parent.
   #
   # @param unit [Unit]
-  # @return [UnitFinder] self
+  # @return [UnitRelation] self
   #
   def parent_unit(unit)
     @parent_unit = unit
@@ -37,22 +34,6 @@ class UnitFinder < AbstractFinder
 
   def get_class
     Unit
-  end
-
-  def load
-    return if @loaded
-
-    @response_json = get_response
-
-    if @response_json['hits']
-      @result_count = @response_json['hits']['total']['value']
-    else
-      @result_count = 0
-      raise IOError, "#{@response_json['error']['type']}: "\
-          "#{@response_json['error']['root_cause'][0]['reason']}"
-    end
-
-    @loaded = true
   end
 
   private
