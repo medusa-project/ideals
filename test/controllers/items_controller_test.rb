@@ -43,4 +43,19 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "show() returns HTTP 403 for not-in-archive items" do
+    get item_path(items(:not_in_archive))
+    assert_response :forbidden
+  end
+
+  test "show() returns HTTP 403 for undiscoverable items" do
+    get item_path(items(:undiscoverable))
+    assert_response :forbidden
+  end
+
+  test "show() returns HTTP 410 for withdrawn items" do
+    get item_path(items(:withdrawn))
+    assert_response :gone
+  end
+
 end

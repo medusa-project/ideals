@@ -21,12 +21,18 @@ class ItemsController < ApplicationController
     @permitted_params = results_params
   end
 
-  # GET /items/1
-  # GET /items/1.json
+  ##
+  # Responds to `GET /items/:id`
+  #
   def show
-    raise ActiveRecord::RecordNotFound unless @resource
-
-    @breadcrumbable = @resource
+    template = "show"
+    if @resource.withdrawn
+      render template, status: :gone
+    elsif !@resource.discoverable
+      render template, status: :forbidden
+    elsif !@resource.in_archive
+      render template, status: :forbidden
+    end
   end
 
   # GET /items/new
@@ -81,7 +87,7 @@ class ItemsController < ApplicationController
 
   def set_item
     if params.has_key?(:id)
-      @resource = Item.find_by(id: params[:id])
+      @resource = Item.find(params[:id])
     elsif params.has_key?(:suffix)
       @resource = Handle.find_by(prefix: params[:prefix], suffix: params[:suffix]).resource
     end

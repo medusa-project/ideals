@@ -2,36 +2,47 @@
 
 %h1= @resource.title
 
-%ul.nav.nav-tabs{role: "tablist"}
-  %li.nav-item
-    %a#properties-tab.nav-link.active{href: "#properties-tab-content",
-                                      "data-toggle": "tab",
-                                      role: "tab",
-                                      "aria-controls": "properties-tab-content",
-                                      "aria-selected": "true"} Properties
-  %li.nav-item
-    %a#metadata-tab.nav-link{href: "#metadata-tab-content",
-                             "data-toggle": "tab",
-                             role: "tab",
-                             "aria-controls": "metadata-tab-content",
-                             "aria-selected": "true"} Metadata
+- if @resource.withdrawn
+  .alert.alert-info
+    This item has been withdrawn.
+- elsif !@resource.in_archive
+  .alert.alert-info
+    This item is not in archive.
+- elsif !@resource.discoverable
+  .alert.alert-info
+    This item is not discoverable.
 
-.tab-content
-  #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
-                                                    "aria-labelledby": "properties-tab"}
-    %dl
-      %dt Submitter email
-      %dd= @resource.submitter_email
-      %dt Submitter auth provider
-      %dd= @resource.submitter_auth_provider
-      %dt In archive
-      %dd= @resource.in_archive
-      %dt Withdrawn
-      %dd= @resource.withdrawn
-      %dt Discoverable
-      %dd= @resource.discoverable
+- if policy(@resource).show?
+  %ul.nav.nav-tabs{role: "tablist"}
+    %li.nav-item
+      %a#properties-tab.nav-link.active{href: "#properties-tab-content",
+                                        "data-toggle": "tab",
+                                        role: "tab",
+                                        "aria-controls": "properties-tab-content",
+                                        "aria-selected": "true"} Properties
+    %li.nav-item
+      %a#metadata-tab.nav-link{href: "#metadata-tab-content",
+                               "data-toggle": "tab",
+                               role: "tab",
+                               "aria-controls": "metadata-tab-content",
+                               "aria-selected": "true"} Metadata
 
-  #metadata-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                           "aria-labelledby": "metadata-tab"}
-    = metadata_as_dl(@resource.primary_collection.effective_metadata_profile,
-                     @resource.elements)
+  .tab-content
+    #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                                      "aria-labelledby": "properties-tab"}
+      %dl
+        %dt Submitter email
+        %dd= @resource.submitter_email
+        %dt Submitter auth provider
+        %dd= @resource.submitter_auth_provider
+        %dt In archive
+        %dd= @resource.in_archive
+        %dt Withdrawn
+        %dd= @resource.withdrawn
+        %dt Discoverable
+        %dd= @resource.discoverable
+
+    #metadata-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                             "aria-labelledby": "metadata-tab"}
+      = metadata_as_dl(@resource.effective_metadata_profile,
+                       @resource.elements)
