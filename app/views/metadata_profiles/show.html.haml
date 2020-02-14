@@ -34,12 +34,13 @@
                                     "aria-selected": "true"}
       Elements
       %span.badge.badge-pill.badge-secondary= @profile.elements.count
-  %li.nav-item
-    %a#collections-tab.nav-link{href: "#collections", "data-toggle": "tab",
-                                role: "tab", "aria-controls": "collections",
-                                "aria-selected": "false"}
-      Collections
-      %span.badge.badge-pill.badge-secondary= @profile.collections.count
+  - unless @profile.default
+    %li.nav-item
+      %a#collections-tab.nav-link{href: "#collections", "data-toggle": "tab",
+                                  role: "tab", "aria-controls": "collections",
+                                  "aria-selected": "false"}
+        Collections
+        %span.badge.badge-pill.badge-secondary= @collections.count
 
 .tab-content
   #elements.tab-pane.fade.show.active{role: "tabpanel",
@@ -93,12 +94,13 @@
             %td{class: element.repeatable? ? "bg-success" : "bg-danger"}
               = boolean(element.repeatable)
 
-  #collections.tab-pane.fade{role: "tabpanel",
-                             "aria-labelledby": "collections-tab"}
-    - if @profile.collections.count > 0
-      = resource_list(@profile.collections)
-    - else
-      This metadata profile is not in use by any collections.
+  - unless @profile.default
+    #collections.tab-pane.fade{role: "tabpanel",
+                               "aria-labelledby": "collections-tab"}
+      - if @collections.count > 0
+        = resource_list(@collections)
+      - else
+        This metadata profile is not in use by any collections.
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-profile-modal", title: "Edit Profile" }

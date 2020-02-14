@@ -74,6 +74,10 @@ class MetadataProfilesController < ApplicationController
   # Responds to `GET /metadata-profiles/:id`
   #
   def show
+    # N.B.: these are only directly-assigned collections. For the default
+    # profile, the collections list won't be displayed because it would be too
+    # long.
+    @collections = @profile.collections
     @new_element = MetadataProfileElement.new
   end
 
