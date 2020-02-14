@@ -34,3 +34,30 @@ undescribed:
   discoverable: true
   collections:
     - collection1
+
+not_in_archive:
+  submitter_email: sally@example.org
+  submitter_auth_provider:
+  in_archive: false
+  withdrawn: false
+  discoverable: true
+  collections:
+    - collection1
+
+undiscoverable:
+  submitter_email: sally@example.org
+  submitter_auth_provider:
+  in_archive: true
+  withdrawn: false
+  discoverable: false
+  collections:
+    - collection1
+
+withdrawn:
+  submitter_email: sally@example.org
+  submitter_auth_provider:
+  in_archive: true
+  withdrawn: true
+  discoverable: true
+  collections:
+    - collection1
