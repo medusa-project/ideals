@@ -31,7 +31,6 @@ class Unit < ApplicationRecord
           source: :user
   scope :top, -> { where(parent_id: nil) }
   scope :bottom, -> { where(children.count == 0) }
-  has_many :roles, through: :administrators
   has_many :units, foreign_key: "parent_id", dependent: :restrict_with_exception
 
   validates :title, presence: true

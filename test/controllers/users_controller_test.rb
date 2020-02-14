@@ -85,9 +85,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             user: {
-                role_ids: [
-                    roles(:sysadmin).id
-                ]
+                sysadmin: true
             }
         }
     }
@@ -102,9 +100,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             user: {
-                role_ids: [
-                    roles(:sysadmin).id
-                ]
+                sysadmin: true
             }
         }
     }
@@ -112,15 +108,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
+    skip # TODO: this model doesn't currently have any properties that we can supply illegal values for
     log_in_as(users(:admin))
     user = users(:admin)
     patch "/users/#{user.id}", {
         xhr: true,
         params: {
             user: {
-                role_ids: [
-                    9999999
-                ]
+                bogus: "cats"
             }
         }
     }

@@ -69,7 +69,6 @@ namespace :ideals do
         case Rails.env
         when "demo", "production"
           user = ShibbolethUser.no_omniauth(email)
-          user.roles << Role.find_by(name: "sysadmin") unless user.sysadmin?
           user.save!
         else
           invitee = Invitee.find_by_email(email) || Invitee.create!(email: email,
@@ -87,7 +86,7 @@ namespace :ideals do
           identity.activated_at = Time.zone.now
           identity.save!
           user = IdentityUser.no_omniauth(email)
-          user.roles << Role.find_by(name: "sysadmin") unless user.sysadmin?
+          user.sysadmin = true
           user.save!
         end
       end

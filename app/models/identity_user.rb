@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 ##
-# This type of user comes from the identity authentication strategy.
+# Concrete implementation of {User}. This type of user is created, stored, and
+# managed locally. Users are preferentially {ShibbolethUser}s, but some users
+# (including local development and test users) may not have NetIDs, thus the
+# need for this type.
+#
+# For this type of user, the {sysadmin} column determines whether they are a
+# sysadmin.
 #
 class IdentityUser < User
 
@@ -68,4 +74,9 @@ class IdentityUser < User
 
     identity.name || email
   end
+
+  def sysadmin?
+    sysadmin
+  end
+
 end

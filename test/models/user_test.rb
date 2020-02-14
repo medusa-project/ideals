@@ -48,42 +48,6 @@ class UserTest < ActiveSupport::TestCase
     assert !@instance.manager?(collections(:collection1))
   end
 
-  # role?()
-
-  test "role?() returns true when the user is a member of the given role" do
-    assert users(:admin).role?(:sysadmin)
-  end
-
-  test "role?() returns false when the user is not a member of the given role" do
-    assert !@instance.role?(:sysadmin)
-  end
-
-  # roles
-
-  test "roles can be empty" do
-    @instance.roles = []
-    assert @instance.save
-  end
-
-  test "user cannot be added to multiple instances of the same role" do
-    @instance.roles = []
-    role = roles(:sysadmin)
-    @instance.roles << role
-    assert_raises ActiveRecord::RecordNotUnique do
-      @instance.roles << role
-    end
-  end
-
-  # sysadmin?()
-
-  test "sysadmin?() returns true when the user is a member of the sysadmin role" do
-    assert users(:admin).sysadmin?
-  end
-
-  test "sysadmin?() returns false when the user is not a member of the sysadmin role" do
-    assert !@instance.sysadmin?
-  end
-
   # unit_admin?()
 
   test "unit_admin?() returns true when the user is an administrator of the

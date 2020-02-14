@@ -12,11 +12,9 @@ class User < ApplicationRecord
 
   has_many :administrators
   has_many :administering_units, through: :administrators, source: :unit
-  has_many :assignments
   has_many :managing_collections, through: :managers, source: :collection
   has_many :primary_administering_units, class_name: "Unit",
            inverse_of: :primary_administrator
-  has_many :roles, through: :assignments
   has_many :submitting_collections, through: :submitters, source: :collection
 
   validates :name, presence: true
@@ -60,21 +58,6 @@ class User < ApplicationRecord
   #
   def manager?(collection)
     collection.managers.where(user_id: self.id).count > 0
-  end
-
-  ##
-  # @param role [Symbol] Role name. TODO: accept a Role
-  # @return [Boolean] Whether the instance is a member of the given role.
-  #
-  def role?(role)
-    roles.any? {|r| r.name.underscore.to_sym == role }
-  end
-
-  ##
-  # @return [Boolean] Whether the instance is a member of the `sysadmin` role.
-  #
-  def sysadmin?
-    role? :sysadmin
   end
 
   ##

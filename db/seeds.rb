@@ -6,8 +6,6 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-Role.create!(name: "sysadmin")
-
 elements = {
     title: RegisteredElement.create!(name: "title",
                                      uri: "http://example.org/title"),
@@ -45,3 +43,4 @@ profile.elements.build(registered_element: elements[:subject],
                        sortable: false,
                        repeatable: true,
                        required: false)
+profile.save!

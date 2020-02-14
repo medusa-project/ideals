@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
 ##
-# This type of user comes from the shibboleth authentication strategy.
+# Concrete implementation of {User}. This type of user comes from the
+# shibboleth authentication strategy. All Shibboleth users have NetIDs and
+# whether or not they are a {sysadmin? sysadmin} is determined by their
+# membership in the AD group named in the `admin/ad_group` configuration key.
 #
 class ShibbolethUser < User
+
+  validate :sysadmin_not_allowed
 
   def self.from_omniauth(auth)
     return nil unless auth && auth[:uid]
@@ -31,11 +36,8 @@ class ShibbolethUser < User
     raise ArgumentError, "valid email address required" unless email_string.match(URI::MailTo::EMAIL_REGEXP)
 
     user = ShibbolethUser.find_by(email: email)
-    if user
-      user.role = role
-      user.save!
-    else
-      user = ShibbolethUser.create_no_omniauth(email: email_string, role: role)
+    unless user
+      user = ShibbolethUser.create_no_omniauth(email: email_string)
     end
     user
   end
@@ -92,4 +94,26 @@ class ShibbolethUser < User
 
     netid
   end
+
+  ##
+  # @return [Boolean]
+  #
+  def sysadmin?
+    group = Configuration.instance.admin[:ad_group]
+    LdapQuery.new.is_member_of?(group, self.username)
+  end
+
+  private
+
+  ##
+  # Ensures that the `sysadmin` property is not set to `true`, as this is only
+  # available for {IdentityUser}s. For instances of this class, sysadmin-ness
+  # is obtained from Active Directory.
+  #
+  def sysadmin_not_allowed
+    if self.sysadmin
+      errors.add(:sysadmin, "cannot be set to true for #{self.class}s")
+    end
+  end
+
 end

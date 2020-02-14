@@ -11,17 +11,13 @@
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
-  .form-group
-    = label_tag "Roles"
-    = hidden_field_tag "user[role_ids][]"
-    - Role.all.order(:name).each do |role|
+  - if f.object.kind_of?(IdentityUser)
+    .form-group
       .form-check
-        = check_box_tag "user[role_ids][]", role.id,
-          f.object.roles.include?(role),
-          id: "user_role_ids_#{role.id}",
-          class: "form-check-input"
-        = label_tag "user_role_ids_#{role.id}",
-          role.name, class: "form-check-label"
+        = f.check_box :sysadmin, class: "form-check-input"
+        = f.label :sysadmin, "System Administrator", class: "form-check-label"
+  - else
+    %p This user has no editable properties.
 
   .clearfix
     .float-right

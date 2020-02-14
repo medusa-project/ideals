@@ -6,25 +6,18 @@
   =icon_for(@resource)
   =@resource.name
 
-.row
-  .col-sm-6
-    %h2 Account
-    %dl
-      %dt UID
-      %dd= @resource.uid
-      %dt Username
-      %dd= @resource.username
-      %dt Email
-      %dd= @resource.email
-      %dt Type
-      %dd= @resource.type
-      %dt Created
-      %dd= @resource.created_at
-  .col-sm-6
-    %h2 Roles
-    %ul
-      - @resource.roles.order(:name).each do |role|
-        %li= role.name
+%h2 Account
+%dl
+  %dt UID
+  %dd= @resource.uid
+  %dt Username
+  %dd= @resource.username
+  %dt Email
+  %dd= @resource.email
+  %dt Type
+  %dd= @resource.type
+  %dt Created
+  %dd= @resource.created_at
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-user-modal", title: "Edit User" }

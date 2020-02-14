@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_14_151350) do
+ActiveRecord::Schema.define(version: 2020_02_14_165635) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,16 +34,6 @@ ActiveRecord::Schema.define(version: 2020_02_14_151350) do
     t.bigint "item_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-  end
-
-  create_table "assignments", force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "role_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["role_id"], name: "index_assignments_on_role_id"
-    t.index ["user_id", "role_id"], name: "index_assignments_on_user_id_and_role_id", unique: true
-    t.index ["user_id"], name: "index_assignments_on_user_id"
   end
 
   create_table "bitstreams", force: :cascade do |t|
@@ -172,12 +162,6 @@ ActiveRecord::Schema.define(version: 2020_02_14_151350) do
     t.index ["uri"], name: "index_registered_elements_on_uri", unique: true
   end
 
-  create_table "roles", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "submitters", force: :cascade do |t|
     t.bigint "collection_id"
     t.bigint "user_id"
@@ -201,6 +185,7 @@ ActiveRecord::Schema.define(version: 2020_02_14_151350) do
     t.datetime "updated_at", null: false
     t.string "username"
     t.string "type"
+    t.boolean "sysadmin", default: false, null: false
   end
 
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
@@ -208,8 +193,6 @@ ActiveRecord::Schema.define(version: 2020_02_14_151350) do
   add_foreign_key "ascribed_elements", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "assignments", "roles", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "assignments", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "units", column: "primary_unit_id", on_update: :cascade, on_delete: :restrict
