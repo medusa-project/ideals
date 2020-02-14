@@ -2,6 +2,10 @@ require 'test_helper'
 
 class UnitsControllerTest < ActionDispatch::IntegrationTest
 
+  setup do
+    setup_elasticsearch
+  end
+
   teardown do
     log_out
   end
