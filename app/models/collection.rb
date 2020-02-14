@@ -3,14 +3,45 @@
 ##
 # A collection is a container for {Item}s.
 #
-# # Relationships
-#
-# Collections have many-to-many relationships with {Item}s and {Unit}s.
-#
 # # Indexing
 #
 # See the documentation of {Indexed} for a detailed explanation of how indexing
 # works.
+#
+# # Attributes
+#
+# * `created_at`          Managed by ActiveRecord.
+# * `metadata_profile_id` Foreign key to {MetadataProfile}. Instances without
+#                         this set should use the {MetadataProfile#default
+#                         default profile}. For most use cases,
+#                         {effective_metadata_profile} should be used instead
+#                         of accessing this directly.
+# * `primary_unit_id`     Foreign key to {Unit}.
+# * `updated_at`          Managed by ActiveRecord.
+#
+# # Relationships
+#
+# * `elements`            References zero-to-many {AscribedElement}s used to
+#                         describe an instance.
+# * `items`               References all {Items} contained within the instance.
+# * `managers`            References the {Manager}s that are allowed to manage
+#                         the instance. This does not include all "effective"
+#                         managers, such as administrators of owning units or
+#                         system administrators; see
+#                         {User#effective_manager()?}.
+# * `managing_users`      More useful alternative to {managers} that returns
+#                         {User}s instead.
+# * `metadata_profile`    References the {MetadataProfile} directly assigned
+#                         to the instance, if any (see the documentation of the
+#                         `metadata_profile_id` attribute).
+# * `primary_unit`        References the primary {Unit} in which the instance
+#                         resides.
+# * `submitters`          References all {Submitter}s who are allowed to submit
+#                         {Item}s to the instance.
+# * `submitting_users`    More useful alternative to {submitters} that returns
+#                         {User}s instead.
+# * `units`               References all units to which the instance is
+#                         directly assigned. See also {all_units}.
 #
 class Collection < ApplicationRecord
   include Breadcrumb
