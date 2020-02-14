@@ -23,7 +23,7 @@ class AbstractRelation
   def initialize
     @client = ElasticsearchClient.instance
 
-    @aggregations = true
+    @aggregations = false
     @bucket_limit = DEFAULT_BUCKET_LIMIT
     @exact_match  = false
     @filters      = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
@@ -202,6 +202,8 @@ class AbstractRelation
   # @return [Enumerable<Facet>] Result facets.
   #
   def facets
+    raise "Aggregations are disabled. Call `aggregations(true)` and re-run "\
+        "the query." unless @aggregations
     load
     @result_facets
   end

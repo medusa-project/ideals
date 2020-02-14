@@ -10,6 +10,7 @@ class ItemsController < ApplicationController
     @start  = results_params[:start].to_i
     @window = window_size
     @items = Item.search.
+        aggregations(true).
         query_all(results_params[:q]).
         facet_filters(results_params[:fq]).
         start(@start).
