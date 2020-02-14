@@ -110,13 +110,10 @@ rails elasticsearch:purge
 rails db:reset
 rails "ideals_dspace:migrate[dbname,dbhost,dbuser]"
 rails "ideals:users:create[username,password]"
-rails elasticsearch:reindex[4]
+rails elasticsearch:reindex
 ```
-N.B. 1: (`dbhost` and `dbuser`) are only required if the database is on a
+N.B.: (`dbhost` and `dbuser`) are only required if the database is on a
 different host and/or the database user is different from the default.
-
-N.B. 2: `4` is the thread count to use for reindexing. This ought to make it go
-a lot faster than one thread, but how much is hard to say.
 
 ### In demo
 
@@ -125,7 +122,7 @@ a lot faster than one thread, but how much is hard to say.
 rails elasticsearch:purge
 rails db:reset
 rails "ideals_dspace:migrate[dbname,dbhost,dbuser]"
-rails elasticsearch:reindex[2]
+rails elasticsearch:reindex
 ```
 
 ## Run the web app

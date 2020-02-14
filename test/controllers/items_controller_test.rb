@@ -19,7 +19,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() omits undiscoverable, withdrawn, and not-in-archive items by default" do
-    Item.reindex_all(nil, 2)
+    Item.reindex_all
     ElasticsearchClient.instance.refresh
 
     expected_count = Item.where(withdrawn: false,

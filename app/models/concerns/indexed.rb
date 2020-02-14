@@ -79,44 +79,23 @@ module Indexed
     end
 
     ##
-    # Reindexes all of the class' indexed documents. Multi-threaded indexing is
-    # supported for potentially major performance gains, but care must be taken
-    # not to overwhelm the Elasticsearch cluster.
-    #
     # N.B.: Orphaned documents are not deleted; for that, use
     # {delete_orphaned_documents}.
     #
     # @param es_index [String] Index name. If omitted, the default index is
     #                          used.
-    # @param num_threads [Integer]
     # @return [void]
     #
-    def reindex_all(es_index = nil, num_threads = 1)
-      mutex        = Mutex.new
-      threads      = []
-      record_count = count
-      record_index = 0
-      per_thread   = (record_count / num_threads.to_f).ceil
-      progress     = Progress.new(record_count)
-
-      num_threads.times do |thread_index|
-        threads << Thread.new do
-          ActiveRecord::Base.uncached do
-            all.offset(thread_index * per_thread).
-                limit(per_thread).
-                find_each do |model|
-              model.reindex(es_index)
-              mutex.synchronize do
-                progress.report(record_index,
-                                "Indexing #{name.downcase.pluralize}")
-                record_index += 1
-              end
-            end
-          end
+    def reindex_all(es_index = nil)
+      count_ = count
+      progress = Progress.new(count_)
+      ActiveRecord::Base.uncached do
+        all.find_each.with_index do |model, i|
+          model.reindex(es_index)
+          progress.report(i, "Indexing #{name.downcase.pluralize}")
         end
+        puts ""
       end
-      threads.each(&:join)
-      puts ""
     end
 
     ##
