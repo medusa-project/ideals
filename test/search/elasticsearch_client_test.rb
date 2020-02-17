@@ -5,6 +5,7 @@ class ElasticsearchClientTest < ActiveSupport::TestCase
   setup do
     @instance   = ElasticsearchClient.instance
     @test_index = Configuration.instance.elasticsearch[:index]
+    @instance.delete_index(@test_index) if @instance.index_exists?(@test_index)
   end
 
   teardown do
@@ -63,9 +64,6 @@ class ElasticsearchClientTest < ActiveSupport::TestCase
   test "delete_index_alias() works" do
     alias_name = "test1-alias"
 
-    if @instance.index_exists?(@test_index)
-      @instance.delete_index(@test_index)
-    end
     @instance.create_index(@test_index)
     @instance.create_index_alias(@test_index, alias_name)
     assert @instance.index_exists?(@test_index)
@@ -79,8 +77,6 @@ class ElasticsearchClientTest < ActiveSupport::TestCase
   # get_document()
 
   test "get_document() returns nil for a missing document" do
-    @instance.delete_index(@test_index) if @instance.index_exists?(@test_index)
-
     begin
       @instance.create_index(@test_index)
       assert_nil @instance.get_document(@test_index, "bogus")
@@ -90,7 +86,6 @@ class ElasticsearchClientTest < ActiveSupport::TestCase
   end
 
   test "get_document() returns an existing document" do
-    @instance.delete_index(@test_index) if @instance.index_exists?(@test_index)
     @instance.create_index(@test_index)
     @instance.index_document(@test_index, "id1", {})
     assert_not_nil @instance.get_document(@test_index, "id1")
@@ -99,7 +94,6 @@ class ElasticsearchClientTest < ActiveSupport::TestCase
   # index_document()
 
   test "index_document() indexes a document" do
-    @instance.delete_index(@test_index) if @instance.index_exists?(@test_index)
     @instance.create_index(@test_index)
     assert_nil @instance.get_document(@test_index, "id1")
 
@@ -110,7 +104,6 @@ class ElasticsearchClientTest < ActiveSupport::TestCase
   # index_exists?()
 
   test "index_exists?() works" do
-    @instance.delete_index(@test_index) if @instance.index_exists?(@test_index)
     @instance.create_index(@test_index)
     assert @instance.index_exists?(@test_index)
 
@@ -129,7 +122,6 @@ class ElasticsearchClientTest < ActiveSupport::TestCase
 
   test "purge() purges all documents" do
     skip # TODO: fix this
-    @instance.delete_index(@test_index) if @instance.index_exists?(@test_index)
     @instance.create_index(@test_index)
 
     @instance.index_document(@test_index, "id1", {})
