@@ -31,10 +31,14 @@
     #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                       "aria-labelledby": "properties-tab"}
       %dl
-        %dt Submitter email
-        %dd= @resource.submitter_email
-        %dt Submitter auth provider
-        %dd= @resource.submitter_auth_provider
+        - if @resource.submitter
+          - submitter = @resource.submitter.becomes(User)
+          %dt Submitter
+          %dd
+            - if policy(submitter).show?
+              = link_to(submitter.name, submitter)
+            - else
+              = submitter.name
         %dt In archive
         %dd= @resource.in_archive
         %dt Withdrawn

@@ -242,31 +242,46 @@ class IdealsImporter
       row = line.split("|")
       id  = row[0].to_i
       next if item_ids.include?(id)
+      item_ids << id
 
-      item_ids.add(id)
+      submitter       = nil
       submitter_email = row[1]
-      next unless submitter_email
 
-      # TODO: When this is for real, not just toy records, blank submitter_email is a problem
-      email_parts = submitter_email.split("@")
-      submitter_auth_provider = if %w(illinois.edu uis.edu uic.edu).include?(email_parts[-1])
-                                  AuthProvider::SHIBBOLETH
-                                else
-                                  AuthProvider::IDENTITY
-                                end
+      if submitter_email.present?
+        # Reformat emails that are in "spam avoidance" format, like
+        # "user at uiuc dot edu".
+        submitter_email.gsub!(/(\w+) at (\w+) dot (\w+)/, "\\1@\\2.\\3")
+        email_parts = submitter_email.split("@")
+        username    = email_parts[0]
+        tld         = email_parts[-1].scan(/(\w+).(\w+)$/).last.join(".")
+
+        if %w(illinois.edu uillinois.edu uiuc.edu uis.edu uic.edu).include?(tld)
+          submitter = ShibbolethUser.find_by_email(submitter_email)
+          submitter = ShibbolethUser.create!(uid:      submitter_email,
+                                             email:    submitter_email,
+                                             name:     username,
+                                             username: username) unless submitter
+        else
+          submitter = IdentityUser.find_by_email(submitter_email)
+          submitter = IdentityUser.create!(uid:      submitter_email,
+                                           email:    submitter_email,
+                                           name:     username,
+                                           username: username) unless submitter
+        end
+      end
       in_archive    = row[2] == "t"
       withdrawn     = row[3] == "t"
       collection_id = row[4].present? ? row[4].to_i : nil
       discoverable  = row[5] == "t"
 
       progress.report(row_num, "Importing items")
-      Item.create!(id:                      id,
-                   submitter_email:         submitter_email,
-                   submitter_auth_provider: submitter_auth_provider,
-                   in_archive:              in_archive,
-                   withdrawn:               withdrawn,
-                   discoverable:            discoverable,
-                   primary_collection_id:   collection_id)
+
+      Item.create!(id:                    id,
+                   submitter:             submitter,
+                   in_archive:            in_archive,
+                   withdrawn:             withdrawn,
+                   discoverable:          discoverable,
+                   primary_collection_id: collection_id)
     end
     update_pkey_sequence("items")
   ensure

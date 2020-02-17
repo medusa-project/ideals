@@ -10,23 +10,22 @@
 #
 # # Attributes
 #
-# * `created_at`              Managed by ActiveRecord.
-# * `discoverable`            If false, the submitter has indicated during
-#                             submission that the item should be private, which
-#                             means it should not be included in search
-#                             results, and its metadata should not be available
-#                             except to administrators.
-# * `in_archive`              Like a published state, sort of, but can be
-#                             overridden by `discoverable`. If false, it means
-#                             the item is currently in the submission process
-#                             (a draft) or has been withdrawn.
-# * `primary_collection_id`   Foreign key to {Collection}.
-# * `submitter_auth_provider` Deprecated.
-# * `submitter_email`         Deprecated.
-# * `updated_at`              Managed by ActiveRecord.
-# * `withdrawn`               An administrator has made the item inaccessible,
-#                             but not totally deleted it. Requests for
-#                             withdrawn items return HTTP 410 Gone.
+# * `created_at`            Managed by ActiveRecord.
+# * `discoverable`          If false, the submitter has indicated during
+#                           submission that the item should be private, which
+#                           means it should not be included in search results,
+#                           and its metadata should not be available except to
+#                           administrators.
+# * `in_archive`            Like a published state, sort of, but can be
+#                           overridden by `discoverable`. If false, it means
+#                           the item is currently in the submission process (a
+#                           draft) or has been withdrawn.
+# * `primary_collection_id` Foreign key to {Collection}.
+# * `submitter_id`          Foreign key to {User}.
+# * `updated_at`            Managed by ActiveRecord.
+# * `withdrawn`             An administrator has made the item inaccessible,
+#                           but not totally deleted it. Requests for
+#                           withdrawn items return HTTP 410 Gone.
 #
 # # Relationships
 #
@@ -57,6 +56,7 @@ class Item < ApplicationRecord
     LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     PRIMARY_COLLECTION = "i_primary_collection_id"
     PRIMARY_UNIT       = "i_primary_unit_id"
+    SUBMITTER          = "i_submitter_id"
     WITHDRAWN          = "b_withdrawn"
   end
 
@@ -65,6 +65,8 @@ class Item < ApplicationRecord
   has_many :elements, class_name: "AscribedElement"
   belongs_to :primary_collection, class_name: "Collection",
              foreign_key: "primary_collection_id", optional: true
+  belongs_to :submitter, class_name: "User", inverse_of: "submitted_items",
+             optional: true
 
   breadcrumbs parent: :primary_collection, label: :title
 
@@ -82,6 +84,7 @@ class Item < ApplicationRecord
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
     doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection_id
     doc[IndexFields::PRIMARY_UNIT]       = self.primary_unit&.id
+    doc[IndexFields::SUBMITTER]          = self.submitter_id
     doc[IndexFields::WITHDRAWN]          = self.withdrawn
 
     # Index ascribed metadata elements into dynamic fields.

@@ -1,6 +1,5 @@
 item1:
-  submitter_email: bill@example.org
-  submitter_auth_provider:
+  submitter: admin
   in_archive: true
   withdrawn: false
   discoverable: true
@@ -9,8 +8,7 @@ item1:
     - collection1
 
 item2:
-  submitter_email: bill@example.org
-  submitter_auth_provider:
+  submitter: admin
   in_archive: true
   withdrawn: false
   discoverable: true
@@ -18,8 +16,7 @@ item2:
     - collection1
 
 described:
-  submitter_email: sally@example.org
-  submitter_auth_provider:
+  submitter: admin
   in_archive: true
   withdrawn: false
   discoverable: true
@@ -27,8 +24,7 @@ described:
     - collection1
 
 undescribed:
-  submitter_email: sally@example.org
-  submitter_auth_provider:
+  submitter: admin
   in_archive: true
   withdrawn: false
   discoverable: true
@@ -36,8 +32,7 @@ undescribed:
     - collection1
 
 not_in_archive:
-  submitter_email: sally@example.org
-  submitter_auth_provider:
+  submitter: admin
   in_archive: false
   withdrawn: false
   discoverable: true
@@ -45,8 +40,7 @@ not_in_archive:
     - collection1
 
 undiscoverable:
-  submitter_email: sally@example.org
-  submitter_auth_provider:
+  submitter: admin
   in_archive: true
   withdrawn: false
   discoverable: false
@@ -54,8 +48,7 @@ undiscoverable:
     - collection1
 
 withdrawn:
-  submitter_email: sally@example.org
-  submitter_auth_provider:
+  submitter: admin
   in_archive: true
   withdrawn: true
   discoverable: true

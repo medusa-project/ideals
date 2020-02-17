@@ -84,6 +84,8 @@ class ItemTest < ActiveSupport::TestCase
                  doc[Item::IndexFields::PRIMARY_COLLECTION]
     assert_equal @instance.primary_collection.primary_unit.id,
                  doc[Item::IndexFields::PRIMARY_UNIT]
+    assert_equal @instance.submitter.id,
+                 doc[Item::IndexFields::SUBMITTER]
     assert !doc[Item::IndexFields::WITHDRAWN]
 
     item = items(:described)
