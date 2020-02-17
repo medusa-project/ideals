@@ -249,8 +249,17 @@ class AbstractRelation
         LOGGER.warn("to_a(): #{get_class} #{id} is missing from the database")
       end
     end
-    @result_instances
   end
+
+  ##
+  # @return [Enumerable<String>] Enumerable of entity IDs.
+  #
+  def to_id_a
+    load
+    @response_json['hits']['hits']
+        .map{ |r| r[ElasticsearchIndex::StandardFields::ID] }
+  end
+
 
   protected
 
@@ -323,21 +332,13 @@ class AbstractRelation
     @loaded = true
   end
 
+
   private
 
   def get_response
     @request_json = build_query
     result = @client.query(@request_json)
     JSON.parse(result)
-  end
-
-  ##
-  # @return [Enumerable<String>] Enumerable of entity IDs.
-  #
-  def to_id_a
-    load
-    @response_json['hits']['hits']
-        .map{ |r| r[ElasticsearchIndex::StandardFields::ID] }
   end
 
 end
