@@ -29,7 +29,6 @@ gem 'mini_racer', platforms: :ruby
 gem "uglifier", ">= 2.7.2"
 
 # Use jquery as the JavaScript library
-gem "highcharts-rails"
 gem "jquery-rails"
 gem "jquery-ui-rails"
 
@@ -63,12 +62,6 @@ gem "minitar", "~> 0.6.1"
 
 # Use rchardet to attempt to detect character encoding
 gem "rchardet"
-
-# Use roda for routing magic
-gem "roda"
-
-# Use figaro to set environment variables
-gem "figaro"
 
 # Use bootstrap for layout framework
 gem "autoprefixer-rails"
