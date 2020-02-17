@@ -5,16 +5,16 @@
 #
 # # Querying
 #
-# A low-level interface to Elasticsearch is provided by ElasticsearchClient, but
-# in most cases, it's better to use the higher-level query interface provided
-# by the various {AbstractRelation} subclasses, which are easier to use, and
-# take public accessibility etc. into account.
+# A low-level interface to Elasticsearch is provided by {ElasticsearchClient},
+# but in most cases, it's better to use the higher-level query interface
+# provided by the various {AbstractRelation} subclasses, which are easier to
+# use, and take public accessibility etc. into account.
 #
 # # Persistence Callbacks
 #
 # **IMPORTANT NOTE**: Instances are automatically indexed in Elasticsearch (see
 # {as_indexed_json}) upon transaction commit. They are **not** indexed on
-# save or delete. Whenever creating, updating, or deleting outside of a
+# save or destroy. Whenever creating, updating, or deleting outside of a
 # transaction, you must {reindex reindex} or {delete_document delete} the
 # document manually.
 #
@@ -24,7 +24,7 @@ module Indexed
   class_methods do
     ##
     # Normally this method should not be used except to delete "orphaned"
-    # documents with no database counterpart. See the class documentation for
+    # documents with no database counterpart. See the module documentation for
     # information about correct document deletion.
     #
     def delete_document(id)
@@ -48,12 +48,10 @@ module Indexed
     # Iterates through all of the model's indexed documents and deletes any for
     # which no counterpart exists in the database.
     #
-    # This is very expensive and ideally the application should be written in
-    # a way that never requires it to be called.
+    # This is very expensive and ideally it should never have to be used.
     #
     def delete_orphaned_documents
       class_ = name.constantize
-      start_time = Time.now
 
       # Get the document count.
       relation = search.limit(0)
@@ -71,7 +69,7 @@ module Indexed
             num_deleted += 1
           end
           index += 1
-          progress.report(index, "Deleting stale documents")
+          progress.report(index, "Deleting orphaned documents")
         end
         start += limit
       end
@@ -79,23 +77,64 @@ module Indexed
     end
 
     ##
-    # N.B.: Orphaned documents are not deleted; for that, use
+    # Reindexes all of the class' indexed documents. Multi-threaded indexing is
+    # supported to potentially make this go a lot faster, but care must be
+    # taken not to overwhelm the Elasticsearch cluster.
+    #
+    # N.B. 1: Cursory testing suggests that benefit diminishes rapidly beyond 2
+    # threads.
+    #
+    # N.B. 2: Orphaned documents are not deleted; for that, use
     # {delete_orphaned_documents}.
     #
     # @param es_index [String] Index name. If omitted, the default index is
     #                          used.
+    # @param num_threads [Integer]
     # @return [void]
     #
-    def reindex_all(es_index = nil)
-      count_ = count
-      progress = Progress.new(count_)
-      ActiveRecord::Base.uncached do
-        all.find_each.with_index do |model, i|
-          model.reindex(es_index)
-          progress.report(i, "Indexing #{name.downcase.pluralize}")
+    def reindex_all(es_index: nil, num_threads: 1)
+      # THe basic idea is to divide the total number of results into num_threads
+      # segments, and have each thread work on a segment.
+      mutex              = Mutex.new
+      threads            = Set.new
+      num_records        = count
+      progress           = Progress.new(num_records)
+      record_index       = 0
+      num_thread_records = (num_records / num_threads.to_f).ceil
+
+      num_threads.times do |thread_num|
+        threads << Thread.new do
+          batch_size  = [1000, num_thread_records].min
+          num_batches = (num_thread_records / batch_size.to_f).ceil
+          num_batches.times do |batch_index|
+            batch_offset = batch_index * batch_size
+            q_offset     = thread_num * num_thread_records + batch_offset
+            q_limit      = [batch_size, num_thread_records - batch_offset].min
+            uncached do
+=begin
+              puts "[num_records: #{num_records}] "\
+                    "[num_threads: #{num_threads}] "\
+                    "[thread_num: #{thread_num}] "\
+                    "[num_thread_records: #{num_thread_records}] "\
+                    "[batch_offset: #{batch_offset}] "\
+                    "[batch_size: #{batch_size}] "\
+                    "[offset: #{q_offset}] "\
+                    "[limit: #{q_limit}] "
+=end
+              all.order(:id).offset(q_offset).limit(q_limit).each do |model|
+                model.reindex(es_index)
+                mutex.synchronize do
+                  record_index += 1
+                  progress.report(record_index,
+                                  "Indexing #{name.downcase.pluralize}")
+                end
+              end
+            end
+          end
         end
-        puts ""
       end
+      threads.each(&:join)
+      puts ""
     end
 
     ##

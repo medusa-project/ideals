@@ -62,11 +62,12 @@ namespace :elasticsearch do
   end
 
   desc 'Reindex all database entities'
-  task reindex: :environment do
-    Unit.reindex_all
-    Collection.reindex_all
-    Item.reindex_all
-    # TODO: delete indexed docs whose database rows have been deleted
+  task :reindex, [:num_threads] => :environment do |task, args|
+    # N.B.: orphaned documents are not deleted.
+    num_threads = args[:num_threads].to_i
+    Unit.reindex_all(num_threads: num_threads)
+    Collection.reindex_all(num_threads: num_threads)
+    Item.reindex_all(num_threads: num_threads)
   end
 
 end

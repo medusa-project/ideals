@@ -113,7 +113,7 @@ rails elasticsearch:purge
 rails db:reset
 rails "ideals_dspace:migrate[dbname,dbhost,dbuser]"
 rails "ideals:users:create[username,password]"
-rails elasticsearch:reindex
+rails elasticsearch:reindex[3] # thread count
 ```
 N.B.: (`dbhost` and `dbuser`) are only required if the database is on a
 different host and/or the database user is different from the default.
@@ -125,7 +125,7 @@ different host and/or the database user is different from the default.
 rails elasticsearch:purge
 rails db:reset
 rails "ideals_dspace:migrate[dbname,dbhost,dbuser]"
-rails elasticsearch:reindex
+rails elasticsearch:reindex[2] # thread count
 ```
 
 ## Run the web app

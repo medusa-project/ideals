@@ -16,11 +16,6 @@ namespace :ideals do
         Collection.all.destroy_all
       end
     end
-
-    desc 'Reindex all collections'
-    task :reindex, [:index_name] => :environment do |task, args|
-      Collection.reindex_all(args[:index_name])
-    end
   end
 
   namespace :handles do
@@ -39,11 +34,6 @@ namespace :ideals do
         Item.all.destroy_all
       end
     end
-
-    desc 'Reindex all items'
-    task :reindex, [:index_name] => :environment do |task, args|
-      Item.reindex_all(args[:index_name])
-    end
   end
 
   namespace :units do
@@ -52,11 +42,6 @@ namespace :ideals do
       ActiveRecord::Base.transaction do
         Unit.all.destroy_all
       end
-    end
-
-    desc 'Reindex all units'
-    task :reindex, [:index_name] => :environment do |task, args|
-      Unit.reindex_all(args[:index_name])
     end
   end
 
