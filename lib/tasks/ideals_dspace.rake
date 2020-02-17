@@ -85,11 +85,28 @@ namespace :ideals_dspace do
     end
   end
 
+  namespace :users do
+    desc "Migrate users from IDEALS-DSpace into the application"
+    task :migrate, [:source_db_name, :source_db_host, :source_db_user] => :environment do |task, args|
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 "export_users.sql",
+                 :import_users)
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 "export_user_metadata.sql",
+                 :import_user_metadata)
+    end
+  end
+
   desc "Migrate all content from IDEALS-DSpace into the application"
   task :migrate, [:source_db_name, :source_db_host, :source_db_user] => :environment do |task, args|
     dbname = args[:source_db_name]
     dbhost = args[:source_db_host]
     dbuser = args[:source_db_user]
+    Rake::Task["ideals_dspace:users:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:communities:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:collections:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:items:migrate"].invoke(dbname, dbhost, dbuser)

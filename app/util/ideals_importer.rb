@@ -235,40 +235,12 @@ class IdealsImporter
     line_count = count_lines(csv_pathname)
     progress   = Progress.new(line_count)
 
-    item_ids = Set.new
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row = line.split("|")
-      id  = row[0].to_i
-      next if item_ids.include?(id)
-      item_ids << id
-
-      submitter       = nil
-      submitter_email = row[1]
-
-      if submitter_email.present?
-        # Reformat emails that are in "spam avoidance" format, like
-        # "user at uiuc dot edu".
-        submitter_email.gsub!(/(\w+) at (\w+) dot (\w+)/, "\\1@\\2.\\3")
-        email_parts = submitter_email.split("@")
-        username    = email_parts[0]
-        tld         = email_parts[-1].scan(/(\w+).(\w+)$/).last.join(".")
-
-        if %w(illinois.edu uillinois.edu uiuc.edu uis.edu uic.edu).include?(tld)
-          submitter = ShibbolethUser.find_by_email(submitter_email)
-          submitter = ShibbolethUser.create!(uid:      submitter_email,
-                                             email:    submitter_email,
-                                             name:     username,
-                                             username: username) unless submitter
-        else
-          submitter = IdentityUser.find_by_email(submitter_email)
-          submitter = IdentityUser.create!(uid:      submitter_email,
-                                           email:    submitter_email,
-                                           name:     username,
-                                           username: username) unless submitter
-        end
-      end
+      row           = line.split("|")
+      id            = row[0].to_i
+      submitter_id  = row[1]
       in_archive    = row[2] == "t"
       withdrawn     = row[3] == "t"
       collection_id = row[4].present? ? row[4].to_i : nil
@@ -277,7 +249,7 @@ class IdealsImporter
       progress.report(row_num, "Importing items")
 
       Item.create!(id:                    id,
-                   submitter:             submitter,
+                   submitter_id:          submitter_id,
                    in_archive:            in_archive,
                    withdrawn:             withdrawn,
                    discoverable:          discoverable,
@@ -316,6 +288,127 @@ class IdealsImporter
     update_pkey_sequence("registered_elements")
   ensure
     puts "\n"
+    @running = false
+  end
+
+  ##
+  # @param csv_pathname [String]
+  #
+  def import_user_metadata(csv_pathname)
+    @running = true
+    LOGGER.debug("import_user_metadata(): importing %s", csv_pathname)
+
+    line_count = count_lines(csv_pathname)
+    progress = Progress.new(line_count)
+
+    # This technique is quite inefficient, but Postgres does not make pivot
+    # queries easy...
+    users = Set.new
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
+
+      row_arr   = line.split("|")
+      user_id   = row_arr[0].to_i
+      elem_name = row_arr[1]
+      value     = row_arr[2]
+      next unless elem_name.present? && value.present?
+
+      user = users.find{ |u| u[:id] == user_id }
+      unless user
+        user = { id: user_id }
+        users << user
+      end
+
+      case elem_name
+      when "firstname"
+        user[:first_name] = value.strip
+      when "lastname"
+        user[:last_name] = value.strip
+      when "phone"
+        user[:phone] = value.strip
+      when "language"
+        user[:language] = value.strip
+      end
+
+      progress.report(row_num, "Importing user metadata (1/2)")
+    end
+
+    progress = Progress.new(users.length)
+    users.each_with_index do |user_info, index|
+      new_name = "#{user_info[:first_name]} #{user_info[:last_name]}"
+      if new_name.present?
+        begin
+          user = User.find(user_info[:id])
+          user.update!(name: new_name)
+          # TODO: phone and maybe language
+        rescue ActiveRecord::RecordNotFound
+          # Not much we can do. I guess we could create a new User with this
+          # info, but will hold off on that until it proves to be necessary.
+        end
+      end
+      progress.report(index + 1, "Importing user metadata (2/2)")
+    end
+  ensure
+    puts "\n"
+    @running = false
+  end
+
+  ##
+  # @param csv_pathname [String]
+  #
+  def import_users(csv_pathname)
+    @running = true
+    LOGGER.debug("import_users(): importing %s", csv_pathname)
+
+    line_count = count_lines(csv_pathname)
+    progress   = Progress.new(line_count)
+
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
+
+      row = line.split("|")
+      id  = row[0].to_i
+      # The eperson table contains all kinds of crap. Some of the email
+      # addresses are invalid and some are in "spam avoidance format," like
+      # "user at uiuc dot edu". For the invalid ones, assign a new
+      # "example.edu" address and try to retain the invalid string in the user
+      # part (as it may contain useful information). For the latter, try to
+      # reformat them.
+      #
+      # Of course, none of this would be a problem if users.email were more
+      # lenient...
+      #
+      # We try not to discard any users because we may need them to satisfy
+      # foreign key constraints.
+      email = row[1].strip.
+          gsub('"', "").
+          gsub(/(\w+) at (\w+) dot (\w+)/, "\\1@\\2.\\3")
+      if email.blank? || !email.match?(User::VALID_EMAIL_REGEX)
+        email = "#{email.gsub("@", "_at_")}-#{SecureRandom.hex[0..8]}@example.edu"
+      end
+      email_parts = email.split("@")
+      username    = email_parts[0]
+      tld         = email.scan(/(\w+).(\w+)$/).last.join(".")
+
+      unless User.find_by_email(email)
+        if %w(illinois.edu uillinois.edu uiuc.edu uis.edu uic.edu).include?(tld)
+          ShibbolethUser.create!(id:       id,
+                                 uid:      email,
+                                 email:    email,
+                                 name:     username,
+                                 username: username)
+        else
+          IdentityUser.create!(id:       id,
+                               uid:      email,
+                               email:    email,
+                               name:     username,
+                               username: username)
+        end
+      end
+      progress.report(row_num, "Importing users")
+    end
+    update_pkey_sequence("users")
+  ensure
     @running = false
   end
 
