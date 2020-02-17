@@ -12,14 +12,14 @@
   - if policy(@profile).clone?
     / Clone button
     = link_to(metadata_profile_clone_path(@profile), method: "post",
-                                                     type: "button",
+                                                     role: "button",
                                                      class: "btn btn-light") do
       %i.fa.fa-copy
       Clone
   - if policy(@profile).destroy?
     / Delete button
     = link_to(metadata_profile_path(@profile), class: "btn btn-danger",
-                                               type: "button",
+                                               role: "button",
                                                method: :delete,
                                                data: { confirm: "Are you sure you want to delete this profile?" }) do
       %i.fa.fa-trash
