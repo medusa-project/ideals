@@ -1,0 +1,24 @@
+.row.justify-content-md-center
+  .col-md-auto
+    = paginate(@count, @window, @current_page, @permitted_params)
+
+%table.table
+  %thead
+    %tr
+      %th Username
+      %th Name
+      %th Email
+      %th Authentication Type
+      %th System Administrator
+  %tbody
+    - @users.each do |user|
+      %tr
+        %td= link_to(user.username, user.becomes(User))
+        %td= user.name
+        %td= link_to(user.email, "mailto:#{user.email}")
+        %td= user.type
+        %td{class: "#{user.sysadmin? ? "bg-success" : "bg-danger"}"}= boolean(user.sysadmin?)
+
+.row.justify-content-md-center
+  .col-md-auto
+    = paginate(@count, @window, @current_page, @permitted_params)
