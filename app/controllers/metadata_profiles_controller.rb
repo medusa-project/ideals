@@ -49,7 +49,7 @@ class MetadataProfilesController < ApplicationController
     else
       flash['success'] = "Metadata profile \"#{@profile.name}\" deleted."
     ensure
-      redirect_back fallback_location: metadata_profiles_path
+      redirect_to metadata_profiles_path
     end
   end
 
