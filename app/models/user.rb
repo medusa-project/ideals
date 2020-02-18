@@ -9,6 +9,7 @@ class User < ApplicationRecord
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 
   include Breadcrumb
+  include Indexed
 
   has_many :administrators
   has_many :administering_units, through: :administrators, source: :unit
@@ -25,6 +26,35 @@ class User < ApplicationRecord
   validates_uniqueness_of :uid, allow_blank: false
 
   before_save -> { email.downcase! }
+
+  ##
+  # Contains constants for all "technical" indexed fields.
+  #
+  class IndexFields
+    CLASS         = ElasticsearchIndex::StandardFields::CLASS
+    CREATED       = ElasticsearchIndex::StandardFields::CREATED
+    EMAIL         = "k_email"
+    ID            = ElasticsearchIndex::StandardFields::ID
+    LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    NAME          = "t_name"
+    USERNAME      = "k_username"
+  end
+
+  ##
+  # @return [Hash] Indexable JSON representation of the instance.
+  #
+  def as_indexed_json
+    doc = {}
+    doc[IndexFields::CLASS]         = ["User", self.class.to_s]
+    doc[IndexFields::CREATED]       = self.created_at.utc.iso8601
+    doc[IndexFields::LAST_INDEXED]  = Time.now.utc.iso8601
+    doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
+    doc[IndexFields::EMAIL]         = self.email
+    doc[IndexFields::NAME]          = self.name
+    doc[IndexFields::USERNAME]      = self.username
+    doc
+  end
 
   ##
   # @param collection [Collection]
