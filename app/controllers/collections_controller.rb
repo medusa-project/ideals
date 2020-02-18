@@ -111,7 +111,7 @@ class CollectionsController < ApplicationController
       @start = params[:start].to_i
       @window = window_size
       @collections = Item.search.
-          collection(params[:id]).
+          filter(Item::IndexFields::COLLECTIONS, params[:id]).
           start(@start).
           limit(@window)
       @count            = @collections.count

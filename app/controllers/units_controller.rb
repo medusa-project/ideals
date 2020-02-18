@@ -87,7 +87,7 @@ class UnitsController < ApplicationController
         limit(999).
         to_a
     @collections = Collection.search.
-        primary_unit(@resource).
+        filter(Collection::IndexFields::PRIMARY_UNIT, @resource.id).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999).
         to_a

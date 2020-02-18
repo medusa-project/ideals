@@ -32,12 +32,6 @@ class UnitRelation < AbstractRelation
 
   protected
 
-  def get_class
-    Unit
-  end
-
-  private
-
   ##
   # @return [String] JSON string.
   #

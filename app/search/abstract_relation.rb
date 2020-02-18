@@ -8,7 +8,25 @@
 #
 # TLDR: it makes interacting with Elasticsearch more like ActiveRecord.
 #
-# The normal way of obtaining an instance is via {Indexed#search}.
+# The normal way of obtaining an instance is via {Indexed#search}. That method
+# expects every searchable model to define its own subclass of this class.
+# It's possible that the subclass may not even need to override anything (i.e.
+# it may be empty). Otherwise, it may need to override {facet_elements}, if it
+# doesn't want to use only the facetable {MetadataProfileElements} in the
+# default {MetadataProfile}.
+#
+# For more extensive customizations, it can override {build_query}, which
+# basically grants it full control over the query that gets sent to
+# Elasticsearch.
+#
+# The Elasticsearch request and response communications are logged and are also
+# available via {request_json} and {response_json}.
+#
+# Why this class and not
+# [elasticsearch-model](https://github.com/elastic/elasticsearch-rails/tree/master/elasticsearch-model)?
+# Ultimately they are apples and oranges. This class fills a gap that that gem
+# doesn't, namely hiding complicated Elasticsearch queries behind a friendly
+# interface.
 #
 class AbstractRelation
 
@@ -209,7 +227,7 @@ class AbstractRelation
   end
 
   def method_missing(m, *args, &block)
-    result_instances.send(m, *args, &block)
+    @result_instances.send(m, *args, &block)
   end
 
   ##
@@ -271,25 +289,21 @@ class AbstractRelation
   end
 
   ##
-  # @return [Class]
+  # This default implementation returns all of the facetable elements in the
+  # {MetadataProfile#default default metadata profile}. Override it to return
+  # others.
   #
-  def get_class
-    raise "Subclasses must override get_class()"
-  end
-
-  ##
-  # @return [MetadataProfile] The return value of {MetadataProfile#default}.
-  #                           Subclasses can override this to use a different
-  #                           profile.
-  def metadata_profile
-    MetadataProfile.default
-  end
-
-  ##
-  # @return [String] Query that is safe to pass to Elasticsearch.
+  # @return [Enumerable<Hash<Symbol,String>>] Enumerable of Hashes with
+  #                                           `:label` and `:keyword_field`
+  #                                           keys.
   #
-  def sanitized_query
-    @query[:query].gsub(/[\[\]\(\)]/, "").gsub("/", " ")
+  def facet_elements
+    MetadataProfile.default.elements.where(facetable: true).map do |e|
+      {
+          label: e.registered_element.label,
+          keyword_field: e.registered_element.indexed_keyword_field
+      }
+    end
   end
 
   def load
@@ -300,13 +314,12 @@ class AbstractRelation
     # Assemble the response aggregations into Facets. The order of the facets
     # should be the same as the order of elements in the metadata profile.
     if @aggregations
-      metadata_profile.facetable_elements.each do |profile_element|
-        keyword_field = profile_element.registered_element.indexed_keyword_field
-        agg = @response_json['aggregations']&.find{ |a| a[0] == keyword_field }
+      facet_elements.each do |element|
+        agg = @response_json['aggregations']&.find{ |a| a[0] == element[:keyword_field] }
         if agg
           facet = Facet.new.tap do |f|
-            f.name  = profile_element.label
-            f.field = keyword_field
+            f.name  = element[:label]
+            f.field = element[:keyword_field]
           end
           agg[1]['buckets'].each do |bucket|
             facet.terms << FacetTerm.new.tap do |t|
@@ -333,7 +346,7 @@ class AbstractRelation
   end
 
   ##
-  # Builds a generic query. Subclasses should override to insert their own
+  # Builds a generic query. Subclasses can override to insert their own
   # special features.
   #
   # @return [String] JSON string.
@@ -357,7 +370,7 @@ class AbstractRelation
               else
                 j.term do
                   # Use the keyword field to get an exact match.
-                  j.set! @query[:field] + EntityElement::KEYWORD_FIELD_SUFFIX,
+                  j.set! @query[:field] + RegisteredElement::KEYWORD_FIELD_SUFFIX,
                          sanitized_query
                 end
               end
@@ -394,6 +407,20 @@ class AbstractRelation
         end
       end
 
+      # Aggregations
+      j.aggregations do
+        if @aggregations
+          facet_elements.each do |element|
+            j.set! element[:keyword_field] do
+              j.terms do
+                j.field element[:keyword_field]
+                j.size @bucket_limit
+              end
+            end
+          end
+        end
+      end
+
       # Ordering
       # Order by explicit orders, if provided; otherwise sort by the metadata
       # profile's default order, if @orders is set to true; otherwise don't
@@ -424,10 +451,21 @@ class AbstractRelation
 
   private
 
+  def get_class
+    self.class.to_s.gsub("Relation", "").constantize
+  end
+
   def get_response
     @request_json = build_query
     result = @client.query(@request_json)
     JSON.parse(result)
+  end
+
+  ##
+  # @return [String] Query that is safe to pass to Elasticsearch.
+  #
+  def sanitized_query
+    @query[:query].gsub(/[\[\]\(\)]/, "").gsub("/", " ")
   end
 
 end
