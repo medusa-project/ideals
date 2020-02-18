@@ -2,7 +2,7 @@
 
 json.set! "class", @resource.class.to_s
 json.uri item_url(@resource, format: :json)
-json.extract! @resource, :id, :submitter_email, :in_archive, :withdrawn, :discoverable, :created_at, :updated_at
+json.extract! @resource, :id, :in_archive, :withdrawn, :discoverable, :created_at, :updated_at
 json.primary_collection do
   json.id @resource.primary_collection_id
   json.uri collection_url(@resource.primary_collection_id, format: :json)

@@ -83,6 +83,7 @@ class UserTest < ActiveSupport::TestCase
   # reindex() (Indexed concern)
 
   test "reindex() reindexes the instance" do
+    setup_elasticsearch
     assert_equal 0, User.search.filter(User::IndexFields::ID, @instance.index_id).count
 
     @instance.reindex
