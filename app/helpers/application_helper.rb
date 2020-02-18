@@ -28,6 +28,7 @@ module ApplicationHelper
   end
 
   ##
+  # @param name [String] Field name.
   # @param container [Unit,Collection] Container a.k.a. owning object to limit
   #                                    results to.
   # @param container_field [String] Index field, such as
@@ -35,7 +36,7 @@ module ApplicationHelper
   #                                 corresponding to `container`.
   # @return [String] HTML element.
   #
-  def filter_field(container = nil, container_field = nil)
+  def filter_field(name: "q", container: nil, container_field: nil)
     html = StringIO.new
     html << "<div class=\"input-group mb-4 filter-field\">"
     html <<   hidden_field_tag(container_field, container.id) if container
@@ -45,7 +46,7 @@ module ApplicationHelper
     placeholder = container ?
                       "Search within this #{container.class.to_s.downcase}&hellip;" :
                       ""
-    html <<   search_field_tag(:q, "",
+    html <<   search_field_tag(name, "",
                                placeholder: raw(placeholder),
                                'aria-label': 'Search',
                                class: 'form-control')

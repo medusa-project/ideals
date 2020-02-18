@@ -54,7 +54,8 @@
     -if @resource.items.count.positive?
       .float-right
         = form_tag(items_path, method: :get, class: "filter") do
-          = filter_field(@resource, Item::IndexFields::PRIMARY_COLLECTION)
+          = filter_field(container: @resource,
+                         container_field: Item::IndexFields::PRIMARY_COLLECTION)
       %h2 Items
       = resource_list(@collections)
     -else
