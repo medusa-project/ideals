@@ -3,6 +3,7 @@ admin: # TODO: rename to identity_admin
   uid: admin@illinois.edu
   name: admin
   email: admin@illinois.edu
+  phone: (888) 555-1234
   username: admin
   sysadmin: true
 
@@ -11,6 +12,7 @@ norights:
   uid: norights@illinois.edu
   name: I have no rights
   email: norights@illinois.edu
+  phone: (888) 555-1234
   username: norights
   sysadmin: false
 
@@ -19,6 +21,7 @@ sally:
   uid: sally@illinois.edu
   name: Sally
   email: sally@illinois.edu
+  phone: (888) 555-1234
   username: sally
   sysadmin: false
 
@@ -27,6 +30,7 @@ shibboleth:
   uid: shib@illinois.edu
   name: Shib Boleth, Esq.
   email: shib@illinois.edu
+  phone: (888) 555-1234
   username: shib
   sysadmin: false
 
@@ -35,5 +39,6 @@ unit1_unit2_unit1_admin:
   uid: bob@illinois.edu
   name: bob
   email: bob@illinois.edu
+  phone: (888) 555-1234
   username: bob
   sysadmin: false

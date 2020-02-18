@@ -339,8 +339,8 @@ class IdealsImporter
       if new_name.present?
         begin
           user = User.find(user_info[:id])
-          user.update!(name: new_name)
-          # TODO: phone and maybe language
+          user.update!(name: new_name,
+                       phone: user_info[:phone]) # TODO: language?
         rescue ActiveRecord::RecordNotFound
           # Not much we can do. I guess we could create a new User with this
           # info, but will hold off on that until it proves to be necessary.
