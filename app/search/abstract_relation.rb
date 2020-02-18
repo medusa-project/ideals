@@ -387,7 +387,7 @@ class AbstractRelation
                 end
 
                 @filters.each do |key_value|
-                  if key_value[1].present?
+                  unless key_value[1].nil?
                     j.child! do
                       if key_value[0].respond_to?(:each)
                         j.terms do
