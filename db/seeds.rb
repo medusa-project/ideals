@@ -1,9 +1,9 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+puts <<-eos
 
-MetadataProfile.create!(name: "Default Profile", default: true)
+NOTE: In a typical Rails app, `db:seed` initializes the database with default
+data immediately after the database has been created. But in this app, the
+seed data must be added **after** content has been migrated from IDEALS.
+This task (`db:seed`) is therefore not used, and `ideals:seed` must be used
+instead--again, after content has been migrated.
+
+eos
