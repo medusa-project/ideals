@@ -6,20 +6,52 @@
   =icon_for(@resource)
   =@resource.name
 
-%h2 Account
-%dl
-  %dt UID
-  %dd= @resource.uid
-  %dt Username
-  %dd= @resource.username
-  %dt Email
-  %dd= @resource.email
-  %dt Phone
-  %dd= @resource.phone
-  %dt Type
-  %dd= @resource.type
-  %dt Created
-  %dd= @resource.created_at
+%ul.nav.nav-tabs{role: "tablist"}
+  %li.nav-item
+    %a#account-tab.nav-link.active{"data-toggle": "tab",
+                                   href: "#account",
+                                   role: "tab",
+                                   "aria-controls": "account",
+                                   "aria-selected": "true"} Account
+  %li.nav-item
+    %a#items-tab.nav-link{"data-toggle": "tab",
+                          href: "#items",
+                          role: "tab",
+                          "aria-controls": "items",
+                          "aria-selected": "false"}
+      Submitted Items
+      %span.badge.badge-pill.badge-secondary
+        = @items.count
+
+.tab-content
+  #account.tab-pane.show.active{role: "tabpanel",
+                                "aria-labelledby": "account-tab"}
+    %dl
+      %dt UID
+      %dd= @resource.uid
+      %dt Username
+      %dd= @resource.username
+      %dt Email
+      %dd= link_to(@resource.email, "mailto:#{@resource.email}")
+      - if @resource.phone
+        %dt Phone
+        %dd
+          = link_to(@resource.phone, "tel:#{@resource.phone}")
+      %dt Type
+      %dd= @resource.type
+      %dt Created
+      %dd= @resource.created_at
+  #items.tab-pane{role: "tabpanel", "aria-labelledby": "items-tab"}
+    .card.search-status
+      #search-status.card-body
+        = search_status(@item_count, @start, @window, "item")
+    .row.justify-content-md-center
+      .col-md-auto
+        = paginate(@item_count, @window, @current_page, @results_params)
+    =resource_list(@items)
+    .row.justify-content-md-center
+      .col-md-auto
+        = paginate(@item_count, @window, @current_page, @results_params)
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-user-modal", title: "Edit User" }

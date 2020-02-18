@@ -1,4 +1,6 @@
 /**
+ * Handles list-users view.
+ *
  * @constructor
  */
 const UsersView = function() {
@@ -15,8 +17,24 @@ const UsersView = function() {
 
 };
 
+/**
+ * Handles show-user view.
+ *
+ * @constructor
+ */
+const UserView = function() {
+
+    const queryArgs = new URLSearchParams(window.location.search);
+    if (queryArgs.has("start")) {
+        $("#items-tab").tab("show");
+    }
+
+};
+
 $(document).ready(function() {
-    if ($('body#show_user').length) {
+    if ($("body#users_index").length) {
         new UsersView();
+    } else if ($("body#show_user").length) {
+        new UserView();
     }
 });

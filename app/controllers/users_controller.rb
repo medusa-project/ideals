@@ -23,7 +23,7 @@ class UsersController < ApplicationController
     @count = @users.count
     @users = @users.
         order(:name).
-        limit(window_size).
+        limit(@window).
         offset(@start)
     @current_page = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
     @permitted_params = params.permit([])
@@ -33,6 +33,17 @@ class UsersController < ApplicationController
   # Responds to `GET /users/:id`
   #
   def show
+    @start = params[:start].to_i
+    @window = window_size
+    @items = Item.search.
+        aggregations(false).
+        filter(Item::IndexFields::SUBMITTER, @resource.id).
+        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+        limit(@window).
+        start(@start)
+    @item_count = @items.count
+    @current_page = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
+    @results_params = params.permit(:start, :window)
   end
 
   ##
