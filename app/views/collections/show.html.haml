@@ -55,7 +55,10 @@
       .float-right
         = form_tag(items_path, method: :get, class: "filter") do
           = filter_field(container: @resource,
-                         container_field: Item::IndexFields::PRIMARY_COLLECTION)
+                         container_field: Item::IndexFields::PRIMARY_COLLECTION,
+                         placeholder: "Search within this collection&hellip;",
+                         icon: "fa fa-search",
+                         submit_text: "Search")
       %h2 Items
       = resource_list(@collections)
     -else

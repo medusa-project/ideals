@@ -29,32 +29,41 @@ module ApplicationHelper
 
   ##
   # @param name [String] Field name.
+  # @param icon [String] Font Awesome icon class.
   # @param container [Unit,Collection] Container a.k.a. owning object to limit
   #                                    results to.
   # @param container_field [String] Index field, such as
   #                                 {Item::IndexFields::PRIMARY_UNIT_ID},
   #                                 corresponding to `container`.
-  # @return [String] HTML element.
+  # @param placeholder [String] Placeholder text.
+  # @param submit_text [String] Text to put in the submit button.
+  # @return [String] HTML div element without surrounding form.
   #
-  def filter_field(name: "q", container: nil, container_field: nil)
+  def filter_field(name: "q",
+                   icon: nil,
+                   container: nil,
+                   container_field: nil,
+                   placeholder: nil,
+                   submit_text: nil)
     html = StringIO.new
     html << "<div class=\"input-group mb-4 filter-field\">"
     html <<   hidden_field_tag(container_field, container.id) if container
-    html <<   "<div class=\"input-group-prepend input-group-text\">"
-    html <<     "<i class=\"fa fa-filter\"></i>"
-    html <<   "</div>"
-    placeholder = container ?
-                      "Search within this #{container.class.to_s.downcase}&hellip;" :
-                      ""
+    if icon
+      html <<   "<div class=\"input-group-prepend input-group-text\">"
+      html <<     "<i class=\"#{icon}\"></i>"
+      html <<   "</div>"
+    end
     html <<   search_field_tag(name, "",
                                placeholder: raw(placeholder),
                                'aria-label': 'Search',
                                class: 'form-control')
-    html <<   "<div class=\"input-group-append\">"
-    html <<     submit_tag(container ? "Search" : "Filter",
-                           name: "",
-                           class: "btn btn-outline-primary")
-    html <<   "</div>"
+    if submit_text
+      html <<   "<div class=\"input-group-append\">"
+      html <<     submit_tag(submit_text,
+                             name: "",
+                             class: "btn btn-outline-primary")
+      html <<   "</div>"
+    end
     html << "</div>"
     raw(html.string)
   end

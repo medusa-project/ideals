@@ -9,9 +9,10 @@
 .float-right
   = form_tag(items_path, method: :get, class: "filter") do
     = filter_field(container: @resource,
-                   container_field: Item::IndexFields::PRIMARY_UNIT)
-
-
+                   container_field: Item::IndexFields::PRIMARY_UNIT,
+                   placeholder: "Search within this unit&hellip;",
+                   icon: "fa fa-search",
+                   submit_text: "Search")
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item
