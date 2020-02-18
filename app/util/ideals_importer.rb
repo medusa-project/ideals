@@ -34,7 +34,7 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row_arr       = line.split("|")
+      row_arr       = line.split("|").map(&:strip)
       collection_id = row_arr[4].to_i
       next if collection_id == 0
 
@@ -66,7 +66,7 @@ class IdealsImporter
 
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
-      row_arr = line.split("|")
+      row_arr = line.split("|").map(&:strip)
       progress.report(row_num, "Importing collections")
       Collection.create!(id: row_arr[0].to_i)
     end
@@ -88,7 +88,7 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row_arr       = line.split("|")
+      row_arr       = line.split("|").map(&:strip)
       collection_id = row_arr[0].to_i
       group_id      = row_arr[1].to_i
 
@@ -114,7 +114,7 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row_arr      = line.split("|")
+      row_arr      = line.split("|").map(&:strip)
       community_id = row_arr[0].to_i
       title        = row_arr[1].strip
 
@@ -139,7 +139,7 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row_arr        = line.split("|")
+      row_arr        = line.split("|").map(&:strip)
       group_id       = row_arr[0].to_i
       parent_unit_id = row_arr[1].to_i
 
@@ -198,7 +198,7 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row_arr   = line.split("|")
+      row_arr   = line.split("|").map(&:strip)
       item_id   = row_arr[4].to_i
       elem_name = "#{row_arr[0]}:#{row_arr[1]}"
       elem_name += ":#{row_arr[2]}" if row_arr[2].present?
@@ -238,7 +238,7 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row           = line.split("|")
+      row           = line.split("|").map(&:strip)
       id            = row[0].to_i
       submitter_id  = row[1]
       in_archive    = row[2] == "t"
@@ -274,7 +274,7 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row_arr = line.split("|")
+      row_arr = line.split("|").map(&:strip)
       name    = "#{row_arr[1]}:#{row_arr[2]}"
       name    += ":#{row_arr[3]}" if row_arr[3].present?
 
@@ -307,7 +307,7 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row_arr   = line.split("|")
+      row_arr   = line.split("|").map(&:strip)
       user_id   = row_arr[0].to_i
       elem_name = row_arr[1]
       value     = row_arr[2]
@@ -366,7 +366,7 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row = line.split("|")
+      row = line.split("|").map(&:strip)
       id  = row[0].to_i
       # The eperson table contains all kinds of crap. Some of the email
       # addresses are invalid and some are in "spam avoidance format," like
