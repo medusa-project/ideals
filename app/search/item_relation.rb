@@ -40,8 +40,6 @@ class ItemRelation < AbstractRelation
     profile
   end
 
-  private
-
   ##
   # @return [String] JSON string.
   #
@@ -74,8 +72,10 @@ class ItemRelation < AbstractRelation
           j.filter do
             j.bool do
               j.must do
-                j.term do
-                  j.set! Item::IndexFields::CLASS, 'Item'
+                j.child! do
+                  j.term do
+                    j.set! ElasticsearchIndex::StandardFields::CLASS, get_class.to_s
+                  end
                 end
 
                 @filters.each do |key_value|
