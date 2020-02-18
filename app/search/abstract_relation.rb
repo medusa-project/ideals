@@ -332,6 +332,95 @@ class AbstractRelation
     @loaded = true
   end
 
+  ##
+  # Builds a generic query. Subclasses should override to insert their own
+  # special features.
+  #
+  # @return [String] JSON string.
+  #
+  def build_query
+    Jbuilder.encode do |j|
+      j.track_total_hits true
+      j.query do
+        j.bool do
+          # Query
+          if @query.present?
+            j.must do
+              if !@exact_match
+                # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
+                j.query_string do
+                  j.query sanitized_query
+                  j.default_operator 'AND'
+                  j.lenient true
+                  j.default_field @query[:field]
+                end
+              else
+                j.term do
+                  # Use the keyword field to get an exact match.
+                  j.set! @query[:field] + EntityElement::KEYWORD_FIELD_SUFFIX,
+                         sanitized_query
+                end
+              end
+            end
+          end
+
+          j.filter do
+            j.bool do
+              j.must do
+                j.child! do
+                  j.term do
+                    j.set! ElasticsearchIndex::StandardFields::CLASS, get_class.to_s
+                  end
+                end
+
+                @filters.each do |key_value|
+                  if key_value[1].present?
+                    j.child! do
+                      if key_value[0].respond_to?(:each)
+                        j.terms do
+                          j.set! key_value[0], key_value[1]
+                        end
+                      else
+                        j.term do
+                          j.set! key_value[0], key_value[1]
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+
+      # Ordering
+      # Order by explicit orders, if provided; otherwise sort by the metadata
+      # profile's default order, if @orders is set to true; otherwise don't
+      # sort.
+      if @orders.respond_to?(:any?) and @orders.any?
+        j.sort do
+          @orders.each do |order|
+            j.set! order[:field] do
+              j.order order[:direction]
+              j.unmapped_type 'keyword'
+            end
+          end
+        end
+      elsif @orders
+      end
+
+      # Start
+      if @start.present?
+        j.from @start
+      end
+
+      # Limit
+      if @limit.present?
+        j.size @limit
+      end
+    end
+  end
 
   private
 
