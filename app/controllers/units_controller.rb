@@ -66,14 +66,6 @@ class UnitsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /units/new`
-  #
-  def new
-    @resource = Unit.new
-    authorize @resource
-  end
-
-  ##
   # Responds to GET /units/:id
   #
   def show
