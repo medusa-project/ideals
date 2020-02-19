@@ -38,9 +38,15 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "index() returns HTTP 200 for authorized users" do
+  test "index() returns HTTP 200 for authorized users for HTML" do
     log_in_as(users(:admin))
     get users_path
+    assert_response :ok
+  end
+
+  test "index() returns HTTP 200 for authorized users for JSON" do
+    log_in_as(users(:admin))
+    get users_path(format: :json)
     assert_response :ok
   end
 
