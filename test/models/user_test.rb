@@ -33,7 +33,6 @@ class UserTest < ActiveSupport::TestCase
                  doc[User::IndexFields::LAST_MODIFIED]
     assert_equal @instance.name,
                  doc[User::IndexFields::NAME]
-    assert !doc[User::IndexFields::SYSADMIN]
     assert_equal @instance.username,
                  doc[User::IndexFields::USERNAME]
   end

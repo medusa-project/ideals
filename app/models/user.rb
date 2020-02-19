@@ -38,7 +38,6 @@ class User < ApplicationRecord
     LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     NAME          = "t_name"
-    SYSADMIN      = "b_sysadmin"
     USERNAME      = "k_username"
   end
 
@@ -69,7 +68,6 @@ class User < ApplicationRecord
     doc[IndexFields::EMAIL]         = self.email
     doc[IndexFields::NAME]          = self.name
     doc[IndexFields::USERNAME]      = self.username
-    doc[IndexFields::SYSADMIN]      = self.sysadmin?
     doc
   end
 
