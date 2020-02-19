@@ -6,6 +6,19 @@ class UserTest < ActiveSupport::TestCase
     @instance = users(:norights)
   end
 
+  # from_autocomplete_string()
+
+  test "from_autocomplete_string() returns a user" do
+    string = @instance.to_autocomplete
+    actual = User.from_autocomplete_string(string)
+    assert_equal @instance, actual
+  end
+
+  test "from_autocomplete_string() returns nil for no match" do
+    string = "Bogus Bogus (bogus.example.org)"
+    assert_nil User.from_autocomplete_string(string)
+  end
+
   # as_indexed_json()
 
   test "as_indexed_json() returns the correct structure" do
@@ -112,6 +125,15 @@ class UserTest < ActiveSupport::TestCase
 
   test "search() returns a UserRelation" do
     assert_kind_of UserRelation, User.search
+  end
+
+  # to_autocomplete()
+
+  test "to_autocomplete() returns the name and email when both are present" do
+    assert_equal "#{@instance.name} (#{@instance.email})",
+                 @instance.to_autocomplete
+    @instance.name = nil
+    assert_equal @instance.email, @instance.to_autocomplete
   end
 
   # unit_admin?()

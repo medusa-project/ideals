@@ -43,6 +43,21 @@ class User < ApplicationRecord
   end
 
   ##
+  # @param string [String] Autocomplete text field string.
+  # @return [User] Instance corresponding to the given string. May be `nil`.
+  # @see to_autocomplete
+  #
+  def self.from_autocomplete_string(string)
+    if string.present?
+      # user strings may be in one of two formats: "Name (email)" or "email"
+      tmp = string.scan(/\((.*)\)/).last
+      email = tmp ? tmp.first : string
+      return User.find_by_email(email)
+    end
+    nil
+  end
+
+  ##
   # @return [Hash] Indexable JSON representation of the instance.
   #
   def as_indexed_json
@@ -91,6 +106,17 @@ class User < ApplicationRecord
   #
   def manager?(collection)
     collection.managers.where(user_id: self.id).count > 0
+  end
+
+  ##
+  # @return [String] The instance's name and/or email formatted for an
+  #                  autocomplete text field.
+  # @see from_autocomplete_string
+  #
+  def to_autocomplete
+    # N.B.: changing this probably requires changing some JavaScript and
+    # controller code.
+    name.present? ? "#{name} (#{email})" : email
   end
 
   ##

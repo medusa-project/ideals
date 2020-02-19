@@ -21,22 +21,29 @@
 
   - unless f.object.parent
     .form-group
-      = label_tag :primary_administrator_id, "Primary Administrator"
-      = select_tag(:primary_administrator_id,
-          options_for_select(User.all.order(:name).map{ |u| [u.name, u.id] },
-                             f.object.primary_administrator&.id),
-            class: "custom-select")
+      = label_tag :primary_administrator, "Primary Administrator"
+      = text_field_tag :primary_administrator,
+                       f.object.primary_administrator&.to_autocomplete,
+                       autocomplete: "off",
+                       class: "form-control"
+      .dropdown-menu
+        - # populated by javascript
 
   .form-group
     = label_tag "Administrators"
-    = hidden_field_tag "unit[administering_user_ids][]"
-    - User.all.order(:name).each do |user|
-      .form-check
-        = check_box_tag "unit[administering_user_ids][]", user.id,
-          f.object.administering_users.include?(user),
-          { id: "unit_administering_user_ids_#{user.id}", class: "form-check-input" }
-        = label_tag "unit_administering_user_ids_#{user.id}",
-          user.name, class: "form-check-label"
+    = hidden_field_tag "administering_users[]"
+    - user_strings = f.object.administering_users.each.map(&:to_autocomplete)
+    - user_strings << user_strings[-1]
+    - user_strings.each do |user_str|
+      .input-group.mb-3.user
+        = text_field_tag "administering_users[]", user_str,
+                         autocomplete: "off",
+                         class: "form-control"
+        .input-group-append
+          %button.btn.btn-danger.remove{type: "button"} &minus;
+        .dropdown-menu
+          - # populated by javascript
+    %button.btn.btn-success.add &plus;
 
   .clearfix
     .float-right

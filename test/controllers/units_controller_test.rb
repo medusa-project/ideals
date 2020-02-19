@@ -38,15 +38,16 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() creates a unit" do
     log_in_as(users(:admin))
-    post units_path, {
-        xhr: true,
-        params: {
-            unit: {
-                title: "New Unit"
-            }
-        }
-    }
-    assert_not_nil Unit.find_by_title("New Unit")
+    assert_difference "Unit.count" do
+      post units_path, {
+          xhr: true,
+          params: {
+              unit: {
+                  title: "New Unit"
+              }
+          }
+      }
+    end
   end
 
   test "create() returns HTTP 400 for illegal arguments" do

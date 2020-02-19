@@ -14,10 +14,7 @@ class UnitsController < ApplicationController
       authorize @resource
       ActiveRecord::Base.transaction do
         @resource.save!
-        if params[:primary_administrator_id]
-          @resource.primary_administrator =
-              User.find(params[:primary_administrator_id])
-        end
+        assign_administrators
         @resource.save!
       end
     rescue
@@ -101,10 +98,7 @@ class UnitsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         @resource.update!(unit_params)
-        if params[:primary_administrator_id]
-          @resource.primary_administrator =
-              User.find(params[:primary_administrator_id])
-        end
+        assign_administrators
         @resource.save!
       end
     rescue
@@ -134,8 +128,23 @@ class UnitsController < ApplicationController
     @resource ? authorize(@resource) : skip_authorization
   end
 
+  def assign_administrators
+    # Non-primary administrators
+    @resource.administrators.where(primary: false).destroy_all
+    if params[:administering_users].respond_to?(:each)
+      params[:administering_users].each do |user_str|
+        user = User.from_autocomplete_string(user_str)
+        @resource.errors.add(:administrators,
+                             "includes a user that does not exist") unless user
+        @resource.administering_users << user
+      end
+    end
+    # Primary administrator
+    @resource.primary_administrator =
+        User.from_autocomplete_string(params[:primary_administrator])
+  end
+
   def unit_params
-    params.require(:unit).permit({ administering_user_ids: [] },
-                                 :title, :parent_id)
+    params.require(:unit).permit(:title, :parent_id)
   end
 end

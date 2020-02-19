@@ -135,11 +135,13 @@ class Unit < ApplicationRecord
   #
   def primary_administrator=(user)
     self.administrators.update_all(primary: false)
-    admin = self.administrators.where(user: user).limit(1).first
-    if admin
-      admin.update!(primary: true)
-    else
-      self.administrators.build(user: user, primary: true).save!
+    if user
+      admin = self.administrators.where(user: user).limit(1).first
+      if admin
+        admin.update!(primary: true)
+      else
+        self.administrators.build(user: user, primary: true).save!
+      end
     end
   end
 
