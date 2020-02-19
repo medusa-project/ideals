@@ -51,7 +51,6 @@ class IdealsImporter
     end
   ensure
     @running = false
-    puts "\n"
   end
 
   ##
@@ -179,7 +178,6 @@ class IdealsImporter
     end
     update_pkey_sequence("handles")
   ensure
-    puts "\n"
     @running = false
   end
 
@@ -212,8 +210,8 @@ class IdealsImporter
                                 item_id: item_id,
                                 string: string)
       rescue ActiveRecord::RecordInvalid
-        # This is probably caused by a nonexistent RegisteredElement. Not much
-        # we can do.
+        # This may be caused by either a nonexistent RegisteredElement, or a
+        # nonexistent Item. Not much we can do in either case.
       rescue ActiveRecord::InvalidForeignKey
         # IDEALS-DSpace does not have a hard elements-items foreign key and
         # there is some inconsistency, which we have not much choice but to
@@ -221,7 +219,6 @@ class IdealsImporter
       end
     end
   ensure
-    puts "\n"
     @running = false
   end
 
@@ -246,14 +243,17 @@ class IdealsImporter
       collection_id = row[4].present? ? row[4].to_i : nil
       discoverable  = row[5] == "t"
 
+      # Skip submitterless items (items whose submitting user has not been
+      # imported due to not being a UofI user). This is temporary.
+      if User.find_by(id: submitter_id)
+        Item.create!(id:                    id,
+                     submitter_id:          submitter_id,
+                     in_archive:            in_archive,
+                     withdrawn:             withdrawn,
+                     discoverable:          discoverable,
+                     primary_collection_id: collection_id)
+      end
       progress.report(row_num, "Importing items")
-
-      Item.create!(id:                    id,
-                   submitter_id:          submitter_id,
-                   in_archive:            in_archive,
-                   withdrawn:             withdrawn,
-                   discoverable:          discoverable,
-                   primary_collection_id: collection_id)
     end
     update_pkey_sequence("items")
   ensure
@@ -287,7 +287,6 @@ class IdealsImporter
     end
     update_pkey_sequence("registered_elements")
   ensure
-    puts "\n"
     @running = false
   end
 
@@ -342,14 +341,13 @@ class IdealsImporter
           user.update!(name: new_name,
                        phone: user_info[:phone]) # TODO: language?
         rescue ActiveRecord::RecordNotFound
-          # Not much we can do. I guess we could create a new User with this
-          # info, but will hold off on that until it proves to be necessary.
+          # This is expected to be quite common as we are currently importing
+          # only UofI users.
         end
       end
       progress.report(index + 1, "Importing user metadata (2/2)")
     end
   ensure
-    puts "\n"
     @running = false
   end
 
@@ -370,39 +368,27 @@ class IdealsImporter
       id  = row[0].to_i
       # The eperson table contains all kinds of crap. Some of the email
       # addresses are invalid and some are in "spam avoidance format," like
-      # "user at uiuc dot edu". For the invalid ones, assign a new
-      # "example.edu" address and try to retain the invalid string in the user
-      # part (as it may contain useful information). For the latter, try to
-      # reformat them.
-      #
-      # Of course, none of this would be a problem if users.email were more
-      # lenient...
-      #
-      # We try not to discard any users because we may need them to satisfy
-      # foreign key constraints.
+      # "user at uiuc dot edu". For now, we're going to import only UofI users.
       email = row[1].strip.
           gsub('"', "").
           gsub(/(\w+) at (\w+) dot (\w+)/, "\\1@\\2.\\3")
-      if email.blank? || !email.match?(User::VALID_EMAIL_REGEX)
-        email = "#{email.gsub("@", "_at_")}-#{SecureRandom.hex[0..8]}@example.edu"
-      end
+      next if email.blank?
+
+      # Many items were bulk-imported into IDEALS-DSpace under this email.
+      # Change it to Seth's UofI address so that associated items will be
+      # included in the import.
+      email = "srobbins@illinois.edu" if email == "robbins.sd@gmail.com"
       email_parts = email.split("@")
       username    = email_parts[0]
       tld         = email.scan(/(\w+).(\w+)$/).last.join(".")
 
-      unless User.find_by_email(email)
-        if %w(illinois.edu uillinois.edu uiuc.edu uis.edu uic.edu).include?(tld)
+      if %w(illinois.edu uillinois.edu uiuc.edu).include?(tld)
+        unless User.find_by_email(email)
           ShibbolethUser.create!(id:       id,
                                  uid:      email,
                                  email:    email,
                                  name:     username,
                                  username: username)
-        else
-          IdentityUser.create!(id:       id,
-                               uid:      email,
-                               email:    email,
-                               name:     username,
-                               username: username)
         end
       end
       progress.report(row_num, "Importing users")
