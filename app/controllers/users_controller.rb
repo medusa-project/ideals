@@ -16,17 +16,17 @@ class UsersController < ApplicationController
   #
   def index
     authorize(User)
-    @start = params[:start].to_i
+    @start  = results_params[:start].to_i
     @window = window_size
-
-    @users = User.all
-    @count = @users.count
-    @users = @users.
-        order(:name).
+    @users  = User.search.
+        aggregations(false).
+        query_all(results_params[:q]).
+        order(User::IndexFields::USERNAME).
         limit(@window).
-        offset(@start)
-    @current_page = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
-    @permitted_params = params.permit([])
+        start(@start)
+    @count            = @users.count
+    @current_page     = @users.page
+    @permitted_params = results_params
   end
 
   ##
