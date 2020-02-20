@@ -37,6 +37,8 @@
         %dt Phone
         %dd
           = link_to(@resource.phone, "tel:#{@resource.phone}")
+      %dt System Administrator
+      %dd= @resource.sysadmin? ? "Yes" : "No"
       %dt Type
       %dd= @resource.type
       %dt Created
