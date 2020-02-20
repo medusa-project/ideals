@@ -6,7 +6,7 @@ const ItemsView = function() {
 };
 
 $(document).ready(function() {
-    if ($('body#items_index').length) {
+    if ($("body#list_items").length) {
         new ItemsView();
     }
 });

@@ -30,7 +30,7 @@ const UnitView = function() {
 };
 
 $(document).ready(function() {
-    if ($('body#units_index').length) {
+    if ($("body#list_units").length) {
         new UnitsView();
     } else if ($("body#show_unit").length) {
         new UnitView();

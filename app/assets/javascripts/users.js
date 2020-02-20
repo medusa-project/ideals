@@ -37,7 +37,7 @@ const UserView = function() {
 };
 
 $(document).ready(function() {
-    if ($("body#users_index").length) {
+    if ($("body#list_users").length) {
         new UsersView();
     } else if ($("body#show_user").length) {
         new UserView();
