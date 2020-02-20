@@ -19,19 +19,25 @@
                                       "data-toggle": "tab",
                                       role: "tab",
                                       "aria-controls": "metadata-tab-content",
-                                      "aria-selected": "true"} Metadata
+                                      "aria-selected": "true"}
+        %i.fa.fa-bars
+        Metadata
     %li.nav-item
       %a#properties-tab.nav-link{href: "#properties-tab-content",
                                  "data-toggle": "tab",
                                  role: "tab",
                                  "aria-controls": "properties-tab-content",
-                                 "aria-selected": "true"} Properties
+                                 "aria-selected": "true"}
+        %i.fa.fa-info-circle
+        Properties
     %li.nav-item
       %a#collections-tab.nav-link{href: "#collections-tab-content",
                                   "data-toggle": "tab",
                                   role: "tab",
                                   "aria-controls": "collections-tab-content",
-                                  "aria-selected": "true"} Collections
+                                  "aria-selected": "true"}
+        = icon_for(Collection)
+        Collections
 
   .tab-content
     #metadata-tab-content.tab-pane.fade.show.active{role: "tabpanel",

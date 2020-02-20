@@ -21,19 +21,25 @@
                                  "aria-selected": "false",
                                  "data-toggle": "tab",
                                  href: "#units",
-                                 role: "tab"} Sub-Units
+                                 role: "tab"}
+      = icon_for(Unit)
+      Sub-Units
   %li.nav-item
     %a#collections-tab.nav-link{"aria-controls": "collections",
                                 "aria-selected": "false",
                                 "data-toggle": "tab",
                                 href: "#collections",
-                                role: "tab"} Collections
+                                role: "tab"}
+      = icon_for(Collection)
+      Collections
   %li.nav-item
     %a#access-tab.nav-link{"aria-controls": "access",
                            "aria-selected": "false",
                            "data-toggle": "tab",
                            href: "#access",
-                           role: "tab"} Access
+                           role: "tab"}
+      %i.fa.fa-users
+      Access
 
 
 .tab-content

@@ -12,26 +12,33 @@
                                     "data-toggle": "tab",
                                     role: "tab",
                                     "aria-controls": "metadata-tab-content",
-                                    "aria-selected": "true"} Metadata
+                                    "aria-selected": "true"}
+      %i.fa.fa-bars
+      Metadata
   %li.nav-item
     %a#items-tab.nav-link{href: "#items-tab-content",
                           "data-toggle": "tab",
                           role: "tab",
                           "aria-controls": "items-tab-content",
-                          "aria-selected": "true"} Items
+                          "aria-selected": "true"}
+      = icon_for(Item)
+      Items
   %li.nav-item
     %a#unit-membership-tab.nav-link{href: "#unit-membership-tab-content",
                                     "data-toggle": "tab",
                                     role: "tab",
                                     "aria-controls": "unit-membership-tab-content",
-                                    "aria-selected": "true"} Unit Membership
+                                    "aria-selected": "true"}
+      = icon_for(Unit)
+      Unit Membership
   %li.nav-item
     %a#access-tab.nav-link{href: "#access-tab-content",
                            "data-toggle": "tab",
                            role: "tab",
                            "aria-controls": "access-tab-content",
-                           "aria-selected": "true"} Access
-
+                           "aria-selected": "true"}
+      %i.fa.fa-users
+      Access
 .tab-content
   #metadata-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                   "aria-labelledby": "metadata-tab"}
