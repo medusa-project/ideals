@@ -44,7 +44,7 @@
       %dt Created
       %dd= @resource.created_at
   #items.tab-pane{role: "tabpanel", "aria-labelledby": "items-tab"}
-    .card.search-status
+    .card.search-status.mb-3
       #search-status.card-body
         = search_status(@item_count, @start, @window, "item")
     .row.justify-content-md-center
