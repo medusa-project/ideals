@@ -102,9 +102,11 @@ module ApplicationHelper
             html <<   sanitize(element.string)
             html << "</li>"
           end
+          html << "</ul>"
         else
           html << sanitize(matching_elements.first.string)
         end
+        html << "</dd>"
       end
     end
     html << "</dl>"
