@@ -71,12 +71,25 @@ class Item < ApplicationRecord
   breadcrumbs parent: :primary_collection, label: :title
 
   ##
+  # @return [Enumerable<Collection>] All owning collections, including the
+  #                                  primary one.
+  #
+  def all_collections
+    bucket = Set.new
+    bucket << self.primary_collection if self.primary_collection_id
+    collections.each do |collection|
+      bucket << collection
+    end
+    bucket
+  end
+
+  ##
   # @return [Hash] Indexable JSON representation of the instance.
   #
   def as_indexed_json
     doc = {}
     doc[IndexFields::CLASS]              = self.class.to_s
-    doc[IndexFields::COLLECTIONS]        = self.collection_ids
+    doc[IndexFields::COLLECTIONS]        = self.all_collections.map(&:id)
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
     doc[IndexFields::DISCOVERABLE]       = self.discoverable
     doc[IndexFields::IN_ARCHIVE]         = self.in_archive

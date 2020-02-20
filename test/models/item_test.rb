@@ -33,18 +33,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal count - 1, Item.search.count
   end
 
-  # description() (Describable concern)
-
-  test "description() returns the description element value" do
-    item = items(:described)
-    assert_equal "Some description", item.description
-  end
-
-  test "description() returns an empty string when there is no description element" do
-    item = items(:undescribed)
-    assert_equal "", item.description
-  end
-
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
@@ -66,6 +54,12 @@ class ItemTest < ActiveSupport::TestCase
 
   test "search() returns an ItemRelation" do
     assert_kind_of ItemRelation, Item.search
+  end
+
+  # all_collections()
+
+  test "all_collections() returns the expected collections" do
+    assert_equal 1, @instance.all_collections.length
   end
 
   # as_indexed_json()
@@ -94,6 +88,18 @@ class ItemTest < ActiveSupport::TestCase
     title = item.elements.find{ |e| e.name == Configuration.instance.elements[:title] }
     assert_equal [title.string],
                  doc[title.registered_element.indexed_name]
+  end
+
+  # description() (Describable concern)
+
+  test "description() returns the description element value" do
+    item = items(:described)
+    assert_equal "Some description", item.description
+  end
+
+  test "description() returns an empty string when there is no description element" do
+    item = items(:undescribed)
+    assert_equal "", item.description
   end
 
   # effective_metadata_profile()
