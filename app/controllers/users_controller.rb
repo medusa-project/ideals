@@ -21,6 +21,8 @@ class UsersController < ApplicationController
     @users  = User.search.
         aggregations(false).
         query_all(results_params[:q]).
+        filter(User::IndexFields::CLASS,
+               results_params[:class].present? ? results_params[:class] : nil).
         order(User::IndexFields::USERNAME).
         limit(@window).
         start(@start)
@@ -75,6 +77,10 @@ class UsersController < ApplicationController
     # N.B.: with becomes() here, Pundit will require separate
     # IdentityUserPolicy and ShibbolethUserPolicy classes.
     @resource ? authorize(@resource.becomes(User)) : skip_authorization
+  end
+
+  def results_params
+    params.permit(:class, :q, :start, :window)
   end
 
   def user_params

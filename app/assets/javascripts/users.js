@@ -1,4 +1,18 @@
 /**
+ * Handles list-users view.
+ *
+ * @constructor
+ */
+const UsersView = function() {
+    // Select the authentication type based on the URL "class" argument, as the
+    // browser won't do this automatically.
+    const queryArgs = new URLSearchParams(location.search);
+    if (queryArgs.has("class")) {
+        $("select[name=class]").val(queryArgs.get("class"));
+    }
+};
+
+/**
  * Handles show-user view.
  *
  * @constructor
@@ -23,7 +37,9 @@ const UserView = function() {
 };
 
 $(document).ready(function() {
-    if ($("body#show_user").length) {
+    if ($("body#users_index").length) {
+        new UsersView();
+    } else if ($("body#show_user").length) {
         new UserView();
     }
 });
