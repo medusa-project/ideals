@@ -108,17 +108,16 @@ class CollectionsController < ApplicationController
   # Responds to `GET /collections/:id`
   #
   def show
-    if @resource.items.count.positive?
-      @start = params[:start].to_i
-      @window = window_size
-      @collections = Item.search.
-          filter(Item::IndexFields::COLLECTIONS, params[:id]).
-          start(@start).
-          limit(@window)
-      @count            = @collections.count
-      @current_page     = @collections.page
-      @permitted_params = params.permit(:q, :start)
-    end
+    @start = params[:start].to_i
+    @window = window_size
+    @items = Item.search.
+        filter(Item::IndexFields::COLLECTIONS, params[:id]).
+        start(@start).
+        limit(@window)
+    @count            = @items.count
+    @current_page     = @items.page
+    @permitted_params = params.permit(:q, :start)
+
     @metadata_profile = @resource.effective_metadata_profile
     @breadcrumbable   = @resource
   end

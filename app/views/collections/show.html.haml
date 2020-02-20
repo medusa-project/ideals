@@ -51,7 +51,7 @@
 
   #items-tab-content.tab-pane.fade.show{role: "tabpanel",
                                         "aria-labelledby": "items-tab"}
-    -if @resource.items.count.positive?
+    - if @items.count.positive?
       .float-right
         = form_tag(items_path, method: :get, class: "filter") do
           = filter_field(container: @resource,
@@ -60,8 +60,8 @@
                          icon: "fa fa-search",
                          submit_text: "Search")
       %h2 Items
-      = resource_list(@collections)
-    -else
+      = resource_list(@items)
+    - else
       There are no items in this collection.
 
   #unit-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
