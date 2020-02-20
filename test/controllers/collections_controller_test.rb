@@ -203,13 +203,15 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             collection: {
-                managing_user_ids: [ users(:admin).id ]
+                primary_unit_id: collection.primary_unit_id
+            },
+            elements: {
+                description: "New description"
             }
         }
     }
     collection.reload
-    assert_equal 1, collection.managing_users.length
-    assert_equal users(:admin), collection.managing_users.first
+    assert_equal "New description", collection.description
   end
 
   test "update() returns HTTP 200" do
