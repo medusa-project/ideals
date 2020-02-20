@@ -8,6 +8,7 @@
       = facets_as_cards(@facets, @permitted_params)
 
     .col-sm-8.col-lg-9.col.xl-10
-      = filter_field(icon: "fa fa-filter", submit_text: "Filter")
+      .input-group.mb-4.filter-field
+        = filter_field(icon: "fa fa-filter", submit_text: "Filter")
       #listing
         = render partial: "listing"

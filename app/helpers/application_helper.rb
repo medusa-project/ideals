@@ -46,25 +46,23 @@ module ApplicationHelper
                    placeholder: nil,
                    submit_text: nil)
     html = StringIO.new
-    html << "<div class=\"input-group mb-4 filter-field\">"
-    html <<   hidden_field_tag(container_field, container.id) if container
+    html << hidden_field_tag(container_field, container.id) if container
     if icon
-      html <<   "<div class=\"input-group-prepend input-group-text\">"
-      html <<     "<i class=\"#{icon}\"></i>"
-      html <<   "</div>"
+      html << "<div class=\"input-group-prepend input-group-text\">"
+      html <<   "<i class=\"#{icon}\"></i>"
+      html << "</div>"
     end
-    html <<   search_field_tag(name, "",
-                               placeholder: raw(placeholder),
-                               'aria-label': 'Search',
-                               class: 'form-control')
+    html << search_field_tag(name, "",
+                             placeholder: raw(placeholder),
+                             'aria-label': 'Search',
+                             class: 'form-control')
     if submit_text
-      html <<   "<div class=\"input-group-append\">"
-      html <<     submit_tag(submit_text,
-                             name: "",
-                             class: "btn btn-outline-primary")
-      html <<   "</div>"
+      html << "<div class=\"input-group-append\">"
+      html <<   submit_tag(submit_text,
+                           name: "",
+                           class: "btn btn-outline-primary")
+      html << "</div>"
     end
-    html << "</div>"
     raw(html.string)
   end
 
