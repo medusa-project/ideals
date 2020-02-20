@@ -46,35 +46,36 @@ namespace :ideals do
   end
 
   namespace :users do
-    desc 'Create a user'
-    task :create, [:netid, :localpass] => :environment do |task, args|
-      netid = args[:netid]
-      email = "#{netid}@illinois.edu"
+    desc "Create a local identity sysadmin user"
+    task :create_identity_sysadmin, [:username, :password] => :environment do |task, args|
+      username = args[:username]
+      email = "#{username}@example.edu"
       ActiveRecord::Base.transaction do
-        case Rails.env
-        when "demo", "production"
-          user = ShibbolethUser.no_omniauth(email)
-          user.save!
-        else
-          invitee = Invitee.find_by_email(email) || Invitee.create!(email: email,
-                                                                    approval_state: ApprovalState::APPROVED)
-          invitee.expires_at = Time.zone.now + 1.years
-          invitee.save!
-          identity = Identity.find_or_create_by(email: email)
-          salt = BCrypt::Engine.generate_salt
-          localpass = args[:localpass]
-          encrypted_password = BCrypt::Engine.hash_secret(localpass, salt)
-          identity.password_digest = encrypted_password
-          identity.update(password: localpass, password_confirmation: localpass)
-          identity.name = netid
-          identity.activated = true
-          identity.activated_at = Time.zone.now
-          identity.save!
-          user = IdentityUser.no_omniauth(email)
-          user.sysadmin = true
-          user.save!
-        end
+        invitee = Invitee.find_by_email(email) || Invitee.create!(email: email,
+                                                                  approval_state: ApprovalState::APPROVED)
+        invitee.expires_at = Time.zone.now + 1.years
+        invitee.save!
+        identity = Identity.find_or_create_by(email: email)
+        salt = BCrypt::Engine.generate_salt
+        password = args[:password]
+        encrypted_password = BCrypt::Engine.hash_secret(localpass, salt)
+        identity.password_digest = encrypted_password
+        identity.update(password: password, password_confirmation: password)
+        identity.name = username
+        identity.activated = true
+        identity.activated_at = Time.zone.now
+        identity.save!
+        user = IdentityUser.no_omniauth(email)
+        user.sysadmin = true
+        user.save!
       end
+    end
+
+    desc "Create a Shibboleth user"
+    task :create_shibboleth, [:netid] => :environment do |task, args|
+      email = "#{args[:netid]}@illinois.edu"
+      user = ShibbolethUser.no_omniauth(email)
+      user.save!
     end
 
     desc 'Delete a user'
