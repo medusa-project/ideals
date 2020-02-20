@@ -84,20 +84,6 @@ in your `development.yml`.)
 Note 2: the above does not apply to the test index. This index will be
 recreated automatically when the tests are run.
 
-## Create and seed the databases
-
-```sh
-$ rails db:create
-$ rails db:migrate
-$ rails db:seed
-```
-
-## Add a user for yourself
-
-```sh
-$ rails "ideals:users:create[my_username,my_password]"
-```
-
 ## Migrate content from IDEALS-DSpace into the application
 
 Currently the migration process requires dropping the existing database and
