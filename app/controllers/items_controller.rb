@@ -25,6 +25,11 @@ class ItemsController < ApplicationController
   # Responds to `GET /items/:id`
   #
   def show
+    @collections = @resource.collections.to_a
+    if @resource.primary_collection
+      @collections = @collections.unshift(@resource.primary_collection)
+    end
+
     template = "show"
     if @resource.withdrawn
       render template, status: :gone

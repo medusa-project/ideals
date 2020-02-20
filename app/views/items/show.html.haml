@@ -15,21 +15,32 @@
 - if policy(@resource).show?
   %ul.nav.nav-tabs{role: "tablist"}
     %li.nav-item
-      %a#properties-tab.nav-link.active{href: "#properties-tab-content",
-                                        "data-toggle": "tab",
-                                        role: "tab",
-                                        "aria-controls": "properties-tab-content",
-                                        "aria-selected": "true"} Properties
+      %a#metadata-tab.nav-link.active{href: "#metadata-tab-content",
+                                      "data-toggle": "tab",
+                                      role: "tab",
+                                      "aria-controls": "metadata-tab-content",
+                                      "aria-selected": "true"} Metadata
     %li.nav-item
-      %a#metadata-tab.nav-link{href: "#metadata-tab-content",
-                               "data-toggle": "tab",
-                               role: "tab",
-                               "aria-controls": "metadata-tab-content",
-                               "aria-selected": "true"} Metadata
+      %a#properties-tab.nav-link{href: "#properties-tab-content",
+                                 "data-toggle": "tab",
+                                 role: "tab",
+                                 "aria-controls": "properties-tab-content",
+                                 "aria-selected": "true"} Properties
+    %li.nav-item
+      %a#collections-tab.nav-link{href: "#collections-tab-content",
+                                  "data-toggle": "tab",
+                                  role: "tab",
+                                  "aria-controls": "collections-tab-content",
+                                  "aria-selected": "true"} Collections
 
   .tab-content
-    #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
-                                                      "aria-labelledby": "properties-tab"}
+    #metadata-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                             "aria-labelledby": "metadata-tab"}
+      = metadata_as_dl(@resource.effective_metadata_profile,
+                       @resource.elements)
+
+    #properties-tab-content.tab-pane.fade{role: "tabpanel",
+                                          "aria-labelledby": "properties-tab"}
       %dl
         - if @resource.submitter
           - submitter = @resource.submitter.becomes(User)
@@ -46,7 +57,6 @@
         %dt Discoverable
         %dd= @resource.discoverable
 
-    #metadata-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                             "aria-labelledby": "metadata-tab"}
-      = metadata_as_dl(@resource.effective_metadata_profile,
-                       @resource.elements)
+    #collections-tab-content.tab-pane{role: "tabpanel",
+                                      "aria-labelledby": "collections-tab"}
+      = resource_list(@collections)
