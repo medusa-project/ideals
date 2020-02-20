@@ -79,20 +79,13 @@
                         data: { confirm: 'Are you sure you want to delete this element?' }) do
                 %i.fa.fa-trash
                 Delete
-            %td
-              = element.label
-            %td{class: element.visible? ? "bg-success" : "bg-danger"}
-              = boolean(element.visible)
-            %td{class: element.searchable? ? "bg-success" : "bg-danger"}
-              = boolean(element.searchable)
-            %td{class: element.sortable? ? "bg-success" : "bg-danger"}
-              = boolean(element.sortable)
-            %td{class: element.facetable? ? "bg-success" : "bg-danger"}
-              = boolean(element.facetable)
-            %td{class: element.required? ? "bg-success" : "bg-danger"}
-              = boolean(element.required)
-            %td{class: element.repeatable? ? "bg-success" : "bg-danger"}
-              = boolean(element.repeatable)
+            %td= element.label
+            %td.boolean= boolean(element.visible)
+            %td.boolean= boolean(element.searchable)
+            %td.boolean= boolean(element.sortable)
+            %td.boolean= boolean(element.facetable)
+            %td.boolean= boolean(element.required)
+            %td.boolean= boolean(element.repeatable)
 
   - unless @profile.default
     #collections.tab-pane.fade{role: "tabpanel",
