@@ -26,14 +26,14 @@ class UserPolicy < ApplicationPolicy
   end
 
   def index?
-    subject_user.sysadmin?
+    subject_user&.sysadmin?
   end
 
   def show?
-    subject_user.sysadmin?
+    subject_user&.sysadmin?
   end
 
   def update?
-    subject_user.sysadmin?
+    subject_user&.sysadmin?
   end
 end
