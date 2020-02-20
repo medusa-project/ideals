@@ -44,10 +44,10 @@
               Administration
             .dropdown-menu.dropdown-menu-right{"aria-labelledby": "administration-dropdown"}
               = link_to registered_elements_path, class: 'dropdown-item' do
-                %i.fa.fa-bars
+                = icon_for(RegisteredElement)
                 Element Registry
               = link_to metadata_profiles_path, class: 'dropdown-item' do
-                %i.fa.fa-bars
+                = icon_for(MetadataProfile)
                 Metadata Profiles
               = link_to users_path, class: 'dropdown-item' do
                 %i.fa.fa-users
