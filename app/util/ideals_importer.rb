@@ -373,11 +373,6 @@ class IdealsImporter
           gsub('"', "").
           gsub(/(\w+) at (\w+) dot (\w+)/, "\\1@\\2.\\3")
       next if email.blank?
-
-      # Many items were bulk-imported into IDEALS-DSpace under this email.
-      # Change it to Seth's UofI address so that associated items will be
-      # included in the import.
-      email = "srobbins@illinois.edu" if email == "robbins.sd@gmail.com"
       email_parts = email.split("@")
       username    = email_parts[0]
       tld         = email.scan(/(\w+).(\w+)$/).last.join(".")
@@ -389,6 +384,15 @@ class IdealsImporter
                                  email:    email,
                                  name:     username,
                                  username: username)
+        end
+      elsif email == "robbins.sd@gmail.com"
+        # Many items were bulk-imported into IDEALS-DSpace under this email.
+        unless User.find_by_email(email)
+          IdentityUser.create!(id:       id,
+                               uid:      email,
+                               email:    email,
+                               name:     "Seth Robbins",
+                               username: username)
         end
       end
       progress.report(row_num, "Importing users")

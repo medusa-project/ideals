@@ -91,7 +91,12 @@ namespace :ideals_dspace do
       do_migrate(args[:source_db_name],
                  args[:source_db_host],
                  args[:source_db_user],
-                 "export_users.sql",
+                 "export_users_1.sql",
+                 :import_users)
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 "export_users_2.sql",
                  :import_users)
       do_migrate(args[:source_db_name],
                  args[:source_db_host],
@@ -113,8 +118,8 @@ namespace :ideals_dspace do
     Rake::Task["ideals_dspace:handles:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:metadata:migrate_registry"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:metadata:migrate_collection_values"].invoke(dbname, dbhost, dbuser)
-    puts "WARNING: the next step is the last, but it takes hours and hours. "\
-        "You can ctrl+c any time if you don't need full item metadata."
+    puts "WARNING: This is the last step, but it takes a long time. "\
+        "You can ctrl+c at any time if you don't need full item metadata."
     Rake::Task["ideals_dspace:metadata:migrate_item_values"].invoke(dbname, dbhost, dbuser)
   end
 
