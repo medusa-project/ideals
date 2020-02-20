@@ -27,6 +27,9 @@ const CollectionView = function() {
         const url = ROOT_URL + "/collections/" + id + "/edit-access";
         $.get(url, function(data) {
             $("#edit-collection-access-modal .modal-body").html(data);
+            new IDEALS.UserAutocompleter(
+                $("input[name='managers[]'], input[name='submitters[]']"));
+            new IDEALS.MultiUserList();
         });
     });
     $('.edit-collection-membership').on("click", function() {

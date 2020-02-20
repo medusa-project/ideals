@@ -8,27 +8,38 @@
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
+  - # `collection` is required in the params
+  = f.hidden_field :primary_unit_id, value: f.object.primary_unit_id
+
   .form-group
     %h5 Managers
-    = hidden_field_tag "collection[managing_user_ids][]"
-    - User.all.order(:name).each do |user|
-      .form-check
-        = check_box_tag "collection[managing_user_ids][]", user.id,
-          f.object.managing_users.include?(user),
-          { id: "unit_managing_user_ids_#{user.id}", class: "form-check-input" }
-        = label_tag "unit_managing_user_ids_#{user.id}",
-          user.name, class: "form-check-label"
+    - user_strings = f.object.managing_users.each.map(&:to_autocomplete)
+    - user_strings << "" if user_strings.empty?
+    - user_strings.each do |user_str|
+      .input-group.mb-3.user
+        = text_field_tag "managers[]", user_str,
+                         autocomplete: "off",
+                         class: "form-control"
+        .input-group-append
+          %button.btn.btn-danger.remove{type: "button"} &minus;
+        .dropdown-menu
+          - # populated by javascript
+    %button.btn.btn-success.add &plus;
 
   .form-group
     %h5 Submitters
-    = hidden_field_tag "collection[submitting_user_ids][]"
-    - User.all.order(:name).each do |user|
-      .form-check
-        = check_box_tag "collection[submitting_user_ids][]", user.id,
-          f.object.submitting_users.include?(user),
-          { id: "unit_submitting_user_ids_#{user.id}", class: "form-check-input" }
-        = label_tag "unit_submitting_user_ids_#{user.id}",
-          user.name, class: "form-check-label"
+    - user_strings = f.object.submitting_users.each.map(&:to_autocomplete)
+    - user_strings << "" if user_strings.empty?
+    - user_strings.each do |user_str|
+      .input-group.mb-3.user
+        = text_field_tag "submitters[]", user_str,
+                         autocomplete: "off",
+                         class: "form-control"
+        .input-group-append
+          %button.btn.btn-danger.remove{type: "button"} &minus;
+        .dropdown-menu
+          - # populated by javascript
+    %button.btn.btn-success.add &plus;
 
   .clearfix
     .float-right

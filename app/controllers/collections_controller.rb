@@ -20,6 +20,7 @@ class CollectionsController < ApplicationController
         # Save now in order to obtain an ID with which to associate
         # AscribedElements in the next step.
         @resource.save!
+        assign_users
         build_metadata
         @resource.save!
       end
@@ -128,12 +129,13 @@ class CollectionsController < ApplicationController
   def update
     begin
       ActiveRecord::Base.transaction do
+        assign_users
         build_metadata
         @resource.update!(collection_params)
       end
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @resource },
+             locals: { object: @resource.errors.any? ? @resource : e },
              status: :bad_request
     else
       ElasticsearchClient.instance.refresh
@@ -143,6 +145,29 @@ class CollectionsController < ApplicationController
   end
 
   private
+
+  def assign_users
+    # Managers
+    @resource.managers.destroy_all
+    if params[:managers].respond_to?(:each)
+      params[:managers].select(&:present?).each do |user_str|
+        user = User.from_autocomplete_string(user_str)
+        @resource.errors.add(:managers,
+                             "includes a user that does not exist") unless user
+        @resource.managing_users << user
+      end
+    end
+    # Submitters
+    @resource.submitters.destroy_all
+    if params[:submitters].respond_to?(:each)
+      params[:submitters].select(&:present?).each do |user_str|
+        user = User.from_autocomplete_string(user_str)
+        @resource.errors.add(:submitters,
+                             "includes a user that does not exist") unless user
+        @resource.submitting_users << user
+      end
+    end
+  end
 
   ##
   # Builds and ascribes {AscribedElement}s to the collection based on user
@@ -180,8 +205,6 @@ class CollectionsController < ApplicationController
   def collection_params
     params.require(:collection).permit(:metadata_profile_id,
                                        :primary_unit_id,
-                                       managing_user_ids: [],
-                                       submitting_user_ids: [],
                                        unit_ids: [])
   end
 end

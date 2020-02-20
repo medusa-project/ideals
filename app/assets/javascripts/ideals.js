@@ -18,6 +18,26 @@ const IDEALS = {
         }
     },
 
+    MultiUserList: function() {
+        $("button.add").on("click", function(e) {
+            const clone = $(this).prev().clone();
+            clone.find("input").val("");
+            $(this).before(clone);
+            addRemoveEventListeners();
+            new IDEALS.UserAutocompleter(clone.find("input"));
+            e.preventDefault();
+        });
+        addRemoveEventListeners();
+
+        function addRemoveEventListeners() {
+            $("button.remove").off("click").on("click", function () {
+                if ($(this).parents(".form-group").find(".user").length > 1) {
+                    $(this).parents(".user").remove();
+                }
+            });
+        }
+    },
+
     NonNetIDLoginForm: function() {
         const root_url = $('input[name=root_url]').val();
         const modal    = $('#non-netid-login-modal');
