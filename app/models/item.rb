@@ -74,6 +74,30 @@ class Item < ApplicationRecord
   breadcrumbs parent: :primary_collection, label: :title
 
   ##
+  # @return [Enumerable<User>] All managers of all owning collections,
+  #                            including the primary one.
+  #
+  def all_collection_managers
+    bucket = Set.new
+    all_collections.each do |col|
+      bucket += col.managing_users
+    end
+    bucket
+  end
+
+  ##
+  # @return [Enumerable<User>] All submitters to all owning collections,
+  #                            including the primary one.
+  #
+  def all_collection_submitters
+    bucket = Set.new
+    all_collections.each do |col|
+      bucket += col.submitting_users
+    end
+    bucket
+  end
+
+  ##
   # @return [Enumerable<Collection>] All owning collections, including the
   #                                  primary one.
   #
@@ -91,6 +115,17 @@ class Item < ApplicationRecord
     bucket = Set.new
     all_collections.each do |collection|
       bucket += collection.all_units
+    end
+    bucket
+  end
+
+  ##
+  # @return [Enumerable<User>]
+  #
+  def all_unit_administrators
+    bucket = Set.new
+    all_units.each do |unit|
+      bucket += unit.all_administrators
     end
     bucket
   end

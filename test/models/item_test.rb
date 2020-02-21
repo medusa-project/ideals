@@ -56,10 +56,28 @@ class ItemTest < ActiveSupport::TestCase
     assert_kind_of ItemRelation, Item.search
   end
 
+  # all_collection_managers()
+
+  test "all_collection_managers() returns the expected users" do
+    assert_equal 1, @instance.all_collection_managers.length
+  end
+
+  # all_collection_submitters()
+
+  test "all_collection_submitters() returns the expected users" do
+    assert_equal 1, @instance.all_collection_submitters.length
+  end
+
   # all_collections()
 
   test "all_collections() returns the expected collections" do
     assert_equal 1, @instance.all_collections.length
+  end
+
+  # all_unit_administrators()
+
+  test "all_unit_administrators() returns the expected users" do
+    assert_equal 1, @instance.all_unit_administrators.length
   end
 
   # all_units()
