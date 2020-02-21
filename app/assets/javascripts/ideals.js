@@ -170,9 +170,20 @@ const ideals_ready = function () {
         return false;
     });
 
+    // Save the last-selected tab in a cookie.
+    $('a[data-toggle="tab"]').on('click', function(e) {
+        Cookies.set('last_tab', $(e.target).attr('href'));
+    });
+
+    // Activate the cookie-stored tab, if it exists.
+    const lastTab = Cookies.get('last_tab');
+    if (lastTab) {
+        $('a[href="' + lastTab + '"]').click();
+    }
+
+    // Don't allow disabled anchors to be clicked.
     $("a[disabled='disabled']").on("click", function() {
         return false;
     });
 };
 $(document).ready(ideals_ready);
-$(document).on('page:load', ideals_ready);
