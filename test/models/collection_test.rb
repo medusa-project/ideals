@@ -40,6 +40,12 @@ class CollectionTest < ActiveSupport::TestCase
     assert_kind_of CollectionRelation, Collection.search
   end
 
+  # all_unit_administrators()
+
+  test "all_unit_administrators()" do
+    assert_equal 1, @instance.all_unit_administrators.length
+  end
+
   # all_units()
 
   test "all_units() returns the expected units" do

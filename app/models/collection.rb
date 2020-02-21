@@ -94,6 +94,17 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<User>]
+  #
+  def all_unit_administrators
+    bucket = Set.new
+    all_units.each do |unit|
+      bucket += unit.all_administrators
+    end
+    bucket
+  end
+
+  ##
   # @return [Hash] Indexable JSON representation of the instance.
   #
   def as_indexed_json
