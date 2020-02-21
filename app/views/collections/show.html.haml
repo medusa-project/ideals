@@ -8,21 +8,13 @@
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item
-    %a#metadata-tab.nav-link.active{href: "#metadata-tab-content",
+    %a#metadata-tab.nav-link.active{href: "#properties-tab-content",
                                     "data-toggle": "tab",
                                     role: "tab",
-                                    "aria-controls": "metadata-tab-content",
+                                    "aria-controls": "properties-tab-content",
                                     "aria-selected": "true"}
-      = icon_for(AscribedElement)
-      Metadata
-  %li.nav-item
-    %a#items-tab.nav-link{href: "#items-tab-content",
-                          "data-toggle": "tab",
-                          role: "tab",
-                          "aria-controls": "items-tab-content",
-                          "aria-selected": "true"}
-      = icon_for(Item)
-      Items
+      %i.fa.fa-info-circle
+      Properties
   %li.nav-item
     %a#unit-membership-tab.nav-link{href: "#unit-membership-tab-content",
                                     "data-toggle": "tab",
@@ -32,6 +24,14 @@
       = icon_for(Unit)
       Unit Membership
   %li.nav-item
+    %a#items-tab.nav-link{href: "#items-tab-content",
+                          "data-toggle": "tab",
+                          role: "tab",
+                          "aria-controls": "items-tab-content",
+                          "aria-selected": "true"}
+      = icon_for(Item)
+      Items
+  %li.nav-item
     %a#access-tab.nav-link{href: "#access-tab-content",
                            "data-toggle": "tab",
                            role: "tab",
@@ -40,8 +40,8 @@
       %i.fa.fa-users
       Access
 .tab-content
-  #metadata-tab-content.tab-pane.fade.show.active{role: "tabpanel",
-                                                  "aria-labelledby": "metadata-tab"}
+  #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                                    "aria-labelledby": "properties-tab"}
     - if current_user&.effective_manager?(@resource)
       %dl
         %dt Metadata Profile
@@ -53,24 +53,14 @@
               = @metadata_profile.name
           - else
             = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
-    %hr
+      %hr
     = metadata_as_dl(@metadata_profile, @resource.elements)
-
-  #items-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                        "aria-labelledby": "items-tab"}
-    - if @items.count.positive?
-      .float-right
-        = form_tag(items_path, method: :get, class: "filter") do
-          .input-group.mb-4.filter-field
-            = filter_field(container: @resource,
-                           container_field: Item::IndexFields::PRIMARY_COLLECTION,
-                           placeholder: "Search within this collection&hellip;",
-                           icon: "fa fa-search",
-                           submit_text: "Search")
-      %h2 Items
-      = resource_list(@items)
-    - else
-      There are no items in this collection.
+    %hr
+    %dl
+      %dt Created
+      %dd= @resource.created_at
+      %dt Last Updated
+      %dd= @resource.updated_at
 
   #unit-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
                                                   "aria-labelledby": "unit-membership-tab"}
@@ -87,13 +77,27 @@
           %br
           %br
 
+  #items-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                        "aria-labelledby": "items-tab"}
+    - if @items.count.positive?
+      = form_tag(collection_path(@resource), method: :get, class: "filter") do
+        .input-group.mb-3.col-4.filter-field
+          = hidden_field_tag("fq[]", "#{Item::IndexFields::COLLECTION_TITLES}:#{@resource.title}")
+          = filter_field(icon: "fa fa-filter", submit_text: "Filter")
+      = render partial: "items/listing"
+    - else
+      This collection does not contain any items.
+
   #access-tab-content.tab-pane.fade.show{role: "tabpanel",
                                          "aria-labelledby": "access-tab"}
     %h3 Unit Administrators
-    %ul
-      - @resource.all_units.each do |unit|
-        - unit.all_administrators.each do |user|
+    - admins = @resource.all_unit_administrators
+    - if admins.any?
+      %ul
+        - admins.each do |user|
           %li= link_to(user.name, "mailto:#{user.email}")
+    - else
+      None
     %h3 Managers
     - if @resource.managing_users.any?
       %ul

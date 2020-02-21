@@ -69,18 +69,30 @@ class UnitsController < ApplicationController
   # Responds to GET /units/:id
   #
   def show
-    @breadcrumbable = @resource
+    @new_unit = Unit.new
+    # Subunits tab
     @subunits = Unit.search.
         parent_unit(@resource).
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(999).
         to_a
+    # Collections tab
     @collections = Collection.search.
         filter(Collection::IndexFields::PRIMARY_UNIT, @resource.id).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999).
         to_a
-    @new_unit = Unit.new
+    # Items tab
+    @start = params[:start].to_i
+    @window = window_size
+    @items = Item.search.
+        query_all(params[:q]).
+        filter(Item::IndexFields::UNITS, params[:id]).
+        start(@start).
+        limit(@window)
+    @count            = @items.count
+    @current_page     = @items.page
+    @permitted_params = results_params
   end
 
   ##
