@@ -6,6 +6,36 @@ class ItemPolicyTest < ActiveSupport::TestCase
     @item = items(:item1)
   end
 
+  # edit?()
+
+  test "edit?() is restrictive by default" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.edit?
+  end
+
+  test "edit?() authorizes sysadmins" do
+    policy = ItemPolicy.new(users(:admin), @item)
+    assert policy.edit?
+  end
+
+  test "edit?() authorizes unit admins" do
+    user = users(:norights)
+    unit = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(user, @item)
+    assert policy.edit?
+  end
+
+  test "edit?() authorizes collection managers" do
+    user = users(:norights)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(user, @item)
+    assert policy.edit?
+  end
+
   # index?()
 
   test "index?() authorizes everyone" do
@@ -43,6 +73,36 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes sysadmins to withdrawn items" do
     policy = ItemPolicy.new(users(:admin), items(:withdrawn))
     assert policy.show?
+  end
+
+  # update?()
+
+  test "update?() is restrictive by default" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.update?
+  end
+
+  test "update?() authorizes sysadmins" do
+    policy = ItemPolicy.new(users(:admin), @item)
+    assert policy.update?
+  end
+
+  test "update?() authorizes unit admins" do
+    user = users(:norights)
+    unit = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(user, @item)
+    assert policy.update?
+  end
+
+  test "update?() authorizes collection managers" do
+    user = users(:norights)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(user, @item)
+    assert policy.update?
   end
 
 end
