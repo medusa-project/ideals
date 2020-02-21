@@ -47,6 +47,7 @@ class Item < ApplicationRecord
   #
   class IndexFields
     CLASS              = ElasticsearchIndex::StandardFields::CLASS
+    COLLECTION_TITLES  = "k_collection_titles"
     COLLECTIONS        = "i_collection_ids"
     CREATED            = ElasticsearchIndex::StandardFields::CREATED
     DISCOVERABLE       = "b_discoverable"
@@ -57,6 +58,8 @@ class Item < ApplicationRecord
     PRIMARY_COLLECTION = "i_primary_collection_id"
     PRIMARY_UNIT       = "i_primary_unit_id"
     SUBMITTER          = "i_submitter_id"
+    UNIT_TITLES        = "k_unit_titles"
+    UNITS              = "i_unit_ids"
     WITHDRAWN          = "b_withdrawn"
   end
 
@@ -77,8 +80,17 @@ class Item < ApplicationRecord
   def all_collections
     bucket = Set.new
     bucket << self.primary_collection if self.primary_collection_id
-    collections.each do |collection|
-      bucket << collection
+    bucket += collections
+    bucket
+  end
+
+  ##
+  # @return [Enumerable<Unit>] All owning units.
+  #
+  def all_units
+    bucket = Set.new
+    all_collections.each do |collection|
+      bucket += collection.all_units
     end
     bucket
   end
@@ -89,7 +101,9 @@ class Item < ApplicationRecord
   def as_indexed_json
     doc = {}
     doc[IndexFields::CLASS]              = self.class.to_s
-    doc[IndexFields::COLLECTIONS]        = self.all_collections.map(&:id)
+    collections = self.all_collections
+    doc[IndexFields::COLLECTION_TITLES]  = collections.map(&:title)
+    doc[IndexFields::COLLECTIONS]        = collections.map(&:id)
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
     doc[IndexFields::DISCOVERABLE]       = self.discoverable
     doc[IndexFields::IN_ARCHIVE]         = self.in_archive
@@ -98,6 +112,9 @@ class Item < ApplicationRecord
     doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection_id
     doc[IndexFields::PRIMARY_UNIT]       = self.primary_unit&.id
     doc[IndexFields::SUBMITTER]          = self.submitter_id
+    units = self.all_units
+    doc[IndexFields::UNIT_TITLES]        = units.map(&:title)
+    doc[IndexFields::UNITS]              = units.map(&:id)
     doc[IndexFields::WITHDRAWN]          = self.withdrawn
 
     # Index ascribed metadata elements into dynamic fields.

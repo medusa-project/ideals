@@ -62,11 +62,18 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 1, @instance.all_collections.length
   end
 
+  # all_units()
+
+  test "all_units() returns the expected units" do
+    assert_equal 2, @instance.all_units.length
+  end
+
   # as_indexed_json()
 
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
     assert_equal "Item", doc[Item::IndexFields::CLASS]
+    assert_not_empty doc[Item::IndexFields::COLLECTION_TITLES]
     assert_not_empty doc[Item::IndexFields::COLLECTIONS]
     assert_not_empty doc[Item::IndexFields::CREATED]
     assert doc[Item::IndexFields::DISCOVERABLE]
@@ -80,6 +87,8 @@ class ItemTest < ActiveSupport::TestCase
                  doc[Item::IndexFields::PRIMARY_UNIT]
     assert_equal @instance.submitter.id,
                  doc[Item::IndexFields::SUBMITTER]
+    assert_not_empty doc[Item::IndexFields::UNIT_TITLES]
+    assert_not_empty doc[Item::IndexFields::UNITS]
     assert !doc[Item::IndexFields::WITHDRAWN]
 
     item = items(:described)
