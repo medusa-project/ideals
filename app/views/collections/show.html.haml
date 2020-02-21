@@ -31,14 +31,17 @@
                           "aria-selected": "true"}
       = icon_for(Item)
       Items
-  %li.nav-item
-    %a#access-tab.nav-link{href: "#access-tab-content",
-                           "data-toggle": "tab",
-                           role: "tab",
-                           "aria-controls": "access-tab-content",
-                           "aria-selected": "true"}
-      %i.fa.fa-users
-      Access
+  - if policy(@resource).edit_access?
+    %li.nav-item
+      %a#access-tab.nav-link{href: "#access-tab-content",
+                             "data-toggle": "tab",
+                             role: "tab",
+                             "aria-controls": "access-tab-content",
+                             "aria-selected": "true"}
+        %i.fa.fa-users
+        Access
+
+
 .tab-content
   #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                     "aria-labelledby": "properties-tab"}
@@ -94,30 +97,31 @@
     - else
       This collection does not contain any items.
 
-  #access-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                         "aria-labelledby": "access-tab"}
-    %h3 Unit Administrators
-    - admins = @resource.all_unit_administrators
-    - if admins.any?
-      %ul
-        - admins.each do |user|
-          %li= link_to(user.name, "mailto:#{user.email}")
-    - else
-      None
-    %h3 Managers
-    - if @resource.managing_users.any?
-      %ul
-        - @resource.managing_users.each do |user|
-          %li= link_to(user.name, "mailto:#{user.email}")
-    - else
-      None
-    %h3 Submitters
-    - if @resource.submitters.any?
-      %ul
-        - @resource.submitting_users.each do |user|
-          %li= link_to(user.name, "mailto:#{user.email}")
-    - else
-      None
+  - if policy(@resource).edit_access?
+    #access-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                           "aria-labelledby": "access-tab"}
+      %h3 Unit Administrators
+      - admins = @resource.all_unit_administrators
+      - if admins.any?
+        %ul
+          - admins.each do |user|
+            %li= link_to(user.name, "mailto:#{user.email}")
+      - else
+        None
+      %h3 Managers
+      - if @resource.managing_users.any?
+        %ul
+          - @resource.managing_users.each do |user|
+            %li= link_to(user.name, "mailto:#{user.email}")
+      - else
+        None
+      %h3 Submitters
+      - if @resource.submitters.any?
+        %ul
+          - @resource.submitting_users.each do |user|
+            %li= link_to(user.name, "mailto:#{user.email}")
+      - else
+        None
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-collection-properties-modal",

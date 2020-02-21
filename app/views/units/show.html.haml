@@ -31,14 +31,15 @@
                           "aria-selected": "true"}
       = icon_for(Item)
       Items
-  %li.nav-item
-    %a#access-tab.nav-link{"aria-controls": "access",
-                           "aria-selected": "false",
-                           "data-toggle": "tab",
-                           href: "#access",
-                           role: "tab"}
-      %i.fa.fa-users
-      Access
+  - if policy(@resource).edit?
+    %li.nav-item
+      %a#access-tab.nav-link{"aria-controls": "access",
+                             "aria-selected": "false",
+                             "data-toggle": "tab",
+                             href: "#access",
+                             role: "tab"}
+        %i.fa.fa-users
+        Access
 
 
 .tab-content
@@ -79,27 +80,28 @@
     - else
       This unit does not contain any items.
 
-  #access.tab-pane.fade{"aria-labelledby": "access-tab",
-                        role: "tabpanel"}
-    %dl
-      %dt Direct Administrators
-      %dd
-        - if @resource.administering_users.any?
-          %ul
-            - @resource.administering_users.each do |user|
-              %li= link_to(raw("#{user.name}#{user == @resource.primary_administrator ? " <span class=\"badge badge-primary\">PRIMARY</span>" : ""}"),
-              "mailto:#{user.email}")
-        - else
-          None
-      %dt Effective Administrators (including administrators of parent units)
-      %dd
-        - admins = @resource.all_administrators
-        - if admins.any?
-          %ul
-            - admins.each do |user|
-              %li= link_to(user.name, "mailto:#{user.email}")
-        - else
-          None
+  - if policy(@resource).edit?
+    #access.tab-pane.fade{"aria-labelledby": "access-tab",
+                          role: "tabpanel"}
+      %dl
+        %dt Direct Administrators
+        %dd
+          - if @resource.administering_users.any?
+            %ul
+              - @resource.administering_users.each do |user|
+                %li= link_to(raw("#{user.name}#{user == @resource.primary_administrator ? " <span class=\"badge badge-primary\">PRIMARY</span>" : ""}"),
+                "mailto:#{user.email}")
+          - else
+            None
+        %dt Effective Administrators (including administrators of parent units)
+        %dd
+          - admins = @resource.all_administrators
+          - if admins.any?
+            %ul
+              - admins.each do |user|
+                %li= link_to(user.name, "mailto:#{user.email}")
+          - else
+            None
 
 = render partial: "collections/add_modal",
          locals: { primary_unit: @resource }
