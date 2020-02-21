@@ -4,4 +4,5 @@
   %p You may have mistyped the address or the page may have moved.
   %p
     IDEALS @ Illinois administrators may be contacted at:
-    %a(href="mailto:ideals-gen@illinois.edu") ideals-gen@illinois.edu
+    %a{href: "mailto:#{::Configuration.instance.website[:email]}"}
+      = ::Configuration.instance.website[:email]

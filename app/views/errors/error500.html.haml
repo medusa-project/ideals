@@ -5,5 +5,5 @@
     Details have been logged.
     %b
     IDEALS @ Illinois administrators may be contacted at:
-    %a(href="mailto:ideals-gen@illinois.edu") ideals-gen@illinois.edu
-
+    %a{href: "mailto:#{::Configuration.instance.website[:email]}"}
+      = ::Configuration.instance.website[:email]

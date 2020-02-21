@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 class IdealsMailer < ApplicationMailer
-  GENERAL_ADDRESS  = "ideals-gen@illinois.edu"
   NO_REPLY_ADDRESS = "ideals-noreply@illinois.edu"
 
-  default from: GENERAL_ADDRESS
+  default from: ::Configuration.instance.website[:email]
 
   def contact_help(params)
     subject = "#{subject_prefix} IDEALS] Help Request"
     @params = params
     mail(from:    @params["help-email"],
-         to:      [GENERAL_ADDRESS, @params["help-email"]],
+         to:      [::Configuration.instance.website[:email],
+                   @params["help-email"]],
          subject: subject)
   end
 
