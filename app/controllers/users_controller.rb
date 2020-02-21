@@ -40,12 +40,12 @@ class UsersController < ApplicationController
     @items = Item.search.
         aggregations(false).
         filter(Item::IndexFields::SUBMITTER, @resource.id).
-        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+        order(params[:sort]).
         limit(@window).
         start(@start)
-    @item_count = @items.count
+    @count = @items.count
     @current_page = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
-    @results_params = params.permit(:start, :window)
+    @permitted_params = params.permit(:start, :window)
   end
 
   ##
