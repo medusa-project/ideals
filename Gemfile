@@ -31,6 +31,7 @@ gem "uglifier", ">= 2.7.2"
 # Use jquery as the JavaScript library
 gem "jquery-rails"
 gem "jquery-ui-rails"
+gem "js_cookie_rails"
 
 # Use in-house storage gem to manage flexible storage on filesystems and s3 buckets
 gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "master"
