@@ -88,6 +88,7 @@ class UnitsController < ApplicationController
     @items = Item.search.
         query_all(params[:q]).
         filter(Item::IndexFields::UNITS, params[:id]).
+        order(params[:sort]).
         start(@start).
         limit(@window)
     @count            = @items.count
