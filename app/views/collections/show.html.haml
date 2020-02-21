@@ -81,9 +81,15 @@
                                         "aria-labelledby": "items-tab"}
     - if @items.count.positive?
       = form_tag(collection_path(@resource), method: :get, class: "filter") do
-        .input-group.mb-3.col-4.filter-field
-          = hidden_field_tag("fq[]", "#{Item::IndexFields::COLLECTION_TITLES}:#{@resource.title}")
-          = filter_field(icon: "fa fa-filter", submit_text: "Filter")
+        .row.justify-content-between
+          .col-4
+            .input-group.mb-3.filter-field
+              = hidden_field_tag("fq[]", "#{Item::IndexFields::COLLECTION_TITLES}:#{@resource.title}")
+              = filter_field(icon: "fa fa-filter", submit_text: "Filter")
+          .col-4
+            .input-group
+              = sort_menu(MetadataProfile.default)
+
       = render partial: "items/listing"
     - else
       This collection does not contain any items.

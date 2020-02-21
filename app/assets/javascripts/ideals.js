@@ -170,6 +170,11 @@ const ideals_ready = function () {
         return false;
     });
 
+    // Submit forms when a "sort" select menu changes.
+    $("[name=sort]").on("change", function() {
+        $(this).parents("form:first").submit();
+    });
+
     // Save the last-selected tab in a cookie.
     $('a[data-toggle="tab"]').on('click', function(e) {
         Cookies.set('last_tab', $(e.target).attr('href'));

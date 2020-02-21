@@ -69,7 +69,7 @@ class ApplicationController < ActionController::Base
   end
 
   def results_params
-    params.permit(:q, :start, :window, fq: [])
+    params.permit(:q, :sort, :start, :window, fq: [])
   end
 
   ##

@@ -13,6 +13,7 @@ class ItemsController < ApplicationController
         aggregations(true).
         query_all(results_params[:q]).
         facet_filters(results_params[:fq]).
+        order(params[:sort]).
         start(@start).
         limit(@window)
     @count            = @items.count
