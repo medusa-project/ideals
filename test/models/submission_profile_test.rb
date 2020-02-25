@@ -14,7 +14,6 @@ class SubmissionProfileTest < ActiveSupport::TestCase
     end
   end
 
-=begin
   test "destroying an instance destroys its dependent SubmissionProfileElements" do
     elements = @instance.elements
     @instance.collections = []
@@ -23,7 +22,6 @@ class SubmissionProfileTest < ActiveSupport::TestCase
       assert element.destroyed?
     end
   end
-=end
 
   # default()
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_25_205356) do
+ActiveRecord::Schema.define(version: 2020_02_25_213210) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -163,6 +163,21 @@ ActiveRecord::Schema.define(version: 2020_02_25_205356) do
     t.index ["uri"], name: "index_registered_elements_on_uri", unique: true
   end
 
+  create_table "submission_profile_elements", force: :cascade do |t|
+    t.bigint "submission_profile_id", null: false
+    t.bigint "registered_element_id", null: false
+    t.integer "index", null: false
+    t.string "label"
+    t.text "help_text"
+    t.boolean "repeatable", default: false, null: false
+    t.boolean "required", default: true, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["index"], name: "index_submission_profile_elements_on_index"
+    t.index ["repeatable"], name: "index_submission_profile_elements_on_repeatable"
+    t.index ["required"], name: "index_submission_profile_elements_on_required"
+  end
+
   create_table "submission_profiles", force: :cascade do |t|
     t.string "name", null: false
     t.boolean "default", default: false, null: false
@@ -218,6 +233,8 @@ ActiveRecord::Schema.define(version: 2020_02_25_205356) do
   add_foreign_key "managers", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "submission_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "users", on_update: :cascade, on_delete: :cascade
 end

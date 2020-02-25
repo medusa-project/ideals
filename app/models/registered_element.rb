@@ -19,6 +19,7 @@ class RegisteredElement < ApplicationRecord
   SORTABLE_FIELD_SUFFIX = ".sort"
 
   has_many :metadata_profile_elements, inverse_of: :registered_element
+  has_many :submission_profile_elements, inverse_of: :registered_element
 
   # label
   validates_presence_of :label

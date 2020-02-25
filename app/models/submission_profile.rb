@@ -30,10 +30,10 @@ class SubmissionProfile < ApplicationRecord
 
   has_many :collections, inverse_of: :submission_profile,
            dependent: :restrict_with_exception
-  #has_many :elements, -> { order(:index) },
-  #         class_name: "SubmissionProfileElement",
-  #         inverse_of: :submission_profile,
-  #         dependent: :destroy
+  has_many :elements, -> { order(:index) },
+           class_name: "SubmissionProfileElement",
+           inverse_of: :submission_profile,
+           dependent: :destroy
   validates :name, presence: true, length: { minimum: 2 },
             uniqueness: { case_sensitive: false }
 
