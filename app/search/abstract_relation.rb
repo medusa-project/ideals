@@ -119,6 +119,7 @@ class AbstractRelation
   # @param field [String]
   # @param value [Object] Single value or an array of "OR" values.
   # @return [self]
+  # @see remove_filter
   #
   def filter(field, value)
     @filters << [field, value]
@@ -183,6 +184,16 @@ class AbstractRelation
   #
   def query_all(query)
     query(ElasticsearchIndex::StandardFields::SEARCH_ALL, query)
+    self
+  end
+
+  ##
+  # @param name [String] Field name.
+  # @return [self]
+  # @see filter
+  #
+  def remove_filter(name)
+    @filters.reject!{ |f| f[0] == name }
     self
   end
 
