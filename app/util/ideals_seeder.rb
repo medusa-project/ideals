@@ -72,6 +72,9 @@ class IdealsSeeder
                            repeatable: false,
                            required: false)
     profile.save!
+
+    profile = SubmissionProfile.create!(name: "Default Profile",
+                                        default: true)
   end
 
 end

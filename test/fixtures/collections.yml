@@ -1,5 +1,6 @@
 collection1:
   metadata_profile: default
+  submission_profile: default
   primary_unit: unit1
   units:
     - unit1
@@ -7,16 +8,21 @@ collection1:
 
 collection1_1:
   metadata_profile: default
+  submission_profile: default
   primary_unit: unit1
 
 collection2:
   metadata_profile: default
+  submission_profile: default
 
 described:
   metadata_profile: default
+  submission_profile: default
 
 empty:
   metadata_profile: default
+  submission_profile: default
 
 undescribed:
   metadata_profile: default
+  submission_profile: default

@@ -10,14 +10,19 @@
 #
 # # Attributes
 #
-# * `created_at`          Managed by ActiveRecord.
-# * `metadata_profile_id` Foreign key to {MetadataProfile}. Instances without
-#                         this set should use the {MetadataProfile#default
-#                         default profile}. For most use cases,
-#                         {effective_metadata_profile} should be used instead
-#                         of accessing this directly.
-# * `primary_unit_id`     Foreign key to {Unit}.
-# * `updated_at`          Managed by ActiveRecord.
+# * `created_at`            Managed by ActiveRecord.
+# * `metadata_profile_id`   Foreign key to {MetadataProfile}. Instances without
+#                           this set should use the {MetadataProfile#default
+#                           default profile}. In most cases,
+#                           {effective_metadata_profile} should be used instead
+#                           of accessing this directly.
+# * `primary_unit_id`       Foreign key to {Unit}.
+# * `submission_profile_id` Foreign key to {SubmissionProfile}. Instances
+#                           without this set should use the
+#                           {SubmissionProfile#default default profile}. In
+#                           most cases, {effective_submission_profile} should
+#                           be used instead of accessing this directly.
+# * `updated_at`            Managed by ActiveRecord.
 #
 # # Relationships
 #
@@ -36,6 +41,9 @@
 #                         `metadata_profile_id` attribute).
 # * `primary_unit`        References the primary {Unit} in which the instance
 #                         resides.
+# * `submission_profile`  References the {SubmissionProfile} directly assigned
+#                         to the instance, if any (see the documentation of the
+#                         `submission_profile_id` attribute).
 # * `submitters`          References all {Submitter}s who are allowed to submit
 #                         {Item}s to the instance.
 # * `submitting_users`    More useful alternative to {submitters} that returns
@@ -69,6 +77,7 @@ class Collection < ApplicationRecord
   has_many :managers
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user
+  belongs_to :submission_profile, inverse_of: :collections, optional: true
   has_many :submitters
   has_many :submitting_users, through: :submitters,
            class_name: "User", source: :user
@@ -136,7 +145,15 @@ class Collection < ApplicationRecord
   #         the default profile if no profile is assigned.
   #
   def effective_metadata_profile
-    self.metadata_profile || MetadataProfile.find_by_default(true)
+    self.metadata_profile || MetadataProfile.default
+  end
+
+  ##
+  # @return [SubmissionProfile] The submission profile assigned to the
+  #         instance, or the default profile if no profile is assigned.
+  #
+  def effective_submission_profile
+    self.submission_profile || SubmissionProfile.default
   end
 
   def label

@@ -94,6 +94,18 @@ class CollectionTest < ActiveSupport::TestCase
                  doc[title.registered_element.indexed_name]
   end
 
+  # description() (Describable concern)
+
+  test "description() returns the description element value" do
+    collection = collections(:described)
+    assert_equal "Some description", collection.description
+  end
+
+  test "description() returns an empty string when there is no description element" do
+    collection = collections(:undescribed)
+    assert_equal "", collection.description
+  end
+
   # effective_metadata_profile()
 
   test "effective_metadata_profile() returns the assigned metadata profile" do
@@ -108,16 +120,19 @@ class CollectionTest < ActiveSupport::TestCase
                  @instance.effective_metadata_profile
   end
 
-  # description() (Describable concern)
+  # effective_submission_profile()
 
-  test "description() returns the description element value" do
-    collection = collections(:described)
-    assert_equal "Some description", collection.description
+  test "effective_submission_profile() returns the assigned submission profile" do
+    profile = submission_profiles(:unused)
+    @instance.submission_profile = profile
+    assert_equal profile, @instance.effective_submission_profile
   end
 
-  test "description() returns an empty string when there is no description element" do
-    collection = collections(:undescribed)
-    assert_equal "", collection.description
+  test "effective_submission_profile() falls back to the default profile if no
+  profile is assigned" do
+    @instance.submission_profile = nil
+    assert_equal submission_profiles(:default),
+                 @instance.effective_submission_profile
   end
 
   # element() (Describable concern)

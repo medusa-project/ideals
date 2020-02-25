@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_18_173427) do
+ActiveRecord::Schema.define(version: 2020_02_25_205356) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(version: 2020_02_18_173427) do
     t.datetime "updated_at", null: false
     t.bigint "primary_unit_id"
     t.bigint "metadata_profile_id"
+    t.bigint "submission_profile_id"
   end
 
   create_table "collections_items", id: false, force: :cascade do |t|
@@ -162,6 +163,15 @@ ActiveRecord::Schema.define(version: 2020_02_18_173427) do
     t.index ["uri"], name: "index_registered_elements_on_uri", unique: true
   end
 
+  create_table "submission_profiles", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "default", default: false, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["default"], name: "index_submission_profiles_on_default"
+    t.index ["name"], name: "index_submission_profiles_on_name", unique: true
+  end
+
   create_table "submitters", force: :cascade do |t|
     t.bigint "collection_id"
     t.bigint "user_id"
@@ -196,6 +206,7 @@ ActiveRecord::Schema.define(version: 2020_02_18_173427) do
   add_foreign_key "ascribed_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "units", column: "primary_unit_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections_items", "collections", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections_items", "items", on_update: :cascade, on_delete: :cascade
