@@ -9,7 +9,9 @@
     %meta{:content => "width=device-width,initial-scale=1.0,shrink-to-fit=no", :name => "viewport"}/
     / Internet Explorer use the highest version available
     %meta{:content => "IE=edge", "http-equiv" => "X-UA-Compatible"}/
-    %title IDEALS
+    %title
+      = yield :title
+      | IDEALS
     = favicon_link_tag 'favicon.ico'
     = stylesheet_link_tag 'application', media: 'all'
     = javascript_include_tag 'application'
