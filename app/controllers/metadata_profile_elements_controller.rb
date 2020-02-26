@@ -71,7 +71,6 @@ class MetadataProfileElementsController < ApplicationController
     params.require(:metadata_profile_element).permit(:facetable, :index,
                                                      :metadata_profile_id,
                                                      :registered_element_id,
-                                                     :repeatable, :required,
                                                      :searchable, :sortable,
                                                      :visible)
   end

@@ -18,41 +18,31 @@ class IdealsSeeder
                            visible: true,
                            facetable: false,
                            searchable: true,
-                           sortable: true,
-                           repeatable: false,
-                           required: true)
+                           sortable: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:issued"),
                            index: 1,
                            visible: true,
                            facetable: false,
                            searchable: true,
-                           sortable: true,
-                           repeatable: false,
-                           required: false)
+                           sortable: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
                            index: 2,
                            visible: true,
                            facetable: true,
                            searchable: true,
-                           sortable: false,
-                           repeatable: true,
-                           required: false)
+                           sortable: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:uri"),
                            index: 3,
                            visible: true,
                            facetable: false,
                            searchable: true,
-                           sortable: true,
-                           repeatable: false,
-                           required: false)
+                           sortable: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
                            index: 4,
                            visible: true,
                            facetable: true,
                            searchable: true,
-                           sortable: false,
-                           repeatable: false,
-                           required: false)
+                           sortable: false)
     profile.save!
   end
 

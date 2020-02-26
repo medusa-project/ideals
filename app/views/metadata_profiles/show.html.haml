@@ -32,6 +32,7 @@
     %a#elements-tab.nav-link.active{href: "#elements", "data-toggle": "tab",
                                     role: "tab", "aria-controls": "elements",
                                     "aria-selected": "true"}
+      = icon_for(MetadataProfileElement)
       Elements
       %span.badge.badge-pill.badge-secondary= @profile.elements.count
   - unless @profile.default
@@ -39,6 +40,7 @@
       %a#collections-tab.nav-link{href: "#collections", "data-toggle": "tab",
                                   role: "tab", "aria-controls": "collections",
                                   "aria-selected": "false"}
+        = icon_for(Collection)
         Collections
         %span.badge.badge-pill.badge-secondary= @collections.count
 
@@ -60,8 +62,6 @@
         %th Searchable
         %th Sortable
         %th Facetable
-        %th Required
-        %th Repeatable
       %tbody
         - @profile.elements.each do |element|
           %tr
@@ -84,8 +84,6 @@
             %td.boolean= boolean(element.searchable)
             %td.boolean= boolean(element.sortable)
             %td.boolean= boolean(element.facetable)
-            %td.boolean= boolean(element.required)
-            %td.boolean= boolean(element.repeatable)
 
   - unless @profile.default
     #collections.tab-pane.fade{role: "tabpanel",

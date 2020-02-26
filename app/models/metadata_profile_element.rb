@@ -12,10 +12,6 @@
 # * `metadata_profile_id`   ID of the associated metadata profile. Foreign key.
 # * `registered_element_id` ID of the associated {RegisteredElement}. Foreign
 #                           key.
-# * `repeatable`            Whether multiple matching {AscribedElement}s can be
-#                           associated with an entity.
-# * `required`              Whether a matching {AscribedElement} must be
-#                           associated with an entity.
 # * `searchable`            Whether users can search on the element.
 # * `sortable`              Whether results can be sorted on the element.
 # * `updated_at`            Managed by ActiveRecord.
