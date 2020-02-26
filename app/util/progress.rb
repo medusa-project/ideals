@@ -33,6 +33,7 @@ class Progress
   # @return [void]
   #
   def report(iteration, message)
+    return if Rails.env.test?
     str = "#{message}: #{progress_str(iteration)}"
     str = str.ljust(80)
     print "#{str}\r"
