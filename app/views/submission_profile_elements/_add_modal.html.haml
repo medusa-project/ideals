@@ -1,0 +1,13 @@
+/ Add-element modal
+#add-element-modal.modal.fade{"aria-labelledby": "add-element-modal-label", role: "dialog", tabindex: "-1"}
+  .modal-dialog{role: "document"}
+    .modal-content
+      .modal-header
+        %h4#add-element-modal-label.modal-title Add Element
+        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+          %span{"aria-hidden": "true"} &times;
+      .modal-body
+        = render partial: "submission_profile_elements/form",
+                 locals: { profile: @profile,
+                           element: @new_element,
+                           context: :new }

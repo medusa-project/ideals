@@ -46,6 +46,22 @@ class SubmissionProfile < ApplicationRecord
     SubmissionProfile.find_by_default(true)
   end
 
+  ##
+  # Overrides parent to intelligently clone an instance including all of its
+  # elements.
+  #
+  # @return [SubmissionProfile]
+  #
+  def dup
+    clone = super
+    clone.name = "Clone of #{self.name}"
+    clone.default = false
+    # The instance requires an ID for SubmissionProfileElement validations.
+    clone.save!
+    self.elements.each { |e| clone.elements << e.dup }
+    clone
+  end
+
   def label
     name
   end

@@ -1,0 +1,27 @@
+- provide :body_id, "submission_profiles"
+
+.btn-group.float-right{role: "group"}
+  / Add Profile button
+  %button.btn.btn-light{"data-target": "#add-profile-modal",
+                        "data-toggle": "modal", type: "button"}
+    %i.fa.fa-plus
+    Add Profile
+
+%h1 Submission Profiles
+
+%table.table
+  %thead
+    %tr
+      %th Name
+  %tbody
+    - @profiles.each do |profile|
+      %tr
+        %td
+          = link_to(profile.name, profile)
+          - if profile.default
+            %span.badge.badge-success DEFAULT
+
+= render partial: 'add_modal'
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-profile-modal", title: "Edit Profile" }
+

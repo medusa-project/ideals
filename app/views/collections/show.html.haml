@@ -45,25 +45,35 @@
 .tab-content
   #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                     "aria-labelledby": "properties-tab"}
-    - if current_user&.effective_manager?(@resource)
-      %dl
-        %dt Metadata Profile
-        %dd
-          - if @resource.metadata_profile
-            - if policy(@metadata_profile).show?
-              = link_to(@metadata_profile.name, @metadata_profile)
-            - else
-              = @metadata_profile.name
-          - else
-            = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
-      %hr
-    = metadata_as_dl(@metadata_profile, @resource.elements)
-    %hr
-    %dl
-      %dt Created
-      %dd= @resource.created_at
-      %dt Last Updated
-      %dd= @resource.updated_at
+    .row
+      .col-md-8
+        = metadata_as_dl(@metadata_profile, @resource.elements)
+      .col-md-4
+        - if current_user&.effective_manager?(@resource)
+          %dl
+            %dt Metadata Profile
+            %dd
+              - if @resource.metadata_profile
+                - if policy(@metadata_profile).show?
+                  = link_to(@metadata_profile.name, @metadata_profile)
+                - else
+                  = @metadata_profile.name
+              - else
+                = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
+            %dt Submission Profile
+            %dd
+              - if @resource.submission_profile
+                - if policy(@submission_profile).show?
+                  = link_to(@submission_profile.name, @submission_profile)
+                - else
+                  = @submission_profile.name
+              - else
+                = raw("Not assigned (falling back to #{link_to(@submission_profile.name, @submission_profile)})")
+        %dl
+          %dt Created
+          %dd= @resource.created_at
+          %dt Last Updated
+          %dd= @resource.updated_at
 
   #unit-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
                                                   "aria-labelledby": "unit-membership-tab"}

@@ -19,6 +19,16 @@
     = label_tag "elements_description", "Description"
     = text_area_tag "elements[description]", f.object.description, class: "form-control"
 
+  .form-group
+    = f.label :metadata_profile_id, "Metadata Profile"
+    = f.select :metadata_profile_id, MetadataProfile.all.pluck(:name, :id),
+               { include_blank: true }, class: "custom-select"
+
+  .form-group
+    = f.label :submission_profile_id, "Submission Profile"
+    = f.select :submission_profile_id, SubmissionProfile.all.pluck(:name, :id),
+               { include_blank: true }, class: "custom-select"
+
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel

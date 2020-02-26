@@ -77,8 +77,11 @@ module ApplicationHelper
       icon = "far fa-folder-open"
     when "Item"
       icon = "fa fa-cube"
-    when "MetadataProfile", "RegisteredElement", "AscribedElement"
-      icon = "fa fa-bars"
+    when "MetadataProfile", "SubmissionProfile"
+      icon = "fa fa-list"
+    when "RegisteredElement", "AscribedElement", "MetadataProfileElement",
+        "SubmissionProfileElement"
+      icon = "fa fa-tags"
     when "Unit"
       icon = "fa fa-university"
     when "User", "IdentityUser", "ShibbolethUser"

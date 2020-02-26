@@ -7,7 +7,10 @@
 # * `created_at`            Managed by ActiveRecord.
 # * `help_text`             Help text.
 # * `index`                 Zero-based position within the owning
-#                           {MetadataProfile}.
+#                           {SubmissionProfile}.
+# * `label`                 Custom label of the element. If assigned, this
+#                           overrides the label of the associated
+#                           {RegisteredElement}.
 # * `submission_profile_id` ID of the associated {SubmissionProfile}. Foreign
 #                           key.
 # * `registered_element_id` ID of the associated {RegisteredElement}. Foreign
@@ -35,6 +38,14 @@ class SubmissionProfileElement < ApplicationRecord
   before_create :shift_element_indexes_before_create
   before_update :shift_element_indexes_before_update
   after_destroy :shift_element_indexes_after_destroy
+
+  ##
+  # @return [String] The `label` property, or, if not set, the `label` property
+  #                  of the associated {RegisteredElement}.
+  #
+  def effective_label
+    self.label.present? ? self.label : self.registered_element.label
+  end
 
   private
 

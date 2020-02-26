@@ -1,0 +1,39 @@
+// @param element [SubmissionProfileElement]
+// @param profile [SubmissionProfile]
+// @param context [Symbol] `:new` or `:edit`
+
+= form_for([profile, element], remote: true) do |f|
+  = f.hidden_field :submission_profile_id, value: profile.id
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+  .form-group
+    = f.label :registered_element_id, "Element"
+    = f.select(:registered_element_id, RegisteredElement.all.order(:name).pluck(:name, :id),
+      { selected: f.object.registered_element_id },
+      class: "custom-select")
+  - if profile.elements.any?
+    .form-group
+      = f.label :index, "Position After"
+      = f.select(:index, profile.elements.where("id != ?", element&.id || -1).map.with_index { |e, i| [e.effective_label, i + 1] },
+        { selected: element.index },
+        class: "custom-select")
+  - else
+    = f.hidden_field :index, value: 0
+  .form-group
+    = f.label :label, "Label Override"
+    = f.text_field :label, class: "form-control"
+  .form-group
+    = f.label :help_text, "Help Text"
+    = f.text_area :help_text, class: "form-control"
+  .form-group
+    .form-check
+      = f.check_box :required, class: "form-check-input"
+      = f.label :required, class: "form-check-label"
+    .form-check
+      = f.check_box :repeatable, class: "form-check-input"
+      = f.label :repeatable, class: "form-check-label"
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit(context == :new ? 'Create Element' : 'Edit Element',
+                 class: 'btn btn-primary')

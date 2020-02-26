@@ -14,6 +14,10 @@ Rails.application.routes.draw do
     resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]
   end
   resources :registered_elements, param: :name, path: "elements"
+  resources :submission_profiles, path: "submission-profiles" do
+    match "/clone", to: "submission_profiles#clone", via: :post
+    resources :submission_profile_elements, path: "elements", except: [:new, :index, :show]
+  end
 
   root 'welcome#index'
   get '/', to: 'welcome#index'

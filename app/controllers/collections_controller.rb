@@ -108,19 +108,20 @@ class CollectionsController < ApplicationController
   # Responds to `GET /collections/:id`
   #
   def show
-    @start = params[:start].to_i
+    @start  = params[:start].to_i
     @window = window_size
-    @items = Item.search.
+    @items  = Item.search.
         filter(Item::IndexFields::COLLECTIONS, params[:id]).
         order(params[:sort]).
         start(@start).
         limit(@window)
-    @count            = @items.count
-    @current_page     = @items.page
-    @permitted_params = params.permit(:q, :start)
+    @count              = @items.count
+    @current_page       = @items.page
+    @permitted_params   = params.permit(:q, :start)
 
-    @metadata_profile = @resource.effective_metadata_profile
-    @breadcrumbable   = @resource
+    @metadata_profile   = @resource.effective_metadata_profile
+    @submission_profile = @resource.effective_submission_profile
+    @breadcrumbable     = @resource
   end
 
   ##
@@ -205,6 +206,7 @@ class CollectionsController < ApplicationController
   def collection_params
     params.require(:collection).permit(:metadata_profile_id,
                                        :primary_unit_id,
+                                       :submission_profile_id,
                                        unit_ids: [])
   end
 end

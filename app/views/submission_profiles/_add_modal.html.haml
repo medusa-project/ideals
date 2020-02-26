@@ -1,0 +1,11 @@
+/ Add-profile modal
+#add-profile-modal.modal.fade{"aria-labelledby": "add-profile-modal-label", role: "dialog", tabindex: "-1"}
+  .modal-dialog{role: "document"}
+    .modal-content
+      .modal-header
+        %h4#add-profile-modal-label.modal-title Add Profile
+        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+          %span{"aria-hidden": "true"} &times;
+      .modal-body
+        = render partial: 'form', locals: { profile: @new_profile,
+                                            context: :new }
