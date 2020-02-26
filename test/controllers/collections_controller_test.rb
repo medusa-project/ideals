@@ -2,6 +2,10 @@ require 'test_helper'
 
 class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
+  setup do
+    setup_elasticsearch
+  end
+
   teardown do
     log_out
   end
@@ -166,6 +170,18 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     collection = collections(:collection1)
     get collection_edit_properties_path(collection)
+    assert_response :ok
+  end
+
+  # index()
+
+  test "index() returns HTTP 200 for HTML" do
+    get collections_path
+    assert_response :ok
+  end
+
+  test "index() returns HTTP 200 for JSON" do
+    get collections_path(format: :json)
     assert_response :ok
   end
 
