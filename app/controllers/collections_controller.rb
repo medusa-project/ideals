@@ -176,20 +176,22 @@ class CollectionsController < ApplicationController
   # would be a PITA.
   #
   def build_metadata
-    config                  = ::Configuration.instance
-    reg_title_element       = RegisteredElement.find_by_name(config.elements[:title])
-    reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
     if params[:elements].present?
+      config                  = ::Configuration.instance
+      reg_title_element       = RegisteredElement.find_by_name(config.elements[:title])
+      reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
+
+      # Remove existing title & description
       @resource.elements.where(registered_element_id: [reg_title_element.id,
                                                        reg_description_element.id]).destroy_all
-      if params[:elements][:title].present?
-        @resource.elements.build(registered_element: reg_title_element,
-                                 string: params[:elements][:title])
-      end
-      if params[:elements][:description].present?
-        @resource.elements.build(registered_element: reg_description_element,
-                                 string: params[:elements][:description])
-      end
+      # Add title
+      title = params[:elements][config.elements[:title]]
+      @resource.elements.build(registered_element: reg_title_element,
+                               string: title) if title.present?
+      # Add description
+      description = params[:elements][config.elements[:description]]
+      @resource.elements.build(registered_element: reg_description_element,
+                               string: description) if description.present?
     end
   end
 

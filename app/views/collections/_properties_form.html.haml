@@ -12,12 +12,14 @@
   = f.hidden_field :primary_unit_id, value: f.object.primary_unit_id
 
   .form-group
-    = label_tag "elements_title", "Title"
-    = text_field_tag "elements[title]", f.object.title, class: "form-control"
+    = label_tag "elements_#{::Configuration.instance.elements[:title]}", "Title"
+    = text_field_tag "elements[#{::Configuration.instance.elements[:title]}]",
+                     f.object.title, class: "form-control"
 
   .form-group
-    = label_tag "elements_description", "Description"
-    = text_area_tag "elements[description]", f.object.description, class: "form-control"
+    = label_tag "elements_#{::Configuration.instance.elements[:description]}", "Description"
+    = text_area_tag "elements[#{::Configuration.instance.elements[:description]}]",
+                    f.object.description, class: "form-control"
 
   .form-group
     = f.label :metadata_profile_id, "Metadata Profile"
