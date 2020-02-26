@@ -206,7 +206,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
                 primary_unit_id: collection.primary_unit_id
             },
             elements: {
-                description: "New description"
+                "dc:description": "New description"
             }
         }
     }
