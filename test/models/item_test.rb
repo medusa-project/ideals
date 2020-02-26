@@ -42,9 +42,7 @@ class ItemTest < ActiveSupport::TestCase
     Item.reindex_all
     refresh_elasticsearch
 
-    expected = Item.where(discoverable: true,
-                          in_archive: true,
-                          withdrawn: false).count
+    expected = Item.count
     actual = Item.search.count
     assert actual > 0
     assert_equal expected, actual

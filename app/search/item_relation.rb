@@ -1,14 +1,5 @@
 class ItemRelation < AbstractRelation
 
-  def initialize
-    super
-    # Initialize filters to include only publicly accessible items by
-    # default. Clients may override where necessary.
-    filter(Item::IndexFields::DISCOVERABLE, true)
-    filter(Item::IndexFields::IN_ARCHIVE, true)
-    filter(Item::IndexFields::WITHDRAWN, false)
-  end
-
   protected
 
   def facet_elements

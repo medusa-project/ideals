@@ -115,9 +115,10 @@ class CollectionsController < ApplicationController
         order(params[:sort]).
         start(@start).
         limit(@window)
-    @count              = @items.count
-    @current_page       = @items.page
-    @permitted_params   = params.permit(:q, :start)
+    @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
+    @count            = @items.count
+    @current_page     = @items.page
+    @permitted_params = params.permit(:q, :start)
 
     @metadata_profile   = @resource.effective_metadata_profile
     @submission_profile = @resource.effective_submission_profile

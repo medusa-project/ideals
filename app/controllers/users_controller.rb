@@ -35,16 +35,17 @@ class UsersController < ApplicationController
   # Responds to `GET /users/:id`
   #
   def show
-    @start = params[:start].to_i
+    @start  = params[:start].to_i
     @window = window_size
-    @items = Item.search.
+    @items  = Item.search.
         aggregations(false).
         filter(Item::IndexFields::SUBMITTER, @resource.id).
         order(params[:sort]).
         limit(@window).
         start(@start)
-    @count = @items.count
-    @current_page = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
+    @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
+    @count            = @items.count
+    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
     @permitted_params = params.permit(:start, :window)
   end
 

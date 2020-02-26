@@ -91,6 +91,7 @@ class UnitsController < ApplicationController
         order(params[:sort]).
         start(@start).
         limit(@window)
+    @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
     @count            = @items.count
     @current_page     = @items.page
     @permitted_params = results_params

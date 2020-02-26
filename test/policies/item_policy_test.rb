@@ -2,6 +2,27 @@ require 'test_helper'
 
 class ItemPolicyTest < ActiveSupport::TestCase
 
+  class ScopeTest < ActiveSupport::TestCase
+
+    test "resolve() sets no filters for sysadmins" do
+      relation = ItemRelation.new
+      scope = ItemPolicy::Scope.new(users(:admin), relation)
+      assert_equal 0, scope.resolve.instance_variable_get("@filters").length
+    end
+
+    test "resolve() sets filters for non-sysadmins" do
+      relation = ItemRelation.new
+      scope = ItemPolicy::Scope.new(users(:norights), relation)
+      assert_equal [
+                       [Item::IndexFields::DISCOVERABLE, true],
+                       [Item::IndexFields::IN_ARCHIVE, true],
+                       [Item::IndexFields::WITHDRAWN, false]
+                   ],
+                   scope.resolve.instance_variable_get("@filters")
+    end
+
+  end
+
   setup do
     @item = items(:item1)
   end

@@ -4,7 +4,8 @@ class WelcomeController < ApplicationController
   helper_method :current_user, :logged_in?
 
   def index
-    @item_count = Item.search.aggregations(false).limit(0).count
+    @item_count = policy_scope(Item.search.aggregations(false).limit(0),
+                               policy_scope_class: ItemPolicy::Scope).count
   end
 
   def dashboard; end
