@@ -18,6 +18,7 @@ class User < ApplicationRecord
            inverse_of: :primary_administrator
   has_many :submitted_items, class_name: "Item", inverse_of: :submitter
   has_many :submitting_collections, through: :submitters, source: :collection
+  has_and_belongs_to_many :user_groups
 
   validates :name, presence: true
   validates_uniqueness_of :email, scope: :type
