@@ -52,6 +52,10 @@
               = link_to submission_profiles_path, class: 'dropdown-item' do
                 = icon_for(SubmissionProfile)
                 Submission Profiles
+              .dropdown-divider
               = link_to users_path, class: 'dropdown-item' do
-                %i.fa.fa-users
+                %i.fa.fa-user
                 Users
+              = link_to user_groups_path, class: 'dropdown-item' do
+                %i.fa.fa-users
+                User Groups

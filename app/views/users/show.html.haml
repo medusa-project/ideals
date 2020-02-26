@@ -40,6 +40,14 @@
           = link_to(@resource.phone, "tel:#{@resource.phone}")
       %dt System Administrator
       %dd= @resource.sysadmin? ? "Yes" : "No"
+      %dt User Groups
+      %dd
+        - if @resource.user_groups.any?
+          %ul
+            - @resource.user_groups.each do |group|
+              %li= link_to(group.name, group)
+        - else
+          None
       %dt Type
       %dd= @resource.type
       %dt Created

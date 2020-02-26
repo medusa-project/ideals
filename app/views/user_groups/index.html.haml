@@ -1,0 +1,26 @@
+- provide :body_id, "user_groups"
+- provide :title, "User Groups"
+
+.btn-group.float-right{role: "group"}
+  / Add User Group button
+  %button.btn.btn-light{"data-target": "#add-user-group-modal",
+                        "data-toggle": "modal", type: "button"}
+    %i.fa.fa-plus
+    Add User Group
+
+%h1 User Groups
+
+%table.table
+  %thead
+    %tr
+      %th Name
+  %tbody
+    - @user_groups.each do |group|
+      %tr
+        %td
+          = link_to(group.name, group)
+
+= render partial: 'add_modal'
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-user-group-modal", title: "Edit User Group" }
+

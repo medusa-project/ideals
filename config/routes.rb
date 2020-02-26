@@ -18,6 +18,7 @@ Rails.application.routes.draw do
     match "/clone", to: "submission_profiles#clone", via: :post
     resources :submission_profile_elements, path: "elements", except: [:new, :index, :show]
   end
+  resources :user_groups, path: "user-groups", except: :new
 
   root 'welcome#index'
   get '/', to: 'welcome#index'

@@ -1,0 +1,11 @@
+/ Add-user group modal
+#add-user-group-modal.modal.fade{"aria-labelledby": "dl-add-user-group-modal-label", role: "dialog", tabindex: "-1"}
+  .modal-dialog{role: "document"}
+    .modal-content
+      .modal-header
+        %h4#add-user-group-modal-label.modal-title Add User Group
+        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+          %span{"aria-hidden": "true"} &times;
+      .modal-body
+        = render partial: 'form', locals: { user_group: @new_user_group,
+                                            context: :new }

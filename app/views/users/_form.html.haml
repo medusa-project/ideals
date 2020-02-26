@@ -16,8 +16,16 @@
       .form-check
         = f.check_box :sysadmin, class: "form-check-input"
         = f.label :sysadmin, "System Administrator", class: "form-check-label"
-  - else
-    %p This user has no editable properties.
+
+  %h5 User Groups
+  = hidden_field_tag "user[user_group_ids][]"
+  - UserGroup.all.order(:name).each do |group|
+    .form-check
+      = check_box_tag "user[user_group_ids][]", group.id,
+                      f.object.user_groups.include?(group),
+                      { id: "user_user_group_ids_#{group.id}", class: "form-check-input" }
+      = label_tag "user_user_group_ids_#{group.id}",
+      group.name, class: "form-check-label"
 
   .clearfix
     .float-right

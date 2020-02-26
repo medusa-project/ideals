@@ -2,3 +2,6 @@
 
 one:
   name: User Group One
+
+unused:
+  name: Unused Group

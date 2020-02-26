@@ -84,6 +84,6 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:sysadmin)
+    params.require(:user).permit(:sysadmin, user_group_ids: [])
   end
 end
