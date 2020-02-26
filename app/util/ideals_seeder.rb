@@ -1,3 +1,6 @@
+##
+# Seeds the database post-migration from IDEALS-DSpace.
+#
 class IdealsSeeder
 
   def seed
@@ -74,29 +77,30 @@ class IdealsSeeder
 
   def update_registered_element_labels
     # See: https://uofi.app.box.com/notes/593479281190
-    RegisteredElement.find_by_name("dc:title").update!(label: "Title")
-    RegisteredElement.find_by_name("dc:date:issued").update!(label: "Date of Publication")
-    RegisteredElement.find_by_name("dc:type").update!(label: "Type of Resource")
-    RegisteredElement.find_by_name("dc:subject").update!(label: "Subject Keywords")
-    RegisteredElement.find_by_name("dc:creator").update!(label: "Creator")
     RegisteredElement.find_by_name("dc:contributor").update!(label: "Contributor")
-    RegisteredElement.find_by_name("dc:description:abstract").update!(label: "Abstract")
+    RegisteredElement.find_by_name("dc:contributor:advisor").update!(label: "Dissertation Director of Research or Thesis Advisor")
+    RegisteredElement.find_by_name("dc:contributor:committeeChair").update!(label: "Dissertation Chair")
     RegisteredElement.find_by_name("dc:coverage:spatial").update!(label: "Geographic Coverage")
-    RegisteredElement.find_by_name("dc:type:genre").update!(label: "Genre of Resource")
-    RegisteredElement.find_by_name("dc:language").update!(label: "Language")
+    RegisteredElement.find_by_name("dc:creator").update!(label: "Creator")
+    RegisteredElement.find_by_name("dc:date:issued").update!(label: "Date of Publication")
+    RegisteredElement.find_by_name("dc:description:abstract").update!(label: "Abstract")
+    RegisteredElement.find_by_name("dc:description:sponsorship").update!(label: "Sponsor/Grant No.")
+    RegisteredElement.find_by_name("dc:identifier").update!(label: "Identifier")
     RegisteredElement.find_by_name("dc:identifier:bibliographicCitation").update!(label: "Complete Citation For This Item")
+    RegisteredElement.find_by_name("dc:identifier:uri").update!(label: "Identifiers: URI or URL")
+    RegisteredElement.find_by_name("dc:language").update!(label: "Language")
     RegisteredElement.find_by_name("dc:publisher").update!(label: "Publisher")
     RegisteredElement.find_by_name("dc:relation:ispartof").update!(label: "Series Name/Report No.")
-    RegisteredElement.find_by_name("dc:description:sponsorship").update!(label: "Sponsor/Grant No.")
     RegisteredElement.find_by_name("dc:rights").update!(label: "Copyright Statement")
-    RegisteredElement.find_by_name("dc:identifier").update!(label: "Identifier")
-    RegisteredElement.find_by_name("thesis:degree:name").update!(label: "Degree")
-    RegisteredElement.find_by_name("thesis:degree:level").update!(label: "Dissertation or Thesis")
-    RegisteredElement.find_by_name("dc:contributor:committeeChair").update!(label: "Dissertation Chair")
-    RegisteredElement.find_by_name("dc:contributor:advisor").update!(label: "Dissertation Director of Research or Thesis Advisor")
-    RegisteredElement.find_by_name("thesis:degree:grantor").update!(label: "Degree Granting Institution")
-    RegisteredElement.find_by_name("thesis:degree:discipline").update!(label: "Dissertation/Thesis Degree Discipline")
+    RegisteredElement.find_by_name("dc:subject").update!(label: "Subject Keywords")
+    RegisteredElement.find_by_name("dc:title").update!(label: "Title")
+    RegisteredElement.find_by_name("dc:type").update!(label: "Type of Resource")
+    RegisteredElement.find_by_name("dc:type:genre").update!(label: "Genre of Resource")
     RegisteredElement.find_by_name("thesis:degree:department").update!(label: "Dissertation/Thesis Degree Department")
+    RegisteredElement.find_by_name("thesis:degree:discipline").update!(label: "Dissertation/Thesis Degree Discipline")
+    RegisteredElement.find_by_name("thesis:degree:grantor").update!(label: "Degree Granting Institution")
+    RegisteredElement.find_by_name("thesis:degree:level").update!(label: "Dissertation or Thesis")
+    RegisteredElement.find_by_name("thesis:degree:name").update!(label: "Degree")
     RegisteredElement.find_by_name("thesis:degree:program").update!(label: "Dissertation/Thesis Degree Program")
   end
 
