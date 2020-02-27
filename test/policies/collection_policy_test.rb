@@ -8,6 +8,11 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   # create?()
 
+  test "create?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.create?
+  end
+
   test "create?() is restrictive by default" do
     policy = CollectionPolicy.new(users(:norights), @collection)
     assert !policy.create?
@@ -29,6 +34,11 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   # destroy?()
 
+  test "destroy?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.destroy?
+  end
+
   test "destroy?() is restrictive by default" do
     policy = CollectionPolicy.new(users(:norights), @collection)
     assert !policy.destroy?
@@ -40,6 +50,11 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   # edit_access?()
+
+  test "edit_access?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.edit_access?
+  end
 
   test "edit_access?() is restrictive by default" do
     policy = CollectionPolicy.new(users(:norights), @collection)
@@ -53,6 +68,11 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   # edit_membership?()
 
+  test "edit_membership?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.edit_membership?
+  end
+
   test "edit_membership?() is restrictive by default" do
     policy = CollectionPolicy.new(users(:norights), @collection)
     assert !policy.edit_membership?
@@ -64,6 +84,11 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   # edit_properties?()
+
+  test "edit_properties?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.edit_properties?
+  end
 
   test "edit_properties?() is restrictive by default" do
     policy = CollectionPolicy.new(users(:norights), @collection)
@@ -77,12 +102,22 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   # index?()
 
+  test "index?() returns true with a nil user" do
+    policy = CollectionPolicy.new(nil, Collection)
+    assert policy.index?
+  end
+
   test "index?() authorizes everyone" do
-    policy = CollectionPolicy.new(users(:norights), @collection)
+    policy = CollectionPolicy.new(users(:norights), Collection)
     assert policy.index?
   end
 
   # new?()
+
+  test "new?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.new?
+  end
 
   test "new?() is restrictive by default" do
     policy = CollectionPolicy.new(users(:norights), @collection)
@@ -96,12 +131,22 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   # show?()
 
+  test "show?() returns true with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert policy.show?
+  end
+
   test "show?() authorizes everyone" do
     policy = CollectionPolicy.new(users(:norights), @collection)
     assert policy.show?
   end
 
   # update?()
+
+  test "update?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.update?
+  end
 
   test "update?() is restrictive by default" do
     policy = CollectionPolicy.new(users(:norights), @collection)
@@ -110,7 +155,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   test "update?() authorizes sysadmins" do
     policy = CollectionPolicy.new(users(:admin), @collection)
-    assert policy.new?
+    assert policy.update?
   end
 
 end

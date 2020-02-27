@@ -29,6 +29,11 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   # edit?()
 
+  test "edit?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.edit?
+  end
+
   test "edit?() is restrictive by default" do
     policy = ItemPolicy.new(users(:norights), @item)
     assert !policy.edit?
@@ -59,12 +64,22 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   # index?()
 
+  test "index?() returns true with a nil user" do
+    policy = ItemPolicy.new(nil, Item)
+    assert policy.index?
+  end
+
   test "index?() authorizes everyone" do
-    policy = ItemPolicy.new(users(:norights), @item)
+    policy = ItemPolicy.new(users(:norights), Item)
     assert policy.index?
   end
 
   # show?()
+
+  test "show?() returns true with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert policy.show?
+  end
 
   test "show?() restricts undiscoverable items by default" do
     policy = ItemPolicy.new(users(:norights), items(:undiscoverable))
@@ -97,6 +112,11 @@ class ItemPolicyTest < ActiveSupport::TestCase
   end
 
   # update?()
+
+  test "update?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.update?
+  end
 
   test "update?() is restrictive by default" do
     policy = ItemPolicy.new(users(:norights), @item)

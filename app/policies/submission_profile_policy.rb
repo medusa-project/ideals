@@ -17,7 +17,7 @@ class SubmissionProfilePolicy < ApplicationPolicy
   end
 
   def create?
-    user.sysadmin?
+    user&.sysadmin?
   end
 
   def destroy?
@@ -29,7 +29,7 @@ class SubmissionProfilePolicy < ApplicationPolicy
   end
 
   def index?
-    user.sysadmin?
+    user&.sysadmin?
   end
 
   def new?

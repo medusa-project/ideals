@@ -8,7 +8,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   # edit?()
 
-  test "edit?() with a nil subject user" do
+  test "edit?() returns false with a nil subject user" do
     policy = UserPolicy.new(nil, @object_user)
     assert !policy.edit?
   end
@@ -25,24 +25,24 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   # index?()
 
-  test "index?() with a nil subject user" do
-    policy = UserPolicy.new(nil, @object_user)
+  test "index?() returns false with a nil subject user" do
+    policy = UserPolicy.new(nil, User)
     assert !policy.index?
   end
 
   test "index?() does not authorize non-sysadmins" do
-    policy = UserPolicy.new(users(:norights), @object_user)
+    policy = UserPolicy.new(users(:norights), User)
     assert !policy.index?
   end
 
   test "index?() authorizes sysadmins" do
-    policy = UserPolicy.new(users(:admin), @object_user)
+    policy = UserPolicy.new(users(:admin), User)
     assert policy.index?
   end
 
   # show?()
 
-  test "show?() with a nil subject user" do
+  test "show?() returns false with a nil subject user" do
     policy = UserPolicy.new(nil, @object_user)
     assert !policy.show?
   end
@@ -59,7 +59,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   # update?()
 
-  test "update?() with a nil subject user" do
+  test "update?() returns false with a nil subject user" do
     policy = UserPolicy.new(nil, @object_user)
     assert !policy.update?
   end

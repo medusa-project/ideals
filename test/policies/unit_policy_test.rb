@@ -8,6 +8,11 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   # create?()
 
+  test "create?() returns false with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.create?
+  end
+
   test "create?() is restrictive by default" do
     policy = UnitPolicy.new(users(:norights), @unit)
     assert !policy.create?
@@ -24,6 +29,11 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   # destroy?()
+
+  test "destroy?() returns false with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.destroy?
+  end
 
   test "destroy?() is restrictive by default" do
     policy = UnitPolicy.new(users(:norights), @unit)
@@ -42,6 +52,11 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   # edit?()
 
+  test "edit?() returns false with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.edit?
+  end
+
   test "edit?() is restrictive by default" do
     policy = UnitPolicy.new(users(:norights), @unit)
     assert !policy.edit?
@@ -59,12 +74,22 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   # index?()
 
+  test "index?() returns true with a nil user" do
+    policy = UnitPolicy.new(nil, Unit)
+    assert policy.index?
+  end
+
   test "index?() authorizes everyone" do
-    policy = UnitPolicy.new(users(:norights), @unit)
+    policy = UnitPolicy.new(users(:norights), Unit)
     assert policy.index?
   end
 
   # new?()
+
+  test "new?() returns false with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.new?
+  end
 
   test "new?() is restrictive by default" do
     policy = UnitPolicy.new(users(:norights), @unit)
@@ -83,12 +108,22 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   # show?()
 
+  test "show?() returns true with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert policy.show?
+  end
+
   test "show?() authorizes everyone" do
     policy = UnitPolicy.new(users(:norights), @unit)
     assert policy.show?
   end
 
   # update?()
+
+  test "update?() returns false with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.update?
+  end
 
   test "update?() is restrictive by default" do
     policy = UnitPolicy.new(users(:norights), @unit)
