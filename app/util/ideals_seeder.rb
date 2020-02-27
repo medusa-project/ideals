@@ -170,7 +170,7 @@ class IdealsSeeder
     RegisteredElement.find_by_name("dc:publisher").update!(label: "Publisher")
     RegisteredElement.find_by_name("dc:relation:ispartof").update!(label: "Series Name/Report No.")
     RegisteredElement.find_by_name("dc:rights").update!(label: "Copyright Statement")
-    RegisteredElement.find_by_name("dc:subject").update!(label: "Subject Keywords")
+    RegisteredElement.find_by_name("dc:subject").update!(label: "Keyword")
     RegisteredElement.find_by_name("dc:title").update!(label: "Title")
     RegisteredElement.find_by_name("dc:type").update!(label: "Type of Resource")
     RegisteredElement.find_by_name("dc:type:genre").update!(label: "Genre of Resource")
