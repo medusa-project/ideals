@@ -2,10 +2,11 @@
 
 class ItemsController < ApplicationController
 
-
   before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_item, only: [:destroy, :edit_properties, :show, :update]
-  before_action :authorize_item, only: [:destroy, :edit_properties, :show, :update]
+  before_action :set_item, only: [:destroy, :edit_metadata, :edit_properties,
+                                  :show, :update]
+  before_action :authorize_item, only: [:destroy, :edit_metadata,
+                                        :edit_properties, :show, :update]
 
   ##
   # Responds to `POST /items`.
@@ -43,9 +44,19 @@ class ItemsController < ApplicationController
   end
 
   ##
+  # Used for editing metadata.
+  #
+  # Responds to GET `/items/:id/edit-metadata` (XHR only)
+  #
+  def edit_metadata
+    render partial: "items/metadata_form",
+           locals: { item: @resource }
+  end
+
+  ##
   # Used for editing basic properties.
   #
-  # Responds to GET `/items/:id/edit` (XHR only)
+  # Responds to GET `/items/:id/edit-properties` (XHR only)
   #
   def edit_properties
     render partial: "items/properties_form",

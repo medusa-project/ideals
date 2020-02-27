@@ -47,6 +47,10 @@ class ItemPolicy < ApplicationPolicy
     create?
   end
 
+  def edit_metadata?
+    update?
+  end
+
   def edit_properties?
     update?
   end

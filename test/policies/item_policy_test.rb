@@ -44,6 +44,41 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.destroy?
   end
 
+  # edit_metadata?()
+
+  test "edit_metadata?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.edit_metadata?
+  end
+
+  test "edit_metadata?() is restrictive by default" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.edit_metadata?
+  end
+
+  test "edit_metadata?() authorizes sysadmins" do
+    policy = ItemPolicy.new(users(:admin), @item)
+    assert policy.edit_metadata?
+  end
+
+  test "edit_metadata?() authorizes unit admins" do
+    user = users(:norights)
+    unit = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(user, @item)
+    assert policy.edit_metadata?
+  end
+
+  test "edit_metadata?() authorizes collection managers" do
+    user = users(:norights)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(user, @item)
+    assert policy.edit_metadata?
+  end
+
   # edit_properties?()
 
   test "edit_properties?() returns false with a nil user" do

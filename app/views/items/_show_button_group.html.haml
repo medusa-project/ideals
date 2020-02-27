@@ -16,6 +16,13 @@
                                                 role: "button"}
             %i.fa.fa-info-circle
             Properties
+        - if policy(@resource).edit_metadata?
+          %a.dropdown-item.edit-item-metadata{"data-item-id": @resource.id,
+                                              "data-target": "#edit-item-metadata-modal",
+                                              "data-toggle": "modal",
+                                              role: "button"}
+            = icon_for(AscribedElement)
+            Metadata
 
   // Delete button
   -if policy(@resource).destroy?

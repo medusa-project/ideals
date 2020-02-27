@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   end
   resources :invitees
   resources :items, except: [:edit, :new] do
+    match "/edit-metadata", to: "items#edit_metadata", via: :get
     match "/edit-properties", to: "items#edit_properties", via: :get
   end
   resources :metadata_profiles, path: "metadata-profiles" do

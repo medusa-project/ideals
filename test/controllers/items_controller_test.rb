@@ -45,6 +45,28 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # edit_metadata()
+
+  test "edit_metadata() redirects to login path for logged-out users" do
+    item = items(:item1)
+    get "/items/#{item.id}/edit-metadata", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_metadata() redirects to login path for unauthorized users" do
+    log_in_as(users(:norights))
+    item = items(:item1)
+    get "/items/#{item.id}/edit-metadata", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_metadata() returns HTTP 200" do
+    log_in_as(users(:admin))
+    item = items(:item1)
+    get item_edit_metadata_path(item)
+    assert_response :ok
+  end
+
   # edit_properties()
 
   test "edit_properties() redirects to login path for logged-out users" do
