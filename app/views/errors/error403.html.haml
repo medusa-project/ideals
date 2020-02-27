@@ -1,0 +1,7 @@
+.dialog.text-center
+  %h2 You don't have permission to access this resource.
+  %hr
+  %p
+    IDEALS @ Illinois administrators may be contacted at:
+    %a{href: "mailto:#{::Configuration.instance.website[:email]}"}
+      = ::Configuration.instance.website[:email]

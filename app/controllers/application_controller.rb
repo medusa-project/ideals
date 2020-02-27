@@ -10,6 +10,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActionView::MissingTemplate do |_exception|
     render json: {}, status: :unprocessable_entity
   end
+  rescue_from Pundit::NotAuthorizedError, with: :unauthorized
 
   after_action :copy_flash_to_response_headers, :store_location
 
@@ -65,6 +66,14 @@ class ApplicationController < ActionController::Base
         format.xml { render xml: {status: 500}.to_xml }
       end
 
+    end
+  end
+
+  def unauthorized
+    respond_to do |format|
+      format.html { render "errors/error403", status: :forbidden }
+      format.json { render nothing: true, status: :forbidden }
+      format.xml { render xml: {status: 403}.to_xml }
     end
   end
 

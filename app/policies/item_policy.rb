@@ -39,7 +39,15 @@ class ItemPolicy < ApplicationPolicy
     @item = item
   end
 
-  def edit?
+  def create?
+    user&.sysadmin? # TODO: write this
+  end
+
+  def destroy?
+    create?
+  end
+
+  def edit_properties?
     update?
   end
 

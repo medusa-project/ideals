@@ -27,39 +27,56 @@ class ItemPolicyTest < ActiveSupport::TestCase
     @item = items(:item1)
   end
 
-  # edit?()
+  # destroy?()
 
-  test "edit?() returns false with a nil user" do
+  test "destroy?() returns false with a nil user" do
     policy = ItemPolicy.new(nil, @item)
-    assert !policy.edit?
+    assert !policy.destroy?
   end
 
-  test "edit?() is restrictive by default" do
+  test "destroy?() is restrictive by default" do
     policy = ItemPolicy.new(users(:norights), @item)
-    assert !policy.edit?
+    assert !policy.destroy?
   end
 
-  test "edit?() authorizes sysadmins" do
+  test "destroy?() authorizes sysadmins" do
     policy = ItemPolicy.new(users(:admin), @item)
-    assert policy.edit?
+    assert policy.destroy?
   end
 
-  test "edit?() authorizes unit admins" do
+  # edit_properties?()
+
+  test "edit_properties?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.edit_properties?
+  end
+
+  test "edit_properties?() is restrictive by default" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.edit_properties?
+  end
+
+  test "edit_properties?() authorizes sysadmins" do
+    policy = ItemPolicy.new(users(:admin), @item)
+    assert policy.edit_properties?
+  end
+
+  test "edit_properties?() authorizes unit admins" do
     user = users(:norights)
     unit = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
     policy = ItemPolicy.new(user, @item)
-    assert policy.edit?
+    assert policy.edit_properties?
   end
 
-  test "edit?() authorizes collection managers" do
+  test "edit_properties?() authorizes collection managers" do
     user = users(:norights)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!
     policy = ItemPolicy.new(user, @item)
-    assert policy.edit?
+    assert policy.edit_properties?
   end
 
   # index?()

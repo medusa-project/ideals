@@ -1,0 +1,28 @@
+-# frozen_string_literal: true
+//
+// Required arguments:
+//
+// item [Item]
+//
+= form_for(item, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  / Include this only because `item` is required in the params.
+  /= f.hidden_field :visible, value: f.object.visible
+
+  .form-group
+    .form-check
+      = f.check_box :discoverable, class: "form-check-input"
+      = f.label :discoverable, class: "form-check-label"
+    .form-check
+      = f.check_box :in_archive, class: "form-check-input"
+      = f.label :in_archive, class: "form-check-label"
+    .form-check
+      = f.check_box :withdrawn, class: "form-check-input"
+      = f.label :withdrawn, class: "form-check-label"
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Edit", class: 'btn btn-primary')

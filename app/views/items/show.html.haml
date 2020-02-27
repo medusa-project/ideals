@@ -1,18 +1,9 @@
+- provide :body_id, "show_item"
 - provide :title, @resource.title
 
-%p#notice= notice
+= render partial: "show_button_group"
 
 %h1= @resource.title
-
-- if @resource.withdrawn
-  .alert.alert-info
-    This item has been withdrawn.
-- elsif !@resource.in_archive
-  .alert.alert-info
-    This item is not in archive.
-- elsif !@resource.discoverable
-  .alert.alert-info
-    This item is not discoverable.
 
 - if policy(@resource).show?
   %ul.nav.nav-tabs{role: "tablist"}
@@ -40,19 +31,19 @@
                                   "aria-selected": "true"}
         = icon_for(Collection)
         Collections
-    - if policy(@resource).edit?
+    - if policy(@resource).edit_properties? # TODO: this is wrong
       %li.nav-item
         %a#access-tab.nav-link{href: "#access-tab-content",
-                                    "data-toggle": "tab",
-                                    role: "tab",
-                                    "aria-controls": "access-tab-content",
-                                    "aria-selected": "true"}
+                               "data-toggle": "tab",
+                               role: "tab",
+                               "aria-controls": "access-tab-content",
+                               "aria-selected": "true"}
           %i.fa.fa-users
           Access
 
   .tab-content
     #metadata-tab-content.tab-pane.fade.show.active{role: "tabpanel",
-                                             "aria-labelledby": "metadata-tab"}
+                                                    "aria-labelledby": "metadata-tab"}
       = metadata_as_dl(@resource.effective_metadata_profile,
                        @resource.elements)
 
@@ -82,7 +73,7 @@
                                       "aria-labelledby": "collections-tab"}
       = resource_list(@collections)
 
-    - if policy(@resource).edit?
+    - if policy(@resource).edit_properties? # TODO: this is wrong
       #access-tab-content.tab-pane{role: "tabpanel",
                                    "aria-labelledby": "access-tab"}
         %h3 Unit Administrators
@@ -109,3 +100,7 @@
               %li= link_to(user.name, "mailto:#{user.email}")
         - else
           None
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-item-properties-modal",
+                   title: "Edit Properties" }
