@@ -13,7 +13,12 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def create?
-    user&.sysadmin?
+    if user # IR-67
+      return user.sysadmin? ||
+        user.administrators.count.positive? ||
+        user.managers.count.positive?
+    end
+    false
   end
 
   def destroy?
@@ -25,7 +30,7 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def index?
-    user&.sysadmin?
+    create?
   end
 
   def new?

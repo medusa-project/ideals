@@ -13,6 +13,7 @@ class User < ApplicationRecord
 
   has_many :administrators
   has_many :administering_units, through: :administrators, source: :unit
+  has_many :managers
   has_many :managing_collections, through: :managers, source: :collection
   has_many :primary_administering_units, class_name: "Unit",
            inverse_of: :primary_administrator
