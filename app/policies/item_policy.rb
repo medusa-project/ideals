@@ -63,6 +63,10 @@ class ItemPolicy < ApplicationPolicy
     @user&.sysadmin? || (@item.discoverable && !@item.withdrawn && @item.in_archive)
   end
 
+  def show_all_metadata?
+    @user&.sysadmin? # TODO: this is wrong
+  end
+
   def update?
     @user&.sysadmin? || (@item.all_collection_managers + @item.all_unit_administrators).include?(@user)
   end

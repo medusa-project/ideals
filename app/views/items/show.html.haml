@@ -42,8 +42,23 @@
 .tab-content
   #metadata-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                   "aria-labelledby": "metadata-tab"}
-    = metadata_as_dl(@resource.effective_metadata_profile,
-                     @resource.elements)
+    - if policy(@resource).show_all_metadata?
+      .row
+        .col-md-6
+          %h4 Visible Public Elements
+          %p
+            Metadata Profile
+            = link_to(@resource.effective_metadata_profile.name,
+                      @resource.effective_metadata_profile)
+          %hr
+          = metadata_as_dl(@resource.elements,
+                           @resource.effective_metadata_profile)
+        .col-md-6
+          %h4 All Ascribed Elements
+          = metadata_as_dl(@resource.elements)
+    - else
+      = metadata_as_dl(@resource.elements,
+                       @resource.effective_metadata_profile)
 
   #properties-tab-content.tab-pane.fade{role: "tabpanel",
                                         "aria-labelledby": "properties-tab"}

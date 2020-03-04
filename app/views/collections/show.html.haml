@@ -48,7 +48,7 @@
                                                     "aria-labelledby": "properties-tab"}
     .row
       .col-md-8
-        = metadata_as_dl(@metadata_profile, @resource.elements)
+        = metadata_as_dl(@resource.elements, @metadata_profile)
       .col-md-4
         - if current_user&.effective_manager?(@resource)
           %dl

@@ -93,30 +93,35 @@ module ApplicationHelper
   end
 
   ##
-  # @param profile [MetadataProfile]
-  # @param elements [Enumerable<AscribedElement>]
+  # @param ascribed_elements [Enumerable<AscribedElement>]
+  # @param profile [MetadataProfile] If provided, only
+  #        {MetadataProfileElement#visible visible elements} are displayed.
   # @return [String] HTML definition list.
   #
-  def metadata_as_dl(profile, elements)
+  def metadata_as_dl(ascribed_elements, profile = nil)
     html = StringIO.new
     html << "<dl>"
-    profile.elements.each do |profile_element|
-      matching_elements = elements.select{ |e| e.name == profile_element.name }
-      if matching_elements.any?
+    all_elements = profile ?
+                       profile.elements.where(visible: true).order(:index) :
+                       RegisteredElement.all.order(:label)
+    all_elements.each do |element|
+      matching_ascribed_elements =
+          ascribed_elements.select{ |e| e.name == element.name }
+      if matching_ascribed_elements.any?
         html << "<dt>"
-        html <<   profile_element.label
+        html <<   element.label
         html << "</dt>"
         html << "<dd>"
-        if matching_elements.length > 1
+        if matching_ascribed_elements.length > 1
           html << "<ul>"
-          matching_elements.each do |element|
+          matching_ascribed_elements.each do |asc_e|
             html << "<li>"
-            html <<   sanitize(element.string)
+            html <<   sanitize(asc_e.string)
             html << "</li>"
           end
           html << "</ul>"
         else
-          html << sanitize(matching_elements.first.string)
+          html << sanitize(matching_ascribed_elements.first.string)
         end
         html << "</dd>"
       end

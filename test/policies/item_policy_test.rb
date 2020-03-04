@@ -163,6 +163,23 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  # show?()
+
+  test "show_all_metadata?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.show_all_metadata?
+  end
+
+  test "show_all_metadata?() does not authorize non-sysadmins" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.show_all_metadata?
+  end
+
+  test "show_all_metadata?() authorizes sysadmins" do
+    policy = ItemPolicy.new(users(:admin), items(:undiscoverable))
+    assert policy.show_all_metadata?
+  end
+
   # update?()
 
   test "update?() returns false with a nil user" do
