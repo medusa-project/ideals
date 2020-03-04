@@ -1,0 +1,10 @@
+#non-netid-login-modal.modal.fade{"aria-hidden": "true", "aria-labelledby": "non-netid-login-modal-label", role: "dialog", tabindex: "-1"}
+  .modal-dialog.modal-lg{role: "document"}
+    .modal-content
+      = form_tag '/auth/identity/callback' do
+        .modal-header
+          %h5#non-netid-login-modal-label.modal-title Log In
+          %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+            %span{"aria-hidden": "true"} &times;
+        .modal-body
+          = render partial: "sessions/login_form"

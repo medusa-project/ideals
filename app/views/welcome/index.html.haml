@@ -21,7 +21,7 @@
       = render partial: 'welcome'
     .col-4
       %br
-      = link_to(login_path, role: 'button', class: 'btn btn-primary btn-block') do
+      = link_to(netid_login_path, role: 'button', class: 'btn btn-primary btn-block') do
         = image_tag 'library_wordmark_horizontal_1.png', style: 'height: 1em'
         %i.fa.fa-sign-in-alt
         &nbsp;Log in with Illinois NetID

@@ -5,10 +5,11 @@ Rails.application.routes.draw do
   get '/deposit', to: "welcome#deposit"
 
   # authentication routes
-  match '/auth/:provider/callback', to: 'sessions#create', via: [:get, :post]
-  match '/login', to: 'sessions#new', as: :login, via: [:get, :post]
-  match '/logout', to: 'sessions#destroy', as: :logout, via: :all
-  match '/auth/failure', to: 'sessions#unauthorized', as: :unauthorized, via: [:get, :post]
+  match "/auth/:provider/callback", to: "sessions#create", via: [:get, :post]
+  match "/login", to: "sessions#new", as: :login, via: :get
+  match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: [:get, :post]
+  match "/logout", to: "sessions#destroy", as: :logout, via: :all
+  match "/auth/failure", to: "sessions#unauthorized", as: :unauthorized, via: [:get, :post]
 
   # handle routing
   get '/handle/:prefix/:suffix', to: 'handles#resolve'

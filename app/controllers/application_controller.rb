@@ -12,13 +12,12 @@ class ApplicationController < ActionController::Base
   end
   rescue_from Pundit::NotAuthorizedError, with: :unauthorized
 
-  after_action :copy_flash_to_response_headers, :store_location
+  before_action :store_location
+  after_action :copy_flash_to_response_headers
 
   def store_location
     return nil unless request.get?
-
-    if request.path != login_path and
-        request.path != logout_path and
+    if !["/auth/failure", login_path, logout_path, netid_login_path].include?(request.path) &&
         !request.xhr? # don't store ajax calls
       session[:previous_url] = request.fullpath
       session[:login_return_uri] = request.env["REQUEST_URI"]

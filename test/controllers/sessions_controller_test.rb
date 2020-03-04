@@ -34,8 +34,15 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   # new()
 
-  test "new() redirects to shibboleth login path" do
+  test "new() displays the login page" do
     get login_path
+    assert_response :ok
+  end
+
+  # new_netid()
+
+  test "new_netid() redirects to netid login path" do
+    get netid_login_path
     assert_redirected_to "http://www.example.com/Shibboleth.sso/Login?target=https://localhost/auth/shibboleth/callback"
   end
 

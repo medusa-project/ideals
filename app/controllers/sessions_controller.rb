@@ -2,7 +2,17 @@
 
 class SessionsController < ApplicationController
 
+  ##
+  # Displays the login page. Responds to `GET /login`.
+  #
   def new
+  end
+
+  ##
+  # Redirects to the Shibboleth login flow. Responds to
+  # `GET/POST /netid-login`.
+  #
+  def new_netid
     redirect_to(shibboleth_login_path(Ideals::Application.shibboleth_host))
   end
 
@@ -29,11 +39,12 @@ class SessionsController < ApplicationController
 
   def destroy
     session[:user_id] = nil
-    redirect_to root_url
+    redirect_back fallback_location: root_url
   end
 
   def unauthorized
-    redirect_to root_url, notice: "Login failed."
+    flash['error'] = "Login failed."
+    redirect_back fallback_location: root_url
   end
 
   protected
