@@ -1,0 +1,26 @@
+%dl
+  %dt Unit Administrators
+  %dd
+    - admins = @resource.all_unit_administrators
+    - if admins.any?
+      %ul
+        - admins.each do |user|
+          %li= link_to(user.name, "mailto:#{user.email}")
+    - else
+      None
+  %dt Managers
+  %dd
+    - if @resource.managing_users.any?
+      %ul
+        - @resource.managing_users.each do |user|
+          %li= link_to(user.name, "mailto:#{user.email}")
+    - else
+      None
+  %dt Submitters
+  %dd
+    - if @resource.submitters.any?
+      %ul
+        - @resource.submitting_users.each do |user|
+          %li= link_to(user.name, "mailto:#{user.email}")
+    - else
+      None

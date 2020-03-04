@@ -46,83 +46,20 @@
 .tab-content
   #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                     "aria-labelledby": "properties-tab"}
-    .row
-      .col-md-8
-        = metadata_as_dl(@resource.elements, @metadata_profile)
-      .col-md-4
-        - if current_user&.effective_manager?(@resource)
-          %dl
-            %dt Metadata Profile
-            %dd
-              - if @resource.metadata_profile
-                - if policy(@metadata_profile).show?
-                  = link_to(@metadata_profile.name, @metadata_profile)
-                - else
-                  = @metadata_profile.name
-              - else
-                = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
-            %dt Submission Profile
-            %dd
-              - if @resource.submission_profile
-                - if policy(@submission_profile).show?
-                  = link_to(@submission_profile.name, @submission_profile)
-                - else
-                  = @submission_profile.name
-              - else
-                = raw("Not assigned (falling back to #{link_to(@submission_profile.name, @submission_profile)})")
-        %dl
-          %dt Created
-          %dd= @resource.created_at
-          %dt Last Updated
-          %dd= @resource.updated_at
+    = render partial: "show_properties_tab"
 
   #unit-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
                                                   "aria-labelledby": "unit-membership-tab"}
-    = resource_list(@resource.all_units.sort{ |u| u.title <=> u.title },
-                    @resource.primary_unit_id)
+    = render partial: "show_units_tab"
 
   #items-tab-content.tab-pane.fade.show{role: "tabpanel",
                                         "aria-labelledby": "items-tab"}
-    - if @items.count.positive?
-      = form_tag(collection_path(@resource), method: :get, class: "filter") do
-        .row.justify-content-between
-          .col-4
-            .input-group.mb-3.filter-field
-              = hidden_field_tag("fq[]", "#{Item::IndexFields::COLLECTION_TITLES}:#{@resource.title}")
-              = filter_field(icon: "fa fa-filter", submit_text: "Filter")
-          .col-4
-            .input-group
-              = sort_menu(MetadataProfile.default)
-
-      = render partial: "items/listing"
-    - else
-      This collection does not contain any items.
+    = render partial: "show_items_tab"
 
   - if policy(@resource).edit_access?
     #access-tab-content.tab-pane.fade.show{role: "tabpanel",
                                            "aria-labelledby": "access-tab"}
-      %h3 Unit Administrators
-      - admins = @resource.all_unit_administrators
-      - if admins.any?
-        %ul
-          - admins.each do |user|
-            %li= link_to(user.name, "mailto:#{user.email}")
-      - else
-        None
-      %h3 Managers
-      - if @resource.managing_users.any?
-        %ul
-          - @resource.managing_users.each do |user|
-            %li= link_to(user.name, "mailto:#{user.email}")
-      - else
-        None
-      %h3 Submitters
-      - if @resource.submitters.any?
-        %ul
-          - @resource.submitting_users.each do |user|
-            %li= link_to(user.name, "mailto:#{user.email}")
-      - else
-        None
+      = render partial: "show_access_tab"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-collection-properties-modal",

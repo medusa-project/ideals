@@ -1,0 +1,11 @@
+-if policy(Collection).new?
+  .btn-group.float-right{role: "group"}
+    / Add Collection button
+    %button.btn.btn-light{"data-target": "#add-collection-modal",
+                            "data-toggle": "modal", type: "button"}
+      %i.fa.fa-plus
+      Add Collection
+- if @collections.any?
+  = resource_list(@collections)
+- else
+  %p This unit does not contain any collections.
