@@ -21,7 +21,7 @@
             %td
               = select_tag "elements[][name]",
                            options_for_select(RegisteredElement.order(:label).pluck(:label, :name),
-                                              asc_element.name),
+                                              asc_element&.name),
                            class: "custom-select"
             %td
               %table.table-sm.table-borderless

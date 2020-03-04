@@ -20,14 +20,14 @@ class AscribedElement < ApplicationRecord
   # @return [String] Label of the associated {RegisteredElement}.
   #
   def label
-    registered_element.label
+    registered_element&.label
   end
 
   ##
   # @return [String] Name of the associated {RegisteredElement}.
   #
   def name
-    registered_element.name
+    registered_element&.name
   end
 
   private

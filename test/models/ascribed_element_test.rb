@@ -57,10 +57,20 @@ class AscribedElementTest < ActiveSupport::TestCase
     assert_equal "Title", @instance.label
   end
 
+  test "label() returns nil when there is no associated RegisteredElement" do
+    @instance.registered_element = nil
+    assert_nil @instance.label
+  end
+
   # name()
 
   test "name() returns the associated RegisteredElement name" do
     assert_equal "dc:title", @instance.name
+  end
+
+  test "name() returns nil when there is no associated RegisteredElement" do
+    @instance.registered_element = nil
+    assert_nil @instance.name
   end
 
 end
