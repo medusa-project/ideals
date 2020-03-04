@@ -23,7 +23,7 @@
                                     "aria-controls": "unit-membership-tab-content",
                                     "aria-selected": "true"}
       = icon_for(Unit)
-      Unit Membership
+      Owning Units
   %li.nav-item
     %a#items-tab.nav-link{href: "#items-tab-content",
                           "data-toggle": "tab",
@@ -78,18 +78,8 @@
 
   #unit-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
                                                   "aria-labelledby": "unit-membership-tab"}
-    - @resource.all_units.sort{ |u| u.title <=> u.title }.each do |unit|
-      .media.resource-list
-        .thumbnail
-          = link_to(unit) do
-            = icon_for(unit)
-        .media-body
-          %h5.mt-0
-            = link_to(unit.title, unit)
-            - if @resource.primary_unit_id == unit.id
-              %span.badge.badge-primary PRIMARY
-          %br
-          %br
+    = resource_list(@resource.all_units.sort{ |u| u.title <=> u.title },
+                    @resource.primary_unit_id)
 
   #items-tab-content.tab-pane.fade.show{role: "tabpanel",
                                         "aria-labelledby": "items-tab"}

@@ -211,9 +211,11 @@ module ApplicationHelper
 
   ##
   # @param resources [Enumerable<Object>]
+  # @param primary_id [Integer] ID of a resource in `resources` to visually
+  #        mark as "primary."
   # @return [String] HTML listing.
   #
-  def resource_list(resources)
+  def resource_list(resources, primary_id = nil)
     html = StringIO.new
     resources.each do |resource|
       html << "<div class=\"media resource-list\">"
@@ -225,6 +227,9 @@ module ApplicationHelper
       html <<   "<div class=\"media-body\">"
       html <<     "<h5 class=\"mt-0\">"
       html <<       link_to(resource.title, resource)
+      if primary_id == resource.id
+        html <<     " <span class=\"badge badge-primary\">PRIMARY</span>"
+      end
       html <<     "</h5>"
 
       if resources.first.kind_of?(Item)

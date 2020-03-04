@@ -29,7 +29,7 @@
                                 "aria-controls": "collections-tab-content",
                                 "aria-selected": "true"}
       = icon_for(Collection)
-      Collections
+      Owning Collections
   %li.nav-item
     %a#access-tab.nav-link{href: "#access-tab-content",
                            "data-toggle": "tab",
@@ -84,7 +84,7 @@
 
   #collections-tab-content.tab-pane{role: "tabpanel",
                                     "aria-labelledby": "collections-tab"}
-    = resource_list(@collections)
+    = resource_list(@collections, @resource.primary_collection_id)
 
   #access-tab-content.tab-pane{role: "tabpanel",
                                "aria-labelledby": "access-tab"}
