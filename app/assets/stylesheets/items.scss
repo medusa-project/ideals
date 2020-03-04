@@ -6,3 +6,34 @@ body#list_items, body#list_collections {
     width: 18em;
   }
 }
+
+body#show_item {
+  #edit-item-metadata-modal {
+    textarea {
+      height: 5em;
+    }
+    table {
+      td {
+        vertical-align: middle;
+      }
+      td:first-child {
+        max-width: 12em;
+        padding-left: 0;
+      }
+      table {
+        width: 100%;
+        td:first-child {
+          text-align: right;
+          width: 1px;
+        }
+        td:last-child {
+          width: 100%;
+        }
+      }
+      td:last-child {
+        width: 1px;
+        padding-right: 0;
+      }
+    }
+  }
+}

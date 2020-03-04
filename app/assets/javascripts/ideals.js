@@ -18,6 +18,26 @@ const IDEALS = {
         }
     },
 
+    MetadataEditor: function() {
+        $("button.add").on("click", function(e) {
+            const last_tr = $(this).parent(".form-group").find("table.metadata > tbody > tr:last-child");
+            const clone = last_tr.clone();
+            clone.find("input").val("");
+            last_tr.after(clone);
+            addRemoveEventListeners();
+            e.preventDefault();
+        });
+        addRemoveEventListeners();
+
+        function addRemoveEventListeners() {
+            $("button.remove").off("click").on("click", function () {
+                if ($(this).parents("table").find("tr").length > 1) {
+                    $(this).parents("tr").remove();
+                }
+            });
+        }
+    },
+
     MultiUserList: function() {
         $("button.add").on("click", function(e) {
             const clone = $(this).prev().clone();

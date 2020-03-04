@@ -98,7 +98,11 @@ class ItemsController < ApplicationController
   #
   def update
     begin
-      @resource.update!(item_params)
+      ActiveRecord::Base.transaction do
+        @resource.update!(item_params)
+        build_metadata
+        @resource.save!
+      end
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @resource.errors.any? ? @resource : e },
@@ -125,6 +129,24 @@ class ItemsController < ApplicationController
   def set_item
     @resource = Item.find(params[:id] || params[:item_id])
     @breadcrumbable = @resource
+  end
+
+  ##
+  # Builds and ascribes {AscribedElement}s to the item based on user input.
+  # This is done manually because to do it using Rails nested attributes would
+  # be harder.
+  #
+  def build_metadata
+    if params[:elements].present?
+      ActiveRecord::Base.transaction do
+        @resource.elements.destroy_all
+        params[:elements].each do |element|
+          @resource.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
+                                   string:             element[:string],
+                                   uri:                element[:uri])
+        end
+      end
+    end
   end
 
 end

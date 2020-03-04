@@ -20,6 +20,7 @@ const ItemView = function() {
         const url = ROOT_URL + "/items/" + id + "/edit-metadata";
         $.get(url, function(data) {
             $("#edit-item-metadata-modal .modal-body").html(data);
+            new IDEALS.MetadataEditor();
         });
     });
     $(".edit-item-properties").on("click", function() {

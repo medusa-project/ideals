@@ -9,11 +9,39 @@
     - # populated via ajax by shared/_validation_messages.js.erb
 
   / Include this only because `item` is required in the params.
-  /= f.hidden_field :visible, value: f.object.visible
+  = f.hidden_field :visible, value: f.object.in_archive
 
-  %p Metadata editing will appear here.
+  .form-group
+    %table.table.metadata
+      %tbody
+        - asc_elements = f.object.elements
+        - asc_elements << AscribedElement.new if asc_elements.empty?
+        - asc_elements.each do |asc_element|
+          %tr
+            %td
+              = select_tag "elements[][name]",
+                           options_for_select(RegisteredElement.order(:label).pluck(:label, :name),
+                                              asc_element.name),
+                           class: "custom-select"
+            %td
+              %table.table-sm.table-borderless
+                %tr
+                  %td String:
+                  %td
+                    = text_area_tag "elements[][string]", asc_element.string,
+                                    class: "form-control"
+                %tr
+                  %td URI:
+                  %td
+                    = text_field_tag "elements[][uri]", asc_element.uri,
+                                     class: "form-control"
+            %td
+              %button.btn.btn-danger.remove{type: "button"} &minus;
+    %button.btn.btn-success.add
+      %i.fa.fa-plus
+      Add Element
 
   .clearfix
-    .float-right
+    .float-right.mb-3
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
       = f.submit("Edit", class: 'btn btn-primary')
