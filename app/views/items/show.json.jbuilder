@@ -26,8 +26,9 @@ if policy(@resource).show?
         json.child! do
           json.name element.name
           json.label element.label
-          json.uri element.uri
+          json.uri element.registered_element.uri
           json.string_value sanitize(element.string)
+          json.uri_value element.uri
         end
       end
     end

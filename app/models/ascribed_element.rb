@@ -30,13 +30,6 @@ class AscribedElement < ApplicationRecord
     registered_element.name
   end
 
-  ##
-  # @return [String] URI of the associated {RegisteredElement}.
-  #
-  def uri
-    registered_element.uri
-  end
-
   private
 
   ##

@@ -63,10 +63,4 @@ class AscribedElementTest < ActiveSupport::TestCase
     assert_equal "dc:title", @instance.name
   end
 
-  # uri()
-
-  test "uri() returns the associated RegisteredElement URI" do
-    assert_equal "http://purl.org/dc/terms/title", @instance.uri
-  end
-
 end
