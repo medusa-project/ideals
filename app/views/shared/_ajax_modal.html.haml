@@ -1,14 +1,18 @@
-// Requires the following locals:
+// Uses the following locals:
 //
-// id [String] Modal panel ID.
-// title [String] Modal panel title.
+// id [String] Modal panel ID. Required.
+// title [String] Modal panel title. Required.
+// size [Symbol] `:sm`, `:lg`, or `:xl` (optional)
+
+- size = nil unless defined?(size)
 
 .modal.fade{id: id,
             "aria-hidden": "true",
             "aria-labelledby": "#{id}-modal-label",
             role: "dialog",
             tabindex: "-1"}
-  .modal-dialog{role: "document"}
+  %div{class: "modal-dialog modal-dialog-scrollable modal-dialog-centered #{size ? "modal-#{size}" : ""}",
+       role: "document"}
     .modal-content
       .modal-header
         %h4.modal-title{id: "#{id}-modal-label"}
