@@ -23,49 +23,27 @@
       Submitted Items
       %span.badge.badge-pill.badge-secondary
         = @items.count
+  %li.nav-item
+    %a#submissions-tab.nav-link{"data-toggle": "tab",
+                                href: "#submissions",
+                                role: "tab",
+                                "aria-controls": "submissions",
+                                "aria-selected": "false"}
+      Submissions In Progress
+      %span.badge.badge-pill.badge-secondary
+        = @submissions.count
+
 
 .tab-content
   #account.tab-pane.show.active{role: "tabpanel",
                                 "aria-labelledby": "account-tab"}
-    %dl
-      %dt UID
-      %dd= @resource.uid
-      %dt Username
-      %dd= @resource.username
-      %dt Email
-      %dd= link_to(@resource.email, "mailto:#{@resource.email}")
-      - if @resource.phone
-        %dt Phone
-        %dd
-          = link_to(@resource.phone, "tel:#{@resource.phone}")
-      %dt System Administrator
-      %dd= @resource.sysadmin? ? "Yes" : "No"
-      %dt User Groups
-      %dd
-        - if @resource.user_groups.any?
-          %ul
-            - @resource.user_groups.each do |group|
-              %li= link_to(group.name, group)
-        - else
-          None
-      %dt Type
-      %dd= @resource.type
-      %dt Created
-      %dd= @resource.created_at
+    = render partial: "show_account_tab"
+
   #items.tab-pane{role: "tabpanel", "aria-labelledby": "items-tab"}
-    - if @items.count.positive?
-      = form_tag(user_path(@resource), method: :get, class: "filter") do
-        .row.justify-content-between
-          .col-4
-            .input-group.mb-3.filter-field
-              = hidden_field_tag("fq[]", "#{Item::IndexFields::SUBMITTER}:#{@resource.id}")
-              = filter_field(icon: "fa fa-filter", submit_text: "Filter")
-          .col-4
-            .input-group
-              = sort_menu(MetadataProfile.default)
-      = render partial: "items/listing"
-    - else
-      This user has not submitted any items.
+    = render partial: "show_items_tab"
+
+  #submissions.tab-pane{role: "tabpanel", "aria-labelledby": "submissions-tab"}
+    = render partial: "show_submissions_tab"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-user-modal", title: "Edit User" }

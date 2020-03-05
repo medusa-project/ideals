@@ -1,0 +1,16 @@
+%table.table
+  %thead
+    %tr
+      %th Begun
+      %th Last Updated
+      %th Collection
+      %th
+  %tbody
+    - @submissions.each do |submission|
+      %tr
+        %td= submission.created_at
+        %td= submission.updated_at
+        %td= submission.collection ? link_to(submission.collection&.title, submission.collection) : "Not Yet Selected"
+        %td
+          - if submission.user == current_user
+            = link_to("Continue", edit_submission_path(submission), class: "btn btn-primary btn-sm")

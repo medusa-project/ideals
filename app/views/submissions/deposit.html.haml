@@ -1,0 +1,29 @@
+- provide :body_id, "deposit"
+
+%h1 Deposit
+
+- if @submissions.any?
+  .card.text-white.bg-info.mb-3
+    .card-header Submissions In Progress
+    .card-body
+      %p= "You have #{pluralize(@submissions.length, "submission")} in progress:"
+      %ul
+        - @submissions.each do |submission|
+          %li
+            - if submission.collection
+              = "#{submission.collection.title}, #{submission.created_at}"
+            - else
+              = "#{submission.created_at} (Collection Not Selected)"
+            = link_to("Continue", edit_submission_path(submission), class: "btn btn-outline-light btn-sm")
+      %button.begin-submission.btn.btn-outline-light Begin a new submission
+
+#deposit-agreement.card{style: "#{@submissions.any? ? "display: none" : ""}"}
+  %h5.card-header Deposit Agreement
+  .card-body
+    %p Rerum aspernatur quo beatae ut rerum aut repellendus. Culpa iure voluptatem sit qui. Ea quisquam vero quod itaque. Ad non voluptatem modi optio sunt sapiente exercitationem. Modi iure ratione sapiente sed eligendi vel. Fuga cum excepturi non.
+    %p Harum in quasi omnis est velit nemo id ipsum. Cum vel accusantium alias a placeat iste esse molestias. Ut qui rem et voluptas adipisci.
+    %p Deleniti facilis autem esse aut in rerum. Impedit est fugiat voluptatem illo cupiditate. Quaerat veritatis expedita quae quos dolorum ab ut et.
+    %p Voluptas ea eos quod qui voluptatum accusamus. Iure voluptatibus explicabo aut omnis. Hic hic et quasi iusto iure rerum unde ut. Aut distinctio aut ad eveniet totam tempora sit ducimus. Minima sunt ipsam sit nulla et autem.
+    %p Qui voluptate dolorem labore ea tempora unde. Hic debitis cum eius exercitationem animi adipisci. Et voluptas voluptatem neque itaque. Fugit officiis illo quia. Numquam ipsa ut et quia vel tempore. Dolor saepe qui beatae.
+    = form_tag submissions_path, method: :post do
+      = submit_tag("I agree", class: "btn btn-primary")

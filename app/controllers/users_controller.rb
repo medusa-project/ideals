@@ -55,6 +55,7 @@ class UsersController < ApplicationController
     @count            = @items.count
     @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
     @permitted_params = params.permit(:start, :window)
+    @submissions      = @resource.submissions.order(updated_at: :desc)
   end
 
   ##

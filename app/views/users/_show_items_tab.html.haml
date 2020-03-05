@@ -1,0 +1,13 @@
+- if @items.count.positive?
+  = form_tag(user_path(@resource), method: :get, class: "filter") do
+    .row.justify-content-between
+      .col-4
+        .input-group.mb-3.filter-field
+          = hidden_field_tag("fq[]", "#{Item::IndexFields::SUBMITTER}:#{@resource.id}")
+          = filter_field(icon: "fa fa-filter", submit_text: "Filter")
+      .col-4
+        .input-group
+          = sort_menu(MetadataProfile.default)
+  = render partial: "items/listing"
+- else
+  This user has not submitted any items.

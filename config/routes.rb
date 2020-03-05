@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   root 'welcome#index'
   get '/', to: 'welcome#index'
-  get '/deposit', to: "welcome#deposit"
 
   # authentication routes
   match "/auth/:provider/callback", to: "sessions#create", via: [:get, :post]
@@ -20,6 +19,7 @@ Rails.application.routes.draw do
     match "/edit-properties", to: "collections#edit_properties", via: :get
   end
   match "/dashboard", to: "users#dashboard", via: :get
+  match "/deposit", to: "submissions#deposit", via: :get
   resources :handles
   resources :identities do
     collection do
@@ -42,6 +42,7 @@ Rails.application.routes.draw do
     match "/clone", to: "submission_profiles#clone", via: :post
     resources :submission_profile_elements, path: "elements", except: [:new, :index, :show]
   end
+  resources :submissions, except: [:index, :new, :show]
   resources :units, except: :new
   resources :user_groups, path: "user-groups", except: :new
   resources :users, except: [:create, :delete]
