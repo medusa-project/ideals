@@ -38,7 +38,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() authorizes sysadmins" do
     policy = RegisteredElementPolicy.new(users(:admin), @element)
-    assert policy.edit?
+    assert policy.destroy?
   end
 
   # edit?()
