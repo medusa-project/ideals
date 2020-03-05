@@ -44,6 +44,7 @@
 # * `submission_profile`  References the {SubmissionProfile} directly assigned
 #                         to the instance, if any (see the documentation of the
 #                         `submission_profile_id` attribute).
+# * `submissions`         References all {Submissions} into the instance.
 # * `submitters`          References all {Submitter}s who are allowed to submit
 #                         {Item}s to the instance.
 # * `submitting_users`    More useful alternative to {submitters} that returns
@@ -78,6 +79,7 @@ class Collection < ApplicationRecord
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user
   belongs_to :submission_profile, inverse_of: :collections, optional: true
+  has_many :submissions, inverse_of: :collection
   has_many :submitters
   has_many :submitting_users, through: :submitters,
            class_name: "User", source: :user
