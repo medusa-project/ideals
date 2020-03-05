@@ -8,8 +8,6 @@ class WelcomeController < ApplicationController
                                policy_scope_class: ItemPolicy::Scope).count
   end
 
-  def dashboard; end
-
   def deposit; end
 
   def login_choice; end

@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   root 'welcome#index'
   get '/', to: 'welcome#index'
-  get '/dashboard', to: 'welcome#dashboard'
   get '/deposit', to: "welcome#deposit"
 
   # authentication routes
@@ -20,6 +19,7 @@ Rails.application.routes.draw do
     match "/edit-membership", to: "collections#edit_membership", via: :get
     match "/edit-properties", to: "collections#edit_properties", via: :get
   end
+  match "/dashboard", to: "users#dashboard", via: :get
   resources :handles
   resources :identities do
     collection do

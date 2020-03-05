@@ -4,6 +4,14 @@ class UsersController < ApplicationController
   before_action :authorize_user, only: [:show, :edit, :update]
 
   ##
+  # Responds to `GET /dashboard`.
+  #
+  def dashboard
+    @user = current_user
+    @submissions = @user.submissions.order(updated_at: :desc)
+  end
+
+  ##
   # Responds to `GET /users/:id/edit`
   #
   def edit

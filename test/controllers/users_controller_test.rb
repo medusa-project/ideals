@@ -10,6 +10,25 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
+  # dashboard()
+
+  test "dashboard() redirects to login page for logged-out users" do
+    get dashboard_path(users(:admin))
+    assert_redirected_to login_path
+  end
+
+  test "dashboard() redirects to login page for unauthorized users" do
+    log_in_as(users(:norights))
+    get dashboard_path(users(:admin))
+    assert_redirected_to login_path
+  end
+
+  test "dashboard() returns HTTP 200 for authorized users" do
+    log_in_as(users(:admin))
+    get dashboard_path(users(:admin))
+    assert_response :ok
+  end
+
   # edit()
 
   test "edit() redirects to login page for logged-out users" do
