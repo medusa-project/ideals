@@ -69,6 +69,18 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # input_type
+
+  test "input_type must be one of the InputType constant values" do
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.update!(input_type: "bogus")
+    end
+  end
+
+  test "input_type is allowed to be blank" do
+    @instance.update!(input_type: nil)
+  end
+
   # submission_profile
 
   test "submission_profile is required" do

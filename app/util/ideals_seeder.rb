@@ -56,98 +56,122 @@ class IdealsSeeder
                                         default: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
                            index: 0,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:issued"),
                            index: 1,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
                            index: 2,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: true) # TODO: checkbox list controlled by common types
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
                            index: 3,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
                            index: 4,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor"),
                            index: 5,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:abstract"),
                            index: 6,
+                           input_type: SubmissionProfileElement::InputType::TEXT_AREA,
                            repeatable: false,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:coverage:spatial"),
                            index: 7,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type:genre"),
                            index: 8,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:language"),
                            index: 9,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: false,
                            required: false) # TODO: dropdown controlled by ISO languages
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:bibliographicCitation"),
                            index: 10,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: false,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:publisher"),
                            index: 11,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: false,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:relation:ispartof"),
                            index: 12,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:sponsorship"),
                            index: 13,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:rights"),
                            index: 14,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier"),
                            index: 15,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:name"),
                            index: 16,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: false,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:level"),
                            index: 17,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: false,
                            required: false) # TODO: controlled dropdown
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeChair"),
                            index: 18,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:advisor"),
                            index: 19,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:grantor"),
                            index: 20,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: false,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:discipline"),
                            index: 21,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: false,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:department"),
                            index: 22,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: false,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:program"),
                            index: 23,
+                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
                            repeatable: false,
                            required: false)
     profile.save!

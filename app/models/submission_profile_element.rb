@@ -8,6 +8,7 @@
 # * `help_text`             Help text.
 # * `index`                 Zero-based position within the owning
 #                           {SubmissionProfile}.
+# * `input_type`            One of the {InputType} constant values.
 # * `label`                 Custom label of the element. If assigned, this
 #                           overrides the label of the associated
 #                           {RegisteredElement}.
@@ -22,6 +23,19 @@
 # * `updated_at`            Managed by ActiveRecord.
 #
 class SubmissionProfileElement < ApplicationRecord
+
+  class InputType
+    TEXT_AREA  = "text_area"
+    TEXT_FIELD = "text_field"
+
+    ##
+    # @return [Enumerable<String>] All constant values.
+    #
+    def self.all
+      self.constants.map{ |c| self.const_get(c) }
+    end
+  end
+
   belongs_to :submission_profile, inverse_of: :elements, touch: true
   belongs_to :registered_element, inverse_of: :submission_profile_elements
 
@@ -30,6 +44,9 @@ class SubmissionProfileElement < ApplicationRecord
   validates :index, numericality: { only_integer: true,
                                     greater_than_or_equal_to: 0 }
   validates_presence_of :index
+
+  # input_type
+  validates :input_type, inclusion: { in: InputType.all }, allow_blank: true
 
   # registered_element_id
   validates_presence_of :registered_element_id

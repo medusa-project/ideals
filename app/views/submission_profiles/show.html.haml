@@ -60,6 +60,7 @@
         %th
         %th Element
         %th Label Override
+        %th Input Type
         %th Help Text
         %th Required
         %th Repeatable
@@ -82,6 +83,7 @@
                 Delete
             %td= element.registered_element.label
             %td= element.label
+            %td= element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
             %td= element.help_text
             %td.boolean= boolean(element.required)
             %td.boolean= boolean(element.repeatable)

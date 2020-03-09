@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_06_145016) do
+ActiveRecord::Schema.define(version: 2020_03_09_174025) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -170,6 +170,7 @@ ActiveRecord::Schema.define(version: 2020_03_06_145016) do
     t.boolean "required", default: true, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "input_type"
     t.index ["index"], name: "index_submission_profile_elements_on_index"
     t.index ["repeatable"], name: "index_submission_profile_elements_on_repeatable"
     t.index ["required"], name: "index_submission_profile_elements_on_required"

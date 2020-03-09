@@ -23,6 +23,11 @@
     = f.label :label, "Label Override"
     = f.text_field :label, class: "form-control"
   .form-group
+    = f.label :input_type, "Input Type"
+    = f.select(:input_type, options_for_select(SubmissionProfileElement::InputType.all.map{ |t| [t.split("_").map(&:capitalize).join(" "), t] },
+                            f.object.input_type),
+               {}, class: "custom-select")
+  .form-group
     = f.label :help_text, "Help Text"
     = f.text_area :help_text, class: "form-control"
   .form-group
