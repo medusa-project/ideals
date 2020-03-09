@@ -27,6 +27,82 @@ class ItemPolicyTest < ActiveSupport::TestCase
     @item = items(:item1)
   end
 
+  # cancel_submission?()
+
+  test "cancel_submission?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.cancel_submission?
+  end
+
+  test "cancel_submission?() does not authorize non-sysadmins" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.cancel_submission?
+  end
+
+  test "cancel_submission?() authorizes sysadmins" do
+    policy = ItemPolicy.new(users(:admin), @item)
+    assert policy.cancel_submission?
+  end
+
+  test "cancel_submission?() authorizes the submission owner if the item is not in archive" do
+    user = users(:norights)
+    @item.submitter = user
+    @item.in_archive = false
+    policy = ItemPolicy.new(user, @item)
+    assert policy.cancel_submission?
+  end
+
+  test "cancel_submission?() does not authorize the submission owner if the item is in archive" do
+    user = users(:norights)
+    @item.submitter = user
+    @item.in_archive = true
+    policy = ItemPolicy.new(user, @item)
+    assert !policy.cancel_submission?
+  end
+
+  test "cancel_submission?() authorizes managers of the submission's collection" do
+    doing_user = users(:norights)
+    collection = collections(:collection1)
+    collection.managing_users << doing_user
+    collection.save!
+    @item.submitter          = users(:sally) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(doing_user, @item)
+    assert policy.cancel_submission?
+  end
+
+  test "cancel_submission?() authorizes admins of the submission's collection's unit" do
+    doing_user               = users(:norights)
+    collection               = collections(:collection1)
+    unit                     = collection.primary_unit
+    unit.administering_users << doing_user
+    unit.save!
+    @item.submitter          = users(:sally) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(doing_user, @item)
+    assert policy.cancel_submission?
+  end
+
+  test "cancel_submission?() does not authorize anyone else" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.cancel_submission?
+  end
+
+  # deposit?()
+
+  test "deposit?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.deposit?
+  end
+
+  test "deposit?() authorizes logged-in users" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert policy.deposit?
+  end
+
+
   # destroy?()
 
   test "destroy?() returns false with a nil user" do
@@ -34,7 +110,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  test "destroy?() is restrictive by default" do
+  test "destroy?() does not authorize non-sysadmins" do
     policy = ItemPolicy.new(users(:norights), @item)
     assert !policy.destroy?
   end
@@ -42,6 +118,115 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes sysadmins" do
     policy = ItemPolicy.new(users(:admin), @item)
     assert policy.destroy?
+  end
+
+  test "destroy?() authorizes the submission owner if the item is not in archive" do
+    user = users(:norights)
+    @item.submitter = user
+    @item.in_archive = false
+    policy = ItemPolicy.new(user, @item)
+    assert policy.destroy?
+  end
+
+  test "destroy?() does not authorize the submission owner if the item is in archive" do
+    user = users(:norights)
+    @item.submitter = user
+    @item.in_archive = true
+    policy = ItemPolicy.new(user, @item)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() authorizes managers of the submission's collection" do
+    doing_user = users(:norights)
+    collection = collections(:collection1)
+    collection.managing_users << doing_user
+    collection.save!
+    @item.submitter          = users(:sally) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(doing_user, @item)
+    assert policy.destroy?
+  end
+
+  test "destroy?() authorizes admins of the submission's collection's unit" do
+    doing_user               = users(:norights)
+    collection               = collections(:collection1)
+    unit                     = collection.primary_unit
+    unit.administering_users << doing_user
+    unit.save!
+    @item.submitter          = users(:sally) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(doing_user, @item)
+    assert policy.destroy?
+  end
+
+  test "destroy?() does not authorize anyone else" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.destroy?
+  end
+
+  # edit?()
+
+  test "edit?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.edit?
+  end
+
+  test "edit?() does not authorize non-sysadmins" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.edit?
+  end
+
+  test "edit?() authorizes sysadmins" do
+    policy = ItemPolicy.new(users(:admin), @item)
+    assert policy.edit?
+  end
+
+  test "edit?() authorizes the submission owner if the item is not in archive" do
+    user = users(:norights)
+    @item.submitter = user
+    @item.in_archive = false
+    policy = ItemPolicy.new(user, @item)
+    assert policy.edit?
+  end
+
+  test "edit?() does not authorize the submission owner if the item is in archive" do
+    user = users(:norights)
+    @item.submitter = user
+    @item.in_archive = true
+    policy = ItemPolicy.new(user, @item)
+    assert !policy.edit?
+  end
+
+  test "edit?() authorizes managers of the item's collection" do
+    doing_user = users(:norights)
+    collection = collections(:collection1)
+    collection.managing_users << doing_user
+    collection.save!
+    @item.submitter          = users(:sally) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(doing_user, @item)
+    assert policy.edit?
+  end
+
+  test "edit?() authorizes admins of the item's collection's unit" do
+    doing_user               = users(:norights)
+    collection               = collections(:collection1)
+    unit                     = collection.primary_unit
+    unit.administering_users << doing_user
+    unit.save!
+    @item.submitter          = users(:sally) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(doing_user, @item)
+    assert policy.edit?
+  end
+
+  test "edit?() does not authorize anyone else" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.edit?
   end
 
   # edit_metadata?()
@@ -187,7 +372,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
-  test "update?() is restrictive by default" do
+  test "update?() does not authorize non-sysadmins" do
     policy = ItemPolicy.new(users(:norights), @item)
     assert !policy.update?
   end
@@ -197,22 +382,50 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.update?
   end
 
-  test "update?() authorizes unit admins" do
+  test "update?() authorizes the submission owner if the item is not in archive" do
     user = users(:norights)
-    unit = @item.primary_collection.units.first
-    unit.administrators.build(user: user)
-    unit.save!
+    @item.submitter = user
+    @item.in_archive = false
     policy = ItemPolicy.new(user, @item)
     assert policy.update?
   end
 
-  test "update?() authorizes collection managers" do
+  test "update?() does not authorize the submission owner if the item is in archive" do
     user = users(:norights)
-    collection = @item.primary_collection
-    collection.managers.build(user: user)
-    collection.save!
+    @item.submitter = user
+    @item.in_archive = true
     policy = ItemPolicy.new(user, @item)
+    assert !policy.update?
+  end
+
+  test "update?() authorizes managers of the submission's collection" do
+    doing_user = users(:norights)
+    collection = collections(:collection1)
+    collection.managing_users << doing_user
+    collection.save!
+    @item.submitter          = users(:sally) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(doing_user, @item)
     assert policy.update?
+  end
+
+  test "update?() authorizes admins of the submission's collection's unit" do
+    doing_user               = users(:norights)
+    collection               = collections(:collection1)
+    unit                     = collection.primary_unit
+    unit.administering_users << doing_user
+    unit.save!
+    @item.submitter          = users(:sally) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(doing_user, @item)
+    assert policy.update?
+  end
+
+  test "update?() does not authorize anyone else" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.update?
   end
 
 end

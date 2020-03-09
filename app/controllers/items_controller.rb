@@ -3,32 +3,65 @@
 class ItemsController < ApplicationController
 
   before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_item, only: [:destroy, :edit_metadata, :edit_properties,
-                                  :show, :update]
-  before_action :authorize_item, only: [:destroy, :edit_metadata,
-                                        :edit_properties, :show, :update]
+  before_action :set_item, only: [:cancel_submission, :destroy, :edit,
+                                  :edit_metadata, :edit_properties, :show,
+                                  :update]
+  before_action :authorize_item, only: [:cancel_submission, :destroy,
+                                        :edit_metadata, :edit_properties,
+                                        :show, :update]
 
   ##
-  # Responds to `POST /items`.
+  # Essentially the same as {destroy} but sets a different flash message and
+  # redirects to a different location. For use when canceling a submission.
   #
-  def create
+  # Responds to `DELETE /items/:id/cancel-submission`
+  #
+  # @see destroy
+  #
+  def cancel_submission
     begin
-      @resource = Item.new(item_params)
-      authorize @resource
-      @resource.save!
-    rescue
-      render partial: "shared/validation_messages",
-             locals: { object: @resource },
-             status: :bad_request
+      @resource.destroy!
+    rescue => e
+      flash['error'] = "#{e}"
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = "Item \"#{@item.title}\" created."
-      render "shared/reload"
+      flash['success'] = "Submission canceled."
+    ensure
+      redirect_to root_path
     end
   end
 
   ##
+  # Creates a new {Item} upon acceptance of the {deposit deposit agreement}.
+  # After the submission has been created, the user is redirected to {edit}.
+  #
+  # Responds to `POST /items`.
+  #
+  def create
+    item = Item.create!(submitter: current_user,
+                        primary_collection_id: params[:collection_id],
+                        in_archive: false)
+    authorize item # this should always succeed
+    redirect_to edit_item_path(item)
+  end
+
+  ##
+  # Displays the deposit agreement. At the end of the agreement is a submit
+  # button that POSTs to {create}.
+  #
+  # Responds to `GET /deposit`.
+  #
+  def deposit
+    authorize Item
+    @submissions = current_user.submitted_items.
+        where(in_archive: false).
+        order(:updated_at)
+  end
+
+  ##
   # Responds to `DELETE /items/:id`
+  #
+  # @see cancel_submission
   #
   def destroy
     begin
@@ -37,14 +70,23 @@ class ItemsController < ApplicationController
       flash['error'] = "#{e}"
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = "Item \"#{@resource.title}\" deleted."
+      flash['success'] = @resource.title.present? ?
+                             "Item \"#{@resource.title}\" deleted." : "Item deleted."
     ensure
       redirect_to @resource.primary_collection
     end
   end
 
   ##
-  # Used for editing metadata.
+  # Renders the new-submission form.
+  #
+  # Responds to `GET /items/:id/edit`
+  #
+  def edit
+  end
+
+  ##
+  # Used for editing the metadata of already-submitted items.
   #
   # Responds to GET `/items/:id/edit-metadata` (XHR only)
   #
@@ -54,7 +96,7 @@ class ItemsController < ApplicationController
   end
 
   ##
-  # Used for editing basic properties.
+  # Used for editing the basic properties of already-submitted items.
   #
   # Responds to GET `/items/:id/edit-properties` (XHR only)
   #

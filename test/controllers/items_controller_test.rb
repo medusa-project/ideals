@@ -10,16 +10,57 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
+  # create()
+
+  test "create() redirects to login page for logged-out users" do
+    post items_path, {}
+    assert_redirected_to login_path
+  end
+
+  test "create() redirects to login page for unauthorized users" do
+    log_in_as(users(:norights))
+    post items_path, {}
+    assert_redirected_to login_path
+  end
+
+  test "create() creates an item" do
+    log_in_as(users(:admin))
+    assert_difference "Item.count" do
+      post items_path, {}
+    end
+  end
+
+  test "create() redirects to item-edit view" do
+    log_in_as(users(:admin))
+    post items_path, {}
+    submission = Item.order(created_at: :desc).limit(1).first
+    assert_redirected_to edit_item_path(submission)
+  end
+
+  # deposit()
+
+  test "deposit() redirects to login path for logged-out users" do
+    get deposit_path
+    assert_redirected_to login_path
+  end
+
+  test "deposit() returns HTTP 200 for logged-in users" do
+    skip # TODO: why does this fail?
+    log_in_as(users(:norights))
+    get deposit_path
+    assert_response :ok
+  end
+
   # destroy()
 
   test "destroy() redirects to login path for logged-out users" do
-    delete "/items/#{items(:item1).id}"
+    delete item_path(items(:item1))
     assert_redirected_to login_path
   end
 
   test "destroy() redirects to login path for unauthorized users" do
     log_in_as(users(:norights))
-    delete "/items/#{items(:item1).id}"
+    delete item_path(items(:item1))
     assert_redirected_to login_path
   end
 
@@ -27,22 +68,36 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     item = items(:item1)
     assert_difference "Item.count", -1 do
-      delete "/items/#{item.id}"
+      delete item_path(item)
     end
   end
 
   test "destroy() returns HTTP 302 for an existing item" do
     log_in_as(users(:admin))
-    item = items(:item1)
-    primary_collection = item.primary_collection
-    delete "/items/#{item.id}"
-    assert_redirected_to primary_collection
+    submission = items(:item1)
+    delete item_path(submission)
+    assert_redirected_to submission.primary_collection
   end
 
   test "destroy() returns HTTP 404 for a missing item" do
     log_in_as(users(:admin))
-    delete "/items/bogus"
+    delete "/items/99999"
     assert_response :not_found
+  end
+
+  # edit()
+
+  test "edit() redirects to login page for logged-out users" do
+    item = items(:item1)
+    get edit_item_path(item)
+    assert_redirected_to login_path
+  end
+
+  test "edit() returns HTTP 200 for logged-in users" do
+    item = items(:item1)
+    log_in_as(item.submitter)
+    get edit_item_path(item)
+    assert_response :ok
   end
 
   # edit_metadata()

@@ -3,6 +3,8 @@
  */
 const IDEALS = {
 
+    FADE_TIME: 200,
+
     FacetSet: function() {
         /**
          * Enables the facets returned by one of the facets_as_x() helpers.

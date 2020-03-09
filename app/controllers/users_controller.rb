@@ -8,7 +8,9 @@ class UsersController < ApplicationController
   #
   def dashboard
     @user = current_user
-    @submissions = @user.submissions.order(updated_at: :desc)
+    @submissions = @user.submitted_items.
+        where(in_archive: false).
+        order(updated_at: :desc)
   end
 
   ##
@@ -48,6 +50,7 @@ class UsersController < ApplicationController
     @items  = Item.search.
         aggregations(false).
         filter(Item::IndexFields::SUBMITTER, @resource.id).
+        filter(Item::IndexFields::IN_ARCHIVE, true).
         order(params[:sort]).
         limit(@window).
         start(@start)
@@ -55,7 +58,9 @@ class UsersController < ApplicationController
     @count            = @items.count
     @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
     @permitted_params = params.permit(:start, :window)
-    @submissions      = @resource.submissions.order(updated_at: :desc)
+    @submissions      = @resource.submitted_items.
+        where(in_archive: false).
+        order(updated_at: :desc)
   end
 
   ##

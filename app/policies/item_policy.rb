@@ -39,12 +39,24 @@ class ItemPolicy < ApplicationPolicy
     @item = item
   end
 
+  def cancel_submission?
+    update?
+  end
+
   def create?
-    user&.sysadmin? # TODO: write this
+    !user.nil?
+  end
+
+  def deposit?
+    !user.nil?
   end
 
   def destroy?
-    create?
+    update?
+  end
+
+  def edit?
+    update?
   end
 
   def edit_metadata?
@@ -68,7 +80,23 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def update?
-    @user&.sysadmin? || (@item.all_collection_managers + @item.all_unit_administrators).include?(@user)
+    # user must be logged in
+    if user
+      # sysadmins can do anything
+      return true if user.sysadmin?
+      # all users can update their own submissions
+      return true if user == item.submitter && !item.in_archive
+
+      item.all_collections.each do |collection|
+        # collection managers can update items within their collections
+        return true if user.manager?(collection)
+        # unit admins can update items within their units
+        collection.all_units.each do |unit|
+          return true if user.unit_admin?(unit)
+        end
+      end
+    end
+    false
   end
 
 end

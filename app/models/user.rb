@@ -17,8 +17,8 @@ class User < ApplicationRecord
   has_many :managing_collections, through: :managers, source: :collection
   has_many :primary_administering_units, class_name: "Unit",
            inverse_of: :primary_administrator
-  has_many :submissions, inverse_of: :user
-  has_many :submitted_items, class_name: "Item", inverse_of: :submitter
+  has_many :submitted_items, class_name: "Item", foreign_key: "submitter_id",
+           inverse_of: :submitter
   has_many :submitting_collections, through: :submitters, source: :collection
   has_and_belongs_to_many :user_groups
 

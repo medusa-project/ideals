@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_05_155344) do
+ActiveRecord::Schema.define(version: 2020_03_06_145016) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -184,13 +184,6 @@ ActiveRecord::Schema.define(version: 2020_03_05_155344) do
     t.index ["name"], name: "index_submission_profiles_on_name", unique: true
   end
 
-  create_table "submissions", force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "collection_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
-
   create_table "submitters", force: :cascade do |t|
     t.bigint "collection_id"
     t.bigint "user_id"
@@ -251,8 +244,6 @@ ActiveRecord::Schema.define(version: 2020_03_05_155344) do
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "submissions", "collections", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "submissions", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "user_groups_users", "user_groups", on_update: :cascade, on_delete: :cascade

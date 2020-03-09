@@ -79,7 +79,6 @@ class Collection < ApplicationRecord
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user
   belongs_to :submission_profile, inverse_of: :collections, optional: true
-  has_many :submissions, inverse_of: :collection
   has_many :submitters
   has_many :submitting_users, through: :submitters,
            class_name: "User", source: :user

@@ -8,13 +8,13 @@
     .card-body
       %p= "You have #{pluralize(@submissions.length, "submission")} in progress:"
       %ul
-        - @submissions.each do |submission|
+        - @submissions.each do |item|
           %li
-            - if submission.collection
-              = "#{submission.collection.title}, #{submission.created_at}"
+            - if item.primary_collection
+              = "#{item.primary_collection.title}, #{item.created_at}"
             - else
-              = "#{submission.created_at} (Collection Not Selected)"
-            = link_to("Continue", edit_submission_path(submission), class: "btn btn-outline-light btn-sm")
+              = "#{item.created_at} (Collection Not Selected)"
+            = link_to("Continue", edit_item_path(item), class: "btn btn-outline-light btn-sm")
       %button.begin-submission.btn.btn-outline-light Begin a new submission
 
 #deposit-agreement.card{style: "#{@submissions.any? ? "display: none" : ""}"}
@@ -25,5 +25,5 @@
     %p Deleniti facilis autem esse aut in rerum. Impedit est fugiat voluptatem illo cupiditate. Quaerat veritatis expedita quae quos dolorum ab ut et.
     %p Voluptas ea eos quod qui voluptatum accusamus. Iure voluptatibus explicabo aut omnis. Hic hic et quasi iusto iure rerum unde ut. Aut distinctio aut ad eveniet totam tempora sit ducimus. Minima sunt ipsam sit nulla et autem.
     %p Qui voluptate dolorem labore ea tempora unde. Hic debitis cum eius exercitationem animi adipisci. Et voluptas voluptatem neque itaque. Fugit officiis illo quia. Numquam ipsa ut et quia vel tempore. Dolor saepe qui beatae.
-    = form_tag submissions_path, method: :post do
+    = form_tag items_path, method: :post do
       = submit_tag("I agree", class: "btn btn-primary")

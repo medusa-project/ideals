@@ -6,11 +6,11 @@
       %th Collection
       %th
   %tbody
-    - @submissions.each do |submission|
+    - @submissions.each do |item|
       %tr
-        %td= submission.created_at
-        %td= submission.updated_at
-        %td= submission.collection ? link_to(submission.collection&.title, submission.collection) : "Not Yet Selected"
+        %td= item.created_at
+        %td= item.updated_at
+        %td= item.primary_collection ? link_to(item.primary_collection&.title, item.primary_collection) : "Not Yet Selected"
         %td
-          - if submission.user == current_user
-            = link_to("Continue", edit_submission_path(submission), class: "btn btn-primary btn-sm")
+          - if item.submitter == current_user
+            = link_to("Continue", edit_item_path(item), class: "btn btn-primary btn-sm")

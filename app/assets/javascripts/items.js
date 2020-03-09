@@ -1,4 +1,16 @@
 /**
+ * @constructor
+ */
+const DepositView = function() {
+    // Show the deposit agreement when the begin-submission button is clicked.
+    $("button.begin-submission").on("click", function() {
+        $(this).parents(".card").fadeOut(IDEALS.FADE_TIME, function() {
+            $("#deposit-agreement").fadeIn(IDEALS.FADE_TIME);
+        });
+    });
+};
+
+/**
  * Handles list-items view (/items).
  *
  * @constructor
@@ -33,7 +45,9 @@ const ItemView = function() {
 };
 
 $(document).ready(function() {
-    if ($("body#list_items").length) {
+    if ($("body#deposit").length) {
+        new DepositView();
+    } else if ($("body#list_items").length) {
         new ItemsView();
     } else if ($("body#show_item").length) {
         new ItemView();
