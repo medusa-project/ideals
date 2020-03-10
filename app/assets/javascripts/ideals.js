@@ -22,7 +22,7 @@ const IDEALS = {
             const inputGroups = $(this).parent().find(".input-group");
             inputGroups.find(".input-group-append").show();
             // Clone the last input group
-            const prevInputGroup = inputGroups.filter(":last");
+            const prevInputGroup = inputGroups.last();
             const clone = prevInputGroup.clone();
             clone.find("input[type=text], textarea").val("");
             // Insert the clone after the last input group
