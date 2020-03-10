@@ -1,3 +1,6 @@
+- provide :body_id, "edit_item"
+- provide :title, "Deposit"
+
 .btn-group.float-right{role: "group"}
   / Cancel button
   = link_to(item_cancel_submission_path(@resource), class: "btn btn-danger",
@@ -9,4 +12,35 @@
 
 %h1 Deposit
 
-%p Deposit form goes here
+%ul.nav.nav-pills.nav-justified{role: "tablist"}
+  %li.nav-item
+    %a#properties-tab.nav-link.active{"data-toggle": "tab",
+                                      href: "#properties",
+                                      role: "tab",
+                                      "aria-controls": "properties",
+                                      "aria-selected": "true"} Step 1: Basic Properties
+  %li.nav-item
+    %a#metadata-tab.nav-link{"data-toggle": "tab",
+                             href: "#metadata",
+                             role: "tab",
+                             "aria-controls": "metadata",
+                             "aria-selected": "true"} Step 2: Metadata
+  %li.nav-item
+    %a#files-tab.nav-link{"data-toggle": "tab",
+                          href: "#files",
+                          role: "tab",
+                          "aria-controls": "files",
+                          "aria-selected": "true"} Step 3: Files
+
+.tab-content
+  #properties.tab-pane.fade.show.active{role: "tabpanel",
+                                        "aria-labelledby": "properties-tab"}
+    = render partial: "deposit_properties_form"
+
+  #metadata.tab-pane.fade{role: "tabpanel",
+                          "aria-labelledby": "metadata-tab"}
+    = render partial: "deposit_metadata_form"
+
+  #files.tab-pane.fade{role: "tabpanel",
+                       "aria-labelledby": "files-tab"}
+    = render partial: "deposit_files_form"

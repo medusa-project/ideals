@@ -1,0 +1,20 @@
+-# frozen_string_literal: true
+
+= form_for(@resource, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  / Include this only because `item` is required in the params.
+  = f.hidden_field :visible, value: f.object.in_archive
+
+  .alert.alert-info
+    Select one or more files to attach to the item.
+
+  %p (File upload hasn't been started yet)
+
+  .text-center.mb-3
+    %button.btn.btn-light.step-3-to-2{type: "button"}
+      %i.fa.fa-arrow-left
+      Back to Step 2
+    %button.btn.btn-primary{type: "button"}
+      Complete Deposit

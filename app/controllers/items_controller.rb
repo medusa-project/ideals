@@ -83,6 +83,7 @@ class ItemsController < ApplicationController
   # Responds to `GET /items/:id/edit`
   #
   def edit
+    @submission_profile = SubmissionProfile.default # TODO: collection-specific
   end
 
   ##

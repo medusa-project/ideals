@@ -7,6 +7,17 @@ body#list_items, body#list_collections {
   }
 }
 
+body#edit_item {
+  table.metadata {
+    td:first-child {
+      width: 30%;
+    }
+    .input-group-append {
+      display: none;
+    }
+  }
+}
+
 body#show_item {
   #edit-item-metadata-modal {
     textarea {

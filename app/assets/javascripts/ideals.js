@@ -3,7 +3,61 @@
  */
 const IDEALS = {
 
+    /**
+     * Application-wide fade time, for consistency.
+     */
     FADE_TIME: 200,
+
+    /**
+     * Counterpart to {@link MetadataEditor} for use in the deposit form.
+     *
+     * @constructor
+     */
+    DepositMetadataEditor: function() {
+        refreshRemoveButtons();
+        wireRemoveButtons();
+
+        $("button.add").on("click", function(e) {
+            // Show the "remove" button of all adjacent input groups
+            const inputGroups = $(this).parent().find(".input-group");
+            inputGroups.find(".input-group-append").show();
+            // Clone the last input group
+            const prevInputGroup = inputGroups.filter(":last");
+            const clone = prevInputGroup.clone();
+            clone.find("input[type=text], textarea").val("");
+            // Insert the clone after the last input group
+            prevInputGroup.after(clone);
+            wireRemoveButtons();
+            e.preventDefault();
+        });
+
+        /**
+         * Shows all adjacent input groups' "remove" buttons if there are two
+         * or more of them, and hides them (it) if not.
+         */
+        function refreshRemoveButtons() {
+            $("button.remove").each(function() {
+                const button = $(this);
+                const parentInputGroup = button.parents(".input-group");
+                if (parentInputGroup.siblings(".input-group").length > 0) {
+                    button.parent().show();
+                } else {
+                    button.parent().hide();
+                }
+            });
+        }
+
+        function wireRemoveButtons() {
+            $("button.remove").off("click").on("click", function(e) {
+                const parentInputGroup = $(this).parents(".input-group");
+                if (parentInputGroup.siblings(".input-group").length > 0) {
+                    parentInputGroup.remove();
+                }
+                refreshRemoveButtons();
+                e.preventDefault();
+            });
+        }
+    },
 
     FacetSet: function() {
         /**
@@ -26,12 +80,12 @@ const IDEALS = {
             const clone = last_tr.clone();
             clone.find("input").val("");
             last_tr.after(clone);
-            addRemoveEventListeners();
+            updateEventListeners();
             e.preventDefault();
         });
-        addRemoveEventListeners();
+        updateEventListeners();
 
-        function addRemoveEventListeners() {
+        function updateEventListeners() {
             $("button.remove").off("click").on("click", function () {
                 if ($(this).parents("table").find("tr").length > 1) {
                     $(this).parents("tr").remove();
@@ -45,13 +99,13 @@ const IDEALS = {
             const clone = $(this).prev().clone();
             clone.find("input").val("");
             $(this).before(clone);
-            addRemoveEventListeners();
+            updateEventListeners();
             new IDEALS.UserAutocompleter(clone.find("input"));
             e.preventDefault();
         });
-        addRemoveEventListeners();
+        updateEventListeners();
 
-        function addRemoveEventListeners() {
+        function updateEventListeners() {
             $("button.remove").off("click").on("click", function () {
                 if ($(this).parents(".form-group").find(".user").length > 1) {
                     $(this).parents(".user").remove();

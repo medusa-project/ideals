@@ -1,0 +1,56 @@
+-# frozen_string_literal: true
+
+= form_for(@resource, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  / Include this only because `item` is required in the params.
+  = f.hidden_field :visible, value: f.object.in_archive
+
+  .alert.alert-info
+    Enter descriptive info about the item.
+
+  %table.table.metadata
+    %tbody
+      - @submission_profile.elements.each do |profile_element|
+        %tr
+          %td
+            = hidden_field_tag "elements[][name]",
+                               profile_element.registered_element.name
+            = profile_element.registered_element.label
+            - if profile_element.required
+              %span.badge.badge-danger REQUIRED
+
+            - if profile_element.help_text.present?
+              %p.form-text.text-muted.mb-0= profile_element.help_text
+          %td
+            .input-group.mb-2
+              - case profile_element.input_type
+              - when SubmissionProfileElement::InputType::TEXT_AREA
+                = text_area_tag "elements[][string]", nil,
+                                "data-required": profile_element.required,
+                                "data-repeatable": profile_element.repeatable,
+                                class: "form-control"
+              - else
+                = text_field_tag "elements[][string]", nil,
+                                 "data-required": profile_element.required,
+                                 "data-repeatable": profile_element.repeatable,
+                                 class: "form-control"
+
+              - if !profile_element.required || profile_element.repeatable
+                .input-group-append
+                  %button.btn.btn-outline-danger.remove{type: "button"}
+                    %i.fa.fa-minus
+                    Remove Value
+            - if profile_element.repeatable
+              %button.btn.btn-outline-success.btn-sm.mt-1.add{type: "button"}
+                %i.fa.fa-plus
+                Add Value
+
+  .text-center.mb-3
+    %button.btn.btn-light.step-2-to-1{type: "button"}
+      %i.fa.fa-arrow-left
+      Back to Step 1
+    %button.btn.btn-light.step-2-to-3{type: "button"}
+      Proceed to Step 3
+      %i.fa.fa-arrow-right

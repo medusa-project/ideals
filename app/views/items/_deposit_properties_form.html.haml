@@ -1,0 +1,19 @@
+-# frozen_string_literal: true
+
+= form_for(@resource, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  .alert.alert-info
+    Select the collection into which you'd like to deposit the item.
+
+  = f.select(:primary_collection_id, deposit_collection_options_for_select,
+             {}, class: "custom-select")
+  %p.form-text.text-muted
+    This menu contains all collections to which you have submitter access.
+    To request access to another collection, _______ TODO: write this
+
+  .text-center.mb-3
+    %button.btn.btn-light.step-1-to-2{type: "button"}
+      Proceed to Step 2
+      %i.fa.fa-arrow-right
