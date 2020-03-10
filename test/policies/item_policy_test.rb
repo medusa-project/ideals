@@ -15,7 +15,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
       scope = ItemPolicy::Scope.new(users(:norights), relation)
       assert_equal [
                        [Item::IndexFields::DISCOVERABLE, true],
-                       [Item::IndexFields::IN_ARCHIVE, true],
+                       [Item::IndexFields::SUBMITTING, false],
                        [Item::IndexFields::WITHDRAWN, false]
                    ],
                    scope.resolve.instance_variable_get("@filters")
@@ -44,18 +44,18 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.destroy?
   end
 
-  test "destroy?() authorizes the submission owner if the item is not in archive" do
+  test "destroy?() authorizes the submission owner if the item is submitting" do
     user = users(:norights)
     @item.submitter = user
-    @item.in_archive = false
+    @item.submitting = true
     policy = ItemPolicy.new(user, @item)
     assert policy.destroy?
   end
 
-  test "destroy?() does not authorize the submission owner if the item is in archive" do
+  test "destroy?() does not authorize the submission owner if the item is not submitting" do
     user = users(:norights)
     @item.submitter = user
-    @item.in_archive = true
+    @item.submitting = false
     policy = ItemPolicy.new(user, @item)
     assert !policy.destroy?
   end
@@ -184,8 +184,8 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() restricts not-in-archive items by default" do
-    policy = ItemPolicy.new(users(:norights), items(:not_in_archive))
+  test "show?() restricts submitting items by default" do
+    policy = ItemPolicy.new(users(:norights), items(:submitting))
     assert !policy.show?
   end
 
@@ -199,8 +199,8 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
-  test "show?() authorizes sysadmins to not-in-archive items" do
-    policy = ItemPolicy.new(users(:admin), items(:not_in_archive))
+  test "show?() authorizes sysadmins to submitting items" do
+    policy = ItemPolicy.new(users(:admin), items(:submitting))
     assert policy.show?
   end
 
@@ -243,18 +243,18 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.update?
   end
 
-  test "update?() authorizes the submission owner if the item is not in archive" do
+  test "update?() authorizes the submission owner if the item is submitting" do
     user = users(:norights)
     @item.submitter = user
-    @item.in_archive = false
+    @item.submitting = true
     policy = ItemPolicy.new(user, @item)
     assert policy.update?
   end
 
-  test "update?() does not authorize the submission owner if the item is in archive" do
+  test "update?() does not authorize the submission owner if the item is not submitting" do
     user = users(:norights)
     @item.submitter = user
-    @item.in_archive = true
+    @item.submitting = false
     policy = ItemPolicy.new(user, @item)
     assert !policy.update?
   end

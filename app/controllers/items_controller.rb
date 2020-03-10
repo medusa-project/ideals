@@ -105,8 +105,7 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:discoverable, :in_archive,
-                                 :primary_collection_id, :submitter_id,
+    params.require(:item).permit(:discoverable, :primary_collection_id,
                                  :withdrawn)
   end
 

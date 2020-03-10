@@ -35,18 +35,18 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     assert policy.destroy?
   end
 
-  test "destroy?() authorizes the submission owner if the item is not in archive" do
+  test "destroy?() authorizes the submission owner if the item is submitting" do
     user = users(:norights)
     @item.submitter = user
-    @item.in_archive = false
+    @item.submitting = true
     policy = SubmissionPolicy.new(user, @item)
     assert policy.destroy?
   end
 
-  test "destroy?() does not authorize the submission owner if the item is in archive" do
+  test "destroy?() does not authorize the submission owner if the item is not submitting" do
     user = users(:norights)
     @item.submitter = user
-    @item.in_archive = true
+    @item.submitting = false
     policy = SubmissionPolicy.new(user, @item)
     assert !policy.destroy?
   end
@@ -98,18 +98,18 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     assert policy.edit?
   end
 
-  test "edit?() authorizes the submission owner if the item is not in archive" do
+  test "edit?() authorizes the submission owner if the item is submitting" do
     user = users(:norights)
     @item.submitter = user
-    @item.in_archive = false
+    @item.submitting = true
     policy = SubmissionPolicy.new(user, @item)
     assert policy.edit?
   end
 
-  test "edit?() does not authorize the submission owner if the item is in archive" do
+  test "edit?() does not authorize the submission owner if the item is not submitting" do
     user = users(:norights)
     @item.submitter = user
-    @item.in_archive = true
+    @item.submitting = false
     policy = SubmissionPolicy.new(user, @item)
     assert !policy.edit?
   end
@@ -161,18 +161,18 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     assert policy.update?
   end
 
-  test "update?() authorizes the submission owner if the item is not in archive" do
+  test "update?() authorizes the submission owner if the item is submitting" do
     user = users(:norights)
     @item.submitter = user
-    @item.in_archive = false
+    @item.submitting = true
     policy = SubmissionPolicy.new(user, @item)
     assert policy.update?
   end
 
-  test "update?() does not authorize the submission owner if the item is in archive" do
+  test "update?() does not authorize the submission owner if the item is not submitting" do
     user = users(:norights)
     @item.submitter = user
-    @item.in_archive = true
+    @item.submitting = false
     policy = SubmissionPolicy.new(user, @item)
     assert !policy.update?
   end

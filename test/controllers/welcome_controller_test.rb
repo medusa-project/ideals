@@ -17,13 +17,13 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "index() omits undiscoverable, withdrawn, and not-in-archive items from the item count" do
+  test "index() omits undiscoverable, withdrawn, and submitting items from the item count" do
     Item.reindex_all
     ElasticsearchClient.instance.refresh
 
     expected_count = Item.where(withdrawn: false,
                                 discoverable: true,
-                                in_archive: true).count
+                                submitting: false).count
 
     get root_path
     assert response.body.include?("Search across #{expected_count} items")

@@ -106,7 +106,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
     expected_count = Item.where(withdrawn: false,
                                 discoverable: true,
-                                in_archive: true).count
+                                submitting: false).count
 
     get items_path(format: :json)
     struct = JSON.parse(response.body)
@@ -126,7 +126,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() returns HTTP 403 for not-in-archive items" do
-    get item_path(items(:not_in_archive))
+    get item_path(items(:submitting))
     assert_response :forbidden
   end
 

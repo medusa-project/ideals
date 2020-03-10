@@ -22,7 +22,7 @@ class ItemPolicy < ApplicationPolicy
         relation
       else
         relation.filter(Item::IndexFields::DISCOVERABLE, true).
-            filter(Item::IndexFields::IN_ARCHIVE, true).
+            filter(Item::IndexFields::SUBMITTING, false).
             filter(Item::IndexFields::WITHDRAWN, false)
       end
     end
@@ -64,7 +64,7 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def show?
-    @user&.sysadmin? || (@item.discoverable && !@item.withdrawn && @item.in_archive)
+    @user&.sysadmin? || (@item.discoverable && !@item.withdrawn && !@item.submitting)
   end
 
   def show_all_metadata?
@@ -77,7 +77,7 @@ class ItemPolicy < ApplicationPolicy
       # sysadmins can do anything
       return true if user.sysadmin?
       # all users can update their own submissions
-      return true if user == item.submitter && !item.in_archive
+      return true if user == item.submitter && item.submitting
 
       item.all_collections.each do |collection|
         # collection managers can update items within their collections

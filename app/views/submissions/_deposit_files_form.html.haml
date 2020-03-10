@@ -1,13 +1,13 @@
 -# frozen_string_literal: true
 
-= form_for(@resource, url: submission_path(@resource), remote: true) do |f|
+= form_for(@resource, url: submission_path(@resource), remote: true, html: { id: "deposit-files-form" }) do |f|
   = token_tag(nil)
 
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
   / Include this only because `item` is required in the params.
-  = f.hidden_field :visible, value: f.object.in_archive
+  = f.hidden_field :primary_collection_id, value: f.object.primary_collection_id
 
   .alert.alert-light
     Select one or more files to attach to the item.
@@ -18,9 +18,7 @@
     %button.btn.btn-light.step-3-to-2{type: "button"}
       %i.fa.fa-arrow-left
       Back to Step 2
-    %button.btn.btn-primary{type: "button", "data-toggle": "modal",
-                            "data-target": "#complete-modal"}
-      Complete Deposit
+    = f.submit("Complete Deposit", class: "btn btn-primary")
 
 #complete-modal.modal.fade{tabindex: "-1", role: "dialog",
                            "data-backdrop": "static",
@@ -33,4 +31,4 @@
       .modal-body
         Sint enim enim sequi quo perferendis accusantium ut. Pariatur amet facere natus voluptate explicabo est. Praesentium illo dicta provident aut ipsum omnis ratione. Voluptatem nemo qui soluta eius aut atque voluptatum. Nostrum ratione culpa veritatis et. Culpa itaque aut qui vero rerum blanditiis.
       .modal-footer
-        = link_to "Get Me Outta Here", root_path, class: "btn btn-primary"
+        = link_to "Done", root_path, class: "btn btn-primary"

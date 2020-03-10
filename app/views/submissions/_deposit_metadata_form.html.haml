@@ -7,7 +7,7 @@
     - # populated via ajax by shared/_validation_messages.js.erb
 
   / Include this only because `item` is required in the params.
-  = f.hidden_field :visible, value: f.object.in_archive
+  = f.hidden_field :primary_collection_id, value: f.object.primary_collection_id
 
   .alert.alert-light
     Enter descriptive info about the item.

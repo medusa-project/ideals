@@ -35,7 +35,7 @@ class SubmissionPolicy < ApplicationPolicy
       # sysadmins can do anything
       return true if user.sysadmin?
       # all users can update their own submissions
-      return true if user == item.submitter && !item.in_archive
+      return true if user == item.submitter && item.submitting
 
       item.all_collections.each do |collection|
         # collection managers can update items within their collections

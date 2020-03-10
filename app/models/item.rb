@@ -16,16 +16,14 @@
 #                           means it should not be included in search results,
 #                           and its metadata should not be available except to
 #                           administrators.
-# * `in_archive`            Like a published state, sort of, but can be
-#                           overridden by `discoverable`. If false, it means
-#                           the item is currently in the submission process (a
-#                           draft) or has been withdrawn.
 # * `primary_collection_id` Foreign key to {Collection}.
 # * `submitter_id`          Foreign key to {User}.
+# * `submitting`            Indicates that the item is in the submission
+#                           process. This is more-or-less an inversion of
+#                           DSpace's `in_archive` property.
 # * `updated_at`            Managed by ActiveRecord.
 # * `withdrawn`             An administrator has made the item inaccessible,
-#                           but not totally deleted it. Requests for
-#                           withdrawn items return HTTP 410 Gone.
+#                           but not totally deleted it.
 #
 # # Relationships
 #
@@ -52,12 +50,12 @@ class Item < ApplicationRecord
     CREATED            = ElasticsearchIndex::StandardFields::CREATED
     DISCOVERABLE       = "b_discoverable"
     ID                 = ElasticsearchIndex::StandardFields::ID
-    IN_ARCHIVE         = "b_in_archive"
     LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     PRIMARY_COLLECTION = "i_primary_collection_id"
     PRIMARY_UNIT       = "i_primary_unit_id"
     SUBMITTER          = "i_submitter_id"
+    SUBMITTING         = "b_submitting"
     UNIT_TITLES        = "k_unit_titles"
     UNITS              = "i_unit_ids"
     WITHDRAWN          = "b_withdrawn"
@@ -141,12 +139,12 @@ class Item < ApplicationRecord
     doc[IndexFields::COLLECTIONS]        = collections.map(&:id)
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
     doc[IndexFields::DISCOVERABLE]       = self.discoverable
-    doc[IndexFields::IN_ARCHIVE]         = self.in_archive
     doc[IndexFields::LAST_INDEXED]       = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
     doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection_id
     doc[IndexFields::PRIMARY_UNIT]       = self.primary_unit&.id
     doc[IndexFields::SUBMITTER]          = self.submitter_id
+    doc[IndexFields::SUBMITTING]         = self.submitting
     units = self.all_units
     doc[IndexFields::UNIT_TITLES]        = units.map(&:title)
     doc[IndexFields::UNITS]              = units.map(&:id)

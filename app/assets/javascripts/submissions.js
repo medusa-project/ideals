@@ -13,7 +13,7 @@ const AgreementView = function() {
 };
 
 /**
- * Handles the edit-item view used during submission.
+ * Handles the submission form.
  *
  * @constructor
  */
@@ -60,6 +60,14 @@ const EditView = function() {
             successMessage.hide();
             errorMessage.show();
         }
+    });
+
+    $("#deposit-files-form input[type=submit]").on("click", function() {
+        $(this).parent().append("<input type=\"hidden\" name=\"submitting\" value=\"false\">");
+    });
+
+    $("#deposit-files-form").on("submit", function(e) {
+        $("#complete-modal").modal("show");
     });
 };
 

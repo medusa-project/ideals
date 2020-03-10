@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_09_174025) do
+ActiveRecord::Schema.define(version: 2020_03_10_194402) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -101,15 +101,15 @@ ActiveRecord::Schema.define(version: 2020_03_09_174025) do
   end
 
   create_table "items", force: :cascade do |t|
-    t.boolean "in_archive", default: false, null: false
     t.boolean "withdrawn", default: false, null: false
     t.boolean "discoverable", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "primary_collection_id"
     t.bigint "submitter_id"
+    t.boolean "submitting", default: true, null: false
     t.index ["discoverable"], name: "index_items_on_discoverable"
-    t.index ["in_archive"], name: "index_items_on_in_archive"
+    t.index ["submitting"], name: "index_items_on_submitting"
     t.index ["withdrawn"], name: "index_items_on_withdrawn"
   end
 

@@ -18,7 +18,7 @@ class SubmissionsController < ApplicationController
   #
   def agreement
     @submissions = current_user.submitted_items.
-        where(in_archive: false).
+        where(submitting: true).
         order(:updated_at)
   end
 
@@ -31,7 +31,7 @@ class SubmissionsController < ApplicationController
   def create
     item = Item.create!(submitter: current_user,
                         primary_collection_id: params[:collection_id],
-                        in_archive: false)
+                        submitting: true)
     authorize item, policy_class: SubmissionPolicy # this should always succeed
     redirect_to edit_submission_path(item)
   end
@@ -92,7 +92,8 @@ class SubmissionsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:primary_collection_id, :submitter_id)
+    params.require(:item).permit(:primary_collection_id, :submitter_id,
+                                 :submitting)
   end
 
   def set_item

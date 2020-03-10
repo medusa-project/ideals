@@ -1,6 +1,6 @@
 item1:
   submitter: admin
-  in_archive: true
+  submitting: false
   withdrawn: false
   discoverable: true
   primary_collection: collection1
@@ -9,7 +9,7 @@ item1:
 
 item2:
   submitter: admin
-  in_archive: true
+  submitting: false
   withdrawn: false
   discoverable: true
   collections:
@@ -17,7 +17,7 @@ item2:
 
 described:
   submitter: admin
-  in_archive: true
+  submitting: false
   withdrawn: false
   discoverable: true
   collections:
@@ -25,15 +25,15 @@ described:
 
 undescribed:
   submitter: admin
-  in_archive: true
+  submitting: false
   withdrawn: false
   discoverable: true
   collections:
     - collection1
 
-not_in_archive:
+submitting:
   submitter: admin
-  in_archive: false
+  submitting: true
   withdrawn: false
   discoverable: true
   collections:
@@ -41,7 +41,7 @@ not_in_archive:
 
 undiscoverable:
   submitter: admin
-  in_archive: true
+  submitting: false
   withdrawn: false
   discoverable: false
   collections:
@@ -49,7 +49,7 @@ undiscoverable:
 
 withdrawn:
   submitter: admin
-  in_archive: true
+  submitting: false
   withdrawn: true
   discoverable: true
   collections:

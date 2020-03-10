@@ -238,7 +238,7 @@ class IdealsImporter
       row           = line.split("|").map(&:strip)
       id            = row[0].to_i
       submitter_id  = row[1]
-      in_archive    = row[2] == "t"
+      submitting    = row[2] != "t"
       withdrawn     = row[3] == "t"
       collection_id = row[4].present? ? row[4].to_i : nil
       discoverable  = row[5] == "t"
@@ -248,7 +248,7 @@ class IdealsImporter
       if User.find_by(id: submitter_id)
         Item.create!(id:                    id,
                      submitter_id:          submitter_id,
-                     in_archive:            in_archive,
+                     submitting:            submitting,
                      withdrawn:             withdrawn,
                      discoverable:          discoverable,
                      primary_collection_id: collection_id)
