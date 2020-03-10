@@ -1,0 +1,10 @@
+body#edit_submission {
+  table.metadata {
+    td:first-child {
+      width: 30%;
+    }
+    .input-group-append {
+      display: none;
+    }
+  }
+}

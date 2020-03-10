@@ -10,47 +10,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
-  # create()
-
-  test "create() redirects to login page for logged-out users" do
-    post items_path, {}
-    assert_redirected_to login_path
-  end
-
-  test "create() redirects to login page for unauthorized users" do
-    log_in_as(users(:norights))
-    post items_path, {}
-    assert_redirected_to login_path
-  end
-
-  test "create() creates an item" do
-    log_in_as(users(:admin))
-    assert_difference "Item.count" do
-      post items_path, {}
-    end
-  end
-
-  test "create() redirects to item-edit view" do
-    log_in_as(users(:admin))
-    post items_path, {}
-    submission = Item.order(created_at: :desc).limit(1).first
-    assert_redirected_to edit_item_path(submission)
-  end
-
-  # deposit()
-
-  test "deposit() redirects to login path for logged-out users" do
-    get deposit_path
-    assert_redirected_to login_path
-  end
-
-  test "deposit() returns HTTP 200 for logged-in users" do
-    skip # TODO: why does this fail?
-    log_in_as(users(:norights))
-    get deposit_path
-    assert_response :ok
-  end
-
   # destroy()
 
   test "destroy() redirects to login path for logged-out users" do
@@ -83,21 +42,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     delete "/items/99999"
     assert_response :not_found
-  end
-
-  # edit()
-
-  test "edit() redirects to login page for logged-out users" do
-    item = items(:item1)
-    get edit_item_path(item)
-    assert_redirected_to login_path
-  end
-
-  test "edit() returns HTTP 200 for logged-in users" do
-    item = items(:item1)
-    log_in_as(item.submitter)
-    get edit_item_path(item)
-    assert_response :ok
   end
 
   # edit_metadata()
@@ -196,5 +140,9 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     get item_path(items(:withdrawn))
     assert_response :forbidden
   end
+
+  # update()
+
+  # TODO: write update() tests
 
 end

@@ -3,60 +3,10 @@
 class ItemsController < ApplicationController
 
   before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_item, only: [:cancel_submission, :destroy, :edit,
-                                  :edit_metadata, :edit_properties, :show,
-                                  :update]
-  before_action :authorize_item, only: [:cancel_submission, :destroy,
-                                        :edit_metadata, :edit_properties,
-                                        :show, :update]
-
-  ##
-  # Essentially the same as {destroy} but sets a different flash message and
-  # redirects to a different location. For use when canceling a submission.
-  #
-  # Responds to `DELETE /items/:id/cancel-submission`
-  #
-  # @see destroy
-  #
-  def cancel_submission
-    begin
-      @resource.destroy!
-    rescue => e
-      flash['error'] = "#{e}"
-    else
-      ElasticsearchClient.instance.refresh
-      flash['success'] = "Submission canceled."
-    ensure
-      redirect_to root_path
-    end
-  end
-
-  ##
-  # Creates a new {Item} upon acceptance of the {deposit deposit agreement}.
-  # After the submission has been created, the user is redirected to {edit}.
-  #
-  # Responds to `POST /items`.
-  #
-  def create
-    item = Item.create!(submitter: current_user,
-                        primary_collection_id: params[:collection_id],
-                        in_archive: false)
-    authorize item # this should always succeed
-    redirect_to edit_item_path(item)
-  end
-
-  ##
-  # Displays the deposit agreement. At the end of the agreement is a submit
-  # button that POSTs to {create}.
-  #
-  # Responds to `GET /deposit`.
-  #
-  def deposit
-    authorize Item
-    @submissions = current_user.submitted_items.
-        where(in_archive: false).
-        order(:updated_at)
-  end
+  before_action :set_item, only: [:destroy, :edit_metadata, :edit_properties,
+                                  :show, :update]
+  before_action :authorize_item, only: [:destroy, :edit_metadata,
+                                        :edit_properties, :show, :update]
 
   ##
   # Responds to `DELETE /items/:id`
@@ -75,15 +25,6 @@ class ItemsController < ApplicationController
     ensure
       redirect_to @resource.primary_collection
     end
-  end
-
-  ##
-  # Renders the new-submission form.
-  #
-  # Responds to `GET /items/:id/edit`
-  #
-  def edit
-    @submission_profile = SubmissionProfile.default # TODO: collection-specific
   end
 
   ##
