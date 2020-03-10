@@ -24,6 +24,6 @@
             = raw("Not assigned (falling back to #{link_to(@submission_profile.name, @submission_profile)})")
     %dl
       %dt Created
-      %dd= @resource.created_at
+      %dd= local_time @resource.created_at
       %dt Last Updated
-      %dd= @resource.updated_at
+      %dd= local_time @resource.updated_at

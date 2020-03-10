@@ -70,6 +70,9 @@ gem 'bootstrap', '~> 4.4'
 gem "font-awesome-sass", "~> 5.6.1"
 gem 'scars-bootstrap-theme', github: 'medusa-project/scars-bootstrap-theme'
 
+# For pretty absolute and relative dates
+gem "local_time"
+
 gem "haml"
 gem "haml-rails"
 

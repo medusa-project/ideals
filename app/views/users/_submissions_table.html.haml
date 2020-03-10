@@ -8,8 +8,8 @@
   %tbody
     - @submissions.each do |item|
       %tr
-        %td= item.created_at
-        %td= item.updated_at
+        %td= local_time item.created_at
+        %td= local_time item.updated_at
         %td= item.primary_collection ? link_to(item.primary_collection&.title, item.primary_collection) : "Not Yet Selected"
         %td
           - if item.submitter == current_user

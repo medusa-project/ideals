@@ -16,4 +16,5 @@
 //= require popper
 //= require bootstrap-sprockets
 //= require activestorage
+//= require local-time
 //= require_tree .

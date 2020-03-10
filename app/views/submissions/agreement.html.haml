@@ -11,9 +11,9 @@
         - @submissions.each do |item|
           %li
             - if item.primary_collection
-              = "#{item.primary_collection.title}, #{item.created_at}"
+              = raw "Started #{local_time_ago(item.created_at)} in #{item.primary_collection.title}"
             - else
-              = "#{item.created_at} (Collection Not Selected)"
+              = raw "Started #{local_time_ago(item.created_at)} (collection not selected)"
             = link_to("Continue", edit_submission_path(item), class: "btn btn-outline-light btn-sm")
       %button.begin-submission.btn.btn-outline-light Begin a new submission
 
