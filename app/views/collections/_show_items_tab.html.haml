@@ -1,3 +1,9 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@resource).submit_item?
+    = link_to(collection_deposit_path(@resource), class: "btn btn-light", type: "button") do
+      %i.fas.fa-plus
+      Deposit Item Into This Collection
+
 - if @items.count.positive?
   = form_tag(collection_path(@resource), method: :get, class: "filter") do
     .row.justify-content-between

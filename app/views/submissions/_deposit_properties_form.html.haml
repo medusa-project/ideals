@@ -6,14 +6,19 @@
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
-  .alert.alert-light
-    Select the collection into which you'd like to deposit the item.
+  - if @resource.primary_collection
+    = f.hidden_field :primary_collection_id, value: params[:collection_id]
+    %h2 Collection
+    %p= @resource.primary_collection.title
+  - else
+    .alert.alert-light
+      Select the collection into which you'd like to deposit the item.
 
-  = f.select(:primary_collection_id, deposit_collection_options_for_select,
-             {}, class: "custom-select")
-  %p.form-text.text-muted
-    This menu contains all collections to which you have submitter access.
-    To request access to another collection, _______ TODO: write this
+    = f.select(:primary_collection_id, deposit_collection_options_for_select,
+               {}, class: "custom-select")
+    %p.form-text.text-muted
+      This menu contains all collections to which you have directly-assigned
+      submitter access. To request access to another collection, _______ TODO: write this
 
   .text-center.mb-3
     %button.btn.btn-light.step-1-to-2{type: "button"}

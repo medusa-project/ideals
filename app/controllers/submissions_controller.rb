@@ -14,7 +14,10 @@ class SubmissionsController < ApplicationController
   # Displays the deposit agreement. At the end of the agreement is a submit
   # button that POSTs to {create}.
   #
-  # Responds to `GET /deposit`.
+  # Clients may arrive here from a main menu, or from a
+  # {CollectionsController#show show-collection page}.
+  #
+  # Responds to `GET /deposit` and `GET /collections/:collection_id/deposit`.
   #
   def agreement
     @submissions = current_user.submitted_items.

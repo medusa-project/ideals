@@ -14,8 +14,8 @@ class CollectionPolicy < ApplicationPolicy
 
   def create?
     return false unless user
-    user.sysadmin? or                                                  # user is sysadmin
-        collection.all_units.find{ |unit| @user.unit_admin?(unit) } or # user is unit admin
+    user.sysadmin? ||                                                  # user is sysadmin
+        collection.all_units.find{ |unit| @user.unit_admin?(unit) } || # user is unit admin
         user.manager?(collection)                                      # user is collection manager
   end
 
@@ -45,6 +45,17 @@ class CollectionPolicy < ApplicationPolicy
 
   def show?
     true
+  end
+
+  ##
+  # N.B.: this method doesn't correspond to a controller method.
+  #
+  def submit_item?
+    return false unless user
+    user.sysadmin? ||                                                  # user is sysadmin
+        collection.all_units.find{ |unit| @user.unit_admin?(unit) } || # user is unit admin
+        user.manager?(collection) ||                                   # user is collection manager
+        user.submitter?(collection)                                    # user is collection submitter
   end
 
   def update?

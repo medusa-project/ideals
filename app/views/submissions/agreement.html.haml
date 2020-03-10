@@ -26,4 +26,5 @@
     %p Voluptas ea eos quod qui voluptatum accusamus. Iure voluptatibus explicabo aut omnis. Hic hic et quasi iusto iure rerum unde ut. Aut distinctio aut ad eveniet totam tempora sit ducimus. Minima sunt ipsam sit nulla et autem.
     %p Qui voluptate dolorem labore ea tempora unde. Hic debitis cum eius exercitationem animi adipisci. Et voluptas voluptatem neque itaque. Fugit officiis illo quia. Numquam ipsa ut et quia vel tempore. Dolor saepe qui beatae.
     = form_tag submissions_path, method: :post do
+      = hidden_field_tag(:collection_id, params[:collection_id])
       = submit_tag("I agree", class: "btn btn-primary")

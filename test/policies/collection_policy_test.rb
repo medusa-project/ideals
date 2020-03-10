@@ -32,6 +32,14 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.create?
   end
 
+  test "create?() authorizes collection managers" do
+    user = users(:norights)
+    @collection.managing_users << user
+    @collection.save!
+    policy = CollectionPolicy.new(user, @collection)
+    assert policy.create?
+  end
+
   # destroy?()
 
   test "destroy?() returns false with a nil user" do
@@ -141,6 +149,48 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  # submit_item?()
+
+  test "submit_item?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.submit_item?
+  end
+
+  test "submit_item?() is restrictive by default" do
+    policy = CollectionPolicy.new(users(:norights), @collection)
+    assert !policy.submit_item?
+  end
+
+  test "submit_item?() authorizes sysadmins" do
+    policy = CollectionPolicy.new(users(:admin), @collection)
+    assert policy.submit_item?
+  end
+
+  test "submit_item?() authorizes unit admins" do
+    user = users(:norights)
+    unit = @collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = CollectionPolicy.new(user, @collection)
+    assert policy.submit_item?
+  end
+
+  test "submit_item?() authorizes collection managers" do
+    user = users(:norights)
+    @collection.managing_users << user
+    @collection.save!
+    policy = CollectionPolicy.new(user, @collection)
+    assert policy.submit_item?
+  end
+
+  test "submit_item?() authorizes collection submitters" do
+    user = users(:norights)
+    @collection.submitting_users << user
+    @collection.save!
+    policy = CollectionPolicy.new(user, @collection)
+    assert policy.submit_item?
+  end
+
   # update?()
 
   test "update?() returns false with a nil user" do
@@ -155,6 +205,23 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   test "update?() authorizes sysadmins" do
     policy = CollectionPolicy.new(users(:admin), @collection)
+    assert policy.update?
+  end
+
+  test "update?() authorizes unit admins" do
+    user = users(:norights)
+    unit = @collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = CollectionPolicy.new(user, @collection)
+    assert policy.update?
+  end
+
+  test "update?() authorizes collection managers" do
+    user = users(:norights)
+    @collection.managing_users << user
+    @collection.save!
+    policy = CollectionPolicy.new(user, @collection)
     assert policy.update?
   end
 
