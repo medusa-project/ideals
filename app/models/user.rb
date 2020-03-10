@@ -94,6 +94,17 @@ class User < ApplicationRecord
   end
 
   ##
+  # @param collection [Collection]
+  # @return [Boolean] Whether the instance is an effective submitter in the
+  #                   given collection, either directly or as a collection
+  #                   manager or unit or system administrator.
+  # @see #submitter?
+  #
+  def effective_submitter?(collection)
+    effective_manager?(collection) || submitter?(collection)
+  end
+
+  ##
   # For compatibility with breadcrumbs.
   #
   def label
@@ -108,6 +119,16 @@ class User < ApplicationRecord
   #
   def manager?(collection)
     collection.managers.where(user_id: self.id).count > 0
+  end
+
+  ##
+  # @param collection [Collection]
+  # @return [Boolean] Whether the instance is a direct submitter of the given
+  #                   collection.
+  # @see #effective_submitter?
+  #
+  def submitter?(collection)
+    collection.submitters.where(user_id: self.id).count > 0
   end
 
   ##

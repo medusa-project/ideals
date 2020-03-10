@@ -53,10 +53,9 @@ class UserTest < ActiveSupport::TestCase
 
   # effective_manager?()
 
-  test "effective_manager?() returns true when the user is a manager of the given collection" do
+  test "effective_manager?() returns true when the user is a sysadmin" do
+    @instance = users(:admin)
     collection = collections(:collection1)
-    collection.managing_users << @instance
-    collection.save!
     assert @instance.effective_manager?(collection)
   end
 
@@ -69,15 +68,52 @@ class UserTest < ActiveSupport::TestCase
     assert @instance.effective_manager?(collection)
   end
 
-  test "effective_manager?() returns true when the user is a sysadmin" do
-    @instance = users(:admin)
+  test "effective_manager?() returns true when the user is a manager of the given collection" do
     collection = collections(:collection1)
+    collection.managing_users << @instance
+    collection.save!
     assert @instance.effective_manager?(collection)
   end
 
   test "effective_manager?() returns false when the user is not a manager of
   the given collection, nor a unit admin, nor a sysadmin" do
     assert !@instance.effective_manager?(collections(:collection1))
+  end
+
+  # effective_submitter?()
+
+  test "effective_submitter?() returns true when the user is a sysadmin" do
+    @instance = users(:admin)
+    collection = collections(:collection1)
+    assert @instance.effective_submitter?(collection)
+  end
+
+  test "effective_submitter?() returns true when the user is an administrator of
+  one of the collection's units" do
+    collection = collections(:collection1)
+    unit = collection.primary_unit
+    unit.administering_users << @instance
+    unit.save!
+    assert @instance.effective_submitter?(collection)
+  end
+
+  test "effective_submitter?() returns true when the user is a manager of the given collection" do
+    collection = collections(:collection1)
+    collection.managing_users << @instance
+    collection.save!
+    assert @instance.effective_submitter?(collection)
+  end
+
+  test "effective_submitter?() returns true when the user is a submitter in the given collection" do
+    collection = collections(:collection1)
+    collection.submitting_users << @instance
+    collection.save!
+    assert @instance.effective_submitter?(collection)
+  end
+
+  test "effective_submitter?() returns false when the user is not a manager of
+  the given collection, nor a unit admin, nor a sysadmin" do
+    assert !@instance.effective_submitter?(collections(:collection1))
   end
 
   # manager?()
@@ -124,6 +160,19 @@ class UserTest < ActiveSupport::TestCase
 
   test "search() returns a UserRelation" do
     assert_kind_of UserRelation, User.search
+  end
+
+  # submitter?()
+
+  test "submitter?() returns true when the user is a submitter in the given collection" do
+    collection = collections(:collection1)
+    collection.submitting_users << @instance
+    collection.save!
+    assert @instance.submitter?(collection)
+  end
+
+  test "submitter?() returns false when the user is not a submitter in the given collection" do
+    assert !@instance.submitter?(collections(:collection1))
   end
 
   # to_autocomplete()
