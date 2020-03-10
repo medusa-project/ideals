@@ -12,8 +12,7 @@ class ApplicationController < ActionController::Base
   end
   rescue_from Pundit::NotAuthorizedError, with: :unauthorized
 
-  before_action :store_location
-  after_action :copy_flash_to_response_headers
+  after_action :store_location, :copy_flash_to_response_headers
 
   def store_location
     return nil unless request.get?
