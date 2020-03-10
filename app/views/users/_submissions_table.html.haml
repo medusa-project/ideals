@@ -13,4 +13,4 @@
         %td= item.primary_collection ? link_to(item.primary_collection&.title, item.primary_collection) : "Not Yet Selected"
         %td
           - if item.submitter == current_user
-            = link_to("Continue", edit_item_path(item), class: "btn btn-primary btn-sm")
+            = link_to("Continue", edit_submission_path(item), class: "btn btn-primary btn-sm")
