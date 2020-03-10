@@ -32,8 +32,34 @@ const EditView = function() {
     });
     new IDEALS.DepositMetadataEditor();
 
+    var lastEditedInput;
     $("input, select, textarea").on("change", function() {
-        console.log("form changed");
+        lastEditedInput = $(this);
+        $(this).parents("form").submit();
+    });
+
+    $("form").on("submit", function(e) {
+        e.preventDefault();
+        const successMessage = $(this).find("td.message > div.text-success");
+        const errorMessage = $(this).find("td.message > div.text-danger");
+        if (lastEditedInput && lastEditedInput.is(":valid")) {
+            const form = $(this);
+            $.ajax({
+                type: form.attr("method"),
+                url: form.attr("action"),
+                data: form.serialize(),
+                complete: function (request) {
+                    successMessage.show();
+                    errorMessage.hide();
+                    setTimeout(function () {
+                        successMessage.fadeOut();
+                    }, 4000);
+                }
+            });
+        } else {
+            successMessage.hide();
+            errorMessage.show();
+        }
     });
 };
 

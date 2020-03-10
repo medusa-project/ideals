@@ -72,17 +72,15 @@ class SubmissionsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         @resource.update!(item_params)
-        #build_metadata
-        #@resource.save!
+        build_metadata
+        @resource.save!
       end
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @resource.errors.any? ? @resource : e },
              status: :bad_request
     else
-      ElasticsearchClient.instance.refresh
-      flash['success'] = "Item \"#{@resource.title}\" updated."
-      render "shared/reload"
+      head :no_content
     end
   end
 
@@ -94,9 +92,7 @@ class SubmissionsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:discoverable, :in_archive,
-                                 :primary_collection_id, :submitter_id,
-                                 :withdrawn)
+    params.require(:item).permit(:primary_collection_id, :submitter_id)
   end
 
   def set_item
@@ -112,10 +108,9 @@ class SubmissionsController < ApplicationController
     if params[:elements].present?
       ActiveRecord::Base.transaction do
         @resource.elements.destroy_all
-        params[:elements].each do |element|
+        params[:elements].select{ |e| e[:string].present? }.each do |element|
           @resource.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
-                                   string:             element[:string],
-                                   uri:                element[:uri])
+                                   string:             element[:string])
         end
       end
     end

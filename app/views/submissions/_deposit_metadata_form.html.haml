@@ -1,13 +1,15 @@
 -# frozen_string_literal: true
 
-= form_for(@resource, remote: true) do |f|
+= form_for(@resource, url: submission_path(@resource), remote: true) do |f|
+  = token_tag(nil)
+
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
   / Include this only because `item` is required in the params.
   = f.hidden_field :visible, value: f.object.in_archive
 
-  .alert.alert-info
+  .alert.alert-light
     Enter descriptive info about the item.
 
   %table.table.metadata
@@ -15,38 +17,43 @@
       - @submission_profile.elements.each do |profile_element|
         %tr
           %td
-            = hidden_field_tag "elements[][name]",
-                               profile_element.registered_element.name
             = profile_element.registered_element.label
             - if profile_element.required
               %span.badge.badge-danger REQUIRED
-
-            - if profile_element.help_text.present?
-              %p.form-text.text-muted.mb-0= profile_element.help_text
+            %p.form-text.text-muted.mb-0= profile_element.help_text
           %td
-            .input-group.mb-2
-              - case profile_element.input_type
-              - when SubmissionProfileElement::InputType::TEXT_AREA
-                = text_area_tag "elements[][string]", nil,
-                                "data-required": profile_element.required,
-                                "data-repeatable": profile_element.repeatable,
-                                class: "form-control"
-              - else
-                = text_field_tag "elements[][string]", nil,
-                                 "data-required": profile_element.required,
-                                 "data-repeatable": profile_element.repeatable,
-                                 class: "form-control"
+            - if f.object.element(profile_element.registered_element.name.to_sym).nil?
+              - f.object.elements.build(registered_element: profile_element.registered_element)
+            - f.object.elements.select{ |e| e.registered_element == profile_element.registered_element }.each do |asc_element|
+              .input-group.mb-2
+                = hidden_field_tag "elements[][name]",
+                                   profile_element.registered_element.name
+                - case profile_element.input_type
+                - when SubmissionProfileElement::InputType::TEXT_AREA
+                  = text_area_tag("elements[][string]", asc_element.string,
+                                  class: "form-control",
+                                  required: profile_element.required)
+                - else
+                  = text_field_tag("elements[][string]", asc_element.string,
+                                   class: "form-control",
+                                   required: profile_element.required)
 
-              - if !profile_element.required || profile_element.repeatable
-                .input-group-append
-                  %button.btn.btn-outline-danger.remove{type: "button"}
-                    %i.fa.fa-minus
-                    Remove Value
+                - if !profile_element.required || profile_element.repeatable
+                  .input-group-append
+                    %button.btn.btn-outline-danger.remove{type: "button"}
+                      %i.fa.fa-minus
+                      Remove Value
             - if profile_element.repeatable
               %button.btn.btn-outline-success.btn-sm.mt-1.add{type: "button"}
                 %i.fa.fa-plus
                 Add Value
-
+          %td.message
+            .text-success
+              %i.fa.fa-check
+              Value saved
+            .text-danger
+              %i.fa.fa-times
+              Invalid value
   .text-center.mb-3
     %button.btn.btn-light.step-2-to-1{type: "button"}
       %i.fa.fa-arrow-left

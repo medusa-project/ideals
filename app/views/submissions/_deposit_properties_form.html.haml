@@ -1,10 +1,12 @@
 -# frozen_string_literal: true
 
-= form_for(@resource, remote: true) do |f|
+= form_for(@resource, url: submission_path(@resource), remote: true) do |f|
+  = token_tag(nil)
+
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
-  .alert.alert-info
+  .alert.alert-light
     Select the collection into which you'd like to deposit the item.
 
   = f.select(:primary_collection_id, deposit_collection_options_for_select,

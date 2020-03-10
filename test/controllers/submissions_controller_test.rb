@@ -131,7 +131,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal collection.id, item.primary_collection_id
   end
 
-  test "update() returns HTTP 200" do
+  test "update() returns HTTP 204" do
     log_in_as(users(:admin))
     item = items(:item1)
     patch submission_path(item), {
@@ -142,7 +142,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
             }
         }
     }
-    assert_response :ok
+    assert_response :no_content
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
