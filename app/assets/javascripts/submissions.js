@@ -38,10 +38,11 @@ const EditView = function() {
         $(this).parents("form").submit();
     });
 
-    $("form").on("submit", function(e) {
+    $("form#deposit-metadata-form").on("submit", function(e) {
         e.preventDefault();
-        const successMessage = $(this).find("td.message > div.text-success");
-        const errorMessage = $(this).find("td.message > div.text-danger");
+        const tr             = lastEditedInput.parents("tr");
+        const successMessage = tr.find("td.message > div.text-success");
+        const errorMessage   = tr.find("td.message > div.text-danger");
         if (lastEditedInput && lastEditedInput.is(":valid")) {
             const form = $(this);
             $.ajax({
