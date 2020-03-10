@@ -74,7 +74,7 @@ const EditView = function() {
 $(document).ready(function() {
     if ($("body#agreement").length) {
         new AgreementView();
-    } else if ($("body#edit_submission")) {
+    } else if ($("body#edit_submission").length) {
         new EditView();
     }
 });
