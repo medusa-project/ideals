@@ -1,2 +1,11 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@resource).edit_membership?
+    %button.btn.btn-light.edit-collection-membership{"data-collection-id": @resource.id,
+                                                     "data-target": "#edit-collection-membership-modal",
+                                                     "data-toggle": "modal",
+                                                     role: "button"}
+      %i.fas.fa-pencil-alt
+      Change Unit Membership
+
 = resource_list(@resource.all_units.sort{ |u| u.title <=> u.title },
                 @resource.primary_unit_id)

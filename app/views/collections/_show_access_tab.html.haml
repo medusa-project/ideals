@@ -1,3 +1,12 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@resource).edit_access?
+    %button.btn.btn-light.edit-collection-access{"data-collection-id": @resource.id,
+                                                 "data-target": "#edit-collection-access-modal",
+                                                 "data-toggle": "modal",
+                                                 role: "button"}
+      %i.fas.fa-pencil-alt
+      Edit Access
+
 %dl
   %dt Unit Administrators
   %dd

@@ -1,3 +1,13 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@resource).edit_properties?
+    %button.btn.btn-light.edit-collection-properties{"data-collection-id": @resource.id,
+                                                     "data-target": "#edit-collection-properties-modal",
+                                                     "data-toggle": "modal",
+                                                     role: "button"}
+      %i.fas.fa-pencil-alt
+      Edit Properties
+
+.clearfix
 .row
   .col-md-8
     = metadata_as_dl(@resource.elements, @metadata_profile)
