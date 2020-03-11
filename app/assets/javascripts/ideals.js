@@ -94,21 +94,31 @@ const IDEALS = {
         }
     },
 
-    MultiUserList: function() {
+    /**
+     * Supports "multi-element lists" (for want of a better term) in forms.
+     * These are lists that support a model's one-to-many property where there
+     * is one element per property, a remove button next to each element, and
+     * an add button after the last element.
+     *
+     * @constructor
+     */
+    MultiElementList: function() {
         $("button.add").on("click", function(e) {
             const clone = $(this).prev().clone();
             clone.find("input").val("");
             $(this).before(clone);
             updateEventListeners();
-            new IDEALS.UserAutocompleter(clone.find("input"));
+            if (clone.hasClass("user")) {
+                new IDEALS.UserAutocompleter(clone.find("input"));
+            }
             e.preventDefault();
         });
         updateEventListeners();
 
         function updateEventListeners() {
             $("button.remove").off("click").on("click", function () {
-                if ($(this).parents(".form-group").find(".user").length > 1) {
-                    $(this).parents(".user").remove();
+                if ($(this).parents(".form-group").find(".input-group").length > 1) {
+                    $(this).parents(".input-group").remove();
                 }
             });
         }

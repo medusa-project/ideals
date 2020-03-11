@@ -6,7 +6,7 @@
 const UnitsView = function() {
     new IDEALS.UserAutocompleter(
         $("input[name=primary_administrator], input[name='administering_users[]']"));
-    new IDEALS.MultiUserList();
+    new IDEALS.MultiElementList();
 };
 
 /**
@@ -24,7 +24,7 @@ const UnitView = function() {
             $("#edit-unit-access-modal .modal-body").html(data);
             new IDEALS.UserAutocompleter(
                 $("input[name=primary_administrator], input[name='administering_users[]']"));
-            new IDEALS.MultiUserList();
+            new IDEALS.MultiElementList();
         });
     });
     $('.edit-unit-membership').on("click", function() {

@@ -22,7 +22,7 @@ const CollectionView = function() {
             $("#edit-collection-access-modal .modal-body").html(data);
             new IDEALS.UserAutocompleter(
                 $("input[name='managers[]'], input[name='submitters[]']"));
-            new IDEALS.MultiUserList();
+            new IDEALS.MultiElementList();
         });
     });
     $('.edit-collection-membership').on("click", function() {
