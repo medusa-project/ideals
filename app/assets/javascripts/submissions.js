@@ -63,11 +63,7 @@ const EditView = function() {
         }
     });
 
-    $("#deposit-files-form input[type=submit]").on("click", function() {
-        $(this).parent().append("<input type=\"hidden\" name=\"submitting\" value=\"false\">");
-    });
-
-    $("#deposit-files-form").on("submit", function(e) {
+    $("#complete-form").on("submit", function() {
         $("#complete-modal").modal("show");
     });
 };

@@ -2,7 +2,7 @@
 
 ##
 # Counterpart of {ItemsController} that manages {Item}s during the submission
-# workflow.
+# process.
 #
 class SubmissionsController < ApplicationController
 
@@ -29,7 +29,7 @@ class SubmissionsController < ApplicationController
   # Creates a new {Item} upon acceptance of the {deposit deposit agreement}.
   # After the submission has been created, the user is redirected to {edit}.
   #
-  # Responds to `POST /items`.
+  # Responds to `POST /submissions`.
   #
   def create
     item = Item.create!(submitter: current_user,
@@ -69,7 +69,7 @@ class SubmissionsController < ApplicationController
   end
 
   ##
-  # Responds to `PATCH/PUT /items/:id`
+  # Responds to `PATCH/PUT /submissions/:id`
   #
   def update
     begin

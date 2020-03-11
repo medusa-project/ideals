@@ -1,6 +1,6 @@
 -# frozen_string_literal: true
 
-= form_for(@resource, url: submission_path(@resource), remote: true, html: { id: "deposit-files-form" }) do |f|
+= form_for(@resource, url: submission_path(@resource), remote: true) do |f|
   = token_tag(nil)
 
   .error-messages
@@ -14,10 +14,13 @@
 
   %p (File upload goes here)
 
+= form_for(@resource, url: submission_path(@resource), remote: true,
+           html: { id: "complete-form" }) do |f|
   .text-center.mb-3
     %button.btn.btn-light.step-3-to-2{type: "button"}
       %i.fa.fa-arrow-left
       Back to Step 2
+    = f.hidden_field :submitting, value: "false"
     = f.submit("Complete Deposit", class: "btn btn-primary")
 
 #complete-modal.modal.fade{tabindex: "-1", role: "dialog",
