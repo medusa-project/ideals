@@ -1,5 +1,34 @@
-admin_identity:
+##
+# N.B.: every identity in this file MUST have a corresponding User in
+# `users.yml`.
+#
+
+admin:
   name: admin
   email: admin@illinois.edu
+  activated: true
+  password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
+
+norights:
+  name: norights
+  email: norights@illinois.edu
+  activated: true
+  password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
+
+sally:
+  name: sally
+  email: sally@illinois.edu
+  activated: true
+  password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
+
+shibboleth:
+  name: shibboleth
+  email: shibboleth@illinois.edu
+  activated: true
+  password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
+
+unit1_unit2_unit1_admin:
+  name: unit1_unit2_unit1_admin
+  email: unit1_unit2_unit1_admin@illinois.edu
   activated: true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>

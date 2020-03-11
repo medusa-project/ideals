@@ -13,10 +13,19 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "create() redirects to login page for unauthorized users" do
+  test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post registered_elements_path, {}
-    assert_redirected_to login_path
+    post registered_elements_path, {
+        xhr: true,
+        params: {
+            registered_element: {
+                name: "cats",
+                label: "Cats",
+                scope_note: "Mammals"
+            }
+        }
+    }
+    assert_response :forbidden
   end
 
   test "create() returns HTTP 200" do
@@ -65,15 +74,15 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login path for logged-out users" do
+  test "destroy() redirects to login page for logged-out users" do
     delete "/elements/bogus"
     assert_redirected_to login_path
   end
 
-  test "destroy() redirects to login path for unauthorized users" do
+  test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete "/elements/bogus"
-    assert_redirected_to login_path
+    delete registered_element_path(registered_elements(:unused))
+    assert_response :forbidden
   end
 
   test "destroy() destroys the element" do
@@ -104,10 +113,10 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "index() redirects to login page for unauthorized users" do
+  test "index() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     get registered_elements_path
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users" do
@@ -118,15 +127,15 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login path for logged-out users" do
+  test "update() redirects to login page for logged-out users" do
     patch "/elements/bogus", {}
     assert_redirected_to login_path
   end
 
-  test "update() redirects to login path for unauthorized users" do
+  test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch "/elements/bogus", {}
-    assert_redirected_to login_path
+    patch registered_element_path(registered_elements(:description)), {}
+    assert_response :forbidden
   end
 
   test "update() updates an element" do

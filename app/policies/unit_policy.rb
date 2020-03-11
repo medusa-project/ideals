@@ -16,7 +16,7 @@ class UnitPolicy < ApplicationPolicy
     return false unless user
     return true if user.sysadmin?
     if unit != Unit
-      return user.sysadmin? || unit.administrators.where(user_id: user.id).count > 0
+      return unit.administrators.where(user_id: user.id).count > 0
     end
     false
   end

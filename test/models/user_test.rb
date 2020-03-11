@@ -3,6 +3,7 @@ require 'test_helper'
 class UserTest < ActiveSupport::TestCase
 
   setup do
+    setup_elasticsearch
     @instance = users(:norights)
   end
 

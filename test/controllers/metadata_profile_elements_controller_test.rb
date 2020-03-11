@@ -17,10 +17,20 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "create() redirects to login page for unauthorized users" do
+  test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post metadata_profile_metadata_profile_elements_path(@profile), {}
-    assert_redirected_to login_path
+    post metadata_profile_metadata_profile_elements_path(@profile), {
+        xhr: true,
+        params: {
+            metadata_profile_element: {
+                registered_element_id: registered_elements(:title).id,
+                metadata_profile_id: @profile.id,
+                label: "Title",
+                index: 0
+            }
+        }
+    }
+    assert_response :forbidden
   end
 
   test "create() returns HTTP 200" do
@@ -73,15 +83,17 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login path for logged-out users" do
-    delete metadata_profile_path(@profile) + "/elements/9999"
+  test "destroy() redirects to login page for logged-out users" do
+    delete metadata_profile_metadata_profile_element_path(@profile,
+                                                          metadata_profile_elements(:default_description))
     assert_redirected_to login_path
   end
 
-  test "destroy() redirects to login path for unauthorized users" do
+  test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete metadata_profile_path(@profile) + "/elements/9999"
-    assert_redirected_to login_path
+    delete metadata_profile_metadata_profile_element_path(@profile,
+                                                          metadata_profile_elements(:default_description))
+    assert_response :forbidden
   end
 
   test "destroy() destroys the element" do
@@ -113,11 +125,11 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "edit() redirects to login page for unauthorized users" do
+  test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     element = metadata_profile_elements(:default_title)
     get edit_metadata_profile_metadata_profile_element_path(@profile, element)
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
@@ -129,15 +141,17 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login path for logged-out users" do
-    patch metadata_profile_path(@profile) + "/elements/9999", {}
+  test "update() redirects to login page for logged-out users" do
+    element = metadata_profile_elements(:default_title)
+    patch metadata_profile_metadata_profile_element_path(@profile, element), {}
     assert_redirected_to login_path
   end
 
-  test "update() redirects to login path for unauthorized users" do
+  test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch metadata_profile_path(@profile) + "/elements/9999", {}
-    assert_redirected_to login_path
+    element = metadata_profile_elements(:default_title)
+    patch metadata_profile_metadata_profile_element_path(@profile, element), {}
+    assert_response :forbidden
   end
 
   test "update() updates an element" do

@@ -17,10 +17,17 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "create() redirects to login page for unauthorized users" do
+  test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post units_path, {}
-    assert_redirected_to login_path
+    post units_path, {
+        xhr: true,
+        params: {
+            unit: {
+                title: "New Unit"
+            }
+        }
+    }
+    assert_response :forbidden
   end
 
   test "create() returns HTTP 200 for authorized users" do
@@ -65,15 +72,15 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login path for logged-out users" do
+  test "destroy() redirects to login page for logged-out users" do
     delete "/units/#{units(:unit1).id}"
     assert_redirected_to login_path
   end
 
-  test "destroy() redirects to login path for unauthorized users" do
+  test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     delete "/units/#{units(:unit1).id}"
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "destroy() destroys the unit" do
@@ -101,17 +108,17 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_access()
 
-  test "edit_access() redirects to login path for logged-out users" do
+  test "edit_access() redirects to login page for logged-out users" do
     unit = units(:unit1)
     get "/units/#{unit.id}/edit-access", {}
     assert_redirected_to login_path
   end
 
-  test "edit_access() redirects to login path for unauthorized users" do
+  test "edit_access() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
     get "/units/#{unit.id}/edit-access", {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_access() returns HTTP 200" do
@@ -123,17 +130,17 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_membership()
 
-  test "edit_membership() redirects to login path for logged-out users" do
+  test "edit_membership() redirects to login page for logged-out users" do
     unit = units(:unit1)
     get "/units/#{unit.id}/edit-membership", {}
     assert_redirected_to login_path
   end
 
-  test "edit_membership() redirects to login path for unauthorized users" do
+  test "edit_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
     get "/units/#{unit.id}/edit-membership", {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_membership() returns HTTP 200" do
@@ -145,17 +152,17 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
-  test "edit_properties() redirects to login path for logged-out users" do
+  test "edit_properties() redirects to login page for logged-out users" do
     unit = units(:unit1)
     get "/units/#{unit.id}/edit-properties", {}
     assert_redirected_to login_path
   end
 
-  test "edit_properties() redirects to login path for unauthorized users" do
+  test "edit_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
     get "/units/#{unit.id}/edit-properties", {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 200" do
@@ -193,17 +200,17 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login path for logged-out users" do
+  test "update() redirects to login page for logged-out users" do
     unit = units(:unit1)
     patch "/units/#{unit.id}", {}
     assert_redirected_to login_path
   end
 
-  test "update() redirects to login path for unauthorized users" do
+  test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
     patch "/units/#{unit.id}", {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "update() updates a unit" do

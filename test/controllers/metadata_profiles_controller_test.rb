@@ -14,11 +14,11 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "clone() redirects to login page for unauthorized users" do
+  test "clone() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     profile = metadata_profiles(:default)
     post metadata_profile_clone_path(profile), {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "clone() redirects to the clone upon success" do
@@ -43,10 +43,17 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "create() redirects to login page for unauthorized users" do
+  test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post metadata_profiles_path, {}
-    assert_redirected_to login_path
+    post metadata_profiles_path, {
+        xhr: true,
+        params: {
+            metadata_profile: {
+                name: "cats"
+            }
+        }
+    }
+    assert_response :forbidden
   end
 
   test "create() returns HTTP 200" do
@@ -91,15 +98,15 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login path for logged-out users" do
-    delete "/metadata-profiles/99999"
+  test "destroy() redirects to login page for logged-out users" do
+    delete metadata_profile_path(metadata_profiles(:unused))
     assert_redirected_to login_path
   end
 
-  test "destroy() redirects to login path for unauthorized users" do
+  test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete "/metadata-profiles/99999"
-    assert_redirected_to login_path
+    delete metadata_profile_path(metadata_profiles(:unused))
+    assert_response :forbidden
   end
 
   test "destroy() destroys the profile" do
@@ -130,10 +137,10 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "index() redirects to login page for unauthorized users" do
+  test "index() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     get metadata_profiles_path
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users" do
@@ -149,10 +156,10 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "show() redirects to login page for unauthorized users" do
+  test "show() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     get metadata_profile_path(metadata_profiles(:default))
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
@@ -163,15 +170,15 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login path for logged-out users" do
+  test "update() redirects to login page for logged-out users" do
     patch "/metadata-profiles/99999", {}
     assert_redirected_to login_path
   end
 
-  test "update() redirects to login path for unauthorized users" do
+  test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch "/metadata-profiles/99999", {}
-    assert_redirected_to login_path
+    patch metadata_profile_path(metadata_profiles(:unused)), {}
+    assert_response :forbidden
   end
 
   test "update() updates a profile" do

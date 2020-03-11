@@ -17,10 +17,20 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "create() redirects to login page for unauthorized users" do
+  test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post collections_path, {}
-    assert_redirected_to login_path
+    post collections_path, {
+        xhr: true,
+        params: {
+            collection: {
+                primary_unit_id: units(:unit1).id
+            },
+            elements: {
+                title: "New Collection"
+            }
+        }
+    }
+    assert_response :forbidden
   end
 
   test "create() returns HTTP 200 for authorized users" do
@@ -73,15 +83,15 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login path for logged-out users" do
+  test "destroy() redirects to login page for logged-out users" do
     delete "/collections/#{collections(:collection1).id}"
     assert_redirected_to login_path
   end
 
-  test "destroy() redirects to login path for unauthorized users" do
+  test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     delete "/collections/#{collections(:collection1).id}"
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "destroy() destroys the collection" do
@@ -109,17 +119,17 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_access()
 
-  test "edit_access() redirects to login path for logged-out users" do
+  test "edit_access() redirects to login page for logged-out users" do
     collection = collections(:collection1)
     get "/collections/#{collection.id}/edit-access", {}
     assert_redirected_to login_path
   end
 
-  test "edit_access() redirects to login path for unauthorized users" do
+  test "edit_access() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
     get "/collections/#{collection.id}/edit-access", {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_access() returns HTTP 200" do
@@ -131,17 +141,17 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_membership()
 
-  test "edit_membership() redirects to login path for logged-out users" do
+  test "edit_membership() redirects to login page for logged-out users" do
     collection = collections(:collection1)
     get "/collections/#{collection.id}/edit-membership", {}
     assert_redirected_to login_path
   end
 
-  test "edit_membership() redirects to login path for unauthorized users" do
+  test "edit_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
     get "/collections/#{collection.id}/edit-membership", {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_membership() returns HTTP 200" do
@@ -153,17 +163,17 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
-  test "edit_properties() redirects to login path for logged-out users" do
+  test "edit_properties() redirects to login page for logged-out users" do
     collection = collections(:collection1)
     get "/collections/#{collection.id}/edit-properties", {}
     assert_redirected_to login_path
   end
 
-  test "edit_properties() redirects to login path for unauthorized users" do
+  test "edit_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
     get "/collections/#{collection.id}/edit-properties", {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 200" do
@@ -199,17 +209,17 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login path for logged-out users" do
+  test "update() redirects to login page for logged-out users" do
     collection = collections(:collection1)
     patch "/collections/#{collection.id}", {}
     assert_redirected_to login_path
   end
 
-  test "update() redirects to login path for unauthorized users" do
+  test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
     patch "/collections/#{collection.id}", {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "update() updates a collection" do

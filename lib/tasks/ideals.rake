@@ -49,25 +49,9 @@ namespace :ideals do
     desc "Create a local identity sysadmin user"
     task :create_identity_sysadmin, [:username, :password] => :environment do |task, args|
       username = args[:username]
-      email = "#{username}@example.edu"
       ActiveRecord::Base.transaction do
-        invitee = Invitee.find_by_email(email) || Invitee.create!(email: email,
-                                                                  approval_state: ApprovalState::APPROVED)
-        invitee.expires_at = Time.zone.now + 1.years
-        invitee.save!
-        identity = Identity.find_or_create_by(email: email)
-        salt = BCrypt::Engine.generate_salt
-        password = args[:password]
-        encrypted_password = BCrypt::Engine.hash_secret(localpass, salt)
-        identity.password_digest = encrypted_password
-        identity.update(password: password, password_confirmation: password)
-        identity.name = username
-        identity.activated = true
-        identity.activated_at = Time.zone.now
-        identity.save!
-        user = IdentityUser.no_omniauth(email)
-        user.sysadmin = true
-        user.save!
+        user = IdentityUser.no_omniauth("#{username}@example.edu")
+        Identity.create_for_user(user, args[:password])
       end
     end
 

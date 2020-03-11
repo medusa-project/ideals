@@ -13,6 +13,7 @@
 # * `uri`        Linked Data URI.
 #
 class RegisteredElement < ApplicationRecord
+  include Breadcrumb
 
   METADATA_FIELD_PREFIX = "metadata_"
   KEYWORD_FIELD_SUFFIX  = ".keyword"

@@ -17,12 +17,31 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   validates :password, presence: true, length: {minimum: 6}
   validate :invited
 
-  # Returns true if the given token matches the digest.
-  def authenticated?(attribute, token)
-    digest = send("#{attribute}_digest")
-    return false if digest.nil?
+  ##
+  # Creates a counterpart for the given user. If one already exists, it is
+  # updated with the given password.
+  #
+  # @param user [IdentityUser]
+  # @param password [String]
+  # @return [Identity]
+  #
+  def self.create_for_user(user, password)
+    invitee = Invitee.find_by_email(user.email) ||
+        Invitee.create!(email: user.email,
+                        approval_state: ApprovalState::APPROVED)
+    invitee.expires_at = Time.zone.now + 1.years
+    invitee.save!
 
-    BCrypt::Password.new(digest).is_password?(token)
+    identity           = find_or_create_by(email: user.email)
+    salt               = BCrypt::Engine.generate_salt
+    encrypted_password = BCrypt::Engine.hash_secret(password, salt)
+    identity.update!(name: user.name,
+                     password: password,
+                     password_confirmation: password,
+                     password_digest: encrypted_password,
+                     activated: true,
+                     activated_at: Time.zone.now)
+    identity
   end
 
   # Returns the hash digest of the given string.
@@ -38,6 +57,14 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   # Returns a random token.
   def self.new_token
     SecureRandom.urlsafe_base64
+  end
+
+  # Returns true if the given token matches the digest.
+  def authenticated?(attribute, token)
+    digest = send("#{attribute}_digest")
+    return false if digest.nil?
+
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
   def invited

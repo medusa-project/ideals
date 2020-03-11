@@ -12,13 +12,12 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   # agreement()
 
-  test "agreement() redirects to login path for logged-out users" do
+  test "agreement() redirects to login page for logged-out users" do
     get deposit_path
     assert_redirected_to login_path
   end
 
   test "agreement() returns HTTP 200 for logged-in users" do
-    skip # TODO: why does this fail?
     log_in_as(users(:norights))
     get deposit_path
     assert_response :ok
@@ -27,12 +26,6 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() redirects to login page for logged-out users" do
-    post submissions_path, {}
-    assert_redirected_to login_path
-  end
-
-  test "create() redirects to login page for unauthorized users" do
-    log_in_as(users(:norights))
     post submissions_path, {}
     assert_redirected_to login_path
   end
@@ -53,15 +46,15 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login path for logged-out users" do
+  test "destroy() redirects to login page for logged-out users" do
     delete submission_path(items(:item1))
     assert_redirected_to login_path
   end
 
-  test "destroy() redirects to login path for unauthorized users" do
+  test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     delete submission_path(items(:item1))
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "destroy() destroys the item" do
@@ -102,17 +95,17 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login path for logged-out users" do
+  test "update() redirects to login page for logged-out users" do
     item = items(:item1)
     patch submission_path(item), {}
     assert_redirected_to login_path
   end
 
-  test "update() redirects to login path for unauthorized users" do
+  test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     item = items(:item1)
     patch submission_path(item), {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "update() updates an item" do

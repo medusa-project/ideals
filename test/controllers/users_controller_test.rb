@@ -17,10 +17,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "edit() redirects to login page for unauthorized users" do
+  test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     get edit_user_path(users(:admin))
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
@@ -36,10 +36,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "index() redirects to login page for unauthorized users" do
+  test "index() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     get users_path
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users for HTML" do
@@ -61,10 +61,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "show() redirects to login page for unauthorized users" do
+  test "show() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     get user_path(users(:admin))
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
@@ -75,17 +75,17 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login path for logged-out users" do
+  test "update() redirects to login page for logged-out users" do
     user = users(:admin)
     patch "/users/#{user.id}", {}
     assert_redirected_to login_path
   end
 
-  test "update() redirects to login path for unauthorized users" do
+  test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     user = users(:admin)
     patch "/users/#{user.id}", {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "update() updates a user" do

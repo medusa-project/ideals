@@ -1,3 +1,8 @@
+##
+# N.B.: every user in this file MUST have a corresponding Identity in
+# `identities.yml`. (This is a requirement of the omniauth-identity gem.)
+#
+
 admin: # TODO: rename to identity_admin
   type: IdentityUser
   uid: admin@illinois.edu

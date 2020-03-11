@@ -11,17 +11,15 @@ class UnitsController < ApplicationController
   # Responds to `POST /units`
   #
   def create
+    @resource = Unit.new(unit_params)
+    authorize @resource
     begin
-      @resource = Unit.new(unit_params)
-      authorize @resource
       ActiveRecord::Base.transaction do
         @resource.save!
-        assign_administrators
-        @resource.save!
       end
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @resource },
+             locals: { object: @resource.errors.any? ? @resource : e },
              status: :bad_request
     else
       ElasticsearchClient.instance.refresh
@@ -155,8 +153,8 @@ class UnitsController < ApplicationController
 
   def assign_administrators
     # Non-primary administrators
-    @resource.administrators.where(primary: false).destroy_all
-    if params[:administering_users].respond_to?(:each)
+    if params[:administering_users]
+      @resource.administrators.where(primary: false).destroy_all
       params[:administering_users].select(&:present?).each do |user_str|
         user = User.from_autocomplete_string(user_str)
         @resource.errors.add(:administrators,
@@ -165,8 +163,10 @@ class UnitsController < ApplicationController
       end
     end
     # Primary administrator
-    @resource.primary_administrator =
-        User.from_autocomplete_string(params[:primary_administrator])
+    if params[:primary_administrator]
+      @resource.primary_administrator =
+          User.from_autocomplete_string(params[:primary_administrator])
+    end
   end
 
   def unit_params

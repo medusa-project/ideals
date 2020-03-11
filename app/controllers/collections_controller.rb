@@ -13,9 +13,9 @@ class CollectionsController < ApplicationController
   # Responds to `POST /collections`.
   #
   def create
+    @resource = Collection.new(collection_params)
+    authorize @resource
     begin
-      @resource = Collection.new(collection_params)
-      authorize @resource
       ActiveRecord::Base.transaction do
         # Save now in order to obtain an ID with which to associate
         # AscribedElements in the next step.
@@ -24,9 +24,9 @@ class CollectionsController < ApplicationController
         build_metadata
         @resource.save!
       end
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @resource },
+             locals: { object: @resource.errors.any? ? @resource : e },
              status: :bad_request
     else
       ElasticsearchClient.instance.refresh
@@ -150,23 +150,27 @@ class CollectionsController < ApplicationController
 
   def assign_users
     # Managers
-    @resource.managers.destroy_all
-    if params[:managers].respond_to?(:each)
-      params[:managers].select(&:present?).each do |user_str|
-        user = User.from_autocomplete_string(user_str)
-        @resource.errors.add(:managers,
-                             "includes a user that does not exist") unless user
-        @resource.managing_users << user
+    if params[:managers].present?
+      @resource.managers.destroy_all
+      if params[:managers].respond_to?(:each)
+        params[:managers].select(&:present?).each do |user_str|
+          user = User.from_autocomplete_string(user_str)
+          @resource.errors.add(:managers,
+                               "includes a user that does not exist") unless user
+          @resource.managing_users << user
+        end
       end
     end
     # Submitters
-    @resource.submitters.destroy_all
-    if params[:submitters].respond_to?(:each)
-      params[:submitters].select(&:present?).each do |user_str|
-        user = User.from_autocomplete_string(user_str)
-        @resource.errors.add(:submitters,
-                             "includes a user that does not exist") unless user
-        @resource.submitting_users << user
+    if params[:submitters].present?
+      @resource.submitters.destroy_all
+      if params[:submitters].respond_to?(:each)
+        params[:submitters].select(&:present?).each do |user_str|
+          user = User.from_autocomplete_string(user_str)
+          @resource.errors.add(:submitters,
+                               "includes a user that does not exist") unless user
+          @resource.submitting_users << user
+        end
       end
     end
   end

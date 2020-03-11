@@ -13,10 +13,17 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "create() redirects to login page for unauthorized users" do
+  test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post user_groups_path, {}
-    assert_redirected_to login_path
+    post user_groups_path, {
+        xhr: true,
+        params: {
+            user_group: {
+                name: "cats"
+            }
+        }
+    }
+    assert_response :forbidden
   end
 
   test "create() returns HTTP 200" do
@@ -61,15 +68,15 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login path for logged-out users" do
+  test "destroy() redirects to login page for logged-out users" do
     delete "/user-groups/99999"
     assert_redirected_to login_path
   end
 
-  test "destroy() redirects to login path for unauthorized users" do
+  test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete "/user-groups/99999"
-    assert_redirected_to login_path
+    delete user_group_path(user_groups(:unused))
+    assert_response :forbidden
   end
 
   test "destroy() destroys the group" do
@@ -100,10 +107,10 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "index() redirects to login page for unauthorized users" do
+  test "index() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     get user_groups_path
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users" do
@@ -119,10 +126,10 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "show() redirects to login page for unauthorized users" do
+  test "show() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     get user_group_path(user_groups(:one))
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
@@ -133,15 +140,15 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login path for logged-out users" do
+  test "update() redirects to login page for logged-out users" do
     patch "/user-groups/99999", {}
     assert_redirected_to login_path
   end
 
-  test "update() redirects to login path for unauthorized users" do
+  test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch "/user-groups/99999", {}
-    assert_redirected_to login_path
+    patch user_group_path(user_groups(:unused)), {}
+    assert_response :forbidden
   end
 
   test "update() updates a user group" do

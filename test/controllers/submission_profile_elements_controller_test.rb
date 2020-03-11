@@ -17,10 +17,20 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "create() redirects to login page for unauthorized users" do
+  test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post submission_profile_submission_profile_elements_path(@profile), {}
-    assert_redirected_to login_path
+    post submission_profile_submission_profile_elements_path(@profile), {
+        xhr: true,
+        params: {
+            submission_profile_element: {
+                registered_element_id: registered_elements(:title).id,
+                submission_profile_id: @profile.id,
+                label: "Title",
+                index: 0
+            }
+        }
+    }
+    assert_response :forbidden
   end
 
   test "create() returns HTTP 200" do
@@ -73,15 +83,16 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login path for logged-out users" do
+  test "destroy() redirects to login page for logged-out users" do
     delete submission_profile_path(@profile) + "/elements/9999"
     assert_redirected_to login_path
   end
 
-  test "destroy() redirects to login path for unauthorized users" do
+  test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete submission_profile_path(@profile) + "/elements/9999"
-    assert_redirected_to login_path
+    delete submission_profile_submission_profile_element_path(@profile,
+                                                              submission_profile_elements(:default_subject))
+    assert_response :forbidden
   end
 
   test "destroy() destroys the element" do
@@ -114,11 +125,11 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "edit() redirects to login page for unauthorized users" do
+  test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     element = submission_profile_elements(:default_title)
     get edit_submission_profile_submission_profile_element_path(@profile, element)
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
@@ -130,15 +141,16 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login path for logged-out users" do
+  test "update() redirects to login page for logged-out users" do
     patch submission_profile_path(@profile) + "/elements/9999", {}
     assert_redirected_to login_path
   end
 
-  test "update() redirects to login path for unauthorized users" do
+  test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch submission_profile_path(@profile) + "/elements/9999", {}
-    assert_redirected_to login_path
+    element = submission_profile_elements(:default_title)
+    patch submission_profile_submission_profile_element_path(@profile, element), {}
+    assert_response :forbidden
   end
 
   test "update() updates an element" do

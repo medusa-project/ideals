@@ -12,15 +12,15 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login path for logged-out users" do
+  test "destroy() redirects to login page for logged-out users" do
     delete item_path(items(:item1))
     assert_redirected_to login_path
   end
 
-  test "destroy() redirects to login path for unauthorized users" do
+  test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     delete item_path(items(:item1))
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "destroy() destroys the item" do
@@ -46,17 +46,17 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_metadata()
 
-  test "edit_metadata() redirects to login path for logged-out users" do
+  test "edit_metadata() redirects to login page for logged-out users" do
     item = items(:item1)
     get "/items/#{item.id}/edit-metadata", {}
     assert_redirected_to login_path
   end
 
-  test "edit_metadata() redirects to login path for unauthorized users" do
+  test "edit_metadata() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     item = items(:item1)
     get "/items/#{item.id}/edit-metadata", {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_metadata() returns HTTP 200" do
@@ -68,17 +68,17 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
-  test "edit_properties() redirects to login path for logged-out users" do
+  test "edit_properties() redirects to login page for logged-out users" do
     item = items(:item1)
     get "/items/#{item.id}/edit-properties", {}
     assert_redirected_to login_path
   end
 
-  test "edit_properties() redirects to login path for unauthorized users" do
+  test "edit_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     item = items(:item1)
     get "/items/#{item.id}/edit-properties", {}
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 200" do
