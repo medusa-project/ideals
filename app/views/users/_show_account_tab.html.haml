@@ -1,25 +1,29 @@
+-# Requires the following locals:
+-#
+-# user [User]
+
 %dl
   %dt UID
-  %dd= @resource.uid
+  %dd= user.uid
   %dt Username
-  %dd= @resource.username
+  %dd= user.username
   %dt Email
-  %dd= link_to(@resource.email, "mailto:#{@resource.email}")
-  - if @resource.phone
+  %dd= link_to(user.email, "mailto:#{user.email}")
+  - if user.phone
     %dt Phone
     %dd
-      = link_to(@resource.phone, "tel:#{@resource.phone}")
+      = link_to(user.phone, "tel:#{user.phone}")
   %dt System Administrator
-  %dd= @resource.sysadmin? ? "Yes" : "No"
-  %dt User Groups
+  %dd= user.sysadmin? ? "Yes" : "No"
+  %dt Groups
   %dd
-    - if @resource.user_groups.any?
+    - if user.user_groups.any?
       %ul
-        - @resource.user_groups.each do |group|
+        - user.user_groups.each do |group|
           %li= link_to(group.name, group)
     - else
       None
   %dt Type
-  %dd= @resource.type
+  %dd= user.type
   %dt Created
-  %dd= local_time @resource.created_at
+  %dd= local_time user.created_at

@@ -1,3 +1,7 @@
+-# Requires the following locals:
+-#
+-# submissions [Enumerable<Item>]
+
 %table.table
   %thead
     %tr
@@ -6,7 +10,7 @@
       %th Collection
       %th
   %tbody
-    - @submissions.each do |item|
+    - submissions.each do |item|
       %tr
         %td= local_time item.created_at
         %td= local_time item.updated_at

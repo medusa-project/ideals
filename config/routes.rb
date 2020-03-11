@@ -19,7 +19,6 @@ Rails.application.routes.draw do
     match "/edit-membership", to: "collections#edit_membership", via: :get
     match "/edit-properties", to: "collections#edit_properties", via: :get
   end
-  match "/dashboard", to: "users#dashboard", via: :get
   match "/deposit", to: "submissions#agreement", via: :get
   resources :handles
   resources :identities do

@@ -37,7 +37,7 @@
 .tab-content
   #account.tab-pane.show.active{role: "tabpanel",
                                 "aria-labelledby": "account-tab"}
-    = render partial: "show_account_tab"
+    = render partial: "show_account_tab", locals: { user: @resource }
 
   #items.tab-pane{role: "tabpanel", "aria-labelledby": "items-tab"}
     = render partial: "show_items_tab"
