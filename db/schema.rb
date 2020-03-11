@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_10_194402) do
+ActiveRecord::Schema.define(version: 2020_03_11_155129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -235,7 +235,7 @@ ActiveRecord::Schema.define(version: 2020_03_10_194402) do
   add_foreign_key "collections", "units", column: "primary_unit_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections_items", "collections", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections_items", "items", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "collections_units", "collections", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "collections_units", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections_units", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "items", "collections", column: "primary_collection_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
