@@ -43,8 +43,7 @@ class SessionsController < ApplicationController
   end
 
   def unauthorized
-    flash['error'] = "Login failed."
-    redirect_back fallback_location: root_url
+    render plain: "401 Unauthorized", status: :unauthorized
   end
 
   protected
