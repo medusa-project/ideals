@@ -99,6 +99,72 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # edit_access()
+
+  test "edit_access() redirects to login path for logged-out users" do
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-access", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_access() redirects to login path for unauthorized users" do
+    log_in_as(users(:norights))
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-access", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_access() returns HTTP 200" do
+    log_in_as(users(:admin))
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-access"
+    assert_response :ok
+  end
+
+  # edit_membership()
+
+  test "edit_membership() redirects to login path for logged-out users" do
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-membership", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_membership() redirects to login path for unauthorized users" do
+    log_in_as(users(:norights))
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-membership", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_membership() returns HTTP 200" do
+    log_in_as(users(:admin))
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-membership"
+    assert_response :ok
+  end
+
+  # edit_properties()
+
+  test "edit_properties() redirects to login path for logged-out users" do
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-properties", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_properties() redirects to login path for unauthorized users" do
+    log_in_as(users(:norights))
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-properties", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_properties() returns HTTP 200" do
+    log_in_as(users(:admin))
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-properties"
+    assert_response :ok
+  end
+
   # index()
 
   test "index() returns HTTP 200 for HTML" do

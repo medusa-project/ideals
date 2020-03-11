@@ -32,7 +32,15 @@ class UnitPolicy < ApplicationPolicy
         (unit.child? && user == unit.root_parent.primary_administrator)
   end
 
-  def edit?
+  def edit_access?
+    update?
+  end
+
+  def edit_membership?
+    update?
+  end
+
+  def edit_properties?
     update?
   end
 

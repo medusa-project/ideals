@@ -2,8 +2,10 @@
 
 class UnitsController < ApplicationController
   before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_unit, only: [:show, :edit, :update, :destroy]
-  before_action :authorize_unit, only: [:show, :edit, :update, :destroy]
+  before_action :set_unit, only: [:show, :edit_access, :edit_membership,
+                                  :edit_properties, :update, :destroy]
+  before_action :authorize_unit, only: [:show, :edit_access, :edit_membership,
+                                        :edit_properties, :update, :destroy]
 
   ##
   # Responds to `POST /units`
@@ -47,11 +49,33 @@ class UnitsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /units/:id/edit`
+  # Used for editing access control.
   #
-  def edit
-    render partial: "units/form",
-           locals: { unit: @resource, context: :edit }
+  # Responds to `GET /units/:id/edit-membership` (XHR only)
+  #
+  def edit_access
+    render partial: "units/access_form",
+           locals: { unit: @resource }
+  end
+
+  ##
+  # Used for editing unit membership.
+  #
+  # Responds to `GET /units/:id/edit-membership` (XHR only)
+  #
+  def edit_membership
+    render partial: "units/membership_form",
+           locals: { unit: @resource }
+  end
+
+  ##
+  # Used for editing basic properties.
+  #
+  # Responds to GET `/units/:id/edit` (XHR only)
+  #
+  def edit_properties
+    render partial: "units/properties_form",
+           locals: { unit: @resource }
   end
 
   ##
@@ -107,9 +131,9 @@ class UnitsController < ApplicationController
         assign_administrators
         @resource.save!
       end
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @resource },
+             locals: { object: @resource.errors.any? ? @resource : e },
              status: :bad_request
     else
       ElasticsearchClient.instance.refresh
@@ -121,12 +145,7 @@ class UnitsController < ApplicationController
   private
 
   def set_unit
-    if params.has_key?(:id)
-      @resource = Unit.find(params[:id])
-    elsif params.has_key?(:suffix)
-      @resource = Handle.find_by(prefix: params[:prefix],
-                                 suffix: params[:suffix]).resource
-    end
+    @resource = Unit.find(params[:id] || params[:unit_id])
     @breadcrumbable = @resource
   end
 
@@ -138,7 +157,7 @@ class UnitsController < ApplicationController
     # Non-primary administrators
     @resource.administrators.where(primary: false).destroy_all
     if params[:administering_users].respond_to?(:each)
-      params[:administering_users].each do |user_str|
+      params[:administering_users].select(&:present?).each do |user_str|
         user = User.from_autocomplete_string(user_str)
         @resource.errors.add(:administrators,
                              "includes a user that does not exist") unless user

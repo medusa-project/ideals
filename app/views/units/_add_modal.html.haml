@@ -7,4 +7,4 @@
         %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
           %span{"aria-hidden": "true"} &times;
       .modal-body
-        = render partial: "units/form", locals: { unit: unit, context: :new }
+        = render partial: "units/new_form", locals: { unit: unit }

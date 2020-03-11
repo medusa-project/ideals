@@ -1,0 +1,29 @@
+-# frozen_string_literal: true
+//
+// Required locals:
+//
+// unit [Unit]
+//
+= form_for(unit, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :title
+    = f.text_field :title, class: "form-control"
+
+  .form-group
+    = f.label :parent_id, "Parent Unit"
+    = f.select(:parent_id,
+        unit_tree_options_for_select(unit.parent, true),
+        {}, { class: "custom-select" })
+
+  %p.form-text.text-muted
+    %i.fa.fa-info-circle
+    Access control and other properties can be customized after the unit has
+    been created.
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit "Create Unit", class: "btn btn-primary"

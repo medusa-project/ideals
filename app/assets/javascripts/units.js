@@ -17,14 +17,28 @@ const UnitsView = function() {
 const UnitView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
-    $('button.edit-unit').on("click", function() {
+    $('.edit-unit-access').on("click", function() {
         const id = $(this).data("unit-id");
-        const url = ROOT_URL + "/units/" + id + "/edit";
+        const url = ROOT_URL + "/units/" + id + "/edit-access";
         $.get(url, function(data) {
-            $('#edit-unit-modal .modal-body').html(data);
+            $("#edit-unit-access-modal .modal-body").html(data);
             new IDEALS.UserAutocompleter(
                 $("input[name=primary_administrator], input[name='administering_users[]']"));
             new IDEALS.MultiUserList();
+        });
+    });
+    $('.edit-unit-membership').on("click", function() {
+        const id = $(this).data("unit-id");
+        const url = ROOT_URL + "/units/" + id + "/edit-membership";
+        $.get(url, function(data) {
+            $("#edit-unit-membership-modal .modal-body").html(data);
+        });
+    });
+    $('.edit-unit-properties').on("click", function() {
+        const id = $(this).data("unit-id");
+        const url = ROOT_URL + "/units/" + id + "/edit-properties";
+        $.get(url, function(data) {
+            $("#edit-unit-properties-modal .modal-body").html(data);
         });
     });
 };

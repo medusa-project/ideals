@@ -3,21 +3,13 @@
 // Required locals:
 //
 // unit [Unit]
-// context [Symbol] `:new` or `:edit`
 //
 = form_for(unit, remote: true) do |f|
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
-  .form-group
-    = f.label :title
-    = f.text_field :title, class: "form-control"
-
-  .form-group
-    = f.label :parent_id, "Parent Unit"
-    = f.select(:parent_id,
-        unit_tree_options_for_select(unit.parent, true),
-        {}, { class: "custom-select" })
+  / Include a random property because `unit` is required in the params
+  = f.hidden_field :parent_id, value: f.object.parent_id
 
   - unless f.object.parent
     .form-group
@@ -48,5 +40,4 @@
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
-      = f.submit(context == :new ? 'Create Unit' : 'Edit Unit',
-                 class: 'btn btn-primary')
+      = f.submit "Edit Unit", class: "btn btn-primary"

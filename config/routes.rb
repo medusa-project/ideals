@@ -44,7 +44,11 @@ Rails.application.routes.draw do
     resources :submission_profile_elements, path: "elements", except: [:new, :index, :show]
   end
   resources :submissions, except: [:index, :show]
-  resources :units, except: :new
+  resources :units, except: [:edit, :new] do
+    match "/edit-access", to: "units#edit_access", via: :get
+    match "/edit-membership", to: "units#edit_membership", via: :get
+    match "/edit-properties", to: "units#edit_properties", via: :get
+  end
   resources :user_groups, path: "user-groups", except: :new
   resources :users, except: [:create, :delete]
 

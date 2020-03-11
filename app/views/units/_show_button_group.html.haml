@@ -1,12 +1,4 @@
 .btn-group.float-right{role: "group"}
-  // Edit button
-  -if policy(@resource).edit?
-    %button.btn.btn-light.edit-unit{"data-unit-id": @resource.id,
-                                    "data-target": "#edit-unit-modal",
-                                    "data-toggle": "modal",
-                                    type: "button"}
-      %i.fas.fa-pencil-alt
-      Edit
   // Delete button
   -if policy(@resource).destroy?
     = link_to(unit_path(@resource), class: 'btn btn-danger',

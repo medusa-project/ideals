@@ -1,0 +1,18 @@
+-# frozen_string_literal: true
+//
+// Required locals:
+//
+// unit [Unit]
+//
+= form_for(unit, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :title
+    = f.text_field :title, class: "form-control"
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit "Edit Unit", class: "btn btn-primary"

@@ -4,23 +4,31 @@
 = render partial: "show_button_group"
 
 %h1
-  =icon_for(@resource)
-  =@resource.title
+  = icon_for(@resource)
+  = @resource.title
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item
-    %a#units-tab.nav-link.active{"aria-controls": "units",
-                                 "aria-selected": "false",
-                                 "data-toggle": "tab",
-                                 href: "#units",
-                                 role: "tab"}
-      = icon_for(Unit)
-      Sub-Units
+    %a#properties-tab.nav-link.active{"aria-controls": "properties-tab-content",
+                                      "aria-selected": "false",
+                                      "data-toggle": "tab",
+                                      href: "#properties-tab-content",
+                                      role: "tab"}
+      %i.fa.fa-info-circle
+      Properties
   %li.nav-item
-    %a#collections-tab.nav-link{"aria-controls": "collections",
+    %a#units-tab.nav-link{"aria-controls": "units-tab-content",
+                          "aria-selected": "false",
+                          "data-toggle": "tab",
+                          href: "#units-tab-content",
+                          role: "tab"}
+      = icon_for(Unit)
+      Unit Membership
+  %li.nav-item
+    %a#collections-tab.nav-link{"aria-controls": "collections-tab-content",
                                 "aria-selected": "false",
                                 "data-toggle": "tab",
-                                href: "#collections",
+                                href: "#collections-tab-content",
                                 role: "tab"}
       = icon_for(Collection)
       Collections
@@ -32,36 +40,47 @@
                           "aria-selected": "true"}
       = icon_for(Item)
       Items
-  - if policy(@resource).edit?
+  - if policy(@resource).edit_access?
     %li.nav-item
-      %a#access-tab.nav-link{"aria-controls": "access",
+      %a#access-tab.nav-link{"aria-controls": "access-tab-content",
                              "aria-selected": "false",
                              "data-toggle": "tab",
-                             href: "#access",
+                             href: "#access-tab-content",
                              role: "tab"}
         %i.fa.fa-users
         Access
 
 
 .tab-content
-  #units.tab-pane.fade.show.active{"aria-labelledby": "units-tab",
-                                   role: "tabpanel"}
-    = render partial: "show_units_tab"
+  #properties-tab-content.tab-pane.fade.show.active{"aria-labelledby": "properties-tab",
+                                                    role: "tabpanel"}
+    = render partial: "show_properties_tab"
 
-  #collections.tab-pane.fade{"aria-labelledby": "collections-tab",
-                             role: "tabpanel"}
+  #units-tab-content.tab-pane.fade{"aria-labelledby": "units-tab",
+                                   role: "tabpanel"}
+    = render partial: "show_membership_tab"
+
+  #collections-tab-content.tab-pane.fade{"aria-labelledby": "collections-tab",
+                                         role: "tabpanel"}
     = render partial: "show_collections_tab"
 
-  #items-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                        "aria-labelledby": "items-tab"}
+  #items-tab-content.tab-pane.fade{"aria-labelledby": "items-tab",
+                                   role: "tabpanel"}
     = render partial: "show_items_tab"
 
-  - if policy(@resource).edit?
-    #access.tab-pane.fade{"aria-labelledby": "access-tab",
-                          role: "tabpanel"}
+  - if policy(@resource).edit_access?
+    #access-tab-content.tab-pane.fade{"aria-labelledby": "access-tab",
+                                      role: "tabpanel"}
       = render partial: "show_access_tab"
 
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-unit-properties-modal",
+                   title: "Edit Properties" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-unit-access-modal",
+                   title: "Edit Access" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-unit-membership-modal",
+                   title: "Change Unit Membership" }
 = render partial: "collections/add_modal",
          locals: { primary_unit: @resource }
-= render partial: "shared/ajax_modal",
-         locals: { id: "edit-unit-modal", title: "Edit Unit" }

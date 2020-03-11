@@ -1,0 +1,14 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@resource).edit_properties?
+    %button.btn.btn-light.edit-unit-properties{"data-unit-id": @resource.id,
+                                               "data-target": "#edit-unit-properties-modal",
+                                               "data-toggle": "modal",
+                                               role: "button"}
+      %i.fas.fa-pencil-alt
+      Edit Properties
+
+%dl
+  %dt Created
+  %dd= local_time @resource.created_at
+  %dt Updated
+  %dd= local_time @resource.updated_at
