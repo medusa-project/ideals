@@ -102,10 +102,12 @@ const IDEALS = {
      *
      * @constructor
      */
-    MultiElementList: function() {
+    MultiElementList: function(minElements = 1) {
         $("button.add").on("click", function(e) {
             const clone = $(this).prev().clone();
             clone.find("input").val("");
+            clone.find("select").attr("disabled", false);
+            clone.removeClass("d-none");
             $(this).before(clone);
             updateEventListeners();
             if (clone.hasClass("user")) {
@@ -117,8 +119,17 @@ const IDEALS = {
 
         function updateEventListeners() {
             $("button.remove").off("click").on("click", function () {
-                if ($(this).parents(".form-group").find(".input-group").length > 1) {
-                    $(this).parents(".input-group").remove();
+                const numIGs = $(this).parents(".form-group").find(".input-group").length;
+                if (numIGs > minElements) {
+                    const parentIG = $(this).parents(".input-group");
+                    // Don't remove the last one, as the add button needs to
+                    // clone it.
+                    if (numIGs > 1) {
+                        parentIG.remove();
+                    } else {
+                        parentIG.addClass("d-none");
+                        parentIG.find("select").attr("disabled", true);
+                    }
                 }
             });
         }

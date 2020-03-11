@@ -4,7 +4,9 @@
 //
 // collection [Collection]
 // primary_unit [Unit]
-//
+
+- options = unit_tree_options
+
 = form_for(collection, remote: true) do |f|
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
@@ -12,8 +14,21 @@
   .form-group
     = f.label :primary_unit_id, "Primary Unit"
     = f.select(:primary_unit_id,
-        options_for_select(unit_tree_options, primary_unit.id),
+        options_for_select(options, primary_unit.id),
         {}, class: 'custom-select')
+
+  .form-group
+    = f.label :units, "Other Units"
+    - units = f.object.units.order(:title).to_a.dup
+    - units << Unit.new if units.empty?
+    - units.each do |unit|
+      .input-group.mb-3
+        = select_tag "collection[unit_ids][]",
+                     options_for_select(options, unit.id),
+                     class: "custom-select"
+        .input-group-append
+          %button.btn.btn-danger.remove{type: "button"} &minus;
+    %button.btn.btn-success.add &plus;
 
   .clearfix
     .float-right

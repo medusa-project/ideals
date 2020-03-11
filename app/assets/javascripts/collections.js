@@ -30,6 +30,7 @@ const CollectionView = function() {
         const url = ROOT_URL + "/collections/" + id + "/edit-membership";
         $.get(url, function(data) {
             $("#edit-collection-membership-modal .modal-body").html(data);
+            new IDEALS.MultiElementList(0);
         });
     });
     $('.edit-collection-properties').on("click", function() {
