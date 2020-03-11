@@ -11,7 +11,7 @@
   .form-group
     = f.label :parent_id, "Parent Unit"
     = f.select(:parent_id,
-        unit_tree_options_for_select(f.object.parent, true),
+        options_for_select(unit_tree_options(true), f.object.parent&.id),
         {}, { class: "custom-select" })
 
   .clearfix
