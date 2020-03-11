@@ -7,7 +7,7 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   attr_accessor :activation_token, :reset_token
   before_create :set_invitee
   before_create :create_activation_digest
-  after_create :send_activation_email
+  after_create :send_activation_email, unless: -> { Rails.env.test? }
   before_destroy :destroy_user
   validates :name, presence: true
   validates :email, presence: true, length: {maximum: 255},
