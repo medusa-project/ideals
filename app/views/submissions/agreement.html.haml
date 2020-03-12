@@ -48,5 +48,5 @@
     %p By agreeing to this Deposit Agreement, you acknowledge that you have read and accept the terms of this License and all related Illinois Data Bank and University policies.
 
     = form_tag submissions_path, method: :post do
-      = hidden_field_tag(:collection_id, params[:collection_id])
+      = hidden_field_tag(:primary_collection_id, params[:collection_id])
       = submit_tag("I agree", class: "btn btn-primary")

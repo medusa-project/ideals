@@ -1,13 +1,15 @@
 body#edit_submission {
+  .message {
+    div {
+      display: none;
+    }
+  }
   table.metadata {
     td:first-child {
       width: 30%;
     }
     td.message {
       width: 15%;
-      div {
-        display: none;
-      }
     }
     .input-group-append {
       display: none;

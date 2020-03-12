@@ -36,6 +36,11 @@ const EditView = function() {
     $("input, select, textarea").on("change", function() {
         lastEditedInput = $(this);
         $(this).parents("form").submit();
+        const successMessage = $(this).parents(".row").find(".message > div.text-success");
+        successMessage.show();
+        setTimeout(function () {
+            successMessage.fadeOut();
+        }, 4000);
     });
 
     $("form#deposit-metadata-form").on("submit", function(e) {
