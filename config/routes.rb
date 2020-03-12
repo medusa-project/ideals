@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   end
   resources :invitees
   resources :items, except: :new do
+    match "/edit-membership", to: "items#edit_membership", via: :get
     match "/edit-metadata", to: "items#edit_metadata", via: :get
     match "/edit-properties", to: "items#edit_properties", via: :get
   end

@@ -3,10 +3,11 @@
 class ItemsController < ApplicationController
 
   before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_item, only: [:destroy, :edit_metadata, :edit_properties,
-                                  :show, :update]
-  before_action :authorize_item, only: [:destroy, :edit_metadata,
-                                        :edit_properties, :show, :update]
+  before_action :set_item, only: [:destroy, :edit_membership, :edit_metadata,
+                                  :edit_properties, :show, :update]
+  before_action :authorize_item, only: [:destroy, :edit_membership,
+                                        :edit_metadata, :edit_properties,
+                                        :show, :update]
 
   ##
   # Responds to `DELETE /items/:id`
@@ -25,6 +26,16 @@ class ItemsController < ApplicationController
     ensure
       redirect_to @resource.primary_collection
     end
+  end
+
+  ##
+  # Used for editing the owning collections of already-submitted items.
+  #
+  # Responds to GET `/items/:id/edit-membership` (XHR only)
+  #
+  def edit_membership
+    render partial: "items/membership_form",
+           locals: { item: @resource }
   end
 
   ##

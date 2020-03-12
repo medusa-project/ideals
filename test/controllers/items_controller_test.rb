@@ -44,6 +44,28 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # edit_membership()
+
+  test "edit_membership() redirects to login page for logged-out users" do
+    item = items(:item1)
+    get "/items/#{item.id}/edit-membership", {}
+    assert_redirected_to login_path
+  end
+
+  test "edit_membership() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    item = items(:item1)
+    get "/items/#{item.id}/edit-membership", {}
+    assert_response :forbidden
+  end
+
+  test "edit_membership() returns HTTP 200" do
+    log_in_as(users(:admin))
+    item = items(:item1)
+    get item_edit_membership_path(item)
+    assert_response :ok
+  end
+
   # edit_metadata()
 
   test "edit_metadata() redirects to login page for logged-out users" do

@@ -1,0 +1,19 @@
+-# frozen_string_literal: true
+//
+// Required arguments:
+//
+// item [Item]
+//
+
+= form_for(item, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :primary_collection_id, "Primary Collection"
+    TODO: write this
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Edit", class: 'btn btn-primary')

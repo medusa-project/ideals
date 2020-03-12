@@ -59,6 +59,9 @@
     = render partial: "show_access_tab"
 
 = render partial: "shared/ajax_modal",
+         locals: { id: "edit-item-membership-modal",
+                   title: "Edit Membership" }
+= render partial: "shared/ajax_modal",
          locals: { id: "edit-item-metadata-modal",
                    title: "Edit Metadata",
                    size: :xl }

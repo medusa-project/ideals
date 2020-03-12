@@ -51,6 +51,10 @@ class ItemPolicy < ApplicationPolicy
     update?
   end
 
+  def edit_membership?
+    update?
+  end
+
   def edit_metadata?
     update?
   end

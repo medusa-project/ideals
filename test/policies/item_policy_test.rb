@@ -90,6 +90,41 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
+  # edit_membership?()
+
+  test "edit_membership?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.edit_membership?
+  end
+
+  test "edit_membership?() is restrictive by default" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.edit_membership?
+  end
+
+  test "edit_membership?() authorizes sysadmins" do
+    policy = ItemPolicy.new(users(:admin), @item)
+    assert policy.edit_membership?
+  end
+
+  test "edit_membership?() authorizes unit admins" do
+    user = users(:norights)
+    unit = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(user, @item)
+    assert policy.edit_membership?
+  end
+
+  test "edit_membership?() authorizes collection managers" do
+    user = users(:norights)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(user, @item)
+    assert policy.edit_membership?
+  end
+
   # edit_metadata?()
 
   test "edit_metadata?() returns false with a nil user" do

@@ -1,1 +1,10 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@resource).edit_membership?
+    %button.btn.btn-light.edit-item-membership{"data-item-id": @resource.id,
+                                               "data-target": "#edit-item-membership-modal",
+                                               "data-toggle": "modal",
+                                               role: "button"}
+      %i.fas.fa-pencil-alt
+      Change Collection Ownership
+
 = resource_list(@collections, @resource.primary_collection_id)

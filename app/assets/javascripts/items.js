@@ -15,6 +15,13 @@ const ItemsView = function() {
 const ItemView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
+    $(".edit-item-membership").on("click", function() {
+        const id  = $(this).data("item-id");
+        const url = ROOT_URL + "/items/" + id + "/edit-membership";
+        $.get(url, function(data) {
+            $("#edit-item-membership-modal .modal-body").html(data);
+        });
+    });
     $(".edit-item-metadata").on("click", function() {
         const id  = $(this).data("item-id");
         const url = ROOT_URL + "/items/" + id + "/edit-metadata";
