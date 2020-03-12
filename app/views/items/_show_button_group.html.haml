@@ -1,29 +1,4 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@resource).edit_properties?
-    // Edit button
-    .btn-group{role: "group"}
-      %button#edit-dropdown.btn.btn-light.dropdown-toggle{type: "button",
-                                                          "data-toggle": "dropdown",
-                                                          "aria-haspopup": true,
-                                                          "aria-expanded": false}
-        %i.fas.fa-pencil-alt
-        Edit
-      .dropdown-menu.dropdown-menu-right{"aria-labelledby": "edit-dropdown"}
-        - if policy(@resource).edit_properties?
-          %a.dropdown-item.edit-item-properties{"data-item-id": @resource.id,
-                                                "data-target": "#edit-item-properties-modal",
-                                                "data-toggle": "modal",
-                                                role: "button"}
-            %i.fa.fa-info-circle
-            Properties
-        - if policy(@resource).edit_metadata?
-          %a.dropdown-item.edit-item-metadata{"data-item-id": @resource.id,
-                                              "data-target": "#edit-item-metadata-modal",
-                                              "data-toggle": "modal",
-                                              role: "button"}
-            = icon_for(AscribedElement)
-            Metadata
-
   // Delete button
   -if policy(@resource).destroy?
     = link_to(item_path(@resource), class: 'btn btn-danger',

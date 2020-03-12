@@ -1,19 +1,28 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@resource).edit_properties?
+    %button.btn.btn-light.edit-item-properties{"data-item-id": @resource.id,
+                                               "data-target": "#edit-item-properties-modal",
+                                               "data-toggle": "modal",
+                                               role: "button"}
+      %i.fas.fa-pencil-alt
+      Edit Properties
+
 %dl
-  - if @resource.submitter
-    - submitter = @resource.submitter.becomes(User)
-    %dt Submitter
-    %dd
-      - if policy(submitter).show?
-        = link_to(submitter.name, submitter)
-      - else
-        = submitter.name
-  %dt In Submission Process
-  %dd= @resource.submitting
-  %dt Withdrawn
-  %dd= @resource.withdrawn
-  %dt Discoverable
-  %dd= @resource.discoverable
-  %dt Created
-  %dd= local_time @resource.created_at
-  %dt Last Updated
-  %dd= local_time @resource.updated_at
+- if @resource.submitter
+  - submitter = @resource.submitter.becomes(User)
+  %dt Submitter
+  %dd
+    - if policy(submitter).show?
+      = link_to(submitter.name, submitter)
+    - else
+      = submitter.name
+%dt In Submission Process
+%dd= @resource.submitting
+%dt Withdrawn
+%dd= @resource.withdrawn
+%dt Discoverable
+%dd= @resource.discoverable
+%dt Created
+%dd= local_time @resource.created_at
+%dt Last Updated
+%dd= local_time @resource.updated_at
