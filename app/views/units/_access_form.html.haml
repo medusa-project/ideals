@@ -32,10 +32,14 @@
                          autocomplete: "off",
                          class: "form-control"
         .input-group-append
-          %button.btn.btn-danger.remove{type: "button"} &minus;
+          %button.btn.btn-outline-danger.remove{type: "button"}
+            %i.fa.fa-minus
+            Remove
         .dropdown-menu
           - # populated by javascript
-    %button.btn.btn-success.add &plus;
+    %button.btn.btn-sm.btn-outline-success.add
+      %i.fa.fa-plus
+      Add Administrator
 
   .clearfix
     .float-right

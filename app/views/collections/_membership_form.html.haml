@@ -27,8 +27,12 @@
                      options_for_select(options, unit.id),
                      class: "custom-select"
         .input-group-append
-          %button.btn.btn-danger.remove{type: "button"} &minus;
-    %button.btn.btn-success.add &plus;
+          %button.btn.btn-outline-danger.remove{type: "button"}
+            %i.fa.fa-minus
+            Remove
+    %button.btn.btn-sm.btn-outline-success.add
+      %i.fa.fa-plus
+      Add Other Unit
 
   .clearfix
     .float-right

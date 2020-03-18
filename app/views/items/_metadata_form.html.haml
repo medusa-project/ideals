@@ -36,8 +36,11 @@
                     = text_field_tag "elements[][uri]", asc_element.uri,
                                      class: "form-control"
             %td
-              %button.btn.btn-danger.remove{type: "button"} &minus;
-    %button.btn.btn-success.add
+              %button.btn.btn-sm.btn-outline-danger.remove{type: "button",
+                                                           style: "white-space: nowrap"}
+                %i.fa.fa-minus
+                Remove
+    %button.btn.btn-sm.btn-outline-success.add
       %i.fa.fa-plus
       Add Element
 
