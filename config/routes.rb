@@ -45,6 +45,7 @@ Rails.application.routes.draw do
   end
   resources :submissions, except: [:index, :show]
   resources :units, except: [:edit, :new] do
+    match "/children", to: "units#children", via: :get
     match "/edit-access", to: "units#edit_access", via: :get
     match "/edit-membership", to: "units#edit_membership", via: :get
     match "/edit-properties", to: "units#edit_properties", via: :get

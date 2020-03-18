@@ -12,6 +12,10 @@ class UnitPolicy < ApplicationPolicy
     @unit = unit
   end
 
+  def children?
+    true
+  end
+
   def create?
     return false unless user
     return true if user.sysadmin?

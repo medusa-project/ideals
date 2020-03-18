@@ -1,0 +1,15 @@
+body#list_units {
+  ul {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+    button.btn-link {
+      color: black;
+      padding-left: 0;
+      padding-right: 0.5em;
+    }
+    ul {
+      margin-left: 2em;
+    }
+  }
+}

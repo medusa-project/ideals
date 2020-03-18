@@ -10,6 +10,14 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
+  # chlldren()
+
+  test "children() returns HTTP 200 for HTML" do
+    collections(:described).reindex # this is needed to fully initialize the schema
+    get unit_children_path(units(:unit1))
+    assert_response :ok
+  end
+
   # create()
 
   test "create() redirects to login page for logged-out users" do

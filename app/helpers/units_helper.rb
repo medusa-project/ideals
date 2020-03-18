@@ -2,32 +2,21 @@ module UnitsHelper
 
   ##
   # @param units [Enumerable<Object>]
-  # @return [String] HTML listing.
+  # @return [String] HTML list.
   #
   def unit_list(units)
     html = StringIO.new
+    html << "<ul>"
     units.each do |unit|
-      html << "<div class=\"media resource-list\">"
-      html <<   "<div class=\"thumbnail\">"
-      html <<     link_to(unit) do
-        icon_for(unit)
-      end
-      html <<   "</div>"
-      html <<   "<div class=\"media-body\">"
-      html <<     "<h5 class=\"mt-0\">"
-      html <<       link_to(unit.title, unit)
-      html <<     "</h5>"
-      html << "<br><br>"
-      children = Unit.search.
-          parent_unit(unit).
-          order("#{Unit::IndexFields::TITLE}.sort").
-          limit(999)
-      if children.count > 0
-        html << resource_list(children)
-      end
-      html <<   "</div>"
-      html << "</div>"
+      html << "<li data-id=\"#{unit.id}\">"
+      html <<   "<button class=\"btn btn-link expand\" type=\"button\">"
+      html <<     "<i class=\"far fa-plus-square\"></i>"
+      html <<   "</button>"
+      html <<   link_to(unit.title, unit)
+      # sub-units inserted here via JS
+      html << "</li>"
     end
+    html << "</ul>"
     raw(html.string)
   end
 

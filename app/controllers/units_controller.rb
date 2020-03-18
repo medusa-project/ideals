@@ -1,11 +1,28 @@
 # frozen_string_literal: true
 
 class UnitsController < ApplicationController
-  before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_unit, only: [:show, :edit_access, :edit_membership,
-                                  :edit_properties, :update, :destroy]
-  before_action :authorize_unit, only: [:show, :edit_access, :edit_membership,
-                                        :edit_properties, :update, :destroy]
+  before_action :ensure_logged_in, except: [:children, :index, :show]
+  before_action :set_unit, only: [:children, :edit_access, :edit_membership,
+                                  :edit_properties, :show, :update, :destroy]
+  before_action :authorize_unit, only: [:children, :edit_access,
+                                        :edit_membership, :edit_properties,
+                                        :show, :update, :destroy]
+
+  ##
+  # Renders a partial for the expandable unit list used in {index}. Has the
+  # same permissions as {show}.
+  #
+  # Responds to `GET /units/:unit_id/children` (XHR only)
+  #
+  def children
+    raise ActionController::BadRequest if params[:unit_id].blank?
+    @units = Unit.search.
+        filter(Unit::IndexFields::PARENT, params[:unit_id].to_i).
+        include_children(true).
+        order("#{Unit::IndexFields::TITLE}.sort").
+        limit(999)
+    render partial: "children"
+  end
 
   ##
   # Responds to `POST /units`

@@ -4,6 +4,7 @@
  * @constructor
  */
 const UnitsView = function() {
+    new IDEALS.ExpandableUnitList();
     new IDEALS.UserAutocompleter(
         $("input[name=primary_administrator], input[name='administering_users[]']"));
     new IDEALS.MultiElementList();

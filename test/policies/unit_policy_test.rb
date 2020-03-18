@@ -6,6 +6,18 @@ class UnitPolicyTest < ActiveSupport::TestCase
     @unit = units(:unit1)
   end
 
+  # children?()
+
+  test "children?() returns true with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert policy.children?
+  end
+
+  test "children?() authorizes everyone" do
+    policy = UnitPolicy.new(users(:norights), @unit)
+    assert policy.children?
+  end
+
   # create?()
 
   test "create?() returns false with a nil user" do
