@@ -1,12 +1,13 @@
 body#list_units {
   ul {
+    font-size: 14pt;
+    font-weight: 600;
     list-style: none;
     margin-left: 0;
     padding-left: 0;
     button.btn-link {
       color: black;
-      padding-left: 0;
-      padding-right: 0.5em;
+      padding: 0.1em 0.5em 0.1em 0;
     }
     ul {
       margin-left: 2em;
