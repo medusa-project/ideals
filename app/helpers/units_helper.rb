@@ -9,9 +9,11 @@ module UnitsHelper
     html << "<ul>"
     units.each do |unit|
       html << "<li data-id=\"#{unit.id}\">"
-      html <<   "<button class=\"btn btn-link expand\" type=\"button\">"
-      html <<     "<i class=\"far fa-plus-square\"></i>"
-      html <<   "</button>"
+      if unit.units.count > 0
+        html <<   "<button class=\"btn btn-link expand\" type=\"button\">"
+        html <<     "<i class=\"far fa-plus-square\"></i>"
+        html <<   "</button>"
+      end
       html <<   link_to(unit.title, unit)
       # sub-units inserted here via JS
       html << "</li>"
