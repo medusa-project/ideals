@@ -39,10 +39,10 @@ class SubmissionPolicy < ApplicationPolicy
 
       item.all_collections.each do |collection|
         # collection managers can update items within their collections
-        return true if user.manager?(collection)
+        return true if user.effective_manager?(collection)
         # unit admins can update items within their units
         collection.all_units.each do |unit|
-          return true if user.unit_admin?(unit)
+          return true if user.effective_unit_admin?(unit)
         end
       end
     end

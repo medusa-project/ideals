@@ -83,14 +83,19 @@ class User < ApplicationRecord
   # @see #manager?
   #
   def effective_manager?(collection)
-    # check for sysadmin
+    # Check for sysadmin.
     return true if sysadmin?
-    # check for unit admin
-    collection.units.each do |unit|
-      return true if unit_admin?(unit)
+    # Check for unit admin.
+    collection.all_units.each do |unit|
+      return true if effective_unit_admin?(unit)
     end
-    # check for collection manager
-    manager?(collection)
+    # Check for manager of the collection itself.
+    return true if manager?(collection)
+    # Check all of its parent collections.
+    collection.all_parents.each do |parent|
+      return true if manager?(parent)
+    end
+    false
   end
 
   ##
@@ -101,7 +106,32 @@ class User < ApplicationRecord
   # @see #submitter?
   #
   def effective_submitter?(collection)
-    effective_manager?(collection) || submitter?(collection)
+    return true if effective_manager?(collection)
+    # Check the collection itself.
+    return true if submitter?(collection)
+    # Check all of its parent collections.
+    collection.all_parents.each do |parent|
+      return true if submitter?(parent)
+    end
+    false
+  end
+
+  ##
+  # @param unit [Unit]
+  # @return [Boolean] Whether the instance is effectively an administrator of
+  #                   the given unit.
+  # @see unit_admin?
+  #
+  def effective_unit_admin?(unit)
+    # Sysadmins can do anything.
+    return true if sysadmin?
+    # Check to see whether the user is an administrator of the unit itself.
+    return true if unit_admin?(unit)
+    # Check all of its parent units.
+    unit.all_parents.each do |parent|
+      return true if unit_admin?(parent)
+    end
+    false
   end
 
   ##
@@ -144,10 +174,12 @@ class User < ApplicationRecord
 
   ##
   # @param unit [Unit]
-  # @return [Boolean] Whether the instance is an administrator of the given
-  #                   unit.
+  # @return [Boolean] Whether the instance is a direct administrator of the
+  #                   given unit.
+  # @see effective_unit_admin?
   #
   def unit_admin?(unit)
     unit.administrators.where(user_id: self.id).count > 0
   end
+
 end

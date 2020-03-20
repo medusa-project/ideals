@@ -69,7 +69,17 @@ class UserTest < ActiveSupport::TestCase
     assert @instance.effective_manager?(collection)
   end
 
-  test "effective_manager?() returns true when the user is a manager of the given collection" do
+  test "effective_manager?() returns true when the user is a manager of one of
+  the given collection's parents" do
+    parent = collections(:collection1)
+    child  = collections(:collection1_1)
+    parent.managing_users << @instance
+    parent.save!
+    assert @instance.effective_manager?(child)
+  end
+
+  test "effective_manager?() returns true when the user is a manager of the
+  given collection" do
     collection = collections(:collection1)
     collection.managing_users << @instance
     collection.save!
@@ -98,14 +108,25 @@ class UserTest < ActiveSupport::TestCase
     assert @instance.effective_submitter?(collection)
   end
 
-  test "effective_submitter?() returns true when the user is a manager of the given collection" do
+  test "effective_submitter?() returns true when the user is a manager of one
+  of the given collection's parents" do
+    parent = collections(:collection1)
+    child  = collections(:collection1_1)
+    parent.managing_users << @instance
+    parent.save!
+    assert @instance.effective_submitter?(child)
+  end
+
+  test "effective_submitter?() returns true when the user is a manager of the
+  given collection" do
     collection = collections(:collection1)
     collection.managing_users << @instance
     collection.save!
     assert @instance.effective_submitter?(collection)
   end
 
-  test "effective_submitter?() returns true when the user is a submitter in the given collection" do
+  test "effective_submitter?() returns true when the user is a submitter in the
+  given collection" do
     collection = collections(:collection1)
     collection.submitting_users << @instance
     collection.save!
@@ -115,6 +136,36 @@ class UserTest < ActiveSupport::TestCase
   test "effective_submitter?() returns false when the user is not a manager of
   the given collection, nor a unit admin, nor a sysadmin" do
     assert !@instance.effective_submitter?(collections(:collection1))
+  end
+
+  # effective_unit_admin?()
+
+  test "effective_unit_admin?() returns true when the user is a sysadmin" do
+    @instance = users(:admin)
+    unit      = units(:unit1)
+    assert @instance.effective_unit_admin?(unit)
+  end
+
+  test "effective_unit_admin?() returns true when the user is an administrator
+  of the given unit's parent" do
+    parent = units(:unit1)
+    child  = units(:unit1_unit1)
+    parent.administering_users << @instance
+    parent.save!
+    assert @instance.effective_unit_admin?(child)
+  end
+
+  test "effective_unit_admin?() returns true when the user is an administrator
+  of the given unit" do
+    unit = units(:unit1)
+    unit.administering_users << @instance
+    unit.save!
+    assert @instance.effective_unit_admin?(unit)
+  end
+
+  test "effective_unit_admin?() returns false when the user is not an
+  administrator of the given unit" do
+    assert !@instance.effective_unit_admin?(units(:unit1))
   end
 
   # manager?()
