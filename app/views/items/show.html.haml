@@ -32,14 +32,15 @@
                                 "aria-selected": "true"}
       = icon_for(Collection)
       Owning Collections
-  %li.nav-item
-    %a#access-tab.nav-link{href: "#access-tab-content",
-                           "data-toggle": "tab",
-                           role: "tab",
-                           "aria-controls": "access-tab-content",
-                           "aria-selected": "true"}
-      %i.fa.fa-users
-      Access
+  - if policy(@resource).show_access?
+    %li.nav-item
+      %a#access-tab.nav-link{href: "#access-tab-content",
+                             "data-toggle": "tab",
+                             role: "tab",
+                             "aria-controls": "access-tab-content",
+                             "aria-selected": "true"}
+        %i.fa.fa-users
+        Access
 
 .tab-content
   #metadata-tab-content.tab-pane.fade.show.active{role: "tabpanel",
@@ -54,9 +55,10 @@
                                     "aria-labelledby": "collections-tab"}
     = render partial: "show_collections_tab"
 
-  #access-tab-content.tab-pane{role: "tabpanel",
-                               "aria-labelledby": "access-tab"}
-    = render partial: "show_access_tab"
+  - if policy(@resource).show_access?
+    #access-tab-content.tab-pane{role: "tabpanel",
+                                 "aria-labelledby": "access-tab"}
+      = render partial: "show_access_tab"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-item-membership-modal",

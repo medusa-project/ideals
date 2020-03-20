@@ -244,20 +244,73 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
-  # show?()
+  # show_access?()
+
+  test "show_access?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.show_access?
+  end
+
+  test "show_access?() is restrictive by default" do
+    policy = ItemPolicy.new(users(:norights), @item)
+    assert !policy.show_access?
+  end
+
+  test "show_access?() authorizes sysadmins" do
+    policy = ItemPolicy.new(users(:admin), @item)
+    assert policy.show_access?
+  end
+
+  test "show_access?() authorizes unit admins" do
+    user = users(:norights)
+    unit = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(user, @item)
+    assert policy.show_access?
+  end
+
+  test "show_access?() authorizes collection managers" do
+    user = users(:norights)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(user, @item)
+    assert policy.show_access?
+  end
+
+  # show_all_metadata?()
 
   test "show_all_metadata?() returns false with a nil user" do
     policy = ItemPolicy.new(nil, @item)
     assert !policy.show_all_metadata?
   end
 
-  test "show_all_metadata?() does not authorize non-sysadmins" do
+  test "show_all_metadata?() is restrictive by default" do
     policy = ItemPolicy.new(users(:norights), @item)
     assert !policy.show_all_metadata?
   end
 
   test "show_all_metadata?() authorizes sysadmins" do
     policy = ItemPolicy.new(users(:admin), items(:undiscoverable))
+    assert policy.show_all_metadata?
+  end
+
+  test "show_all_metadata?() authorizes unit admins" do
+    user = users(:norights)
+    unit = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(user, @item)
+    assert policy.show_all_metadata?
+  end
+
+  test "show_all_metadata?() authorizes collection managers" do
+    user = users(:norights)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(user, @item)
     assert policy.show_all_metadata?
   end
 

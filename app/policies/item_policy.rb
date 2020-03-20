@@ -71,8 +71,29 @@ class ItemPolicy < ApplicationPolicy
     @user&.sysadmin? || (@item.discoverable && !@item.withdrawn && !@item.submitting)
   end
 
+  ##
+  # N.B.: this is not a controller method.
+  #
+  def show_access?
+    # user must be logged in
+    if user
+      # sysadmins can see access
+      return true if user.sysadmin?
+
+      item.all_collections.each do |collection|
+        # collection managers can see access of items within their collections
+        return true if user.effective_manager?(collection)
+        # unit admins can see access of items within their units
+        collection.all_units.each do |unit|
+          return true if user.effective_unit_admin?(unit)
+        end
+      end
+    end
+    false
+  end
+
   def show_all_metadata?
-    @user&.sysadmin? # TODO: this is wrong
+    show_access?
   end
 
   def update?
