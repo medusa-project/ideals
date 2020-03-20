@@ -134,6 +134,26 @@ class CollectionTest < ActiveSupport::TestCase
     assert collections(:empty).destroy
   end
 
+  # effective_managers()
+
+  test "effective_managers() includes sysadmins" do
+    @instance.effective_managers.include?(users(:admin))
+  end
+
+  test "effective_managers() includes unit admins" do
+    @instance.effective_managers.include?(@instance.primary_unit.administering_users.first)
+  end
+
+  test "effective_managers() includes managers of parent collections" do
+    parent    = collections(:collection1)
+    @instance = collections(:collection1_collection1)
+    @instance.effective_managers.include?(parent.managing_users.first)
+  end
+
+  test "effective_managers() includes direct managers" do
+    @instance.effective_managers.include?(@instance.managing_users.first)
+  end
+
   # effective_metadata_profile()
 
   test "effective_metadata_profile() returns the assigned metadata profile" do
@@ -161,6 +181,36 @@ class CollectionTest < ActiveSupport::TestCase
     @instance.submission_profile = nil
     assert_equal submission_profiles(:default),
                  @instance.effective_submission_profile
+  end
+
+  # effective_submitters()
+
+  test "effective_submitters() includes sysadmins" do
+    @instance.effective_submitters.include?(users(:admin))
+  end
+
+  test "effective_submitters() includes unit admins" do
+    @instance.effective_submitters.include?(@instance.primary_unit.administering_users.first)
+  end
+
+  test "effective_submitters() includes managers of parent collections" do
+    parent    = collections(:collection1)
+    @instance = collections(:collection1_collection1)
+    @instance.effective_submitters.include?(parent.managing_users.first)
+  end
+
+  test "effective_submitters() includes direct managers" do
+    @instance.effective_submitters.include?(@instance.managing_users.first)
+  end
+
+  test "effective_submitters() includes submitters into parent collections" do
+    parent    = collections(:collection1)
+    @instance = collections(:collection1_collection1)
+    @instance.effective_submitters.include?(parent.submitting_users.first)
+  end
+
+  test "effective_submitters() includes direct submitters" do
+    @instance.effective_submitters.include?(@instance.submitting_users.first)
   end
 
   # element() (Describable concern)

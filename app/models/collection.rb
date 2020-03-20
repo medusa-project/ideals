@@ -173,10 +173,10 @@ class Collection < ApplicationRecord
     doc[IndexFields::CREATED]       = self.created_at.utc.iso8601
     doc[IndexFields::LAST_INDEXED]  = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
-    doc[IndexFields::MANAGERS]      = self.managers.pluck(:user_id)
+    doc[IndexFields::MANAGERS]      = self.effective_managers.map(&:id)
     doc[IndexFields::PARENT]        = self.parent_id
     doc[IndexFields::PRIMARY_UNIT]  = self.primary_unit_id
-    doc[IndexFields::SUBMITTERS]    = self.submitters.pluck(:user_id)
+    doc[IndexFields::SUBMITTERS]    = self.effective_submitters.map(&:id)
     doc[IndexFields::UNIT_TITLES]   = self.all_units.map(&:title)
     doc[IndexFields::UNITS]         = self.unit_ids
 
@@ -193,6 +193,28 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # @return [Set<User>] All users who are effectively managers of the instance.
+  #
+  def effective_managers
+    set = Set.new
+    # Add sysadmins.
+    set += User.where(sysadmin: true)
+    # Add administrators of the primary unit.
+    set += primary_unit.all_administrators if primary_unit
+    # Add administrators of other units.
+    self.units.each do |unit|
+      set += unit.all_administrators
+    end
+    # Add direct managers.
+    set += self.managing_users
+    # Add managers of parent collections.
+    all_parents.each do |parent|
+      set += parent.managing_users
+    end
+    set
+  end
+
+  ##
   # @return [MetadataProfile] The metadata profile assigned to the instance, or
   #         the default profile if no profile is assigned.
   #
@@ -206,6 +228,22 @@ class Collection < ApplicationRecord
   #
   def effective_submission_profile
     self.submission_profile || SubmissionProfile.default
+  end
+
+  ##
+  # @return [Set<User>] All users who are effectively able to submit into the
+  #                     instance.
+  #
+  def effective_submitters
+    set = Set.new
+    set += effective_managers
+    # Add direct submitters.
+    set += self.submitting_users
+    # Add submitters into parent collections.
+    all_parents.each do |parent|
+      set += parent.submitting_users
+    end
+    set
   end
 
   def label
