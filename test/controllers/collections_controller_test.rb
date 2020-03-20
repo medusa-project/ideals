@@ -121,21 +121,28 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_access() redirects to login page for logged-out users" do
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-access", {}
+    get "/collections/#{collection.id}/edit-access", xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_access() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-access", {}
+    get "/collections/#{collection.id}/edit-access", xhr: true
     assert_response :forbidden
   end
 
-  test "edit_access() returns HTTP 200" do
+  test "edit_access() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
     get "/collections/#{collection.id}/edit-access"
+    assert_response :not_found
+  end
+
+  test "edit_access() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:admin))
+    collection = collections(:collection1)
+    get "/collections/#{collection.id}/edit-access", xhr: true
     assert_response :ok
   end
 
@@ -143,21 +150,28 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_collection_membership() redirects to login page for logged-out users" do
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-collection-membership", {}
+    get "/collections/#{collection.id}/edit-collection-membership", xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_collection_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-collection-membership", {}
+    get "/collections/#{collection.id}/edit-collection-membership", xhr: true
     assert_response :forbidden
   end
 
-  test "edit_collection_membership() returns HTTP 200" do
+  test "edit_collection_membership() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
     get "/collections/#{collection.id}/edit-collection-membership"
+    assert_response :not_found
+  end
+
+  test "edit_collection_membership() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:admin))
+    collection = collections(:collection1)
+    get "/collections/#{collection.id}/edit-collection-membership", xhr: true
     assert_response :ok
   end
 
@@ -165,21 +179,28 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_properties() redirects to login page for logged-out users" do
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-properties", {}
+    get "/collections/#{collection.id}/edit-properties", xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-properties", {}
+    get "/collections/#{collection.id}/edit-properties", xhr: true
     assert_response :forbidden
   end
 
-  test "edit_properties() returns HTTP 200" do
+  test "edit_properties() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
     get collection_edit_properties_path(collection)
+    assert_response :not_found
+  end
+
+  test "edit_properties() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:admin))
+    collection = collections(:collection1)
+    get collection_edit_properties_path(collection), xhr: true
     assert_response :ok
   end
 
@@ -187,21 +208,28 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_unit_membership() redirects to login page for logged-out users" do
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-unit-membership", {}
+    get "/collections/#{collection.id}/edit-unit-membership", xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_unit_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-unit-membership", {}
+    get "/collections/#{collection.id}/edit-unit-membership", xhr: true
     assert_response :forbidden
   end
 
-  test "edit_unit_membership() returns HTTP 200" do
+  test "edit_unit_membership() returns HTTP 200 for non-XHR requests" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
     get "/collections/#{collection.id}/edit-unit-membership"
+    assert_response :not_found
+  end
+
+  test "edit_unit_membership() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:admin))
+    collection = collections(:collection1)
+    get "/collections/#{collection.id}/edit-unit-membership", xhr: true
     assert_response :ok
   end
 

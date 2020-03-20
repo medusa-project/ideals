@@ -15,11 +15,15 @@ Rails.application.routes.draw do
   resources :account_activations, only: [:edit]
   resources :collections, except: [:edit, :new] do
     match "/deposit", to: "submissions#agreement", via: :get
-    match "/edit-access", to: "collections#edit_access", via: :get
+    match "/edit-access", to: "collections#edit_access", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-collection-membership",
-          to: "collections#edit_collection_membership", via: :get
-    match "/edit-properties", to: "collections#edit_properties", via: :get
-    match "/edit-unit-membership", to: "collections#edit_unit_membership", via: :get
+          to: "collections#edit_collection_membership", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-properties", to: "collections#edit_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-unit-membership", to: "collections#edit_unit_membership", via: :get,
+          constraints: lambda { |request| request.xhr? }
   end
   match "/deposit", to: "submissions#agreement", via: :get
   resources :handles
@@ -31,9 +35,12 @@ Rails.application.routes.draw do
   end
   resources :invitees
   resources :items, except: :new do
-    match "/edit-membership", to: "items#edit_membership", via: :get
-    match "/edit-metadata", to: "items#edit_metadata", via: :get
-    match "/edit-properties", to: "items#edit_properties", via: :get
+    match "/edit-membership", to: "items#edit_membership", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-metadata", to: "items#edit_metadata", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-properties", to: "items#edit_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
   end
   resources :metadata_profiles, path: "metadata-profiles" do
     match "/clone", to: "metadata_profiles#clone", via: :post
@@ -47,10 +54,14 @@ Rails.application.routes.draw do
   end
   resources :submissions, except: [:index, :show]
   resources :units, except: [:edit, :new] do
-    match "/children", to: "units#children", via: :get
-    match "/edit-access", to: "units#edit_access", via: :get
-    match "/edit-membership", to: "units#edit_membership", via: :get
-    match "/edit-properties", to: "units#edit_properties", via: :get
+    match "/children", to: "units#children", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-access", to: "units#edit_access", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-membership", to: "units#edit_membership", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-properties", to: "units#edit_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
   end
   resources :user_groups, path: "user-groups", except: :new
   resources :users, except: [:create, :delete]

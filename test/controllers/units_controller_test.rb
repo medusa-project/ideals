@@ -12,9 +12,15 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # chlldren()
 
-  test "children() returns HTTP 200 for HTML" do
+  test "children() returns HTTP 404 for non-XHR requests" do
     collections(:described).reindex # this is needed to fully initialize the schema
     get unit_children_path(units(:unit1))
+    assert_response :not_found
+  end
+
+  test "children() returns HTTP 200 for XHR requests" do
+    collections(:described).reindex # this is needed to fully initialize the schema
+    get unit_children_path(units(:unit1)), xhr: true
     assert_response :ok
   end
 
@@ -118,21 +124,28 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_access() redirects to login page for logged-out users" do
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-access", {}
+    get "/units/#{unit.id}/edit-access", xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_access() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-access", {}
+    get "/units/#{unit.id}/edit-access", xhr: true
     assert_response :forbidden
   end
 
-  test "edit_access() returns HTTP 200" do
+  test "edit_access() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:admin))
     unit = units(:unit1)
     get "/units/#{unit.id}/edit-access"
+    assert_response :not_found
+  end
+
+  test "edit_access() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:admin))
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-access", xhr: true
     assert_response :ok
   end
 
@@ -140,21 +153,28 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_membership() redirects to login page for logged-out users" do
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-membership", {}
+    get "/units/#{unit.id}/edit-membership", xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-membership", {}
+    get "/units/#{unit.id}/edit-membership", xhr: true
     assert_response :forbidden
   end
 
-  test "edit_membership() returns HTTP 200" do
+  test "edit_membership() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:admin))
     unit = units(:unit1)
     get "/units/#{unit.id}/edit-membership"
+    assert_response :not_found
+  end
+
+  test "edit_membership() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:admin))
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-membership", xhr: true
     assert_response :ok
   end
 
@@ -162,21 +182,28 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_properties() redirects to login page for logged-out users" do
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-properties", {}
+    get "/units/#{unit.id}/edit-properties", xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-properties", {}
+    get "/units/#{unit.id}/edit-properties", xhr: true
     assert_response :forbidden
   end
 
-  test "edit_properties() returns HTTP 200" do
+  test "edit_properties() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:admin))
     unit = units(:unit1)
     get "/units/#{unit.id}/edit-properties"
+    assert_response :not_found
+  end
+
+  test "edit_properties() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:admin))
+    unit = units(:unit1)
+    get "/units/#{unit.id}/edit-properties", xhr: true
     assert_response :ok
   end
 
