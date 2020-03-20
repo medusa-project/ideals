@@ -49,9 +49,9 @@ class CollectionTest < ActiveSupport::TestCase
   # all_parents()
 
   test "all_parents() returns the parents" do
-    result = collections(:collection1_1_1).all_parents
+    result = collections(:collection1_collection1_collection1).all_parents
     assert_equal 2, result.count
-    assert_equal collections(:collection1_1), result[0]
+    assert_equal collections(:collection1_collection1), result[0]
     assert_equal collections(:collection1), result[1]
   end
 
@@ -126,7 +126,7 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "destroy() raises an error when there are dependent collections" do
     assert_raises ActiveRecord::DeleteRestrictionError do
-      collections(:collection1_1).destroy!
+      collections(:collection1_collection1).destroy!
     end
   end
 

@@ -6,21 +6,17 @@ collection1:
     - unit1
     - unit2
 
-collection1_1:
+collection1_collection1:
   metadata_profile: default
   submission_profile: default
   primary_unit: unit1
   parent: collection1
 
-collection1_1_1:
+collection1_collection1_collection1:
   metadata_profile: default
   submission_profile: default
   primary_unit: unit1
-  parent: collection1_1
-
-collection2:
-  metadata_profile: default
-  submission_profile: default
+  parent: collection1_collection1
 
 described:
   metadata_profile: default

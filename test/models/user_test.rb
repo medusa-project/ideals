@@ -72,7 +72,7 @@ class UserTest < ActiveSupport::TestCase
   test "effective_manager?() returns true when the user is a manager of one of
   the given collection's parents" do
     parent = collections(:collection1)
-    child  = collections(:collection1_1)
+    child  = collections(:collection1_collection1)
     parent.managing_users << @instance
     parent.save!
     assert @instance.effective_manager?(child)
@@ -111,7 +111,7 @@ class UserTest < ActiveSupport::TestCase
   test "effective_submitter?() returns true when the user is a manager of one
   of the given collection's parents" do
     parent = collections(:collection1)
-    child  = collections(:collection1_1)
+    child  = collections(:collection1_collection1)
     parent.managing_users << @instance
     parent.save!
     assert @instance.effective_submitter?(child)
