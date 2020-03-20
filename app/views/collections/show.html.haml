@@ -25,6 +25,14 @@
       = icon_for(Unit)
       Owning Units
   %li.nav-item
+    %a#collection-membership-tab.nav-link{href: "#collection-membership-tab-content",
+                                          "data-toggle": "tab",
+                                          role: "tab",
+                                          "aria-controls": "collection-membership-tab-content",
+                                          "aria-selected": "true"}
+      = icon_for(Collection)
+      Collection Membership
+  %li.nav-item
     %a#items-tab.nav-link{href: "#items-tab-content",
                           "data-toggle": "tab",
                           role: "tab",
@@ -52,6 +60,10 @@
                                                   "aria-labelledby": "unit-membership-tab"}
     = render partial: "show_units_tab"
 
+  #collection-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                        "aria-labelledby": "collection-membership-tab"}
+    = render partial: "show_collections_tab"
+
   #items-tab-content.tab-pane.fade.show{role: "tabpanel",
                                         "aria-labelledby": "items-tab"}
     = render partial: "show_items_tab"
@@ -69,4 +81,7 @@
                    title: "Edit Access" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-collection-membership-modal",
+                   title: "Change Collection Membership" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-unit-membership-modal",
                    title: "Change Unit Membership" }

@@ -1,9 +1,9 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@resource).edit_membership?
-    %button.btn.btn-light.edit-collection-membership{"data-collection-id": @resource.id,
-                                                     "data-target": "#edit-collection-membership-modal",
-                                                     "data-toggle": "modal",
-                                                     role: "button"}
+  - if policy(@resource).edit_unit_membership?
+    %button.btn.btn-light.edit-unit-membership{"data-collection-id": @resource.id,
+                                               "data-target": "#edit-unit-membership-modal",
+                                               "data-toggle": "modal",
+                                               role: "button"}
       %i.fas.fa-pencil-alt
       Change Unit Membership
 

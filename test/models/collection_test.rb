@@ -40,6 +40,21 @@ class CollectionTest < ActiveSupport::TestCase
     assert_kind_of CollectionRelation, Collection.search
   end
 
+  # all_children()
+
+  test "all_children() returns the correct collections" do
+    assert_equal 2, collections(:collection1).all_children.count
+  end
+
+  # all_parents()
+
+  test "all_parents() returns the parents" do
+    result = collections(:collection1_1_1).all_parents
+    assert_equal 2, result.count
+    assert_equal collections(:collection1_1), result[0]
+    assert_equal collections(:collection1), result[1]
+  end
+
   # all_unit_administrators()
 
   test "all_unit_administrators()" do
@@ -77,6 +92,7 @@ class CollectionTest < ActiveSupport::TestCase
                  doc[Collection::IndexFields::LAST_MODIFIED]
     assert_equal [@instance.managing_users.first.id],
                  doc[Collection::IndexFields::MANAGERS]
+    assert_nil doc[Collection::IndexFields::PARENT]
     assert_equal @instance.primary_unit_id,
                doc[Collection::IndexFields::PRIMARY_UNIT]
     assert_equal [@instance.submitting_users.first.id],
@@ -104,6 +120,18 @@ class CollectionTest < ActiveSupport::TestCase
   test "description() returns an empty string when there is no description element" do
     collection = collections(:undescribed)
     assert_equal "", collection.description
+  end
+
+  # destroy()
+
+  test "destroy() raises an error when there are dependent collections" do
+    assert_raises ActiveRecord::DeleteRestrictionError do
+      collections(:collection1_1).destroy!
+    end
+  end
+
+  test "destroy() succeeds when there are no dependent collections" do
+    assert collections(:empty).destroy
   end
 
   # effective_metadata_profile()
@@ -144,6 +172,31 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "element() returns nil if no such element exists" do
     assert_nil @instance.element("bogus")
+  end
+
+  # parent_id
+
+  test "parent_id cannot be set to the instance ID" do
+    @instance.parent_id = @instance.id
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.save!
+    end
+  end
+
+  test "parent_id cannot be set to a child ID" do
+    @instance.parent_id = @instance.collections.first.id
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.save!
+    end
+  end
+
+  test "parent_id cannot be set to an ID of a collection in a different unit" do
+    other = collections(:empty)
+    assert_not_equal @instance.primary_unit, other.primary_unit
+    @instance.parent_id = other.id
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.save!
+    end
   end
 
   # reindex() (Indexed concern)

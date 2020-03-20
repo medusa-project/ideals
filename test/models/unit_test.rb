@@ -57,7 +57,7 @@ class UnitTest < ActiveSupport::TestCase
   # all_collections()
 
   test "all_collections() returns the correct collections" do
-    assert_equal 3, units(:unit1).all_collections.count
+    assert_equal 4, units(:unit1).all_collections.count
   end
 
   # all_parents()

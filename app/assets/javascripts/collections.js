@@ -27,7 +27,7 @@ const CollectionView = function() {
     });
     $('.edit-collection-membership').on("click", function() {
         const id = $(this).data("collection-id");
-        const url = ROOT_URL + "/collections/" + id + "/edit-membership";
+        const url = ROOT_URL + "/collections/" + id + "/edit-collection-membership";
         $.get(url, function(data) {
             $("#edit-collection-membership-modal .modal-body").html(data);
             new IDEALS.MultiElementList(0);
@@ -40,7 +40,14 @@ const CollectionView = function() {
             $("#edit-collection-properties-modal .modal-body").html(data);
         });
     });
-
+    $('.edit-unit-membership').on("click", function() {
+        const id = $(this).data("collection-id");
+        const url = ROOT_URL + "/collections/" + id + "/edit-unit-membership";
+        $.get(url, function(data) {
+            $("#edit-unit-membership-modal .modal-body").html(data);
+            new IDEALS.MultiElementList(0);
+        });
+    });
 };
 
 $(document).ready(function() {

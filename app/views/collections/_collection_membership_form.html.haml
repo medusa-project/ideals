@@ -1,0 +1,24 @@
+-# frozen_string_literal: true
+-#
+-# Required arguments:
+-#
+-# collection [Collection]
+
+= form_for(collection, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :parent_id, "Parent Collection"
+    = f.select(:parent_id,
+        options_for_select(f.object.primary_unit.all_collections.reject{ |c| c.id == f.object.id }.map{ |c| [c.title, c.id] }, f.object.parent_id),
+        {}, class: 'custom-select')
+    %p.form-text.text-muted
+      %i.fa.fa-info-circle
+      Only collections in the same unit are shown. To move to a collection in
+      a different unit, change the unit first.
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Change", class: "btn btn-primary")

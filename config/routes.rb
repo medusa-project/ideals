@@ -16,8 +16,10 @@ Rails.application.routes.draw do
   resources :collections, except: [:edit, :new] do
     match "/deposit", to: "submissions#agreement", via: :get
     match "/edit-access", to: "collections#edit_access", via: :get
-    match "/edit-membership", to: "collections#edit_membership", via: :get
+    match "/edit-collection-membership",
+          to: "collections#edit_collection_membership", via: :get
     match "/edit-properties", to: "collections#edit_properties", via: :get
+    match "/edit-unit-membership", to: "collections#edit_unit_membership", via: :get
   end
   match "/deposit", to: "submissions#agreement", via: :get
   resources :handles

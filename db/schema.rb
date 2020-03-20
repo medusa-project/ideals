@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_11_155129) do
+ActiveRecord::Schema.define(version: 2020_03_19_204600) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,7 @@ ActiveRecord::Schema.define(version: 2020_03_11_155129) do
     t.bigint "primary_unit_id"
     t.bigint "metadata_profile_id"
     t.bigint "submission_profile_id"
+    t.bigint "parent_id"
   end
 
   create_table "collections_items", id: false, force: :cascade do |t|
@@ -230,6 +231,7 @@ ActiveRecord::Schema.define(version: 2020_03_11_155129) do
   add_foreign_key "ascribed_elements", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "collections", "collections", column: "parent_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "units", column: "primary_unit_id", on_update: :cascade, on_delete: :restrict
@@ -247,6 +249,7 @@ ActiveRecord::Schema.define(version: 2020_03_11_155129) do
   add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "units", "units", column: "parent_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "user_groups_users", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "user_groups_users", "users", on_update: :cascade, on_delete: :cascade
 end

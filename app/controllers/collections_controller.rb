@@ -2,11 +2,15 @@
 
 class CollectionsController < ApplicationController
   before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_collection, only: [:show, :edit_access, :edit_membership,
-                                        :edit_properties, :update, :destroy]
+  before_action :set_collection, only: [:show, :edit_access,
+                                        :edit_collection_membership,
+                                        :edit_properties,
+                                        :edit_unit_membership, :update,
+                                        :destroy]
   before_action :authorize_collection, only: [:show, :edit_access,
-                                              :edit_membership,
-                                              :edit_properties, :update,
+                                              :edit_collection_membership,
+                                              :edit_properties,
+                                              :edit_unit_membership, :update,
                                               :destroy]
 
   ##
@@ -65,14 +69,13 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Used for editing unit membership.
+  # Used for editing collection membership.
   #
-  # Responds to `GET /collections/:id/edit-membership` (XHR only)
+  # Responds to `GET /collections/:id/edit-collection-membership` (XHR only)
   #
-  def edit_membership
-    render partial: 'collections/membership_form',
-           locals: { collection: @resource,
-                     primary_unit: @resource.primary_unit }
+  def edit_collection_membership
+    render partial: 'collections/collection_membership_form',
+           locals: { collection: @resource }
   end
 
   ##
@@ -83,6 +86,17 @@ class CollectionsController < ApplicationController
   def edit_properties
     render partial: 'collections/properties_form',
            locals: { collection: @resource }
+  end
+
+  ##
+  # Used for editing unit membership.
+  #
+  # Responds to `GET /collections/:id/edit-unit-membership` (XHR only)
+  #
+  def edit_unit_membership
+    render partial: 'collections/unit_membership_form',
+           locals: { collection: @resource,
+                     primary_unit: @resource.primary_unit }
   end
 
   ##
@@ -120,9 +134,16 @@ class CollectionsController < ApplicationController
     @current_page     = @items.page
     @permitted_params = params.permit(:q, :start)
 
+    # Metadata tab
     @metadata_profile   = @resource.effective_metadata_profile
     @submission_profile = @resource.effective_submission_profile
-    @breadcrumbable     = @resource
+    # Subcollections tab
+    @subcollections = Collection.search.
+        parent_collection(@resource).
+        include_children(true).
+        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+        limit(999)
+    a = 3
   end
 
   ##
@@ -211,9 +232,8 @@ class CollectionsController < ApplicationController
   end
 
   def collection_params
-    params.require(:collection).permit(:metadata_profile_id,
+    params.require(:collection).permit(:metadata_profile_id, :parent_id,
                                        :primary_unit_id,
-                                       :submission_profile_id,
-                                       unit_ids: [])
+                                       :submission_profile_id, unit_ids: [])
   end
 end

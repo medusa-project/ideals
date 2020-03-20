@@ -27,11 +27,15 @@ class CollectionPolicy < ApplicationPolicy
     update?
   end
 
-  def edit_membership?
+  def edit_collection_membership?
     update?
   end
 
   def edit_properties?
+    update?
+  end
+
+  def edit_unit_membership?
     update?
   end
 

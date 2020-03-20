@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 ##
-# A collection is a container for {Item}s.
+# A collection is a container for {Item}s. It resides within a {Unit}. It
+# supports a one-to-many parent-children relationship with itself.
 #
 # # Indexing
 #
@@ -26,6 +27,7 @@
 #
 # # Relationships
 #
+# * `collections`         References zero-to-many sub-{Collection}s.
 # * `elements`            References zero-to-many {AscribedElement}s used to
 #                         describe an instance.
 # * `items`               References all {Items} contained within the instance.
@@ -39,6 +41,7 @@
 # * `metadata_profile`    References the {MetadataProfile} directly assigned
 #                         to the instance, if any (see the documentation of the
 #                         `metadata_profile_id` attribute).
+# * `parent`              References a parent {Collection}.
 # * `primary_unit`        References the primary {Unit} in which the instance
 #                         resides.
 # * `submission_profile`  References the {SubmissionProfile} directly assigned
@@ -64,12 +67,14 @@ class Collection < ApplicationRecord
     LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     MANAGERS      = "i_manager_id"
+    PARENT        = "i_parent_id"
     PRIMARY_UNIT  = "i_primary_unit_id"
     SUBMITTERS    = "i_submitter_id"
     UNIT_TITLES   = "s_unit_titles"
     UNITS         = "i_units"
   end
 
+  has_many :collections, foreign_key: "parent_id", dependent: :restrict_with_exception
   has_many :elements, class_name: "AscribedElement"
   has_and_belongs_to_many :items
   belongs_to :metadata_profile, inverse_of: :collections, optional: true
@@ -78,6 +83,7 @@ class Collection < ApplicationRecord
   has_many :managers
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user
+  belongs_to :parent, class_name: "Collection", foreign_key: "parent_id", optional: true
   belongs_to :submission_profile, inverse_of: :collections, optional: true
   has_many :submitters
   has_many :submitting_users, through: :submitters,
@@ -87,7 +93,51 @@ class Collection < ApplicationRecord
   # See {all_units} and {primary_unit}.
   has_and_belongs_to_many :units
 
+  validate :validate_parent
+
   breadcrumbs parent: :primary_unit, label: :title
+
+  ##
+  # @return [Enumerable<Collection>] All collections that are children of the
+  #                                  instance, at any level in the tree.
+  # @see walk_tree
+  #
+  def all_children
+    # This is much faster than walking down the tree via ActiveRecord.
+    sql = "WITH RECURSIVE q AS (
+        SELECT h, 1 AS level, ARRAY[id] AS breadcrumb
+        FROM collections h
+        WHERE id = $1
+        UNION ALL
+        SELECT hi, q.level + 1 AS level, breadcrumb || id
+        FROM q
+        JOIN collections hi
+          ON hi.parent_id = (q.h).id
+      )
+      SELECT (q.h).id
+      FROM q
+      ORDER BY breadcrumb"
+    values = [[ nil, self.id ]]
+
+    results = ActiveRecord::Base.connection.exec_query(sql, "SQL", values)
+    Collection.where("id IN (?)", results.
+        select{ |row| row['id'] != self.id }.
+        map{ |row| row['id'] })
+  end
+
+  ##
+  # @return [Enumerable<Collection>] All parents in order from closest to
+  #                                  farthest.
+  #
+  def all_parents
+    parents = []
+    p = self.parent
+    while p
+      parents << p
+      p = p.parent
+    end
+    parents
+  end
 
   ##
   # @return [Enumerable<Unit>] All directly associated units, as well as all of
@@ -124,6 +174,7 @@ class Collection < ApplicationRecord
     doc[IndexFields::LAST_INDEXED]  = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
     doc[IndexFields::MANAGERS]      = self.managers.pluck(:user_id)
+    doc[IndexFields::PARENT]        = self.parent_id
     doc[IndexFields::PRIMARY_UNIT]  = self.primary_unit_id
     doc[IndexFields::SUBMITTERS]    = self.submitters.pluck(:user_id)
     doc[IndexFields::UNIT_TITLES]   = self.all_units.map(&:title)
@@ -159,6 +210,24 @@ class Collection < ApplicationRecord
 
   def label
     title
+  end
+
+  private
+
+  ##
+  # Ensures that {parent_id} is not set to the instance ID nor any of the IDs
+  # of its children.
+  #
+  def validate_parent
+    if self.parent_id.present?
+      if self.id.present? && self.parent_id == self.id
+        errors.add(:parent_id, "cannot be set to the same collection")
+      elsif all_children.map(&:id).include?(self.parent_id)
+        errors.add(:parent_id, "cannot be set to a child collection")
+      elsif self.parent.primary_unit_id != self.primary_unit_id
+        errors.add(:parent_id, "cannot be set to a collection in a different unit")
+      end
+    end
   end
 
 end

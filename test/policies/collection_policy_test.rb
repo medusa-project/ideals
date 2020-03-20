@@ -74,21 +74,21 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.edit_access?
   end
 
-  # edit_membership?()
+  # edit_collection_membership?()
 
-  test "edit_membership?() returns false with a nil user" do
+  test "edit_collection_membership?() returns false with a nil user" do
     policy = CollectionPolicy.new(nil, @collection)
-    assert !policy.edit_membership?
+    assert !policy.edit_collection_membership?
   end
 
-  test "edit_membership?() is restrictive by default" do
+  test "edit_collection_membership?() is restrictive by default" do
     policy = CollectionPolicy.new(users(:norights), @collection)
-    assert !policy.edit_membership?
+    assert !policy.edit_collection_membership?
   end
 
-  test "edit_membership?() authorizes sysadmins" do
+  test "edit_collection_membership?() authorizes sysadmins" do
     policy = CollectionPolicy.new(users(:admin), @collection)
-    assert policy.edit_membership?
+    assert policy.edit_collection_membership?
   end
 
   # edit_properties?()
@@ -106,6 +106,23 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   test "edit_properties?() authorizes sysadmins" do
     policy = CollectionPolicy.new(users(:admin), @collection)
     assert policy.edit_properties?
+  end
+
+  # edit_unit_membership?()
+
+  test "edit_unit_membership?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.edit_unit_membership?
+  end
+
+  test "edit_unit_membership?() is restrictive by default" do
+    policy = CollectionPolicy.new(users(:norights), @collection)
+    assert !policy.edit_unit_membership?
+  end
+
+  test "edit_unit_membership?() authorizes sysadmins" do
+    policy = CollectionPolicy.new(users(:admin), @collection)
+    assert policy.edit_unit_membership?
   end
 
   # index?()

@@ -1,0 +1,18 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@resource).edit_collection_membership?
+    %button.btn.btn-light.edit-collection-membership{"data-collection-id": @resource.id,
+                                                     "data-target": "#edit-collection-membership-modal",
+                                                     "data-toggle": "modal",
+                                                     role: "button"}
+      %i.fas.fa-pencil-alt
+      Change Collection Membership
+
+.clearfix
+
+- if @resource.parent
+  %h2 Parent Collection
+  = resource_list([@resource.parent])
+
+- if @subcollections.any?
+  %h2 Child Collections
+  = resource_list(@subcollections)
