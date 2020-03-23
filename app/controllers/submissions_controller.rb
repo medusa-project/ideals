@@ -33,7 +33,7 @@ class SubmissionsController < ApplicationController
   #
   def create
     item = Item.create!(submitter: current_user,
-                        primary_collection_id: params[:collection_id],
+                        primary_collection_id: params[:primary_collection_id],
                         submitting: true)
     authorize item, policy_class: SubmissionPolicy # this should always succeed
     redirect_to edit_submission_path(item)
