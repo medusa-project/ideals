@@ -6,6 +6,6 @@
       %i.fa.fa-plus
       Add Collection
 - if @collections.any?
-  = resource_list(@collections)
+  = resource_list(@collections, default_id: @resource.default_collection&.id)
 - else
   %p This unit does not contain any collections.

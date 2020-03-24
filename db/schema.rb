@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_19_204600) do
+ActiveRecord::Schema.define(version: 2020_03_24_154748) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,6 +54,7 @@ ActiveRecord::Schema.define(version: 2020_03_19_204600) do
     t.bigint "metadata_profile_id"
     t.bigint "submission_profile_id"
     t.bigint "parent_id"
+    t.boolean "unit_default", default: false, null: false
   end
 
   create_table "collections_items", id: false, force: :cascade do |t|

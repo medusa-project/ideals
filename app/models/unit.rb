@@ -36,6 +36,7 @@ class Unit < ApplicationRecord
   validates :title, presence: true
   validate :validate_parent, :validate_primary_administrator
 
+  after_create :create_default_collection
   before_destroy :validate_empty
 
   breadcrumbs parent: :parent, label: :title
@@ -123,6 +124,13 @@ class Unit < ApplicationRecord
     self.parent_id.present?
   end
 
+  ##
+  # @return [Collection]
+  #
+  def default_collection
+    Collection.where(primary_unit: self, unit_default: true).limit(1).first
+  end
+
   def label
     title
   end
@@ -154,6 +162,27 @@ class Unit < ApplicationRecord
   end
 
   private
+
+  ##
+  # Creates a new {Collection} and assigns the instance as its primary unit.
+  #
+  def create_default_collection
+    config = ::Configuration.instance
+    transaction do
+      col = Collection.create!(primary_unit_id: self.id, unit_default: true)
+
+      # Add title
+      reg_title_element = RegisteredElement.find_by_name(config.elements[:title])
+      col.elements.build(registered_element: reg_title_element,
+                         string: "Default Collection")
+      # Add description
+      reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
+      col.elements.build(registered_element: reg_description_element,
+                         string: "This collection was created automatically "\
+                           "along with its parent unit.")
+      col.save!
+    end
+  end
 
   ##
   # Ensures that the unit cannot be destroyed unless it is empty.

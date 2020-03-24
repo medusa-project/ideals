@@ -23,6 +23,8 @@
 #                           {SubmissionProfile#default default profile}. In
 #                           most cases, {effective_submission_profile} should
 #                           be used instead of accessing this directly.
+# * `unit_default`          Whether the instance is the default collection of
+#                           its primary unit.
 # * `updated_at`            Managed by ActiveRecord.
 #
 # # Relationships
@@ -94,6 +96,8 @@ class Collection < ApplicationRecord
   has_and_belongs_to_many :units
 
   validate :validate_parent
+
+  after_save :ensure_default_uniqueness
 
   breadcrumbs parent: :primary_unit, label: :title
 
@@ -251,6 +255,19 @@ class Collection < ApplicationRecord
   end
 
   private
+
+  ##
+  # Sets other instances with the same primary unit as "not unit-default" if
+  # the instance is marked as unit-default.
+  #
+  def ensure_default_uniqueness
+    if self.unit_default
+      self.class.all.where('id != ? and primary_unit_id = ?',
+                           self.id, self.primary_unit_id).each do |instance|
+        instance.update!(unit_default: false)
+      end
+    end
+  end
 
   ##
   # Ensures that {parent_id} is not set to the instance ID nor any of the IDs

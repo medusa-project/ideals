@@ -8,4 +8,4 @@
       Change Unit Membership
 
 = resource_list(@resource.all_units.sort{ |u| u.title <=> u.title },
-                @resource.primary_unit_id)
+                primary_id: @resource.primary_unit_id)

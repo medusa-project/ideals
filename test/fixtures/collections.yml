@@ -2,6 +2,7 @@ collection1:
   metadata_profile: default
   submission_profile: default
   primary_unit: unit1
+  unit_default: true
   units:
     - unit1
     - unit2

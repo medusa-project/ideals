@@ -274,6 +274,16 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal "", collection.title
   end
 
+  # unit_default
+
+  test "setting a profile as the unit default sets all other instances to
+  not-unit-default" do
+    unit = units(:unit1)
+    assert_equal 1, Collection.where(primary_unit: unit, unit_default: true).count
+    Collection.create!(primary_unit: unit, unit_default: true)
+    assert_equal 1, Collection.where(primary_unit: unit, unit_default: true).count
+  end
+
   # units
 
   test "units can be empty" do

@@ -7,9 +7,19 @@ class UnitTest < ActiveSupport::TestCase
     @instance = units(:unit1)
   end
 
+  # create()
+
+  test "create() creates a default collection" do
+    unit = Unit.create!(title: "New Unit")
+    assert_equal 1, unit.all_collections.length
+    col = unit.all_collections.first
+    assert col.unit_default
+    assert_equal "Default Collection", col.title
+  end
+
   # delete_document() (Indexed concern)
 
-  test 'delete_document() deletes a document' do
+  test "delete_document() deletes a document" do
     units = Unit.all.limit(5)
     units.each(&:reindex)
     refresh_elasticsearch
@@ -94,6 +104,17 @@ class UnitTest < ActiveSupport::TestCase
 
   test "child?() returns true for child units" do
     assert units(:unit1_unit2).child?
+  end
+
+  # default_collection()
+
+  test "default_collection() returns the default collection" do
+    assert_equal collections(:collection1), @instance.default_collection
+  end
+
+  test "default_collection() returns nil when there is no  default collection" do
+    @instance = units(:empty)
+    assert_nil @instance.default_collection
   end
 
   # destroy()
