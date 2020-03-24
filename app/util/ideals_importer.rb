@@ -1,5 +1,6 @@
 ##
 # Imports content from "Old IDEALS" (IDEALS-DSpace) into the application.
+# Methods work in conjunction with the SQL scripts in the `scripts` directory.
 #
 # This class is intended to be used with a fresh, empty database. It is a
 # Singleton because other application component(s) may need to know when it is
@@ -18,6 +19,73 @@ class IdealsImporter
   LOGGER = CustomLogger.new(IdealsImporter)
 
   include Singleton
+
+  ##
+  # @param csv_pathname [String]
+  #
+  def import_bitstreams(csv_pathname)
+    @running = true
+    LOGGER.debug("import_bitstreams(): importing %s (1/2)", csv_pathname)
+
+    line_count = count_lines(csv_pathname)
+    progress   = Progress.new(line_count)
+
+    # destroy_all is excruciatingly slow and we don't need callbacks
+    Bitstream.delete_all
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
+      row_arr = line.split("|").map(&:strip)
+      progress.report(row_num, "Importing bitstreams")
+
+      begin
+        Bitstream.create!(id:         row_arr[1].to_i,
+                          item_id:    row_arr[0].to_i,
+                          key:        row_arr[2],
+                          length:     row_arr[6].to_i,
+                          media_type: row_arr[7])
+      rescue ActiveRecord::RecordNotFound
+        # nothing we can do
+      rescue ActiveRecord::RecordInvalid
+        # nothing we can do
+      end
+    end
+    update_pkey_sequence("bitstreams")
+  ensure
+    @running = false
+  end
+
+  ##
+  # @param csv_pathname [String]
+  #
+  def import_bitstream_metadata(csv_pathname)
+    @running = true
+    LOGGER.debug("import_bitstream_metadata(): importing %s", csv_pathname)
+
+    line_count = count_lines(csv_pathname)
+    progress   = Progress.new(line_count)
+
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
+
+      row_arr   = line.split("|").map(&:strip)
+      bs_id     = row_arr[4].to_i
+      elem_name = "#{row_arr[0]}:#{row_arr[1]}"
+      elem_name += ":#{row_arr[2]}" if row_arr[2].present?
+      string    = row_arr[3]&.strip
+      next unless elem_name == "dc:title"
+      next unless string.present?
+
+      progress.report(row_num, "Importing bitstream metadata")
+      begin
+        b = Bitstream.find(bs_id)
+        b.update!(original_filename: string)
+      rescue ActiveRecord::RecordNotFound
+        # This may be caused by a nonexistent Bitstream. Not much we can do.
+      end
+    end
+  ensure
+    @running = false
+  end
 
   ##
   # @param csv_pathname [String]

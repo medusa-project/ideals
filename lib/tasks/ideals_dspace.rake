@@ -2,6 +2,22 @@ require 'rake'
 
 namespace :ideals_dspace do
 
+  namespace :bitstreams do
+    desc "Migrate bitstreams from IDEALS-DSpace into the application"
+    task :migrate, [:source_db_name, :source_db_host, :source_db_user] => :environment do |task, args|
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 "export_bitstreams.sql",
+                 :import_bitstreams)
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 "export_bitstream_metadata.sql",
+                 :import_bitstream_metadata)
+    end
+  end
+
   namespace :collections do
     desc "Migrate collections from IDEALS-DSpace into the application"
     task :migrate, [:source_db_name, :source_db_host, :source_db_user] => :environment do |task, args|
@@ -115,6 +131,7 @@ namespace :ideals_dspace do
     Rake::Task["ideals_dspace:communities:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:collections:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:items:migrate"].invoke(dbname, dbhost, dbuser)
+    Rake::Task["ideals_dspace:bitstreams:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:handles:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:metadata:migrate_registry"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:metadata:migrate_collection_values"].invoke(dbname, dbhost, dbuser)
