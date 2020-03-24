@@ -22,11 +22,6 @@
                     f.object.description, class: "form-control"
 
   .form-group
-    .form-check
-      = f.check_box :unit_default, class: 'form-check-input'
-      = f.label :unit_default, "Unit Default", class: "form-check-label"
-
-  .form-group
     = f.label :metadata_profile_id, "Metadata Profile"
     = f.select :metadata_profile_id, MetadataProfile.all.pluck(:name, :id),
                { include_blank: true }, class: "custom-select"
