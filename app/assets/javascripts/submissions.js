@@ -6,7 +6,8 @@
 const AgreementView = function() {
     // Show the deposit agreement when the begin-submission button is clicked.
     $("button.begin-submission").on("click", function() {
-        $(this).parents(".card").fadeOut(IDEALS.FADE_TIME, function() {
+        $(this).fadeOut(IDEALS.FADE_TIME);
+        $(".submissions-in-progress").fadeOut(IDEALS.FADE_TIME, function() {
             $("#deposit-agreement").fadeIn(IDEALS.FADE_TIME);
         });
     });

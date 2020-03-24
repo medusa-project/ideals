@@ -3,7 +3,7 @@
 %h1 Deposit
 
 - if @submissions.any?
-  .card.text-white.bg-info.mb-3
+  .card.text-white.bg-info.submissions-in-progress.mb-3
     .card-header Submissions In Progress
     .card-body
       %p= "You have #{pluralize(@submissions.length, "submission")} in progress:"
@@ -15,7 +15,7 @@
             - else
               = raw "Started #{local_time_ago(item.created_at)} (collection not selected)"
             = link_to("Continue", edit_submission_path(item), class: "btn btn-outline-light btn-sm")
-      %button.begin-submission.btn.btn-outline-light Begin a new submission
+  %button.begin-submission.btn.btn-outline-primary Begin a new submission
 
 #deposit-agreement.card{style: "#{@submissions.any? ? "display: none" : ""}"}
   %h5.card-header IDEALS Deposit Agreement
