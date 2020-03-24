@@ -16,6 +16,10 @@ class UnitPolicy < ApplicationPolicy
     true
   end
 
+  def collections?
+    true
+  end
+
   def create?
     return false unless user
     return true if user.sysadmin?

@@ -24,6 +24,20 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # collections()
+
+  test "collections() returns HTTP 404 for non-XHR requests" do
+    collections(:described).reindex # this is needed to fully initialize the schema
+    get unit_collections_path(units(:unit1))
+    assert_response :not_found
+  end
+
+  test "collections() returns HTTP 200 for XHR requests" do
+    collections(:described).reindex # this is needed to fully initialize the schema
+    get unit_collections_path(units(:unit1)), xhr: true
+    assert_response :ok
+  end
+
   # create()
 
   test "create() redirects to login page for logged-out users" do

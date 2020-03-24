@@ -18,6 +18,18 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.children?
   end
 
+  # collections?()
+
+  test "collections?() returns true with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert policy.collections?
+  end
+
+  test "collections?() authorizes everyone" do
+    policy = UnitPolicy.new(users(:norights), @unit)
+    assert policy.collections?
+  end
+
   # create?()
 
   test "create?() returns false with a nil user" do

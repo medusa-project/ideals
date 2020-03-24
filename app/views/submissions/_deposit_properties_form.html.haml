@@ -6,17 +6,30 @@
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
-  %p Select the collection into which you'd like to deposit the item.
+  = f.hidden_field :submitter_id, value: current_user.id
+  = f.hidden_field :initial_primary_collection_unit_id, value: f.object&.primary_collection&.primary_unit_id
+  = f.hidden_field :initial_primary_collection_id, value: f.object.primary_collection_id
 
-  .row
+  %p Select the Academic Unit into which you would like to deposit the item.
+
+  .row.mb-3
     .col-sm-10
-      = f.select(:primary_collection_id,
-                 deposit_collection_options_for_select(params[:primary_collection_id]),
-                 {}, class: "custom-select")
-      %p.form-text.text-muted
-        This menu contains all collections to which you have directly-assigned
-        submitter access. To request access to another collection,
-        _______ TODO: write this
+      -# N.B.: this element is used only to control the contents of the
+      -# collection-select menu; its selected value is not used.
+      = select_tag(:unit_id, options_for_select(unit_tree_options),
+                   class: "custom-select")
+    .col-sm-2
+      .message
+        .text-success
+          %i.fa.fa-check
+          Value saved
+
+  %p Select the collection into which you would like to deposit the item.
+
+  .row.mb-3
+    .col-sm-10
+      = f.select(:primary_collection_id, options_for_select([]),
+                 {}, class: "custom-select", disabled: true)
     .col-sm-2
       .message
         .text-success

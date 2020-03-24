@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 class UnitsController < ApplicationController
-  before_action :ensure_logged_in, except: [:children, :index, :show]
-  before_action :set_unit, only: [:children, :edit_access, :edit_membership,
-                                  :edit_properties, :show, :update, :destroy]
-  before_action :authorize_unit, only: [:children, :edit_access,
+  before_action :ensure_logged_in, except: [:children, :collections, :index,
+                                            :show]
+  before_action :set_unit, only: [:children, :collections, :edit_access,
+                                  :edit_membership, :edit_properties, :show,
+                                  :update, :destroy]
+  before_action :authorize_unit, only: [:children, :collections, :edit_access,
                                         :edit_membership, :edit_properties,
                                         :show, :update, :destroy]
 
@@ -22,6 +24,17 @@ class UnitsController < ApplicationController
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(999)
     render partial: "children"
+  end
+
+  ##
+  # Renders a JSON list of all of a unit's child collections. Has the same
+  # permissions as {show}.
+  #
+  # Responds to `GET /units/:unit_id/collections` (XHR only)
+  #
+  def collections
+    raise ActionController::BadRequest if params[:unit_id].blank?
+    render partial: "collections", locals: { unit: @resource }
   end
 
   ##

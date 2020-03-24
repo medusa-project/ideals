@@ -28,6 +28,17 @@ class CollectionRelation < AbstractRelation
     self
   end
 
+  ##
+  # Limits the results to children of the given unit.
+  #
+  # @param unit [Unit]
+  # @return [CollectionRelation] self
+  #
+  def primary_unit(unit)
+    @primary_unit = unit
+    self
+  end
+
   protected
 
   ##
@@ -86,6 +97,13 @@ class CollectionRelation < AbstractRelation
                   j.child! do
                     j.term do
                       j.set! Collection::IndexFields::PARENT, @parent_collection.id
+                    end
+                  end
+                end
+                if @primary_unit
+                  j.child! do
+                    j.term do
+                      j.set! Collection::IndexFields::PRIMARY_UNIT, @primary_unit.id
                     end
                   end
                 end

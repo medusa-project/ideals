@@ -56,6 +56,8 @@ Rails.application.routes.draw do
   resources :units, except: [:edit, :new] do
     match "/children", to: "units#children", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/collections", to: "units#collections", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-access", to: "units#edit_access", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-membership", to: "units#edit_membership", via: :get,

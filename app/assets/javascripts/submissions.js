@@ -13,40 +13,33 @@ const AgreementView = function() {
 };
 
 /**
- * Manages the deposit metadata form.
+ * Manages the deposit form.
  *
  * @constructor
  */
-const DepositMetadataEditor = function() {
+const DepositForm = function() {
 
-    refreshRemoveButtons();
-    wireRemoveButtons();
+    const self = this;
+    const form = $("form.edit_item");
 
     var lastEditedInput;
-    $("input, select, textarea").on("change", function() {
+    form.find("input, select, textarea").on("change", function() {
         lastEditedInput = $(this);
-        validate(false);
-        $(this).parents("form").submit();
-        const successMessage = $(this).parents(".row").find(".message > div.text-success");
-        successMessage.show();
-        setTimeout(function () {
-            successMessage.fadeOut();
-        }, 4000);
+        self.validate(false);
+        self.save(lastEditedInput);
     });
 
-    const metadataForm = $("form#deposit-metadata-form");
-    metadataForm.on("submit", function(e) {
+    form.on("submit", function(e) {
         e.preventDefault();
         const tr             = lastEditedInput.parents("tr");
         const successMessage = tr.find("td.message > div.text-success");
         const errorMessage   = tr.find("td.message > div.text-danger");
         if (lastEditedInput && lastEditedInput.is(":valid")) {
-            const form = $(this);
             $.ajax({
                 type: form.attr("method"),
-                url: form.attr("action"),
+                url:  form.attr("action"),
                 data: form.serialize(),
-                complete: function (request) {
+                success: function() {
                     successMessage.show();
                     errorMessage.hide();
                     setTimeout(function () {
@@ -60,17 +53,114 @@ const DepositMetadataEditor = function() {
         }
     });
 
-    $("form#complete-form input[type=submit]").on("click", function(e) {
-        if (!validate(true)) {
+    this.save = function(lastEditedInput) {
+        const localForm = lastEditedInput.parents("form");
+        $.ajax({
+            type: localForm.attr("method"),
+            url:  localForm.attr("action"),
+            data: localForm.serialize(),
+            success: function() {
+                const successMessage = lastEditedInput.parents(".row").find(".message > .text-success");
+                successMessage.show();
+                setTimeout(function () {
+                    successMessage.fadeOut();
+                }, 4000);
+            }
+        });
+    };
+
+    this.validate = function(includeRequired) {
+        let isValid = true;
+        form.find("input[required], textarea[required]").each(function() {
+            if ($(this).val().length < 1) {
+                isValid = false;
+            }
+        });
+        const messages = form.find(".error-messages");
+        if (isValid) {
+            messages.empty();
+            return true;
+        } else if (includeRequired) {
+            messages.html("<div class=\"alert alert-danger\">" +
+                "Please ensure that all required elements are filled in.</div>");
+            return false;
+        }
+    };
+
+    const fetchCollectionsForUnit = function(unitID, onComplete) {
+        collectionsMenu.attr("disabled", true);
+        const ROOT_URL = $("input[name=root_url]").val();
+        $.ajax({
+            method: "GET",
+            url: ROOT_URL + "/units/" + unitID + "/collections",
+            success: function (data) {
+                collectionsMenu.children().remove();
+                if (data.length > 0) {
+                    $.each(data, function (index, value) {
+                        collectionsMenu.append(
+                            "<option value=\"" + value[1] + "\">" + value[0] + "</option>");
+                    });
+                    collectionsMenu.attr("disabled", false);
+                }
+                if (onComplete) {
+                    onComplete();
+                }
+            }
+        });
+    };
+
+    const selectUnit = function(unitID) {
+        unitsMenu.val(unitID);
+    };
+
+    const selectCollection = function(collectionID) {
+        collectionsMenu.val(collectionID);
+    };
+
+    const unitsMenu       = $("[name=unit_id]");
+    const collectionsMenu = $("[name='item[primary_collection_id]']");
+
+    unitsMenu.on("change", function(e) {
+        fetchCollectionsForUnit($(this).val(), function() {
+            self.save(collectionsMenu);
+        });
+    });
+
+    // Restore initial unit & collection selection values.
+    const unitID = $("[name='item[initial_primary_collection_unit_id]']").val();
+    if (unitID > 0) {
+        fetchCollectionsForUnit(unitID, function() {
+            selectUnit(unitID);
+            const collectionID = $("[name='item[initial_primary_collection_id]']").val();
+            if (collectionID > 0) {
+                selectCollection(collectionID);
+            }
+        });
+    }
+
+    const completeForm = $("form#complete-form");
+    completeForm.find("input[type=submit]").on("click", function(e) {
+        if (!self.validate(true)) {
             $("#metadata-tab").click();
             e.preventDefault();
             return false;
         }
     });
 
-    $("#complete-form").on("submit", function() {
+    completeForm.on("submit", function() {
         $("#complete-modal").modal("show");
     });
+};
+
+/**
+ * Manages the deposit metadata form.
+ *
+ * @constructor
+ */
+const DepositMetadataEditor = function() {
+
+    refreshRemoveButtons();
+    wireRemoveButtons();
 
     $("button.add").on("click", function(e) {
         // Show the "remove" button of all adjacent input groups
@@ -85,24 +175,6 @@ const DepositMetadataEditor = function() {
         wireRemoveButtons();
         e.preventDefault();
     });
-
-    function validate(includeRequired) {
-        let isValid = true;
-        metadataForm.find("input[required], textarea[required]").each(function() {
-            if ($(this).val().length < 1) {
-                isValid = false;
-            }
-        });
-        const messages = metadataForm.find(".error-messages");
-        if (isValid) {
-            messages.empty();
-            return true;
-        } else if (includeRequired) {
-            messages.html("<div class=\"alert alert-danger\">" +
-                "Please ensure that all required elements are filled in.</div>");
-            return false;
-        }
-    };
 
     /**
      * Shows all adjacent input groups' "remove" buttons if there are two
@@ -150,6 +222,7 @@ const EditView = function() {
     $("button.step-2-to-1").on("click", function() {
         $("#properties-tab").tab("show");
     });
+    new DepositForm();
     new DepositMetadataEditor();
 };
 
