@@ -7,13 +7,10 @@
       %i.fas.fa-pencil-alt
       Change Unit Membership
 
-.clearfix
-
 - if @resource.parent
   %h2 Parent Unit
   = resource_list([@resource.parent])
 
 - if @subunits.any?
-  %hr
   %h2 Child Units
   = resource_list(@subunits)
