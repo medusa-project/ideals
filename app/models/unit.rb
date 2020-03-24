@@ -174,7 +174,7 @@ class Unit < ApplicationRecord
       # Add title
       reg_title_element = RegisteredElement.find_by_name(config.elements[:title])
       col.elements.build(registered_element: reg_title_element,
-                         string: "Default Collection")
+                         string: self.title)
       # Add description
       reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
       col.elements.build(registered_element: reg_description_element,

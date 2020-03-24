@@ -14,7 +14,7 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal 1, unit.all_collections.length
     col = unit.all_collections.first
     assert col.unit_default
-    assert_equal "Default Collection", col.title
+    assert_equal unit.title, col.title
   end
 
   # delete_document() (Indexed concern)
