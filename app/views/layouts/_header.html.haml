@@ -1,15 +1,15 @@
 %header
   = render partial: 'layouts/library_header'
-  %nav.navbar.navbar-expand-md{role: "navigation"}
+  %nav.navbar.navbar-expand-lg{role: "navigation"}
     = link_to 'IDEALS', root_path, class: 'navbar-brand'
-    %button.navbar-toggler{"aria-controls": "navbarColor01",
+    %button.navbar-toggler{"aria-controls": "navbar-supported-content",
                            "aria-expanded": "false",
                            "aria-label": "Toggle navigation",
-                           "data-target": "#navbarColor01",
+                           "data-target": "#navbar-supported-content",
                            "data-toggle": "collapse",
                            type: "button"}
       %span.navbar-toggler-icon
-    #navbarColor01.collapse.navbar-collapse
+    #navbar-supported-content.collapse.navbar-collapse
       %ul.navbar-nav.mr-auto
         - if logged_in?
           %li#dashboard-nav.nav-item
@@ -19,35 +19,21 @@
         %li#deposit-nav.nav-item
           = link_to deposit_path, class: "nav-link" do
             %i.fa.fa-plus
-            Deposit
-        %li#find-nav.nav-item.dropdown
-          %a#find-dropdown.nav-link.dropdown-toggle{href: "#", role: "button",
-                                                    "data-toggle": "dropdown",
-                                                    "aria-haspopup": "true",
-                                                    "aria-expanded": "false"}
-            %i.fa.fa-search
-            Find
-          .dropdown-menu{"aria-labelledby": "find-dropdown"}
-            = link_to units_path, class: "dropdown-item" do
-              = icon_for(Unit)
-              Academic Units
-            = link_to collections_path, class: "dropdown-item" do
-              = icon_for(Collection)
-              Collections
-            = link_to items_path, class: "dropdown-item" do
-              = icon_for(Item)
-              Items
+            Submit an Item
+        %li#browse-nav.nav-item
+          = link_to units_path, class: "nav-link" do
+            = icon_for(Unit)
+            Browse
         %li#policies-nav.nav-item
           = link_to "https://wiki.illinois.edu//wiki/display/IDEALS/IDEALS+Resources+and+Information", class: 'nav-link' do
             %i.fa.fa-info-circle
             About
-      - re = policy(RegisteredElement).index?
-      - mp = policy(MetadataProfile).index?
-      - sp = policy(SubmissionProfile).index?
-      - u  = policy(User).index?
-      - ug = policy(UserGroup).index?
-      - if re || mp || sp || u || ug
-        %ul.navbar-nav.my-2.my-lg-0
+        - re = policy(RegisteredElement).index?
+        - mp = policy(MetadataProfile).index?
+        - sp = policy(SubmissionProfile).index?
+        - u  = policy(User).index?
+        - ug = policy(UserGroup).index?
+        - if re || mp || sp || u || ug
           %li#administration-nav.nav-item.dropdown
             %a#administration-dropdown.nav-link.dropdown-toggle{href: "#", role: "button", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"}
               %i.fa.fa-lock-open
@@ -74,3 +60,9 @@
                 = link_to user_groups_path, class: 'dropdown-item' do
                   %i.fa.fa-users
                   User Groups
+      = form_tag items_path, method: "get", class: "form-inline my-2 my-lg-0 mr-3" do
+        .input-group.mr-3
+          %input.form-control{name: "q", type: "search", placeholder: "Search", "aria-label": "Search"}
+          .input-group-append
+            %button{type: "submit", class: "btn btn-outline-secondary"}
+              %i.fa.fa-search

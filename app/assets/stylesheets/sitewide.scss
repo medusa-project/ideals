@@ -1,6 +1,21 @@
 // This stylesheet contains styles for elements that may appear in multiple
 // views.
 
+#navbar-supported-content {
+  .nav-item {
+    margin-bottom: 0;
+    .nav-link {
+      white-space: nowrap;
+    }
+  }
+  form.form-inline {
+    width: 12em;
+    input[type=search] {
+      width: 12em;
+    }
+  }
+}
+
 .resource-list {
   .thumbnail {
     font-size: 4em;
