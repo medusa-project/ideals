@@ -1,13 +1,4 @@
 /**
- * Handles list-collections view.
- *
- * @constructor
- */
-const CollectionsView = function() {
-    new IDEALS.FacetSet().init();
-};
-
-/**
  * Handles show-collection view.
  *
  * @constructor
@@ -51,9 +42,7 @@ const CollectionView = function() {
 };
 
 $(document).ready(function() {
-    if ($("body#list_collections").length) {
-        new CollectionsView();
-    } else if ($('body#show_collection').length) {
+    if ($('body#show_collection').length) {
         new CollectionView();
     }
 });

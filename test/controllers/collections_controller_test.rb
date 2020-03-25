@@ -235,9 +235,9 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
-  test "index() returns HTTP 200 for HTML" do
+  test "index() returns HTTP 406 for HTML" do
     get collections_path
-    assert_response :ok
+    assert_response :not_acceptable
   end
 
   test "index() returns HTTP 200 for JSON" do

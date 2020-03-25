@@ -100,20 +100,22 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /collections`
+  # Responds to `GET /collections` (JSON only)
   #
   def index
+    if params[:format] != "json"
+      render plain: "Not Acceptable", status: :not_acceptable
+      return
+    end
     @start  = results_params[:start].to_i
     @window = window_size
     @collections = Collection.search.
-        aggregations(true).
+        aggregations(false).
         query_all(results_params[:q]).
-        facet_filters(results_params[:fq]).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         start(@start).
         limit(@window)
     @count            = @collections.count
-    @facets           = @collections.facets
     @current_page     = @collections.page
     @permitted_params = results_params
   end
