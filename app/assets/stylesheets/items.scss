@@ -8,6 +8,11 @@ body#list_items, body#list_collections {
 }
 
 body#show_item {
+  li.media {
+    i {
+      font-size: 5em;
+    }
+  }
   #edit-item-metadata-modal {
     textarea {
       height: 5em;

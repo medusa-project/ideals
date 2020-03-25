@@ -25,6 +25,15 @@
       %i.fa.fa-info-circle
       Properties
   %li.nav-item
+    %a#bitstreams-tab.nav-link{href: "#bitstreams-tab-content",
+                               "data-toggle": "tab",
+                               role: "tab",
+                               "aria-controls": "bitstreams-tab-content",
+                               "aria-selected": "true"}
+      %i.fa.fa-file
+      Bitstreams
+      %span.badge.badge-secondary.badge-pill= @bitstreams.count
+  %li.nav-item
     %a#collections-tab.nav-link{href: "#collections-tab-content",
                                 "data-toggle": "tab",
                                 role: "tab",
@@ -50,6 +59,10 @@
   #properties-tab-content.tab-pane.fade{role: "tabpanel",
                                         "aria-labelledby": "properties-tab"}
     = render partial: "show_properties_tab"
+
+  #bitstreams-tab-content.tab-pane.fade{role: "tabpanel",
+                                        "aria-labelledby": "bitstreams-tab"}
+    = render partial: "show_bitstreams_tab"
 
   #collections-tab-content.tab-pane{role: "tabpanel",
                                     "aria-labelledby": "collections-tab"}

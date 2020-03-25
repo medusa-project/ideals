@@ -71,8 +71,55 @@ module ApplicationHelper
   # @return [String] HTML icon tag.
   #
   def icon_for(entity)
-    entity = entity.kind_of?(Class) ? entity : entity.class
-    case entity.to_s
+    entity_class = entity.kind_of?(Class) ? entity : entity.class
+    case entity_class.to_s
+    when "Bitstream"
+      if entity.media_type.start_with?("audio/")
+        icon = "far fa-file-audio"
+      elsif entity.media_type.start_with?("image/")
+        icon = "far fa-file-image"
+      elsif entity.media_type.start_with?("video/")
+        icon = "far fa-file-video"
+      else
+        case entity.media_type
+        when "application/msword"
+          icon = "far fa-file-word"
+        when "application/octet-stream"
+          icon = "far fa-file"
+        when "application/postscript"
+          icon = "far fa-file-image"
+        when "application/pdf"
+          icon = "far fa-file-pdf"
+        when "application/vnd.ms-excel"
+          icon = "far fa-file-excel"
+        when "application/vnd.ms-powerpoint"
+          icon = "far fa-file-powerpoint"
+        when "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          icon = "far fa-file-powerpoint"
+        when "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          icon = "far fa-file-excel"
+        when "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          icon = "far fa-file-word"
+        when "application/x-rar-compressed"
+          icon = "far fa-file-archive"
+        when "application/x-tex"
+          icon = "far fa-file-code"
+        when "application/zip"
+          icon = "far fa-file-archive"
+        when "text/csv"
+          icon = "far fa-file-alt"
+        when "text/html"
+          icon = "far fa-file-code"
+        when "text/plain"
+          icon = "far fa-file-alt"
+        when "text/richtext"
+          icon = "far fa-file-alt"
+        when "text/xml"
+          icon = "far fa-file-code"
+        else
+          icon = "far fa-file"
+        end
+      end
     when "Collection"
       icon = "far fa-folder-open"
     when "Item"

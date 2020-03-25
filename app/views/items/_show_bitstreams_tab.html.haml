@@ -1,0 +1,16 @@
+%ul.list-unstyled
+  - @bitstreams.each do |bs|
+    %li.media.mb-3
+      .mr-3
+        = icon_for(bs)
+      .media-body
+        %h5.mt-0.mb-1= bs.original_filename
+        %span
+          = bs.media_type
+          &bull;
+          = number_with_delimiter(bs.length)
+          bytes
+        - if current_user&.sysadmin?
+          %br
+          %span
+            = bs.key
