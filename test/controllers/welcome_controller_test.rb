@@ -34,10 +34,4 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
     assert response.body.include?("Search across #{expected_count} items")
   end
 
-  test "index() displays the dashboard to logged-in users" do
-    log_in_as(users(:sally))
-    get root_path
-    assert_select "h1", "Dashboard"
-  end
-
 end

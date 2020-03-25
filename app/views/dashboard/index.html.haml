@@ -1,3 +1,5 @@
+- provide :title, "Dashboard"
+
 %h1 Dashboard
 
 -#.sys_admin
@@ -23,27 +25,17 @@
 
 %nav
   .nav.nav-tabs{role: "tablist"}
-    #nav-about-me-tab.nav-item.nav-link.active{"data-toggle": "tab",
-                                               href: "#nav-about-me",
-                                               role: "tab",
-                                               "aria-controls": "nav-about-me",
-                                               "aria-selected": "true"}
-      About Me
-    #nav-submissions-tab.nav-item.nav-link{"data-toggle": "tab",
-                                           href: "#nav-submissions",
-                                           role: "tab",
-                                           "aria-controls": "nav-submissions",
-                                           "aria-selected": "true"}
+    #nav-submissions-tab.nav-item.nav-link.active{"data-toggle": "tab",
+                                                  href: "#nav-submissions",
+                                                  role: "tab",
+                                                  "aria-controls": "nav-submissions",
+                                                  "aria-selected": "true"}
       My Submissions
       %span.badge.badge-pill.badge-secondary= @submissions_in_progress.count
 
 .tab-content
-  #nav-about-me.tab-pane.fade.show.active{role: "tabpanel",
-                                          "aria-labelledby": "nav-about-me-tab"}
-    = render partial: "users/show_account_tab", locals: { user: @user }
-
-  #nav-submissions.tab-pane.fade{role: "tabpanel",
-                                 "aria-labelledby": "nav-submissions-tab"}
+  #nav-submissions.tab-pane.fade.show.active{role: "tabpanel",
+                                             "aria-labelledby": "nav-submissions-tab"}
     - if @submissions_in_progress.any?
       = render partial: "users/submissions_table",
                locals: { submissions: @submissions_in_progress }

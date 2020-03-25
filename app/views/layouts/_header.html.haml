@@ -11,6 +11,11 @@
       %span.navbar-toggler-icon
     #navbarColor01.collapse.navbar-collapse
       %ul.navbar-nav.mr-auto
+        - if logged_in?
+          %li#dashboard-nav.nav-item
+            = link_to dashboard_path, class: "nav-link" do
+              %i.fa.fa-tachometer-alt
+              Dashboard
         %li#deposit-nav.nav-item
           = link_to deposit_path, class: "nav-link" do
             %i.fa.fa-plus
