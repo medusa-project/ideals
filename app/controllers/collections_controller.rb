@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class CollectionsController < ApplicationController
-  before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_collection, only: [:show, :edit_access,
+  before_action :ensure_logged_in, except: [:children, :index, :show]
+  before_action :set_collection, only: [:children, :show, :edit_access,
                                         :edit_collection_membership,
                                         :edit_properties,
                                         :edit_unit_membership, :update,
@@ -12,6 +12,20 @@ class CollectionsController < ApplicationController
                                               :edit_properties,
                                               :edit_unit_membership, :update,
                                               :destroy]
+
+  ##
+  # Renders a partial for the expandable unit list used in {index}. Has the
+  # same permissions as {show}.
+  #
+  # Responds to `GET /collections/:collection_id/children` (XHR only)
+  #
+  def children
+    @collections = Collection.search.
+        filter(Collection::IndexFields::PARENT, @resource.id).
+        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+        limit(999)
+    render partial: "children"
+  end
 
   ##
   # Responds to `POST /collections`.

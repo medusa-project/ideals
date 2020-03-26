@@ -6,6 +6,18 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     @collection = collections(:collection1)
   end
 
+  # children?()
+
+  test "children?() returns true with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert policy.children?
+  end
+
+  test "children?() authorizes everyone" do
+    policy = CollectionPolicy.new(users(:norights), @collection)
+    assert policy.children?
+  end
+
   # create?()
 
   test "create?() returns false with a nil user" do

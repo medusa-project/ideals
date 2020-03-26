@@ -4,4 +4,4 @@
 # unit [Unit]
 #
 
-json.array! collection_tree_options(unit: unit)
+json.array! collection_tree_options(unit: @resource)

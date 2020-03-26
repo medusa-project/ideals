@@ -10,6 +10,18 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
+  # chlldren()
+
+  test "children() returns HTTP 404 for non-XHR requests" do
+    get collection_children_path(collections(:collection1))
+    assert_response :not_found
+  end
+
+  test "children() returns HTTP 200 for XHR requests" do
+    get collection_children_path(collections(:collection1)), xhr: true
+    assert_response :ok
+  end
+
   # create()
 
   test "create() redirects to login page for logged-out users" do

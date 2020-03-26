@@ -9,9 +9,9 @@
       %i.fa.fa-plus
       Add Unit
 
-%h1 Academic Units
+%h1 Academic Units and Collections
 
-= unit_list(@units)
+= expandable_unit_list(@units)
 
 = render partial: "units/add_modal", locals: { unit: @new_unit,
                                                context: :new}

@@ -12,6 +12,10 @@ class CollectionPolicy < ApplicationPolicy
     @collection = collection
   end
 
+  def children?
+    true
+  end
+
   def create?
     return false unless user
     user.sysadmin? ||                       # user is a sysadmin

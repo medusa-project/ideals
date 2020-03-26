@@ -34,7 +34,16 @@ class UnitsController < ApplicationController
   #
   def collections
     raise ActionController::BadRequest if params[:unit_id].blank?
-    render partial: "collections", locals: { unit: @resource }
+    @collections = Collection.search.
+        filter(Collection::IndexFields::PRIMARY_UNIT, @resource.id).
+        include_children(false).
+        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+        limit(999)
+    if params[:'for-select'] == "true"
+      render partial: "collections_for_select"
+    else
+      render partial: "collections/children"
+    end
   end
 
   ##

@@ -14,6 +14,8 @@ Rails.application.routes.draw do
 
   resources :account_activations, only: [:edit]
   resources :collections, except: [:edit, :new] do
+    match "/children", to: "collections#children", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/deposit", to: "submissions#agreement", via: :get
     match "/edit-access", to: "collections#edit_access", via: :get,
           constraints: lambda { |request| request.xhr? }

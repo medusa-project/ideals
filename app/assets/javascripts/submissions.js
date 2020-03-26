@@ -93,7 +93,7 @@ const DepositForm = function() {
         const ROOT_URL = $("input[name=root_url]").val();
         $.ajax({
             method: "GET",
-            url: ROOT_URL + "/units/" + unitID + "/collections",
+            url: ROOT_URL + "/units/" + unitID + "/collections?for-select=true",
             success: function (data) {
                 collectionsMenu.children().remove();
                 if (data.length > 0) {

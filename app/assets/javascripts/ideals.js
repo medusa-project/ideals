@@ -14,12 +14,37 @@ const IDEALS = {
      *
      * @constructor
      */
-    ExpandableUnitList: function() {
+    ExpandableResourceList: function() {
         const ROOT_URL = $("input[name=root_url]").val();
 
         const setToggleState = function(elem, expanded) {
             const icon = expanded ? "fa-minus-square" : "fa-plus-square";
             elem.html("<i class=\"far " + icon + "\"></i>");
+        };
+
+        const insert = function(data, container) {
+            if (data.length < 1) {
+                return;
+            }
+            var html = "<ul>";
+            $.each(data, function(index, obj) {
+                html += "<li data-id=\"" + obj.id + "\">";
+                if (obj.numCollections > 0 || obj.numChildren > 0) {
+                    html += "<button class=\"btn btn-link expand\" type=\"button\" data-class=\"" + obj.class + "\">";
+                    html +=   "<i class=\"far fa-plus-square\"></i>";
+                    html += "</button>";
+                }
+                html +=   "<a href=\"" + obj.uri + "\">";
+                html +=     (obj.class === "Unit") ?
+                    "<i class=\"fa fa-university\"></i> " :
+                    "<i class=\"far fa-folder-open\"></i> ";
+                html +=     obj.title;
+                html +=   "</a>";
+                html += "</li>";
+            });
+            html += "</ul>";
+            container.append(html);
+            attachExpandButtonListeners();
         };
 
         const attachExpandButtonListeners = function() {
@@ -33,14 +58,26 @@ const IDEALS = {
                     button.addClass("expanded");
                     const id = button.parents("li").data("id");
                     setToggleState(button, true);
+                    // Query for sub-units and sub-collections.
                     $.ajax({
                         method: "GET",
-                        url: ROOT_URL + "/units/" + id + "/children",
+                        url: (button.data("class") === "Unit") ?
+                            ROOT_URL + "/units/" + id + "/children" :
+                            ROOT_URL + "/collections/" + id + "/children",
                         success: function (data, status, xhr) {
-                            button.siblings().last().after(data);
-                            attachExpandButtonListeners();
+                            insert(data, button.parent());
                         }
                     });
+                    if (button.data("class") === "Unit") {
+                        // Query for collections that are immediate children of units.
+                        $.ajax({
+                            method: "GET",
+                            url: ROOT_URL + "/units/" + id + "/collections",
+                            success: function (data, status, xhr) {
+                                insert(data, button.parent());
+                            }
+                        });
+                    }
                 }
             });
         };

@@ -1,20 +1,25 @@
 module UnitsHelper
 
   ##
-  # @param units [Enumerable<Object>]
+  # Renders a list of units. Works in conjunction with the
+  # `IDEALS.ExpandableResourceList` JavaScript function.
+  #
+  # @param units [Enumerable<Unit>]
   # @return [String] HTML list.
   #
-  def unit_list(units)
+  def expandable_unit_list(units)
     html = StringIO.new
     html << "<ul>"
     units.each do |unit|
       html << "<li data-id=\"#{unit.id}\">"
-      if unit.units.count > 0
-        html <<   "<button class=\"btn btn-link expand\" type=\"button\">"
+      if unit.all_children.length > 0 || unit.all_collections.length > 0
+        html <<   "<button class=\"btn btn-link expand\" type=\"button\" data-class=\"#{unit.class}\">"
         html <<     "<i class=\"far fa-plus-square\"></i>"
         html <<   "</button>"
       end
-      html <<   link_to(unit.title, unit)
+      html <<   link_to(unit) do
+        raw("#{icon_for(unit)} #{unit.title}")
+      end
       # sub-units inserted here via JS
       html << "</li>"
     end
