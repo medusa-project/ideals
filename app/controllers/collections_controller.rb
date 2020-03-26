@@ -22,6 +22,7 @@ class CollectionsController < ApplicationController
   def children
     @collections = Collection.search.
         filter(Collection::IndexFields::PARENT, @resource.id).
+        filter(Collection::IndexFields::UNIT_DEFAULT, false).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999)
     render partial: "children"

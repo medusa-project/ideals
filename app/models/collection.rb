@@ -72,6 +72,7 @@ class Collection < ApplicationRecord
     PARENT        = "i_parent_id"
     PRIMARY_UNIT  = "i_primary_unit_id"
     SUBMITTERS    = "i_submitter_id"
+    UNIT_DEFAULT  = "b_unit_default"
     UNIT_TITLES   = "s_unit_titles"
     UNITS         = "i_units"
   end
@@ -181,6 +182,7 @@ class Collection < ApplicationRecord
     doc[IndexFields::PARENT]        = self.parent_id
     doc[IndexFields::PRIMARY_UNIT]  = self.primary_unit_id
     doc[IndexFields::SUBMITTERS]    = self.effective_submitters.map(&:id)
+    doc[IndexFields::UNIT_DEFAULT]  = self.unit_default
     doc[IndexFields::UNIT_TITLES]   = self.all_units.map(&:title)
     doc[IndexFields::UNITS]         = self.unit_ids
 

@@ -27,8 +27,11 @@ class UnitsController < ApplicationController
   end
 
   ##
-  # Renders a JSON list of all of a unit's child collections. Has the same
-  # permissions as {show}.
+  # Renders a JSON list of all of a unit's child collections, except the
+  # default. This is used via XHR to build the expandable unit list at
+  # `/units`.
+  #
+  # The permissions are the same as those of {show}.
   #
   # Responds to `GET /units/:unit_id/collections` (XHR only)
   #
@@ -36,6 +39,7 @@ class UnitsController < ApplicationController
     raise ActionController::BadRequest if params[:unit_id].blank?
     @collections = Collection.search.
         filter(Collection::IndexFields::PRIMARY_UNIT, @resource.id).
+        filter(Collection::IndexFields::UNIT_DEFAULT, false).
         include_children(false).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999)
