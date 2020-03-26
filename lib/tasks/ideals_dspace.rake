@@ -127,13 +127,13 @@ namespace :ideals_dspace do
     dbname = args[:source_db_name]
     dbhost = args[:source_db_host]
     dbuser = args[:source_db_user]
+    Rake::Task["ideals_dspace:metadata:migrate_registry"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:users:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:communities:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:collections:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:items:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:bitstreams:migrate"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:handles:migrate"].invoke(dbname, dbhost, dbuser)
-    Rake::Task["ideals_dspace:metadata:migrate_registry"].invoke(dbname, dbhost, dbuser)
     Rake::Task["ideals_dspace:metadata:migrate_collection_values"].invoke(dbname, dbhost, dbuser)
     puts "WARNING: This is the last step, but it takes a long time. "\
         "You can ctrl+c at any time if you don't need full item metadata."

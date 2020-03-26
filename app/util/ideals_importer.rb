@@ -135,7 +135,11 @@ class IdealsImporter
       next if row_num == 0 # skip header row
       row_arr = line.split("|").map(&:strip)
       progress.report(row_num, "Importing collections")
-      Collection.create!(id: row_arr[0].to_i)
+      begin
+        Collection.create!(id: row_arr[0].to_i)
+      rescue ActiveRecord::RecordNotUnique
+        # nothing we can do
+      end
     end
     update_pkey_sequence("collections")
   ensure
