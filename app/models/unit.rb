@@ -36,7 +36,7 @@ class Unit < ApplicationRecord
   validates :title, presence: true
   validate :validate_parent, :validate_primary_administrator
 
-  after_create :create_default_collection
+  after_create :create_default_collection, unless: -> { IdealsImporter.instance.running? }
   before_destroy :validate_empty
 
   breadcrumbs parent: :parent, label: :title
@@ -125,6 +125,34 @@ class Unit < ApplicationRecord
   end
 
   ##
+  # Creates a new {Collection} and assigns the instance as its primary unit.
+  #
+  # N.B.: This method doesn't work properly during an
+  # {IdealsImporter#running? import}. This is because units are imported before
+  # collections and imported IDs are fixed, so any collection IDs created here
+  # would get overwritten in the subsequent collection-import step. The
+  # importer instead has to invoke this method on all units **after** all
+  # collections have been imported.
+  #
+  def create_default_collection
+    config = ::Configuration.instance
+    transaction do
+      col = Collection.create!(primary_unit_id: self.id, unit_default: true)
+
+      # Add title
+      reg_title_element = RegisteredElement.find_by_name(config.elements[:title])
+      col.elements.build(registered_element: reg_title_element,
+                         string: "Default collection for #{self.title}")
+      # Add description
+      reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
+      col.elements.build(registered_element: reg_description_element,
+                         string: "This collection was created automatically "\
+                           "along with its parent unit.")
+      col.save!
+    end
+  end
+
+  ##
   # @return [Collection]
   #
   def default_collection
@@ -162,27 +190,6 @@ class Unit < ApplicationRecord
   end
 
   private
-
-  ##
-  # Creates a new {Collection} and assigns the instance as its primary unit.
-  #
-  def create_default_collection
-    config = ::Configuration.instance
-    transaction do
-      col = Collection.create!(primary_unit_id: self.id, unit_default: true)
-
-      # Add title
-      reg_title_element = RegisteredElement.find_by_name(config.elements[:title])
-      col.elements.build(registered_element: reg_title_element,
-                         string: "Default collection for #{self.title}")
-      # Add description
-      reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
-      col.elements.build(registered_element: reg_description_element,
-                         string: "This collection was created automatically "\
-                           "along with its parent unit.")
-      col.save!
-    end
-  end
 
   ##
   # Ensures that the unit cannot be destroyed unless it is empty.

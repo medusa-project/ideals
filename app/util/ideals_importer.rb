@@ -134,14 +134,22 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
       row_arr = line.split("|").map(&:strip)
-      progress.report(row_num, "Importing collections")
+      progress.report(row_num, "Importing collections (1/2)")
       begin
         Collection.create!(id: row_arr[0].to_i)
       rescue ActiveRecord::RecordNotUnique
         # nothing we can do
       end
     end
+
     update_pkey_sequence("collections")
+
+    LOGGER.debug("import_collections(): creating unit default collections")
+    progress = Progress.new(Unit.count)
+    Unit.all.each_with_index do |unit, index|
+      unit.create_default_collection
+      progress.report(index, "Creating unit default collections (2/2)")
+    end
   ensure
     @running = false
   end
