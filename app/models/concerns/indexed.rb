@@ -101,6 +101,7 @@ module Indexed
       progress           = Progress.new(num_records)
       record_index       = 0
       num_thread_records = (num_records / num_threads.to_f).ceil
+      return if num_thread_records < 1
 
       num_threads.times do |thread_num|
         threads << Thread.new do
