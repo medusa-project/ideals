@@ -142,13 +142,12 @@ class Unit < ApplicationRecord
       # Add title
       reg_title_element = RegisteredElement.find_by_name(config.elements[:title])
       col.elements.build(registered_element: reg_title_element,
-                         string: "Default collection for #{self.title}")
+                         string: "Default collection for #{self.title}").save!
       # Add description
       reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
       col.elements.build(registered_element: reg_description_element,
                          string: "This collection was created automatically "\
-                           "along with its parent unit.")
-      col.save!
+                           "along with its parent unit.").save!
     end
   end
 
