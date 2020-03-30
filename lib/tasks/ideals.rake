@@ -51,6 +51,7 @@ namespace :ideals do
       username = args[:username]
       ActiveRecord::Base.transaction do
         user = IdentityUser.no_omniauth("#{username}@example.edu")
+        user.update!(sysadmin: true)
         Identity.create_for_user(user, args[:password])
       end
     end
