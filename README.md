@@ -122,6 +122,12 @@ rails elasticsearch:reindex[2] # thread count
 $ rails server
 ```
 
+Development login credentials:
+
+* Email: `{username}@example.edu` (`username` is the one supplied to
+  `ideals:users:create_identity_sysadmin` earlier)
+* Password: the one supplied to `ideals:users:create_identity_sysadmin` earlier
+
 # Branches & Environments
 
 | Rails Environment | Git Branch                 | Machine                | Configuration File                       |
