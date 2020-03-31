@@ -7,6 +7,9 @@
       %i.fas.fa-pencil-alt
       Change Unit Membership
 
+- if !@resource.parent && @subunits.empty?
+  .clearfix
+
 - if @resource.parent
   %h2 Parent Unit
   = resource_list([@resource.parent])
