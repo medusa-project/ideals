@@ -119,6 +119,15 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "index() respects role limits" do
+    log_in_as(users(:admin))
+    get user_groups_path
+    assert_response :ok
+
+    get user_groups_path(role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # show()
 
   test "show() redirects to login page for logged-out users" do
@@ -136,6 +145,15 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     get user_group_path(user_groups(:one))
     assert_response :ok
+  end
+
+  test "show() respects role limits" do
+    log_in_as(users(:admin))
+    get user_group_path(user_groups(:one))
+    assert_response :ok
+
+    get user_group_path(user_groups(:one), role: Role::LOGGED_OUT)
+    assert_response :forbidden
   end
 
   # update()

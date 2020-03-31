@@ -149,6 +149,15 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "index() respects role limits" do
+    log_in_as(users(:admin))
+    get metadata_profiles_path
+    assert_response :ok
+
+    get metadata_profiles_path(role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # show()
 
   test "show() redirects to login page for logged-out users" do
@@ -166,6 +175,16 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     get metadata_profile_path(metadata_profiles(:default))
     assert_response :ok
+  end
+
+  test "show() respects role limits" do
+    log_in_as(users(:admin))
+    get metadata_profile_path(metadata_profiles(:default))
+    assert_response :ok
+
+    get metadata_profile_path(metadata_profiles(:default),
+                              role: Role::LOGGED_OUT)
+    assert_response :forbidden
   end
 
   # update()

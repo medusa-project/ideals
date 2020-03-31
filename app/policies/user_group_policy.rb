@@ -1,22 +1,23 @@
 # frozen_string_literal: true
 
 class UserGroupPolicy < ApplicationPolicy
-  attr_reader :user, :user_group
+  attr_reader :user, :role, :user_group
 
   ##
-  # @param user [User]
+  # @param user_context [UserContext]
   # @param user_group [UserGroup]
   #
-  def initialize(user, user_group)
-    @user        = user
+  def initialize(user_context, user_group)
+    @user        = user_context&.user
+    @role        = user_context&.role_limit
     @user_group  = user_group
   end
 
   def create?
     if user # IR-67
-      return user.sysadmin? ||
-        user.administrators.count.positive? ||
-        user.managers.count.positive?
+      return true if (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?) ||
+          (role >= Role::UNIT_ADMINISTRATOR && user.administrators.count > 0) ||
+          (role >= Role::COLLECTION_MANAGER && user.managers.count > 0)
     end
     false
   end

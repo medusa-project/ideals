@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 class CollectionPolicy < ApplicationPolicy
-  attr_reader :user, :collection
+  attr_reader :user, :role, :collection
 
   ##
-  # @param user [User]
+  # @param user_context [UserContext]
   # @param collection [Collection]
   #
-  def initialize(user, collection)
-    @user       = user
+  def initialize(user_context, collection)
+    @user       = user_context&.user
+    @role       = user_context&.role_limit || Role::NO_LIMIT
     @collection = collection
   end
 
@@ -18,8 +19,12 @@ class CollectionPolicy < ApplicationPolicy
 
   def create?
     return false unless user
-    user.sysadmin? ||                       # user is a sysadmin
-        user.effective_manager?(collection) # user is a unit admin or collection manager
+    if role >= Role::SYSTEM_ADMINISTRATOR
+      return true if user.sysadmin? || user.effective_manager?(collection)
+    elsif role >= Role::COLLECTION_MANAGER
+      return true if user.effective_manager?(collection)
+    end
+    false
   end
 
   def destroy?
@@ -59,9 +64,17 @@ class CollectionPolicy < ApplicationPolicy
   #
   def submit_item?
     return false unless user
-    user.sysadmin? ||                          # user is sysadmin
-        user.effective_manager?(collection) || # user is collection manager or unit admin
-        user.effective_submitter?(collection)  # user is collection submitter
+    if role >= Role::SYSTEM_ADMINISTRATOR
+      return true if user.sysadmin? ||
+          user.effective_manager?(collection) ||
+          user.effective_submitter?(collection)
+    elsif role >= Role::COLLECTION_MANAGER
+      return true if user.effective_manager?(collection) ||
+          user.effective_submitter?(collection)
+    elsif role >= Role::COLLECTION_SUBMITTER
+      return true if user.effective_submitter?(collection)
+    end
+    false
   end
 
   def update?

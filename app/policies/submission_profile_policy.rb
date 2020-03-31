@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 class SubmissionProfilePolicy < ApplicationPolicy
-  attr_reader :user, :submission_profile
+  attr_reader :user, :role, :submission_profile
 
   ##
-  # @param user [User]
+  # @param user_context [UserContext]
   # @param submission_profile [SubmissionProfile]
   #
-  def initialize(user, submission_profile)
-    @user               = user
+  def initialize(user_context, submission_profile)
+    @user               = user_context&.user
+    @role               = user_context&.role_limit
     @submission_profile = submission_profile
   end
 
@@ -17,7 +18,10 @@ class SubmissionProfilePolicy < ApplicationPolicy
   end
 
   def create?
-    user&.sysadmin?
+    if user
+      return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
+    end
+    false
   end
 
   def destroy?
@@ -29,7 +33,7 @@ class SubmissionProfilePolicy < ApplicationPolicy
   end
 
   def index?
-    user&.sysadmin?
+    create?
   end
 
   def new?

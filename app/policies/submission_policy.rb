@@ -2,23 +2,24 @@
 
 class SubmissionPolicy < ApplicationPolicy
 
-  attr_reader :user, :item
+  attr_reader :user, :role, :item
 
   ##
-  # @param user [User]
+  # @param user_context [UserContext]
   # @param item [Item]
   #
-  def initialize(user, item)
-    @user = user
+  def initialize(user_context, item)
+    @user = user_context&.user
+    @role = user_context&.role_limit
     @item = item
   end
 
   def agreement?
-    !user.nil?
+    create?
   end
 
   def create?
-    !user.nil?
+    user && role >= Role::LOGGED_IN
   end
 
   def destroy?
@@ -33,16 +34,19 @@ class SubmissionPolicy < ApplicationPolicy
     # user must be logged in
     if user
       # sysadmins can do anything
-      return true if user.sysadmin?
+      return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
       # all users can update their own submissions
-      return true if user == item.submitter && item.submitting
+      return true if role >= Role::COLLECTION_SUBMITTER &&
+          user == item.submitter && item.submitting
 
       item.all_collections.each do |collection|
         # collection managers can update items within their collections
-        return true if user.effective_manager?(collection)
+        return true if role >= Role::COLLECTION_MANAGER &&
+            user.effective_manager?(collection)
         # unit admins can update items within their units
         collection.all_units.each do |unit|
-          return true if user.effective_unit_admin?(unit)
+          return true if role >= Role::UNIT_ADMINISTRATOR &&
+              user.effective_unit_admin?(unit)
         end
       end
     end

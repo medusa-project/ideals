@@ -247,6 +247,15 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "show() respects role limits" do
+    log_in_as(users(:admin))
+    get unit_path(units(:unit1))
+    assert_select("#access-tab")
+
+    get unit_path(units(:unit1), role: Role::LOGGED_OUT)
+    assert_select("#access-tab", false)
+  end
+
   # update()
 
   test "update() redirects to login page for logged-out users" do

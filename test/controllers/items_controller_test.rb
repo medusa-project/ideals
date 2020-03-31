@@ -184,6 +184,15 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test "show() respects role limits" do
+    log_in_as(users(:admin))
+    get item_path(items(:item1))
+    assert_select("#access-tab")
+
+    get item_path(items(:item1), role: Role::LOGGED_OUT)
+    assert_select("#access-tab", false)
+  end
+
   # update()
 
   # TODO: write update() tests

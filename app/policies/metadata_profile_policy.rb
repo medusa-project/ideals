@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 class MetadataProfilePolicy < ApplicationPolicy
-  attr_reader :user, :metadata_profile
+  attr_reader :user, :role, :metadata_profile
 
   ##
-  # @param user [User]
+  # @param user_context [UserContext]
   # @param metadata_profile [MetadataProfile]
   #
-  def initialize(user, metadata_profile)
-    @user             = user
+  def initialize(user_context, metadata_profile)
+    @user             = user_context&.user
+    @role             = user_context&.role_limit
     @metadata_profile = metadata_profile
   end
 
@@ -17,7 +18,10 @@ class MetadataProfilePolicy < ApplicationPolicy
   end
 
   def create?
-    user&.sysadmin?
+    if user
+      return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
+    end
+    false
   end
 
   def destroy?
@@ -29,7 +33,7 @@ class MetadataProfilePolicy < ApplicationPolicy
   end
 
   def index?
-    user&.sysadmin?
+    create?
   end
 
   def new?

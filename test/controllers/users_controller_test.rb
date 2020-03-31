@@ -29,6 +29,15 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "edit() respects role limits" do
+    log_in_as(users(:admin))
+    get edit_user_path(users(:admin))
+    assert_response :ok
+
+    get edit_user_path(users(:admin), role: Role::LOGGED_IN)
+    assert_response :forbidden
+  end
+
   # index()
 
   test "index() redirects to login page for logged-out users" do
@@ -54,6 +63,15 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "index() respects role limits" do
+    log_in_as(users(:admin))
+    get users_path
+    assert_response :ok
+
+    get users_path(role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # show()
 
   test "show() redirects to login page for logged-out users" do
@@ -71,6 +89,15 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     get user_path(users(:admin))
     assert_response :ok
+  end
+
+  test "show() respects role limits" do
+    log_in_as(users(:admin))
+    get user_path(users(:admin))
+    assert_response :ok
+
+    get user_path(users(:admin), role: Role::LOGGED_OUT)
+    assert_response :forbidden
   end
 
   # update()

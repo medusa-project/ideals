@@ -15,13 +15,22 @@ class SubmissionProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "clone?() does not authorize non-sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:norights), @profile)
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert !policy.clone?
   end
 
   test "clone?() authorizes sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:admin), @profile)
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert policy.clone?
+  end
+
+  test "clone?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
+    assert !policy.clone?
   end
 
   # create?()
@@ -32,13 +41,22 @@ class SubmissionProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() does not authorize non-sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:norights), @profile)
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy = SubmissionProfilePolicy.new(context, @profile)
     assert !policy.create?
   end
 
   test "create?() authorizes sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:admin), @profile)
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert policy.create?
+  end
+
+  test "create?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
+    assert !policy.create?
   end
 
   # destroy?()
@@ -49,13 +67,22 @@ class SubmissionProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() does not authorize non-sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:norights), @profile)
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy = SubmissionProfilePolicy.new(context, @profile)
     assert !policy.destroy?
   end
 
   test "destroy?() authorizes sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:admin), @profile)
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert policy.destroy?
+  end
+
+  test "destroy?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
+    assert !policy.destroy?
   end
 
   # edit?()
@@ -66,13 +93,22 @@ class SubmissionProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() does not authorize non-sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:norights), @profile)
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert !policy.edit?
   end
 
   test "edit?() authorizes sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:admin), @profile)
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert policy.edit?
+  end
+
+  test "edit?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
+    assert !policy.edit?
   end
 
   # index?()
@@ -83,13 +119,22 @@ class SubmissionProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() does not authorize non-sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:norights), SubmissionProfile)
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy = SubmissionProfilePolicy.new(context, SubmissionProfile)
     assert !policy.index?
   end
 
   test "index?() authorizes sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:admin), SubmissionProfile)
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, SubmissionProfile)
     assert policy.index?
+  end
+
+  test "index?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
+    assert !policy.index?
   end
 
   # new()
@@ -100,13 +145,22 @@ class SubmissionProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() does not authorize non-sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:norights), @profile)
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert !policy.new?
   end
 
   test "new?() authorizes sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:admin), @profile)
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert policy.new?
+  end
+
+  test "new?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
+    assert !policy.new?
   end
 
   # show?()
@@ -117,13 +171,22 @@ class SubmissionProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() does not authorize non-sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:norights), @profile)
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert !policy.show?
   end
 
   test "show?() authorizes sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:admin), @profile)
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert policy.show?
+  end
+
+  test "show?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
+    assert !policy.show?
   end
 
   # update?()
@@ -134,13 +197,22 @@ class SubmissionProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() does not authorize non-sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:norights), @profile)
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert !policy.update?
   end
 
   test "update?() authorizes sysadmins" do
-    policy = SubmissionProfilePolicy.new(users(:admin), @profile)
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
     assert policy.update?
+  end
+
+  test "update?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = SubmissionProfilePolicy.new(context, @profile)
+    assert !policy.update?
   end
 
 end

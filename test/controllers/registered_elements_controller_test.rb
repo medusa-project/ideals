@@ -125,6 +125,15 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "index() respects role limits" do
+    log_in_as(users(:admin))
+    get registered_elements_path
+    assert_response :ok
+
+    get registered_elements_path(role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # update()
 
   test "update() redirects to login page for logged-out users" do

@@ -269,6 +269,15 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "show() respects role limits" do
+    log_in_as(users(:admin))
+    get collection_path(collections(:collection1))
+    assert_select("#access-tab")
+
+    get collection_path(collections(:collection1), role: Role::LOGGED_OUT)
+    assert_select("#access-tab", false)
+  end
+
   # update()
 
   test "update() redirects to login page for logged-out users" do

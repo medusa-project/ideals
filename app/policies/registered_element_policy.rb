@@ -1,19 +1,23 @@
 # frozen_string_literal: true
 
 class RegisteredElementPolicy < ApplicationPolicy
-  attr_reader :user, :registered_element
+  attr_reader :user, :role, :registered_element
 
   ##
-  # @param user [User]
+  # @param user_context [UserContext]
   # @param registered_element [RegisteredElement]
   #
-  def initialize(user, registered_element)
-    @user               = user
+  def initialize(user_context, registered_element)
+    @user               = user_context&.user
+    @role               = user_context&.role_limit
     @registered_element = registered_element
   end
 
   def create?
-    user&.sysadmin?
+    if user
+      return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
+    end
+    false
   end
 
   def destroy?
@@ -25,7 +29,7 @@ class RegisteredElementPolicy < ApplicationPolicy
   end
 
   def index?
-    user&.sysadmin?
+    create?
   end
 
   def new?

@@ -14,6 +14,18 @@ class ApplicationController < ActionController::Base
 
   after_action :store_location, :copy_flash_to_response_headers
 
+  def current_user
+    if session[:user_id]
+      @current_user = User.find(session[:user_id])
+    end
+  rescue ActiveRecord::RecordNotFound
+    session[:user_id] = nil
+  end
+
+  def logged_in?
+    current_user.present?
+  end
+
   def store_location
     return nil unless request.get?
     if !["/auth/failure", login_path, logout_path, netid_login_path].include?(request.path) &&
@@ -67,6 +79,26 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  ##
+  # Overrides the "user" object supplied to Pundit policy methods. See
+  # {UserContext} for more information.
+  #
+  def pundit_user
+    # Read the role from the URL query and write it to the session so that it
+    # will persist across pages without having to add it into links.
+    # If a role was not provided in the query, read it from the session.
+    role_limit = params[:role]
+    if role_limit.present?
+      role_limit           = role_limit.to_i
+      session[:role_limit] = role_limit
+    else
+      role_limit           = session[:role_limit]
+      role_limit         ||= Role::NO_LIMIT
+      session[:role_limit] = role_limit
+    end
+    UserContext.new(current_user, role_limit)
+  end
+
   def unauthorized
     respond_to do |format|
       format.html { render "errors/error403", status: :forbidden }
@@ -111,18 +143,6 @@ class ApplicationController < ActionController::Base
         response.headers['X-Ideals-Message']      = flash['success']
       end
     end
-  end
-
-  def current_user
-    if session[:user_id]
-      @current_user = User.find(session[:user_id])
-    end
-  rescue ActiveRecord::RecordNotFound
-    session[:user_id] = nil
-  end
-
-  def logged_in?
-    current_user.present?
   end
 
 end
