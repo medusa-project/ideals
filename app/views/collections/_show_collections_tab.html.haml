@@ -6,6 +6,12 @@
                                                      role: "button"}
       %i.fas.fa-pencil-alt
       Change Collection Membership
+    %button.btn.btn-light.add-sub-collection{"data-collection-id": @resource.id,
+                                             "data-target": "#add-collection-modal",
+                                             "data-toggle": "modal",
+                                             role: "button"}
+      %i.fa.fa-plus
+      Add Child Collection
 
 .clearfix
 

@@ -73,6 +73,10 @@
                                            "aria-labelledby": "access-tab"}
       = render partial: "show_access_tab"
 
+= render partial: "collections/add_modal",
+         locals: { primary_unit: @resource.primary_unit,
+                   parent: @resource,
+                   title: "Add Child Collection" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-collection-properties-modal",
                    title: "Edit Properties" }

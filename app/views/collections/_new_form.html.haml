@@ -1,14 +1,19 @@
 -# frozen_string_literal: true
-//
-// Required arguments:
-//
-// primary_unit [Unit]
-//
+-#
+-# Required arguments:
+-#
+-# primary_unit [Unit]
+-# parent [Collection] Optional.
+
+- parent = nil unless defined?(:parent)
+
 = form_for(Collection.new, remote: true) do |f|
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
   = f.hidden_field :primary_unit_id, value: primary_unit.id
+  - if parent
+    = f.hidden_field :parent_id, value: parent.id
 
   .form-group
     = label_tag "elements_#{::Configuration.instance.elements[:title]}", "Title"

@@ -1,11 +1,25 @@
-/ Add-collection modal
-#add-collection-modal.modal.fade{"aria-labelledby": "add-collection-modal-label", role: "dialog", tabindex: "-1"}
+-# frozen_string_literal: true
+-#
+-# Add-collection modal
+-#
+-# Requires the following locals:
+-#
+-# primary_unit [Unit]
+-# parent [Collection] Optional.
+-# title [String] Optional.
+
+- title = "Add Collection" unless defined?(:title)
+- parent = nil unless defined?(:parent)
+
+#add-collection-modal.modal.fade{"aria-labelledby": "add-collection-modal-label",
+                                 role: "dialog", tabindex: "-1"}
   .modal-dialog{role: "document"}
     .modal-content
       .modal-header
-        %h4#add-collection-modal-label.modal-title Add Collection
+        %h4#add-collection-modal-label.modal-title= title
         %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
           %span{"aria-hidden": "true"} &times;
       .modal-body
         = render partial: 'collections/new_form',
-                 locals: { primary_unit: primary_unit }
+                 locals: { primary_unit: primary_unit,
+                           parent: parent }
