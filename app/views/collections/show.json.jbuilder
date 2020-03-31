@@ -17,6 +17,20 @@ json.units do
   end
 end
 
+if @resource.parent
+  json.parent do
+    json.id @resource.parent.id
+    json.uri collection_url(@resource.parent)
+  end
+end
+
+if @resource.collections.any?
+  json.children @resource.collections do |child|
+    json.id child.id
+    json.uri collection_url(child)
+  end
+end
+
 json.elements do
   @resource.effective_metadata_profile.elements.each do |profile_element|
     matching_elements = @resource.elements.select{ |e| e.name == profile_element.name }
