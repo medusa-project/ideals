@@ -7,101 +7,46 @@ ruby "2.6.3"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem "rails", "~> 6.0.2.1"
-# Use postgresql as the database for Active Record
-gem "pg"
+
+#gem 'aws-sdk-s3', '~> 1'
+# Use ActiveModel has_secure_password for local identity users
+gem "bcrypt", "~> 3.1.7"
+# Use bootstrap for layout framework
+gem 'bootstrap', '~> 4.4' # TODO: does scars-bootstrap-theme provide this?
+# Use Boxr to interact with Box API
+# gem "boxr"
+# Provides all of our icons.
+gem "font-awesome-sass", "~> 5.6"
+# All HTML templates are written in HAML
+gem "haml"
+gem "haml-rails"
+# Application HTTP client
+gem "httpclient"
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem "jbuilder", "~> 2.5"
-# Use Redis adapter to run Action Cable in production
-# gem 'redis', '~> 4.0'
-# Use ActiveModel has_secure_password
-gem "bcrypt", "~> 3.1.7"
-
-# Use pundit for authorization
-gem "pundit"
-
-# Use SCSS for stylesheets
-gem "sassc"
-
-# JavaScript runtime
-gem 'mini_racer', platforms: :ruby
-
-# Use Uglifier as compressor for JavaScript assets
-gem "uglifier", ">= 2.7.2"
-
 # Use jquery as the JavaScript library
 gem "jquery-rails"
 gem "jquery-ui-rails"
 gem "js_cookie_rails"
-
-# Use in-house storage gem to manage flexible storage on filesystems and s3 buckets
-gem "medusa_storage", git: "https://github.com/medusa-project/medusa_storage.git", branch: "master"
-
-# Use aws-sdk to manage signed urls for downloads
-gem "aws-sdk"
-
-# Use browser to detect request browser
-gem "browser", "~> 1.1"
-
-# Use tus-server to support chunked uploads of large files
-gem "tus-server"
-
-# Use reCAPTCHA API to reduce spam in contact form
-gem "recaptcha"
-
-# Use filemagic to detect file types
-gem "ruby-filemagic", "~> 0.7.2"
-
-# Use rubyzip to stream dynamically generated zip files
-gem "rubyzip"
-gem "zipline"
-
-# Use seven_zip_ruby to handle 7zip archives
-gem "seven_zip_ruby", "~> 1.2", ">= 1.2.5"
-
-# Use minitar to deal with POSIX tar archive files
-gem "minitar", "~> 0.6.1"
-
-# Use rchardet to attempt to detect character encoding
-gem "rchardet"
-
-# Use bootstrap for layout framework
-gem "autoprefixer-rails"
-gem 'bootstrap', '~> 4.4'
-gem "font-awesome-sass", "~> 5.6.1"
-gem 'scars-bootstrap-theme', github: 'medusa-project/scars-bootstrap-theme'
-
 # For pretty absolute and relative dates
 gem "local_time"
-
-gem "haml"
-gem "haml-rails"
-
-gem "uuid"
-
-gem "open_uri_redirections"
-
-gem "simple_form"
-
-gem "mime-types", require: "mime/types/full"
-
-# Use 'rest-client' to interaction with file processor api
-gem "rest-client"
-
-gem "equivalent-xml"
-gem "nokogiri"
-gem "nokogiri-diff"
-
-# Use email validator for model
-gem "valid_email"
-
-# Use identity strategy to create local accounts for testing
+# JavaScript runtime
+gem 'mini_racer', platforms: :ruby
+# Enables local identity logins.
 gem "omniauth-identity"
+# Enables Shibboleth logins.
 gem "omniauth-shibboleth"
-
 gem "omniauth-rails_csrf_protection"
-
-# Use Boxr to interact with Box API
-gem "boxr"
+# Use postgresql as the database for Active Record
+gem "pg"
+# Use pundit for authorization
+gem "pundit"
+# Use SCSS for stylesheets
+gem "sassc"
+# Provides the website theme.
+gem 'scars-bootstrap-theme', github: 'medusa-project/scars-bootstrap-theme'
+# Use Uglifier as compressor for JavaScript assets
+gem "uglifier", ">= 2.7.2"
 
 # Use delayed_job during upload and ingest from box to avoid timeout failures
 gem "daemons"
@@ -132,20 +77,6 @@ group :development do
   gem "rubocop-performance"
   gem "rubocop-rails"
   gem 'yard'
-end
-
-group :test do
-  # Adds support for Capybara system testing and selenium driver
-  gem "capybara", ">= 2.15"
-  gem "selenium-webdriver"
-  # Easy installation and use of chromedriver to run system tests with Chrome
-  gem "chromedriver-helper"
-  # Use DatabaseCleaner to clean the database (because transactional fixtures do not work with Selenium)
-  gem "database_cleaner"
-  # Use mocha to support stubs for testing
-  gem "mocha", "~> 1.1"
-  # Use Cucumber for behavior testing
-  gem "cucumber-rails", require: false
 end
 
 group :production do
