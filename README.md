@@ -16,6 +16,7 @@ This is a getting-started guide for developers.
 * Elasticsearch >= 7.x with the
   [ICU analysis plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html)
   installed
+* An S3 endpoint, such as AWS S3 or [Minio](https://min.io)
 
 # Installation
 

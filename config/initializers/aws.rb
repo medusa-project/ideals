@@ -3,14 +3,18 @@
 require 'configuration'
 
 config = ::Configuration.instance
+opts   = {}
 
-opts = { region: config.aws[:region] }
-
-# The access key ID and secret access key are only stored in the configuration
-# in development and test. Demo & production use EC2 IAM credentials.
 if Rails.env.development? || Rails.env.test?
-  opts[:credentials] = Aws::Credentials.new(config.aws[:access_key_id],
-                                            config.aws[:secret_access_key])
+  # In development and test, we connect to a custom endpoint, and credentials
+  # are drawn from the application configuration.
+  opts[:endpoint]         = config.aws[:endpoint]
+  opts[:force_path_style] = true
+  opts[:credentials]      = Aws::Credentials.new(config.aws[:access_key_id],
+                                                 config.aws[:secret_access_key])
+else
+  # Demo & production use EC2 IAM credentials.
+  opts[:region] = config.aws[:region]
 end
 
 Aws.config.update(opts)
