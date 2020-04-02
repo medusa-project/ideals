@@ -1,6 +1,7 @@
 -# frozen_string_literal: true
 
-= form_for(@resource, url: submission_path(@resource), remote: true, html: { id: "deposit-metadata-form" }) do |f|
+= form_for(@resource, url: submission_path(@resource), remote: true,
+           html: { id: "deposit-metadata-form" }) do |f|
   = token_tag(nil)
 
   .error-messages
@@ -9,8 +10,7 @@
   / Include this only because `item` is required in the params.
   = f.hidden_field :primary_collection_id, value: f.object.primary_collection_id
 
-  .alert.alert-light
-    Enter descriptive information about the item.
+  %p Enter descriptive information about the item.
 
   %table.table.metadata
     %tbody
