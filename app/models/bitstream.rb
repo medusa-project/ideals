@@ -11,7 +11,7 @@ class Bitstream < ApplicationRecord
 
   before_destroy :delete_object
 
-  STAGING_KEY_PREFIX = "submissions/staging"
+  STAGING_KEY_PREFIX = "submissions"
 
   ##
   # @param item [Item]
