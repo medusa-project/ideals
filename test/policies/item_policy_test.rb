@@ -479,6 +479,32 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.show_all_metadata?
   end
 
+  # show_sysadmin_content?()
+
+  test "show_sysadmin_content?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.show_sysadmin_content?
+  end
+
+  test "show_sysadmin_content?() does not authorize non-sysadmins" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_sysadmin_content?
+  end
+
+  test "show_sysadmin_content?() authorizes sysadmins" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy = ItemPolicy.new(context, @item)
+    assert policy.show_sysadmin_content?
+  end
+
+  test "show_sysadmin_content?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_sysadmin_content?
+  end
+
   # update?()
 
   test "update?() returns false with a nil user" do

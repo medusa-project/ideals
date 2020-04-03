@@ -114,6 +114,14 @@ class ItemPolicy < ApplicationPolicy
     show_access?
   end
 
+  ##
+  # N.B.: this is used only in views and doesn't correspond to a controller
+  # method.
+  #
+  def show_sysadmin_content?
+    role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?
+  end
+
   def update?
     # user must be logged in
     if user

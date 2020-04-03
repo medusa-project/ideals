@@ -6,11 +6,11 @@
       .media-body
         %h5.mt-0.mb-1= bs.original_filename
         %span
-          = bs.media_type
-          &bull;
-          = number_with_delimiter(bs.length)
-          bytes
-        - if current_user&.sysadmin?
+          - if bs.media_type.present?
+            = bs.media_type
+            &bull;
+          = number_to_human_size(bs.length)
+        - if policy(@resource).show_sysadmin_content?
           %br
           %span
             = bs.key

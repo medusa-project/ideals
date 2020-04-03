@@ -10,6 +10,7 @@ body#list_items, body#list_collections {
 body#show_item {
   li.media {
     i {
+      color: $gray-600;
       font-size: 5em;
     }
   }

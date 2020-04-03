@@ -86,7 +86,7 @@ class ItemsController < ApplicationController
     if @resource.primary_collection
       @collections = @collections.unshift(@resource.primary_collection)
     end
-    @bitstreams = @resource.bitstreams
+    @bitstreams = @resource.bitstreams.order(:original_filename)
   end
 
   ##
