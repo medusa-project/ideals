@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   end
   resources :invitees
   resources :items, except: :new do
+    resources :bitstreams, only: [:create, :destroy]
     match "/edit-membership", to: "items#edit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-metadata", to: "items#edit_metadata", via: :get,
