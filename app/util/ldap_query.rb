@@ -15,10 +15,11 @@ class LdapQuery
     if hash.has_key?(group)
       hash[group]
     else
-      uri      = URI.parse(ldap_url(group, net_id))
-      http     = Net::HTTP.new(uri.host, uri.port)
-      request  = Net::HTTP::Get.new(uri.request_uri)
-      response = http.request(request)
+      uri          = URI.parse(ldap_url(group, net_id))
+      http         = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = (uri.scheme == "https")
+      request      = Net::HTTP::Get.new(uri.request_uri)
+      response     = http.request(request)
       if response.code.to_i < 300
         (response.body == "TRUE").tap do |is_member|
           hash[group] = is_member
@@ -34,7 +35,7 @@ class LdapQuery
   end
 
   def ldap_url(group, net_id)
-    "http://quest.grainger.uiuc.edu/directory/ad/#{net_id}/ismemberof/#{URI.encode(group)}"
+    "https://quest.library.illinois.edu/directory/ad/#{net_id}/ismemberof/#{URI.encode(group)}"
   end
 
   def self.ldap_cache_key(net_id)
