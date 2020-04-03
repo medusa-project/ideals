@@ -47,19 +47,19 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   # destroy()
 
   test "destroy() redirects to login page for logged-out users" do
-    delete submission_path(items(:item1))
+    delete submission_path(items(:submitting))
     assert_redirected_to login_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete submission_path(items(:item1))
+    delete submission_path(items(:submitting))
     assert_response :forbidden
   end
 
   test "destroy() destroys the item" do
     log_in_as(users(:admin))
-    item = items(:item1)
+    item = items(:submitting)
     assert_difference "Item.count", -1 do
       delete submission_path(item)
     end
@@ -67,7 +67,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() returns HTTP 302 for an existing item" do
     log_in_as(users(:admin))
-    submission = items(:item1)
+    submission = items(:submitting)
     delete submission_path(submission)
     assert_redirected_to root_path
   end
@@ -78,32 +78,46 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "destroy() redirects back when an item has already been submitted" do
+    log_in_as(users(:admin))
+    item = items(:item1)
+    delete submission_path(item)
+    assert_redirected_to root_url
+  end
+
   # edit()
 
   test "edit() redirects to login page for logged-out users" do
-    item = items(:item1)
+    item = items(:submitting)
     get edit_submission_path(item)
     assert_redirected_to login_path
   end
 
   test "edit() returns HTTP 200 for logged-in users" do
-    item = items(:item1)
+    item = items(:submitting)
     log_in_as(item.submitter)
     get edit_submission_path(item)
     assert_response :ok
   end
 
+  test "edit() redirects back when an item has already been submitted" do
+    item = items(:item1)
+    log_in_as(item.submitter)
+    get edit_submission_path(item)
+    assert_redirected_to root_path
+  end
+
   # update()
 
   test "update() redirects to login page for logged-out users" do
-    item = items(:item1)
+    item = items(:submitting)
     patch submission_path(item), {}
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item = items(:item1)
+    item = items(:submitting)
     patch submission_path(item), {}
     assert_response :forbidden
   end
@@ -111,7 +125,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   test "update() updates an item" do
     log_in_as(users(:admin))
     collection = collections(:empty)
-    item = items(:item1)
+    item = items(:submitting)
     patch submission_path(item), {
         xhr: true,
         params: {
@@ -126,7 +140,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 204" do
     log_in_as(users(:admin))
-    item = items(:item1)
+    item = items(:submitting)
     patch submission_path(item), {
         xhr: true,
         params: {
@@ -140,7 +154,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
-    item = items(:item1)
+    item = items(:submitting)
     patch submission_path(item), {
         xhr: true,
         params: {
@@ -156,6 +170,13 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     patch "/submissions/bogus", {}
     assert_response :not_found
+  end
+
+  test "update() redirects back when an item has already been submitted" do
+    log_in_as(users(:admin))
+    item = items(:item1)
+    patch submission_path(item), {}
+    assert_redirected_to root_url
   end
 
 end

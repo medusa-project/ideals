@@ -9,6 +9,7 @@ class SubmissionsController < ApplicationController
   before_action :ensure_logged_in
   before_action :set_item, only: [:destroy, :edit, :update]
   before_action :authorize_item, only: [:destroy, :update]
+  before_action :check_submitting, only: [:destroy, :edit, :update]
 
   ##
   # Displays the deposit agreement. At the end of the agreement is a submit
@@ -74,6 +75,8 @@ class SubmissionsController < ApplicationController
   def update
     begin
       ActiveRecord::Base.transaction do
+        # N.B.: this method does not handle file uploads; see
+        # BinariesController.create().
         @resource.update!(item_params)
         build_metadata
         @resource.save!
@@ -92,6 +95,17 @@ class SubmissionsController < ApplicationController
   def authorize_item
     @resource ? authorize(@resource, policy_class: SubmissionPolicy) :
         skip_authorization
+  end
+
+  ##
+  # Ensures that an {Item} is only operated on when it is {Item#submitting
+  # marked as being in the submission process}.
+  #
+  def check_submitting
+    unless @resource.submitting
+      flash['error'] = "This item has already been submitted."
+      redirect_back fallback_location: root_path
+    end
   end
 
   def item_params
