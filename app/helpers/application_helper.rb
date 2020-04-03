@@ -122,7 +122,31 @@ module ApplicationHelper
           end
         end
       else
-        icon = "far fa-file"
+        ext = File.extname(entity.original_filename).downcase.reverse.chomp(".").reverse
+        case ext
+        when "bmp", "gif", "jp2", "jpg", "jpeg", "png", "tif", "tiff", "wbmp", "xpm"
+          icon = "far fa-file-image"
+        when "aif", "aiff", "mid", "mp3", "ra", "ram", "wav"
+          icon = "far fa-file-audio"
+        when "avi", "flv", "mov", "mp4", "mpg", "qt", "ts", "wmv"
+          icon = "far fa-file-video"
+        when "pdf", "ps"
+          icon = "far fa-file-pdf"
+        when "doc", "docx"
+          icon = "far fa-file-word"
+        when "xls", "xlsx"
+          icon = "far fa-file-excel"
+        when "ppt", "pptx"
+          icon = "far fa-file-powerpoint"
+        when "7z", "bz2", "gz", "hqx", "rar", "tar", "tgz", "zip"
+          icon = "far fa-file-archive"
+        when "c", "cpp", "css", "h", "htm", "html", "js", "php", "pl", "py", "rb", "tex", "xml", "xsl"
+          icon = "far fa-file-code"
+        when "csv", "rtf", "tsv", "txt"
+          icon = "far fa-file-alt"
+        else
+          icon = "far fa-file"
+        end
       end
     when "Collection"
       icon = "far fa-folder-open"
