@@ -39,14 +39,19 @@ jobs:
         env:
           RAILS_ENV: test
           SECRET_KEY_BASE: whateverdoesntmatter
-        # Ideally we would run Elasticsearch in a service like we do PostgreSQL
-        # above, but we need to use a plugin that isn't included in ES's
-        # standard Dockerfile. So instead we have to build a custom image and
-        # run it in this step. We can't do it in an earlier step because
+        # N.B. 1: Ideally we would run Elasticsearch in a service like we do
+        # PostgreSQL above, but we need to use a plugin that isn't included in
+        # ES's standard Dockerfile. So instead we have to build a custom image
+        # and run it in this step. We can't do it in an earlier step because
         # processes don't live through steps.
+        #
+        # N.B. 2: Similar story with Minio; the official Dockerfile requires
+        # supplying some extra arguments but GitHub Actions services don't
+        # support this.
         run: |
           docker build -t ideals-elasticsearch -f .github/Dockerfile-elasticsearch .
           docker run -d -p 9200:9200 -e "discovery.type=single-node" ideals-elasticsearch
+          docker run -d -p 9000:9000 -e MINIO_ACCESS_KEY=my-access-key -e MINIO_SECRET_KEY=my-secret-key minio/minio:latest server /data
           sleep 30
           bin/rails "elasticsearch:indexes:create[ideals_test]"
           bin/rails test

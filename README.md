@@ -16,7 +16,7 @@ This is a getting-started guide for developers.
 * Elasticsearch >= 7.x with the
   [ICU analysis plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html)
   installed
-* An S3 endpoint, such as AWS S3 or [Minio](https://min.io)
+* An S3 endpoint, such as AWS S3 or [Minio Server](https://min.io)
 
 # Installation
 
@@ -159,10 +159,11 @@ invokes YARD to generate HTML documentation for the code base.
 # Tests & Continuous Integration
 
 Minitest is used for model and controller tests. Some tests depend on
-Elasticsearch and most depend on PostgreSQL. `rails test` runs the tests.
+Elasticsearch and most depend on PostgreSQL. A few depend on an S3 server.
+`rails test` runs the tests.
 
 There is also a continuous integration setup using
 [GitHub Actions](https://github.com/features/actions). The
 `.github/workflows/ci.yml` file defines the container fleet, including all
-required services such as Elasticsearch and PostgreSQL, which run in separate
+required services (Elasticsearch, PostgreSQL, and Minio), which run in separate
 containers.
