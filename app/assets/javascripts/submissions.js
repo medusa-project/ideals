@@ -18,42 +18,64 @@ const AgreementView = function() {
  *
  * @constructor
  */
-const DepositForm = function() {
-
-    const self = this;
-    const form = $("form.edit_item");
+const SubmissionForm = function() {
+    const self            = this;
+    const form            = $("form.edit_item");
+    // Properties section
+    const unitsMenu       = $("[name=unit_id]");
+    const collectionsMenu = $("[name='item[primary_collection_id]']");
+    // Metadata section
+    const metadataForm    = form.filter("#metadata-form");
+    // Files section
+    const filesForm       = form.filter("#files-form");
+    const filesTable      = filesForm.find("table.files");
 
     var lastEditedInput;
-    form.find("input, select, textarea").on("change", function() {
-        lastEditedInput = $(this);
-        self.validate(false);
-        self.save(lastEditedInput);
+
+    $("button.step-1-to-2").on("click", function() {
+        $("#metadata-tab").tab("show");
+    });
+    $("button.step-2-to-3").on("click", function() {
+        $("#files-tab").tab("show");
+    });
+    $("button.step-3-to-2").on("click", function() {
+        $("#metadata-tab").tab("show");
+    });
+    $("button.step-2-to-1").on("click", function() {
+        $("#properties-tab").tab("show");
     });
 
     form.on("submit", function(e) {
         e.preventDefault();
-        const tr             = lastEditedInput.parents("tr");
-        const successMessage = tr.find("td.message > div.text-success");
-        const errorMessage   = tr.find("td.message > div.text-danger");
-        if (lastEditedInput && lastEditedInput.is(":valid")) {
-            $.ajax({
-                type: form.attr("method"),
-                url:  form.attr("action"),
-                data: form.serialize(),
-                success: function() {
-                    successMessage.show();
-                    errorMessage.hide();
-                    setTimeout(function () {
-                        successMessage.fadeOut();
-                    }, 4000);
-                }
-            });
-        } else {
-            successMessage.hide();
-            errorMessage.show();
+        if (lastEditedInput) {
+            const tr             = lastEditedInput.parents("tr");
+            const successMessage = tr.find("td.message > div.text-success");
+            const errorMessage   = tr.find("td.message > div.text-danger");
+            if (lastEditedInput.is(":valid")) {
+                $.ajax({
+                    type: form.attr("method"),
+                    url: form.attr("action"),
+                    data: form.serialize(),
+                    success: function () {
+                        successMessage.show();
+                        errorMessage.hide();
+                        setTimeout(function () {
+                            successMessage.fadeOut();
+                        }, 4000);
+                    }
+                });
+            } else {
+                successMessage.hide();
+                errorMessage.show();
+            }
         }
     });
 
+    /**
+     * Should be called after every valid edit (except file uploads).
+     *
+     * @param lastEditedInput {jQuery}
+     */
     this.save = function(lastEditedInput) {
         const localForm = lastEditedInput.parents("form");
         $.ajax({
@@ -70,100 +92,131 @@ const DepositForm = function() {
         });
     };
 
-    this.validate = function(includeRequired) {
+    const setFilesError = function(message) {
+        const messages = filesForm.find("#files-messages");
+        messages.empty();
+        if (message != null) {
+            messages.html("<div class='alert alert-danger'>" + message + "</div>");
+        }
+    };
+
+    const setMetadataError = function(message) {
+        const messages = metadataForm.find("#metadata-messages");
+        messages.empty();
+        if (message != null) {
+            messages.html("<div class='alert alert-danger'>" + message + "</div>");
+        }
+    };
+
+    this.validateMetadata = function(includeRequired) {
+        // Check that all required elements are filled in.
         let isValid = true;
-        form.find("input[required], textarea[required]").each(function() {
+        metadataForm.find("input[required], textarea[required]").each(function() {
             if ($(this).val().length < 1) {
                 isValid = false;
             }
         });
-        const messages = form.find(".error-messages");
         if (isValid) {
-            messages.empty();
-            return true;
+            setMetadataError(null);
         } else if (includeRequired) {
-            messages.html("<div class=\"alert alert-danger\">" +
-                "Please ensure that all required elements are filled in.</div>");
+            setMetadataError("Please ensure that all required elements are filled in.");
             return false;
         }
+        return true;
     };
+
+    this.validateFiles = function() {
+        setFilesError(null);
+        // Check that at least one file has been uploaded.
+        if (filesTable.find("tr").length < 1) {
+            setFilesError("You must upload at least one file.");
+            return false;
+        }
+        return true;
+    };
+
+    /************************ Properties section ***************************/
 
     const fetchCollectionsForUnit = function(unitID, onComplete) {
         collectionsMenu.attr("disabled", true);
-        const ROOT_URL = $("input[name=root_url]").val();
-        $.ajax({
-            method: "GET",
-            url: ROOT_URL + "/units/" + unitID + "/collections?for-select=true",
-            success: function (data) {
-                collectionsMenu.children().remove();
-                if (data.length > 0) {
-                    $.each(data, function (index, value) {
-                        collectionsMenu.append(
-                            "<option value=\"" + value[1] + "\">" + value[0] + "</option>");
-                    });
-                    collectionsMenu.attr("disabled", false);
-                }
-                if (onComplete) {
-                    onComplete();
-                }
+        new IDEALS.Client().fetchUnitCollections(unitID, function(data) {
+            collectionsMenu.children().remove();
+            if (data.length > 0) {
+                $.each(data, function (index, value) {
+                    collectionsMenu.append(
+                        "<option value='" + value[1] + "'>" + value[0] + "</option>");
+                });
+                collectionsMenu.attr("disabled", false);
+            }
+            if (onComplete) {
+                onComplete();
             }
         });
     };
 
-    const selectUnit = function(unitID) {
-        unitsMenu.val(unitID);
-    };
-
-    const selectCollection = function(collectionID) {
-        collectionsMenu.val(collectionID);
-    };
-
-    const unitsMenu       = $("[name=unit_id]");
-    const collectionsMenu = $("[name='item[primary_collection_id]']");
-
-    unitsMenu.on("change", function(e) {
+    unitsMenu.on("change", function() {
         fetchCollectionsForUnit($(this).val(), function() {
+            // (No need to validate as this menu is always valid)
             self.save(collectionsMenu);
         });
+    });
+
+    collectionsMenu.on("change", function() {
+        // (No need to validate as this menu is always valid)
+        self.save(collectionsMenu);
     });
 
     // Restore initial unit & collection selection values.
     const unitID = $("[name='item[initial_primary_collection_unit_id]']").val();
     if (unitID > 0) {
         fetchCollectionsForUnit(unitID, function() {
-            selectUnit(unitID);
+            unitsMenu.val(unitID);
             const collectionID = $("[name='item[initial_primary_collection_id]']").val();
             if (collectionID > 0) {
-                selectCollection(collectionID);
+                collectionsMenu.val(collectionID);
             }
         });
     }
 
-    const completeForm = $("form#complete-form");
-    completeForm.find("input[type=submit]").on("click", function(e) {
-        if (!self.validate(true)) {
-            $("#metadata-tab").click();
+    /************************* Metadata section ****************************/
+
+    metadataForm.find("input, select, textarea").on("change", function() {
+        lastEditedInput = $(this);
+        self.validateMetadata(false);
+        self.save(lastEditedInput);
+    });
+
+    /**
+     * Shows all adjacent input groups' "remove" buttons if there are two or
+     * more of them, and hides them (it) if not.
+     */
+    const refreshRemoveButtons = function() {
+        metadataForm.find("button.remove").each(function() {
+            const button = $(this);
+            const parentInputGroup = button.parents(".input-group");
+            if (parentInputGroup.siblings(".input-group").length > 0) {
+                button.parent().show();
+            } else {
+                button.parent().hide();
+            }
+        });
+    };
+
+    const wireRemoveButtons = function() {
+        metadataForm.find("button.remove").off("click").on("click", function(e) {
+            const parentInputGroup = $(this).parents(".input-group");
+            if (parentInputGroup.siblings(".input-group").length > 0) {
+                parentInputGroup.remove();
+            }
+            refreshRemoveButtons();
             e.preventDefault();
-            return false;
-        }
-    });
-
-    completeForm.on("submit", function() {
-        $("#complete-modal").modal("show");
-    });
-};
-
-/**
- * Manages the deposit metadata form.
- *
- * @constructor
- */
-const DepositMetadataEditor = function() {
+        });
+    };
 
     refreshRemoveButtons();
     wireRemoveButtons();
 
-    $("button.add").on("click", function(e) {
+    metadataForm.find("button.add").on("click", function(e) {
         // Show the "remove" button of all adjacent input groups
         const inputGroups = $(this).parent().find(".input-group");
         inputGroups.find(".input-group-append").show();
@@ -177,32 +230,170 @@ const DepositMetadataEditor = function() {
         e.preventDefault();
     });
 
-    /**
-     * Shows all adjacent input groups' "remove" buttons if there are two
-     * or more of them, and hides them (it) if not.
-     */
-    function refreshRemoveButtons() {
-        $("button.remove").each(function() {
-            const button = $(this);
-            const parentInputGroup = button.parents(".input-group");
-            if (parentInputGroup.siblings(".input-group").length > 0) {
-                button.parent().show();
-            } else {
-                button.parent().hide();
-            }
-        });
-    }
+    /*************************** Files section *****************************/
 
-    function wireRemoveButtons() {
-        $("button.remove").off("click").on("click", function(e) {
-            const parentInputGroup = $(this).parents(".input-group");
-            if (parentInputGroup.siblings(".input-group").length > 0) {
-                parentInputGroup.remove();
+    /**
+     * Manages the files table.
+     *
+     * @constructor
+     */
+    const FileTable = function() {
+        /**
+         * Adds a file to the table. (It has probably not finished uploading
+         * yet.) If a file with the same name already exists in the table, the
+         * upload is cancelled and the error message is set.
+         *
+         * @param file {File}
+         */
+        this.addFile = function(file) {
+            if (getFilenames().has(file.name)) {
+                setFilesError("A file named " + file.name +
+                    " has already been uploaded. Please rename it and try again.");
+                return;
+            } else {
+                setFilesError(null);
             }
-            refreshRemoveButtons();
+            // N.B.: This structure must be kept in sync with the structure in
+            // the template.
+            filesTable.append("<tr data-filename='" + file.name + "'>" +
+                "    <td></td>" +
+                "    <td>" + file.name + "</td>" +
+                "    <td>" + IDEALS.Util.formatBytes(file.size) + "</td>" +
+                "    <td>" +
+                "        <div class='progress'>" +
+                "            <div class='progress-bar' role='progressbar' " +
+                "                 style='width: 0' aria-valuenow='0'" +
+                "                 aria-valuemin='0' aria-valuemax='100'></div>" +
+                "        </div>" +
+                "    </td>" +
+                "    <td></td>" +
+                "</tr>");
+            uploadFile(file);
+        };
+
+        /**
+         * @returns {Set<String>}
+         */
+        const getFilenames = function() {
+            const filenames = new Set();
+            filesTable.find("tr").each(function() {
+                filenames.add($(this).data("filename"));
+            });
+            return filenames;
+        };
+
+        /**
+         * To be called when a file upload is complete.
+         *
+         * @param row {jQuery}
+         * @param bitstreamURI {String}
+         */
+        this.markRowCompleted = function(row, bitstreamURI) {
+            row.data("uri", bitstreamURI);
+            row.find("td:first-child").html("<i class='fa fa-check text-success'></i>");
+            row.find(".progress").remove();
+            const lastCell = row.find("td:last-child");
+            lastCell.html(
+                "<button class='btn btn-sm btn-danger remove' type='button'>" +
+                "   <i class='fa fa-minus'></i> Remove" +
+                "</button>");
+            lastCell.find(".remove").on("click", function() {
+                onRemoveFileButtonClicked($(this));
+            });
+        };
+
+        const onRemoveFileButtonClicked = function(button) {
+            const row          = button.parents("tr");
+            const bitstreamURI = row.data("uri");
+            new IDEALS.Client().delete(bitstreamURI, function() {
+                row.fadeOut(IDEALS.FADE_TIME, function() {
+                    row.remove();
+                });
+            });
+        };
+
+        const uploadFile = function(file) {
+            const fileRow     = filesTable.find("tr[data-filename='" + file.name + "']");
+            const progressBar = fileRow.find(".progress-bar");
+
+            const onProgressChanged = function(e) {
+                const complete = Math.round(e.loaded / e.total * 100);
+                progressBar.attr("aria-valuenow", complete);
+                progressBar.css("width", complete + "%");
+            };
+            const onComplete = function(bitstreamURI) {
+                fileTable.markRowCompleted(fileRow, bitstreamURI);
+            };
+            new IDEALS.Client().uploadFile(file,
+                $("input[name=item_bitstreams_uri]").val(),
+                onProgressChanged, onComplete);
+        };
+
+        filesTable.find("button.remove").on("click", function(e) {
             e.preventDefault();
+            onRemoveFileButtonClicked($(this));
         });
-    }
+
+        // The file chooser is a file input, hidden via CSS, that is virtually
+        // clicked when the drop zone is clicked in order to open a file
+        // selection dialog.
+        const fileChooser = $("#file-chooser");
+        fileChooser.on("change", function() {
+            const files = this.files;
+            for (let i = 0; i < files.length; i++) {
+                fileTable.addFile(files[i]);
+            }
+        });
+
+        const dropZone = $("#file-drop-zone");
+        dropZone.on("dragover", function(e) {
+            e.preventDefault();
+            e.originalEvent.dataTransfer.dropEffect = "copy";
+        });
+        dropZone.on("click", function(e) {
+            e.preventDefault();
+            fileChooser.click();
+        });
+        dropZone.on("drop", function(e) {
+            e.preventDefault();
+            e = e.originalEvent;
+            if (e.dataTransfer.items) {
+                for (let i = 0; i < e.dataTransfer.items.length; i++) {
+                    if (e.dataTransfer.items[i].kind === "file") {
+                        let file = e.dataTransfer.items[i].getAsFile();
+                        fileTable.addFile(file);
+                    }
+                }
+            } else {
+                for (let i = 0; i < e.dataTransfer.files.length; i++) {
+                    const file = e.dataTransfer.files[i];
+                    fileTable.addFile(file);
+                }
+            }
+        });
+    };
+
+    const fileTable = new FileTable();
+
+    // N.B.: Contrary to its type, this button does not actually submit the
+    // form. (There is no need since everything has been submitted via XHR
+    // already.) Instead, all it does is validate and then open the
+    // "submission complete" modal.
+    filesForm.find("input[type=submit]").on("click", function(e) {
+        if (!self.validateMetadata(true)) {
+            $("#metadata-tab").click();
+            e.preventDefault();
+            return false;
+        }
+        if (!self.validateFiles()) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    filesForm.on("submit", function() {
+        $("#complete-modal").modal("show");
+    });
 };
 
 /**
@@ -211,20 +402,7 @@ const DepositMetadataEditor = function() {
  * @constructor
  */
 const EditView = function() {
-    $("button.step-1-to-2").on("click", function() {
-        $("#metadata-tab").tab("show");
-    });
-    $("button.step-2-to-3").on("click", function() {
-        $("#files-tab").tab("show");
-    });
-    $("button.step-3-to-2").on("click", function() {
-        $("#metadata-tab").tab("show");
-    });
-    $("button.step-2-to-1").on("click", function() {
-        $("#properties-tab").tab("show");
-    });
-    new DepositForm();
-    new DepositMetadataEditor();
+    new SubmissionForm();
 };
 
 $(document).ready(function() {

@@ -15,4 +15,31 @@ body#edit_submission {
       display: none;
     }
   }
+
+  table.files {
+    td {
+      vertical-align: middle;
+    }
+    td:nth-child(1), td:nth-child(3), td:nth-child(5) {
+      white-space: nowrap;
+    }
+    td:nth-child(1), td:nth-child(5) {
+      width: 1%;
+    }
+    td:nth-child(4) {
+      width: 20%;
+    }
+  }
+  #file-chooser {
+    display: none;
+  }
+  #file-drop-zone {
+    border: 4px dashed #d0d0d0;
+    border-radius: 15px;
+    color: #606060;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 2em;
+    text-align: center;
+  }
 }

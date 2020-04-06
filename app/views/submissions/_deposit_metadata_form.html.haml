@@ -1,16 +1,14 @@
 -# frozen_string_literal: true
 
 = form_for(@resource, url: submission_path(@resource), remote: true,
-           html: { id: "deposit-metadata-form" }) do |f|
+           html: { id: "metadata-form" }) do |f|
   = token_tag(nil)
 
-  .error-messages
+  #metadata-messages.error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
   / Include this only because `item` is required in the params.
   = f.hidden_field :primary_collection_id, value: f.object.primary_collection_id
-
-  %p Enter descriptive information about the item.
 
   %table.table.metadata
     %tbody
@@ -57,7 +55,7 @@
   .text-center.mb-3
     %button.btn.btn-light.step-2-to-1{type: "button"}
       %i.fa.fa-arrow-left
-      Back to Step 1
+      Previous Step
     %button.btn.btn-light.step-2-to-3{type: "button"}
-      Proceed to Step 3
+      Next Step
       %i.fa.fa-arrow-right

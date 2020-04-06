@@ -1,25 +1,48 @@
 -# frozen_string_literal: true
 
-= form_for(@resource, url: submission_path(@resource), remote: true) do |f|
-  = token_tag(nil)
-
-  .error-messages
-    - # populated via ajax by shared/_validation_messages.js.erb
-
-  / Include this only because `item` is required in the params.
-  = f.hidden_field :primary_collection_id, value: f.object.primary_collection_id
-
-  .alert.alert-light
-    Select one or more files to attach to the item.
-
-  %p (File upload goes here)
+.alert.alert-light
+  %i.fa.fa-exclamation-triangle
+  Filenames must be unique, and directory structure is not preserved.
 
 = form_for(@resource, url: submission_path(@resource), remote: true,
-           html: { id: "complete-form" }) do |f|
-  .text-center.mb-3
+           html: { id: "files-form" }) do |f|
+  = token_tag(nil)
+
+  #files-messages.error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  -# Read in JavaScript to determine where to upload files to.
+  = hidden_field_tag "item_bitstreams_uri", item_bitstreams_url(f.object)
+
+  -# This table is modified by DepositForm/FileTable.addFile() (JavaScript).
+  -# Its structure must be kept in sync with that code.
+  %table.table.table-sm.files
+    %tbody
+      - @resource.bitstreams.order(:original_filename).each do |bs|
+        %tr{"data-uri":      item_bitstream_path(@resource, bs),
+            "data-filename": bs.original_filename}
+          %td
+            %i.fa.fa-check.text-success
+          %td= bs.original_filename
+          %td= number_to_human_size(bs.length)
+          %td
+          %td
+            %button.btn.btn-sm.btn-danger.remove
+              %i.fa.fa-minus
+              Remove
+
+  -# This input is hidden via CSS. JavaScript sends #file-dropzone click events
+  -# to it in order to open a file selection dialog.
+  %input#file-chooser{type: "file", multiple: true}
+
+  #file-drop-zone.bg-light
+    %i.fa.fa-upload
+    Attach files by dropping them here or selecting them.
+
+  .text-center.mb-3.mt-3
     %button.btn.btn-light.step-3-to-2{type: "button"}
       %i.fa.fa-arrow-left
-      Back to Step 2
+      Previous Step
     = f.hidden_field :submitting, value: "false"
     = f.submit("Complete Submission", class: "btn btn-primary")
 
@@ -32,6 +55,8 @@
       .modal-header
         %h5#complete-modal-label.modal-title Submission Complete
       .modal-body
+        .alert.alert-info
+          TODO: This is placeholder text. Provide finalized text (including link URLs) in a new JIRA ticket.
         Sint enim enim sequi quo perferendis accusantium ut. Pariatur amet facere natus voluptate explicabo est. Praesentium illo dicta provident aut ipsum omnis ratione. Voluptatem nemo qui soluta eius aut atque voluptatum. Nostrum ratione culpa veritatis et. Culpa itaque aut qui vero rerum blanditiis.
       .modal-footer
         = link_to "Done", root_path, class: "btn btn-primary"

@@ -3,7 +3,7 @@
 = form_for(@resource, url: submission_path(@resource), remote: true) do |f|
   = token_tag(nil)
 
-  .error-messages
+  #properties-messages.error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
   = f.hidden_field :submitter_id, value: current_user.id
@@ -38,5 +38,5 @@
 
   .text-center.mb-3
     %button.btn.btn-light.step-1-to-2{type: "button"}
-      Proceed to Step 2
+      Next Step
       %i.fa.fa-arrow-right
