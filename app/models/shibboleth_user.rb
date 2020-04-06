@@ -75,7 +75,7 @@ class ShibbolethUser < User
     return "Unknown" unless netid
 
     begin
-      response = open("http://quest.grainger.uiuc.edu/directory/ed/person/#{netid}").read
+      response = open("https://quest.library.illinois.edu/directory/ad/person/#{netid}").read
       xml_doc = Nokogiri::XML(response)
       xml_doc.remove_namespaces!
       display_name = xml_doc.xpath("//attr[@name='displayname']").text
