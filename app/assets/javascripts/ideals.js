@@ -47,6 +47,24 @@ const IDEALS = {
         };
 
         /**
+         * @param query {String}
+         * @param onSuccess {Function} Function accepting response data.
+         * @return
+         */
+        this.fetchUsers = function(query, onSuccess) {
+            const MAX_RESULTS = 8;
+            $.ajax({
+                url: ROOT_URL + "/users.json?window=" + MAX_RESULTS + "&q=" + query,
+                method: "get",
+                success: function(data, status, xhr) {
+                    if (onSuccess) {
+                        onSuccess(data, status, xhr);
+                    }
+                }
+            });
+        };
+
+        /**
          * Sends a file to the server, creating a new Bitstream attached to an
          * Item.
          *
@@ -268,12 +286,10 @@ const IDEALS = {
     },
 
     /**
-     * @param textField jQuery text field element.
+     * @param textField {jQuery} Text field element.
      * @constructor
      */
     UserAutocompleter: function(textField) {
-        const MAX_RESULTS = 8;
-        const ROOT_URL = $('input[name="root_url"]').val();
         textField.on("keyup", function() {
             const textField = $(this);
             const menu      = textField.parent().find(".dropdown-menu");
@@ -285,37 +301,30 @@ const IDEALS = {
             menu.css("top", $(this).position().top + $(this).height() + 14 + "px");
             menu.css("left", "14px");
 
-            $.ajax({
-                url: ROOT_URL + "/users.json?window=" + MAX_RESULTS + "&q=" + query,
-                method: "get",
-                success: function(data, status, xhr) {
-                    if (data['numResults'] > 0) {
-                        menu.empty();
-                        data['results'].forEach(function(result) {
-                            const menuItem = $("<div class=\"dropdown-item\"></div>");
-                            // It's important that all menu items be unique
-                            // across all users. For users that have a name, we
-                            // append their email. For unnamed users, we include
-                            // only their email.
-                            if (result['name'].length > 0) {
-                                menuItem.html(result['name'] +
-                                    " <small>(" + result['email'] + ")</small>");
-                            } else {
-                                menuItem.html(result['email']);
-                            }
-                            menu.append(menuItem);
-                            menuItem.on("click", function() {
-                                textField.val($(this).text());
-                                menu.hide();
-                            });
+            new IDEALS.Client().fetchUsers(query, function(data) {
+                if (data['numResults'] > 0) {
+                    menu.empty();
+                    data['results'].forEach(function(result) {
+                        const menuItem = $("<div class=\"dropdown-item\"></div>");
+                        // It's important that all menu items be unique
+                        // across all users. For users that have a name, we
+                        // append their email. For unnamed users, we include
+                        // only their email.
+                        if (result['name'].length > 0) {
+                            menuItem.html(result['name'] +
+                                " <small>(" + result['email'] + ")</small>");
+                        } else {
+                            menuItem.html(result['email']);
+                        }
+                        menu.append(menuItem);
+                        menuItem.on("click", function() {
+                            textField.val($(this).text());
+                            menu.hide();
                         });
-                        menu.show();
-                    } else {
-                        menu.hide();
-                    }
-                },
-                error: function(e) {
-                    console.error(e);
+                    });
+                    menu.show();
+                } else {
+                    menu.hide();
                 }
             });
         });
