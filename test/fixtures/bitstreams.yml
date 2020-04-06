@@ -1,7 +1,8 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 item1_jpg:
-  key: jpg
-  length: 500
+  key: bogus
+  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   media_type: image/jpeg
+  original_filename: escher_lego.jpg
   item: item1

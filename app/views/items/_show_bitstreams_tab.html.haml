@@ -1,10 +1,14 @@
 %ul.list-unstyled
   - @bitstreams.each do |bs|
     %li.media.mb-3
-      .mr-3
+      .mr-3.type-icon
         = icon_for(bs)
       .media-body
-        %h5.mt-0.mb-1= bs.original_filename
+        %h5.mt-0.mb-1
+          = bs.original_filename
+          = link_to(item_bitstream_path(@resource, bs), class: "btn btn-sm btn-outline-primary") do
+            %i.fa.fa-download
+            Download
         %span
           - if bs.media_type.present?
             = bs.media_type
