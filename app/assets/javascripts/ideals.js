@@ -23,13 +23,15 @@ const IDEALS = {
          *
          * @param uri {String}
          * @param onSuccess {Function}
+         * @param onError {Function}
          */
-        this.delete = function (uri, onSuccess) {
+        this.delete = function (uri, onSuccess, onError) {
             $.ajax({
                 type: "DELETE",
                 url: uri,
                 headers: { "X-CSRF-Token": CSRF_TOKEN },
-                success: onSuccess
+                success: onSuccess,
+                error: onError
             });
         };
 

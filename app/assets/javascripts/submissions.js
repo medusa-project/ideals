@@ -305,11 +305,19 @@ const SubmissionForm = function() {
         const onRemoveFileButtonClicked = function(button) {
             const row          = button.parents("tr");
             const bitstreamURI = row.data("uri");
-            new IDEALS.Client().delete(bitstreamURI, function() {
+            const onSuccess    = function() {
                 row.fadeOut(IDEALS.FADE_TIME, function() {
                     row.remove();
                 });
-            });
+            };
+            const onError      = function(xhr, status, error) {
+                console.error(xhr);
+                console.error(status);
+                console.error(error);
+                alert("There was an error removing the file. If this error " +
+                    "persists, please contact IDEALS staff.");
+            };
+            new IDEALS.Client().delete(bitstreamURI, onSuccess, onError);
         };
 
         const uploadFile = function(file) {
