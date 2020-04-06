@@ -143,7 +143,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "index() omits undiscoverable, withdrawn, and not-in-archive items by default" do
+  test "index() omits submitting, undiscoverable, and withdrawn items by default" do
     Item.reindex_all
     ElasticsearchClient.instance.refresh
 
@@ -168,7 +168,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "show() returns HTTP 403 for not-in-archive items" do
+  test "show() returns HTTP 403 for submitting items" do
     get item_path(items(:submitting))
     assert_response :forbidden
   end
