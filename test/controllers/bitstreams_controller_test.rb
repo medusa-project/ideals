@@ -2,8 +2,21 @@ require 'test_helper'
 
 class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
+  setup do
+    create_bucket
+  end
+
   teardown do
     log_out
+  end
+
+  def create_bucket
+    client   = Aws::S3::Client.new
+    resource = Aws::S3::Resource.new
+    bucket   = ::Configuration.instance.aws[:bucket]
+    unless resource.bucket(bucket).exists?
+      client.create_bucket(bucket: bucket)
+    end
   end
 
   # create()
