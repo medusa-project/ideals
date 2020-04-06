@@ -51,13 +51,8 @@ class BitstreamsController < ApplicationController
   # Responds to `DELETE /items/:item_id/bitstreams/:id`
   #
   def destroy
-    begin
-      @bitstream.destroy!
-    rescue => e
-      render plain: "#{e}", status: :internal_server_error
-    else
-      head :no_content
-    end
+    @bitstream.destroy!
+    head :no_content
   end
 
   ##
