@@ -3,6 +3,26 @@
 ##
 # Encapsulates a unit of intellectual content.
 #
+# # Lifecycle
+#
+# An item goes through several "life stages":
+#
+# 1. Creation. This happens during {SubmissionsController submission}. It also
+#    happens one time only during the {IdealsImporter migration of data from
+#    IDEALS-DSpace into this application}.
+#     a. In the former case, the item is marked `submitting = true`,
+#        `in_archive = false`, `withdrawn = false`, `discoverable = false`.
+#     b. In the latter case, the above properties are carried over from
+#        IDEALS-DSpace.
+# 2. Submission. In this stage, its properties are edited, metadata is
+#    ascribed, and bitstreams are attached/detached.
+# 3. Completion. In this stage, `submitting = false`, `in_archive = false`, and
+#    `discoverable = true`.
+# 4. Ingest into Medusa. In this stage, the bitstreams' corresponding
+#    files/objects are moved into Medusa. `in_archive` is now set to `true`.
+# 5. Withdrawal. This is an optional stage in which `withdrawn = true` and
+#    `discoverable = false`.
+#
 # # Indexing
 #
 # See the documentation of {Indexed} for a detailed explanation of how indexing
@@ -16,6 +36,8 @@
 #                           means it should not be included in search results,
 #                           and its metadata should not be available except to
 #                           administrators.
+# * `in_archive`            Whether the item's bitstreams have been archived in
+#                           the Medusa Collection Registry.
 # * `primary_collection_id` Foreign key to {Collection}.
 # * `submitter_id`          Foreign key to {User}.
 # * `submitting`            Indicates that the item is in the submission
