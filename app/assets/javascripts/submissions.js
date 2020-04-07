@@ -242,21 +242,33 @@ const SubmissionForm = function() {
      * @constructor
      */
     const FileTable = function() {
+        const DISALLOWED_LC_FILENAMES = new Set(); // lowercase for easy checking
+        DISALLOWED_LC_FILENAMES.add(".ds_store");
+        DISALLOWED_LC_FILENAMES.add("thumbs.db");
+
         /**
          * Adds a file to the table. (It has probably not finished uploading
          * yet.) If a file with the same name already exists in the table, the
-         * upload is cancelled and the error message is set.
+         * upload is cancelled and an alert is generated.
          *
          * @param file {File}
          */
         this.addFile = function(file) {
+            // Reject empty files
+            if (file.size < 1) {
+                return;
+            }
+            // If the file's name is blacklisted from upload
+            if (DISALLOWED_LC_FILENAMES.has(file.name.toLowerCase())) {
+                return;
+            }
+            // If a file with the same name has already been added
             if (getFilenames().has(file.name)) {
-                setFilesError("A file named " + file.name +
+                alert("A file named " + file.name +
                     " has already been uploaded. Please rename it and try again.");
                 return;
-            } else {
-                setFilesError(null);
             }
+            // All clear.
             // N.B.: This structure must be kept in sync with the structure in
             // the template.
             filesTable.append("<tr data-filename='" + file.name + "'>" +
