@@ -4,8 +4,7 @@ body#welcome {
     margin-bottom: -14px;
   }
   #welcome-image {
-    /* https://digital.library.illinois.edu/items/f07734a0-4b72-0134-1da8-0050569601ca-f */
-    background-image: url("blue_filter.png");
+    background-image: url("orange_network.jpg");
     margin: -16px -16px 1em -16px;
     background-position: center;
     border-bottom: 3px solid $uiuc-orange;
@@ -15,6 +14,9 @@ body#welcome {
     justify-content: center;
     .input-group {
       margin: 0px !important;
+    }
+    input#q {
+      border: 1px solid $uiuc-orange;
     }
   }
   ul {
