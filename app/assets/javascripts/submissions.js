@@ -235,6 +235,10 @@ const SubmissionForm = function() {
     /**
      * Manages the files table.
      *
+     * N.B.: To simplify the implementation, we try to reject uploads of
+     * directories, but it's hard to do even that given that JavaScript file
+     * upload is blighted by cross-browser incompatibilities.
+     *
      * @constructor
      */
     const FileTable = function() {
@@ -367,9 +371,29 @@ const SubmissionForm = function() {
             e = e.originalEvent;
             if (e.dataTransfer.items) {
                 for (let i = 0; i < e.dataTransfer.items.length; i++) {
-                    if (e.dataTransfer.items[i].kind === "file") {
-                        let file = e.dataTransfer.items[i].getAsFile();
-                        fileTable.addFile(file);
+                    const item = e.dataTransfer.items[i];
+                    // We want to distinguish between files and directories
+                    // and ignore the directories. One would think that
+                    // checking the `kind` property here would be all that is
+                    // needed, but one would be forgetting that this is cross-
+                    // browser JavaScript we are dealing with.
+                    if (item.kind === "file") {
+                        // So we utilize a weird technique by which we employ a
+                        // FileReader to try to read the file. If it's a
+                        // directory, FileReader should conk out somehow. But
+                        // again, this is cross-browser JavaScript, so maybe it
+                        // won't.
+                        const file   = item.getAsFile();
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            // It's probably a file. At least, we tried.
+                            fileTable.addFile(file);
+                        };
+                        reader.onerror = function(e) {
+                            // It's a directory or something else happened that
+                            // we can't recover from.
+                        };
+                        reader.readAsBinaryString(file);
                     }
                 }
             } else {
