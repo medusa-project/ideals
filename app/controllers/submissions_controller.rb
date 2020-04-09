@@ -27,17 +27,14 @@ class SubmissionsController < ApplicationController
   end
 
   ##
-  # Creates a new {Item} upon acceptance of the {deposit deposit agreement}.
+  # Creates a new {Item} upon acceptance of the {agreement deposit agreement}.
   # After the submission has been created, the user is redirected to {edit}.
   #
   # Responds to `POST /submissions`.
   #
   def create
-    item = Item.create!(submitter: current_user,
-                        primary_collection_id: params[:primary_collection_id],
-                        submitting: true,
-                        in_archive: false,
-                        discoverable: false)
+    item = Item.new_for_submission(submitter: current_user,
+                                   primary_collection_id: params[:primary_collection_id])
     authorize item, policy_class: SubmissionPolicy # this should always succeed
     redirect_to edit_submission_path(item)
   end
@@ -63,12 +60,12 @@ class SubmissionsController < ApplicationController
   end
 
   ##
-  # Renders the new-submission form.
+  # Renders the submission form.
   #
   # Responds to `GET /submissions/:id/edit`
   #
   def edit
-    @submission_profile = SubmissionProfile.default # TODO: collection-specific
+    @submission_profile = @resource.effective_submission_profile
   end
 
   ##

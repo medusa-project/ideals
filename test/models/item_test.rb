@@ -33,6 +33,23 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal count - 1, Item.search.count
   end
 
+  # new_for_submission()
+
+  test "new_for_submission() returns the expected instance" do
+    submitter  = users(:admin)
+    collection = collections(:collection1)
+    item = Item.new_for_submission(submitter: submitter,
+                                   primary_collection_id: collection.id)
+    assert_equal submission_profile_elements(:default_description).placeholder_text,
+                 item.element("dc:description").string
+    assert_equal submission_profile_elements(:default_subject).placeholder_text,
+                 item.element("dc:subject").string
+    assert item.submitting
+    assert !item.in_archive
+    assert !item.discoverable
+    assert !item.withdrawn
+  end
+
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
@@ -140,6 +157,21 @@ class ItemTest < ActiveSupport::TestCase
     @instance.primary_collection_id = nil
     assert_equal metadata_profiles(:default),
                  @instance.effective_metadata_profile
+  end
+
+  # effective_submission_profile()
+
+  test "effective_submission_profile() returns the submission profile assigned
+  to the primary collection" do
+    assert_equal @instance.primary_collection.submission_profile,
+                 @instance.effective_submission_profile
+  end
+
+  test "effective_submission_profile() falls back to the default profile if
+  there is no primary collection assigned" do
+    @instance.primary_collection_id = nil
+    assert_equal submission_profiles(:default),
+                 @instance.effective_submission_profile
   end
 
   # element() (Describable concern)

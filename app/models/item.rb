@@ -16,12 +16,18 @@
 #        IDEALS-DSpace.
 # 2. Submission. In this stage, its properties are edited, metadata is
 #    ascribed, and bitstreams are attached/detached.
-# 3. Completion. In this stage, `submitting = false`, `in_archive = false`, and
-#    `discoverable = true`.
-# 4. Ingest into Medusa. In this stage, the bitstreams' corresponding
-#    files/objects are moved into Medusa. `in_archive` is now set to `true`.
-# 5. Withdrawal. This is an optional stage in which `withdrawn = true` and
-#    `discoverable = false`.
+# 3. Submission complete.
+# 4. Ingest into Medusa, where the bitstreams' corresponding files/objects are
+#    moved into Medusa.
+# 5. Withdrawal. This is an optional stage.
+#
+# |                     | submitting | in_archive | discoverable | withdrawn |
+# |---------------------|------------|------------|--------------|-----------|
+# | Creation            |    true    |   false    |    false     |   false   |
+# | Submission          |    true    |   false    |    false     |   false   |
+# | Submission Complete |    false   |   false    |     true     |   false   |
+# | Ingest Into Medusa  |    false   |    true    |     true     |   false   |
+# | Withdrawal          |    false   |   true?    |    false     |   false   |
 #
 # # Indexing
 #
@@ -92,6 +98,26 @@ class Item < ApplicationRecord
              optional: true
 
   breadcrumbs parent: :primary_collection, label: :title
+
+  ##
+  # @param submitter [User]
+  # @param primary_collection_id [Integer]
+  # @return [Item] New persisted instance.
+  #
+  def self.new_for_submission(submitter:, primary_collection_id:)
+    item = Item.create!(submitter: submitter,
+                        primary_collection_id: primary_collection_id,
+                        submitting: true,
+                        in_archive: false,
+                        discoverable: false)
+    # For every element with placeholder text in the item's effective
+    # submission profile, ascribe a metadata element with a value of that text.
+    item.effective_submission_profile.elements.where("placeholder_text IS NOT NULL").each do |sp_element|
+      item.elements.build(registered_element: sp_element.registered_element,
+                          string: sp_element.placeholder_text).save!
+    end
+    item
+  end
 
   ##
   # @return [Enumerable<User>] All managers of all owning collections,
@@ -191,6 +217,15 @@ class Item < ApplicationRecord
   #
   def effective_metadata_profile
     self.primary_collection&.effective_metadata_profile || MetadataProfile.default
+  end
+
+  ##
+  # @return [SubmissionProfile] The primary collection's submission profile, o
+  #                             the {SubmissionProfile#default default profile}
+  #                             if not set.
+  #
+  def effective_submission_profile
+    self.primary_collection&.effective_submission_profile || SubmissionProfile.default
   end
 
   def label

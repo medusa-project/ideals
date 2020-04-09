@@ -12,14 +12,15 @@
 # * `label`                 Custom label of the element. If assigned, this
 #                           overrides the label of the associated
 #                           {RegisteredElement}.
-# * `submission_profile_id` ID of the associated {SubmissionProfile}. Foreign
-#                           key.
+# * `placeholder_text`      Text that is inserted into form inputs by default.
 # * `registered_element_id` ID of the associated {RegisteredElement}. Foreign
 #                           key.
 # * `repeatable`            Whether multiple matching {AscribedElement}s can be
 #                           associated with an entity.
 # * `required`              Whether a matching {AscribedElement} must be
 #                           associated with an entity.
+# * `submission_profile_id` ID of the associated {SubmissionProfile}. Foreign
+#                           key.
 # * `updated_at`            Managed by ActiveRecord.
 #
 class SubmissionProfileElement < ApplicationRecord

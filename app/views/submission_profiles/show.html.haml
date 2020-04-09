@@ -55,15 +55,8 @@
                               "data-toggle": "modal", type: "button"}
           %i.fa.fa-plus
           Add Element
+
     %table.table
-      %thead
-        %th
-        %th Element
-        %th Label Override
-        %th Input Type
-        %th Help Text
-        %th Required
-        %th Repeatable
       %tbody
         - @profile.elements.each do |element|
           %tr
@@ -81,12 +74,30 @@
                         data: { confirm: 'Are you sure you want to delete this element?' }) do
                 %i.fa.fa-trash
                 Delete
-            %td= element.registered_element.label
-            %td= element.label
-            %td= element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
-            %td= element.help_text
-            %td.boolean= boolean(element.required)
-            %td.boolean= boolean(element.repeatable)
+            %td
+              %table.table.table-sm.table-borderless
+                %tbody
+                  %tr
+                    %th{style: "width: 1px; white-space: nowrap"} Registered Element:
+                    %td= element.registered_element.label
+                  %tr
+                    %th Label Override:
+                    %td= element.label
+                  %tr
+                    %th Input Type:
+                    %td= element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
+                  %tr
+                    %th Placeholder Text:
+                    %td= element.placeholder_text
+                  %tr
+                    %th Help Text:
+                    %td= element.help_text
+                  %tr
+                    %th Required
+                    %td= boolean(element.required)
+                  %tr
+                    %th Repeatable
+                    %td= boolean(element.repeatable)
 
   - unless @profile.default
     #collections.tab-pane.fade{role: "tabpanel",
