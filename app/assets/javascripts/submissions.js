@@ -457,6 +457,39 @@ const SubmissionForm = function() {
                 }
             }
         });
+
+        // API docs: https://developer.box.com/guides/embed/ui-elements/picker/
+        const filePicker  = new Box.FilePicker();
+        const accessToken = $("input[name=box_access_token]").val();
+
+        filePicker.addListener("choose", function(files) {
+            console.log(files);
+            files.forEach(function(file, index) { // TODO: this is obviously quite broken
+                $.ajax({
+                    type: "GET",
+                    url: file.authenticated_download_url,
+                    headers: {
+                        "Authorization": "Bearer " + accessToken
+                    },
+                    success: function() {
+                        console.log("success");
+                    },
+                    error: function() {
+                        console.log("error");
+                    }
+                });
+                //fileTable.addFile(file);
+            });
+        });
+
+        const folderId = "0"; // the root folder of a Box account is ID 0
+        filePicker.show(folderId, accessToken, {
+            container: "#box-container",
+            modal: {
+                buttonLabel: "Select Files From Box",
+                buttonClassName: "btn btn-lg btn-light"
+            }
+        });
     };
 
     const fileTable = new FileTable();

@@ -66,6 +66,9 @@ class SubmissionsController < ApplicationController
   #
   def edit
     @submission_profile = @resource.effective_submission_profile
+
+    token = BoxClient.new(session).access_token
+    @access_token = token['access_token'] if token
   end
 
   ##

@@ -1,0 +1,13 @@
+- if @access_token.blank?
+  .text-center
+    = link_to BoxClient::authorization_url(callback_url: box_callback_url,
+                                           state: request.original_url),
+              class: "btn btn-primary" do
+      %i.fa.fa-sign-in-alt
+      Log into Box
+- else
+  -# Read by JavaScript
+  = hidden_field_tag "box_access_token", @access_token
+
+  #box-container
+    -# JavaScript takes over from here.

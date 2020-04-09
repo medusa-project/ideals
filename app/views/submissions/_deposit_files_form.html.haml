@@ -1,9 +1,5 @@
 -# frozen_string_literal: true
 
-.alert.alert-light
-  %i.fa.fa-exclamation-triangle
-  Filenames must be unique, and directory structure is not preserved.
-
 = form_for(@resource, url: submission_path(@resource), remote: true,
            html: { id: "files-form" }) do |f|
   = token_tag(nil)
@@ -31,13 +27,29 @@
               %i.fa.fa-minus
               Remove
 
-  -# This input is hidden via CSS. JavaScript sends #file-dropzone click events
-  -# to it in order to open a file selection dialog.
-  %input#file-chooser{type: "file", multiple: true}
+  %ul.nav.nav-pills.nav-justified{role: "tablist"}
+    %li.nav-item
+      %a#browser-files-tab.nav-link.active{"data-toggle": "tab",
+                                        href: "#browser-files",
+                                        role: "tab",
+                                        "aria-controls": "browser-files",
+                                        "aria-selected": "true"} Upload From Browser
+    %li.nav-item
+      %a#box-files-tab.nav-link{"data-toggle": "tab",
+                                href: "#box-files",
+                                role: "tab",
+                                "aria-controls": "box-files",
+                                "aria-selected": "false"} Upload From Box
 
-  #file-drop-zone.bg-light
-    %i.fa.fa-upload
-    Attach files (not folders) by dropping them here or selecting them.
+  .tab-content
+    #browser-files.tab-pane.fade.show.active{role: "tabpanel",
+                                             "aria-labelledby": "browser-files-tab"}
+      = render partial: "deposit_files_form_browser"
+
+    #box-files.tab-pane.fade{role: "tabpanel",
+                             "aria-labelledby": "box-files-tab"}
+      = render partial: "deposit_files_form_box"
+
 
   .text-center.mb-3.mt-3
     %button.btn.btn-light.step-3-to-2{type: "button"}

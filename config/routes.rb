@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   get '/handle/:prefix/:suffix', to: 'handles#resolve'
 
   resources :account_activations, only: [:edit]
+  match "/box/callback", to: "box#oauth_callback", via: :get
   resources :collections, except: [:edit, :new] do
     match "/children", to: "collections#children", via: :get,
           constraints: lambda { |request| request.xhr? }

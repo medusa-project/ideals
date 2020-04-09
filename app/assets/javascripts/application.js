@@ -17,4 +17,5 @@
 //= require bootstrap
 //= require activestorage
 //= require local-time
+//= require_tree ../../../vendor/assets/javascripts
 //= require_tree .
