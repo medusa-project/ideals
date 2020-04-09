@@ -57,7 +57,7 @@ class IdealsSeeder
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
                            index: 0,
                            input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
-                           repeatable: true,
+                           repeatable: false,
                            required: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:issued"),
                            index: 1,
