@@ -84,11 +84,14 @@
                     %th Label Override:
                     %td= element.label
                   %tr
+                    %th Vocabulary:
+                    %td= element.vocabulary&.name
+                  %tr
                     %th Input Type:
-                    %td= element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
+                    %td= element.vocabulary ? "Menu" : element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
                   %tr
                     %th Placeholder Text:
-                    %td= element.placeholder_text
+                    %td= element.vocabulary ? nil : element.placeholder_text
                   %tr
                     %th Help Text:
                     %td= element.help_text

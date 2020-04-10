@@ -23,9 +23,14 @@
     = f.label :label, "Label Override"
     = f.text_field :label, class: "form-control"
   .form-group
+    = f.label :vocabulary_key, "Vocabulary"
+    = f.select(:vocabulary_key, options_for_select(Vocabulary::all.map{ |v| [v.name, v.key] },
+                                                   f.object.vocabulary_key),
+               { include_blank: true }, class: "custom-select")
+  .form-group
     = f.label :input_type, "Input Type"
     = f.select(:input_type, options_for_select(SubmissionProfileElement::InputType.all.map{ |t| [t.split("_").map(&:capitalize).join(" "), t] },
-                            f.object.input_type),
+                                               f.object.input_type),
                {}, class: "custom-select")
   .form-group
     = f.label :placeholder_text, "Placeholder Text"

@@ -26,25 +26,31 @@
               .input-group.mb-2
                 = hidden_field_tag "elements[][name]",
                                    profile_element.registered_element.name
-                - case profile_element.input_type
-                - when SubmissionProfileElement::InputType::TEXT_AREA
-                  = text_area_tag("elements[][string]", asc_element.string,
-                                  class: "form-control",
-                                  required: profile_element.required)
+                - if profile_element.vocabulary
+                  = select_tag("elements[][string]", options_for_select(profile_element.vocabulary.terms.map{ |t| [t.displayed_value, t.stored_value] },
+                                                                        asc_element.string),
+                               class: "custom-select",
+                               required: profile_element.required)
                 - else
-                  = text_field_tag("elements[][string]", asc_element.string,
-                                   class: "form-control",
-                                   required: profile_element.required)
+                  - case profile_element.input_type
+                  - when SubmissionProfileElement::InputType::TEXT_AREA
+                    = text_area_tag("elements[][string]", asc_element.string,
+                                    class: "form-control",
+                                    required: profile_element.required)
+                  - else
+                    = text_field_tag("elements[][string]", asc_element.string,
+                                     class: "form-control",
+                                     required: profile_element.required)
 
-                - if !profile_element.required || profile_element.repeatable
-                  .input-group-append
-                    %button.btn.btn-outline-danger.remove{type: "button"}
-                      %i.fa.fa-minus
-                      Remove Value
+                  - if !profile_element.required || profile_element.repeatable
+                    .input-group-append
+                      %button.btn.btn-outline-danger.remove{type: "button"}
+                        %i.fa.fa-minus
+                        Remove Value
             - if profile_element.repeatable
               %button.btn.btn-outline-success.btn-sm.mt-1.add{type: "button"}
                 %i.fa.fa-plus
-                Add Value
+                Add Another Field
           %td.message
             .text-success
               %i.fa.fa-check

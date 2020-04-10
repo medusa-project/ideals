@@ -50,7 +50,7 @@ class IdealsSeeder
   end
 
   def seed_submission_profiles
-    # This list of elements copied from:
+    # This list of elements is taken from:
     # https://uofi.app.box.com/notes/593479281190
     profile = SubmissionProfile.create!(name: "Default Submission Profile",
                                         default: true)
@@ -66,9 +66,9 @@ class IdealsSeeder
                            required: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
                            index: 2,
-                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
+                           vocabulary_key: Vocabulary::Key::COMMON_TYPES,
                            repeatable: true,
-                           required: true) # TODO: checkbox list controlled by common types
+                           required: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
                            index: 3,
                            input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
@@ -96,14 +96,14 @@ class IdealsSeeder
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type:genre"),
                            index: 8,
-                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
+                           vocabulary_key: Vocabulary::Key::COMMON_GENRES,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:language"),
                            index: 9,
-                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
+                           vocabulary_key: Vocabulary::Key::COMMON_ISO_LANGUAGES,
                            repeatable: false,
-                           required: false) # TODO: dropdown controlled by ISO languages
+                           required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:bibliographicCitation"),
                            index: 10,
                            input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
@@ -131,7 +131,7 @@ class IdealsSeeder
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier"),
                            index: 15,
-                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
+                           vocabulary_key: Vocabulary::Key::DEGREE_NAMES,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:name"),
@@ -141,9 +141,9 @@ class IdealsSeeder
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:level"),
                            index: 17,
-                           input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
+                           vocabulary_key: Vocabulary::Key::DISSERTATION_THESIS,
                            repeatable: false,
-                           required: false) # TODO: controlled dropdown
+                           required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeChair"),
                            index: 18,
                            input_type: SubmissionProfileElement::InputType::TEXT_FIELD,
