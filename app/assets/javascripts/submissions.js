@@ -83,7 +83,7 @@ const SubmissionForm = function() {
             url:  localForm.attr("action"),
             data: localForm.serialize(),
             success: function() {
-                const successMessage = lastEditedInput.parents(".row").find(".message > .text-success");
+                const successMessage = lastEditedInput.parents("tr, .row").find(".message > .text-success");
                 successMessage.show();
                 setTimeout(function () {
                     successMessage.fadeOut();
