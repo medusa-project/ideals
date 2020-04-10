@@ -11,6 +11,48 @@ const AgreementView = function() {
             $("#deposit-agreement").fadeIn(IDEALS.FADE_TIME);
         });
     });
+
+    const allQuestionsAnswered = function() {
+        return $("input.response:checked").length >= $(".question").length;
+    };
+
+    const validateResponses = function() {
+        if (!allQuestionsAnswered()) {
+            return false;
+        }
+        // Check that all answers are "yes."
+        let isValid = true;
+        $("input.response:checked").each(function() {
+            if ("yes" !== $(this).val().toLowerCase()) {
+                isValid = false;
+            }
+        });
+        return isValid;
+    };
+
+    const conditionallyShowFeedback = function() {
+        const feedbackAlert = $("#feedback");
+        if (allQuestionsAnswered()) {
+            if (validateResponses()) {
+                feedbackAlert.hide();
+            } else {
+                feedbackAlert.show();
+            }
+        } else {
+            feedbackAlert.hide();
+        }
+    };
+
+    const conditionallyEnableSubmitButton = function() {
+        $("input[type=submit]").prop("disabled", !validateResponses());
+    };
+
+    $("input.response").on("click", function() {
+        conditionallyShowFeedback();
+        conditionallyEnableSubmitButton();
+    });
+
+    conditionallyEnableSubmitButton();
 };
 
 /**

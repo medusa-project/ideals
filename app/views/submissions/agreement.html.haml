@@ -1,6 +1,6 @@
 - provide :body_id, "agreement"
 
-%h1 Deposit
+%h1 Submit an Item
 
 - if @submissions.any?
   .card.text-white.bg-info.submissions-in-progress.mb-3
@@ -15,7 +15,7 @@
             - else
               = raw "Started #{local_time_ago(item.created_at)} (collection not selected)"
             = link_to("Continue", edit_submission_path(item), class: "btn btn-outline-light btn-sm")
-  %button.begin-submission.btn.btn-outline-primary Begin a new submission
+  %button.begin-submission.btn.btn-outline-primary Begin New Submission
 
 #deposit-agreement.card{style: "#{@submissions.any? ? "display: none" : ""}"}
   %h5.card-header IDEALS Deposit Agreement
@@ -47,6 +47,45 @@
       %li You agree that this submission of this Dataset and your related actions are subject to all applicable state and federal laws as well as University and campus policies.
     %p By agreeing to this Deposit Agreement, you acknowledge that you have read and accept the terms of this License and all related Illinois Data Bank and University policies.
 
+    #feedback.alert.alert-warning
+      %i.fa.fa-exclamation-triangle
+      TODO: provide updated text in #{link_to("IR-34", "https://bugs.library.illinois.edu/browse/IR-34")}. The selections you have made indicate that you are not ready to deposit your dataset. Illinois Data bank curators are available to discuss your dataset with you. Please contact us!
+
+    -# N.B.: these questions are outside of the form because they are read
+    -# only by JavaScript and don't need to be submitted
+    .question.mb-3
+      %p
+        %strong Are you a creator of this dataset or have you been granted permission by the creator to deposit this dataset?
+      .form-check
+        %input#q1-1.response.form-check-input{type: "radio", name: "q1", value: "Yes"}
+        %label.form-check-label{for: "q1-1"} Yes
+      .form-check
+        %input#q1-2.response.form-check-input{type: "radio", name: "q1", value: "No"}
+        %label.form-check-label{for: "q1-2"} No
+
+    .question.mb-3
+      %p
+        %strong Have you removed any private, confidential, or other legally protected information from the dataset?
+      .form-check
+        %input#q2-1.response.form-check-input{type: "radio", name: "q2", value: "Yes"}
+        %label.form-check-label{for: "q2-1"} Yes
+      .form-check
+        %input#q2-2.response.form-check-input{type: "radio", name: "q2", value: "No"}
+        %label.form-check-label{for: "q2-2"} No
+      .form-check
+        %input#q2-3.response.form-check-input{type: "radio", name: "q2", value: "Not applicable"}
+        %label.form-check-label{for: "q2-3"} Not applicable
+
+    .question.mb-3
+      %p
+        %strong Do you agree to the Illinois Data Bank Deposit Agreement in its entirety?
+      .form-check
+        %input#q3-1.response.form-check-input{type: "radio", name: "q3", value: "Yes"}
+        %label.form-check-label{for: "q3-1"} Yes
+      .form-check
+        %input#q3-2.response.form-check-input{type: "radio", name: "q3", value: "No"}
+        %label.form-check-label{for: "q3-2"} No
+
     = form_tag submissions_path, method: :post do
       = hidden_field_tag(:primary_collection_id, params[:collection_id])
-      = submit_tag("I agree", class: "btn btn-primary")
+      = submit_tag("Begin Submission", class: "btn btn-primary")

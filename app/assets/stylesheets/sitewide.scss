@@ -70,3 +70,7 @@
 .bg-info a {
   color: white;
 }
+
+input[disabled], .disabled {
+  cursor: not-allowed;
+}
