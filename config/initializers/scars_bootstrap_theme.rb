@@ -1,1 +1,0 @@
-Rails.application.config.assets.paths += Gem.loaded_specs['scars-bootstrap-theme'].load_paths

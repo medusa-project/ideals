@@ -34,17 +34,13 @@
             &nbsp;Log In
 
         .row.mt-3
-          .col-sm-6
-            No registered account?
-          .col-sm-6
-            = link_to(new_invitee_path, class: "btn btn-primary btn-block") do
+          .col-sm-12
+            = link_to(new_invitee_path, class: "btn btn-light btn-block") do
               %i.fa.fa-user
               &nbsp;Request an account
 
         .row.mt-3
-          .col-sm-6
-            Account approved, not yet registered?
-          .col-sm-6
-            = link_to(register_identities_path, class: "btn btn-primary btn-block") do
+          .col-sm-12
+            = link_to(register_identities_path, class: "btn btn-light btn-block") do
               %i.fa.fa-user
               &nbsp;Register an approved account

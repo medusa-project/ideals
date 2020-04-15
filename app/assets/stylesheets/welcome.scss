@@ -7,7 +7,7 @@ body#welcome {
     background-image: url("orange_network.jpg");
     margin: -16px -16px 1em -16px;
     background-position: center;
-    border-bottom: 3px solid $uiuc-orange;
+    border-bottom: 3px solid $uofi-orange;
     display: flex;
     height: 200px;
     flex-flow: column nowrap;
@@ -16,7 +16,7 @@ body#welcome {
       margin: 0px !important;
     }
     input#q {
-      border: 1px solid $uiuc-orange;
+      border: 1px solid $uofi-orange;
     }
   }
   ul {

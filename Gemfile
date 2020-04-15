@@ -11,8 +11,8 @@ gem "rails", "~> 6.0.2.1"
 gem 'aws-sdk-s3', '~> 1'
 # Use ActiveModel has_secure_password for local identity users
 gem "bcrypt", "~> 3.1.7"
-# Use bootstrap for layout framework
-gem 'bootstrap', '~> 4.4' # TODO: does scars-bootstrap-theme provide this?
+# No Bootstrap! This is provided by scars-bootstrap-theme instead.
+#gem "bootstrap"
 # Use Boxr to interact with Box API
 # gem "boxr"
 # Provides all of our icons.
@@ -26,7 +26,6 @@ gem "httpclient"
 gem "jbuilder", "~> 2.5"
 # Use jquery as the JavaScript library
 gem "jquery-rails"
-gem "jquery-ui-rails"
 gem "js_cookie_rails"
 # For pretty absolute and relative dates
 gem "local_time"
@@ -43,8 +42,8 @@ gem "pg"
 gem "pundit"
 # Use SCSS for stylesheets
 gem "sassc"
-# Provides the website theme.
-gem 'scars-bootstrap-theme', github: 'medusa-project/scars-bootstrap-theme'
+# Provides a SCARS-themed Bootstrap.
+gem 'scars-bootstrap-theme', github: 'medusa-project/scars-bootstrap-theme', tag: 'v4.1.1_2.0'
 # Use Uglifier as compressor for JavaScript assets
 gem "uglifier", ">= 2.7.2"
 

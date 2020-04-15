@@ -58,8 +58,8 @@
             = link_to "Account Info", user_path(current_user), class: "dropdown-item"
             = link_to "Log Out", logout_path, method: :delete, class: "dropdown-item"
       - elsif request.path != login_path
-        %button.btn.btn-sm.btn-block{"data-target": "#non-netid-login-modal",
-                                     "data-toggle": "modal",
-                                     type: "button"}
+        %button.btn.btn-sm.btn-link{"data-target": "#non-netid-login-modal",
+                                    "data-toggle": "modal",
+                                    type: "button"}
           %i.fa.fa-sign-in-alt
           &nbsp;Log In
