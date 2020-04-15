@@ -46,4 +46,6 @@ Rails.application.configure do
 
   # Disable the log file.
   config.logger = ActiveSupport::Logger.new(nil)
+
+  config.assets.check_precompiled_asset = false
 end
