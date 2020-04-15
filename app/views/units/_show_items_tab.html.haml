@@ -1,15 +1,15 @@
 .btn-group.float-right{role: "group"}
-  - if @resource.default_collection && policy(@resource.default_collection).submit_item?
-    = link_to(collection_deposit_path(@resource.default_collection), class: "btn btn-light", type: "button") do
+  - if @unit.default_collection && policy(@unit.default_collection).submit_item?
+    = link_to(collection_deposit_path(@unit.default_collection), class: "btn btn-light", type: "button") do
       %i.fas.fa-plus
       Deposit Item Into This Unit
 
 - if @items.count.positive?
-  = form_tag(unit_path(@resource), method: :get, class: "filter") do
+  = form_tag(unit_path(@unit), method: :get, class: "filter") do
     .row.justify-content-between
       .col-4
         .input-group.mb-3.filter-field
-          = hidden_field_tag("fq[]", "#{Item::IndexFields::UNIT_TITLES}:#{@resource.title}")
+          = hidden_field_tag("fq[]", "#{Item::IndexFields::UNIT_TITLES}:#{@unit.title}")
           = filter_field(icon: "fa fa-filter", submit_text: "Filter")
       .col-4
         .input-group

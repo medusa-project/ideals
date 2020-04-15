@@ -1,11 +1,11 @@
 - provide :body_id, "show_collection"
-- provide :title, @resource.title
+- provide :title, @collection.title
 
 = render partial: "show_button_group"
 
 %h1
-  =icon_for(@resource)
-  =@resource.title
+  =icon_for(@collection)
+  =@collection.title
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item
@@ -40,7 +40,7 @@
                           "aria-selected": "true"}
       = icon_for(Item)
       Items
-  - if policy(@resource).edit_access?
+  - if policy(@collection).edit_access?
     %li.nav-item
       %a#access-tab.nav-link{href: "#access-tab-content",
                              "data-toggle": "tab",
@@ -68,14 +68,14 @@
                                         "aria-labelledby": "items-tab"}
     = render partial: "show_items_tab"
 
-  - if policy(@resource).edit_access?
+  - if policy(@collection).edit_access?
     #access-tab-content.tab-pane.fade.show{role: "tabpanel",
                                            "aria-labelledby": "access-tab"}
       = render partial: "show_access_tab"
 
 = render partial: "collections/add_modal",
-         locals: { primary_unit: @resource.primary_unit,
-                   parent: @resource,
+         locals: { primary_unit: @collection.primary_unit,
+                   parent: @collection,
                    title: "Add Child Collection" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-collection-properties-modal",

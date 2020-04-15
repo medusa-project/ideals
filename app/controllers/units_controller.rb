@@ -38,7 +38,7 @@ class UnitsController < ApplicationController
   def collections
     raise ActionController::BadRequest if params[:unit_id].blank?
     @collections = Collection.search.
-        filter(Collection::IndexFields::PRIMARY_UNIT, @resource.id).
+        filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
         filter(Collection::IndexFields::UNIT_DEFAULT, false).
         include_children(false).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
@@ -54,20 +54,20 @@ class UnitsController < ApplicationController
   # Responds to `POST /units`
   #
   def create
-    @resource = Unit.new(unit_params)
-    authorize @resource
+    @unit = Unit.new(unit_params)
+    authorize @unit
     begin
       ActiveRecord::Base.transaction do
-        @resource.save!
+        @unit.save!
       end
     rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @resource.errors.any? ? @resource : e },
+             locals: { object: @unit.errors.any? ? @unit : e },
              status: :bad_request
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = "Unit \"#{@resource.title}\" created."
-      render "create", locals: { unit: @resource }
+      flash['success'] = "Unit \"#{@unit.title}\" created."
+      render "create", locals: { unit: @unit }
     end
   end
 
@@ -77,13 +77,13 @@ class UnitsController < ApplicationController
   def destroy
     begin
       ActiveRecord::Base.transaction do
-        @resource.destroy!
+        @unit.destroy!
       end
     rescue => e
       flash['error'] = "#{e}"
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = "Unit \"#{@resource.title}\" deleted."
+      flash['success'] = "Unit \"#{@unit.title}\" deleted."
     ensure
       redirect_to units_path
     end
@@ -95,8 +95,7 @@ class UnitsController < ApplicationController
   # Responds to `GET /units/:id/edit-membership` (XHR only)
   #
   def edit_access
-    render partial: "units/access_form",
-           locals: { unit: @resource }
+    render partial: "units/access_form", locals: { unit: @unit }
   end
 
   ##
@@ -105,8 +104,7 @@ class UnitsController < ApplicationController
   # Responds to `GET /units/:id/edit-membership` (XHR only)
   #
   def edit_membership
-    render partial: "units/membership_form",
-           locals: { unit: @resource }
+    render partial: "units/membership_form", locals: { unit: @unit }
   end
 
   ##
@@ -115,8 +113,7 @@ class UnitsController < ApplicationController
   # Responds to GET `/units/:id/edit` (XHR only)
   #
   def edit_properties
-    render partial: "units/properties_form",
-           locals: { unit: @resource }
+    render partial: "units/properties_form", locals: { unit: @unit }
   end
 
   ##
@@ -137,13 +134,13 @@ class UnitsController < ApplicationController
     @new_unit = Unit.new
     # Subunits tab
     @subunits = Unit.search.
-        parent_unit(@resource).
+        parent_unit(@unit).
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(999).
         to_a
     # Collections tab
     @collections = Collection.search.
-        filter(Collection::IndexFields::PRIMARY_UNIT, @resource.id).
+        filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999).
         to_a
@@ -168,17 +165,17 @@ class UnitsController < ApplicationController
   def update
     begin
       ActiveRecord::Base.transaction do
-        @resource.update!(unit_params)
+        @unit.update!(unit_params)
         assign_administrators
-        @resource.save!
+        @unit.save!
       end
     rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @resource.errors.any? ? @resource : e },
+             locals: { object: @unit.errors.any? ? @unit : e },
              status: :bad_request
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = "Unit \"#{@resource.title}\" updated."
+      flash['success'] = "Unit \"#{@unit.title}\" updated."
       render 'shared/reload'
     end
   end
@@ -186,28 +183,28 @@ class UnitsController < ApplicationController
   private
 
   def set_unit
-    @resource = Unit.find(params[:id] || params[:unit_id])
-    @breadcrumbable = @resource
+    @unit = Unit.find(params[:id] || params[:unit_id])
+    @breadcrumbable = @unit
   end
 
   def authorize_unit
-    @resource ? authorize(@resource) : skip_authorization
+    @unit ? authorize(@unit) : skip_authorization
   end
 
   def assign_administrators
     # Non-primary administrators
     if params[:administering_users]
-      @resource.administrators.where(primary: false).destroy_all
+      @unit.administrators.where(primary: false).destroy_all
       params[:administering_users].select(&:present?).each do |user_str|
         user = User.from_autocomplete_string(user_str)
-        @resource.errors.add(:administrators,
+        @unit.errors.add(:administrators,
                              "includes a user that does not exist") unless user
-        @resource.administering_users << user
+        @unit.administering_users << user
       end
     end
     # Primary administrator
     if params[:primary_administrator]
-      @resource.primary_administrator =
+      @unit.primary_administrator =
           User.from_autocomplete_string(params[:primary_administrator])
     end
   end

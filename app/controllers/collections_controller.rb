@@ -21,7 +21,7 @@ class CollectionsController < ApplicationController
   #
   def children
     @collections = Collection.search.
-        filter(Collection::IndexFields::PARENT, @resource.id).
+        filter(Collection::IndexFields::PARENT, @collection.id).
         filter(Collection::IndexFields::UNIT_DEFAULT, false).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999)
@@ -32,24 +32,24 @@ class CollectionsController < ApplicationController
   # Responds to `POST /collections`.
   #
   def create
-    @resource = Collection.new(collection_params)
-    authorize @resource
+    @collection = Collection.new(collection_params)
+    authorize @collection
     begin
       ActiveRecord::Base.transaction do
         # Save now in order to obtain an ID with which to associate
         # AscribedElements in the next step.
-        @resource.save!
+        @collection.save!
         assign_users
         build_metadata
-        @resource.save!
+        @collection.save!
       end
     rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @resource.errors.any? ? @resource : e },
+             locals: { object: @collection.errors.any? ? @collection : e },
              status: :bad_request
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = "Collection \"#{@resource.title}\" created."
+      flash['success'] = "Collection \"#{@collection.title}\" created."
       render 'shared/reload'
     end
   end
@@ -58,16 +58,16 @@ class CollectionsController < ApplicationController
   # Responds to `DELETE /collections/:id`
   #
   def destroy
-    primary_unit = @resource.primary_unit
+    primary_unit = @collection.primary_unit
     begin
       ActiveRecord::Base.transaction do
-        @resource.destroy!
+        @collection.destroy!
       end
     rescue => e
       flash['error'] = "#{e}"
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = "Collection \"#{@resource.title}\" deleted."
+      flash['success'] = "Collection \"#{@collection.title}\" deleted."
     ensure
       redirect_to primary_unit
     end
@@ -80,7 +80,7 @@ class CollectionsController < ApplicationController
   #
   def edit_access
     render partial: 'collections/access_form',
-           locals: { collection: @resource }
+           locals: { collection: @collection }
   end
 
   ##
@@ -90,7 +90,7 @@ class CollectionsController < ApplicationController
   #
   def edit_collection_membership
     render partial: 'collections/collection_membership_form',
-           locals: { collection: @resource }
+           locals: { collection: @collection }
   end
 
   ##
@@ -100,7 +100,7 @@ class CollectionsController < ApplicationController
   #
   def edit_properties
     render partial: 'collections/properties_form',
-           locals: { collection: @resource }
+           locals: { collection: @collection }
   end
 
   ##
@@ -110,8 +110,8 @@ class CollectionsController < ApplicationController
   #
   def edit_unit_membership
     render partial: 'collections/unit_membership_form',
-           locals: { collection: @resource,
-                     primary_unit: @resource.primary_unit }
+           locals: { collection: @collection,
+                     primary_unit: @collection.primary_unit }
   end
 
   ##
@@ -152,11 +152,11 @@ class CollectionsController < ApplicationController
     @permitted_params = params.permit(:q, :start)
 
     # Metadata tab
-    @metadata_profile   = @resource.effective_metadata_profile
-    @submission_profile = @resource.effective_submission_profile
+    @metadata_profile   = @collection.effective_metadata_profile
+    @submission_profile = @collection.effective_submission_profile
     # Subcollections tab
     @subcollections = Collection.search.
-        parent_collection(@resource).
+        parent_collection(@collection).
         include_children(true).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999)
@@ -171,15 +171,15 @@ class CollectionsController < ApplicationController
       ActiveRecord::Base.transaction do
         assign_users
         build_metadata
-        @resource.update!(collection_params)
+        @collection.update!(collection_params)
       end
     rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @resource.errors.any? ? @resource : e },
+             locals: { object: @collection.errors.any? ? @collection : e },
              status: :bad_request
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = "Collection \"#{@resource.title}\" updated."
+      flash['success'] = "Collection \"#{@collection.title}\" updated."
       render 'shared/reload'
     end
   end
@@ -189,25 +189,25 @@ class CollectionsController < ApplicationController
   def assign_users
     # Managers
     if params[:managers].present?
-      @resource.managers.destroy_all
+      @collection.managers.destroy_all
       if params[:managers].respond_to?(:each)
         params[:managers].select(&:present?).each do |user_str|
           user = User.from_autocomplete_string(user_str)
-          @resource.errors.add(:managers,
+          @collection.errors.add(:managers,
                                "includes a user that does not exist") unless user
-          @resource.managing_users << user
+          @collection.managing_users << user
         end
       end
     end
     # Submitters
     if params[:submitters].present?
-      @resource.submitters.destroy_all
+      @collection.submitters.destroy_all
       if params[:submitters].respond_to?(:each)
         params[:submitters].select(&:present?).each do |user_str|
           user = User.from_autocomplete_string(user_str)
-          @resource.errors.add(:submitters,
+          @collection.errors.add(:submitters,
                                "includes a user that does not exist") unless user
-          @resource.submitting_users << user
+          @collection.submitting_users << user
         end
       end
     end
@@ -225,27 +225,27 @@ class CollectionsController < ApplicationController
       reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
 
       # Remove existing title & description
-      @resource.elements.where(registered_element_id: [reg_title_element.id,
+      @collection.elements.where(registered_element_id: [reg_title_element.id,
                                                        reg_description_element.id]).destroy_all
       # Add title
       title = params[:elements][config.elements[:title]]
-      @resource.elements.build(registered_element: reg_title_element,
+      @collection.elements.build(registered_element: reg_title_element,
                                string: title) if title.present?
       # Add description
       description = params[:elements][config.elements[:description]]
-      @resource.elements.build(registered_element: reg_description_element,
+      @collection.elements.build(registered_element: reg_description_element,
                                string: description) if description.present?
     end
   end
 
   def set_collection
     # N.B.: the `||` supports nested routes.
-    @resource = Collection.find(params[:id] || params[:collection_id])
-    @breadcrumbable = @resource
+    @collection = Collection.find(params[:id] || params[:collection_id])
+    @breadcrumbable = @collection
   end
 
   def authorize_collection
-    @resource ? authorize(@resource) : skip_authorization
+    @collection ? authorize(@collection) : skip_authorization
   end
 
   def collection_params

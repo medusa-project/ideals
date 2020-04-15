@@ -1,18 +1,18 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@resource).edit_membership?
-    %button.btn.btn-light.edit-unit-membership{"data-unit-id": @resource.id,
+  - if policy(@unit).edit_membership?
+    %button.btn.btn-light.edit-unit-membership{"data-unit-id": @unit.id,
                                                "data-target": "#edit-unit-membership-modal",
                                                "data-toggle": "modal",
                                                role: "button"}
       %i.fas.fa-pencil-alt
       Change Unit Membership
 
-- if !@resource.parent && @subunits.empty?
+- if !@unit.parent && @subunits.empty?
   .clearfix
 
-- if @resource.parent
+- if @unit.parent
   %h2 Parent Unit
-  = resource_list([@resource.parent])
+  = resource_list([@unit.parent])
 
 - if @subunits.any?
   %h2 Child Units

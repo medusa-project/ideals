@@ -1,25 +1,25 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@resource).edit_metadata?
-    %button.btn.btn-light.edit-item-metadata{"data-item-id": @resource.id,
+  - if policy(@item).edit_metadata?
+    %button.btn.btn-light.edit-item-metadata{"data-item-id": @item.id,
                                              "data-target": "#edit-item-metadata-modal",
                                              "data-toggle": "modal",
                                              role: "button"}
       %i.fas.fa-pencil-alt
       Edit Metadata
 
-- if policy(@resource).show_all_metadata?
+- if policy(@item).show_all_metadata?
   .row
     .col-md-6
       %h4 Visible Public Elements
       .alert.alert-light
         Metadata Profile:
-        = link_to(@resource.effective_metadata_profile.name,
-                    @resource.effective_metadata_profile)
-      = metadata_as_dl(@resource.elements,
-                         @resource.effective_metadata_profile)
+        = link_to(@item.effective_metadata_profile.name,
+                    @item.effective_metadata_profile)
+      = metadata_as_dl(@item.elements,
+                         @item.effective_metadata_profile)
     .col-md-6
       %h4 All Ascribed Elements
-      = metadata_as_dl(@resource.elements)
+      = metadata_as_dl(@item.elements)
 - else
-  = metadata_as_dl(@resource.elements,
-                   @resource.effective_metadata_profile)
+  = metadata_as_dl(@item.elements,
+                   @item.effective_metadata_profile)

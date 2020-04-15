@@ -6,7 +6,7 @@
       .media-body
         %h5.mt-0.mb-1
           = bs.original_filename
-          = link_to(item_bitstream_path(@resource, bs), class: "btn btn-sm btn-outline-primary") do
+          = link_to(item_bitstream_path(@item, bs), class: "btn btn-sm btn-outline-primary") do
             %i.fa.fa-download
             Download
         %span
@@ -14,7 +14,7 @@
             = bs.media_type
             &bull;
           = number_to_human_size(bs.length)
-        - if policy(@resource).show_sysadmin_content?
+        - if policy(@item).show_sysadmin_content?
           %br
           %span
             = bs.key

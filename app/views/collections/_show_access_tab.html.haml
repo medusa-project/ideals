@@ -1,6 +1,6 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@resource).edit_access?
-    %button.btn.btn-light.edit-collection-access{"data-collection-id": @resource.id,
+  - if policy(@collection).edit_access?
+    %button.btn.btn-light.edit-collection-access{"data-collection-id": @collection.id,
                                                  "data-target": "#edit-collection-access-modal",
                                                  "data-toggle": "modal",
                                                  role: "button"}
@@ -10,7 +10,7 @@
 %dl
   %dt Unit Administrators
   %dd
-    - admins = @resource.all_unit_administrators
+    - admins = @collection.all_unit_administrators
     - if admins.any?
       %ul
         - admins.each do |user|
@@ -19,17 +19,17 @@
       None
   %dt Managers
   %dd
-    - if @resource.managing_users.any?
+    - if @collection.managing_users.any?
       %ul
-        - @resource.managing_users.each do |user|
+        - @collection.managing_users.each do |user|
           %li= link_to(user.name, "mailto:#{user.email}")
     - else
       None
   %dt Submitters
   %dd
-    - if @resource.submitters.any?
+    - if @collection.submitters.any?
       %ul
-        - @resource.submitting_users.each do |user|
+        - @collection.submitting_users.each do |user|
           %li= link_to(user.name, "mailto:#{user.email}")
     - else
       None

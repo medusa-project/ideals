@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-json.set! "class", @resource.class.to_s
-json.uri item_url(@resource, format: :json)
+json.set! "class", @item.class.to_s
+json.uri item_url(@item, format: :json)
 
-if policy(@resource).show?
-  json.extract! @resource, :id, :submitting, :in_archive, :discoverable, :withdrawn, :created_at, :updated_at
+if policy(@item).show?
+  json.extract! @item, :id, :submitting, :in_archive, :discoverable, :withdrawn, :created_at, :updated_at
   json.primary_collection do
-    json.id @resource.primary_collection_id
-    json.uri collection_url(@resource.primary_collection_id, format: :json)
+    json.id @item.primary_collection_id
+    json.uri collection_url(@item.primary_collection_id, format: :json)
   end
 
   json.collections do
-    @resource.collection_ids.each do |collection_id|
+    @item.collection_ids.each do |collection_id|
       json.child! do
         json.id collection_id
         json.uri collection_url(collection_id, format: :json)
@@ -20,8 +20,8 @@ if policy(@resource).show?
   end
 
   json.elements do
-    @resource.metadata_profile.elements.each do |profile_element|
-      matching_elements = @resource.elements.select{ |e| e.name == profile_element.name }
+    @item.metadata_profile.elements.each do |profile_element|
+      matching_elements = @item.elements.select{ |e| e.name == profile_element.name }
       matching_elements.each do |element|
         json.child! do
           json.name element.name
@@ -35,12 +35,12 @@ if policy(@resource).show?
   end
 
   json.bitstreams do
-    @resource.bitstreams.order(:original_filename).each do |bitstream|
+    @item.bitstreams.order(:original_filename).each do |bitstream|
       json.child! do
         json.original_filename bitstream.original_filename
         json.media_type bitstream.media_type
         json.length bitstream.length
-        json.uri item_bitstream_url(@resource, bitstream)
+        json.uri item_bitstream_url(@item, bitstream)
       end
     end
   end

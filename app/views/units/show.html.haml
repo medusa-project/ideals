@@ -1,11 +1,11 @@
 - provide :body_id, "show_unit"
-- provide :title, @resource.title
+- provide :title, @unit.title
 
 = render partial: "show_button_group"
 
 %h1
-  = icon_for(@resource)
-  = @resource.title
+  = icon_for(@unit)
+  = @unit.title
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item
@@ -40,7 +40,7 @@
                           "aria-selected": "true"}
       = icon_for(Item)
       Items
-  - if policy(@resource).edit_access?
+  - if policy(@unit).edit_access?
     %li.nav-item
       %a#access-tab.nav-link{"aria-controls": "access-tab-content",
                              "aria-selected": "false",
@@ -68,7 +68,7 @@
                                    role: "tabpanel"}
     = render partial: "show_items_tab"
 
-  - if policy(@resource).edit_access?
+  - if policy(@unit).edit_access?
     #access-tab-content.tab-pane.fade{"aria-labelledby": "access-tab",
                                       role: "tabpanel"}
       = render partial: "show_access_tab"
@@ -83,4 +83,4 @@
          locals: { id: "edit-unit-membership-modal",
                    title: "Change Unit Membership" }
 = render partial: "collections/add_modal",
-         locals: { primary_unit: @resource }
+         locals: { primary_unit: @unit }

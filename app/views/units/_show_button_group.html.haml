@@ -1,7 +1,7 @@
 .btn-group.float-right{role: "group"}
   // Delete button
-  -if policy(@resource).destroy?
-    = link_to(unit_path(@resource), class: 'btn btn-danger',
+  -if policy(@unit).destroy?
+    = link_to(unit_path(@unit), class: 'btn btn-danger',
                                     method: :delete,
                                     "data-confirm": "Are you sure you want to delete this unit?") do
       %i.fa.fa-trash

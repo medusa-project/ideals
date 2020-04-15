@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   #
   def edit
     render partial: "users/form",
-           locals: { user: @resource, context: :edit }
+           locals: { user: @user, context: :edit }
   end
 
   ##
@@ -39,7 +39,7 @@ class UsersController < ApplicationController
     @window = window_size
     @items  = Item.search.
         aggregations(false).
-        filter(Item::IndexFields::SUBMITTER, @resource.id).
+        filter(Item::IndexFields::SUBMITTER, @user.id).
         filter(Item::IndexFields::SUBMITTING, false).
         order(params[:sort]).
         limit(@window).
@@ -48,7 +48,7 @@ class UsersController < ApplicationController
     @count            = @items.count
     @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
     @permitted_params = params.permit(:start, :window)
-    @submissions      = @resource.submitted_items.
+    @submissions      = @user.submitted_items.
         where(submitting: true).
         order(updated_at: :desc)
   end
@@ -59,14 +59,14 @@ class UsersController < ApplicationController
   def update
     begin
       ActiveRecord::Base.transaction do
-        @resource.update!(user_params)
+        @user.update!(user_params)
       end
     rescue
       render partial: "shared/validation_messages",
-             locals: { object: @resource },
+             locals: { object: @user },
              status: :bad_request
     else
-      flash['success'] = "User #{@resource.name} updated."
+      flash['success'] = "User #{@user.name} updated."
       render "shared/reload"
     end
   end
@@ -74,14 +74,14 @@ class UsersController < ApplicationController
   private
 
   def set_user
-    @resource = User.find(params[:id])
-    @breadcrumbable = @resource
+    @user = User.find(params[:id])
+    @breadcrumbable = @user
   end
 
   def authorize_user
     # N.B.: with becomes() here, Pundit will require separate
     # IdentityUserPolicy and ShibbolethUserPolicy classes.
-    @resource ? authorize(@resource.becomes(User)) : skip_authorization
+    @user ? authorize(@user.becomes(User)) : skip_authorization
   end
 
   def results_params

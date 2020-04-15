@@ -1,9 +1,9 @@
 - if @items.count.positive?
-  = form_tag(user_path(@resource), method: :get, class: "filter") do
+  = form_tag(user_path(@user), method: :get, class: "filter") do
     .row.justify-content-between
       .col-4
         .input-group.mb-3.filter-field
-          = hidden_field_tag("fq[]", "#{Item::IndexFields::SUBMITTER}:#{@resource.id}")
+          = hidden_field_tag("fq[]", "#{Item::IndexFields::SUBMITTER}:#{@user.id}")
           = filter_field(icon: "fa fa-filter", submit_text: "Filter")
       .col-4
         .input-group

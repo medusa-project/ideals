@@ -16,15 +16,15 @@ class ItemsController < ApplicationController
   #
   def destroy
     begin
-      @resource.destroy!
+      @item.destroy!
     rescue => e
       flash['error'] = "#{e}"
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = @resource.title.present? ?
-                             "Item \"#{@resource.title}\" deleted." : "Item deleted."
+      flash['success'] = @item.title.present? ?
+                             "Item \"#{@item.title}\" deleted." : "Item deleted."
     ensure
-      redirect_to @resource.primary_collection
+      redirect_to @item.primary_collection
     end
   end
 
@@ -35,7 +35,7 @@ class ItemsController < ApplicationController
   #
   def edit_membership
     render partial: "items/membership_form",
-           locals: { item: @resource }
+           locals: { item: @item }
   end
 
   ##
@@ -45,7 +45,7 @@ class ItemsController < ApplicationController
   #
   def edit_metadata
     render partial: "items/metadata_form",
-           locals: { item: @resource }
+           locals: { item: @item }
   end
 
   ##
@@ -55,7 +55,7 @@ class ItemsController < ApplicationController
   #
   def edit_properties
     render partial: "items/properties_form",
-           locals: { item: @resource }
+           locals: { item: @item }
   end
 
   ##
@@ -82,11 +82,11 @@ class ItemsController < ApplicationController
   # Responds to `GET /items/:id`
   #
   def show
-    @collections = @resource.collections.to_a
-    if @resource.primary_collection
-      @collections = @collections.unshift(@resource.primary_collection)
+    @collections = @item.collections.to_a
+    if @item.primary_collection
+      @collections = @collections.unshift(@item.primary_collection)
     end
-    @bitstreams = @resource.bitstreams.order(:original_filename)
+    @bitstreams = @item.bitstreams.order(:original_filename)
   end
 
   ##
@@ -95,17 +95,17 @@ class ItemsController < ApplicationController
   def update
     begin
       ActiveRecord::Base.transaction do
-        @resource.update!(item_params)
+        @item.update!(item_params)
         build_metadata
-        @resource.save!
+        @item.save!
       end
     rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @resource.errors.any? ? @resource : e },
+             locals: { object: @item.errors.any? ? @item : e },
              status: :bad_request
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = "Item \"#{@resource.title}\" updated."
+      flash['success'] = "Item \"#{@item.title}\" updated."
       render "shared/reload"
     end
   end
@@ -113,7 +113,7 @@ class ItemsController < ApplicationController
   private
 
   def authorize_item
-    @resource ? authorize(@resource) : skip_authorization
+    @item ? authorize(@item) : skip_authorization
   end
 
   def item_params
@@ -122,8 +122,8 @@ class ItemsController < ApplicationController
   end
 
   def set_item
-    @resource = Item.find(params[:id] || params[:item_id])
-    @breadcrumbable = @resource
+    @item = Item.find(params[:id] || params[:item_id])
+    @breadcrumbable = @item
   end
 
   ##
@@ -134,9 +134,9 @@ class ItemsController < ApplicationController
   def build_metadata
     if params[:elements].present?
       ActiveRecord::Base.transaction do
-        @resource.elements.destroy_all
+        @item.elements.destroy_all
         params[:elements].each do |element|
-          @resource.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
+          @item.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
                                    string:             element[:string],
                                    uri:                element[:uri])
         end

@@ -1,11 +1,11 @@
 - provide :body_id, "show_user"
-- provide :title, @resource.name
+- provide :title, @user.name
 
 = render partial: "show_button_group"
 
 %h1
-  =icon_for(@resource)
-  =@resource.name
+  =icon_for(@user)
+  =@user.name
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item
@@ -37,7 +37,7 @@
 .tab-content
   #account.tab-pane.show.active{role: "tabpanel",
                                 "aria-labelledby": "account-tab"}
-    = render partial: "show_account_tab", locals: { user: @resource }
+    = render partial: "show_account_tab", locals: { user: @user }
 
   #items.tab-pane{role: "tabpanel", "aria-labelledby": "items-tab"}
     = render partial: "show_items_tab"

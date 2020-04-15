@@ -1,6 +1,6 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@resource).edit_properties?
-    %button.btn.btn-light.edit-unit-properties{"data-unit-id": @resource.id,
+  - if policy(@unit).edit_properties?
+    %button.btn.btn-light.edit-unit-properties{"data-unit-id": @unit.id,
                                                "data-target": "#edit-unit-properties-modal",
                                                "data-toggle": "modal",
                                                role: "button"}
@@ -9,6 +9,6 @@
 
 %dl
   %dt Created
-  %dd= local_time @resource.created_at
+  %dd= local_time @unit.created_at
   %dt Updated
-  %dd= local_time @resource.updated_at
+  %dd= local_time @unit.updated_at

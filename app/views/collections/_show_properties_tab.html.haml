@@ -1,6 +1,6 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@resource).edit_properties?
-    %button.btn.btn-light.edit-collection-properties{"data-collection-id": @resource.id,
+  - if policy(@collection).edit_properties?
+    %button.btn.btn-light.edit-collection-properties{"data-collection-id": @collection.id,
                                                      "data-target": "#edit-collection-properties-modal",
                                                      "data-toggle": "modal",
                                                      role: "button"}
@@ -10,15 +10,15 @@
 .clearfix
 .row
   .col-md-8
-    = metadata_as_dl(@resource.elements, @metadata_profile)
+    = metadata_as_dl(@collection.elements, @metadata_profile)
   .col-md-4
-    - if current_user&.effective_manager?(@resource)
+    - if current_user&.effective_manager?(@collection)
       %dl
         %dt Unit Default
-        %dd= @resource.unit_default
+        %dd= @collection.unit_default
         %dt Metadata Profile
         %dd
-          - if @resource.metadata_profile
+          - if @collection.metadata_profile
             - if policy(@metadata_profile).show?
               = link_to(@metadata_profile.name, @metadata_profile)
             - else
@@ -27,7 +27,7 @@
             = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
         %dt Submission Profile
         %dd
-          - if @resource.submission_profile
+          - if @collection.submission_profile
             - if policy(@submission_profile).show?
               = link_to(@submission_profile.name, @submission_profile)
             - else
@@ -36,6 +36,6 @@
             = raw("Not assigned (falling back to #{link_to(@submission_profile.name, @submission_profile)})")
     %dl
       %dt Created
-      %dd= local_time @resource.created_at
+      %dd= local_time @collection.created_at
       %dt Last Updated
-      %dd= local_time @resource.updated_at
+      %dd= local_time @collection.updated_at

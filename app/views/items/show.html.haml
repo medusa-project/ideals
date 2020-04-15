@@ -1,11 +1,11 @@
 - provide :body_id, "show_item"
-- provide :title, @resource.title
+- provide :title, @item.title
 
 = render partial: "show_button_group"
 
 %h1
-  = icon_for(@resource)
-  = @resource.title
+  = icon_for(@item)
+  = @item.title
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item
@@ -41,7 +41,7 @@
                                 "aria-selected": "true"}
       = icon_for(Collection)
       Owning Collections
-  - if policy(@resource).show_access?
+  - if policy(@item).show_access?
     %li.nav-item
       %a#access-tab.nav-link{href: "#access-tab-content",
                              "data-toggle": "tab",
@@ -68,7 +68,7 @@
                                     "aria-labelledby": "collections-tab"}
     = render partial: "show_collections_tab"
 
-  - if policy(@resource).show_access?
+  - if policy(@item).show_access?
     #access-tab-content.tab-pane{role: "tabpanel",
                                  "aria-labelledby": "access-tab"}
       = render partial: "show_access_tab"

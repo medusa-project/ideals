@@ -1,6 +1,6 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@resource).edit_access?
-    %button.btn.btn-light.edit-unit-access{"data-unit-id": @resource.id,
+  - if policy(@unit).edit_access?
+    %button.btn.btn-light.edit-unit-access{"data-unit-id": @unit.id,
                                            "data-target": "#edit-unit-access-modal",
                                            "data-toggle": "modal",
                                            role: "button"}
@@ -10,16 +10,16 @@
 %dl
   %dt Direct Administrators
   %dd
-    - if @resource.administering_users.any?
+    - if @unit.administering_users.any?
       %ul
-        - @resource.administering_users.each do |user|
-          %li= link_to(raw("#{user.name}#{user == @resource.primary_administrator ? " <span class=\"badge badge-primary\">PRIMARY</span>" : ""}"),
+        - @unit.administering_users.each do |user|
+          %li= link_to(raw("#{user.name}#{user == @unit.primary_administrator ? " <span class=\"badge badge-primary\">PRIMARY</span>" : ""}"),
               "mailto:#{user.email}")
     - else
       None
   %dt Effective Administrators (including administrators of parent units)
   %dd
-    - admins = @resource.all_administrators
+    - admins = @unit.all_administrators
     - if admins.any?
       %ul
         - admins.each do |user|

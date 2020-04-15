@@ -1,12 +1,12 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@resource).edit_collection_membership?
-    %button.btn.btn-light.edit-collection-membership{"data-collection-id": @resource.id,
+  - if policy(@collection).edit_collection_membership?
+    %button.btn.btn-light.edit-collection-membership{"data-collection-id": @collection.id,
                                                      "data-target": "#edit-collection-membership-modal",
                                                      "data-toggle": "modal",
                                                      role: "button"}
       %i.fas.fa-pencil-alt
       Change Collection Membership
-    %button.btn.btn-light.add-sub-collection{"data-collection-id": @resource.id,
+    %button.btn.btn-light.add-sub-collection{"data-collection-id": @collection.id,
                                              "data-target": "#add-collection-modal",
                                              "data-toggle": "modal",
                                              role: "button"}
@@ -15,9 +15,9 @@
 
 .clearfix
 
-- if @resource.parent
+- if @collection.parent
   %h2 Parent Collection
-  = resource_list([@resource.parent])
+  = resource_list([@collection.parent])
 
 - if @subcollections.any?
   %h2 Child Collections

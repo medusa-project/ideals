@@ -1,7 +1,7 @@
 %dl
   %dt Unit Administrators
   %dd
-    - admins = @resource.all_unit_administrators
+    - admins = @item.all_unit_administrators
     - if admins.any?
       %ul
         - admins.each do |user|
@@ -10,7 +10,7 @@
       None
   %dt Collection Managers
   %dd
-    - managers = @resource.all_collection_managers
+    - managers = @item.all_collection_managers
     - if managers.any?
       %ul
         - managers.each do |user|
@@ -19,7 +19,7 @@
       None
   %dt Collection Submitters
   %dd
-    - submitters = @resource.all_collection_submitters
+    - submitters = @item.all_collection_submitters
     - if submitters.any?
       %ul
         - submitters.each do |user|
