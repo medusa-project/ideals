@@ -11,7 +11,7 @@
       %span.navbar-toggler-icon
     #navbar-supported-content.collapse.navbar-collapse
       %ul.navbar-nav.mr-auto
-        - if logged_in?
+        - if policy(:dashboard).index?
           %li#dashboard-nav.nav-item
             = link_to dashboard_path, class: "nav-link" do
               %i.fa.fa-tachometer-alt

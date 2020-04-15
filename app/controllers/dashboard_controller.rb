@@ -2,6 +2,7 @@
 
 class DashboardController < ApplicationController
   before_action :ensure_logged_in
+  before_action -> { authorize(:dashboard) }
   before_action :set_user
 
   ##
