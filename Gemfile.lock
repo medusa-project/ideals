@@ -305,7 +305,7 @@ DEPENDENCIES
   progress_job
   puma
   pundit
-  rails (~> 6.0.2.1)
+  rails (~> 6.0.2.2)
   rubocop
   rubocop-performance
   rubocop-rails
