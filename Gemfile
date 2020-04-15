@@ -8,6 +8,7 @@ ruby "2.7.1"
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem "rails", "~> 6.0.2.2"
 
+gem "autoprefixer-rails"
 gem 'aws-sdk-s3', '~> 1'
 # Use ActiveModel has_secure_password for local identity users
 gem "bcrypt", "~> 3.1.7"
