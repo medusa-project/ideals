@@ -38,7 +38,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    session[:user_id] = nil
+    reset_session
     redirect_back fallback_location: root_url
   end
 
