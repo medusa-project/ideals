@@ -28,6 +28,7 @@
 class SubmissionProfileElement < ApplicationRecord
 
   class InputType
+    DATE       = "date"
     TEXT_AREA  = "text_area"
     TEXT_FIELD = "text_field"
 

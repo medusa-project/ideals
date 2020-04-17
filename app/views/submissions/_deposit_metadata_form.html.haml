@@ -5,9 +5,9 @@
   = token_tag(nil)
 
   #metadata-messages.error-messages
-    - # populated via ajax by shared/_validation_messages.js.erb
+    -# populated via ajax by shared/_validation_messages.js.erb
 
-  / Include this only because `item` is required in the params.
+  -# Include this only because `item` is required in the params.
   = f.hidden_field :primary_collection_id, value: f.object.primary_collection_id
 
   %table.table.metadata
@@ -22,23 +22,52 @@
           %td
             - if f.object.element(profile_element.registered_element.name.to_sym).nil?
               - f.object.elements.build(registered_element: profile_element.registered_element)
-            - f.object.elements.select{ |e| e.registered_element == profile_element.registered_element }.each do |asc_element|
+            - f.object.elements.select{ |e| e.registered_element == profile_element.registered_element }.each do |ascribed_element|
               .input-group.mb-2
                 = hidden_field_tag "elements[][name]",
                                    profile_element.registered_element.name
                 - if profile_element.vocabulary
                   = select_tag("elements[][string]", options_for_select(profile_element.vocabulary.terms.map{ |t| [t.displayed_value, t.stored_value] },
-                                                                        asc_element.string),
+                                                                        ascribed_element.string),
                                class: "custom-select",
                                required: profile_element.required)
                 - else
                   - case profile_element.input_type
+                  - when SubmissionProfileElement::InputType::DATE
+                    - hidden_input_id = SecureRandom.hex
+                    - date            = ascribed_element.date
+                    -# This hidden input contains a date in "Month DD, YYYY" format.
+                    -# Changes to the Y/M/D select menus below cause its value
+                    -# to change (via JS).
+                    = hidden_field_tag("elements[][string]",
+                                       ascribed_element.string,
+                                       id: hidden_input_id,
+                                       data: { 'input-type': "date" })
+                    .form-inline
+                      -# N.B.: these are submitted incidentally as part of the
+                      -# form but not read server-side.
+                      = select_tag("month",
+                                   options_for_select((1..12).map{ |d| Date.parse("#{'%02d' % d}/01").strftime("%B") },
+                                                      date&.strftime("%B")),
+                                   data: { for: hidden_input_id },
+                                   class: "custom-select mr-2")
+                      = select_tag("day",
+                                   options_for_select((1..31), date&.day),
+                                   data: { for: hidden_input_id },
+                                   class: "custom-select mr-2")
+                      = select_tag("year",
+                                   options_for_select((1900..((Time.now + 1.year).year)),
+                                                      date&.year),
+                                   data: { for: hidden_input_id },
+                                   class: "custom-select")
                   - when SubmissionProfileElement::InputType::TEXT_AREA
-                    = text_area_tag("elements[][string]", asc_element.string,
+                    = text_area_tag("elements[][string]",
+                                    ascribed_element.string,
                                     class: "form-control",
                                     required: profile_element.required)
                   - else
-                    = text_field_tag("elements[][string]", asc_element.string,
+                    = text_field_tag("elements[][string]",
+                                     ascribed_element.string,
                                      class: "form-control",
                                      required: profile_element.required)
 
@@ -46,7 +75,7 @@
                     .input-group-append
                       %button.btn.btn-outline-danger.remove{type: "button"}
                         %i.fa.fa-minus
-                        Remove Value
+                        Remove
             - if profile_element.repeatable
               %button.btn.btn-outline-success.btn-sm.mt-1.add{type: "button"}
                 %i.fa.fa-plus

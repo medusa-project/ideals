@@ -29,7 +29,7 @@
                { include_blank: true }, class: "custom-select")
   .form-group
     = f.label :input_type, "Input Type"
-    = f.select(:input_type, options_for_select(SubmissionProfileElement::InputType.all.map{ |t| [t.split("_").map(&:capitalize).join(" "), t] },
+    = f.select(:input_type, options_for_select(SubmissionProfileElement::InputType.all.map{ |t| [t.split("_").map(&:capitalize).join(" "), t] }.sort.reverse,
                                                f.object.input_type),
                {}, class: "custom-select")
   .form-group

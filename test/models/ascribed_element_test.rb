@@ -51,6 +51,23 @@ class AscribedElementTest < ActiveSupport::TestCase
     assert new_updated_at > original_updated_at
   end
 
+  # date()
+
+  test "date() returns a valid instance when the string contains a recognized date" do
+    @instance.string = "February 7, 1968"
+    assert_equal Date.parse("February 7, 1968"), @instance.date
+  end
+
+  test "date() returns nil when the string does not contain a recognized date" do
+    @instance.string = "the quick brown fox"
+    assert_nil @instance.date
+  end
+
+  test "date() returns nil when the string is nil" do
+    @instance.string = nil
+    assert_nil @instance.date
+  end
+
   # label()
 
   test "label() returns the associated RegisteredElement label" do

@@ -222,6 +222,20 @@ const SubmissionForm = function() {
 
     /************************* Metadata section ****************************/
 
+    /**
+     * Reads the month, day, and year select menus of date-type submission
+     * profile elements, and sets the corresponding hidden date input value
+     * appropriately (in "Month DD, YYYY" format).
+     */
+    metadataForm.find("[name=month], [name=day], [name=year]").on("change", function() {
+        const hiddenInput = $("#" + $(this).data("for"));
+        const parent      = hiddenInput.parent();
+        const month       = parent.find("[name=month]").val();
+        const day         = parent.find("[name=day]").val();
+        const year        = parent.find("[name=year]").val();
+        hiddenInput.val(month + " " + day + ", " + year);
+    });
+
     metadataForm.find("input, select, textarea").on("change", function() {
         lastEditedInput = $(this);
         self.validateMetadata(false);
