@@ -17,6 +17,9 @@ body#edit_submission {
     td.message {
       width: 15%;
     }
+    textarea {
+      height: 10em;
+    }
     .input-group-append {
       display: none;
     }
