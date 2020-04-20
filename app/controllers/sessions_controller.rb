@@ -18,12 +18,12 @@ class SessionsController < ApplicationController
 
   def create
     auth = request.env["omniauth.auth"]
-
     user = nil
 
-    if auth[:provider] && auth[:provider] == AuthProvider::SHIBBOLETH
+    case auth[:provider]
+    when "shibboleth"
       user = ShibbolethUser.from_omniauth(auth)
-    elsif auth[:provider] && auth[:provider] == AuthProvider::IDENTITY
+    when "identity"
       user = IdentityUser.from_omniauth(auth)
     else
       unauthorized
