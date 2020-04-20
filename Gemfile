@@ -44,7 +44,7 @@ gem "pundit"
 # Use SCSS for stylesheets
 gem "sassc"
 # Provides a SCARS-themed Bootstrap.
-gem 'scars-bootstrap-theme', github: 'medusa-project/scars-bootstrap-theme', tag: 'v4.4.1_1.0'
+gem 'scars-bootstrap-theme', github: 'medusa-project/scars-bootstrap-theme', branch: 'release/bootstrap-4.4'
 #gem 'scars-bootstrap-theme', path: '../scars-bootstrap-theme'
 # Use Uglifier as compressor for JavaScript assets
 gem "uglifier", ">= 2.7.2"

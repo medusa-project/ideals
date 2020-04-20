@@ -19,10 +19,13 @@ body#welcome {
       border: 1px solid $uofi-orange;
     }
   }
-  ul {
-    line-height: 1.5em;
-    li {
-      margin-bottom: 0.75em;
+  .page-content {
+    ul {
+      line-height: 1.5em;
+
+      li {
+        margin-bottom: 0.75em;
+      }
     }
   }
 }
