@@ -57,7 +57,7 @@
                                    class: "custom-select mr-2")
                       = select_tag("year",
                                    options_for_select((1900..((Time.now + 1.year).year)),
-                                                      date&.year),
+                                                      date&.year || Time.now.year),
                                    data: { for: hidden_input_id },
                                    class: "custom-select")
                   - when SubmissionProfileElement::InputType::TEXT_AREA
