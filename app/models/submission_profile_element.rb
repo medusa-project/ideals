@@ -9,9 +9,6 @@
 # * `index`                 Zero-based position within the owning
 #                           {SubmissionProfile}.
 # * `input_type`            One of the {InputType} constant values.
-# * `label`                 Custom label of the element. If assigned, this
-#                           overrides the label of the associated
-#                           {RegisteredElement}.
 # * `placeholder_text`      Text that is inserted into form inputs by default.
 # * `registered_element_id` ID of the associated {RegisteredElement}. Foreign
 #                           key.
@@ -61,11 +58,11 @@ class SubmissionProfileElement < ApplicationRecord
   after_destroy :shift_element_indexes_after_destroy
 
   ##
-  # @return [String] The `label` property, or, if not set, the `label` property
-  #                  of the associated {RegisteredElement}.
+  # @return [String] The `label` property of the associated
+  #                  {RegisteredElement}.
   #
-  def effective_label
-    self.label.present? ? self.label : self.registered_element.label
+  def label
+    self.registered_element&.label
   end
 
   ##

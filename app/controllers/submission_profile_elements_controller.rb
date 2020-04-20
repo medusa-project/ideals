@@ -18,7 +18,7 @@ class SubmissionProfileElementsController < ApplicationController
              locals: { object: @element },
              status: :bad_request
     else
-      flash['success'] = "Element \"#{@element.effective_label}\" created."
+      flash['success'] = "Element \"#{@element.label}\" created."
       render "shared/reload"
     end
   end
@@ -32,7 +32,7 @@ class SubmissionProfileElementsController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      flash['success'] = "Element \"#{@element.effective_label}\" deleted."
+      flash['success'] = "Element \"#{@element.label}\" deleted."
     ensure
       redirect_back fallback_location: @element.submission_profile
     end
@@ -61,7 +61,7 @@ class SubmissionProfileElementsController < ApplicationController
              locals: { object: @element },
              status: :bad_request
     else
-      flash['success'] = "Element \"#{@element.effective_label}\" updated."
+      flash['success'] = "Element \"#{@element.label}\" updated."
       render "shared/reload"
     end
   end

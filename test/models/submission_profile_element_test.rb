@@ -43,18 +43,6 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
     end
   end
 
-  # effective_label()
-
-  test "effective_label() returns the label if set" do
-    @instance.label = "cats"
-    assert_equal "cats", @instance.effective_label
-  end
-
-  test "effective_label() returns the label of the associated RegisteredElement if not set" do
-    @instance.label = nil
-    assert_equal @instance.registered_element.label, @instance.effective_label
-  end
-
   # index
 
   test "index is required" do
@@ -79,6 +67,12 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
 
   test "input_type is allowed to be blank" do
     @instance.update!(input_type: nil)
+  end
+
+  # label()
+
+  test "label() returns the label of the associated RegisteredElement" do
+    assert_equal @instance.registered_element.label, @instance.label
   end
 
   # submission_profile

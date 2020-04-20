@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_10_143115) do
+ActiveRecord::Schema.define(version: 2020_04_20_135105) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -169,7 +169,6 @@ ActiveRecord::Schema.define(version: 2020_04_10_143115) do
     t.bigint "submission_profile_id", null: false
     t.bigint "registered_element_id", null: false
     t.integer "index", null: false
-    t.string "label"
     t.text "help_text"
     t.boolean "repeatable", default: false, null: false
     t.boolean "required", default: true, null: false
