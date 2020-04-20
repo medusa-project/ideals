@@ -12,6 +12,9 @@
               class: 'form-control form-control-lg')
           .input-group-append
             %input{type: "submit", value: "Search", class: "btn btn-primary"}
+
+= render partial: "shared/flashes"
+
 .row
   .col-8
     = render partial: "welcome"

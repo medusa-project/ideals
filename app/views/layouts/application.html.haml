@@ -2,13 +2,13 @@
 %html
   %head
     = javascript_include_tag :modernizr
-    %meta{:charset => "utf-8"}/
-    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    %meta{charset: "utf-8"}/
+    %meta{content: "text/html; charset=utf-8", "http-equiv": "Content-Type"}/
     / Mobile viewport optimization h5bp.com/ad
-    %meta{:content => "True", :name => "HandheldFriendly"}/
-    %meta{:content => "width=device-width,initial-scale=1.0,shrink-to-fit=no", :name => "viewport"}/
+    %meta{content: "True", name: "HandheldFriendly"}/
+    %meta{content: "width=device-width,initial-scale=1.0,shrink-to-fit=no", name: "viewport"}/
     / Internet Explorer use the highest version available
-    %meta{:content => "IE=edge", "http-equiv" => "X-UA-Compatible"}/
+    %meta{content: "IE=edge", "http-equiv": "X-UA-Compatible"}/
     %title
       = yield :title
       | IDEALS
@@ -22,7 +22,8 @@
     .container-fluid
       = render partial: 'layouts/header'
       .page-content
-        = render partial: 'shared/flashes'
+        - unless request.path == "/"
+          = render partial: "shared/flashes"
         - if @breadcrumbable
           = breadcrumbs(@breadcrumbable)
         = yield
@@ -30,7 +31,7 @@
 
     - unless logged_in?
       = render partial: "sessions/login_modal"
-    = hidden_field_tag :root_path, root_path
+
+    -# These are read from JavaScript
     = hidden_field_tag :root_url, root_url.chomp('/')
-    =javascript_tag do
-      window.rails_env = "#{Rails.env}";
+    = hidden_field_tag :root_path, root_path
