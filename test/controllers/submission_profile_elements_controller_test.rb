@@ -25,7 +25,6 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
             submission_profile_element: {
                 registered_element_id: registered_elements(:title).id,
                 submission_profile_id: @profile.id,
-                label: "Title",
                 index: 0
             }
         }
@@ -41,7 +40,6 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
             submission_profile_element: {
                 registered_element_id: registered_elements(:title).id,
                 submission_profile_id: @profile.id,
-                label: "Title",
                 index: 0
             }
         }
@@ -58,7 +56,6 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
               submission_profile_element: {
                   registered_element_id: registered_elements(:title).id,
                   submission_profile_id: @profile.id,
-                  label: "Title",
                   index: 0
               }
           }
@@ -179,7 +176,6 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
             submission_profile_element: {
                 registered_element_id: registered_elements(:title).id,
                 submission_profile_id: @profile.id,
-                label: "New Label",
                 index: 0
             }
         }
