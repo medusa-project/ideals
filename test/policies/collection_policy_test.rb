@@ -250,6 +250,41 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  # show_properties?()
+
+  test "show_properties?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.show_properties?
+  end
+
+  test "show_properties?() is restrictive by default" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.show_properties?
+  end
+
+  test "show_properties?() authorizes sysadmins" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.show_properties?
+  end
+
+  test "show_properties?() authorizes collection managers" do
+    user = users(:norights)
+    user.managing_collections << @collection
+    user.save!
+    context = UserContext.new(user, Role::NO_LIMIT)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.show_properties?
+  end
+
+  test "show_properties?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.show_properties?
+  end
+
   # submit_item?()
 
   test "submit_item?() returns false with a nil user" do

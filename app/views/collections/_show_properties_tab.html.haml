@@ -12,10 +12,8 @@
   .col-md-8
     = metadata_as_dl(@collection.elements, @metadata_profile)
   .col-md-4
-    - if current_user&.effective_manager?(@collection)
+    - if policy(@collection).show_properties?
       %dl
-        %dt Unit Default
-        %dd= @collection.unit_default
         %dt Metadata Profile
         %dd
           - if @collection.metadata_profile
