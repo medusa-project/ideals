@@ -20,6 +20,7 @@
     .user-actions
       - if logged_in?
         - if current_user.sysadmin?
+          -# Role-play menu
           .btn-group{role: "group"}
             %button#role-play-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
                                                                               "aria-haspopup": "true",
@@ -46,6 +47,45 @@
               = link_to Role.label(Role::LOGGED_OUT),
                         url_for(role: Role::LOGGED_OUT),
                         class: "dropdown-item"
+
+          -# Administration menu
+          .btn-group{role: "group"}
+            - re = policy(RegisteredElement).index?
+            - mp = policy(MetadataProfile).index?
+            - sp = policy(SubmissionProfile).index?
+            - u  = policy(User).index?
+            - ug = policy(UserGroup).index?
+            - if re || mp || sp || u || ug
+              %button#administration-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
+                                                                                     "aria-haspopup": "true",
+                                                                                     "data-toggle": "dropdown",
+                                                                                     type: "button"}
+                %i.fa.fa-lock-open
+                Administration
+              .dropdown-menu.dropdown-menu-right{"aria-labelledby": "administration-dropdown"}
+                - if re
+                  = link_to registered_elements_path, class: 'dropdown-item' do
+                    = icon_for(RegisteredElement)
+                    Element Registry
+                - if mp
+                  = link_to metadata_profiles_path, class: 'dropdown-item' do
+                    = icon_for(MetadataProfile)
+                    Metadata Profiles
+                - if sp
+                  = link_to submission_profiles_path, class: 'dropdown-item' do
+                    = icon_for(SubmissionProfile)
+                    Submission Profiles
+                .dropdown-divider
+                - if u
+                  = link_to users_path, class: 'dropdown-item' do
+                    %i.fa.fa-user
+                    Users
+                - if ug
+                  = link_to user_groups_path, class: 'dropdown-item' do
+                    %i.fa.fa-users
+                    User Groups
+
+        -# User menu
         .btn-group{role: "group"}
           %button#user-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
                                                                        "aria-haspopup": "true",
