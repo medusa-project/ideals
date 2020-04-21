@@ -69,7 +69,7 @@ const SubmissionForm = function() {
     const metadataForm    = form.filter("#metadata-form");
     // Files section
     const filesForm       = form.filter("#files-form");
-    const filesTable      = filesForm.find("table.files");
+    const fileTable       = new FileTable();
 
     var lastEditedInput;
 
@@ -169,8 +169,13 @@ const SubmissionForm = function() {
     this.validateFiles = function() {
         setFilesError(null);
         // Check that at least one file has been uploaded.
-        if (filesTable.find("tr").length < 1) {
+        if (fileTable.numUploadedFiles() < 1) {
             setFilesError("You must upload at least one file.");
+            return false;
+        }
+        // Check that there are no uploads in progress.
+        if (fileTable.numUploadingFiles() > 0) {
+            setFilesError("Wait for file uploads to complete.");
             return false;
         }
         return true;
@@ -290,16 +295,17 @@ const SubmissionForm = function() {
     /**
      * Manages the files table.
      *
-     * N.B.: To simplify the implementation, we try to reject uploads of
-     * directories, but it's hard to do even that given that JavaScript file
-     * upload is blighted by cross-browser incompatibilities.
+     * To simplify the implementation, we try to reject uploads of directories.
      *
      * @constructor
      */
-    const FileTable = function() {
+    function FileTable() {
         const DISALLOWED_LC_FILENAMES = new Set(); // lowercase for easy checking
         DISALLOWED_LC_FILENAMES.add(".ds_store");
         DISALLOWED_LC_FILENAMES.add("thumbs.db");
+
+        const filesTable = filesForm.find("table.files");
+        let numUploadingFiles = 0, numUploadedFiles = 0;
 
         /**
          * Adds a file to the table. (It has probably not finished uploading
@@ -373,12 +379,45 @@ const SubmissionForm = function() {
             });
         };
 
+        /**
+         * To be called when a file upload fails.
+         *
+         * @param row {jQuery}
+         */
+        this.markRowFailed = function(row) {
+            row.find("td:first-child").html("<i class='fa fa-times text-danger'></i>");
+            row.find(".progress").remove();
+            const lastCell = row.find("td:last-child");
+            lastCell.html(
+                "<button class='btn btn-sm btn-danger remove' type='button'>" +
+                "   <i class='fa fa-minus'></i> Remove" +
+                "</button>");
+            lastCell.find(".remove").on("click", function() {
+                onRemoveFileButtonClicked($(this));
+            });
+        };
+
+        /**
+         * @returns {number}
+         */
+        this.numUploadedFiles = function() {
+            return numUploadedFiles;
+        };
+
+        /**
+         * @returns {number}
+         */
+        this.numUploadingFiles = function() {
+            return numUploadingFiles;
+        };
+
         const onRemoveFileButtonClicked = function(button) {
             const row          = button.parents("tr");
             const bitstreamURI = row.data("uri");
             const onSuccess    = function() {
                 row.fadeOut(IDEALS.FADE_TIME, function() {
                     row.remove();
+                    numUploadedFiles--;
                 });
             };
             const onError      = function(xhr, status, error) {
@@ -394,6 +433,7 @@ const SubmissionForm = function() {
         const uploadFile = function(file) {
             const fileRow     = filesTable.find("tr[data-filename='" + file.name + "']");
             const progressBar = fileRow.find(".progress-bar");
+            numUploadingFiles++;
 
             const onProgressChanged = function(e) {
                 const complete = Math.round(e.loaded / e.total * 100);
@@ -401,11 +441,17 @@ const SubmissionForm = function() {
                 progressBar.css("width", complete + "%");
             };
             const onComplete = function(bitstreamURI) {
+                numUploadingFiles--;
+                numUploadedFiles++;
                 fileTable.markRowCompleted(fileRow, bitstreamURI);
+            };
+            const onError = function(xhr) {
+                numUploadingFiles--;
+                fileTable.markRowFailed(fileRow);
             };
             new IDEALS.Client().uploadFile(file,
                 $("input[name=item_bitstreams_uri]").val(),
-                onProgressChanged, onComplete);
+                onProgressChanged, onComplete, onError);
         };
 
         filesTable.find("button.remove").on("click", function(e) {
@@ -471,8 +517,6 @@ const SubmissionForm = function() {
             }
         });
     };
-
-    const fileTable = new FileTable();
 
     // N.B.: Contrary to its type, this button does not actually submit the
     // form. (There is no need since everything has been submitted via XHR
