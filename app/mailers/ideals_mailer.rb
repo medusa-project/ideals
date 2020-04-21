@@ -17,7 +17,7 @@ class IdealsMailer < ApplicationMailer
   def error(error_text)
     @error_text = error_text
     subject = "#{subject_prefix} IDEALS] System Error"
-    mail(from: NO_REPLY_ADDRESS,
+    mail(reply_to: NO_REPLY_ADDRESS,
          to: ::Configuration.instance.admin[:tech_mail_list],
          subject: subject)
   end
