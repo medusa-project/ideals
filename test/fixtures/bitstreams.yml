@@ -5,4 +5,5 @@ item1_jpg:
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   media_type: image/jpeg
   original_filename: escher_lego.jpg
+  medusa_uuid:
   item: item1

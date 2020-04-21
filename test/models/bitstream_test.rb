@@ -96,6 +96,23 @@ class BitstreamTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # medusa_uuid
+
+  test "medusa_uuid may be nil" do
+    @instance.medusa_uuid = nil
+    assert @instance.valid?
+  end
+
+  test "medusa_uuid can be set to a UUID" do
+    @instance.medusa_uuid = SecureRandom.uuid
+    assert @instance.valid?
+  end
+
+  test "medusa_uuid cannot be set to a nonUUID" do
+    @instance.medusa_uuid = "cats-dogs-foxes"
+    assert !@instance.valid?
+  end
+
   # upload_to_staging()
 
   test "upload_to_staging() uploads a file to the application bucket" do
