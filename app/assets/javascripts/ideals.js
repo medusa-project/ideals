@@ -77,8 +77,10 @@ const IDEALS = {
          * @param onSuccess {Function}         Function accepting a string
          *                                     argument. The string is the URI
          *                                     of the created bitstream.
+         * @param onError {Function}           Function accepting an
+         *                                     {XMLHttpRequest} argument.
          */
-        this.uploadFile = function(file, uri, onProgressChanged, onSuccess) {
+        this.uploadFile = function(file, uri, onProgressChanged, onSuccess, onError) {
             const xhr = new XMLHttpRequest();
             if (onProgressChanged) {
                 xhr.upload.addEventListener("progress", onProgressChanged);
@@ -91,8 +93,12 @@ const IDEALS = {
 
             xhr.onreadystatechange = function () {
                 if (this.readyState === this.HEADERS_RECEIVED) {
-                    if (onSuccess) {
-                        onSuccess(xhr.getResponseHeader("Location"));
+                    if (xhr.status === 0 || (xhr.status >= 200 && xhr.status < 400)) {
+                        if (onSuccess) {
+                            onSuccess(xhr.getResponseHeader("Location"));
+                        }
+                    } else if (onError) {
+                        onError(xhr);
                     }
                 }
             };
