@@ -20,14 +20,13 @@ const AgreementView = function() {
         if (!allQuestionsAnswered()) {
             return false;
         }
-        // Check that all answers are "yes."
-        let isValid = true;
-        $("input.response:checked").each(function() {
-            if ("yes" !== $(this).val().toLowerCase()) {
-                isValid = false;
-            }
-        });
-        return isValid;
+        // Check that all answers are acceptable.
+        const a1 = $("input[name=q1]:checked").val().toLowerCase();
+        const a2 = $("input[name=q2]:checked").val().toLowerCase();
+        const a3 = $("input[name=q3]:checked").val().toLowerCase();
+        return (a1 === "yes" &&
+            (a2 === "yes" || a2 === "not applicable") &&
+            a3 === "yes");
     };
 
     const conditionallyShowFeedback = function() {
