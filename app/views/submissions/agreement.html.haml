@@ -48,10 +48,6 @@
       %li You agree that this submission of this Dataset and your related actions are subject to all applicable state and federal laws as well as University and campus policies.
     %p By agreeing to this Deposit Agreement, you acknowledge that you have read and accept the terms of this License and all related Illinois Data Bank and University policies.
 
-    #feedback.alert.alert-warning
-      %i.fa.fa-exclamation-triangle
-      TODO: provide updated text in #{link_to("IR-34", "https://bugs.library.illinois.edu/browse/IR-34")}. The selections you have made indicate that you are not ready to deposit your dataset. Illinois Data bank curators are available to discuss your dataset with you. Please contact us!
-
     -# N.B.: these questions are outside of the form because they are read
     -# only by JavaScript and don't need to be submitted
     .question.mb-3
@@ -89,4 +85,10 @@
 
     = form_tag submissions_path, method: :post do
       = hidden_field_tag(:primary_collection_id, params[:collection_id])
-      = submit_tag("Begin Submission", class: "btn btn-primary")
+      .row
+        .col-sm-2
+          = submit_tag("Begin Submission", class: "btn btn-primary")
+        .col-sm-10
+          #feedback.text-danger.ml-2
+            %i.fa.fa-exclamation-triangle
+            TODO: provide updated text in #{link_to("IR-34", "https://bugs.library.illinois.edu/browse/IR-34")}. The selections you have made indicate that you are not ready to deposit your dataset. Illinois Data bank curators are available to discuss your dataset with you. Please contact us!
