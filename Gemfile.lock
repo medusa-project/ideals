@@ -151,6 +151,7 @@ GEM
       thor (>= 0.14, < 2.0)
     js_cookie_rails (2.2.0)
       railties (>= 3.1)
+    json (2.3.0)
     libv8 (7.3.492.27.1)
     local_time (2.1.0)
     loofah (2.5.0)
@@ -229,6 +230,8 @@ GEM
       thor (>= 0.20.3, < 2.0)
     rainbow (3.0.0)
     rake (13.0.1)
+    recaptcha (5.5.0)
+      json
     rexml (3.2.4)
     rubocop (0.81.0)
       jaro_winkler (~> 1.5.1)
@@ -309,6 +312,7 @@ DEPENDENCIES
   puma
   pundit
   rails (~> 6.0.2.2)
+  recaptcha
   rubocop
   rubocop-performance
   rubocop-rails

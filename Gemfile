@@ -41,6 +41,8 @@ gem "omniauth-rails_csrf_protection"
 gem "pg"
 # Use pundit for authorization
 gem "pundit"
+# Used during the new user sign-up process
+gem "recaptcha"
 # Use SCSS for stylesheets
 gem "sassc"
 # Provides a SCARS-themed Bootstrap.
