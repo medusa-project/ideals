@@ -457,7 +457,7 @@ class IdealsImporter
       username    = email_parts[0]
       tld         = email.scan(/(\w+).(\w+)$/).last.join(".")
 
-      if %w(illinois.edu uillinois.edu uiuc.edu).include?(tld)
+      if ::Configuration.instance.uofi_email_domains.include?(tld)
         unless User.find_by_email(email)
           ShibbolethUser.create!(id:       id,
                                  uid:      email,
