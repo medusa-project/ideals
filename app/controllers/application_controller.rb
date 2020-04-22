@@ -14,12 +14,20 @@ class ApplicationController < ActionController::Base
 
   after_action :store_location, :copy_flash_to_response_headers
 
+  ##
+  # @return [User] The logged-in user, or `nil` if there is none.
+  #
   def current_user
-    if session[:user_id]
-      @current_user = User.find(session[:user_id])
+    unless @current_user
+      if session[:user_id]
+        begin
+          @current_user = User.find(session[:user_id])
+        rescue ActiveRecord::RecordNotFound
+          session[:user_id] = nil
+        end
+      end
     end
-  rescue ActiveRecord::RecordNotFound
-    session[:user_id] = nil
+    @current_user
   end
 
   def logged_in?
