@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+##
+# Local user identity, which hooks into OmniAuth's authentication system. This
+# is more-or-less an OmniAuth-compatible equivalent of a {User} used for users
+# without a NetID.
+#
 class Identity < OmniAuth::Identity::Models::ActiveRecord
-
-  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 
   attr_accessor :activation_token, :reset_token
   before_create :set_invitee
@@ -11,7 +14,7 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   before_destroy :destroy_user
   validates :name, presence: true
   validates :email, presence: true, length: {maximum: 255},
-            format: {with: VALID_EMAIL_REGEX},
+            format: {with: StringUtils::EMAIL_REGEX},
             uniqueness: {case_sensitive: false}
   has_secure_password
   validates :password, presence: true, length: {minimum: 6}
