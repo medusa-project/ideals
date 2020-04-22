@@ -12,7 +12,6 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   before_create :set_invitee
   before_create :create_activation_digest
   after_create :send_activation_email, unless: -> { Rails.env.test? }
-  before_destroy :destroy_user
 
   validates :email, presence: true, length: {maximum: 255},
             format: {with: StringUtils::EMAIL_REGEX},
@@ -137,10 +136,6 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   end
 
   private
-
-  def destroy_user
-    IdentityUser.destroy_by(email: email)
-  end
 
   def invited
     set_invitee

@@ -50,14 +50,6 @@ class IdentityTest < ActiveSupport::TestCase
     assert_equal expected, @instance.activation_url
   end
 
-  # destroy()
-
-  test "destroy() destroys the corresponding User" do
-    assert_not_nil User.find_by_email(@instance.email)
-    @instance.destroy!
-    assert_nil User.find_by_email(@instance.email)
-  end
-
   # password_reset_url()
 
   test "password_reset_url raises an error if reset_token is blank" do

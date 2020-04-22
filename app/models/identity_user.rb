@@ -11,6 +11,8 @@
 #
 class IdentityUser < User
 
+  before_destroy :destroy_local_identity
+
   def self.from_omniauth(auth)
     return nil unless auth && auth[:uid] && auth["info"]["email"]
 
@@ -75,8 +77,21 @@ class IdentityUser < User
     identity.name || email
   end
 
+  ##
+  # @return [Identity]
+  #
+  def identity
+    Identity.find_by_email(self.email)
+  end
+
   def sysadmin?
     sysadmin
+  end
+
+  private
+
+  def destroy_local_identity
+    Identity.destroy_by(email: self.email)
   end
 
 end
