@@ -1,28 +1,12 @@
 # frozen_string_literal: true
 
 class IdentitiesController < ApplicationController
-  # GET /identities
-  # GET /identities.json
-  # # @identities is already loaded with all identities the user is authorized to read
-  def index; end
-
-  # GET /identities/1
-  # GET /identities/1.json
-  def show; end
-
-  # GET /identities/new
-  def new
-    @identity = Identity.new
-  end
 
   # GET /identities/register
   def register; end
 
   # GET /identities/login
   def login; end
-
-  # GET /identities/1/edit
-  def edit; end
 
   # POST /identities
   # POST /identities.json

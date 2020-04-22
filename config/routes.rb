@@ -30,7 +30,7 @@ Rails.application.routes.draw do
   match "/dashboard", to: "dashboard#index", via: :get
   match "/deposit", to: "submissions#agreement", via: :get
   resources :handles
-  resources :identities do
+  resources :identities, except: [:edit, :index, :new, :show] do
     collection do
       get 'login'
       get 'register'
