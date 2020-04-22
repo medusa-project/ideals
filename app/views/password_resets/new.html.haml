@@ -1,0 +1,12 @@
+- provide :title, "Reset Password"
+
+%h1 Reset Password
+
+= form_tag(password_resets_path) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+  .form-group
+    = label_tag "password_reset[email]", "Your Email Address"
+    = text_field_tag "password_reset[email]", nil, class: "form-control"
+  .clearfix
+    = submit_tag("Send Reset Instructions", class: 'btn btn-primary')

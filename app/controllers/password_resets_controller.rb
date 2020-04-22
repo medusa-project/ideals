@@ -5,21 +5,59 @@ class PasswordResetsController < ApplicationController
   before_action :valid_identity, only: [:edit, :update]
   before_action :check_expiration, only: [:edit, :update]
 
-  def new; end
-
+  ##
+  # Responds to `POST /reset-password`
+  #
   def create
-    @identity = Identity.find_by(email: params[:password_reset][:email].downcase)
-    if @identity
-      @identity.create_reset_digest
-      @identity.send_password_reset_email
-      redirect_to root_url, notice: "Email sent with password reset instructions"
-
+    if params[:password_reset] && params[:password_reset][:email].present?
+      email = params[:password_reset][:email]&.downcase
+      if StringUtils.valid_email?(email)
+        if Identity.uofi?(email)
+          flash['error'] = "Sorry, we're not able to reset passwords for "\
+              "email addresses that are associated with an Illinois NetID. "\
+              "If you have forgotten your NetID password, please contact the "\
+              "NetID Center."
+          redirect_to root_path
+        else
+          @identity = Identity.find_by(email: email)
+          if @identity
+            @identity.create_reset_digest
+            @identity.send_password_reset_email
+            flash['success'] = "An email has been sent containing "\
+                "instructions to reset your password. If you don't receive "\
+                "it soon, check your spam folder."
+            redirect_to root_url
+          else
+            flash['error'] = "No user with this email address has been registered."
+            redirect_to new_password_reset_path
+          end
+        end
+      else
+        flash['error'] = "The email address you provided is invalid. "\
+            "Please try again."
+        render "new", status: :bad_request
+      end
     else
-      render "new", alert: "Email address not found"
+      flash['error'] = "No email address was provided. Please try again."
+      redirect_to new_password_reset_path, status: :bad_request
     end
   end
 
+  ##
+  # Renders the reset-password form, containing password and password
+  # confirmation fields.
+  #
+  # Responds to `GET /reset-password/:token/edit`
+  #
   def edit; end
+
+  ##
+  # Renders the initial reset-password form, containing a single field for
+  # email address.
+  #
+  # Responds to `GET /reset-password/new`
+  #
+  def new; end
 
   def update
     if params[:identity][:password].empty?

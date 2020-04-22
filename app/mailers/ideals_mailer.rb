@@ -29,19 +29,12 @@ class IdealsMailer < ApplicationMailer
 
   def password_reset(identity)
     @identity = identity
-    mail(to: @identity.email, subject: "IDEALS password reset")
+    mail(to: @identity.email, subject: "Reset your IDEALS password")
   end
 
   private
 
   def subject_prefix
-    case Rails.env.to_sym
-    when :production
-      "[PRODUCTION:"
-    when :demo
-      "[DEMO:"
-    else
-      "[LOCAL:"
-    end
+    "[#{Rails.env.to_s.upcase}:"
   end
 end

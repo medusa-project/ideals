@@ -50,7 +50,7 @@ Rails.application.routes.draw do
     match "/clone", to: "metadata_profiles#clone", via: :post
     resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]
   end
-  resources :password_resets, only: [:new, :create, :edit, :update]
+  resources :password_resets, only: [:new, :create, :edit, :update], path: "reset-password"
   resources :registered_elements, param: :name, path: "elements"
   resources :submission_profiles, path: "submission-profiles" do
     match "/clone", to: "submission_profiles#clone", via: :post

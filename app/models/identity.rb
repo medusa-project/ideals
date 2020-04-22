@@ -2,23 +2,26 @@
 
 ##
 # Local user identity, which hooks into OmniAuth's authentication system. This
-# is more-or-less an OmniAuth-compatible equivalent of a {User} used for users
-# without a NetID.
+# is more-or-less an OmniAuth-compatible equivalent of an {IdentityUser} used
+# for users without a NetID.
 #
 class Identity < OmniAuth::Identity::Models::ActiveRecord
 
   attr_accessor :activation_token, :reset_token
+
   before_create :set_invitee
   before_create :create_activation_digest
   after_create :send_activation_email, unless: -> { Rails.env.test? }
   before_destroy :destroy_user
-  validates :name, presence: true
+
   validates :email, presence: true, length: {maximum: 255},
             format: {with: StringUtils::EMAIL_REGEX},
             uniqueness: {case_sensitive: false}
-  has_secure_password
+  validates :name, presence: true
   validates :password, presence: true, length: {minimum: 6}
   validate :invited
+
+  has_secure_password
 
   ##
   # Creates a counterpart for the given user. If one already exists, it is
@@ -47,7 +50,10 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
     identity
   end
 
-  # Returns the hash digest of the given string.
+  ##
+  # @param string [String]
+  # @return [String] Hash digest of the given string.
+  #
   def self.digest(string)
     cost = if ActiveModel::SecurePassword.min_cost
              BCrypt::Engine::MIN_COST
@@ -57,9 +63,20 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
     BCrypt::Password.create(string, cost: cost)
   end
 
-  # Returns a random token.
+  ##
+  # @return [String] Random token.
+  #
   def self.new_token
     SecureRandom.urlsafe_base64
+  end
+
+  ##
+  # @param email [String] Email address.
+  # @return [Boolean] Whether the given email address is related to the UofI.
+  #
+  def self.uofi?(email)
+    domain = email.downcase.split("@").last
+    ::Configuration.instance.uofi_email_domains.include?(domain)
   end
 
   # Returns true if the given token matches the digest.
@@ -70,28 +87,11 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
     BCrypt::Password.new(digest).is_password?(token)
   end
 
-  def invited
-    set_invitee
-    errors.add(:base, "Registered identity must have current invitation.") unless [nil, ""].exclude?(invitee_id)
-  end
-
+  ##
+  # @return [String]
+  #
   def activation_url
     "#{::Configuration.instance.website[:base_url]}/account_activations/#{activation_token}/edit?email=#{CGI.escape(email)}"
-  end
-
-  def password_reset_url
-    "#{::Configuration.instance.website[:base_url]}/password_reset/#{reset_token}/edit?email=#{CGI.escape(email)}"
-  end
-
-  def send_activation_email
-    notification = IdealsMailer.account_activation(self)
-    notification.deliver_now
-  end
-
-  # Sends password reset email.
-  def send_password_reset_email
-    notification = IdealsMailer.password_reset(self)
-    notification.deliver_now
   end
 
   # Creates and assigns the activation token and digest.
@@ -102,8 +102,8 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
 
   # Sets the password reset attributes.
   def create_reset_digest
-    reset_token = Identity.new_token
-    update_attribute(:reset_digest, Identity.digest(reset_token))
+    self.reset_token = Identity.new_token
+    update_attribute(:reset_digest, Identity.digest(self.reset_token))
     update_attribute(:reset_sent_at, Time.zone.now)
   end
 
@@ -111,16 +111,42 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
     reset_sent_at < 2.hours.ago
   end
 
-  private
-
-  # Converts email to all lower-case.
-  def downcase_email
-    self.email = email.downcase
+  ##
+  # @return [String]
+  # @raises [RuntimeError] if {reset_token} is blank. (Invoke
+  #         {create_reset_digest} to remedy that.)
+  #
+  def password_reset_url
+    raise "Reset token is not set." if self.reset_token.blank?
+    base_url = ::Configuration.instance.website[:base_url].chomp("/")
+    "#{base_url}/reset-password/#{self.reset_token}/edit?email=#{CGI.escape(self.email)}"
   end
 
+  def send_activation_email
+    notification = IdealsMailer.account_activation(self)
+    notification.deliver_now
+  end
+
+  ##
+  # Sends a password reset email. Typically this would be called after
+  # {create_reset_digest}.
+  #
+  def send_password_reset_email
+    notification = IdealsMailer.password_reset(self)
+    notification.deliver_now
+  end
+
+  private
+
   def destroy_user
-    user = IdentityUser.find_by(email: email)
-    user&.destroy!
+    IdentityUser.destroy_by(email: email)
+  end
+
+  def invited
+    set_invitee
+    unless [nil, ""].exclude?(invitee_id)
+      errors.add(:base, "Registered identity does not have a current invitation.")
+    end
   end
 
   def set_invitee
