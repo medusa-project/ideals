@@ -6,7 +6,6 @@
 # class name is stored in the `type` column.)
 #
 class User < ApplicationRecord
-  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 
   include Breadcrumb
   include Indexed
@@ -26,7 +25,7 @@ class User < ApplicationRecord
   validates :name, presence: true
   validates_uniqueness_of :email, scope: :type
   validates :email, presence: true, length: {maximum: 255},
-            format: {with: VALID_EMAIL_REGEX}
+            format: {with: StringUtils::EMAIL_REGEX}
   validates_uniqueness_of :uid, allow_blank: false
 
   before_save -> { email.downcase! }
