@@ -61,8 +61,34 @@ class IdentityTest < ActiveSupport::TestCase
   test "password_reset_url() returns a correct URL" do
     @instance.create_reset_digest
     base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    expected = "#{base_url}/reset-password/#{@instance.reset_token}/edit?email=#{CGI.escape(@instance.email)}"
+    expected = "#{base_url}/identities/#{@instance.id}/reset-password?token=#{@instance.reset_token}"
     assert_equal expected, @instance.password_reset_url
+  end
+
+  # update_password!()
+
+  test "update_password!() raises an error if the confirmation does not match
+  the password" do
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.update_password!(password: "MyNewPassword123",
+                                 confirmation: "DoesNotMatch123")
+    end
+  end
+
+  test "update_password!() updates the password" do
+    digest   = @instance.password_digest
+    new_password = "MyNewPassword123"
+    @instance.update_password!(password: new_password,
+                               confirmation: new_password)
+    assert_not_equal digest, @instance.password_digest
+  end
+
+  test "update_password!() clears reset information" do
+    new_password = "MyNewPassword123"
+    @instance.update_password!(password: new_password,
+                               confirmation: new_password)
+    assert_nil @instance.reset_digest
+    assert_nil @instance.reset_sent_at
   end
 
 end

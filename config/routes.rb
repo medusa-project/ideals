@@ -30,11 +30,13 @@ Rails.application.routes.draw do
   match "/dashboard", to: "dashboard#index", via: :get
   match "/deposit", to: "submissions#agreement", via: :get
   resources :handles
-  resources :identities, except: [:edit, :index, :new, :show] do
+  resources :identities, only: [:create, :destroy, :update] do
     collection do
-      get 'login'
-      get 'register'
+      get "login"
+      get "register"
     end
+    match "/reset-password", to: "identities#new_password", via: :get
+    match "/reset-password", to: "identities#reset_password", via: [:patch, :post]
   end
   resources :invitees
   resources :items, except: :new do
@@ -50,7 +52,8 @@ Rails.application.routes.draw do
     match "/clone", to: "metadata_profiles#clone", via: :post
     resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]
   end
-  resources :password_resets, only: [:new, :create, :edit, :update], path: "reset-password"
+  match "/reset-password", to: "password_resets#get", via: :get
+  match "/reset-password", to: "password_resets#post", via: :post
   resources :registered_elements, param: :name, path: "elements"
   resources :submission_profiles, path: "submission-profiles" do
     match "/clone", to: "submission_profiles#clone", via: :post

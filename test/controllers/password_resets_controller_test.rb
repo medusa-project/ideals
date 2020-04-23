@@ -2,18 +2,25 @@ require 'test_helper'
 
 class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
 
-  # create()
+  # get()
 
-  test "create() sets the flash and returns HTTP 400 when no email is provided" do
+  test "get() returns HTTP 200" do
+    get reset_password_path
+    assert_response :ok
+  end
+
+  # post()
+
+  test "post() sets the flash and returns HTTP 400 when no email is provided" do
     # case 1
-    post password_resets_path, {
+    post reset_password_path, {
         params: {}
     }
     assert_response :bad_request
     assert flash['error'].start_with?("No email address was provided")
 
     # case 2
-    post password_resets_path, {
+    post reset_password_path, {
         params: {
             password_reset: {}
         }
@@ -22,7 +29,7 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     assert flash['error'].start_with?("No email address was provided")
 
     # case 3
-    post password_resets_path, {
+    post reset_password_path, {
         params: {
             password_reset: {
                 email: ""
@@ -33,8 +40,8 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     assert flash['error'].start_with?("No email address was provided")
   end
 
-  test "create() sets the flash and returns HTTP 400 when an invalid email is provided" do
-    post password_resets_path, {
+  test "post() sets the flash and returns HTTP 400 when an invalid email is provided" do
+    post reset_password_path, {
         params: {
             password_reset: {
                 email: "invalid email"
@@ -45,8 +52,8 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     assert flash['error'].start_with?("The email address you provided is invalid")
   end
 
-  test "create() sets the flash and redirects when a UofI email is provided" do
-    post password_resets_path, {
+  test "post() sets the flash and redirects when a UofI email is provided" do
+    post reset_password_path, {
         params: {
             password_reset: {
                 email: "user@illinois.edu"
@@ -57,19 +64,19 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     assert flash['error'].start_with?("Sorry, we're not able to reset")
   end
 
-  test "create() sets the flash and redirects when an unregistered email is provided" do
-    post password_resets_path, {
+  test "post() sets the flash and redirects when an unregistered email is provided" do
+    post reset_password_path, {
         params: {
             password_reset: {
                 email: "unregistered@example.org"
             }
         }
     }
-    assert_redirected_to new_password_reset_path
+    assert_redirected_to reset_password_path
     assert flash['error'].start_with?("No user with this email")
   end
 
-  test "create() creates a reset digest, sends an email, sets the flash,
+  test "post() posts a reset digest, sends an email, sets the flash,
   and redirects when a registered email is provided" do
     # We need to fetch an Identity and update its email to a non-UofI address,
     # but the process is a little bit convoluted.
@@ -79,7 +86,7 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     identity.update!(email: email, password: "password")
 
     assert_no_emails
-    post password_resets_path, {
+    post reset_password_path, {
         params: {
             password_reset: {
                 email: email
@@ -92,13 +99,6 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     assert_emails 1
     assert flash['success'].start_with?("An email has been sent")
     assert_redirected_to root_url
-  end
-
-  # new()
-
-  test "new() returns HTTP 200" do
-    get new_password_reset_path
-    assert_response :ok
   end
 
 end

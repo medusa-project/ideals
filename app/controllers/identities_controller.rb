@@ -2,14 +2,24 @@
 
 class IdentitiesController < ApplicationController
 
-  # GET /identities/register
+  before_action :set_identity, only: [:destroy, :new_password, :reset_password,
+                                      :update]
+  before_action :validate_identity, only: [:new_password, :reset_password]
+  before_action :validate_reset_token, only: [:new_password, :reset_password]
+
+  ##
+  # Responds to `GET /identities/register`
+  #
   def register; end
 
-  # GET /identities/login
+  ##
+  # Responds to `GET /identities/login`
+  #
   def login; end
 
-  # POST /identities
-  # POST /identities.json
+  ##
+  # Responds to `POST /identities`
+  #
   def create
     @identity = Identity.new(identity_params)
 
@@ -24,8 +34,43 @@ class IdentitiesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /identities/1
-  # PATCH/PUT /identities/1.json
+  ##
+  # Renders the "phase two" reset-password form, containing password and
+  # password confirmation fields. (The "phase one" form is handled by
+  # {PasswordResetsController}.)
+  #
+  # Responds to `GET /identities/:id/reset-password`. Requires a `token` query
+  # argument.
+  #
+  def new_password
+    @token = params[:token]
+  end
+
+  ##
+  # Processes form submitted from {new_password}. This is like a limited
+  # variant of {update} that updates only the password without being logged in.
+  #
+  # Responds to `PATCH/POST /identities/:id/reset-password`.
+  #
+  def reset_password
+    begin
+      p = identity_password_params
+      @identity.update_password!(password:     p[:password],
+                                 confirmation: p[:password_confirmation])
+    rescue => e
+      flash['error'] = "#{e}"
+      new_password
+      render "new_password"
+    else
+      flash['success'] = "Your password has been changed. You may now log in "\
+          "using your new password."
+      redirect_to root_url
+    end
+  end
+
+  ##
+  # Responds to `PATCH/PUT /identities/:id`
+  #
   def update
     respond_to do |format|
       if @identity.update(identity_params)
@@ -38,10 +83,11 @@ class IdentitiesController < ApplicationController
     end
   end
 
-  # DELETE /identities/1
-  # DELETE /identities/1.json
+  ##
+  # Responds to `DELETE /identities/:id`
+  #
   def destroy
-    @identity.destroy
+    @identity.destroy!
     respond_to do |format|
       format.html { redirect_to identities_url, notice: "Identity was successfully destroyed." }
       format.json { head :no_content }
@@ -50,13 +96,34 @@ class IdentitiesController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_identity
-    @identity = Identity.find(params[:id])
+  def identity_params
+    identity_password_params
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
-  def identity_params
-    params.fetch(:identity, {})
+  def identity_password_params
+    params.require(:identity).permit(:password, :password_confirmation)
   end
+
+  def set_identity
+    @identity = Identity.find(params[:id] || params[:identity_id])
+  end
+
+  def validate_identity
+    redirect_to root_url unless @identity&.activated?
+  end
+
+  def validate_reset_token
+    token = params[:token].to_s
+    # Validate the token.
+    unless @identity.authenticated?(:reset, token)
+      flash['error'] = "Invalid token."
+      redirect_to root_url and return
+    end
+    # Validate the token expiration.
+    if @identity.password_reset_expired?
+      flash['error'] = "This password reset request has expired. Please try again."
+      redirect_to reset_password_url
+    end
+  end
+
 end

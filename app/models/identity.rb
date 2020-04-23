@@ -2,8 +2,10 @@
 
 ##
 # Local user identity, which hooks into OmniAuth's authentication system. This
-# is more-or-less an OmniAuth-compatible equivalent of an {IdentityUser} used
-# for users without a NetID.
+# is more-or-less an OmniAuth-compatible surrogate of an {IdentityUser} used
+# for users whose credentials are stored locally, i.e. users without a NetID.
+#
+# @see https://github.com/omniauth/omniauth-identity
 #
 class Identity < OmniAuth::Identity::Models::ActiveRecord
 
@@ -18,7 +20,7 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
             uniqueness: {case_sensitive: false}
   validates :name, presence: true
   validates :password, presence: true, length: {minimum: 6}
-  validate :invited
+  validate :validate_invited, on: :create
 
   has_secure_password
 
@@ -118,7 +120,7 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   def password_reset_url
     raise "Reset token is not set." if self.reset_token.blank?
     base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    "#{base_url}/reset-password/#{self.reset_token}/edit?email=#{CGI.escape(self.email)}"
+    "#{base_url}/identities/#{self.id}/reset-password?token=#{self.reset_token}"
   end
 
   def send_activation_email
@@ -135,17 +137,28 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
     notification.deliver_now
   end
 
+  ##
+  # @param password [String]
+  # @param confirmation [String]
+  #
+  def update_password!(password:, confirmation:)
+    update!(password: password, password_confirmation: confirmation)
+    update_attribute(:reset_digest, nil)
+    update_attribute(:reset_sent_at, nil)
+  end
+
   private
 
-  def invited
+  def set_invitee
+    @invitee = Invitee.find_by(email: email)
+    self.invitee_id = @invitee.id if @invitee&.expires_at && @invitee.expires_at > Time.zone.now
+  end
+
+  def validate_invited
     set_invitee
     unless [nil, ""].exclude?(invitee_id)
       errors.add(:base, "Registered identity does not have a current invitation.")
     end
   end
 
-  def set_invitee
-    @invitee = Invitee.find_by(email: email)
-    self.invitee_id = @invitee.id if @invitee&.expires_at && @invitee.expires_at > Time.zone.now
-  end
 end
