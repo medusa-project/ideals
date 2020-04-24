@@ -1,7 +1,7 @@
 -# frozen_string_literal: true
 
 .alert.alert-light
-  %i.fa.fa-exclamation-triangle
+  = icon_for(:warning)
   Filenames must be unique, and directory structure is not preserved.
 
 = form_for(@resource, url: submission_path(@resource), remote: true,

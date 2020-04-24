@@ -14,7 +14,7 @@
         options_for_select(f.object.primary_unit.all_collections.reject{ |c| c.id == f.object.id }.map{ |c| [c.title, c.id] }, f.object.parent_id),
         {}, class: 'custom-select')
     %p.form-text.text-muted
-      %i.fa.fa-info-circle
+      = icon_for(:info)
       Only collections in the same unit are shown. To move to a collection in
       a different unit, change the unit first.
 

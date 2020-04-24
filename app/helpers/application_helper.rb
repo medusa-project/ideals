@@ -67,12 +67,14 @@ module ApplicationHelper
   end
 
   ##
-  # @param entity [Object] Any model object or class.
+  # @param entity [Object,Symbol] Any model object or class, or `:info` or
+  #                               `:warning`.
   # @return [String] HTML icon tag.
   #
   def icon_for(entity)
     entity_class = entity.kind_of?(Class) ? entity : entity.class
-    case entity_class.to_s
+    entity_class = entity_class.to_s
+    case entity_class
     when "Bitstream"
       if entity.media_type.present?
         if entity.media_type.start_with?("audio/")
@@ -157,6 +159,13 @@ module ApplicationHelper
     when "RegisteredElement", "AscribedElement", "MetadataProfileElement",
         "SubmissionProfileElement"
       icon = "fa fa-tags"
+    when "Symbol"
+      case entity
+      when :info
+        "fa fa-info-circle"
+      else
+        "fa fa-exclamation-triangle"
+      end
     when "Unit"
       icon = "fa fa-university"
     when "User", "IdentityUser", "ShibbolethUser"

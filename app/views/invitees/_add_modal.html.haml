@@ -14,7 +14,7 @@
           %span{"aria-hidden": "true"} &times;
       .modal-body
         .alert.alert-light
-          %i.fa.fa-info-circle
+          = icon_for(:info)
           A message containing a link to the registration form will be sent to
           this address.
         = render partial: "invitees/form", locals: { invitee: invitee }
