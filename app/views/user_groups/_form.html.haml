@@ -1,5 +1,4 @@
-// @param user_group [UserGroup]
-// @param context [Symbol] `:new` or `:edit`
+-# @param user_group [UserGroup]
 
 = form_for(user_group, remote: true) do |f|
   .error-messages
@@ -10,5 +9,5 @@
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
-      = f.submit(context == :new ? "Create User Group" : "Edit User Group",
+      = f.submit(f.object.new_record? ? "Create User Group" : "Edit User Group",
                  class: "btn btn-primary")

@@ -8,6 +8,4 @@
           %span{"aria-hidden": "true"} &times;
       .modal-body
         = render partial: "metadata_profile_elements/form",
-                 locals: { profile: @profile,
-                           element: @new_element,
-                           context: :new }
+                 locals: { profile: @profile, element: @new_element }

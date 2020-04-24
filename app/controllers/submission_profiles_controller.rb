@@ -58,7 +58,7 @@ class SubmissionProfilesController < ApplicationController
   #
   def edit
     render partial: "submission_profiles/form",
-           locals: { profile: @profile, context: :edit }
+           locals: { profile: @profile }
   end
 
   ##

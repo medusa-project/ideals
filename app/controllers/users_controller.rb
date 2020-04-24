@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   #
   def edit
     render partial: "users/form",
-           locals: { user: @user, context: :edit }
+           locals: { user: @user }
   end
 
   ##

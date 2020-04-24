@@ -1,5 +1,4 @@
-// @param profile [MetadataProfile]
-// @param context [Symbol] :new or :edit
+-# @param profile [MetadataProfile]
 
 = form_for(profile, remote: true) do |f|
   .error-messages
@@ -14,5 +13,5 @@
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
-      = f.submit(context == :new ? 'Create Profile' : 'Edit Profile',
-                 class: 'btn btn-primary')
+      = f.submit(f.object.new_record? ? "Create Profile" : "Edit Profile",
+                 class: "btn btn-primary")

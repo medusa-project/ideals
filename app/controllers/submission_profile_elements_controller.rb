@@ -45,8 +45,7 @@ class SubmissionProfileElementsController < ApplicationController
   def edit
     render partial: "submission_profile_elements/form",
            locals: { profile: @element.submission_profile,
-                     element: @element,
-                     context: :edit }
+                     element: @element }
   end
 
   ##

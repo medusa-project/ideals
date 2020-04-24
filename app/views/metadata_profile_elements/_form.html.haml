@@ -1,6 +1,5 @@
-// @param element [MetadataProfileElement]
-// @param profile [MetadataProfile]
-// @param context [Symbol] :new or :edit
+-# @param element [MetadataProfileElement]
+-# @param profile [MetadataProfile]
 
 = form_for([profile, element], remote: true) do |f|
   = f.hidden_field :metadata_profile_id, value: profile.id
@@ -35,8 +34,5 @@
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
-      = f.submit(context == :new ? 'Create Element' : 'Edit Element',
+      = f.submit(f.object.new_record? ? "Create Element" : "Edit Element",
                  class: 'btn btn-primary')
-
-
-/position_options_for_select = [['Nothing (First)', 0]]

@@ -42,7 +42,7 @@ class UserGroupsController < ApplicationController
   #
   def edit
     render partial: "user_groups/form",
-           locals: { user_group: @user_group, context: :edit }
+           locals: { user_group: @user_group }
   end
 
   ##

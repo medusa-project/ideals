@@ -42,7 +42,7 @@ class RegisteredElementsController < ApplicationController
   #
   def edit
     render partial: 'registered_elements/form',
-           locals: { element: @element, context: :edit }
+           locals: { element: @element }
   end
 
   ##

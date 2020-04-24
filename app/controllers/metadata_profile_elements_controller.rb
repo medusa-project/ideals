@@ -44,8 +44,7 @@ class MetadataProfileElementsController < ApplicationController
   def edit
     render partial: "metadata_profile_elements/form",
            locals: { profile: @element.metadata_profile,
-                     element: @element,
-                     context: :edit }
+                     element: @element }
   end
 
   ##
