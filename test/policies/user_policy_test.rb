@@ -58,6 +58,32 @@ class UserPolicyTest < ActiveSupport::TestCase
     assert !policy.index?
   end
 
+  # invite?()
+
+  test "invite?() returns false with a nil user context" do
+    policy = UserPolicy.new(nil, @object_user)
+    assert !policy.invite?
+  end
+
+  test "invite?() does not authorize non-sysadmins" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy = UserPolicy.new(context, @object_user)
+    assert !policy.invite?
+  end
+
+  test "invite?() authorizes sysadmins" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy = UserPolicy.new(context, @object_user)
+    assert policy.invite?
+  end
+
+  test "invite?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = UserPolicy.new(context, @object_user)
+    assert !policy.invite?
+  end
+
   # show?()
 
   test "show?() returns false with a nil user context" do

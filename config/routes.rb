@@ -12,7 +12,6 @@ Rails.application.routes.draw do
   # handle routing
   get '/handle/:prefix/:suffix', to: 'handles#resolve'
 
-  resources :account_activations, only: [:edit]
   resources :collections, except: [:edit, :new] do
     match "/children", to: "collections#children", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -32,13 +31,13 @@ Rails.application.routes.draw do
   resources :handles
   resources :identities, only: [:create, :destroy, :update] do
     collection do
-      get "login"
       get "register"
     end
+    match "/activate", to: "identities#activate", via: [:patch, :post]
     match "/reset-password", to: "identities#new_password", via: :get
     match "/reset-password", to: "identities#reset_password", via: [:patch, :post]
   end
-  resources :invitees
+  resources :invitees, only: [:create, :destroy, :new, :update]
   resources :items, except: :new do
     resources :bitstreams, only: [:create, :destroy, :show]
     match "/edit-membership", to: "items#edit_membership", via: :get,

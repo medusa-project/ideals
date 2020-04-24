@@ -1,0 +1,20 @@
+-# Add-invitee modal
+-#
+-# Requires the following locals:
+-#
+-# invitee [Invitee]
+-# token [String]
+-#
+#invite-user-modal.modal.fade{"aria-labelledby": "invite-user-modal-label", role: "dialog", tabindex: "-1"}
+  .modal-dialog{role: "document"}
+    .modal-content
+      .modal-header
+        %h4#invitee-user-modal-label.modal-title Invite User
+        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+          %span{"aria-hidden": "true"} &times;
+      .modal-body
+        .alert.alert-light
+          %i.fa.fa-info-circle
+          A message containing a link to the registration form will be sent to
+          this address.
+        = render partial: "invitees/form", locals: { invitee: invitee }

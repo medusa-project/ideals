@@ -1,6 +1,14 @@
 - provide :body_id, "list_users"
 - provide :title, "Users"
 
+-if policy(User).invite?
+  .btn-group.float-right{role: "group"}
+    / Invite button
+    %button.btn.btn-light{"data-target": "#invite-user-modal",
+                          "data-toggle": "modal", type: "button"}
+      %i.fa.fa-plus
+      Invite User
+
 %h1 Users
 
 .card.mb-3
@@ -18,3 +26,5 @@
       = submit_tag "Filter", name: "", class: "btn btn-primary ml-1"
 
 = render partial: "users"
+
+= render partial: "invitees/add_modal", locals: { invitee: @new_invitee }

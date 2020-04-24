@@ -2,14 +2,40 @@ require 'test_helper'
 
 class IdentityTest < ActiveSupport::TestCase
 
+  include ActionMailer::TestHelper
+
   setup do
     @instance = identities(:norights)
+  end
+
+  # create()
+
+  test "create() does not allow association with an expired Invitee" do
+    assert_raises ActiveRecord::RecordInvalid do
+      # Identity.create() is invoked indirectly
+      Invitee.create!(email: "test@example.org",
+                      expires_at: 10.years.ago)
+    end
+  end
+
+  test "create() sets the activation digest" do
+    email   = "tessdfsadft@example.org"
+    invitee = Invitee.create!(email: email)
+    assert_not_empty invitee.identity.activation_digest
+  end
+
+  test "create() sends an activation email" do
+    assert_emails 1 do
+      Invitee.create!(email: "test@example.org") # auto-creates an associated Identity
+    end
   end
 
   # create_for_user()
 
   test "create_for_user() creates a correct instance" do
-    user = User.create!(username: "joe", name: "Joe", email: "joe@example.org")
+    user     = User.create!(username: "joe",
+                            name: "Joe",
+                            email: "joe@example.org")
     identity = Identity.create_for_user(user, "password")
     assert identity.activated
     assert_equal user.name, identity.name
@@ -42,12 +68,56 @@ class IdentityTest < ActiveSupport::TestCase
     assert !Identity.uofi?("not an email address")
   end
 
+  # activate()
+
+  test "activate() works" do
+    @instance.activated    = false
+    @instance.activated_at = nil
+
+    @instance.activate
+    assert @instance.activated
+    assert_not_nil @instance.activated_at
+  end
+
   # activation_url()
 
+  test "activation_url raises an error if activation_token is blank" do
+    assert_raises RuntimeError do
+      @instance.activation_url
+    end
+  end
+
   test "activation_url() returns a correct URL" do
+    @instance.send(:create_activation_digest)
     base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    expected = "#{base_url}/account_activations/#{@instance.activation_token}/edit?email=#{CGI.escape(@instance.email)}"
+    expected = "#{base_url}/identities/#{@instance.id}/activate?token=#{@instance.activation_token}"
     assert_equal expected, @instance.activation_url
+  end
+
+  # create_reset_digest()
+
+  test "create_reset_digest() works" do
+    digest  = @instance.reset_digest
+    sent_at = @instance.reset_sent_at
+    @instance.create_reset_digest
+
+    assert_not_empty @instance.reset_digest
+    assert_not_equal digest, @instance.reset_digest
+    assert_not_nil @instance.reset_sent_at
+    assert_not_equal sent_at, @instance.reset_sent_at
+  end
+
+  # invitee()
+
+  test "invitee is required" do
+    email    = "test@example.org"
+    password = "password"
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance = Identity.create!(name: email,
+                                   email: email,
+                                   password: password,
+                                   password_confirmation: password)
+    end
   end
 
   # password_reset_url()
@@ -63,6 +133,23 @@ class IdentityTest < ActiveSupport::TestCase
     base_url = ::Configuration.instance.website[:base_url].chomp("/")
     expected = "#{base_url}/identities/#{@instance.id}/reset-password?token=#{@instance.reset_token}"
     assert_equal expected, @instance.password_reset_url
+  end
+
+  # send_password_reset_email()
+
+  test "send_password_reset_email() raises an error if reset_token is not set" do
+    assert_no_emails do
+      assert_raises do
+        @instance.send_password_reset_email
+      end
+    end
+  end
+
+  test "send_password_reset_email() sends an email if reset_token is set" do
+    @instance.create_reset_digest
+    assert_emails 1 do
+      @instance.send_password_reset_email
+    end
   end
 
   # update_password!()

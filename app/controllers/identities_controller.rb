@@ -2,20 +2,30 @@
 
 class IdentitiesController < ApplicationController
 
-  before_action :set_identity, only: [:destroy, :new_password, :reset_password,
-                                      :update]
+  before_action :set_identity, only: [:activate, :destroy, :new_password,
+                                      :reset_password, :update]
   before_action :validate_identity, only: [:new_password, :reset_password]
   before_action :validate_reset_token, only: [:new_password, :reset_password]
 
   ##
-  # Responds to `GET /identities/register`
+  # Responds to `PATCH/POST /identities/:id/activate`. Requires a `token` query
+  # argument.
   #
-  def register; end
-
-  ##
-  # Responds to `GET /identities/login`
-  #
-  def login; end
+  def activate
+    if @identity.authenticated?(:activation, params[:token])
+      if @identity.activated?
+        flash['error'] = "This account has already been activated."
+        redirect_back fallback_location: root_path
+      else
+        @identity.activate
+        flash['success'] = "Account activated."
+        redirect_back fallback_location: root_path
+      end
+    else
+      flash['error'] = "Invalid activation link."
+      redirect_back fallback_location: root_path
+    end
+  end
 
   ##
   # Responds to `POST /identities`
@@ -45,6 +55,11 @@ class IdentitiesController < ApplicationController
   def new_password
     @token = params[:token]
   end
+
+  ##
+  # Responds to `GET /identities/register`
+  #
+  def register; end
 
   ##
   # Processes form submitted from {new_password}. This is like a limited

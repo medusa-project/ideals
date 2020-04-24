@@ -30,6 +30,13 @@ class UserPolicy < ApplicationPolicy
     update?
   end
 
+  ##
+  # N.B.: this does not correspond to a controller method.
+  #
+  def invite?
+    update?
+  end
+
   def show?
     update?
   end

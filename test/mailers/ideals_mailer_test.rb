@@ -4,6 +4,27 @@ class IdealsMailerTest < ActionMailer::TestCase
 
   tests IdealsMailer
 
+  # account_activation()
+
+  test "account_activation() sends the expected email" do
+    identity = identities(:norights)
+    identity.send(:create_activation_digest)
+
+    email = IdealsMailer.account_activation(identity).deliver_now
+    assert !ActionMailer::Base.deliveries.empty?
+
+    assert_equal [Configuration.instance.website[:email]], email.from
+    assert_equal [identity.email], email.to
+    assert_equal "Activate your IDEALS account", email.subject
+
+    assert_equal render_template("account_activation.txt", url: identity.activation_url),
+                 email.text_part.body.raw_source
+    assert_equal render_template("account_activation.html", url: identity.activation_url),
+                 email.html_part.body.raw_source
+  end
+
+  # error()
+
   test "error() sends the expected email" do
     email = IdealsMailer.error("Something broke").deliver_now
     assert !ActionMailer::Base.deliveries.empty?
@@ -13,6 +34,8 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal "[TEST: IDEALS] System Error", email.subject
     assert_equal "Something broke\r\n\r\n", email.body.raw_source
   end
+
+  # password_reset()
 
   test "password_reset() sends the expected email" do
     identity = identities(:norights)

@@ -1,0 +1,3 @@
+norights:
+  email: norights@illinois.edu
+  approval_state: <%= ApprovalState::APPROVED %>

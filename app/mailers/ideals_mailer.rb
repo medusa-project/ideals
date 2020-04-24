@@ -24,7 +24,7 @@ class IdealsMailer < ApplicationMailer
 
   def account_activation(identity)
     @identity = identity
-    mail(to: @identity.email, subject: "IDEALS account activation")
+    mail(to: @identity.email, subject: "Activate your IDEALS account")
   end
 
   def password_reset(identity)

@@ -29,6 +29,7 @@ class UsersController < ApplicationController
     @count            = @users.count
     @current_page     = @users.page
     @permitted_params = results_params
+    @new_invitee      = Invitee.new
   end
 
   ##

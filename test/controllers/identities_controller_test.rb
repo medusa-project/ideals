@@ -2,6 +2,60 @@ require 'test_helper'
 
 class IdentitiesControllerTest < ActionDispatch::IntegrationTest
 
+  # activate()
+
+  test "activate() sets the flash and redirects if a token is not provided" do
+    identity = identities(:norights)
+    post identity_activate_path(identity), {
+        params: {}
+    }
+    assert_equal "Invalid activation link.", flash['error']
+    assert_redirected_to root_url
+  end
+
+  test "activate() sets the flash and redirects if an invalid token is provided" do
+    identity = identities(:norights)
+    post identity_activate_path(identity), {
+        params: {
+            token: "bogus"
+        }
+    }
+    assert_equal "Invalid activation link.", flash['error']
+    assert_redirected_to root_url
+  end
+
+  test "activate() sets the flash and redirects if the identity has already been activated" do
+    identity = identities(:norights)
+    identity.send(:create_activation_digest)
+    identity.activate
+
+    post identity_activate_path(identity), {
+        params: {
+            token: identity.activation_token
+        }
+    }
+    assert_equal "This account has already been activated.", flash['error']
+    assert_redirected_to root_url
+  end
+
+  test "activate() activates the identity, sets the flash, and redirects" do
+    identity = identities(:norights)
+    identity.send(:create_activation_digest)
+    identity.update_attribute(:activated, false)
+    identity.update_attribute(:activated_at, nil)
+
+    post identity_activate_path(identity), {
+        params: {
+            token: identity.activation_token
+        }
+    }
+    identity.reload
+    assert identity.activated
+    assert_not_nil identity.activated_at
+    assert_equal "Account activated.", flash['success']
+    assert_redirected_to root_url
+  end
+
   # new_password()
 
   test "new_password() redirects and sets the flash if a token is not provided" do

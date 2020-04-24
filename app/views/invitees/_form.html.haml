@@ -1,29 +1,12 @@
 -# frozen_string_literal: true
-= form_for invitee do |f|
-  - if invitee.errors.any?
-    #error_explanation
-      %h2= "#{pluralize(invitee.errors.count, "error")} prohibited this invitee from being saved:"
-      %ul
-        - invitee.errors.full_messages.each do |message|
-          %li= message
-  = form_for invitee do |f|
-    .form-group.row
-      = f.label :email, "Email Address", class: "col-md-2 col-form-label"
-      .col-md-10
-        = f.text_field :email, class: "form-control", placeholder: "[account@organization.org]"
-    .form-group.row
-      = f.label :note, "Purpose", class: "col-md-2 col-form-label"
-      .col-md-10
-        = f.text_field :note, class: "form-control", placeholder: "collaborate w/Illinois"
-    .form-group.row
-      =f.label :expires_at, "Expiration Date",  class: "col-md-2 col-form-label"
-      .col-md-10
-        =f.date_field :expires_at, class: "form-control"
-    .form-group.row
-      = f.label :approval_state, "Approval", class: "col-md-2 col-form-label"
-      .col-md-10
-        = f.select(:approval_state, ApprovalState::ARRAY, {prompt: true}, {class: "form-control"})
-    .form-group.row.actions
-      .col-md-2.col-md-offset-10
-        =f.submit invitee.new_record? ? "Add" : "Save Changes", class: "btn btn-primary btn-block"
 
+= form_for(invitee, url: invitees_path, remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :email, "Email"
+    = f.text_field :email, class: "form-control"
+
+  .form-group
+    = f.submit "Send Invite", class: "btn btn-primary"

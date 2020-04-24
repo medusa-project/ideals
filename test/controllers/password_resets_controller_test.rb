@@ -80,23 +80,26 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
   and redirects when a registered email is provided" do
     # We need to fetch an Identity and update its email to a non-UofI address,
     # but the process is a little bit convoluted.
-    email = "norights@example.edu"
-    Invitee.create!(email: email, expires_at: Time.now + 1.hour)
-    identity = identities(:norights)
-    identity.update!(email: email, password: "password")
+    email    = "test@example.edu"
+    password = "password"
+    invitee  = Invitee.create!(email: email, expires_at: Time.now + 1.hour)
+    identity = invitee.identity
+    identity.update!(email: email,
+                     password: password,
+                     password_confirmation: password)
 
-    assert_no_emails
-    post reset_password_path, {
-        params: {
-            password_reset: {
-                email: email
-            }
-        }
-    }
+    assert_emails 1 do
+      post reset_password_path, {
+          params: {
+              password_reset: {
+                  email: email
+              }
+          }
+      }
+    end
     identity.reload
     assert_not_nil identity.reset_digest
     assert Time.zone.now - identity.reset_sent_at < 10
-    assert_emails 1
     assert flash['success'].start_with?("An email has been sent")
     assert_redirected_to root_url
   end
