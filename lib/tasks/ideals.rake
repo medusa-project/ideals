@@ -64,9 +64,8 @@ namespace :ideals do
     end
 
     desc 'Delete a user'
-    task :delete, [:netid] => :environment do |task, args|
-      netid = args[:netid]
-      email = "#{netid}@illinois.edu"
+    task :delete, [:email] => :environment do |task, args|
+      email = args[:email]
       ActiveRecord::Base.transaction do
         LocalIdentity.destroy_by(email: email)
         Invitee.destroy_by(email: email)
