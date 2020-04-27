@@ -1,9 +1,0 @@
-- if policy(@user.becomes(User)).edit?
-  .btn-group.float-right{role: "group"}
-    // Edit button
-    %button.btn.btn-light.edit-user{"data-user-id": @user.id,
-                                    "data-target": "#edit-user-modal",
-                                    "data-toggle": "modal",
-                                    type: "button"}
-      %i.fas.fa-pencil-alt
-      Edit

@@ -1,8 +1,6 @@
 - provide :body_id, "show_user"
 - provide :title, @user.name
 
-= render partial: "show_button_group"
-
 %h1
   =icon_for(@user)
   =@user.name
@@ -44,6 +42,3 @@
 
   #submissions.tab-pane{role: "tabpanel", "aria-labelledby": "submissions-tab"}
     = render partial: "show_submissions_tab"
-
-= render partial: "shared/ajax_modal",
-         locals: { id: "edit-user-modal", title: "Edit User" }

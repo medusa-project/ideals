@@ -2,6 +2,16 @@
 -#
 -# user [User]
 
+- if policy(user.becomes(User)).edit?
+  .btn-group.float-right{role: "group"}
+    // Edit button
+    %button.btn.btn-light.edit-user{"data-user-id": user.id,
+                                    "data-target": "#edit-user-modal",
+                                    "data-toggle": "modal",
+                                    type: "button"}
+      %i.fas.fa-pencil-alt
+      Edit
+
 %dl
   %dt UID
   %dd= user.uid
@@ -9,13 +19,11 @@
   %dd= user.username
   %dt Email
   %dd= link_to(user.email, "mailto:#{user.email}")
-  - if user.phone
-    %dt Phone
-    %dd
-      = link_to(user.phone, "tel:#{user.phone}")
+  %dt Phone
+  %dd= user.phone ? link_to(user.phone, "tel:#{user.phone}") : "None"
   %dt System Administrator
   %dd= user.sysadmin? ? "Yes" : "No"
-  %dt Groups
+  %dt User Groups
   %dd
     - if user.user_groups.any?
       %ul
@@ -27,3 +35,6 @@
   %dd= user.type
   %dt Created
   %dd= local_time user.created_at
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-user-modal", title: "Edit User" }
