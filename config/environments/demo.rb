@@ -110,14 +110,13 @@ Rails.application.configure do
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 
-  # email stuff
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-      address: 'express-smtp.cites.uiuc.edu',
-      domain: 'express-smtp.cites.uiuc.edu',
-      openssl_verify_mode: 'none'
-  }
-  config.action_mailer.perform_deliveries = true
-  config.action_mailer.logger = Rails.logger
-  config.action_mailer.default_url_options = {host: "demo.ideals.illinois.edu"}
+  # ActionMailer configuration
+  require "configuration"
+  mail_config = ::Configuration.instance.mail
+  config.action_mailer.delivery_method       = :smtp
+  config.action_mailer.smtp_settings         = mail_config[:smtp].symbolize_keys
+  config.action_mailer.perform_deliveries    = true
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.logger                = Rails.logger
+  config.action_mailer.default_url_options   = {host: "demo.ideals.illinois.edu"}
 end

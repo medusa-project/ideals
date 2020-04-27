@@ -5,5 +5,5 @@
     Details have been logged.
     %b
     IDEALS @ Illinois administrators may be contacted at:
-    %a{href: "mailto:#{::Configuration.instance.website[:email]}"}
-      = ::Configuration.instance.website[:email]
+    %a{href: "mailto:#{::Configuration.instance.mail[:from]}"}
+      = ::Configuration.instance.mail[:from]

@@ -3,13 +3,13 @@
 class IdealsMailer < ApplicationMailer
   NO_REPLY_ADDRESS = "ideals-noreply@illinois.edu"
 
-  default from: ::Configuration.instance.website[:email]
+  default from: ::Configuration.instance.mail[:from]
 
   def contact_help(params)
     subject = "#{subject_prefix} IDEALS] Help Request"
     @params = params
     mail(from:    @params["help-email"],
-         to:      [::Configuration.instance.website[:email],
+         to:      [::Configuration.instance.mail[:from],
                    @params["help-email"]],
          subject: subject)
   end
