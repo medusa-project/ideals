@@ -11,10 +11,10 @@ class InviteeTest < ActiveSupport::TestCase
 
   test "create() creates an associated Identity" do
     email = "new@example.edu"
-    assert_nil Identity.find_by_email(email)
+    assert_nil LocalIdentity.find_by_email(email)
 
     Invitee.create!(email: email)
-    assert_not_nil Identity.find_by_email(email)
+    assert_not_nil LocalIdentity.find_by_email(email)
   end
 
   # destroy()
@@ -22,7 +22,7 @@ class InviteeTest < ActiveSupport::TestCase
   test "destroy() destroys any associated Identity" do
     assert_not_nil @instance.identity
     @instance.destroy
-    assert_nil Identity.find_by_email(@instance.email)
+    assert_nil LocalIdentity.find_by_email(@instance.email)
   end
 
   test "destroy() destroys any associated LocalUser" do

@@ -29,13 +29,13 @@ Rails.application.routes.draw do
   match "/dashboard", to: "dashboard#index", via: :get
   match "/deposit", to: "submissions#agreement", via: :get
   resources :handles
-  resources :identities, only: [:create, :destroy, :update] do
+  resources :local_identities, only: [:create, :destroy, :update], path: "identities" do
     collection do
       get "register"
     end
-    match "/activate", to: "identities#activate", via: [:patch, :post]
-    match "/reset-password", to: "identities#new_password", via: :get
-    match "/reset-password", to: "identities#reset_password", via: [:patch, :post]
+    match "/activate", to: "local_identities#activate", via: [:patch, :post]
+    match "/reset-password", to: "local_identities#new_password", via: :get
+    match "/reset-password", to: "local_identities#reset_password", via: [:patch, :post]
   end
   resources :invitees, only: [:create, :destroy, :new, :update]
   resources :items, except: :new do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class IdentitiesController < ApplicationController
+class LocalIdentitiesController < ApplicationController
 
   before_action :set_identity, only: [:activate, :destroy, :new_password,
                                       :reset_password, :update]
@@ -31,7 +31,7 @@ class IdentitiesController < ApplicationController
   # Responds to `POST /identities`
   #
   def create
-    @identity = Identity.new(identity_params)
+    @identity = LocalIdentity.new(identity_params)
 
     respond_to do |format|
       if @identity.save
@@ -116,11 +116,11 @@ class IdentitiesController < ApplicationController
   end
 
   def identity_password_params
-    params.require(:identity).permit(:password, :password_confirmation)
+    params.require(:local_identity).permit(:password, :password_confirmation)
   end
 
   def set_identity
-    @identity = Identity.find(params[:id] || params[:identity_id])
+    @identity = LocalIdentity.find(params[:id] || params[:local_identity_id])
   end
 
   def validate_identity

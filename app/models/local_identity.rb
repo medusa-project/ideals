@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
 ##
-# Local user identity, which hooks into OmniAuth's authentication system. This
-# is more-or-less an OmniAuth-compatible surrogate of a {LocalUser} used for
-# users whose credentials are stored locally, i.e. users without a NetID.
+# Local user identity, which hooks into the `omniauth-identity` authentication
+# strategy. This is more-or-less an OmniAuth-compatible surrogate of a
+# {LocalUser} used for users whose credentials are stored locally, i.e. users
+# without a NetID.
+#
+# N.B.: `omniauth-identity` wants this class to be named `Identity` by default.
+# It was renamed to make it clearer that these identities are managed locally
+# and are not surrogates for some kind of external identity.
 #
 # # Attributes
 #
@@ -30,7 +35,7 @@
 #
 # @see https://github.com/omniauth/omniauth-identity
 #
-class Identity < OmniAuth::Identity::Models::ActiveRecord
+class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
 
   attr_accessor :activation_token, :reset_token
 
@@ -54,7 +59,7 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   #
   # @param user [LocalUser]
   # @param password [String]
-  # @return [Identity]
+  # @return [LocalIdentity]
   #
   def self.create_for_user(user, password)
     invitee = Invitee.find_or_create_by(email: user.email)
@@ -131,8 +136,8 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   # Creates and assigns new password reset attributes.
   #
   def create_reset_digest
-    self.reset_token = Identity.new_token
-    update_attribute(:reset_digest, Identity.digest(self.reset_token))
+    self.reset_token = LocalIdentity.new_token
+    update_attribute(:reset_digest, LocalIdentity.digest(self.reset_token))
     update_attribute(:reset_sent_at, Time.zone.now)
   end
 
@@ -185,8 +190,8 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   # once, on instance creation.
   #
   def create_activation_digest
-    self.activation_token = Identity.new_token
-    update_attribute(:activation_digest, Identity.digest(self.activation_token))
+    self.activation_token = LocalIdentity.new_token
+    update_attribute(:activation_digest, LocalIdentity.digest(self.activation_token))
   end
 
   def validate_invited

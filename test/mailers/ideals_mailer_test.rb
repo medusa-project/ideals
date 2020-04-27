@@ -7,7 +7,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_activation()
 
   test "account_activation() sends the expected email" do
-    identity = identities(:norights)
+    identity = local_identities(:norights)
     identity.send(:create_activation_digest)
 
     email = IdealsMailer.account_activation(identity).deliver_now
@@ -38,7 +38,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # password_reset()
 
   test "password_reset() sends the expected email" do
-    identity = identities(:norights)
+    identity = local_identities(:norights)
     identity.create_reset_digest
 
     email = IdealsMailer.password_reset(identity).deliver_now

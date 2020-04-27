@@ -2,7 +2,8 @@
 
 ##
 # Non-NetID user who has either been invited to register, or has self-
-# petitioned to register, and may or may not yet have an {Identity}.
+# petitioned to register, and may or may not yet have an {LocalIdentity
+# identity}.
 #
 # # Attributes
 #
@@ -17,7 +18,7 @@ class Invitee < ApplicationRecord
 
   EXPIRATION = 1.year
 
-  has_one :identity, inverse_of: :invitee
+  has_one :identity, class_name: "LocalIdentity", inverse_of: :invitee
 
   after_create :associate_or_create_identity
 
@@ -52,17 +53,17 @@ class Invitee < ApplicationRecord
   private
 
   def associate_or_create_identity
-    self.identity = Identity.find_by(email: email)
+    self.identity = LocalIdentity.find_by(email: email)
     unless self.identity
       # Set a random password. It will be updated during registration.
       password = SecureRandom.hex
-      self.identity = Identity.create!(email:                 self.email,
-                                       name:                  self.email,
-                                       password:              password,
-                                       password_confirmation: password,
-                                       invitee:               self,
-                                       activated:             true,
-                                       activated_at:          Time.zone.now)
+      self.identity = LocalIdentity.create!(email:                 self.email,
+                                            name:                  self.email,
+                                            password:              password,
+                                            password_confirmation: password,
+                                            invitee:               self,
+                                            activated:             true,
+                                            activated_at:          Time.zone.now)
     end
   end
 

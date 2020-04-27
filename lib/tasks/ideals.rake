@@ -46,13 +46,13 @@ namespace :ideals do
   end
 
   namespace :users do
-    desc "Create a local identity sysadmin user"
-    task :create_identity_sysadmin, [:username, :password] => :environment do |task, args|
+    desc "Create a local sysadmin user"
+    task :create_local_sysadmin, [:username, :password] => :environment do |task, args|
       username = args[:username]
       ActiveRecord::Base.transaction do
         user = LocalUser.no_omniauth("#{username}@example.edu")
         user.update!(sysadmin: true)
-        Identity.create_for_user(user, args[:password])
+        LocalIdentity.create_for_user(user, args[:password])
       end
     end
 
@@ -68,7 +68,7 @@ namespace :ideals do
       netid = args[:netid]
       email = "#{netid}@illinois.edu"
       ActiveRecord::Base.transaction do
-        Identity.destroy_by(name: netid)
+        LocalIdentity.destroy_by(email: email)
         Invitee.destroy_by(email: email)
         User.destroy_by(email: email)
       end

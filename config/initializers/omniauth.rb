@@ -4,8 +4,9 @@ OmniAuth.config.logger = Rails.logger
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :identity,
-           :fields => [:email, :name],
-           :on_failed_registration => WelcomeController.action(:on_failed_registration)
+           model: LocalIdentity,
+           fields: [:email, :name],
+           on_failed_registration: WelcomeController.action(:on_failed_registration)
   provider :shibboleth, shib_opts.symbolize_keys
 end
 

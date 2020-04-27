@@ -3,7 +3,7 @@
 # `identities.yml`. (This is a requirement of the omniauth-identity gem.)
 #
 
-admin: # TODO: rename to identity_admin
+admin: # TODO: rename to local_admin
   type: LocalUser
   uid: admin@illinois.edu
   name: admin

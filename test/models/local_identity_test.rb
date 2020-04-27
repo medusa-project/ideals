@@ -1,18 +1,18 @@
 require 'test_helper'
 
-class IdentityTest < ActiveSupport::TestCase
+class LocalIdentityTest < ActiveSupport::TestCase
 
   include ActionMailer::TestHelper
 
   setup do
-    @instance = identities(:norights)
+    @instance = local_identities(:norights)
   end
 
   # create()
 
   test "create() does not allow association with an expired Invitee" do
     assert_raises ActiveRecord::RecordInvalid do
-      # Identity.create() is invoked indirectly
+      # LocalIdentity.create() is invoked indirectly
       Invitee.create!(email: "test@example.org",
                       expires_at: 10.years.ago)
     end
@@ -26,7 +26,7 @@ class IdentityTest < ActiveSupport::TestCase
 
   test "create() sends an activation email" do
     assert_emails 1 do
-      Invitee.create!(email: "test@example.org") # auto-creates an associated Identity
+      Invitee.create!(email: "test@example.org") # auto-creates an associated LocalIdentity
     end
   end
 
@@ -36,7 +36,7 @@ class IdentityTest < ActiveSupport::TestCase
     user     = User.create!(username: "joe",
                             name: "Joe",
                             email: "joe@example.org")
-    identity = Identity.create_for_user(user, "password")
+    identity = LocalIdentity.create_for_user(user, "password")
     assert identity.activated
     assert_equal user.name, identity.name
     assert_not_nil identity.password_digest
@@ -47,25 +47,25 @@ class IdentityTest < ActiveSupport::TestCase
   # new_token()
 
   test "new_token() returns a token" do
-    assert_not_empty Identity.new_token
+    assert_not_empty LocalIdentity.new_token
   end
 
   # uofi?()
 
   test "uofi?() returns true for UofI email addresses" do
-    assert Identity.uofi?("test@illinois.edu")
-    assert Identity.uofi?("test@uillinois.edu")
-    assert Identity.uofi?("test@uiuc.edu")
-    assert Identity.uofi?("TEST@UIUC.EDU")
+    assert LocalIdentity.uofi?("test@illinois.edu")
+    assert LocalIdentity.uofi?("test@uillinois.edu")
+    assert LocalIdentity.uofi?("test@uiuc.edu")
+    assert LocalIdentity.uofi?("TEST@UIUC.EDU")
   end
 
   test "uofi?() returns false for non-UofI email addresses" do
-    assert !Identity.uofi?("test@example.org")
-    assert !Identity.uofi?("test@not-illinois.edu")
+    assert !LocalIdentity.uofi?("test@example.org")
+    assert !LocalIdentity.uofi?("test@not-illinois.edu")
   end
 
   test "uofi?() returns false for malformed email addresses" do
-    assert !Identity.uofi?("not an email address")
+    assert !LocalIdentity.uofi?("not an email address")
   end
 
   # activate()
@@ -113,10 +113,10 @@ class IdentityTest < ActiveSupport::TestCase
     email    = "test@example.org"
     password = "password"
     assert_raises ActiveRecord::RecordInvalid do
-      @instance = Identity.create!(name: email,
-                                   email: email,
-                                   password: password,
-                                   password_confirmation: password)
+      @instance = LocalIdentity.create!(name: email,
+                                        email: email,
+                                        password: password,
+                                        password_confirmation: password)
     end
   end
 

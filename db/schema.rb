@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_27_183605) do
+ActiveRecord::Schema.define(version: 2020_04_27_190233) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -81,21 +81,6 @@ ActiveRecord::Schema.define(version: 2020_04_27_183605) do
     t.integer "suffix"
   end
 
-  create_table "identities", force: :cascade do |t|
-    t.string "name"
-    t.string "email", null: false
-    t.string "password_digest"
-    t.string "activation_digest"
-    t.boolean "activated", default: false
-    t.datetime "activated_at"
-    t.string "reset_digest"
-    t.bigint "invitee_id"
-    t.datetime "reset_sent_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_identities_on_email", unique: true
-  end
-
   create_table "invitees", force: :cascade do |t|
     t.string "email", null: false
     t.datetime "expires_at"
@@ -119,6 +104,21 @@ ActiveRecord::Schema.define(version: 2020_04_27_183605) do
     t.index ["in_archive"], name: "index_items_on_in_archive"
     t.index ["submitting"], name: "index_items_on_submitting"
     t.index ["withdrawn"], name: "index_items_on_withdrawn"
+  end
+
+  create_table "local_identities", force: :cascade do |t|
+    t.string "name"
+    t.string "email", null: false
+    t.string "password_digest"
+    t.string "activation_digest"
+    t.boolean "activated", default: false
+    t.datetime "activated_at"
+    t.string "reset_digest"
+    t.bigint "invitee_id"
+    t.datetime "reset_sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_local_identities_on_email", unique: true
   end
 
   create_table "managers", force: :cascade do |t|
@@ -247,9 +247,9 @@ ActiveRecord::Schema.define(version: 2020_04_27_183605) do
   add_foreign_key "collections_items", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections_units", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections_units", "units", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "identities", "invitees", on_update: :cascade, on_delete: :cascade
   add_foreign_key "items", "collections", column: "primary_collection_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade

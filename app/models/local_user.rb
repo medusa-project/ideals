@@ -12,13 +12,13 @@
 class LocalUser < User
 
   before_save :sync_identity_properties
-  before_destroy :destroy_local_identity
+  before_destroy :destroy_identity
 
   def self.from_omniauth(auth)
     return nil unless auth && auth[:uid] && auth["info"]["email"]
 
     email = auth["info"]["email"].strip
-    identity = Identity.find_by(email: email)
+    identity = LocalIdentity.find_by(email: email)
 
     return nil unless identity&.activated
 
@@ -79,10 +79,10 @@ class LocalUser < User
   end
 
   ##
-  # @return [Identity]
+  # @return [LocalIdentity]
   #
   def identity
-    Identity.find_by_email(self.email)
+    LocalIdentity.find_by_email(self.email)
   end
 
   def sysadmin?
@@ -91,16 +91,16 @@ class LocalUser < User
 
   private
 
-  def destroy_local_identity
-    Identity.destroy_by(email: self.email)
+  def destroy_identity
+    LocalIdentity.destroy_by(email: self.email)
   end
 
   ##
-  # Updates the relevant properties of the associated {Identity} to match those
-  # of the instance.
+  # Updates the relevant properties of the associated {LocalIdentity} to match
+  # those of the instance.
   #
   def sync_identity_properties
-    id = Identity.find_by_email(self.email_was)
+    id = LocalIdentity.find_by_email(self.email_was)
     id.update_attribute(:email, self.email) if self.email_changed?
     id.update_attribute(:name, self.name) if self.name_changed?
   end
