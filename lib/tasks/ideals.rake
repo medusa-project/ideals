@@ -50,7 +50,7 @@ namespace :ideals do
     task :create_identity_sysadmin, [:username, :password] => :environment do |task, args|
       username = args[:username]
       ActiveRecord::Base.transaction do
-        user = IdentityUser.no_omniauth("#{username}@example.edu")
+        user = LocalUser.no_omniauth("#{username}@example.edu")
         user.update!(sysadmin: true)
         Identity.create_for_user(user, args[:password])
       end

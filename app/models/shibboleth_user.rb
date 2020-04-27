@@ -107,7 +107,7 @@ class ShibbolethUser < User
 
   ##
   # Ensures that the `sysadmin` property is not set to `true`, as this is only
-  # available for {IdentityUser}s. For instances of this class, sysadmin-ness
+  # available for {LocalUser}s. For instances of this class, sysadmin-ness
   # is obtained from Active Directory.
   #
   def sysadmin_not_allowed

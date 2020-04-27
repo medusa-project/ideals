@@ -42,10 +42,10 @@ class Invitee < ApplicationRecord
   end
 
   ##
-  # @return [IdentityUser] Associated instance, or `nil` if not yet registered.
+  # @return [LocalUser] Associated instance, or `nil` if not yet registered.
   #
   def user
-    @user = IdentityUser.find_by(email: email) unless @user
+    @user = LocalUser.find_by(email: email) unless @user
     @user
   end
 

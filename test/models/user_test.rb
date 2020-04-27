@@ -24,7 +24,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
-    assert_equal ["User", "IdentityUser"],
+    assert_equal ["User", "LocalUser"],
                  doc[User::IndexFields::CLASS]
     assert_not_empty doc[User::IndexFields::CREATED]
     assert_equal @instance.email,

@@ -2,7 +2,7 @@
 -#
 -# user [User]
 
-- if user.kind_of?(IdentityUser) && policy(user.becomes(User)).edit_properties?
+- if user.kind_of?(LocalUser) && policy(user.becomes(User)).edit_properties?
   .btn-group.float-right{role: "group"}
     // Edit Properties button
     %button.btn.btn-light.edit-properties{"data-user-id": user.id,

@@ -12,7 +12,7 @@
     - # populated via ajax by shared/_validation_messages.js.erb
 
   -# For ShibbolethUsers, all of these properties are provided by AD.
-  - if user.kind_of?(IdentityUser)
+  - if user.kind_of?(LocalUser)
     .form-group
       = f.label :name
       = f.text_field :name, class: "form-control"

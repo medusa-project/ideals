@@ -24,7 +24,7 @@ class SessionsController < ApplicationController
     when "shibboleth"
       user = ShibbolethUser.from_omniauth(auth)
     when "identity"
-      user = IdentityUser.from_omniauth(auth)
+      user = LocalUser.from_omniauth(auth)
     else
       unauthorized
     end

@@ -25,7 +25,7 @@ class InviteeTest < ActiveSupport::TestCase
     assert_nil Identity.find_by_email(@instance.email)
   end
 
-  test "destroy() destroys any associated IdentityUser" do
+  test "destroy() destroys any associated LocalUser" do
     assert_not_nil @instance.identity
     @instance.destroy
     assert_nil User.find_by_email(@instance.email)

@@ -9,7 +9,7 @@
     - # populated via ajax by shared/_validation_messages.js.erb
 
   -# For ShibbolethUsers, this property is provided by AD.
-  - if user.kind_of?(IdentityUser)
+  - if user.kind_of?(LocalUser)
     .form-group
       .form-check
         = f.check_box :sysadmin, class: "form-check-input"

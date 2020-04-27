@@ -4,7 +4,7 @@
 #
 
 admin: # TODO: rename to identity_admin
-  type: IdentityUser
+  type: LocalUser
   uid: admin@illinois.edu
   name: admin
   email: admin@illinois.edu
@@ -13,7 +13,7 @@ admin: # TODO: rename to identity_admin
   sysadmin: true
 
 norights:
-  type: IdentityUser
+  type: LocalUser
   uid: norights@illinois.edu
   name: I have no rights
   email: norights@illinois.edu
@@ -22,7 +22,7 @@ norights:
   sysadmin: false
 
 sally:
-  type: IdentityUser
+  type: LocalUser
   uid: sally@illinois.edu
   name: Sally
   email: sally@illinois.edu
@@ -40,7 +40,7 @@ shibboleth:
   sysadmin: false
 
 unit1_unit2_unit1_admin:
-  type: IdentityUser
+  type: LocalUser
   uid: bob@illinois.edu
   name: bob
   email: bob@illinois.edu

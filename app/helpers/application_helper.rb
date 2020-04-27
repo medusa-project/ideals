@@ -168,7 +168,7 @@ module ApplicationHelper
       end
     when "Unit"
       icon = "fa fa-university"
-    when "User", "IdentityUser", "ShibbolethUser"
+    when "User", "LocalUser", "ShibbolethUser"
       icon = "fa fa-user"
     else
       icon = "fa fa-cube"

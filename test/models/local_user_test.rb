@@ -1,6 +1,6 @@
 require "test_helper"
 
-class IdentityUserTest < ActiveSupport::TestCase
+class LocalUserTest < ActiveSupport::TestCase
 
   setup do
     @instance = users(:norights)

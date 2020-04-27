@@ -111,8 +111,7 @@ class UsersController < ApplicationController
   end
 
   def authorize_user
-    # N.B.: without becomes() here, Pundit would require separate
-    # IdentityUserPolicy and ShibbolethUserPolicy classes.
+    # N.B.: without becomes(), Pundit would require separate policy classes.
     @user ? authorize(@user.becomes(User)) : skip_authorization
   end
 

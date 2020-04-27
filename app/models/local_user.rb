@@ -9,7 +9,7 @@
 # For this type of user, the {sysadmin} column determines whether they are a
 # sysadmin.
 #
-class IdentityUser < User
+class LocalUser < User
 
   before_save :sync_identity_properties
   before_destroy :destroy_local_identity
@@ -22,11 +22,11 @@ class IdentityUser < User
 
     return nil unless identity&.activated
 
-    user = IdentityUser.find_by(email: email)
+    user = LocalUser.find_by(email: email)
     if user
       user.update_with_omniauth(auth)
     else
-      user = IdentityUser.create_with_omniauth(auth)
+      user = LocalUser.create_with_omniauth(auth)
     end
     user
   end
@@ -57,8 +57,8 @@ class IdentityUser < User
   end
 
   def self.no_omniauth(email)
-    IdentityUser.create_no_omniauth(email) unless IdentityUser.exists?(email: email)
-    IdentityUser.find_by(email: email)
+    LocalUser.create_no_omniauth(email) unless LocalUser.exists?(email: email)
+    LocalUser.find_by(email: email)
   end
 
   def update_with_omniauth(auth)

@@ -2,8 +2,8 @@
 
 ##
 # Local user identity, which hooks into OmniAuth's authentication system. This
-# is more-or-less an OmniAuth-compatible surrogate of an {IdentityUser} used
-# for users whose credentials are stored locally, i.e. users without a NetID.
+# is more-or-less an OmniAuth-compatible surrogate of a {LocalUser} used for
+# users whose credentials are stored locally, i.e. users without a NetID.
 #
 # # Attributes
 #
@@ -49,10 +49,10 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
   has_secure_password
 
   ##
-  # Creates a counterpart for the given {IdentityUser}. If one already exists,
-  # it is updated with the given password.
+  # Creates a counterpart for the given {LocalUser}. If one already exists, it
+  # is updated with the given password.
   #
-  # @param user [IdentityUser]
+  # @param user [LocalUser]
   # @param password [String]
   # @return [Identity]
   #

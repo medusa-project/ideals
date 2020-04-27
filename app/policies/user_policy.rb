@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 ##
-# N.B.: To use this policy, an {IdentityUser} or {ShibbolethUser} instance must
-# be cast to its {User} superclass; for example:
+# N.B.: To use this policy, a {LocalUser} or {ShibbolethUser} instance must be
+# cast to its {User} superclass; for example:
 #
 # ```
 # authorize(user.becomes(User))
