@@ -11,6 +11,7 @@
 #
 class IdentityUser < User
 
+  before_save :sync_identity_properties
   before_destroy :destroy_local_identity
 
   def self.from_omniauth(auth)
@@ -92,6 +93,16 @@ class IdentityUser < User
 
   def destroy_local_identity
     Identity.destroy_by(email: self.email)
+  end
+
+  ##
+  # Updates the relevant properties of the associated {Identity} to match those
+  # of the instance.
+  #
+  def sync_identity_properties
+    id = Identity.find_by_email(self.email_was)
+    id.update_attribute(:email, self.email) if self.email_changed?
+    id.update_attribute(:name, self.name) if self.name_changed?
   end
 
 end

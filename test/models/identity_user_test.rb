@@ -17,10 +17,18 @@ class IdentityUserTest < ActiveSupport::TestCase
     end
   end
 
-  # identity()
+  # save()
 
-  test "identity() returns the associated Identity" do
-    assert_equal identities(:norights), @instance.identity
+  test "save() updates the email of the associated Identity" do
+    new_email = "new@example.edu"
+    @instance.update!(email: new_email)
+    assert_equal new_email, @instance.identity.email
+  end
+
+  test "save() updates the name of the associated Identity" do
+    new_name = "New Name"
+    @instance.update!(name: new_name)
+    assert_equal new_name, @instance.identity.name
   end
 
   # sysadmin?()
