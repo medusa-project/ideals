@@ -13,7 +13,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     email = IdealsMailer.account_activation(identity).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
-    assert_equal [Configuration.instance.website[:email]], email.from
+    assert_equal [Configuration.instance.mail[:from]], email.from
     assert_equal [identity.email], email.to
     assert_equal "Activate your IDEALS account", email.subject
 
@@ -44,7 +44,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     email = IdealsMailer.password_reset(identity).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
-    assert_equal [Configuration.instance.website[:email]], email.from
+    assert_equal [Configuration.instance.mail[:from]], email.from
     assert_equal [identity.email], email.to
     assert_equal "Reset your IDEALS password", email.subject
 
@@ -52,6 +52,21 @@ class IdealsMailerTest < ActionMailer::TestCase
                  email.text_part.body.raw_source
     assert_equal render_template("password_reset.html", url: identity.password_reset_url),
                  email.html_part.body.raw_source
+  end
+
+  # password_reset()
+
+  test "test() sends the expected email" do
+    recipient = "user@example.edu"
+    email = IdealsMailer.test(recipient).deliver_now
+    assert !ActionMailer::Base.deliveries.empty?
+
+    assert_equal [Configuration.instance.mail[:from]], email.from
+    assert_equal [recipient], email.to
+    assert_equal "Hello from IDEALS", email.subject
+
+    assert_equal render_template("test.txt"), email.text_part.body.raw_source
+    assert_equal render_template("test.html"), email.html_part.body.raw_source
   end
 
   private

@@ -32,6 +32,10 @@ class IdealsMailer < ApplicationMailer
     mail(to: @identity.email, subject: "Reset your IDEALS password")
   end
 
+  def test(recipient)
+    mail(to: recipient, subject: "Hello from IDEALS")
+  end
+
   private
 
   def subject_prefix
