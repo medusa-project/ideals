@@ -1,17 +1,15 @@
 -# frozen_string_literal: true
-/
-/ N.B.: this form is for editing only, as users can only be created by logging
-/ in.
-/
-/ Required locals:
-/
-/ user [User]
-/
-= form_for(user.becomes(User), remote: true) do |f|
+-#
+-# Required locals:
+-#
+-# user [User]
+-#
+= form_for(user.becomes(User), url: user_update_privileges_path(user), remote: true) do |f|
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
-  - if f.object.kind_of?(IdentityUser)
+  -# For ShibbolethUsers, this property is provided by AD.
+  - if user.kind_of?(IdentityUser)
     .form-group
       .form-check
         = f.check_box :sysadmin, class: "form-check-input"
@@ -30,4 +28,4 @@
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
-      = f.submit("Edit User", class: "btn btn-primary")
+      = f.submit("Edit Privileges", class: "btn btn-primary")

@@ -22,29 +22,51 @@ class UserPolicy < ApplicationPolicy
     @object_user  = object_user
   end
 
-  def edit?
-    update?
+  def edit_privileges?
+    sysadmin?
+  end
+
+  def edit_properties?
+    self_or_sysadmin?
   end
 
   def index?
-    update?
+    sysadmin?
   end
 
   ##
-  # N.B.: this does not correspond to a controller method.
+  # This does not correspond to a controller method.
   #
   def invite?
-    update?
+    sysadmin?
   end
 
   def show?
-    update?
+    self_or_sysadmin?
   end
 
-  def update?
+  def update_privileges?
+    sysadmin?
+  end
+
+  def update_properties?
+    self_or_sysadmin?
+  end
+
+  private
+
+  def self_or_sysadmin?
     if subject_user
-      return true if role >= Role::SYSTEM_ADMINISTRATOR && subject_user.sysadmin?
+      return subject_user == object_user || (role >= Role::SYSTEM_ADMINISTRATOR && subject_user.sysadmin?)
     end
     false
   end
+
+  def sysadmin?
+    if subject_user
+      return role >= Role::SYSTEM_ADMINISTRATOR && subject_user.sysadmin?
+    end
+    false
+  end
+
 end

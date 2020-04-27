@@ -1,0 +1,30 @@
+-# Requires the following locals:
+-#
+-# user [User]
+
+- if user.kind_of?(IdentityUser) && policy(user.becomes(User)).edit_properties?
+  .btn-group.float-right{role: "group"}
+    // Edit Properties button
+    %button.btn.btn-light.edit-properties{"data-user-id": user.id,
+                                          "data-target": "#edit-properties-modal",
+                                          "data-toggle": "modal",
+                                          type: "button"}
+      %i.fas.fa-pencil-alt
+      Edit Properties
+
+%dl
+  %dt UID
+  %dd= user.uid
+  %dt Username
+  %dd= user.username
+  %dt Email
+  %dd= link_to(user.email, "mailto:#{user.email}")
+  %dt Phone
+  %dd= user.phone ? link_to(user.phone, "tel:#{user.phone}") : "None"
+  %dt Type
+  %dd= user.type
+  %dt Created
+  %dd= local_time user.created_at
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-properties-modal", title: "Edit Properties" }

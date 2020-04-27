@@ -1,0 +1,28 @@
+-# Requires the following locals:
+-#
+-# user [User]
+
+- if policy(user.becomes(User)).edit_privileges?
+  .btn-group.float-right{role: "group"}
+    // Edit Privileges button
+    %button.btn.btn-light.edit-privileges{"data-user-id": user.id,
+                                          "data-target": "#edit-privileges-modal",
+                                          "data-toggle": "modal",
+                                          type: "button"}
+      %i.fas.fa-pencil-alt
+      Edit Privileges
+
+%dl
+  %dt System Administrator
+  %dd= user.sysadmin? ? "Yes" : "No"
+  %dt User Groups
+  %dd
+    - if user.user_groups.any?
+      %ul
+        - user.user_groups.each do |group|
+          %li= link_to(group.name, group)
+    - else
+      None
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-privileges-modal", title: "Edit Privileges" }

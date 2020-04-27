@@ -1,0 +1,29 @@
+-# frozen_string_literal: true
+-#
+-# N.B.: this form is for editing only, as User instances can only be created
+-# by logging in.
+-#
+-# Required locals:
+-#
+-# user [User]
+-#
+= form_for(user.becomes(User), url: user_update_properties_path(user), remote: true) do |f|
+  .error-messages
+    - # populated via ajax by shared/_validation_messages.js.erb
+
+  -# For ShibbolethUsers, all of these properties are provided by AD.
+  - if user.kind_of?(IdentityUser)
+    .form-group
+      = f.label :name
+      = f.text_field :name, class: "form-control"
+    .form-group
+      = f.label :email
+      = f.email_field :email, class: "form-control"
+    .form-group
+      = f.label :phone
+      = f.phone_field :phone, class: "form-control"
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Edit Properties", class: "btn btn-primary")

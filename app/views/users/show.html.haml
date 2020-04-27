@@ -7,11 +7,17 @@
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item
-    %a#account-tab.nav-link.active{"data-toggle": "tab",
-                                   href: "#account",
-                                   role: "tab",
-                                   "aria-controls": "account",
-                                   "aria-selected": "true"} Account
+    %a#properties-tab.nav-link.active{"data-toggle": "tab",
+                                      href: "#properties",
+                                      role: "tab",
+                                      "aria-controls": "properties",
+                                      "aria-selected": "true"} Properties
+  %li.nav-item
+    %a#privileges-tab.nav-link{"data-toggle": "tab",
+                               href: "#privileges",
+                               role: "tab",
+                               "aria-controls": "privileges",
+                               "aria-selected": "false"} Privileges
   %li.nav-item
     %a#items-tab.nav-link{"data-toggle": "tab",
                           href: "#items",
@@ -33,9 +39,13 @@
 
 
 .tab-content
-  #account.tab-pane.show.active{role: "tabpanel",
-                                "aria-labelledby": "account-tab"}
-    = render partial: "show_account_tab", locals: { user: @user }
+  #properties.tab-pane.show.active{role: "tabpanel",
+                                   "aria-labelledby": "properties-tab"}
+    = render partial: "show_properties_tab", locals: { user: @user }
+
+  #privileges.tab-pane{role: "tabpanel",
+                       "aria-labelledby": "privileges-tab"}
+    = render partial: "show_privileges_tab", locals: { user: @user }
 
   #items.tab-pane{role: "tabpanel", "aria-labelledby": "items-tab"}
     = render partial: "show_items_tab"

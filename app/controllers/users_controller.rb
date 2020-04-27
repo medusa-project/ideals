@@ -1,13 +1,26 @@
+# frozen_string_literal: true
+
 class UsersController < ApplicationController
   before_action :ensure_logged_in
-  before_action :set_user, only: [:show, :edit, :update]
-  before_action :authorize_user, only: [:show, :edit, :update]
+  before_action :set_user, only: [:show, :edit_privileges, :edit_properties,
+                                  :update_privileges, :update_properties]
+  before_action :authorize_user, only: [:show, :edit_privileges,
+                                        :edit_properties, :update_privileges,
+                                        :update_properties]
 
   ##
-  # Responds to `GET /users/:id/edit`
+  # Responds to `GET /users/:id/edit-privileges`
   #
-  def edit
-    render partial: "users/form",
+  def edit_privileges
+    render partial: "users/privileges_form",
+           locals: { user: @user }
+  end
+
+  ##
+  # Responds to `GET /users/:id/edit-properties`
+  #
+  def edit_properties
+    render partial: "users/properties_form",
            locals: { user: @user }
   end
 
@@ -55,19 +68,37 @@ class UsersController < ApplicationController
   end
 
   ##
-  # Responds to `POST/PATCH/PUT /users/:id`
+  # Responds to `PATCH/POST /users/:id`
   #
-  def update
+  def update_privileges
     begin
       ActiveRecord::Base.transaction do
-        @user.update!(user_params)
+        @user.update!(privileges_params)
       end
     rescue
       render partial: "shared/validation_messages",
              locals: { object: @user },
              status: :bad_request
     else
-      flash['success'] = "User #{@user.name} updated."
+      flash['success'] = "Privileges of user #{@user.name} have been updated."
+      render "shared/reload"
+    end
+  end
+
+  ##
+  # Responds to `PATCH/POST /users/:id`
+  #
+  def update_properties
+    begin
+      ActiveRecord::Base.transaction do
+        @user.update!(properties_params)
+      end
+    rescue
+      render partial: "shared/validation_messages",
+             locals: { object: @user },
+             status: :bad_request
+    else
+      flash['success'] = "Properties of user #{@user.name} have been updated."
       render "shared/reload"
     end
   end
@@ -75,12 +106,12 @@ class UsersController < ApplicationController
   private
 
   def set_user
-    @user = User.find(params[:id])
+    @user = User.find(params[:id] || params[:user_id])
     @breadcrumbable = @user
   end
 
   def authorize_user
-    # N.B.: with becomes() here, Pundit will require separate
+    # N.B.: without becomes() here, Pundit would require separate
     # IdentityUserPolicy and ShibbolethUserPolicy classes.
     @user ? authorize(@user.becomes(User)) : skip_authorization
   end
@@ -89,7 +120,11 @@ class UsersController < ApplicationController
     params.permit(:class, :q, :start, :window)
   end
 
-  def user_params
+  def privileges_params
     params.require(:user).permit(:sysadmin, user_group_ids: [])
+  end
+
+  def properties_params
+    params.require(:user).permit(:email, :name, :phone)
   end
 end

@@ -6,30 +6,63 @@ class UserPolicyTest < ActiveSupport::TestCase
     @object_user = users(:sally)
   end
 
-  # edit?()
+  # edit_privileges?()
 
-  test "edit?() returns false with a nil user context" do
+  test "edit_privileges?() returns false with a nil user context" do
     policy = UserPolicy.new(nil, @object_user)
-    assert !policy.edit?
+    assert !policy.edit_privileges?
   end
 
-  test "edit?() does not authorize non-sysadmins" do
+  test "edit_privileges?() does not authorize non-sysadmins" do
     context = UserContext.new(users(:norights), Role::NO_LIMIT)
     policy  = UserPolicy.new(context, @object_user)
-    assert !policy.edit?
+    assert !policy.edit_privileges?
   end
 
-  test "edit?() authorizes sysadmins" do
+  test "edit_privileges?() authorizes sysadmins" do
     context = UserContext.new(users(:admin), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
-    assert policy.edit?
+    assert policy.edit_privileges?
   end
 
-  test "edit?() respects role limits" do
+  test "edit_privileges?() respects role limits" do
     # sysadmin user limited to an insufficient role
     context = UserContext.new(users(:admin), Role::LOGGED_IN)
     policy  = UserPolicy.new(context, @object_user)
-    assert !policy.edit?
+    assert !policy.edit_privileges?
+  end
+
+  # edit_properties?()
+
+  test "edit_properties?() returns false with a nil user context" do
+    policy = UserPolicy.new(nil, @object_user)
+    assert !policy.edit_properties?
+  end
+
+  test "edit_properties?() does not authorize non-sysadmins other than the one
+  being edited" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = UserPolicy.new(context, @object_user)
+    assert !policy.edit_properties?
+  end
+
+  test "edit_properties?() authorizes the same user as the one being edited" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = UserPolicy.new(context, context.user)
+    assert policy.edit_properties?
+  end
+
+  test "edit_properties?() authorizes sysadmins" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy = UserPolicy.new(context, @object_user)
+    assert policy.edit_properties?
+  end
+
+  test "edit_properties?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = UserPolicy.new(context, @object_user)
+    assert !policy.edit_properties?
   end
 
   # index?()
@@ -110,30 +143,62 @@ class UserPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  # update?()
+  # update_privileges?()
 
-  test "update?() returns false with a nil user context" do
+  test "update_privileges?() returns false with a nil user context" do
     policy = UserPolicy.new(nil, @object_user)
-    assert !policy.update?
+    assert !policy.update_privileges?
   end
 
-  test "update?() does not authorize non-sysadmins" do
+  test "update_privileges?() does not authorize non-sysadmins" do
     context = UserContext.new(users(:norights), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
-    assert !policy.update?
+    assert !policy.update_privileges?
   end
 
-  test "update?() authorizes sysadmins" do
+  test "update_privileges?() authorizes sysadmins" do
     context = UserContext.new(users(:admin), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
-    assert policy.update?
+    assert policy.update_privileges?
   end
 
-  test "update?() respects role limits" do
+  test "update_privileges?() respects role limits" do
     # sysadmin user limited to an insufficient role
     context = UserContext.new(users(:admin), Role::LOGGED_IN)
     policy  = UserPolicy.new(context, @object_user)
-    assert !policy.update?
+    assert !policy.update_privileges?
+  end
+
+  # update_properties?()
+
+  test "update_properties?() returns false with a nil user context" do
+    policy = UserPolicy.new(nil, @object_user)
+    assert !policy.update_properties?
+  end
+
+  test "update_properties?() does not authorize non-sysadmins" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy = UserPolicy.new(context, @object_user)
+    assert !policy.update_properties?
+  end
+
+  test "update_properties?() authorizes the same user" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy = UserPolicy.new(context, context.user)
+    assert policy.update_properties?
+  end
+
+  test "update_properties?() authorizes sysadmins" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy = UserPolicy.new(context, @object_user)
+    assert policy.update_properties?
+  end
+
+  test "update_properties?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = UserPolicy.new(context, @object_user)
+    assert !policy.update_properties?
   end
 
 end

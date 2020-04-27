@@ -19,13 +19,20 @@ const UsersView = function() {
  */
 const UserView = function() {
 
-    const ROOT_URL = $('input[name="root_url"]').val();
+    const ROOT_URL = $("input[name=root_url]").val();
 
-    $('button.edit-user').on('click', function() {
-        var id = $(this).data('user-id');
-        var url = ROOT_URL + '/users/' + id + '/edit';
+    $('button.edit-privileges').on("click", function() {
+        const id = $(this).data("user-id");
+        const url = ROOT_URL + "/users/" + id + "/edit-privileges";
         $.get(url, function(data) {
-            $('#edit-user-modal .modal-body').html(data);
+            $("#edit-privileges-modal .modal-body").html(data);
+        });
+    });
+    $("button.edit-properties").on("click", function() {
+        const id = $(this).data("user-id");
+        const url = ROOT_URL + "/users/" + id + "/edit-properties";
+        $.get(url, function(data) {
+            $("#edit-properties-modal .modal-body").html(data);
         });
     });
 
