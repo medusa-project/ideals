@@ -8,8 +8,10 @@ class LocalIdentitiesController < ApplicationController
   before_action :validate_reset_token, only: [:new_password, :reset_password]
 
   ##
-  # Responds to `PATCH/POST /identities/:id/activate`. Requires a `token` query
-  # argument.
+  # Responds to `GET/PATCH/POST /identities/:id/activate`. (`GET` is used to
+  # support incoming links from emails.)
+  #
+  # Requires a `token` query argument.
   #
   def activate
     if @identity.authenticated?(:activation, params[:token])

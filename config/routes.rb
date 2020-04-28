@@ -33,7 +33,7 @@ Rails.application.routes.draw do
     collection do
       get "register"
     end
-    match "/activate", to: "local_identities#activate", via: [:patch, :post]
+    match "/activate", to: "local_identities#activate", via: [:get, :patch, :post]
     match "/reset-password", to: "local_identities#new_password", via: :get
     match "/reset-password", to: "local_identities#reset_password", via: [:patch, :post]
   end

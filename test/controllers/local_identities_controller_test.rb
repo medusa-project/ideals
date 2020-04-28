@@ -56,6 +56,60 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
+  test "activate() responds to HTTP GET" do
+    identity = local_identities(:norights)
+    identity.send(:create_activation_digest)
+    identity.update_attribute(:activated, false)
+    identity.update_attribute(:activated_at, nil)
+
+    get local_identity_activate_path(identity), {
+        params: {
+            token: identity.activation_token
+        }
+    }
+    identity.reload
+    assert identity.activated
+    assert_not_nil identity.activated_at
+    assert_equal "Account activated.", flash['success']
+    assert_redirected_to root_url
+  end
+
+  test "activate() responds to HTTP PATCH" do
+    identity = local_identities(:norights)
+    identity.send(:create_activation_digest)
+    identity.update_attribute(:activated, false)
+    identity.update_attribute(:activated_at, nil)
+
+    patch local_identity_activate_path(identity), {
+        params: {
+            token: identity.activation_token
+        }
+    }
+    identity.reload
+    assert identity.activated
+    assert_not_nil identity.activated_at
+    assert_equal "Account activated.", flash['success']
+    assert_redirected_to root_url
+  end
+
+  test "activate() responds to HTTP POST" do
+    identity = local_identities(:norights)
+    identity.send(:create_activation_digest)
+    identity.update_attribute(:activated, false)
+    identity.update_attribute(:activated_at, nil)
+
+    post local_identity_activate_path(identity), {
+        params: {
+            token: identity.activation_token
+        }
+    }
+    identity.reload
+    assert identity.activated
+    assert_not_nil identity.activated_at
+    assert_equal "Account activated.", flash['success']
+    assert_redirected_to root_url
+  end
+
   # new_password()
 
   test "new_password() redirects and sets the flash if a token is not provided" do
