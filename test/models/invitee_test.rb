@@ -70,6 +70,16 @@ class InviteeTest < ActiveSupport::TestCase
     assert_not_nil @instance.identity
   end
 
+  # note
+
+  test "note is required" do
+    @instance.note = nil
+    assert !@instance.valid?
+
+    @instance.note = ""
+    assert !@instance.valid?
+  end
+
   # user()
 
   test "user() returns an associated instance" do

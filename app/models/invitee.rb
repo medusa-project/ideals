@@ -11,7 +11,9 @@
 # * `created_at`:     Managed by ActiveRecord.
 # * `email`:          Email address.
 # * `expires_at`:     Time that the invite is no longer valid.
-# * `note`:
+# * `note`:           Contains the "purpose" that the user entered when
+#                     requesting an account. Will be empty for users who were
+#                     invited and did not request their account.
 # * `updated_at`:     Managed by ActiveRecord.
 #
 class Invitee < ApplicationRecord
@@ -23,6 +25,7 @@ class Invitee < ApplicationRecord
   after_create :associate_or_create_identity
 
   validates :email, presence: true, uniqueness: true
+  validates :note, presence: true
 
   before_destroy -> { identity&.destroy!; user&.destroy! }
 

@@ -17,4 +17,16 @@
           = icon_for(:info)
           A message containing a link to the registration form will be sent to
           this address.
-        = render partial: "invitees/form", locals: { invitee: invitee }
+
+        = form_for(invitee, url: invitees_path, remote: true) do |f|
+          .error-messages
+            - # populated via ajax by shared/_validation_messages.js.erb
+
+          = f.hidden_field :note, value: "Invited by user #{current_user.username}"
+
+          .form-group
+            = f.label :email, "Email"
+            = f.text_field :email, class: "form-control"
+
+          .form-group
+            = f.submit "Send Invite", class: "btn btn-primary"

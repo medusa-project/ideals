@@ -16,7 +16,8 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             invitee: {
-                email: "new@example.edu"
+                email: "new@example.edu",
+                note: "This is a new invitee"
             }
         }
     }
@@ -30,7 +31,8 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             invitee: {
-                email: ""
+                email: "",
+                note: "This is a new invitee"
             }
         }
     }
@@ -48,7 +50,8 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               invitee: {
-                  email: email
+                  email: email,
+                  note: "This is a new invitee"
               }
           }
       }
@@ -63,7 +66,8 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
         xhr: true,
         params: {
             invitee: {
-                email: "new@example.edu"
+                email: "new@example.edu",
+                note: "This is a new invitee"
             }
         }
     }

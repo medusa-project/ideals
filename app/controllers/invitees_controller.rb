@@ -38,6 +38,10 @@ class InviteesController < ApplicationController
   end
 
   ##
+  # Renders the account-request form, which is only accessible by logged-out
+  # users. This is one of two pathways into the registration form, the other
+  # being an invite from a sysadmin.
+  #
   # Responds to `GET /invitees/new`
   #
   def new
@@ -68,7 +72,7 @@ class InviteesController < ApplicationController
   end
 
   def invitee_params
-    params.require(:invitee).permit(:email)
+    params.require(:invitee).permit(:email, :note)
   end
 
 end
