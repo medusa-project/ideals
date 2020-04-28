@@ -23,6 +23,20 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test "create() returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:admin))
+
+    post invitees_path, {
+        xhr: true,
+        params: {
+            invitee: {
+                email: ""
+            }
+        }
+    }
+    assert_response :bad_request
+  end
+
   test "create() creates an instance and sends an email if all arguments are valid" do
     log_in_as(users(:admin))
 
