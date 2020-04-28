@@ -21,7 +21,7 @@ class InviteePolicy < ApplicationPolicy
     create?
   end
 
-  def edit?
+  def index?
     update?
   end
 

@@ -38,6 +38,24 @@ class InviteesController < ApplicationController
   end
 
   ##
+  # Responds to `GET /invitees`
+  #
+  def index
+    authorize(Invitee)
+    @start    = results_params[:start].to_i
+    @window   = window_size
+    @invitees = Invitee.
+        where("email LIKE ?", "%#{params[:q]}%").
+        order(created_at: :desc).
+        limit(@window).
+        offset(@start)
+    @count            = @invitees.count
+    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
+    @permitted_params = results_params
+    @new_invitee      = Invitee.new
+  end
+
+  ##
   # Renders the account-request form, which is only accessible by logged-out
   # users. This is one of two pathways into the registration form, the other
   # being an invite from a sysadmin.
@@ -67,12 +85,16 @@ class InviteesController < ApplicationController
     @invitee ? authorize(@invitee) : skip_authorization
   end
 
-  def set_invitee
-    @invitee = Invitee.find(params[:id])
-  end
-
   def invitee_params
     params.require(:invitee).permit(:email, :note)
+  end
+
+  def results_params
+    params.permit(:class, :q, :start, :window)
+  end
+
+  def set_invitee
+    @invitee = Invitee.find(params[:id])
   end
 
 end

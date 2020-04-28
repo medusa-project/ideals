@@ -58,30 +58,30 @@ class InviteePolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  # edit?()
+  # index?()
 
-  test "edit?() returns false with a nil user" do
+  test "index?() returns false with a nil user" do
     policy = InviteePolicy.new(nil, @invitee)
-    assert !policy.edit?
+    assert !policy.index?
   end
 
-  test "edit?() does not authorize non-sysadmins" do
+  test "index?() does not authorize non-sysadmins" do
     context = UserContext.new(users(:norights), Role::NO_LIMIT)
     policy = InviteePolicy.new(context, @invitee)
-    assert !policy.edit?
+    assert !policy.index?
   end
 
-  test "edit?() authorizes sysadmins" do
+  test "index?() authorizes sysadmins" do
     context = UserContext.new(users(:admin), Role::NO_LIMIT)
     policy = InviteePolicy.new(context, @invitee)
-    assert policy.edit?
+    assert policy.index?
   end
 
-  test "edit?() respects role limits" do
+  test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
     context = UserContext.new(users(:admin), Role::LOGGED_IN)
     policy  = InviteePolicy.new(context, @item)
-    assert !policy.edit?
+    assert !policy.index?
   end
 
   # new?()

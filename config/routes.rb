@@ -37,7 +37,7 @@ Rails.application.routes.draw do
     match "/reset-password", to: "local_identities#new_password", via: :get
     match "/reset-password", to: "local_identities#reset_password", via: [:patch, :post]
   end
-  resources :invitees, only: [:create, :destroy, :new, :update]
+  resources :invitees, except: :edit
   resources :items, except: :new do
     resources :bitstreams, only: [:create, :destroy, :show]
     match "/edit-membership", to: "items#edit_membership", via: :get,

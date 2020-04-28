@@ -75,7 +75,41 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # index()
+
+  test "index() redirects to login page for logged-out users" do
+    get invitees_path
+    assert_redirected_to login_path
+  end
+
+  test "index() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get invitees_path
+    assert_response :forbidden
+  end
+
+  test "index() returns HTTP 200 for authorized users" do
+    log_in_as(users(:admin))
+    get invitees_path
+    assert_response :ok
+  end
+
+  test "index() respects role limits" do
+    log_in_as(users(:admin))
+    get invitees_path
+    assert_response :ok
+
+    get invitees_path(role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # new()
+
+  test "new() redirects to root path for logged-in users" do
+    log_in_as(users(:norights))
+    get new_invitee_path
+    assert_redirected_to root_path
+  end
 
   test "new() returns HTTP 200 for logged-out users" do
     get new_invitee_path

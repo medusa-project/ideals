@@ -1,0 +1,27 @@
+.row.justify-content-md-center
+  .col-md-auto
+    = paginate(@count, @window, @current_page, @permitted_params)
+
+%table.table
+  %thead
+    %tr
+      %th
+      %th Email
+      %th Purpose
+      %th Expires
+      %th Approval State
+  %tbody
+    - @invitees.each do |invitee|
+      %tr
+        %td
+          - if invitee.approval_state == ApprovalState::PENDING
+            = link_to("Activate", local_identity_activate_path(invitee.identity),
+                      method: :patch, class: "btn btn-sm btn-success")
+        %td= link_to(invitee.email, "mailto:#{invitee.email}")
+        %td= invitee.note
+        %td= invitee.expires_at ? local_time_ago(invitee.expires_at) : nil
+        %td= invitee.approval_state&.capitalize
+
+.row.justify-content-md-center
+  .col-md-auto
+    = paginate(@count, @window, @current_page, @permitted_params)

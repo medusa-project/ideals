@@ -1,0 +1,26 @@
+- provide :body_id, "list_invitees"
+- provide :title, "Invitees"
+
+-if policy(User).invite?
+  .btn-group.float-right{role: "group"}
+    -# Invite button
+    %button.btn.btn-light{"data-target": "#invite-user-modal",
+                          "data-toggle": "modal", type: "button"}
+      %i.fa.fa-plus
+      Invite User
+
+%h1 Invitees
+
+.card.mb-3
+  .card-body
+    = form_tag invitees_path, method: :get, class: "form-inline" do
+      = label_tag nil, "Email", class: "mr-1"
+      = filter_field
+
+      .btn-group.ml-3{role: "group", "aria-label": "Filter controls"}
+        = button_tag "Clear", type: "reset", class: "btn btn-outline-secondary"
+        = submit_tag "Filter", name: "", class: "btn btn-primary"
+
+= render partial: "invitees"
+
+= render partial: "add_modal", locals: { invitee: @new_invitee }
