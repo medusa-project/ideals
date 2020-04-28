@@ -5,6 +5,21 @@
 # using Rails single-table inheritance. (Basically this just means that their
 # class name is stored in the `type` column.)
 #
+# # Attributes
+#
+# * `created_at`:  Managed by ActiveRecord.
+# * `email`:       Email address.
+# * `name`:        The user's name in whatever format they choose to provide
+#                  it.
+# * `phone`:       The user's phone number.
+# * `sysadmin`:    Whether the user is a system administrator.
+# * `type`:        Supports Rails single-table inheritance (STI).
+# * `uid`:         For {ShibbolethUser}s, this is the UID provided by
+#                  Shibboleth (which is probably the EPPN). For
+#                  {IdentityUser}s, it's the email address.
+# * `updated_at`:  Managed by ActiveRecord.
+# * `username`:    Username.
+#
 class User < ApplicationRecord
 
   include Breadcrumb

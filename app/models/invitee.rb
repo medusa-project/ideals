@@ -12,8 +12,9 @@
 # * `email`:          Email address.
 # * `expires_at`:     Time that the invite is no longer valid.
 # * `note`:           Contains the "purpose" that the user entered when
-#                     requesting an account. Will be empty for users who were
-#                     invited and did not request their account.
+#                     requesting an account. For for users who were invited and
+#                     did not request their account, this is autofilled with
+#                     such a notice.
 # * `updated_at`:     Managed by ActiveRecord.
 #
 class Invitee < ApplicationRecord
