@@ -8,28 +8,17 @@ class InviteePolicyTest < ActiveSupport::TestCase
 
   # create?()
 
-  test "create?() returns false with a nil user" do
+  # new?()
+
+  test "create?() returns true with a nil user" do
     policy = InviteePolicy.new(nil, @invitee)
-    assert !policy.create?
-  end
-
-  test "create?() does not authorize non-sysadmins" do
-    context = UserContext.new(users(:norights), Role::NO_LIMIT)
-    policy  = InviteePolicy.new(context, @invitee)
-    assert !policy.create?
-  end
-
-  test "create?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
-    policy  = InviteePolicy.new(context, @invitee)
     assert policy.create?
   end
 
-  test "create?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
-    policy  = InviteePolicy.new(context, @item)
-    assert !policy.create?
+  test "create?() authorizes non-sysadmins" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = InviteePolicy.new(context, @invitee)
+    assert policy.create?
   end
 
   # destroy?()
@@ -94,13 +83,6 @@ class InviteePolicyTest < ActiveSupport::TestCase
   test "new?() authorizes non-sysadmins" do
     context = UserContext.new(users(:norights), Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
-    assert policy.new?
-  end
-
-  test "new?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_OUT)
-    policy  = InviteePolicy.new(context, @item)
     assert policy.new?
   end
 

@@ -4,27 +4,21 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() redirects to login page for logged-out users" do
-    post invitees_path, {}
-    assert_redirected_to login_path
-  end
-
-  test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+  test "create() via non-XHR returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:admin))
 
     post invitees_path, {
-        xhr: true,
         params: {
             invitee: {
-                email: "new@example.edu",
+                email: "",
                 note: "This is a new invitee"
             }
         }
     }
-    assert_response :forbidden
+    assert_response :bad_request
   end
 
-  test "create() returns HTTP 400 for illegal arguments" do
+  test "create() via XHR returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
 
     post invitees_path, {
@@ -59,7 +53,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "create() sets the flash and returns HTTP 200 if all arguments are valid" do
+  test "create() sets the flash if all arguments are valid" do
     log_in_as(users(:admin))
 
     post invitees_path, {
@@ -72,6 +66,34 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
         }
     }
     assert flash['success'].start_with?("An invitation has been sent")
+  end
+
+  test "create() via non-XHR redirects if all arguments are valid" do
+    log_in_as(users(:admin))
+
+    post invitees_path, {
+        params: {
+            invitee: {
+                email: "new@example.edu",
+                note: "This is a new invitee"
+            }
+        }
+    }
+    assert_redirected_to root_url
+  end
+
+  test "create() via XHR returns HTTP 200 if all arguments are valid" do
+    log_in_as(users(:admin))
+
+    post invitees_path, {
+        xhr: true,
+        params: {
+            invitee: {
+                email: "new@example.edu",
+                note: "This is a new invitee"
+            }
+        }
+    }
     assert_response :ok
   end
 

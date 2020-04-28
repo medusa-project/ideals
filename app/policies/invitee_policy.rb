@@ -14,22 +14,29 @@ class InviteePolicy < ApplicationPolicy
   end
 
   def create?
-    user&.sysadmin? && role >= Role::SYSTEM_ADMINISTRATOR
-  end
-
-  def destroy?
-    create?
-  end
-
-  def index?
-    update?
-  end
-
-  def new?
     true
   end
 
-  def update?
+  def destroy?
+    sysadmin?
+  end
+
+  def index?
+    sysadmin?
+  end
+
+  def new?
     create?
   end
+
+  def update?
+    sysadmin?
+  end
+
+  private
+
+  def sysadmin?
+    user&.sysadmin? && role >= Role::SYSTEM_ADMINISTRATOR
+  end
+
 end

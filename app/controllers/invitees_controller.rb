@@ -2,14 +2,18 @@
 
 class InviteesController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_logged_in, except: [:create, :new]
+  before_action :ensure_logged_out, only: :new
   before_action :set_invitee, only: [:destroy, :update]
   before_action :authorize_invitee, only: [:destroy, :update]
 
   ##
-  # Handles input from the invite-user form.
+  # Handles input from the invite-user form. Note that there are two such
+  # forms: one that is public (for requesting an account) and one that is
+  # sysadmin-only (for inviting a user to register). But it should be safe for
+  # this handler to be public as it works the same for both.
   #
-  # Responds to `POST /invitees` (XHR only)
+  # Responds to `POST /invitees`
   #
   def create
     @invitee = Invitee.new(invitee_params)
@@ -17,12 +21,21 @@ class InviteesController < ApplicationController
     begin
       @invitee.save!
     rescue => e
-      render partial: "shared/validation_messages",
-             locals: { object: @invitee.errors.any? ? @invitee : e },
-             status: :bad_request
+      if request.xhr?
+        render partial: "shared/validation_messages",
+               locals: { object: @invitee.errors.any? ? @invitee : e },
+               status: :bad_request
+      else
+        flash['error'] = "#{e}"
+        redirect_to new_invitee_url, status: :bad_request
+      end
     else
       flash['success'] = "An invitation has been sent to #{@invitee.email}."
-      render "shared/reload"
+      if request.xhr?
+        render "shared/reload"
+      else
+        redirect_to root_url
+      end
     end
   end
 
