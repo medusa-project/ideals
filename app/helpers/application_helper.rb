@@ -162,9 +162,9 @@ module ApplicationHelper
     when "Symbol"
       case entity
       when :info
-        "fa fa-info-circle"
+        icon = "fa fa-info-circle"
       else
-        "fa fa-exclamation-triangle"
+        icon = "fa fa-exclamation-triangle"
       end
     when "Unit"
       icon = "fa fa-university"
