@@ -74,16 +74,15 @@ class ApplicationController < ActionController::Base
 
       Rails.logger.warn(exception_string)
 
-      exception_string += "\nCurrent User: #{current_user.name} | #{current_user.email}" if current_user
-
       unless Rails.env.development?
+        exception_string += "\nCurrent User: #{current_user.name} | #{current_user.email}" if current_user
         notification = IdealsMailer.error(exception_string)
         notification.deliver_now
-        respond_to do |format|
-          format.html { render "errors/error500", status: :internal_server_error }
-          format.json { render nothing: true, status: :internal_server_error }
-          format.xml { render xml: {status: 500}.to_xml }
-        end
+      end
+      respond_to do |format|
+        format.html { render "errors/error500", status: :internal_server_error }
+        format.json { render nothing: true, status: :internal_server_error }
+        format.xml { render xml: {status: 500}.to_xml }
       end
     end
   end
