@@ -27,7 +27,7 @@ class InviteesController < ApplicationController
                status: :bad_request
       else
         flash['error'] = "#{e}"
-        redirect_to new_invitee_url, status: :bad_request
+        redirect_to new_invitee_url
       end
     else
       flash['success'] = "An invitation has been sent to #{@invitee.email}."

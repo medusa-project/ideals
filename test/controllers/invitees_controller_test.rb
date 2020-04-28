@@ -4,7 +4,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() via non-XHR returns HTTP 400 for illegal arguments" do
+  test "create() via non-XHR redirects for illegal arguments" do
     log_in_as(users(:admin))
 
     post invitees_path, {
@@ -15,7 +15,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
             }
         }
     }
-    assert_response :bad_request
+    assert_redirected_to new_invitee_path
   end
 
   test "create() via XHR returns HTTP 400 for illegal arguments" do
