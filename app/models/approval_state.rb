@@ -1,6 +1,12 @@
 class ApprovalState
-  PENDING = 'pending'
+  PENDING  = 'pending'
   APPROVED = 'approved'
   REJECTED = 'rejected'
-  ARRAY = [ApprovalState::PENDING, ApprovalState::APPROVED, ApprovalState::REJECTED]
+
+  ##
+  # @return [Enumerable<String>]
+  #
+  def self.all
+    self.constants.map{ |k| const_get(k) }
+  end
 end
