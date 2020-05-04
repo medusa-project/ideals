@@ -84,7 +84,7 @@ class LocalIdentitiesController < ApplicationController
 
   def pre_validate_registration
     # Validate the token.
-    unless @identity.authenticated?(:activation, params[:token])
+    unless @identity.authenticated?(:registration, params[:token])
       flash['error'] = "Invalid registration link."
       redirect_to root_url and return
     end

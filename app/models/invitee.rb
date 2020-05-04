@@ -116,7 +116,7 @@ class Invitee < ApplicationRecord
       raise "An approval email cannot be sent to an approved invitee."
     end
     associate_or_create_identity
-    self.identity.create_activation_digest
+    self.identity.create_registration_digest
     self.identity.send_approval_email
   end
 
@@ -124,7 +124,7 @@ class Invitee < ApplicationRecord
     unless approved?
       raise "An invite email can only be sent to an approved invitee."
     end
-    self.identity.create_activation_digest
+    self.identity.create_registration_digest
     self.identity.send_invited_email
   end
 

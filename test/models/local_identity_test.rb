@@ -18,14 +18,6 @@ class LocalIdentityTest < ActiveSupport::TestCase
     end
   end
 
-  test "create() sets the activation digest" do
-    email   = "tessdfsadft@example.org"
-    invitee = Invitee.create!(email: email,
-                              note: "New note")
-    invitee.send(:associate_or_create_identity)
-    assert_not_empty invitee.identity.activation_digest
-  end
-
   # create_for_user()
 
   test "create_for_user() creates a correct instance" do
@@ -75,21 +67,6 @@ class LocalIdentityTest < ActiveSupport::TestCase
     assert_not_nil @instance.activated_at
   end
 
-  # activation_url()
-
-  test "activation_url raises an error if activation_token is blank" do
-    assert_raises RuntimeError do
-      @instance.activation_url
-    end
-  end
-
-  test "activation_url() returns a correct URL" do
-    @instance.create_activation_digest
-    base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    expected = "#{base_url}/identities/#{@instance.id}/register?token=#{@instance.activation_token}"
-    assert_equal expected, @instance.activation_url
-  end
-
   # create_activation_digest()
 
   test "create_activation_digest() works" do
@@ -98,6 +75,16 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
     assert_not_empty @instance.activation_digest
     assert_not_equal digest, @instance.activation_digest
+  end
+
+  # create_registration_digest()
+
+  test "create_registration_digest() works" do
+    digest  = @instance.registration_digest
+    @instance.create_registration_digest
+
+    assert_not_empty @instance.registration_digest
+    assert_not_equal digest, @instance.registration_digest
   end
 
   # create_reset_digest()
@@ -141,9 +128,24 @@ class LocalIdentityTest < ActiveSupport::TestCase
     assert_equal expected, @instance.password_reset_url
   end
 
+  # registration_url()
+
+  test "registration_url raises an error if registration_token is blank" do
+    assert_raises RuntimeError do
+      @instance.registration_url
+    end
+  end
+
+  test "registration_url() returns a correct URL" do
+    @instance.create_registration_digest
+    base_url = ::Configuration.instance.website[:base_url].chomp("/")
+    expected = "#{base_url}/identities/#{@instance.id}/register?token=#{@instance.registration_token}"
+    assert_equal expected, @instance.registration_url
+  end
+
   # send_approval_email()
 
-  test "send_approval_email() raises an error if activation_token is not set" do
+  test "send_approval_email() raises an error if registration_token is not set" do
     assert_no_emails do
       assert_raises do
         @instance.send_approval_email
@@ -151,8 +153,8 @@ class LocalIdentityTest < ActiveSupport::TestCase
     end
   end
 
-  test "send_approval_email() sends an email if activation_token is set" do
-    @instance.create_activation_digest
+  test "send_approval_email() sends an email if registration_token is set" do
+    @instance.create_registration_digest
     assert_emails 1 do
       @instance.send_approval_email
     end
@@ -160,7 +162,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   # send_invited_email()
 
-  test "send_invited_email() raises an error if activation_token is not set" do
+  test "send_invited_email() raises an error if registration_token is not set" do
     assert_no_emails do
       assert_raises do
         @instance.send_invited_email
@@ -168,8 +170,8 @@ class LocalIdentityTest < ActiveSupport::TestCase
     end
   end
 
-  test "send_invited_email() sends an email if activation_token is set" do
-    @instance.create_activation_digest
+  test "send_invited_email() sends an email if registration_token is set" do
+    @instance.create_registration_digest
     assert_emails 1 do
       @instance.send_invited_email
     end

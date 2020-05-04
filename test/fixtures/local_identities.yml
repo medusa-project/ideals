@@ -20,7 +20,7 @@ pending:
   name: pending
   email: pending@example.orgnorights@illinois.edu
   invitee: norights
-  activated: true
+  activated: false
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 sally:

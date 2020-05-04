@@ -8,7 +8,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
   test "account_approved() sends the expected email" do
     identity = local_identities(:norights)
-    identity.create_activation_digest
+    identity.create_registration_digest
 
     email = IdealsMailer.account_approved(identity).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
@@ -17,9 +17,9 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal [identity.email], email.to
     assert_equal "Register your IDEALS account", email.subject
 
-    assert_equal render_template("account_approved.txt", url: identity.activation_url),
+    assert_equal render_template("account_approved.txt", url: identity.registration_url),
                  email.text_part.body.raw_source
-    assert_equal render_template("account_approved.html", url: identity.activation_url),
+    assert_equal render_template("account_approved.html", url: identity.registration_url),
                  email.html_part.body.raw_source
   end
 
@@ -96,7 +96,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
   test "invited() sends the expected email" do
     identity = local_identities(:norights)
-    identity.create_activation_digest
+    identity.create_registration_digest
 
     email = IdealsMailer.invited(identity).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
@@ -105,9 +105,9 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal [identity.email], email.to
     assert_equal "Register for an IDEALS account", email.subject
 
-    assert_equal render_template("invited.txt", url: identity.activation_url),
+    assert_equal render_template("invited.txt", url: identity.registration_url),
                  email.text_part.body.raw_source
-    assert_equal render_template("invited.html", url: identity.activation_url),
+    assert_equal render_template("invited.html", url: identity.registration_url),
                  email.html_part.body.raw_source
   end
 

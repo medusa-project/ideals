@@ -39,6 +39,32 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # register()
+
+  test "register() redirects and sets the flash if a token is not provided" do
+    identity = local_identities(:norights)
+    get local_identity_register_path(identity)
+    assert_equal "Invalid registration link.", flash['error']
+    assert_redirected_to root_url
+  end
+
+  test "register() redirects and sets the flash if an invalid token is provided" do
+    identity = local_identities(:norights)
+    get local_identity_register_path(identity, token: "bogus")
+    assert_equal "Invalid registration link.", flash['error']
+    assert_redirected_to root_url
+  end
+
+  test "register() returns HTTP 200 if a valid token is provided" do
+    identity = local_identities(:norights)
+    identity.update_attribute(:activated, false)
+    identity.create_registration_digest
+    token = identity.registration_token
+
+    get local_identity_register_path(identity, token: token)
+    assert_response :ok
+  end
+
   # reset_password()
 
   test "reset_password() redirects and sets the flash if a token is not provided" do
