@@ -25,12 +25,6 @@ class LocalUserTest < ActiveSupport::TestCase
     assert_equal new_email, @instance.identity.email
   end
 
-  test "save() updates the name of the associated Identity" do
-    new_name = "New Name"
-    @instance.update!(name: new_name)
-    assert_equal new_name, @instance.identity.name
-  end
-
   # sysadmin?()
 
   test "sysadmin?() returns true when the user is sysadmin" do

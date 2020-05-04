@@ -71,13 +71,6 @@ class LocalUser < User
             name:     auth["info"]["name"])
   end
 
-  def self.display_name(email)
-    identity = find_by(email: email)
-    return email unless identity
-
-    identity.name || email
-  end
-
   ##
   # @return [LocalIdentity]
   #

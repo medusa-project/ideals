@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_04_154953) do
+ActiveRecord::Schema.define(version: 2020_05_04_164427) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -108,7 +108,6 @@ ActiveRecord::Schema.define(version: 2020_05_04_154953) do
   end
 
   create_table "local_identities", force: :cascade do |t|
-    t.string "name"
     t.string "email", null: false
     t.string "password_digest"
     t.string "activation_digest"

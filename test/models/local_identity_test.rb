@@ -26,7 +26,6 @@ class LocalIdentityTest < ActiveSupport::TestCase
                             email: "joe@example.org")
     identity = LocalIdentity.create_for_user(user, "password")
     assert identity.activated
-    assert_equal user.name, identity.name
     assert_not_nil identity.password_digest
     assert_not_nil identity.password_confirmation
     assert_not_nil identity.activated_at
@@ -106,8 +105,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
     email    = "test@example.org"
     password = "password"
     assert_raises ActiveRecord::RecordInvalid do
-      @instance = LocalIdentity.create!(name: email,
-                                        email: email,
+      @instance = LocalIdentity.create!(email: email,
                                         password: password,
                                         password_confirmation: password)
     end
