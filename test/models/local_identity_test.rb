@@ -20,14 +20,10 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   test "create() sets the activation digest" do
     email   = "tessdfsadft@example.org"
-    invitee = Invitee.create!(email: email)
+    invitee = Invitee.create!(email: email,
+                              note: "New note")
+    invitee.send(:associate_or_create_identity)
     assert_not_empty invitee.identity.activation_digest
-  end
-
-  test "create() sends an activation email" do
-    assert_emails 1 do
-      Invitee.create!(email: "test@example.org") # auto-creates an associated LocalIdentity
-    end
   end
 
   # create_for_user()
@@ -70,7 +66,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   # activate()
 
-  test "activate() works" do
+  test "activate() activates the instance" do
     @instance.activated    = false
     @instance.activated_at = nil
 
@@ -88,10 +84,20 @@ class LocalIdentityTest < ActiveSupport::TestCase
   end
 
   test "activation_url() returns a correct URL" do
-    @instance.send(:create_activation_digest)
+    @instance.create_activation_digest
     base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    expected = "#{base_url}/identities/#{@instance.id}/activate?token=#{@instance.activation_token}"
+    expected = "#{base_url}/identities/#{@instance.id}/register?token=#{@instance.activation_token}"
     assert_equal expected, @instance.activation_url
+  end
+
+  # create_activation_digest()
+
+  test "create_activation_digest() works" do
+    digest  = @instance.activation_digest
+    @instance.create_activation_digest
+
+    assert_not_empty @instance.activation_digest
+    assert_not_equal digest, @instance.activation_digest
   end
 
   # create_reset_digest()
@@ -133,6 +139,40 @@ class LocalIdentityTest < ActiveSupport::TestCase
     base_url = ::Configuration.instance.website[:base_url].chomp("/")
     expected = "#{base_url}/identities/#{@instance.id}/reset-password?token=#{@instance.reset_token}"
     assert_equal expected, @instance.password_reset_url
+  end
+
+  # send_approval_email()
+
+  test "send_approval_email() raises an error if activation_token is not set" do
+    assert_no_emails do
+      assert_raises do
+        @instance.send_approval_email
+      end
+    end
+  end
+
+  test "send_approval_email() sends an email if activation_token is set" do
+    @instance.create_activation_digest
+    assert_emails 1 do
+      @instance.send_approval_email
+    end
+  end
+
+  # send_invited_email()
+
+  test "send_invited_email() raises an error if activation_token is not set" do
+    assert_no_emails do
+      assert_raises do
+        @instance.send_invited_email
+      end
+    end
+  end
+
+  test "send_invited_email() sends an email if activation_token is set" do
+    @instance.create_activation_digest
+    assert_emails 1 do
+      @instance.send_invited_email
+    end
   end
 
   # send_password_reset_email()

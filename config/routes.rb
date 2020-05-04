@@ -29,15 +29,20 @@ Rails.application.routes.draw do
   match "/dashboard", to: "dashboard#index", via: :get
   match "/deposit", to: "submissions#agreement", via: :get
   resources :handles
-  resources :local_identities, only: [:create, :destroy, :update], path: "identities" do
-    collection do
-      get "register"
-    end
-    match "/activate", to: "local_identities#activate", via: [:get, :patch, :post]
+  resources :local_identities, only: [], path: "identities" do
+    match "/register", to: "local_identities#register", via: :get
     match "/reset-password", to: "local_identities#new_password", via: :get
     match "/reset-password", to: "local_identities#reset_password", via: [:patch, :post]
   end
-  resources :invitees, except: :edit
+  resources :invitees, except: [:edit, :update] do
+    collection do
+      match "/create", to: "invitees#create_unsolicited", via: :post,
+            as: "create_unsolicited"
+    end
+    match "/approve", to: "invitees#approve", via: [:patch, :post]
+    match "/reject", to: "invitees#reject", via: [:patch, :post]
+    match "/resend-email", to: "invitees#resend_email", via: [:patch, :post]
+  end
   resources :items, except: :new do
     resources :bitstreams, only: [:create, :destroy, :show]
     match "/edit-membership", to: "items#edit_membership", via: :get,

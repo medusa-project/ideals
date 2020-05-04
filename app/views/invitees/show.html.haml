@@ -1,0 +1,35 @@
+- provide :title, "Invitee #{@invitee.email}"
+
+.btn-group.float-right{role: "group"}
+  = render partial: "actions_menu", locals: { invitee: @invitee,
+                                              button_class: "btn btn-light" }
+
+%h1 Invitee #{@invitee.email}
+
+.row
+  .col-sm-4.col-md-3
+    %dl
+      %dt Email
+      %dd= link_to(@invitee.email, "mailto:#{@invitee.email}")
+      %dt Associated User
+      %dd= @invitee.user ? link_to(@invitee.user.name, @invitee.user.becomes(User)) : "Not yet registered"
+      %dt Invited By
+      %dd= @invitee.inviting_user ? link_to(@invitee.inviting_user.name, @invitee.inviting_user.becomes(User)) : "Self-Invited"
+      %dt Approval State
+      %dd
+        - case @invitee.approval_state
+        - when ApprovalState::PENDING
+          %span.badge.badge-primary PENDING
+        - when ApprovalState::APPROVED
+          %span.badge.badge-success APPROVED
+        - when ApprovalState::REJECTED
+          %span.badge.badge-danger REJECTED
+      %dt Created
+      %dd= local_time_ago(@invitee.created_at)
+      - if @invitee.pending? && @invitee.expires_at?
+        %dt Expires
+        %dd = local_time_ago(@invitee.expires_at)
+  .col-sm-8.col-md-9
+    %dl
+      %dt Purpose
+      %dd= @invitee.note

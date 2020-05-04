@@ -5,22 +5,25 @@
 %table.table
   %thead
     %tr
-      %th
       %th Email
-      %th Purpose
-      %th Expires
+      %th Invited By
       %th Approval State
+      %th
   %tbody
     - @invitees.each do |invitee|
       %tr
+        %td= link_to(invitee.email, invitee)
+        %td= invitee.inviting_user ? link_to(invitee.inviting_user.name, invitee.inviting_user.becomes(User)) : "Self-Invited"
         %td
-          - if invitee.approval_state == ApprovalState::PENDING
-            = link_to("Activate", local_identity_activate_path(invitee.identity),
-                      method: :patch, class: "btn btn-sm btn-success")
-        %td= link_to(invitee.email, "mailto:#{invitee.email}")
-        %td= invitee.note
-        %td= invitee.expires_at ? local_time_ago(invitee.expires_at) : nil
-        %td= invitee.approval_state&.capitalize
+          - case invitee.approval_state
+          - when ApprovalState::PENDING
+            %span.badge.badge-primary PENDING
+          - when ApprovalState::APPROVED
+            %span.badge.badge-success APPROVED
+          - when ApprovalState::REJECTED
+            %span.badge.badge-danger REJECTED
+        %td= render partial: "actions_menu",
+                    locals: { invitee: invitee, button_class: "btn btn-sm btn-outline-secondary" }
 
 .row.justify-content-md-center
   .col-md-auto

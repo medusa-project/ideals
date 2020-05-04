@@ -3,9 +3,67 @@
 class IdealsMailer < ApplicationMailer
   NO_REPLY_ADDRESS = "ideals-noreply@illinois.edu"
 
-  default from: ::Configuration.instance.mail[:from]
+  default from: "IDEALS @ Illinois <#{::Configuration.instance.mail[:from]}>"
 
-  def contact_help(params)
+  ##
+  # Notifies the given local-identity user that their request to register has
+  # been approved, and contains a link to the registration form.
+  #
+  # This is the counterpart of {invited} for self-invited users.
+  #
+  # @param identity [LocalIdentity]
+  #
+  def account_approved(identity)
+    @identity = identity
+    mail(to: @identity.email, subject: "Register your IDEALS account")
+  end
+
+  ##
+  # Notifies the given invitee that their request to register has been denied.
+  #
+  # @param invitee [Invitee]
+  #
+  def account_denied(invitee)
+    @invitee = invitee
+    mail(to: invitee.email, subject: "Your IDEALS account request")
+  end
+
+  ##
+  # Notifies sysadmins that a user has requested to register and needs to be
+  # approved to do so. Used in conjunction with {account_request_received}.
+  #
+  # @param invitee [Invitee]
+  #
+  def account_request_action_required(invitee)
+    config       = ::Configuration.instance
+    @invitee_url = "#{config.website[:base_url]}/invitees/#{invitee.id}"
+    mail(to: [config.mail[:from]],
+         subject: "Action required on a new IDEALS user")
+  end
+
+  def contact_help(params) # TODO: use this or lose it
+    subject = "#{subject_prefix} IDEALS] Help Request"
+    @params = params
+    mail(from:    @params["help-email"],
+         to:      [::Configuration.instance.mail[:from],
+                   @params["help-email"]],
+         subject: subject)
+  end
+
+  ##
+  # Notifies the given invitee that their request to register has
+  # been received, and will soon be acted upon, at which time they will receive
+  # an email from {account_approved} or {account_denied}. Used in conjunction
+  # with {account_request_action_required}.
+  #
+  # @param invitee [Invitee]
+  #
+  def account_request_received(invitee)
+    @invitee = invitee
+    mail(to: invitee.email, subject: "Your IDEALS account request")
+  end
+
+  def contact_help(params) # TODO: use this or lose it
     subject = "#{subject_prefix} IDEALS] Help Request"
     @params = params
     mail(from:    @params["help-email"],
@@ -22,16 +80,31 @@ class IdealsMailer < ApplicationMailer
          subject: subject)
   end
 
-  def account_activation(identity)
+  ##
+  # Notifies the given invitee that a staff member has invited them to
+  # register.
+  #
+  # This is the counterpart of {account_approved} for users who have been
+  # invited (and therefore pre-approved) by a sysadmin.
+  #
+  # @param identity [LocalIdentity]
+  #
+  def invited(identity)
     @identity = identity
-    mail(to: @identity.email, subject: "Activate your IDEALS account")
+    mail(to: @identity.email, subject: "Register for an IDEALS account")
   end
 
+  ##
+  # @param identity [Identity]
+  #
   def password_reset(identity)
     @identity = identity
     mail(to: @identity.email, subject: "Reset your IDEALS password")
   end
 
+  ##
+  # Used to test email delivery. See also the `mail:test` rake task.
+  #
   def test(recipient)
     mail(to: recipient, subject: "Hello from IDEALS")
   end

@@ -13,8 +13,16 @@ class InviteePolicy < ApplicationPolicy
     @invitee = invitee
   end
 
+  def approve?
+    sysadmin?
+  end
+
   def create?
-    true
+    sysadmin?
+  end
+
+  def create_unsolicited?
+    user.nil?
   end
 
   def destroy?
@@ -26,10 +34,18 @@ class InviteePolicy < ApplicationPolicy
   end
 
   def new?
-    create?
+    user.nil?
   end
 
-  def update?
+  def reject?
+    sysadmin?
+  end
+
+  def resend_email?
+    sysadmin?
+  end
+
+  def show?
     sysadmin?
   end
 

@@ -14,12 +14,20 @@
 .card.mb-3
   .card-body
     = form_tag invitees_path, method: :get, class: "form-inline" do
-      = label_tag nil, "Email", class: "mr-1"
-      = filter_field
-
-      .btn-group.ml-3{role: "group", "aria-label": "Filter controls"}
-        = button_tag "Clear", type: "reset", class: "btn btn-outline-secondary"
-        = submit_tag "Filter", name: "", class: "btn btn-primary"
+      .form-inline
+        .form-group.mr-3
+          = label_tag nil, "Email", class: "mr-1"
+          = filter_field
+        .form-group.mr-3
+          = label_tag nil, "Approval State", class: "mr-1"
+          = select_tag "approval_state",
+                       options_for_select(ApprovalState::all.map{ |s| [s.capitalize, s] },
+                                          params[:approval_state]),
+                       include_blank: true,
+                       class: "custom-select"
+        .btn-group{role: "group", "aria-label": "Filter controls"}
+          = button_tag "Clear", type: "reset", class: "btn btn-outline-secondary"
+          = submit_tag "Filter", name: "", class: "btn btn-primary"
 
 = render partial: "invitees"
 

@@ -1,0 +1,37 @@
+-# don't render the button if the menu would be empty
+- if invitee.pending? || (invitee.approved? && !invitee.identity&.activated) || !invitee.identity&.activated
+  .dropdown
+    %button.dropdown-toggle{type: "button",
+                            class: button_class,
+                            id: "invitee-dropdown-#{invitee.id}",
+                            "data-toggle": "dropdown",
+                            "aria-haspopup": "true",
+                            "aria-expanded": "false"}
+      Actions
+    .dropdown-menu.dropdown-menu-right{"aria-labelledby": "invitee-dropdown-#{invitee.id}"}
+      - if invitee.pending?
+        = link_to(invitee_approve_path(invitee),
+                  method: :patch, class: "dropdown-item",
+                  data: { confirm: "Are you sure you want to approve #{invitee.email}?\n\nThe invitee will be notified." }) do
+          %i.fa.fa-check
+          Approve
+      - if invitee.approved? && !invitee.identity&.activated
+        = link_to(invitee_resend_email_path(invitee),
+                  method: :patch, class: "dropdown-item",
+                  data: { confirm: "Are you sure you want to resend the invitation email?" }) do
+          %i.fa.fa-envelope
+          Resend Invitation Email
+      - if invitee.pending?
+        = link_to(invitee_reject_path(invitee),
+                  method: :patch, class: "dropdown-item",
+                  data: { confirm: "Are you sure you want to reject #{invitee.email}?\n\nThe invitee will be notified." }) do
+          %i.fa.fa-times
+          Reject
+        .dropdown-divider
+      - if !invitee.identity&.activated
+        %h6.dropdown-header Testing Only
+        = link_to(invitee_path(invitee),
+                  method: :delete, class: "dropdown-item",
+                  data: { confirm: "Are you sure you want to delete #{invitee.email}?\n\nNo notification will be sent." }) do
+          %i.fa.fa-trash
+          Delete

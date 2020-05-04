@@ -19,7 +19,7 @@
       %a(href="mailto:#{::Configuration.instance.mail[:from]}")
         = ::Configuration.instance.mail[:from]
 
-= form_for(@invitee) do |f|
+= form_for(@invitee, url: create_unsolicited_invitees_path) do |f|
   .form-group
     = f.label :email
     = f.text_field :email, class: "form-control", required: true

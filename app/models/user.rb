@@ -27,6 +27,7 @@ class User < ApplicationRecord
 
   has_many :administrators
   has_many :administering_units, through: :administrators, source: :unit
+  has_many :invitees, inverse_of: :inviting_user, foreign_key: :inviting_user_id
   has_many :managers
   has_many :managing_collections, through: :managers, source: :collection
   has_many :primary_administering_units, class_name: "Unit",

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_28_142547) do
+ActiveRecord::Schema.define(version: 2020_04_30_131018) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,11 +83,12 @@ ActiveRecord::Schema.define(version: 2020_04_28_142547) do
 
   create_table "invitees", force: :cascade do |t|
     t.string "email", null: false
-    t.datetime "expires_at"
+    t.datetime "expires_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "note", null: false
     t.string "approval_state", default: "pending", null: false
+    t.bigint "inviting_user_id"
     t.index ["email"], name: "index_invitees_on_email", unique: true
   end
 
@@ -247,6 +248,7 @@ ActiveRecord::Schema.define(version: 2020_04_28_142547) do
   add_foreign_key "collections_items", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections_units", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections_units", "units", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "collections", column: "primary_collection_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade

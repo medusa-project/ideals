@@ -35,3 +35,4 @@
     -# These are read from JavaScript
     = hidden_field_tag :root_url, root_url.chomp('/')
     = hidden_field_tag :root_path, root_path
+    = hidden_field_tag :csrf_token, session[:_csrf_token]
