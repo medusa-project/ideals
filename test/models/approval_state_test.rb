@@ -5,7 +5,8 @@ class ApprovalStateTest < ActiveSupport::TestCase
   # all()
 
   test "all() returns all approval states" do
-    assert_equal %w(approved rejected pending), ApprovalState.all
+    assert_equal Set.new(%w(approved rejected pending)),
+                 Set.new(ApprovalState.all)
   end
 
 end

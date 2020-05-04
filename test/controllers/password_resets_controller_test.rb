@@ -82,7 +82,10 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     # but the process is a little bit convoluted.
     email    = "test@example.edu"
     password = "password"
-    invitee  = Invitee.create!(email: email, expires_at: Time.now + 1.hour)
+    invitee  = Invitee.create!(email: email,
+                               note: "Note",
+                               expires_at: Time.now + 1.hour)
+    invitee.send(:associate_or_create_identity)
     identity = invitee.identity
     identity.update!(email: email,
                      password: password,
