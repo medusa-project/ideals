@@ -4,34 +4,34 @@
 #
 
 admin:
-  email: admin@illinois.edu
+  email: admin@example.edu
   name: Admin
   activated: true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 approved:
-  email: approved@example.org
+  email: approved@example.edu
   name: Approved
   invitee: approved
   activated: false
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 norights:
-  email: norights@illinois.edu
+  email: norights@example.edu
   name: No Rights
   invitee: norights
   activated: true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 pending:
-  email: pending@example.org
+  email: pending@example.edu
   name: Pending
   invitee: norights
   activated: false
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 sally:
-  email: sally@illinois.edu
+  email: sally@example.edu
   name: Sally
   activated: true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
@@ -43,7 +43,7 @@ shibboleth:
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 unit1_unit2_unit1_admin:
-  email: unit1_unit2_unit1_admin@illinois.edu
+  email: unit1_unit2_unit1_admin@example.edu
   name: Unit1 Unit2 Unit1 Admin
   activated: true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>

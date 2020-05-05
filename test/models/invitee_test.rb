@@ -233,10 +233,4 @@ class InviteeTest < ActiveSupport::TestCase
     end
   end
 
-  # user()
-
-  test "user() returns an associated instance" do
-    assert_not_nil @instance.user
-  end
-
 end

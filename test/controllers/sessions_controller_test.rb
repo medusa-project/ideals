@@ -10,7 +10,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with invalid credentials redirects to failure route" do
     post '/auth/identity/callback', params: {
-        auth_key: "bogus@illinois.edu",
+        auth_key: "bogus@example.edu",
         password: "WRONG"
     }
     assert_redirected_to "http://www.example.com/auth/failure?message=invalid_credentials&strategy=identity"
@@ -20,7 +20,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     user = users(:norights)
     user.identity.update_attribute(:activated, false)
     post '/auth/identity/callback', params: {
-        auth_key: "#{user.username}@illinois.edu",
+        auth_key: user.email,
         password: "password"
     }
     assert_response :unauthorized
@@ -29,7 +29,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "create() with valid credentials redirects to root URL" do
     user = users(:norights)
     post '/auth/identity/callback', params: {
-        auth_key: "#{user.username}@illinois.edu",
+        auth_key: user.email,
         password: "password"
     }
     assert_redirected_to root_url

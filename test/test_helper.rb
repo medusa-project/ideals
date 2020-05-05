@@ -22,7 +22,7 @@ class ActiveSupport::TestCase
 
   def log_in_as(user)
     post '/auth/identity/callback', params: {
-        auth_key: "#{user.username}@illinois.edu",
+        auth_key: user.email,
         password: "password"
     }
   end

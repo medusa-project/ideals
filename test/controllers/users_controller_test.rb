@@ -65,7 +65,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
 
     get user_edit_properties_path(users(:admin),
-                                  role: Role::LOGGED_IN), xhr: true
+                                  role: Role::LOGGED_OUT), xhr: true
     assert_response :forbidden
   end
 

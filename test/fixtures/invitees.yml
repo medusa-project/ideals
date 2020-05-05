@@ -1,17 +1,17 @@
 approved:
-  email: approved-invitee@example.org
+  email: approved-invitee@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
   note: Sample note
   expires_at: <%= Time.now + Invitee::EXPIRATION %>
 
 norights:
-  email: norights@illinois.edu
+  email: norights@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
   note: Sample note
   expires_at: <%= Time.now + Invitee::EXPIRATION %>
 
 pending:
-  email: pending@example.org
+  email: pending@example.edu
   approval_state: <%= ApprovalState::PENDING %>
   note: This invitee is pending.
   expires_at: <%= Time.now + Invitee::EXPIRATION %>

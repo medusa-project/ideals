@@ -17,7 +17,7 @@ class LocalUserTest < ActiveSupport::TestCase
         provider: "identity",
         info: {
             name: "I have no rights",
-            email: "norights@illinois.edu"
+            email: "norights@example.edu"
         },
         credentials: ""
     }
@@ -27,7 +27,7 @@ class LocalUserTest < ActiveSupport::TestCase
   test "from_omniauth() returns nil if the auth hash email is missing" do
     hash = {
         provider: "identity",
-        uid: "norights@illinois.edu",
+        uid: "norights@example.edu",
         info: {
             name: "I have no rights"
         },
@@ -42,10 +42,10 @@ class LocalUserTest < ActiveSupport::TestCase
 
     hash = {
         provider: "identity",
-        uid: "norights@illinois.edu",
+        uid: "norights@example.edu",
         info: {
             name: "I have no rights",
-            email: "norights@illinois.edu"
+            email: "norights@example.edu"
         },
         credentials: ""
     }
@@ -56,10 +56,10 @@ class LocalUserTest < ActiveSupport::TestCase
     name = "This is my new name"
     hash = {
         provider: "identity",
-        uid: "norights@illinois.edu",
+        uid: "norights@example.edu",
         info: {
             name: name,
-            email: "norights@illinois.edu"
+            email: "norights@example.edu"
         },
         credentials: ""
     }
@@ -70,10 +70,10 @@ class LocalUserTest < ActiveSupport::TestCase
   test "from_omniauth() returns the relevant LocalUser" do
     hash = {
         provider: "identity",
-        uid: "norights@illinois.edu",
+        uid: "norights@example.edu",
         info: {
             name: "I have no rights",
-            email: "norights@illinois.edu"
+            email: "norights@example.edu"
         },
         credentials: ""
     }

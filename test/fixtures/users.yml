@@ -5,9 +5,9 @@
 
 admin: # TODO: rename to local_admin
   type: LocalUser
-  uid: admin@illinois.edu
+  uid: admin@example.edu
   name: admin
-  email: admin@illinois.edu
+  email: admin@example.edu
   phone: (888) 555-1234
   username: admin
   sysadmin: true
@@ -15,18 +15,18 @@ admin: # TODO: rename to local_admin
 norights:
   type: LocalUser
   identity: norights
-  uid: norights@illinois.edu
+  uid: norights@example.edu
   name: I have no rights
-  email: norights@illinois.edu
+  email: norights@example.edu
   phone: (888) 555-1234
   username: norights
   sysadmin: false
 
 sally:
   type: LocalUser
-  uid: sally@illinois.edu
+  uid: sally@example.edu
   name: Sally
-  email: sally@illinois.edu
+  email: sally@example.edu
   phone: (888) 555-1234
   username: sally
   sysadmin: false
@@ -42,9 +42,9 @@ shibboleth:
 
 unit1_unit2_unit1_admin:
   type: LocalUser
-  uid: bob@illinois.edu
+  uid: bob@example.edu
   name: bob
-  email: bob@illinois.edu
+  email: bob@example.edu
   phone: (888) 555-1234
   username: bob
   sysadmin: false
