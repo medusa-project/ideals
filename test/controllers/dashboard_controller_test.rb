@@ -14,7 +14,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() returns HTTP 200 for logged-in users" do
-    log_in_as(users(:sally))
+    log_in_as(users(:norights))
     get dashboard_path
     assert_response :ok
     assert_select "h1", "Dashboard"

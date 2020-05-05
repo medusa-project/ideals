@@ -3,7 +3,7 @@ require 'test_helper'
 class UserPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @object_user = users(:sally)
+    @object_user = users(:norights)
   end
 
   # edit_privileges?()
@@ -41,7 +41,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "edit_properties?() does not authorize non-sysadmins other than the one
   being edited" do
-    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    context = UserContext.new(users(:shibboleth), Role::NO_LIMIT)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.edit_properties?
   end
@@ -125,7 +125,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() does not authorize non-sysadmins" do
-    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    context = UserContext.new(users(:shibboleth), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
     assert !policy.show?
   end
@@ -177,7 +177,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_properties?() does not authorize non-sysadmins" do
-    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    context = UserContext.new(users(:shibboleth), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
     assert !policy.update_properties?
   end

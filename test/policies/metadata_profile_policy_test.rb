@@ -3,7 +3,7 @@ require 'test_helper'
 class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   setup do
-    @user    = users(:sally)
+    @user    = users(:norights)
     @profile = metadata_profiles(:default)
   end
 

@@ -3,7 +3,7 @@ require 'test_helper'
 class SubmissionProfilePolicyTest < ActiveSupport::TestCase
 
   setup do
-    @user    = users(:sally)
+    @user    = users(:norights)
     @profile = submission_profiles(:default)
   end
 

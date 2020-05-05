@@ -155,7 +155,7 @@ class UnitTest < ActiveSupport::TestCase
 
   test "primary_administrator=() sets the primary administrator to a user who
   is not already an administrator" do
-    user = users(:sally)
+    user = users(:norights)
     assert_not_equal user, @instance.primary_administrator
     assert_equal 1, @instance.administrators.count
 
@@ -168,7 +168,7 @@ class UnitTest < ActiveSupport::TestCase
 
   test "primary_administrator=() sets the primary administrator to a user who
   is already an administrator" do
-    user = users(:sally)
+    user = users(:norights)
     @instance.administering_users << user
     @instance.save!
 

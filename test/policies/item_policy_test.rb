@@ -151,7 +151,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     collection.managing_users << doing_user
     collection.save!
 
-    @item.submitter          = users(:sally) # somebody else
+    @item.submitter          = users(:norights) # somebody else
     @item.primary_collection = collection
 
     policy = ItemPolicy.new(context, @item)
@@ -166,7 +166,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     unit.administering_users << doing_user
     unit.save!
 
-    @item.submitter          = users(:sally) # somebody else
+    @item.submitter          = users(:norights) # somebody else
     @item.primary_collection = collection
 
     policy = ItemPolicy.new(context, @item)
@@ -551,7 +551,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     collection = collections(:collection1)
     collection.managing_users << doing_user
     collection.save!
-    @item.submitter          = users(:sally) # somebody else
+    @item.submitter          = users(:norights) # somebody else
     @item.primary_collection = collection
 
     policy = ItemPolicy.new(context, @item)
@@ -565,7 +565,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
     unit.save!
-    @item.submitter          = users(:sally) # somebody else
+    @item.submitter          = users(:norights) # somebody else
     @item.primary_collection = collection
 
     policy = ItemPolicy.new(context, @item)

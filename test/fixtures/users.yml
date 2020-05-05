@@ -22,15 +22,6 @@ norights:
   username: norights
   sysadmin: false
 
-sally:
-  type: LocalUser
-  uid: sally@example.edu
-  name: Sally
-  email: sally@example.edu
-  phone: (888) 555-1234
-  username: sally
-  sysadmin: false
-
 shibboleth:
   type: ShibbolethUser
   uid: shib@illinois.edu
