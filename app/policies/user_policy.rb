@@ -57,7 +57,8 @@ class UserPolicy < ApplicationPolicy
 
   def self_or_sysadmin?
     if subject_user
-      return subject_user == object_user || (role >= Role::SYSTEM_ADMINISTRATOR && subject_user.sysadmin?)
+      return (role >= Role::LOGGED_IN && subject_user.id == object_user.id) ||
+          (role >= Role::SYSTEM_ADMINISTRATOR && subject_user.sysadmin?)
     end
     false
   end
