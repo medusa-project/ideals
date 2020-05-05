@@ -24,7 +24,7 @@ class PasswordResetsController < ApplicationController
     if params[:password_reset] && params[:password_reset][:email].present?
       email = params[:password_reset][:email]&.downcase
       if StringUtils.valid_email?(email)
-        if LocalIdentity.uofi?(email)
+        if StringUtils.uofi_email?(email)
           flash['error'] = "Sorry, we're not able to reset passwords for "\
               "email addresses that are associated with an Illinois NetID. "\
               "If you have forgotten your NetID password, please contact the "\

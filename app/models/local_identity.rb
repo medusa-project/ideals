@@ -109,15 +109,6 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
     SecureRandom.urlsafe_base64
   end
 
-  ##
-  # @param email [String] Email address.
-  # @return [Boolean] Whether the given email address is related to the UofI.
-  #
-  def self.uofi?(email)
-    domain = email.downcase.split("@").last
-    ::Configuration.instance.uofi_email_domains.include?(domain)
-  end
-
   def activate
     self.update_attribute(:activated, true)
     self.update_attribute(:activated_at, Time.zone.now)

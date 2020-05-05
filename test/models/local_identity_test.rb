@@ -38,24 +38,6 @@ class LocalIdentityTest < ActiveSupport::TestCase
     assert_not_empty LocalIdentity.new_token
   end
 
-  # uofi?()
-
-  test "uofi?() returns true for UofI email addresses" do
-    assert LocalIdentity.uofi?("test@illinois.edu")
-    assert LocalIdentity.uofi?("test@uillinois.edu")
-    assert LocalIdentity.uofi?("test@uiuc.edu")
-    assert LocalIdentity.uofi?("TEST@UIUC.EDU")
-  end
-
-  test "uofi?() returns false for non-UofI email addresses" do
-    assert !LocalIdentity.uofi?("test@example.org")
-    assert !LocalIdentity.uofi?("test@not-illinois.edu")
-  end
-
-  test "uofi?() returns false for malformed email addresses" do
-    assert !LocalIdentity.uofi?("not an email address")
-  end
-
   # activate()
 
   test "activate() activates the instance" do
