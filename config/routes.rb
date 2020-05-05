@@ -29,7 +29,8 @@ Rails.application.routes.draw do
   match "/dashboard", to: "dashboard#index", via: :get
   match "/deposit", to: "submissions#agreement", via: :get
   resources :handles
-  resources :local_identities, only: [], path: "identities" do
+  resources :local_identities, only: [:update], path: "identities" do
+    match "/activate", to: "local_identities#activate", via: :get
     match "/register", to: "local_identities#register", via: :get
     match "/reset-password", to: "local_identities#new_password", via: :get
     match "/reset-password", to: "local_identities#reset_password", via: [:patch, :post]

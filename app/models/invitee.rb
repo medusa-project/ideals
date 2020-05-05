@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 ##
-# Non-NetID user who has either been invited to register, or has self-
-# requested to register, and may or may not yet have a corresponding
-# {LocalIdentity identity}.
+# Non-NetID user who has either been invited to register, or has requested to
+# register, and may or may not yet have a corresponding {LocalIdentity
+# identity}.
 #
 # # Invitation/Registration Flow
 #
@@ -14,7 +14,7 @@
 #    email address into a private form. This creates an instance that is pre-
 #    {ApprovalState::APPROVED approved} to register. An email is sent to that
 #    address containing a link to the registration form. The link includes a
-#    `token` query argument containing a value that is required to access the
+#    `token` query argument containing a value that authorizes access to the
 #    form.
 # 2. A user requests to register. In this case, the user fills their email
 #    address and a purpose statement into form and submits it. The user
@@ -26,11 +26,12 @@
 #        as {ApprovalState::APPROVED approved}.
 #     b. If rejected, the user receives an email telling them such and the
 #        {Invitee} instance is marked as {ApprovalState::REJECTED rejected}.
-#
-# At this point, assuming the user is approved, the "paths" merge. The user
-# accesses the registration form, filling in their info. After the form has
-# been submitted, the user receives a welcome email containing a link to the
-# login page.
+# 3. At this point, assuming the user is approved, the "paths" merge. The user
+#    accesses the registration form, filling in their info.
+# 4. Upon form submission, the user receives a welcome email containing a link
+#    to the account-activation endpoint. This endpoint marks the user's
+#    {LocalIdentity} as {LocalIdentity#activated} and redirects to the login
+#    page.
 #
 # # Attributes
 #
@@ -58,8 +59,6 @@ class Invitee < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates :note, presence: true
-
-  before_destroy -> { identity&.destroy!; user&.destroy! } # TODO: shouldn't Identity destroy the User?
 
   ##
   # Approves a user-initiated self-invite.
@@ -161,15 +160,20 @@ class Invitee < ApplicationRecord
   private
 
   def associate_or_create_identity
-    self.identity = LocalIdentity.find_by(email: email)
     unless self.identity
-      # Set a random password. It will be updated during registration.
-      password = SecureRandom.hex
-      self.identity = LocalIdentity.create!(email:                 self.email,
-                                            name:                  self.email,
-                                            password:              password,
-                                            password_confirmation: password,
-                                            invitee:               self)
+      id = LocalIdentity.find_by(email: self.email)
+      if id
+        id.invitee = self
+      else
+        # A password is required, so just set a random one. It will be updated
+        # during registration.
+        password = SecureRandom.hex
+        LocalIdentity.create!(email:                 self.email,
+                              name:                  self.email,
+                              password:              password,
+                              password_confirmation: password,
+                              invitee:               self)
+      end
     end
   end
 

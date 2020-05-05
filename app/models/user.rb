@@ -7,24 +7,29 @@
 #
 # # Attributes
 #
-# * `created_at`:  Managed by ActiveRecord.
-# * `email`:       Email address.
-# * `name`:        The user's name in whatever format they choose to provide
-#                  it.
-# * `phone`:       The user's phone number.
-# * `sysadmin`:    Whether the user is a system administrator.
-# * `type`:        Supports Rails single-table inheritance (STI).
-# * `uid`:         For {ShibbolethUser}s, this is the UID provided by
-#                  Shibboleth (which is probably the EPPN). For
-#                  {IdentityUser}s, it's the email address.
-# * `updated_at`:  Managed by ActiveRecord.
-# * `username`:    Username.
+# * `created_at`:        Managed by ActiveRecord.
+# * `email`:             Email address.
+# * `local_identity_id`: Foreign key to {LocalIdentity}. Used only by
+#                        {LocalUser}s; set during processing of the
+#                        registration form.
+# * `name`:              The user's name in whatever format they choose to
+#                        provide it.
+# * `phone`:             The user's phone number.
+# * `sysadmin`:          Whether the user is a system administrator.
+# * `type`:              Supports Rails single-table inheritance (STI).
+# * `uid`:               For {ShibbolethUser}s, this is the UID provided by
+#                        Shibboleth (which is probably the EPPN). For
+#                        {IdentityUser}s, it's the email address.
+# * `updated_at`:        Managed by ActiveRecord.
+# * `username`:          Username.
 #
 class User < ApplicationRecord
 
   include Breadcrumb
   include Indexed
 
+  belongs_to :identity, class_name: "LocalIdentity",
+             foreign_key: "local_identity_id", inverse_of: :user, optional: true
   has_many :administrators
   has_many :administering_units, through: :administrators, source: :unit
   has_many :invitees, inverse_of: :inviting_user, foreign_key: :inviting_user_id
@@ -38,11 +43,14 @@ class User < ApplicationRecord
   has_many :submitting_collections, through: :submitters, source: :collection
   has_and_belongs_to_many :user_groups
 
-  validates :name, presence: true
-  validates_uniqueness_of :email, scope: :type
   validates :email, presence: true, length: {maximum: 255},
             format: {with: StringUtils::EMAIL_REGEX}
-  validates_uniqueness_of :uid, allow_blank: false
+  validates_uniqueness_of :email, scope: :type
+  validates :name, presence: true
+  validates :uid, presence: true
+  validates_uniqueness_of :uid, case_sensitive: true
+  validates :username, presence: true
+  validates_uniqueness_of :username, case_sensitive: true
 
   before_save -> { email.downcase! }
 

@@ -14,10 +14,17 @@ class LocalUser < User
   before_save :sync_identity_properties
   before_destroy :destroy_identity
 
+  ##
+  # @param auth [Hash]
+  # @return [LocalUser] Instance corresponding to the given OmniAuth hash.
+  #                     Only instances with {LocalIdentity#activated activated
+  #                     identities} are returned.
+  #
   def self.from_omniauth(auth)
-    return nil unless auth && auth[:uid] && auth["info"]["email"]
+    auth = auth.deep_symbolize_keys
+    return nil unless auth && auth[:uid] && auth[:info][:email]
 
-    email = auth["info"]["email"].strip
+    email    = auth[:info][:email].strip
     identity = LocalIdentity.find_by(email: email)
 
     return nil unless identity&.activated
@@ -40,8 +47,11 @@ class LocalUser < User
     end
   end
 
+  ##
+  # Private; use {from_omniauth} instead.
+  #
   def self.create_with_omniauth(auth)
-    email = auth["info"]["email"].strip
+    email = auth[:info][:email].strip
     return nil unless email
 
     invitee = Invitee.find_by(email: email)
@@ -51,7 +61,7 @@ class LocalUser < User
     create! do |user|
       user.uid      = email
       user.email    = email
-      user.name     = auth["info"]["name"]
+      user.name     = auth[:info][:name]
       user.username = email
     end
   end
@@ -61,25 +71,26 @@ class LocalUser < User
     LocalUser.find_by(email: email)
   end
 
+  ##
+  # @return [Boolean] Whether the associated {Identity} has been activated,
+  #                   i.e. is allowed to log in.
+  #
+  def activated?
+    identity.activated
+  end
+
+  def sysadmin?
+    sysadmin
+  end
+
   def update_with_omniauth(auth)
-    email = auth["info"]["email"].strip
+    email = auth[:info][:email].strip
     return nil unless email
 
     update!(uid:      email,
             email:    email,
             username: email.split("@").first,
-            name:     auth["info"]["name"])
-  end
-
-  ##
-  # @return [LocalIdentity]
-  #
-  def identity
-    LocalIdentity.find_by_email(self.email)
-  end
-
-  def sysadmin?
-    sysadmin
+            name:     auth[:info][:name])
   end
 
   private
@@ -94,8 +105,10 @@ class LocalUser < User
   #
   def sync_identity_properties
     id = LocalIdentity.find_by_email(self.email_was)
-    id.update_attribute(:email, self.email) if self.email_changed?
-    id.update_attribute(:name, self.name) if self.name_changed?
+    if id
+      id.update_attribute(:email, self.email) if self.email_changed?
+      id.update_attribute(:name, self.name) if self.name_changed?
+    end
   end
 
 end

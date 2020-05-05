@@ -5,32 +5,45 @@
 
 admin:
   email: admin@illinois.edu
+  name: Admin
   activated: true
+  password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
+
+approved:
+  email: approved@example.org
+  name: Approved
+  invitee: approved
+  activated: false
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 norights:
   email: norights@illinois.edu
+  name: No Rights
   invitee: norights
   activated: true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 pending:
-  email: pending@example.orgnorights@illinois.edu
+  email: pending@example.org
+  name: Pending
   invitee: norights
   activated: false
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 sally:
   email: sally@illinois.edu
+  name: Sally
   activated: true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 shibboleth:
   email: shibboleth@illinois.edu
+  name: Shibboleth
   activated: true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 unit1_unit2_unit1_admin:
   email: unit1_unit2_unit1_admin@illinois.edu
+  name: Unit1 Unit2 Unit1 Admin
   activated: true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>

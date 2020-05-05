@@ -168,6 +168,22 @@ class UserTest < ActiveSupport::TestCase
     assert !@instance.effective_unit_admin?(units(:unit1))
   end
 
+  # email
+
+  test "email is required" do
+    @instance.email = nil
+    assert !@instance.valid?
+    @instance.email = "test@example.org"
+    assert @instance.valid?
+  end
+
+  test "email must be unique" do
+    email = @instance.email
+    assert_raises ActiveRecord::RecordInvalid do
+      LocalUser.create!(email: email, name: email, uid: email, username: email)
+    end
+  end
+
   # manager?()
 
   test "manager?() returns true when the user is a manager of the given collection" do
@@ -179,6 +195,15 @@ class UserTest < ActiveSupport::TestCase
 
   test "manager?() returns false when the user is not a manager of the given collection" do
     assert !@instance.manager?(collections(:collection1))
+  end
+
+  # name
+
+  test "name is required" do
+    @instance.name = nil
+    assert !@instance.valid?
+    @instance.name = "test"
+    assert @instance.valid?
   end
 
   # reindex() (Indexed concern)
@@ -236,6 +261,25 @@ class UserTest < ActiveSupport::TestCase
     assert_equal @instance.email, @instance.to_autocomplete
   end
 
+  # uid
+
+  test "uid is required" do
+    @instance.uid = nil
+    assert !@instance.valid?
+    @instance.uid = "test"
+    assert @instance.valid?
+  end
+
+  test "uid must be unique" do
+    uid = @instance.uid
+    assert_raises ActiveRecord::RecordInvalid do
+      LocalUser.create!(email: "random12345@example.org",
+                        name: uid,
+                        uid: uid,
+                        username: uid)
+    end
+  end
+
   # unit_admin?()
 
   test "unit_admin?() returns true when the user is an administrator of the
@@ -249,6 +293,25 @@ class UserTest < ActiveSupport::TestCase
   test "unit_admin?() returns false when the user is not an administrator of
   the given unit" do
     assert !@instance.unit_admin?(units(:unit1))
+  end
+
+  # username
+
+  test "username is required" do
+    @instance.username = nil
+    assert !@instance.valid?
+    @instance.username = "test"
+    assert @instance.valid?
+  end
+
+  test "username must be unique" do
+    username = @instance.username
+    assert_raises ActiveRecord::RecordInvalid do
+      LocalUser.create!(email: "random12345@example.org",
+                        name: username,
+                        uid: username,
+                        username: username)
+    end
   end
 
 end

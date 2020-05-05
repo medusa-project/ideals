@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_04_164427) do
+ActiveRecord::Schema.define(version: 2020_05_05_135148) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -119,6 +119,7 @@ ActiveRecord::Schema.define(version: 2020_05_04_164427) do
     t.datetime "updated_at", null: false
     t.datetime "activated_at"
     t.string "registration_digest"
+    t.string "name", null: false
     t.index ["email"], name: "index_local_identities_on_email", unique: true
   end
 
@@ -223,15 +224,20 @@ ActiveRecord::Schema.define(version: 2020_05_04_164427) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "uid"
-    t.string "name"
-    t.string "email"
+    t.string "uid", null: false
+    t.string "name", null: false
+    t.string "email", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "username"
-    t.string "type"
+    t.string "username", null: false
+    t.string "type", null: false
     t.boolean "sysadmin", default: false, null: false
     t.string "phone"
+    t.bigint "local_identity_id"
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["name"], name: "index_users_on_name"
+    t.index ["uid"], name: "index_users_on_uid", unique: true
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
@@ -263,4 +269,5 @@ ActiveRecord::Schema.define(version: 2020_05_04_164427) do
   add_foreign_key "units", "units", column: "parent_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "user_groups_users", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "user_groups_users", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "users", "local_identities", on_update: :cascade, on_delete: :cascade
 end

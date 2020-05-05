@@ -13,6 +13,10 @@ class LocalIdentityPolicy < ApplicationPolicy
     @identity = identity
   end
 
+  def activate?
+    true
+  end
+
   def new_password?
     true
   end
@@ -22,6 +26,10 @@ class LocalIdentityPolicy < ApplicationPolicy
   end
 
   def reset_password?
+    true
+  end
+
+  def update?
     true
   end
 

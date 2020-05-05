@@ -8,21 +8,31 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test 'create() with valid credentials' do
-    user = users(:admin)
-    post '/auth/identity/callback', params: {
-        auth_key: "#{user.username}@illinois.edu",
-        password: "password"
-    }
-    assert_redirected_to root_url
-  end
-
-  test "create() with invalid credentials" do
+  test "create() with invalid credentials redirects to failure route" do
     post '/auth/identity/callback', params: {
         auth_key: "bogus@illinois.edu",
         password: "WRONG"
     }
     assert_redirected_to "http://www.example.com/auth/failure?message=invalid_credentials&strategy=identity"
+  end
+
+  test "create() with non-activated user responds with HTTP 401" do
+    user = users(:norights)
+    user.identity.update_attribute(:activated, false)
+    post '/auth/identity/callback', params: {
+        auth_key: "#{user.username}@illinois.edu",
+        password: "password"
+    }
+    assert_response :unauthorized
+  end
+
+  test "create() with valid credentials redirects to root URL" do
+    user = users(:norights)
+    post '/auth/identity/callback', params: {
+        auth_key: "#{user.username}@illinois.edu",
+        password: "password"
+    }
+    assert_redirected_to root_url
   end
 
   # destroy()

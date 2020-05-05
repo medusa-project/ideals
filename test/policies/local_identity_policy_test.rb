@@ -6,6 +6,19 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     @identity = local_identities(:norights)
   end
 
+  # activate?()
+
+  test "activate?() returns true with a nil user" do
+    policy = LocalIdentityPolicy.new(nil, @identity)
+    assert policy.activate?
+  end
+
+  test "activate?() authorizes everyone" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = LocalIdentityPolicy.new(context, @identity)
+    assert policy.activate?
+  end
+
   # new_password?()
 
   test "new_password?() returns true with a nil user" do
@@ -43,6 +56,19 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     context = UserContext.new(users(:norights), Role::NO_LIMIT)
     policy  = LocalIdentityPolicy.new(context, @identity)
     assert policy.reset_password?
+  end
+
+  # update?()
+
+  test "update?() returns true with a nil user" do
+    policy = LocalIdentityPolicy.new(nil, @identity)
+    assert policy.update?
+  end
+
+  test "update?() authorizes everyone" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = LocalIdentityPolicy.new(context, @identity)
+    assert policy.update?
   end
 
 end

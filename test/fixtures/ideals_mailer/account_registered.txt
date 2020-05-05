@@ -1,0 +1,4 @@
+Your registration has been received. Follow the link below to log in:
+
+{{{url}}}
+

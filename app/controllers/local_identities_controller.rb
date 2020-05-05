@@ -7,10 +7,22 @@
 class LocalIdentitiesController < ApplicationController
 
   before_action :set_identity
-  before_action :authorize_identity, only: :register
+  before_action :authorize_identity, only: [:register, :update]
+  before_action :pre_validate_activation, only: :activate
   before_action :pre_validate_password_reset, only: [:new_password,
                                                      :reset_password]
-  before_action :pre_validate_registration, only: :register
+  before_action :setup_registration_view, only: [:register, :update]
+  before_action :pre_validate_registration, only: [:register, :update]
+
+  ##
+  # Supports incoming links from emails after registration.
+  #
+  # Responds to `GET /identities/:id/activate`
+  #
+  def activate
+    @identity.activate
+    redirect_to login_path
+  end
 
   ##
   # Renders the "phase two" reset-password form, containing password and
@@ -25,10 +37,10 @@ class LocalIdentitiesController < ApplicationController
   end
 
   ##
-  # Renders the registration form. Requires a `token` query argument which
-  # supports incoming links from emails.
+  # Renders the registration form.
   #
-  # Responds to `GET /identities/:id/register`.
+  # Responds to `GET /identities/:id/register`. Requires a `token` query
+  # argument which supports incoming links from emails.
   #
   def register
   end
@@ -54,6 +66,31 @@ class LocalIdentitiesController < ApplicationController
     end
   end
 
+  ##
+  # Handles {register registration form} submissions. Invoked only once per
+  # unique {LocalIdentity} instance.
+  #
+  # Responds to `PATCH/PUT /identities/:id`.
+  #
+  def update
+    begin
+      p = identity_params
+      p[:user_attributes][:email] = @identity.email
+      p[:user_attributes][:uid]   = @identity.email
+      p[:user_attributes][:type]  = LocalUser.to_s
+      @identity.update!(p)
+      @identity.create_activation_digest
+      @identity.send_post_registration_email
+    rescue => e
+      flash['error'] = "#{e}"
+      render "register"
+    else
+      flash['success'] = "Thanks for registering! Check your email for a link "\
+          "to log in and start using IDEALS."
+      redirect_to root_url
+    end
+  end
+
   private
 
   def authorize_identity
@@ -61,11 +98,25 @@ class LocalIdentitiesController < ApplicationController
   end
 
   def identity_params
-    identity_password_params
+    params.require(:local_identity).permit(:password, :password_confirmation,
+                                           user_attributes: [:name, :phone, :username])
   end
 
   def identity_password_params
     params.require(:local_identity).permit(:password, :password_confirmation)
+  end
+
+  def pre_validate_activation
+    # Validate the token.
+    unless @identity.authenticated?(:activation, params[:token])
+      flash['error'] = "Invalid activation link."
+      redirect_to root_url and return
+    end
+    # Check that the identity has not already been activated.
+    if @identity.activated?
+      flash['error'] = "This account has already been activated."
+      redirect_to root_url
+    end
   end
 
   def pre_validate_password_reset
@@ -97,6 +148,10 @@ class LocalIdentitiesController < ApplicationController
 
   def set_identity
     @identity = LocalIdentity.find(params[:id] || params[:local_identity_id])
+  end
+
+  def setup_registration_view
+    @user = LocalUser.new
   end
 
 end

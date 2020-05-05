@@ -21,9 +21,10 @@ class LocalIdentityTest < ActiveSupport::TestCase
   # create_for_user()
 
   test "create_for_user() creates a correct instance" do
-    user     = User.create!(username: "joe",
-                            name: "Joe",
-                            email: "joe@example.org")
+    user     = LocalUser.create!(uid:      "joe",
+                                 username: "joe",
+                                 name:     "Joe",
+                                 email:    "joe@example.org")
     identity = LocalIdentity.create_for_user(user, "password")
     assert identity.activated
     assert_not_nil identity.password_digest
@@ -66,6 +67,30 @@ class LocalIdentityTest < ActiveSupport::TestCase
     assert_not_nil @instance.activated_at
   end
 
+  test "activate() clears the activation and registration digests" do
+    @instance.create_registration_digest
+    @instance.create_activation_digest
+
+    @instance.activate
+    assert_nil @instance.registration_digest
+    assert_nil @instance.activation_digest
+  end
+
+  # activation_url()
+
+  test "activation_url raises an error if activation_token is blank" do
+    assert_raises RuntimeError do
+      @instance.activation_url
+    end
+  end
+
+  test "activation_url() returns a correct URL" do
+    @instance.create_activation_digest
+    base_url = ::Configuration.instance.website[:base_url].chomp("/")
+    expected = "#{base_url}/identities/#{@instance.id}/activate?token=#{@instance.activation_token}"
+    assert_equal expected, @instance.activation_url
+  end
+
   # create_activation_digest()
 
   test "create_activation_digest() works" do
@@ -74,6 +99,13 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
     assert_not_empty @instance.activation_digest
     assert_not_equal digest, @instance.activation_digest
+  end
+
+  test "create_activation_digest() clears the registration digest" do
+    @instance.create_registration_digest
+    @instance.create_activation_digest
+
+    assert_nil @instance.registration_digest
   end
 
   # create_registration_digest()
@@ -97,6 +129,14 @@ class LocalIdentityTest < ActiveSupport::TestCase
     assert_not_equal digest, @instance.reset_digest
     assert_not_nil @instance.reset_sent_at
     assert_not_equal sent_at, @instance.reset_sent_at
+  end
+
+  # destroy()
+
+  test "destroy() destroys any associated LocalUser" do
+    assert_not_nil @instance.user
+    @instance.destroy!
+    assert_nil LocalUser.find_by_email(@instance.email)
   end
 
   # invitee()
@@ -192,6 +232,15 @@ class LocalIdentityTest < ActiveSupport::TestCase
     end
   end
 
+  # send_post_registration_email()
+
+  test "send_post_registration_email() sends an email" do
+    @instance.create_activation_digest
+    assert_emails 1 do
+      @instance.send_post_registration_email
+    end
+  end
+
   # update_password!()
 
   test "update_password!() raises an error if the confirmation does not match
@@ -203,7 +252,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
   end
 
   test "update_password!() updates the password" do
-    digest   = @instance.password_digest
+    digest       = @instance.password_digest
     new_password = "MyNewPassword123"
     @instance.update_password!(password: new_password,
                                confirmation: new_password)

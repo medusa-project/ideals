@@ -29,6 +29,17 @@ class IdealsMailer < ApplicationMailer
   end
 
   ##
+  # Notifies the given invitee that their registration has been received, and
+  # contains a link to activate their account.
+  #
+  # @param identity [Identity]
+  #
+  def account_registered(identity)
+    @identity = identity
+    mail(to: identity.email, subject: "You're ready to log in to IDEALS!")
+  end
+
+  ##
   # Notifies sysadmins that a user has requested to register and needs to be
   # approved to do so. Used in conjunction with {account_request_received}.
   #
@@ -39,15 +50,6 @@ class IdealsMailer < ApplicationMailer
     @invitee_url = "#{config.website[:base_url]}/invitees/#{invitee.id}"
     mail(to: [config.mail[:from]],
          subject: "Action required on a new IDEALS user")
-  end
-
-  def contact_help(params) # TODO: use this or lose it
-    subject = "#{subject_prefix} IDEALS] Help Request"
-    @params = params
-    mail(from:    @params["help-email"],
-         to:      [::Configuration.instance.mail[:from],
-                   @params["help-email"]],
-         subject: subject)
   end
 
   ##

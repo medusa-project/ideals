@@ -2,6 +2,42 @@ require 'test_helper'
 
 class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
+  # activate()
+
+  test "activate() redirects and sets the flash if a token is not provided" do
+    identity = local_identities(:approved)
+    get local_identity_activate_path(identity), {}
+    assert_equal "Invalid activation link.", flash['error']
+    assert_redirected_to root_url
+  end
+
+  test "activate() redirects and sets the flash if an invalid token is provided" do
+    identity = local_identities(:approved)
+    get local_identity_activate_path(identity), {
+        params: {
+            token: "bogus"
+        }
+    }
+    assert_equal "Invalid activation link.", flash['error']
+    assert_redirected_to root_url
+  end
+
+  test "activate() activates the instance and redirects if all arguments are valid" do
+    identity = local_identities(:approved)
+    assert !identity.activated
+    identity.create_activation_digest
+    token    = identity.activation_token
+
+    get local_identity_activate_path(identity), {
+        params: {
+            token: token
+        }
+    }
+    identity.reload
+    assert identity.activated
+    assert_redirected_to login_url
+  end
+
   # new_password()
 
   test "new_password() redirects and sets the flash if a token is not provided" do
@@ -152,8 +188,120 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
-  # register()
+  # update()
 
-  # TODO: write tests for this
+  test "update() redirects and sets the flash if a token is not provided" do
+    identity = local_identities(:approved)
+    patch local_identity_path(identity), {
+        params: {
+            local_identity: {
+                password: "MyNewPassword123",
+                password_confirmation: "MyNewPassword123",
+                user_attributes: {
+                    name: "New Name",
+                    username: "new"
+                }
+            }
+        }
+    }
+    assert_equal "Invalid registration link.", flash['error']
+    assert_redirected_to root_url
+  end
+
+  test "update() redirects and sets the flash if an invalid token is provided" do
+    identity = local_identities(:approved)
+    patch local_identity_path(identity), {
+        params: {
+            token: "bogus",
+            local_identity: {
+                password: "MyNewPassword123",
+                password_confirmation: "MyNewPassword123",
+                user_attributes: {
+                    name: "New Name",
+                    username: "new"
+                }
+            }
+        }
+    }
+    assert_equal "Invalid registration link.", flash['error']
+    assert_redirected_to root_url
+  end
+
+  test "update() sets the flash if the password does not match the confirmation" do
+    identity = local_identities(:approved)
+    identity.create_registration_digest
+    token = identity.registration_token
+
+    patch local_identity_path(identity), {
+        params: {
+            token: token,
+            local_identity: {
+                password: "MyNewPassword123",
+                password_confirmation: "ThisDoesNotMatch123",
+                user_attributes: {
+                    name: "New Name",
+                    username: "new"
+                }
+            }
+        }
+    }
+    assert flash['error'].include?("Password confirmation doesn't match")
+  end
+
+  test "update() updates the instance and sends an email if all arguments
+  are valid" do
+    identity = local_identities(:approved)
+    identity.create_registration_digest
+    token    = identity.registration_token
+    name     = "New Name"
+    phone    = "555-555-5555"
+    username = "new"
+    password = "MyNewPassword123"
+
+    assert_emails 1 do
+      patch local_identity_path(identity), {
+          params: {
+              token: token,
+              local_identity: {
+                  password: password,
+                  password_confirmation: password,
+                  user_attributes: {
+                      name:     name,
+                      phone:    phone,
+                      username: username
+                  }
+              }
+          }
+      }
+      identity.reload
+      user = identity.user
+      assert_equal name, user.name
+      assert_equal phone, user.phone
+      assert_equal username, user.username
+    end
+  end
+
+  test "update() sets the flash and redirects if all arguments are valid" do
+    identity = local_identities(:approved)
+    identity.create_registration_digest
+    token    = identity.registration_token
+    password = "MyNewPassword123"
+
+    patch local_identity_path(identity), {
+        params: {
+            token: token,
+            local_identity: {
+                password: password,
+                password_confirmation: password,
+                user_attributes: {
+                    name: "New Name",
+                    username: "new"
+                }
+            }
+        }
+    }
+    assert flash['success'].start_with?("Thanks for registering!")
+    assert_redirected_to root_url
+  end
 
 end
