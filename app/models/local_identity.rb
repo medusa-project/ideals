@@ -59,7 +59,7 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   validates :password, presence: true, length: {minimum: 6}
   validate :validate_invited, on: :create
 
-  accepts_nested_attributes_for :user
+  accepts_nested_attributes_for :user, update_only: true
 
   has_secure_password
 

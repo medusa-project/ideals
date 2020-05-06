@@ -4,9 +4,15 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   # activate()
 
+  test "activate() redirects to root path for logged-in users" do
+    identity = local_identities(:approved)
+    get local_identity_activate_path(identity)
+    assert_redirected_to root_path
+  end
+
   test "activate() redirects and sets the flash if a token is not provided" do
     identity = local_identities(:approved)
-    get local_identity_activate_path(identity), {}
+    get local_identity_activate_path(identity)
     assert_equal "Invalid activation link.", flash['error']
     assert_redirected_to root_url
   end
@@ -39,6 +45,12 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # new_password()
+
+  test "new_password() redirects to root path for logged-in users" do
+    identity = local_identities(:approved)
+    get local_identity_reset_password_path(identity)
+    assert_redirected_to root_path
+  end
 
   test "new_password() redirects and sets the flash if a token is not provided" do
     identity = local_identities(:norights)
@@ -77,6 +89,12 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   # register()
 
+  test "register() redirects to root path for logged-in users" do
+    identity = local_identities(:approved)
+    get local_identity_register_path(identity)
+    assert_redirected_to root_path
+  end
+
   test "register() redirects and sets the flash if a token is not provided" do
     identity = local_identities(:norights)
     get local_identity_register_path(identity)
@@ -102,6 +120,12 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # reset_password()
+
+  test "reset_password() redirects to root path for logged-in users" do
+    identity = local_identities(:approved)
+    post local_identity_reset_password_path(identity)
+    assert_redirected_to root_path
+  end
 
   test "reset_password() redirects and sets the flash if a token is not provided" do
     identity = local_identities(:norights)
@@ -189,6 +213,12 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() redirects to root path for logged-in users" do
+    identity = local_identities(:approved)
+    patch local_identity_path(identity)
+    assert_redirected_to root_path
+  end
 
   test "update() redirects and sets the flash if a token is not provided" do
     identity = local_identities(:approved)

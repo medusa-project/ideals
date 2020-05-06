@@ -4,11 +4,11 @@
 
 = form_for(@identity, url: local_identity_path(@identity, token: params[:token])) do |f|
 
-  -# TODO: why is form_for's default _method input full of garbage? is this a rails bug?
+  -# TODO: why does form_for's default _method input have a garbage value? is this a rails bug?
   = hidden_field_tag "_method", "patch"
   = hidden_field_tag "_method", "patch"
 
-  = f.fields_for(@user) do |u|
+  = f.fields_for(:user, @user.becomes(User)) do |u|
     .form-group
       = u.label :name
       = u.text_field :name, class: "form-control", required: true

@@ -6,12 +6,13 @@
 #
 class LocalIdentitiesController < ApplicationController
 
+  before_action :ensure_logged_out
   before_action :set_identity
   before_action :authorize_identity, only: [:register, :update]
   before_action :pre_validate_activation, only: :activate
   before_action :pre_validate_password_reset, only: [:new_password,
                                                      :reset_password]
-  before_action :setup_registration_view, only: [:register, :update]
+  before_action :setup_registration_view, only: :register
   before_action :pre_validate_registration, only: [:register, :update]
 
   ##
@@ -74,15 +75,17 @@ class LocalIdentitiesController < ApplicationController
   #
   def update
     begin
-      p = identity_params
-      p[:user_attributes][:email] = @identity.email
-      p[:user_attributes][:uid]   = @identity.email
-      p[:user_attributes][:type]  = LocalUser.to_s
-      @identity.update!(p)
+      @identity.build_user(email:    @identity.email,
+                           uid:      @identity.email,
+                           username: @identity.email,
+                           name:     @identity.email,
+                           type:     LocalUser.to_s) unless @identity.user
+      @identity.update!(identity_params)
       @identity.create_activation_digest
       @identity.send_post_registration_email
     rescue => e
       flash['error'] = "#{e}"
+      setup_registration_view
       render "register"
     else
       flash['success'] = "Thanks for registering! Check your email for a link "\
