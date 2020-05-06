@@ -3,6 +3,7 @@
     = link_to(collection_deposit_path(@collection), class: "btn btn-light mb-3", role: "button") do
       %i.fas.fa-plus
       Deposit Item Into This Collection
+.clearfix
 
 - if @items.count.positive?
   = form_tag(collection_path(@collection), method: :get, class: "filter") do

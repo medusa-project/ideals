@@ -1,13 +1,15 @@
+- pagination = paginate(@count, @window, @current_page, @permitted_params)
+
 .card.search-status.mb-3
   #search-status.card-body
     = search_status(@count, @start, @window, "item")
 
 .row.justify-content-md-center
   .col-md-auto
-    = paginate(@count, @window, @current_page, @permitted_params)
+    = pagination
 
-=resource_list(@items)
+= resource_list(@items)
 
 .row.justify-content-md-center
   .col-md-auto
-    = paginate(@count, @window, @current_page, @permitted_params)
+    = pagination

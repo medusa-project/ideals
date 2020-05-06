@@ -7,9 +7,11 @@
 -# invitees [Enumerable<Invitee>]
 -#
 
+- pagination = paginate(count, window, current_page, permitted_params)
+
 .row.justify-content-md-center
   .col-md-auto
-    = paginate(count, window, current_page, permitted_params)
+    = pagination
 
 %table.table
   %thead
@@ -36,4 +38,4 @@
 
 .row.justify-content-md-center
   .col-md-auto
-    = paginate(count, window, current_page, permitted_params)
+    = pagination
