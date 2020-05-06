@@ -12,7 +12,8 @@ class ApplicationController < ActionController::Base
   end
   rescue_from Pundit::NotAuthorizedError, with: :unauthorized
 
-  after_action :store_location, :copy_flash_to_response_headers
+  before_action :store_location
+  after_action :copy_flash_to_response_headers
 
   ##
   # @return [User] The logged-in user, or `nil` if there is none.
