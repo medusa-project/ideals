@@ -12,7 +12,7 @@
       - if invitee.pending?
         = link_to(invitee_approve_path(invitee),
                   method: :patch, class: "dropdown-item",
-                  data: { confirm: "Are you sure you want to approve #{invitee.email}?\n\nThe invitee will be notified." }) do
+                  data: { confirm: "Are you sure you want to approve #{invitee.email}?\n\nThe invitee will be notified via email." }) do
           %i.fa.fa-check
           Approve
       - if invitee.approved? && !invitee.identity&.activated
@@ -24,7 +24,7 @@
       - if invitee.pending?
         = link_to(invitee_reject_path(invitee),
                   method: :patch, class: "dropdown-item",
-                  data: { confirm: "Are you sure you want to reject #{invitee.email}?\n\nThe invitee will be notified." }) do
+                  data: { confirm: "Are you sure you want to reject #{invitee.email}?\n\nThe invitee will be notified via email." }) do
           %i.fa.fa-times
           Reject
         .dropdown-divider
