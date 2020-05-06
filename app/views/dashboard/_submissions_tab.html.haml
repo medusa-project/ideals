@@ -1,0 +1,5 @@
+- if @submissions_in_progress.any?
+  = render partial: "users/submissions_table",
+             locals: { submissions: @submissions_in_progress }
+- else
+  %p You have no submissions in progress.

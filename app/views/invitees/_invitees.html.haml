@@ -1,6 +1,15 @@
+-# Requires the following locals:
+-#
+-# count [Integer]
+-# window [Integer]
+-# current_page [Integer]
+-# permitted_params [ActionController::Parameters]
+-# invitees [Enumerable<Invitee>]
+-#
+
 .row.justify-content-md-center
   .col-md-auto
-    = paginate(@count, @window, @current_page, @permitted_params)
+    = paginate(count, window, current_page, permitted_params)
 
 %table.table
   %thead
@@ -10,7 +19,7 @@
       %th Approval State
       %th
   %tbody
-    - @invitees.each do |invitee|
+    - invitees.each do |invitee|
       %tr
         %td= link_to(invitee.email, invitee)
         %td= invitee.inviting_user ? link_to(invitee.inviting_user.name, invitee.inviting_user.becomes(User)) : "Self-Invited"
@@ -22,9 +31,9 @@
             %span.badge.badge-success APPROVED
           - when ApprovalState::REJECTED
             %span.badge.badge-danger REJECTED
-        %td= render partial: "actions_menu",
+        %td= render partial: "invitees/actions_menu",
                     locals: { invitee: invitee, button_class: "btn btn-sm btn-outline-secondary" }
 
 .row.justify-content-md-center
   .col-md-auto
-    = paginate(@count, @window, @current_page, @permitted_params)
+    = paginate(count, window, current_page, permitted_params)

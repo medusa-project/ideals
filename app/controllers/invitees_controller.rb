@@ -26,7 +26,7 @@ class InviteesController < ApplicationController
   else
     flash['success'] = "Invitee #{@invitee.email} has been approved and will "\
         "be receiving an email notification shortly."
-    redirect_to invitees_path
+    redirect_back fallback_location: invitees_path
   end
 
   ##
@@ -90,7 +90,7 @@ class InviteesController < ApplicationController
   else
     flash['success'] = "Invitee #{@invitee.email} has been deleted."
   ensure
-    redirect_to invitees_url
+    redirect_back fallback_location: invitees_url
   end
 
   ##
@@ -138,7 +138,7 @@ class InviteesController < ApplicationController
   else
     flash['success'] = "Invitee #{@invitee.email} has been rejected and will "\
         "be receiving an email notification shortly."
-    redirect_to invitees_path
+    redirect_back fallback_location: invitees_path
   end
 
   ##
