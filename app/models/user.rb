@@ -26,7 +26,6 @@
 class User < ApplicationRecord
 
   include Breadcrumb
-  include Indexed
 
   belongs_to :identity, class_name: "LocalIdentity",
              foreign_key: "local_identity_id", inverse_of: :user, optional: true
@@ -55,20 +54,6 @@ class User < ApplicationRecord
   before_save -> { email.downcase! }
 
   ##
-  # Contains constants for all "technical" indexed fields.
-  #
-  class IndexFields
-    CLASS         = ElasticsearchIndex::StandardFields::CLASS
-    CREATED       = ElasticsearchIndex::StandardFields::CREATED
-    EMAIL         = "k_email"
-    ID            = ElasticsearchIndex::StandardFields::ID
-    LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
-    LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
-    NAME          = "t_name"
-    USERNAME      = "k_username"
-  end
-
-  ##
   # @param string [String] Autocomplete text field string.
   # @return [User] Instance corresponding to the given string. May be `nil`.
   # @see to_autocomplete
@@ -81,21 +66,6 @@ class User < ApplicationRecord
       return User.find_by_email(email)
     end
     nil
-  end
-
-  ##
-  # @return [Hash] Indexable JSON representation of the instance.
-  #
-  def as_indexed_json
-    doc = {}
-    doc[IndexFields::CLASS]         = ["User", self.class.to_s]
-    doc[IndexFields::CREATED]       = self.created_at.utc.iso8601
-    doc[IndexFields::LAST_INDEXED]  = Time.now.utc.iso8601
-    doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
-    doc[IndexFields::EMAIL]         = self.email
-    doc[IndexFields::NAME]          = self.name
-    doc[IndexFields::USERNAME]      = self.username
-    doc
   end
 
   ##

@@ -3,7 +3,6 @@ require 'test_helper'
 class UserTest < ActiveSupport::TestCase
 
   setup do
-    setup_elasticsearch
     @instance = users(:norights)
   end
 
@@ -18,38 +17,6 @@ class UserTest < ActiveSupport::TestCase
   test "from_autocomplete_string() returns nil for no match" do
     string = "Bogus Bogus (bogus.example.org)"
     assert_nil User.from_autocomplete_string(string)
-  end
-
-  # as_indexed_json()
-
-  test "as_indexed_json() returns the correct structure" do
-    doc = @instance.as_indexed_json
-    assert_equal ["User", "LocalUser"],
-                 doc[User::IndexFields::CLASS]
-    assert_not_empty doc[User::IndexFields::CREATED]
-    assert_equal @instance.email,
-                 doc[User::IndexFields::EMAIL]
-    assert_not_empty doc[User::IndexFields::LAST_INDEXED]
-    assert_equal @instance.updated_at.utc.iso8601,
-                 doc[User::IndexFields::LAST_MODIFIED]
-    assert_equal @instance.name,
-                 doc[User::IndexFields::NAME]
-    assert_equal @instance.username,
-                 doc[User::IndexFields::USERNAME]
-  end
-
-  # delete_document() (Indexed concern)
-
-  test "delete_document() deletes a document" do
-    users = User.all.limit(5)
-    users.each(&:reindex)
-    refresh_elasticsearch
-    count = User.search.count
-    assert count > 0
-
-    User.delete_document(users.first.index_id)
-    refresh_elasticsearch
-    assert_equal count - 1, User.search.count
   end
 
   # effective_manager?()
@@ -204,39 +171,6 @@ class UserTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.name = "test"
     assert @instance.valid?
-  end
-
-  # reindex() (Indexed concern)
-
-  test "reindex() reindexes the instance" do
-    setup_elasticsearch
-    assert_equal 0, User.search.filter(User::IndexFields::ID, @instance.index_id).count
-
-    @instance.reindex
-    refresh_elasticsearch
-
-    assert_equal 1, User.search.filter(User::IndexFields::ID, @instance.index_id).count
-  end
-
-  # reindex_all() (Indexed concern)
-
-  test "reindex_all() reindexes all users" do
-    setup_elasticsearch
-    assert_equal 0, User.search.count
-
-    User.reindex_all
-    refresh_elasticsearch
-
-    expected = User.all.count
-    actual = User.search.count
-    assert actual > 0
-    assert_equal expected, actual
-  end
-
-  # search() (Indexed concern)
-
-  test "search() returns a UserRelation" do
-    assert_kind_of UserRelation, User.search
   end
 
   # submitter?()

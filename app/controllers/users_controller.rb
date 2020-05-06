@@ -29,18 +29,15 @@ class UsersController < ApplicationController
   #
   def index
     authorize(User)
-    @start  = results_params[:start].to_i
+    @start  = params[:start].to_i
     @window = window_size
-    @users  = User.search.
-        aggregations(false).
-        query_all(results_params[:q]).
-        filter(User::IndexFields::CLASS,
-               results_params[:class].present? ? results_params[:class] : nil).
-        order(User::IndexFields::USERNAME).
-        limit(@window).
-        start(@start)
+    q = "%#{params[:q]}%"
+    @users  = User.where("name LIKE ? OR username LIKE ?", q, q).
+        where("type LIKE ?", "%#{params[:class]}").
+        order(:name)
     @count            = @users.count
-    @current_page     = @users.page
+    @users            = @users.limit(@window).offset(@start)
+    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
     @permitted_params = results_params
     @new_invitee      = Invitee.new
   end
@@ -113,10 +110,6 @@ class UsersController < ApplicationController
   def authorize_user
     # N.B.: without becomes(), Pundit would require separate policy classes.
     @user ? authorize(@user.becomes(User)) : skip_authorization
-  end
-
-  def results_params
-    params.permit(:class, :q, :start, :window)
   end
 
   def privileges_params
