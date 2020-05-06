@@ -13,65 +13,58 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
 
   test "post() sets the flash and returns HTTP 400 when no email is provided" do
     # case 1
-    post reset_password_path, {
-        params: {}
-    }
+    post reset_password_path, params: {}
     assert_response :bad_request
     assert flash['error'].start_with?("No email address was provided")
 
     # case 2
-    post reset_password_path, {
-        params: {
-            password_reset: {}
-        }
-    }
+    post reset_password_path,
+         params: {
+             password_reset: {}
+         }
     assert_response :bad_request
     assert flash['error'].start_with?("No email address was provided")
 
     # case 3
-    post reset_password_path, {
-        params: {
-            password_reset: {
-                email: ""
-            }
-        }
-    }
+    post reset_password_path,
+         params: {
+             password_reset: {
+                 email: ""
+             }
+         }
     assert_response :bad_request
     assert flash['error'].start_with?("No email address was provided")
   end
 
   test "post() sets the flash and returns HTTP 400 when an invalid email is provided" do
-    post reset_password_path, {
-        params: {
-            password_reset: {
-                email: "invalid email"
-            }
-        }
-    }
+    post reset_password_path,
+         params: {
+             password_reset: {
+                 email: "invalid email"
+             }
+         }
     assert_response :bad_request
     assert flash['error'].start_with?("The email address you provided is invalid")
   end
 
   test "post() sets the flash and redirects when a UofI email is provided" do
-    post reset_password_path, {
-        params: {
-            password_reset: {
-                email: "user@illinois.edu"
-            }
-        }
-    }
+    post reset_password_path,
+         params: {
+             password_reset: {
+                 email: "user@illinois.edu"
+             }
+         }
     assert_redirected_to root_url
     assert flash['error'].start_with?("Sorry, we're not able to reset")
   end
 
   test "post() sets the flash and redirects when an unregistered email is provided" do
-    post reset_password_path, {
-        params: {
-            password_reset: {
-                email: "unregistered@example.org"
-            }
-        }
-    }
+    post reset_password_path,
+         params: {
+             password_reset: {
+                 email: "unregistered@example.org"
+             }
+         }
     assert_redirected_to reset_password_path
     assert flash['error'].start_with?("No user with this email")
   end
@@ -92,13 +85,12 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
                      password_confirmation: password)
 
     assert_emails 1 do
-      post reset_password_path, {
-          params: {
-              password_reset: {
-                  email: email
-              }
-          }
-      }
+      post reset_password_path,
+           params: {
+               password_reset: {
+                   email: email
+               }
+           }
     end
     identity.reload
     assert_not_nil identity.reset_digest

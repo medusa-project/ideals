@@ -9,66 +9,62 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() redirects to login page for logged-out users" do
-    post registered_elements_path, {}
+    post registered_elements_path
     assert_redirected_to login_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post registered_elements_path, {
-        xhr: true,
-        params: {
-            registered_element: {
-                name: "cats",
-                label: "Cats",
-                scope_note: "Mammals"
-            }
-        }
-    }
+    post registered_elements_path,
+         xhr: true,
+         params: {
+             registered_element: {
+                 name: "cats",
+                 label: "Cats",
+                 scope_note: "Mammals"
+             }
+         }
     assert_response :forbidden
   end
 
   test "create() returns HTTP 200" do
     log_in_as(users(:admin))
-    post registered_elements_path, {
-        xhr: true,
-        params: {
-            registered_element: {
-                name: "cats",
-                label: "Cats",
-                scope_note: "Mammals"
-            }
-        }
-    }
+    post registered_elements_path,
+         xhr: true,
+         params: {
+             registered_element: {
+                 name: "cats",
+                 label: "Cats",
+                 scope_note: "Mammals"
+             }
+         }
     assert_response :ok
   end
 
   test "create() creates an element" do
     log_in_as(users(:admin))
     assert_difference "RegisteredElement.count" do
-      post registered_elements_path, {
-          xhr: true,
-          params: {
-              registered_element: {
-                  name: "cats",
-                  label: "Cats",
-                  scope_note: "Mammals"
-              }
-          }
-      }
+      post registered_elements_path,
+           xhr: true,
+           params: {
+               registered_element: {
+                   name: "cats",
+                   label: "Cats",
+                   scope_note: "Mammals"
+               }
+           }
     end
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
-    post registered_elements_path, {
-        xhr: true,
-        params: {
-            registered_element: {
-                name: ""
-            }
-        }
-    }
+    post registered_elements_path,
+         xhr: true,
+         params: {
+             registered_element: {
+                 name: ""
+             }
+         }
     assert_response :bad_request
   end
 
@@ -89,14 +85,14 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     element = registered_elements(:unused)
     assert_difference "RegisteredElement.count", -1 do
-      delete "/elements/#{element.name}"
+      delete registered_element_path(element)
     end
   end
 
   test "destroy() returns HTTP 302 for an existing element" do
     log_in_as(users(:admin))
     element = registered_elements(:title)
-    delete "/elements/#{element.name}"
+    delete registered_element_path(element)
     assert_redirected_to registered_elements_path
   end
 
@@ -137,29 +133,28 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to login page for logged-out users" do
-    patch "/elements/bogus", {}
+    patch "/elements/bogus"
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch registered_element_path(registered_elements(:description)), {}
+    patch registered_element_path(registered_elements(:description))
     assert_response :forbidden
   end
 
   test "update() updates an element" do
     log_in_as(users(:admin))
     element = registered_elements(:title)
-    patch "/elements/#{element.name}", {
-        xhr: true,
-        params: {
-            registered_element: {
-                name: "cats",
-                label: "Cats",
-                scope_note: "Mammals"
-            }
-        }
-    }
+    patch "/elements/#{element.name}",
+          xhr: true,
+          params: {
+              registered_element: {
+                  name: "cats",
+                  label: "Cats",
+                  scope_note: "Mammals"
+              }
+          }
     element.reload
     assert_equal "cats", element.name
     assert_equal "Mammals", element.scope_note
@@ -168,35 +163,33 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   test "update() returns HTTP 200" do
     log_in_as(users(:admin))
     element = registered_elements(:title)
-    patch "/elements/#{element.name}", {
-        xhr: true,
-        params: {
-            registered_element: {
-                name: "cats",
-                scope_note: "Mammals"
-            }
-        }
-    }
+    patch registered_element_path(element),
+          xhr: true,
+          params: {
+              registered_element: {
+                  name: "cats",
+                  scope_note: "Mammals"
+              }
+          }
     assert_response :ok
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
     element = registered_elements(:title)
-    patch "/elements/#{element.name}", {
-        xhr: true,
-        params: {
-            registered_element: {
-                name: "" # invalid
-            }
-        }
-    }
+    patch registered_element_path(element),
+          xhr: true,
+          params: {
+              registered_element: {
+                  name: "" # invalid
+              }
+          }
     assert_response :bad_request
   end
 
   test "update() returns HTTP 404 for nonexistent elements" do
     log_in_as(users(:admin))
-    patch "/elements/bogus", {}
+    patch "/elements/bogus"
     assert_response :not_found
   end
 

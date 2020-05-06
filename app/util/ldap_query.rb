@@ -35,7 +35,7 @@ class LdapQuery
   end
 
   def ldap_url(group, net_id)
-    "https://quest.library.illinois.edu/directory/ad/#{net_id}/ismemberof/#{URI.encode(group)}"
+    "https://quest.library.illinois.edu/directory/ad/#{net_id}/ismemberof/#{CGI.escape(group)}"
   end
 
   def self.ldap_cache_key(net_id)

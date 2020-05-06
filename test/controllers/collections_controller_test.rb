@@ -25,71 +25,67 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() redirects to login page for logged-out users" do
-    post collections_path, {}
+    post collections_path
     assert_redirected_to login_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post collections_path, {
-        xhr: true,
-        params: {
-            collection: {
-                primary_unit_id: units(:unit1).id
-            },
-            elements: {
-                title: "New Collection"
-            }
-        }
-    }
+    post collections_path,
+         xhr: true,
+         params: {
+             collection: {
+                 primary_unit_id: units(:unit1).id
+             },
+             elements: {
+                 title: "New Collection"
+             }
+         }
     assert_response :forbidden
   end
 
   test "create() returns HTTP 200 for authorized users" do
     log_in_as(users(:admin))
-    post collections_path, {
-        xhr: true,
-        params: {
-            collection: {
-                manager_id: users(:admin).id,
-                primary_unit_id: units(:unit1).id
-            },
-            elements: {
-                title: "New Collection"
-            }
-        }
-    }
+    post collections_path,
+         xhr: true,
+         params: {
+             collection: {
+                 manager_id: users(:admin).id,
+                 primary_unit_id: units(:unit1).id
+             },
+             elements: {
+                 title: "New Collection"
+             }
+         }
     assert_response :ok
   end
 
   test "create() creates a collection" do
     log_in_as(users(:admin))
     assert_difference "Collection.count" do
-      post collections_path, {
-          xhr: true,
-          params: {
-              collection: {
-                  manager_id: users(:admin).id,
-                  primary_unit_id: units(:unit1).id
-              },
-              elements: {
-                  title: "New Collection"
-              }
-          }
-      }
+      post collections_path,
+           xhr: true,
+           params: {
+               collection: {
+                   manager_id: users(:admin).id,
+                   primary_unit_id: units(:unit1).id
+               },
+               elements: {
+                   title: "New Collection"
+               }
+           }
     end
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
-    post collections_path, {
-        xhr: true,
-        params: {
-            collection: {
-                primary_unit_id: 99999
-            }
-        }
-    }
+    post collections_path,
+         xhr: true,
+         params: {
+             collection: {
+                 primary_unit_id: 99999
+             }
+         }
     assert_response :bad_request
   end
 
@@ -119,7 +115,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     collection = collections(:collection1)
     primary_unit = collection.primary_unit
-    delete "/collections/#{collection.id}"
+    delete collection_path(collection)
     assert_redirected_to primary_unit
   end
 
@@ -133,28 +129,28 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_access() redirects to login page for logged-out users" do
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-access", xhr: true
+    get collection_edit_access_path(collection), xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_access() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-access", xhr: true
+    get collection_edit_access_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_access() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-access"
+    get collection_edit_access_path(collection)
     assert_response :not_found
   end
 
   test "edit_access() returns HTTP 200 for XHR requests" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-access", xhr: true
+    get collection_edit_access_path(collection), xhr: true
     assert_response :ok
   end
 
@@ -162,28 +158,28 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_collection_membership() redirects to login page for logged-out users" do
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-collection-membership", xhr: true
+    get collection_edit_collection_membership_path(collection), xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_collection_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-collection-membership", xhr: true
+    get collection_edit_collection_membership_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_collection_membership() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-collection-membership"
+    get collection_edit_collection_membership_path(collection)
     assert_response :not_found
   end
 
   test "edit_collection_membership() returns HTTP 200 for XHR requests" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-collection-membership", xhr: true
+    get collection_edit_collection_membership_path(collection), xhr: true
     assert_response :ok
   end
 
@@ -191,14 +187,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_properties() redirects to login page for logged-out users" do
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-properties", xhr: true
+    get collection_edit_properties_path(collection), xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-properties", xhr: true
+    get collection_edit_properties_path(collection), xhr: true
     assert_response :forbidden
   end
 
@@ -220,28 +216,28 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_unit_membership() redirects to login page for logged-out users" do
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-unit-membership", xhr: true
+    get collection_edit_unit_membership_path(collection), xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_unit_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-unit-membership", xhr: true
+    get collection_edit_unit_membership_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_unit_membership() returns HTTP 200 for non-XHR requests" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-unit-membership"
+    get collection_edit_unit_membership_path(collection)
     assert_response :not_found
   end
 
   test "edit_unit_membership() returns HTTP 200 for XHR requests" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
-    get "/collections/#{collection.id}/edit-unit-membership", xhr: true
+    get collection_edit_unit_membership_path(collection), xhr: true
     assert_response :ok
   end
 
@@ -282,31 +278,30 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() redirects to login page for logged-out users" do
     collection = collections(:collection1)
-    patch "/collections/#{collection.id}", {}
+    patch collection_path(collection)
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
-    patch "/collections/#{collection.id}", {}
+    patch collection_path(collection)
     assert_response :forbidden
   end
 
   test "update() updates a collection" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
-    patch "/collections/#{collection.id}", {
-        xhr: true,
-        params: {
-            collection: {
-                primary_unit_id: collection.primary_unit_id
-            },
-            elements: {
-                "dc:description": "New description"
-            }
-        }
-    }
+    patch collection_path(collection),
+          xhr: true,
+          params: {
+              collection: {
+                  primary_unit_id: collection.primary_unit_id
+              },
+              elements: {
+                  "dc:description": "New description"
+              }
+          }
     collection.reload
     assert_equal "New description", collection.description
   end
@@ -314,34 +309,32 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "update() returns HTTP 200" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
-    patch "/collections/#{collection.id}", {
-        xhr: true,
-        params: {
-            collection: {
-                managing_user_ids: [ users(:admin).id ]
-            }
-        }
-    }
+    patch collection_path(collection),
+          xhr: true,
+          params: {
+              collection: {
+                  managing_user_ids: [ users(:admin).id ]
+              }
+          }
     assert_response :ok
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
     collection = collections(:collection1)
-    patch "/collections/#{collection.id}", {
-        xhr: true,
-        params: {
-            collection: {
-                primary_unit_id: 99999
-            }
-        }
-    }
+    patch collection_path(collection),
+          xhr: true,
+          params: {
+              collection: {
+                  primary_unit_id: 99999
+              }
+          }
     assert_response :bad_request
   end
 
   test "update() returns HTTP 404 for nonexistent collections" do
     log_in_as(users(:admin))
-    patch "/collections/bogus", {}
+    patch "/collections/bogus"
     assert_response :not_found
   end
 

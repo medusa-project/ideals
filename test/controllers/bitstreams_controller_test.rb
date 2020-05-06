@@ -52,7 +52,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "create() returns HTTP 400 for illegal arguments" do
     skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
     log_in_as(users(:admin))
-    post item_bitstreams_path(items(:item1)), {}
+    post item_bitstreams_path(items(:item1))
     assert_response :bad_request
   end
 

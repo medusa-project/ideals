@@ -10,21 +10,21 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "clone() redirects to login page for logged-out users" do
     profile = submission_profiles(:default)
-    post submission_profile_clone_path(profile), {}
+    post submission_profile_clone_path(profile)
     assert_redirected_to login_path
   end
 
   test "clone() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     profile = submission_profiles(:default)
-    post submission_profile_clone_path(profile), {}
+    post submission_profile_clone_path(profile)
     assert_response :forbidden
   end
 
   test "clone() redirects to the clone upon success" do
     log_in_as(users(:admin))
     profile = submission_profiles(:default)
-    post submission_profile_clone_path(profile), {}
+    post submission_profile_clone_path(profile)
     assert_redirected_to submission_profile_path(SubmissionProfile.order(created_at: :desc).first)
   end
 
@@ -32,67 +32,63 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     profile = submission_profiles(:default)
     assert_difference "SubmissionProfile.count" do
-      post submission_profile_clone_path(profile), {}
+      post submission_profile_clone_path(profile)
     end
   end
 
   # create()
 
   test "create() redirects to login page for logged-out users" do
-    post submission_profiles_path, {}
+    post submission_profiles_path
     assert_redirected_to login_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post submission_profiles_path, {
-        xhr: true,
-        params: {
-            submission_profile: {
-                name: "cats"
-            }
-        }
-    }
+    post submission_profiles_path,
+         xhr: true,
+         params: {
+             submission_profile: {
+                 name: "cats"
+             }
+         }
     assert_response :forbidden
   end
 
   test "create() returns HTTP 200" do
     log_in_as(users(:admin))
-    post submission_profiles_path, {
-        xhr: true,
-        params: {
-            submission_profile: {
-                name: "cats"
-            }
-        }
-    }
+    post submission_profiles_path,
+         xhr: true,
+         params: {
+             submission_profile: {
+                 name: "cats"
+             }
+         }
     assert_response :ok
   end
 
   test "create() creates a profile" do
     log_in_as(users(:admin))
     assert_difference "SubmissionProfile.count" do
-      post submission_profiles_path, {
-          xhr: true,
-          params: {
-              submission_profile: {
-                  name: "cats"
-              }
-          }
-      }
+      post submission_profiles_path,
+           xhr: true,
+           params: {
+               submission_profile: {
+                   name: "cats"
+               }
+           }
     end
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
-    post submission_profiles_path, {
-        xhr: true,
-        params: {
-            submission_profile: {
-                name: ""
-            }
-        }
-    }
+    post submission_profiles_path,
+         xhr: true,
+         params: {
+             submission_profile: {
+                 name: ""
+             }
+         }
     assert_response :bad_request
   end
 
@@ -113,14 +109,14 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     profile = submission_profiles(:unused)
     assert_difference "SubmissionProfile.count", -1 do
-      delete "/submission-profiles/#{profile.id}"
+      delete submission_profile_path(profile)
     end
   end
 
   test "destroy() returns HTTP 302 for an existing profile" do
     log_in_as(users(:admin))
     profile = submission_profiles(:unused)
-    delete "/submission-profiles/#{profile.id}"
+    delete submission_profile_path(profile)
     assert_redirected_to submission_profiles_path
   end
 
@@ -190,7 +186,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to login page for logged-out users" do
-    patch "/submission-profiles/99999", {}
+    patch "/submission-profiles/99999"
     assert_redirected_to login_path
   end
 
@@ -203,14 +199,13 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   test "update() updates a profile" do
     log_in_as(users(:admin))
     profile = submission_profiles(:default)
-    patch "/submission-profiles/#{profile.id}", {
-        xhr: true,
-        params: {
-            submission_profile: {
-                name: "cats"
-            }
-        }
-    }
+    patch submission_profile_path(profile),
+          xhr: true,
+          params: {
+              submission_profile: {
+                  name: "cats"
+              }
+          }
     profile.reload
     assert_equal "cats", profile.name
   end
@@ -218,34 +213,32 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   test "update() returns HTTP 200" do
     log_in_as(users(:admin))
     profile = submission_profiles(:default)
-    patch "/submission-profiles/#{profile.id}", {
-        xhr: true,
-        params: {
-            submission_profile: {
-                name: "cats"
-            }
-        }
-    }
+    patch submission_profile_path(profile),
+          xhr: true,
+          params: {
+              submission_profile: {
+                  name: "cats"
+              }
+          }
     assert_response :ok
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
     profile = submission_profiles(:default)
-    patch "/submission-profiles/#{profile.id}", {
-        xhr: true,
-        params: {
-            submission_profile: {
-                name: "" # invalid
-            }
-        }
-    }
+    patch submission_profile_path(profile),
+          xhr: true,
+          params: {
+              submission_profile: {
+                  name: "" # invalid
+              }
+          }
     assert_response :bad_request
   end
 
   test "update() returns HTTP 404 for nonexistent profiles" do
     log_in_as(users(:admin))
-    patch "/submission-profiles/99999", {}
+    patch "/submission-profiles/99999"
     assert_response :not_found
   end
 

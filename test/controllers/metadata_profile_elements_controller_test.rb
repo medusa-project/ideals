@@ -13,71 +13,67 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() redirects to login page for logged-out users" do
-    post metadata_profile_metadata_profile_elements_path(@profile), {}
+    post metadata_profile_metadata_profile_elements_path(@profile)
     assert_redirected_to login_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post metadata_profile_metadata_profile_elements_path(@profile), {
-        xhr: true,
-        params: {
-            metadata_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                metadata_profile_id: @profile.id,
-                label: "Title",
-                index: 0
-            }
-        }
-    }
+    post metadata_profile_metadata_profile_elements_path(@profile),
+         xhr: true,
+         params: {
+             metadata_profile_element: {
+                 registered_element_id: registered_elements(:title).id,
+                 metadata_profile_id: @profile.id,
+                 label: "Title",
+                 index: 0
+             }
+         }
     assert_response :forbidden
   end
 
   test "create() returns HTTP 200" do
     log_in_as(users(:admin))
-    post metadata_profile_metadata_profile_elements_path(@profile), {
-        xhr: true,
-        params: {
-            metadata_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                metadata_profile_id: @profile.id,
-                label: "Title",
-                index: 0
-            }
-        }
-    }
+    post metadata_profile_metadata_profile_elements_path(@profile),
+         xhr: true,
+         params: {
+             metadata_profile_element: {
+                 registered_element_id: registered_elements(:title).id,
+                 metadata_profile_id: @profile.id,
+                 label: "Title",
+                 index: 0
+             }
+         }
     assert_response :ok
   end
 
   test "create() creates an element" do
     log_in_as(users(:admin))
     assert_difference "MetadataProfileElement.count" do
-      post metadata_profile_metadata_profile_elements_path(@profile), {
-          xhr: true,
-          params: {
-              metadata_profile_element: {
-                  registered_element_id: registered_elements(:title).id,
-                  metadata_profile_id: @profile.id,
-                  label: "Title",
-                  index: 0
-              }
-          }
-      }
+      post metadata_profile_metadata_profile_elements_path(@profile),
+           xhr: true,
+           params: {
+               metadata_profile_element: {
+                   registered_element_id: registered_elements(:title).id,
+                   metadata_profile_id: @profile.id,
+                   label: "Title",
+                   index: 0
+               }
+           }
     end
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
-    post metadata_profile_metadata_profile_elements_path(@profile), {
-        xhr: true,
-        params: {
-            metadata_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                metadata_profile_id: @profile.id,
-                index: -1 # invalid
-            }
-        }
-    }
+    post metadata_profile_metadata_profile_elements_path(@profile),
+         xhr: true,
+         params: {
+             metadata_profile_element: {
+                 registered_element_id: registered_elements(:title).id,
+                 metadata_profile_id: @profile.id,
+                 index: -1 # invalid
+             }
+         }
     assert_response :bad_request
   end
 
@@ -100,14 +96,16 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     element = metadata_profile_elements(:default_title)
     assert_difference "MetadataProfileElement.count", -1 do
-      delete metadata_profile_metadata_profile_element_path(element.metadata_profile, element)
+      delete metadata_profile_metadata_profile_element_path(element.metadata_profile,
+                                                            element)
     end
   end
 
   test "destroy() returns HTTP 302 for an existing element" do
     log_in_as(users(:admin))
     element = metadata_profile_elements(:default_title)
-    delete metadata_profile_metadata_profile_element_path(element.metadata_profile, element)
+    delete metadata_profile_metadata_profile_element_path(element.metadata_profile,
+                                                          element)
     assert_redirected_to element.metadata_profile
   end
 
@@ -143,30 +141,29 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() redirects to login page for logged-out users" do
     element = metadata_profile_elements(:default_title)
-    patch metadata_profile_metadata_profile_element_path(@profile, element), {}
+    patch metadata_profile_metadata_profile_element_path(@profile, element)
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     element = metadata_profile_elements(:default_title)
-    patch metadata_profile_metadata_profile_element_path(@profile, element), {}
+    patch metadata_profile_metadata_profile_element_path(@profile, element)
     assert_response :forbidden
   end
 
   test "update() updates an element" do
     log_in_as(users(:admin))
     element = metadata_profile_elements(:default_title)
-    patch metadata_profile_metadata_profile_element_path(@profile, element), {
-        xhr: true,
-        params: {
-            metadata_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                metadata_profile_id: @profile.id,
-                index: 2
-            }
-        }
-    }
+    patch metadata_profile_metadata_profile_element_path(@profile, element),
+          xhr: true,
+          params: {
+              metadata_profile_element: {
+                  registered_element_id: registered_elements(:title).id,
+                  metadata_profile_id: @profile.id,
+                  index: 2
+              }
+          }
     element.reload
     assert_equal 2, element.index
   end
@@ -174,39 +171,37 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   test "update() returns HTTP 200" do
     log_in_as(users(:admin))
     element = metadata_profile_elements(:default_title)
-    patch metadata_profile_metadata_profile_element_path(@profile, element), {
-        xhr: true,
-        params: {
-            metadata_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                metadata_profile_id: @profile.id,
-                label: "New Label",
-                index: 0
-            }
-        }
-    }
+    patch metadata_profile_metadata_profile_element_path(@profile, element),
+          xhr: true,
+          params: {
+              metadata_profile_element: {
+                  registered_element_id: registered_elements(:title).id,
+                  metadata_profile_id: @profile.id,
+                  label: "New Label",
+                  index: 0
+              }
+          }
     assert_response :ok
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
     element = metadata_profile_elements(:default_title)
-    patch metadata_profile_metadata_profile_element_path(@profile, element), {
-        xhr: true,
-        params: {
-            metadata_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                metadata_profile_id: @profile.id,
-                index: -1 # invalid
-            }
-        }
-    }
+    patch metadata_profile_metadata_profile_element_path(@profile, element),
+          xhr: true,
+          params: {
+              metadata_profile_element: {
+                  registered_element_id: registered_elements(:title).id,
+                  metadata_profile_id: @profile.id,
+                  index: -1 # invalid
+              }
+          }
     assert_response :bad_request
   end
 
   test "update() returns HTTP 404 for nonexistent elements" do
     log_in_as(users(:admin))
-    patch metadata_profile_path(@profile) + "/elements/9999", {}
+    patch metadata_profile_path(@profile) + "/elements/9999"
     assert_response :not_found
   end
 

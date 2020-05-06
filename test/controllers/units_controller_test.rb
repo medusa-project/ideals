@@ -41,73 +41,71 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() redirects to login page for logged-out users" do
-    post units_path, {}
+    post units_path
     assert_redirected_to login_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post units_path, {
-        xhr: true,
-        params: {
-            unit: {
-                title: "New Unit"
-            }
-        }
-    }
+    post units_path,
+         xhr: true,
+         params: {
+             unit: {
+                 title: "New Unit"
+             }
+         }
     assert_response :forbidden
   end
 
   test "create() returns HTTP 200 for authorized users" do
     log_in_as(users(:admin))
-    post units_path, {
-        xhr: true,
-        params: {
-            unit: {
-                title: "New Unit"
-            }
-        }
-    }
+    post units_path,
+         xhr: true,
+         params: {
+             unit: {
+                 title: "New Unit"
+             }
+         }
     assert_response :ok
   end
 
   test "create() creates a unit" do
     log_in_as(users(:admin))
     assert_difference "Unit.count" do
-      post units_path, {
-          xhr: true,
-          params: {
-              unit: {
-                  title: "New Unit"
-              }
-          }
-      }
+      post units_path,
+           xhr: true,
+           params: {
+               unit: {
+                   title: "New Unit"
+               }
+           }
     end
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
-    post units_path, {
-        xhr: true,
-        params: {
-            unit: {
-                title: ""
-            }
-        }
-    }
+    post units_path,
+         xhr: true,
+         params: {
+             unit: {
+                 title: ""
+             }
+         }
     assert_response :bad_request
   end
 
   # destroy()
 
   test "destroy() redirects to login page for logged-out users" do
-    delete "/units/#{units(:unit1).id}"
+    unit = units(:unit1)
+    delete unit_path(unit)
     assert_redirected_to login_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete "/units/#{units(:unit1).id}"
+    unit = units(:unit1)
+    delete unit_path(unit)
     assert_response :forbidden
   end
 
@@ -115,7 +113,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     # choose a unit with no dependent collections or units to make setup easier
     unit = units(:empty)
-    delete "/units/#{unit.id}"
+    delete unit_path(unit)
     assert_raises ActiveRecord::RecordNotFound do
       Unit.find(unit.id)
     end
@@ -124,7 +122,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "destroy() returns HTTP 302 for an existing unit" do
     log_in_as(users(:admin))
     unit = units(:unit1)
-    delete "/units/#{unit.id}"
+    delete unit_path(unit)
     assert_redirected_to units_path
   end
 
@@ -138,28 +136,28 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_access() redirects to login page for logged-out users" do
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-access", xhr: true
+    get unit_edit_access_path(unit), xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_access() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-access", xhr: true
+    get unit_edit_access_path(unit), xhr: true
     assert_response :forbidden
   end
 
   test "edit_access() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:admin))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-access"
+    get unit_edit_access_path(unit)
     assert_response :not_found
   end
 
   test "edit_access() returns HTTP 200 for XHR requests" do
     log_in_as(users(:admin))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-access", xhr: true
+    get unit_edit_access_path(unit), xhr: true
     assert_response :ok
   end
 
@@ -167,28 +165,28 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_membership() redirects to login page for logged-out users" do
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-membership", xhr: true
+    get unit_edit_membership_path(unit), xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-membership", xhr: true
+    get unit_edit_membership_path(unit), xhr: true
     assert_response :forbidden
   end
 
   test "edit_membership() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:admin))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-membership"
+    get unit_edit_membership_path(unit)
     assert_response :not_found
   end
 
   test "edit_membership() returns HTTP 200 for XHR requests" do
     log_in_as(users(:admin))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-membership", xhr: true
+    get unit_edit_membership_path(unit), xhr: true
     assert_response :ok
   end
 
@@ -196,28 +194,28 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_properties() redirects to login page for logged-out users" do
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-properties", xhr: true
+    get unit_edit_properties_path(unit), xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-properties", xhr: true
+    get unit_edit_properties_path(unit), xhr: true
     assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:admin))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-properties"
+    get unit_edit_properties_path(unit)
     assert_response :not_found
   end
 
   test "edit_properties() returns HTTP 200 for XHR requests" do
     log_in_as(users(:admin))
     unit = units(:unit1)
-    get "/units/#{unit.id}/edit-properties", xhr: true
+    get unit_edit_properties_path(unit), xhr: true
     assert_response :ok
   end
 
@@ -260,28 +258,27 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() redirects to login page for logged-out users" do
     unit = units(:unit1)
-    patch "/units/#{unit.id}", {}
+    patch unit_path(unit)
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
-    patch "/units/#{unit.id}", {}
+    patch unit_path(unit)
     assert_response :forbidden
   end
 
   test "update() updates a unit" do
     log_in_as(users(:admin))
     unit = units(:unit1)
-    patch "/units/#{unit.id}", {
-        xhr: true,
-        params: {
-            unit: {
-                title: "cats"
-            }
-        }
-    }
+    patch unit_path(unit),
+          xhr: true,
+          params: {
+              unit: {
+                  title: "cats"
+              }
+          }
     unit.reload
     assert_equal "cats", unit.title
   end
@@ -289,34 +286,32 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "update() returns HTTP 200" do
     log_in_as(users(:admin))
     unit = units(:unit1)
-    patch "/units/#{unit.id}", {
-        xhr: true,
-        params: {
-            unit: {
-                title: "cats"
-            }
-        }
-    }
+    patch unit_path(unit),
+          xhr: true,
+          params: {
+              unit: {
+                  title: "cats"
+              }
+          }
     assert_response :ok
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
     unit = units(:unit1)
-    patch "/units/#{unit.id}", {
-        xhr: true,
-        params: {
-            unit: {
-                title: "" # invalid
-            }
-        }
-    }
+    patch unit_path(unit),
+          xhr: true,
+          params: {
+              unit: {
+                  title: "" # invalid
+              }
+          }
     assert_response :bad_request
   end
 
   test "update() returns HTTP 404 for nonexistent units" do
     log_in_as(users(:admin))
-    patch "/units/bogus", {}
+    patch "/units/bogus"
     assert_response :not_found
   end
 

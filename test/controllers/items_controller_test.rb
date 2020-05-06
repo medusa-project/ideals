@@ -48,14 +48,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_membership() redirects to login page for logged-out users" do
     item = items(:item1)
-    get "/items/#{item.id}/edit-membership", xhr: true
+    get item_edit_membership_path(item), xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     item = items(:item1)
-    get "/items/#{item.id}/edit-membership", xhr: true
+    get item_edit_membership_path(item), xhr: true
     assert_response :forbidden
   end
 
@@ -77,14 +77,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_metadata() redirects to login page for logged-out users" do
     item = items(:item1)
-    get "/items/#{item.id}/edit-metadata", xhr: true
+    get item_edit_metadata_path(item), xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_metadata() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     item = items(:item1)
-    get "/items/#{item.id}/edit-metadata", xhr: true
+    get item_edit_metadata_path(item), xhr: true
     assert_response :forbidden
   end
 
@@ -106,14 +106,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_properties() redirects to login page for logged-out users" do
     item = items(:item1)
-    get "/items/#{item.id}/edit-properties", xhr: true
+    get item_edit_properties_path(item), xhr: true
     assert_redirected_to login_path
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     item = items(:item1)
-    get "/items/#{item.id}/edit-properties", xhr: true
+    get item_edit_properties_path(item), xhr: true
     assert_response :forbidden
   end
 

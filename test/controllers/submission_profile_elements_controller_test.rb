@@ -13,68 +13,64 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() redirects to login page for logged-out users" do
-    post submission_profile_submission_profile_elements_path(@profile), {}
+    post submission_profile_submission_profile_elements_path(@profile)
     assert_redirected_to login_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post submission_profile_submission_profile_elements_path(@profile), {
-        xhr: true,
-        params: {
-            submission_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                submission_profile_id: @profile.id,
-                index: 0
-            }
-        }
-    }
+    post submission_profile_submission_profile_elements_path(@profile),
+         xhr: true,
+         params: {
+             submission_profile_element: {
+                 registered_element_id: registered_elements(:title).id,
+                 submission_profile_id: @profile.id,
+                 index: 0
+             }
+         }
     assert_response :forbidden
   end
 
   test "create() returns HTTP 200" do
     log_in_as(users(:admin))
-    post submission_profile_submission_profile_elements_path(@profile), {
-        xhr: true,
-        params: {
-            submission_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                submission_profile_id: @profile.id,
-                index: 0
-            }
-        }
-    }
+    post submission_profile_submission_profile_elements_path(@profile),
+         xhr: true,
+         params: {
+             submission_profile_element: {
+                 registered_element_id: registered_elements(:title).id,
+                 submission_profile_id: @profile.id,
+                 index: 0
+             }
+         }
     assert_response :ok
   end
 
   test "create() creates an element" do
     log_in_as(users(:admin))
     assert_difference "SubmissionProfileElement.count" do
-      post submission_profile_submission_profile_elements_path(@profile), {
-          xhr: true,
-          params: {
-              submission_profile_element: {
-                  registered_element_id: registered_elements(:title).id,
-                  submission_profile_id: @profile.id,
-                  index: 0
-              }
-          }
-      }
+      post submission_profile_submission_profile_elements_path(@profile),
+           xhr: true,
+           params: {
+               submission_profile_element: {
+                   registered_element_id: registered_elements(:title).id,
+                   submission_profile_id: @profile.id,
+                   index: 0
+               }
+           }
     end
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
-    post submission_profile_submission_profile_elements_path(@profile), {
-        xhr: true,
-        params: {
-            submission_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                submission_profile_id: @profile.id,
-                index: -1 # invalid
-            }
-        }
-    }
+    post submission_profile_submission_profile_elements_path(@profile),
+         xhr: true,
+         params: {
+             submission_profile_element: {
+                 registered_element_id: registered_elements(:title).id,
+                 submission_profile_id: @profile.id,
+                 index: -1 # invalid
+             }
+         }
     assert_response :bad_request
   end
 
@@ -104,7 +100,8 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   test "destroy() returns HTTP 302 for an existing element" do
     log_in_as(users(:admin))
     element = submission_profile_elements(:default_title)
-    delete submission_profile_submission_profile_element_path(element.submission_profile, element)
+    delete submission_profile_submission_profile_element_path(element.submission_profile,
+                                                              element)
     assert_redirected_to element.submission_profile
   end
 
@@ -139,30 +136,29 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to login page for logged-out users" do
-    patch submission_profile_path(@profile) + "/elements/9999", {}
+    patch submission_profile_path(@profile) + "/elements/9999"
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     element = submission_profile_elements(:default_title)
-    patch submission_profile_submission_profile_element_path(@profile, element), {}
+    patch submission_profile_submission_profile_element_path(@profile, element)
     assert_response :forbidden
   end
 
   test "update() updates an element" do
     log_in_as(users(:admin))
     element = submission_profile_elements(:default_title)
-    patch submission_profile_submission_profile_element_path(@profile, element), {
-        xhr: true,
-        params: {
-            submission_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                submission_profile_id: @profile.id,
-                index: 2
-            }
-        }
-    }
+    patch submission_profile_submission_profile_element_path(@profile, element),
+          xhr: true,
+          params: {
+              submission_profile_element: {
+                  registered_element_id: registered_elements(:title).id,
+                  submission_profile_id: @profile.id,
+                  index: 2
+              }
+          }
     element.reload
     assert_equal 2, element.index
   end
@@ -170,38 +166,36 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   test "update() returns HTTP 200" do
     log_in_as(users(:admin))
     element = submission_profile_elements(:default_title)
-    patch submission_profile_submission_profile_element_path(@profile, element), {
-        xhr: true,
-        params: {
-            submission_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                submission_profile_id: @profile.id,
-                index: 0
-            }
-        }
-    }
+    patch submission_profile_submission_profile_element_path(@profile, element),
+          xhr: true,
+          params: {
+              submission_profile_element: {
+                  registered_element_id: registered_elements(:title).id,
+                  submission_profile_id: @profile.id,
+                  index: 0
+              }
+          }
     assert_response :ok
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
     element = submission_profile_elements(:default_title)
-    patch submission_profile_submission_profile_element_path(@profile, element), {
-        xhr: true,
-        params: {
-            submission_profile_element: {
-                registered_element_id: registered_elements(:title).id,
-                submission_profile_id: @profile.id,
-                index: -1 # invalid
-            }
-        }
-    }
+    patch submission_profile_submission_profile_element_path(@profile, element),
+          xhr: true,
+          params: {
+              submission_profile_element: {
+                  registered_element_id: registered_elements(:title).id,
+                  submission_profile_id: @profile.id,
+                  index: -1 # invalid
+              }
+          }
     assert_response :bad_request
   end
 
   test "update() returns HTTP 404 for nonexistent elements" do
     log_in_as(users(:admin))
-    patch submission_profile_path(@profile) + "/elements/9999", {}
+    patch submission_profile_path(@profile) + "/elements/9999"
     assert_response :not_found
   end
 

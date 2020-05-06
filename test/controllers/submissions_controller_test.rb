@@ -26,14 +26,14 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() redirects to login page for logged-out users" do
-    post submissions_path, {}
+    post submissions_path
     assert_redirected_to login_path
   end
 
   test "create() creates an item" do
     log_in_as(users(:admin))
     assert_difference "Item.count" do
-      post submissions_path, {}
+      post submissions_path
       item = Item.order(created_at: :desc).first
       assert item.submitting
       assert !item.discoverable
@@ -44,7 +44,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to item-edit view" do
     log_in_as(users(:admin))
-    post submissions_path, {}
+    post submissions_path
     submission = Item.order(created_at: :desc).limit(1).first
     assert_redirected_to edit_submission_path(submission)
   end
@@ -116,29 +116,28 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() redirects to login page for logged-out users" do
     item = items(:submitting)
-    patch submission_path(item), {}
+    patch submission_path(item)
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     item = items(:submitting)
-    patch submission_path(item), {}
+    patch submission_path(item)
     assert_response :forbidden
   end
 
   test "update() updates an item" do
     log_in_as(users(:admin))
     collection = collections(:empty)
-    item = items(:submitting)
-    patch submission_path(item), {
-        xhr: true,
-        params: {
-            item: {
-                primary_collection_id: collection.id
-            }
-        }
-    }
+    item       = items(:submitting)
+    patch submission_path(item),
+          xhr: true,
+          params: {
+              item: {
+                  primary_collection_id: collection.id
+              }
+          }
     item.reload
     assert_equal collection.id, item.primary_collection_id
   end
@@ -146,41 +145,39 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   test "update() returns HTTP 204" do
     log_in_as(users(:admin))
     item = items(:submitting)
-    patch submission_path(item), {
-        xhr: true,
-        params: {
-            item: {
-                primary_collection_id: collections(:empty).id
-            }
-        }
-    }
+    patch submission_path(item),
+          xhr: true,
+          params: {
+              item: {
+                  primary_collection_id: collections(:empty).id
+              }
+          }
     assert_response :no_content
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
     item = items(:submitting)
-    patch submission_path(item), {
-        xhr: true,
-        params: {
-            item: {
-                primary_collection_id: 99999
-            }
-        }
-    }
+    patch submission_path(item),
+          xhr: true,
+          params: {
+              item: {
+                  primary_collection_id: 99999
+              }
+          }
     assert_response :bad_request
   end
 
   test "update() returns HTTP 404 for nonexistent items" do
     log_in_as(users(:admin))
-    patch "/submissions/bogus", {}
+    patch "/submissions/bogus"
     assert_response :not_found
   end
 
   test "update() redirects back when an item has already been submitted" do
     log_in_as(users(:admin))
     item = items(:item1)
-    patch submission_path(item), {}
+    patch submission_path(item)
     assert_redirected_to root_url
   end
 

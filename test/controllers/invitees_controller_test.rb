@@ -6,14 +6,14 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   test "approve() redirects to login page for logged-out users" do
     invitee = invitees(:pending)
-    patch invitee_approve_path(invitee), {}
+    patch invitee_approve_path(invitee)
     assert_redirected_to login_path
   end
 
   test "approve() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     invitee = invitees(:pending)
-    patch invitee_approve_path(invitee), {}
+    patch invitee_approve_path(invitee)
     assert_response :forbidden
   end
 
@@ -23,7 +23,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert !invitee.approved?
 
     assert_emails 1 do
-      patch invitee_approve_path(invitee), {}
+      patch invitee_approve_path(invitee)
       invitee.reload
       assert invitee.approved?
     end
@@ -32,7 +32,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   test "approve() sets the flash and redirects upon success" do
     log_in_as(users(:admin))
     invitee = invitees(:pending)
-    patch invitee_approve_path(invitee), {}
+    patch invitee_approve_path(invitee)
     assert_redirected_to invitees_path
     assert flash['success'].start_with?("Invitee #{invitee.email} has been approved")
   end
@@ -42,15 +42,14 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
 
-    post invitees_path, {
-        xhr: true,
-        params: {
-            invitee: {
-                email: "",
-                note: "This is a new invitee"
-            }
-        }
-    }
+    post invitees_path,
+         xhr: true,
+         params: {
+             invitee: {
+                 email: "",
+                 note: "This is a new invitee"
+             }
+         }
     assert_response :bad_request
   end
 
@@ -62,15 +61,14 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert_nil Invitee.find_by_email(email)
 
     assert_emails 1 do
-      post invitees_path, {
-          xhr: true,
-          params: {
-              invitee: {
-                  email: email,
-                  note: "This is a new invitee"
-              }
-          }
-      }
+      post invitees_path,
+           xhr: true,
+           params: {
+               invitee: {
+                   email: email,
+                   note: "This is a new invitee"
+               }
+           }
       invitee = Invitee.find_by_email(email)
       assert_equal ApprovalState::APPROVED, invitee.approval_state
     end
@@ -79,44 +77,41 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   test "create() sets the flash if all arguments are valid" do
     log_in_as(users(:admin))
 
-    post invitees_path, {
-        xhr: true,
-        params: {
-            invitee: {
-                email: "new@example.edu",
-                note: "This is a new invitee"
-            }
-        }
-    }
+    post invitees_path,
+         xhr: true,
+         params: {
+             invitee: {
+                 email: "new@example.edu",
+                 note: "This is a new invitee"
+             }
+         }
     assert flash['success'].include?("An invitation has been sent")
   end
 
   test "create() returns HTTP 200 if all arguments are valid" do
     log_in_as(users(:admin))
 
-    post invitees_path, {
-        xhr: true,
-        params: {
-            invitee: {
-                email: "new@example.edu",
-                note: "This is a new invitee"
-            }
-        }
-    }
+    post invitees_path,
+         xhr: true,
+         params: {
+             invitee: {
+                 email: "new@example.edu",
+                 note: "This is a new invitee"
+             }
+         }
     assert_response :ok
   end
 
   # create_unsolicited()
 
   test "create_unsolicited() redirects for illegal arguments" do
-    post create_unsolicited_invitees_path, {
-        params: {
-            invitee: {
-                email: "",
-                note: "This is a new invitee"
-            }
-        }
-    }
+    post create_unsolicited_invitees_path,
+         params: {
+             invitee: {
+                 email: "",
+                 note: "This is a new invitee"
+             }
+         }
     assert_redirected_to new_invitee_path
   end
 
@@ -126,28 +121,26 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert_nil Invitee.find_by_email(email)
 
     assert_emails 2 do
-      post create_unsolicited_invitees_path, {
-          params: {
-              invitee: {
-                  email: email,
-                  note: "This is a new invitee"
-              }
-          }
-      }
+      post create_unsolicited_invitees_path,
+           params: {
+               invitee: {
+                   email: email,
+                   note: "This is a new invitee"
+               }
+           }
     end
     invitee = Invitee.find_by_email(email)
     assert_equal ApprovalState::PENDING, invitee.approval_state
   end
 
   test "create_unsolicited() sets the flash and redirects if all arguments are valid" do
-    post create_unsolicited_invitees_path, {
-        params: {
-            invitee: {
-                email: "new@example.edu",
-                note: "This is a new invitee"
-            }
-        }
-    }
+    post create_unsolicited_invitees_path,
+         params: {
+             invitee: {
+                 email: "new@example.edu",
+                 note: "This is a new invitee"
+             }
+         }
     assert flash['success'].start_with?("Thanks for requesting")
     assert_redirected_to root_url
   end
@@ -229,14 +222,14 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   test "reject() redirects to login page for logged-out users" do
     invitee = invitees(:pending)
-    patch invitee_reject_path(invitee), {}
+    patch invitee_reject_path(invitee)
     assert_redirected_to login_path
   end
 
   test "reject() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     invitee = invitees(:pending)
-    patch invitee_reject_path(invitee), {}
+    patch invitee_reject_path(invitee)
     assert_response :forbidden
   end
 
@@ -246,7 +239,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert !invitee.rejected?
 
     assert_emails 1 do
-      patch invitee_reject_path(invitee), {}
+      patch invitee_reject_path(invitee)
       invitee.reload
       assert invitee.rejected?
     end
@@ -255,7 +248,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   test "reject() sets the flash and redirects upon success" do
     log_in_as(users(:admin))
     invitee = invitees(:pending)
-    patch invitee_reject_path(invitee), {}
+    patch invitee_reject_path(invitee)
     assert_redirected_to invitees_path
     assert flash['success'].start_with?("Invitee #{invitee.email} has been rejected")
   end
@@ -264,21 +257,21 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   test "resend_email() redirects to login page for logged-out users" do
     invitee = invitees(:pending)
-    patch invitee_resend_email_path(invitee), {}
+    patch invitee_resend_email_path(invitee)
     assert_redirected_to login_path
   end
 
   test "resend_email() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     invitee = invitees(:pending)
-    patch invitee_resend_email_path(invitee), {}
+    patch invitee_resend_email_path(invitee)
     assert_response :forbidden
   end
 
   test "resend_email() redirects to the invitees path upon success" do
     log_in_as(users(:admin))
     invitee = invitees(:approved)
-    patch invitee_resend_email_path(invitee), {}
+    patch invitee_resend_email_path(invitee)
     assert_redirected_to invitees_path
   end
 
@@ -286,7 +279,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     invitee = invitees(:approved)
     assert_emails 1 do
-      patch invitee_resend_email_path(invitee), {}
+      patch invitee_resend_email_path(invitee)
     end
   end
 

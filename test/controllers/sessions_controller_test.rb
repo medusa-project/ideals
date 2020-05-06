@@ -9,7 +9,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() with invalid credentials redirects to failure route" do
-    post '/auth/identity/callback', params: {
+    post "/auth/identity/callback", params: {
         auth_key: "bogus@example.edu",
         password: "WRONG"
     }
@@ -19,7 +19,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "create() with non-activated user responds with HTTP 401" do
     user = users(:norights)
     user.identity.update_attribute(:activated, false)
-    post '/auth/identity/callback', params: {
+    post "/auth/identity/callback", params: {
         auth_key: user.email,
         password: "password"
     }
@@ -28,7 +28,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with valid credentials redirects to root URL" do
     user = users(:norights)
-    post '/auth/identity/callback', params: {
+    post "/auth/identity/callback", params: {
         auth_key: user.email,
         password: "password"
     }

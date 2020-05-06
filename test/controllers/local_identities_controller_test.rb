@@ -19,11 +19,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "activate() redirects and sets the flash if an invalid token is provided" do
     identity = local_identities(:approved)
-    get local_identity_activate_path(identity), {
-        params: {
-            token: "bogus"
-        }
-    }
+    get local_identity_activate_path(identity, token: "bogus")
     assert_equal "Invalid activation link.", flash['error']
     assert_redirected_to root_url
   end
@@ -34,11 +30,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     identity.create_activation_digest
     token    = identity.activation_token
 
-    get local_identity_activate_path(identity), {
-        params: {
-            token: token
-        }
-    }
+    get local_identity_activate_path(identity, token: token)
     identity.reload
     assert identity.activated
     assert_redirected_to login_url
@@ -129,29 +121,27 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "reset_password() redirects and sets the flash if a token is not provided" do
     identity = local_identities(:norights)
-    post local_identity_reset_password_path(identity), {
-        params: {
-            local_identity: {
-                password: "MyNewPassword123",
-                password_confirmation: "MyNewPassword123"
-            }
-        }
-    }
+    post local_identity_reset_password_path(identity),
+         params: {
+             local_identity: {
+                 password: "MyNewPassword123",
+                 password_confirmation: "MyNewPassword123"
+             }
+         }
     assert_equal "Invalid password reset link.", flash['error']
     assert_redirected_to root_url
   end
 
   test "reset_password() redirects and sets the flash if an invalid token is provided" do
     identity = local_identities(:norights)
-    post local_identity_reset_password_path(identity), {
-        params: {
-            token: "bogus",
-            local_identity: {
-                password: "MyNewPassword123",
-                password_confirmation: "MyNewPassword123"
-            }
-        }
-    }
+    post local_identity_reset_password_path(identity),
+         params: {
+             token: "bogus",
+             local_identity: {
+                 password: "MyNewPassword123",
+                 password_confirmation: "MyNewPassword123"
+             }
+         }
     assert_equal "Invalid password reset link.", flash['error']
     assert_redirected_to root_url
   end
@@ -162,15 +152,14 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     token = identity.reset_token
     identity.update_attribute(:reset_sent_at, Time.now - 1.month)
 
-    post local_identity_reset_password_path(identity), {
-        params: {
-            token: token,
-            local_identity: {
-                password: "MyNewPassword123",
-                password_confirmation: "MyNewPassword123"
-            }
-        }
-    }
+    post local_identity_reset_password_path(identity),
+         params: {
+             token: token,
+             local_identity: {
+                 password: "MyNewPassword123",
+                 password_confirmation: "MyNewPassword123"
+             }
+         }
     assert_equal "This password reset link has expired. Please try again.",
                  flash['error']
     assert_redirected_to reset_password_url
@@ -181,15 +170,14 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     identity.create_reset_digest
     token = identity.reset_token
 
-    post local_identity_reset_password_path(identity), {
-        params: {
-            token: token,
-            local_identity: {
-                password: "MyNewPassword123",
-                password_confirmation: "ThisDoesNotMatch123"
-            }
-        }
-    }
+    post local_identity_reset_password_path(identity),
+         params: {
+             token: token,
+             local_identity: {
+                 password: "MyNewPassword123",
+                 password_confirmation: "ThisDoesNotMatch123"
+             }
+         }
     assert flash['error'].include?("Password confirmation doesn't match")
   end
 
@@ -199,15 +187,14 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     token    = identity.reset_token
     password = "MyNewPassword123"
 
-    post local_identity_reset_password_path(identity), {
-        params: {
-            token: token,
-            local_identity: {
-                password: password,
-                password_confirmation: password
-            }
-        }
-    }
+    post local_identity_reset_password_path(identity),
+         params: {
+             token: token,
+             local_identity: {
+                 password: password,
+                 password_confirmation: password
+             }
+         }
     assert flash['success'].start_with?("Your password has been changed")
     assert_redirected_to root_url
   end
@@ -222,37 +209,35 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() redirects and sets the flash if a token is not provided" do
     identity = local_identities(:approved)
-    patch local_identity_path(identity), {
-        params: {
-            local_identity: {
-                password: "MyNewPassword123",
-                password_confirmation: "MyNewPassword123",
-                user_attributes: {
-                    name: "New Name",
-                    username: "new"
-                }
-            }
-        }
-    }
+    patch local_identity_path(identity),
+          params: {
+              local_identity: {
+                  password: "MyNewPassword123",
+                  password_confirmation: "MyNewPassword123",
+                  user_attributes: {
+                      name: "New Name",
+                      username: "new"
+                  }
+              }
+          }
     assert_equal "Invalid registration link.", flash['error']
     assert_redirected_to root_url
   end
 
   test "update() redirects and sets the flash if an invalid token is provided" do
     identity = local_identities(:approved)
-    patch local_identity_path(identity), {
-        params: {
-            token: "bogus",
-            local_identity: {
-                password: "MyNewPassword123",
-                password_confirmation: "MyNewPassword123",
-                user_attributes: {
-                    name: "New Name",
-                    username: "new"
-                }
-            }
-        }
-    }
+    patch local_identity_path(identity),
+          params: {
+              token: "bogus",
+              local_identity: {
+                  password: "MyNewPassword123",
+                  password_confirmation: "MyNewPassword123",
+                  user_attributes: {
+                      name: "New Name",
+                      username: "new"
+                  }
+              }
+          }
     assert_equal "Invalid registration link.", flash['error']
     assert_redirected_to root_url
   end
@@ -262,19 +247,18 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     identity.create_registration_digest
     token = identity.registration_token
 
-    patch local_identity_path(identity), {
-        params: {
-            token: token,
-            local_identity: {
-                password: "MyNewPassword123",
-                password_confirmation: "ThisDoesNotMatch123",
-                user_attributes: {
-                    name: "New Name",
-                    username: "new"
-                }
-            }
-        }
-    }
+    patch local_identity_path(identity),
+          params: {
+              token: token,
+              local_identity: {
+                  password: "MyNewPassword123",
+                  password_confirmation: "ThisDoesNotMatch123",
+                  user_attributes: {
+                      name: "New Name",
+                      username: "new"
+                  }
+              }
+          }
     assert flash['error'].include?("Password confirmation doesn't match")
   end
 
@@ -289,20 +273,19 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     password = "MyNewPassword123"
 
     assert_emails 1 do
-      patch local_identity_path(identity), {
-          params: {
-              token: token,
-              local_identity: {
-                  password: password,
-                  password_confirmation: password,
-                  user_attributes: {
-                      name:     name,
-                      phone:    phone,
-                      username: username
-                  }
-              }
-          }
-      }
+      patch local_identity_path(identity),
+            params: {
+                token: token,
+                local_identity: {
+                    password: password,
+                    password_confirmation: password,
+                    user_attributes: {
+                        name:     name,
+                        phone:    phone,
+                        username: username
+                    }
+                }
+            }
       identity.reload
       user = identity.user
       assert_equal name, user.name
@@ -317,19 +300,18 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     token    = identity.registration_token
     password = "MyNewPassword123"
 
-    patch local_identity_path(identity), {
-        params: {
-            token: token,
-            local_identity: {
-                password: password,
-                password_confirmation: password,
-                user_attributes: {
-                    name: "New Name",
-                    username: "new"
-                }
-            }
-        }
-    }
+    patch local_identity_path(identity),
+          params: {
+              token: token,
+              local_identity: {
+                  password: password,
+                  password_confirmation: password,
+                  user_attributes: {
+                      name: "New Name",
+                      username: "new"
+                  }
+              }
+          }
     assert flash['success'].start_with?("Thanks for registering!")
     assert_redirected_to root_url
   end

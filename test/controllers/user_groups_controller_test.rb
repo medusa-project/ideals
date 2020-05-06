@@ -9,60 +9,56 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() redirects to login page for logged-out users" do
-    post user_groups_path, {}
+    post user_groups_path
     assert_redirected_to login_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post user_groups_path, {
-        xhr: true,
-        params: {
-            user_group: {
-                name: "cats"
-            }
-        }
-    }
+    post user_groups_path,
+         xhr: true,
+         params: {
+             user_group: {
+                 name: "cats"
+             }
+         }
     assert_response :forbidden
   end
 
   test "create() returns HTTP 200" do
     log_in_as(users(:admin))
-    post user_groups_path, {
-        xhr: true,
-        params: {
-            user_group: {
-                name: "cats"
-            }
-        }
-    }
+    post user_groups_path,
+         xhr: true,
+         params: {
+             user_group: {
+                 name: "cats"
+             }
+         }
     assert_response :ok
   end
 
   test "create() creates a user group" do
     log_in_as(users(:admin))
     assert_difference "UserGroup.count" do
-      post user_groups_path, {
-          xhr: true,
-          params: {
-              user_group: {
-                  name: "cats"
-              }
-          }
-      }
+      post user_groups_path,
+           xhr: true,
+           params: {
+               user_group: {
+                   name: "cats"
+               }
+           }
     end
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
-    post user_groups_path, {
-        xhr: true,
-        params: {
-            user_group: {
-                name: ""
-            }
-        }
-    }
+    post user_groups_path,
+         xhr: true,
+         params: {
+             user_group: {
+                 name: ""
+             }
+         }
     assert_response :bad_request
   end
 
@@ -83,14 +79,14 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     group = user_groups(:unused)
     assert_difference "UserGroup.count", -1 do
-      delete "/user-groups/#{group.id}"
+      delete user_group_path(group)
     end
   end
 
   test "destroy() returns HTTP 302 for an existing group" do
     log_in_as(users(:admin))
     group = user_groups(:unused)
-    delete "/user-groups/#{group.id}"
+    delete user_group_path(group)
     assert_redirected_to user_groups_path
   end
 
@@ -159,27 +155,26 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to login page for logged-out users" do
-    patch "/user-groups/99999", {}
+    patch "/user-groups/99999"
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch user_group_path(user_groups(:unused)), {}
+    patch user_group_path(user_groups(:unused))
     assert_response :forbidden
   end
 
   test "update() updates a user group" do
     log_in_as(users(:admin))
     group = user_groups(:one)
-    patch "/user-groups/#{group.id}", {
-        xhr: true,
-        params: {
-            user_group: {
-                name: "cats"
-            }
-        }
-    }
+    patch user_group_path(group),
+          xhr: true,
+          params: {
+              user_group: {
+                  name: "cats"
+              }
+          }
     group.reload
     assert_equal "cats", group.name
   end
@@ -187,34 +182,32 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   test "update() returns HTTP 200" do
     log_in_as(users(:admin))
     group = user_groups(:one)
-    patch "/user-groups/#{group.id}", {
-        xhr: true,
-        params: {
-            user_group: {
-                name: "cats"
-            }
-        }
-    }
+    patch user_group_path(group),
+          xhr: true,
+          params: {
+              user_group: {
+                  name: "cats"
+              }
+          }
     assert_response :ok
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
     group = user_groups(:one)
-    patch "/user-groups/#{group.id}", {
-        xhr: true,
-        params: {
-            user_group: {
-                name: "" # invalid
-            }
-        }
-    }
+    patch user_group_path(group),
+          xhr: true,
+          params: {
+              user_group: {
+                  name: "" # invalid
+              }
+          }
     assert_response :bad_request
   end
 
   test "update() returns HTTP 404 for nonexistent user groups" do
     log_in_as(users(:admin))
-    patch "/user-groups/99999", {}
+    patch "/user-groups/99999"
     assert_response :not_found
   end
 

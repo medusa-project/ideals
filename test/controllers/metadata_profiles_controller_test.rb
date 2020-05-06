@@ -10,21 +10,21 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "clone() redirects to login page for logged-out users" do
     profile = metadata_profiles(:default)
-    post metadata_profile_clone_path(profile), {}
+    post metadata_profile_clone_path(profile)
     assert_redirected_to login_path
   end
 
   test "clone() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     profile = metadata_profiles(:default)
-    post metadata_profile_clone_path(profile), {}
+    post metadata_profile_clone_path(profile)
     assert_response :forbidden
   end
 
   test "clone() redirects to the clone upon success" do
     log_in_as(users(:admin))
     profile = metadata_profiles(:default)
-    post metadata_profile_clone_path(profile), {}
+    post metadata_profile_clone_path(profile)
     assert_redirected_to metadata_profile_path(MetadataProfile.order(created_at: :desc).first)
   end
 
@@ -32,67 +32,63 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     profile = metadata_profiles(:default)
     assert_difference "MetadataProfile.count" do
-      post metadata_profile_clone_path(profile), {}
+      post metadata_profile_clone_path(profile)
     end
   end
 
   # create()
 
   test "create() redirects to login page for logged-out users" do
-    post metadata_profiles_path, {}
+    post metadata_profiles_path
     assert_redirected_to login_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post metadata_profiles_path, {
-        xhr: true,
-        params: {
-            metadata_profile: {
-                name: "cats"
-            }
-        }
-    }
+    post metadata_profiles_path,
+         xhr: true,
+         params: {
+             metadata_profile: {
+                 name: "cats"
+             }
+         }
     assert_response :forbidden
   end
 
   test "create() returns HTTP 200" do
     log_in_as(users(:admin))
-    post metadata_profiles_path, {
-        xhr: true,
-        params: {
-            metadata_profile: {
-                name: "cats"
-            }
-        }
-    }
+    post metadata_profiles_path,
+         xhr: true,
+         params: {
+             metadata_profile: {
+                 name: "cats"
+             }
+         }
     assert_response :ok
   end
 
   test "create() creates a profile" do
     log_in_as(users(:admin))
     assert_difference "MetadataProfile.count" do
-      post metadata_profiles_path, {
-          xhr: true,
-          params: {
-              metadata_profile: {
-                  name: "cats"
-              }
-          }
-      }
+      post metadata_profiles_path,
+           xhr: true,
+           params: {
+               metadata_profile: {
+                   name: "cats"
+               }
+           }
     end
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
-    post metadata_profiles_path, {
-        xhr: true,
-        params: {
-            metadata_profile: {
-                name: ""
-            }
-        }
-    }
+    post metadata_profiles_path,
+         xhr: true,
+         params: {
+             metadata_profile: {
+                 name: ""
+             }
+         }
     assert_response :bad_request
   end
 
@@ -113,14 +109,14 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:admin))
     profile = metadata_profiles(:unused)
     assert_difference "MetadataProfile.count", -1 do
-      delete "/metadata-profiles/#{profile.id}"
+      delete metadata_profile_path(profile)
     end
   end
 
   test "destroy() returns HTTP 302 for an existing profile" do
     log_in_as(users(:admin))
     profile = metadata_profiles(:unused)
-    delete "/metadata-profiles/#{profile.id}"
+    delete metadata_profile_path(profile)
     assert_redirected_to metadata_profiles_path
   end
 
@@ -190,27 +186,26 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to login page for logged-out users" do
-    patch "/metadata-profiles/99999", {}
+    patch "/metadata-profiles/99999"
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch metadata_profile_path(metadata_profiles(:unused)), {}
+    patch metadata_profile_path(metadata_profiles(:unused))
     assert_response :forbidden
   end
 
   test "update() updates a profile" do
     log_in_as(users(:admin))
     profile = metadata_profiles(:default)
-    patch "/metadata-profiles/#{profile.id}", {
-        xhr: true,
-        params: {
-            metadata_profile: {
-                name: "cats"
-            }
-        }
-    }
+    patch metadata_profile_path(profile),
+          xhr: true,
+          params: {
+              metadata_profile: {
+                  name: "cats"
+              }
+          }
     profile.reload
     assert_equal "cats", profile.name
   end
@@ -218,34 +213,32 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   test "update() returns HTTP 200" do
     log_in_as(users(:admin))
     profile = metadata_profiles(:default)
-    patch "/metadata-profiles/#{profile.id}", {
-        xhr: true,
-        params: {
-            metadata_profile: {
-                name: "cats"
-            }
-        }
-    }
+    patch metadata_profile_path(profile),
+          xhr: true,
+          params: {
+              metadata_profile: {
+                  name: "cats"
+              }
+          }
     assert_response :ok
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
     profile = metadata_profiles(:default)
-    patch "/metadata-profiles/#{profile.id}", {
-        xhr: true,
-        params: {
-            metadata_profile: {
-                name: "" # invalid
-            }
-        }
-    }
+    patch metadata_profile_path(profile),
+          xhr: true,
+          params: {
+              metadata_profile: {
+                  name: "" # invalid
+              }
+          }
     assert_response :bad_request
   end
 
   test "update() returns HTTP 404 for nonexistent profiles" do
     log_in_as(users(:admin))
-    patch "/metadata-profiles/99999", {}
+    patch "/metadata-profiles/99999"
     assert_response :not_found
   end
 

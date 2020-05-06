@@ -13,7 +13,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # edit_privileges()
 
   test "edit_privileges() redirects to login page for logged-out users" do
-    s= user_edit_privileges_path(users(:admin))
     get user_edit_privileges_path(users(:admin)), xhr: true
     assert_redirected_to login_path
   end
@@ -149,14 +148,13 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "update_privileges() updates a user" do
     log_in_as(users(:admin))
     user = users(:norights)
-    patch user_update_privileges_path(user), {
-        xhr: true,
-        params: {
-            user: {
-                sysadmin: true
-            }
-        }
-    }
+    patch user_update_privileges_path(user),
+          xhr: true,
+          params: {
+              user: {
+                  sysadmin: true
+              }
+          }
     user.reload
     assert user.sysadmin?
   end
@@ -164,26 +162,24 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "update_privileges() returns HTTP 200" do
     log_in_as(users(:admin))
     user = users(:admin)
-    patch user_update_privileges_path(user), {
-        xhr: true,
-        params: {
-            user: {
-                sysadmin: true
-            }
-        }
-    }
+    patch user_update_privileges_path(user),
+          xhr: true,
+          params: {
+              user: {
+                  sysadmin: true
+              }
+          }
     assert_response :ok
   end
 
   test "update_privileges() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
     user = users(:admin)
-    patch user_update_privileges_path(user), {
-        xhr: true,
-        params: {
-            user_groups: [999999]
-        }
-    }
+    patch user_update_privileges_path(user),
+          xhr: true,
+          params: {
+              user_groups: [999999]
+          }
     assert_response :bad_request
   end
 
@@ -211,14 +207,13 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "update_properties() updates a user" do
     log_in_as(users(:admin))
     user = users(:norights)
-    patch user_update_properties_path(user), {
-        xhr: true,
-        params: {
-            user: {
-                phone: "555-5155"
-            }
-        }
-    }
+    patch user_update_properties_path(user),
+          xhr: true,
+          params: {
+              user: {
+                  phone: "555-5155"
+              }
+          }
     user.reload
     assert_equal "555-5155", user.phone
   end
@@ -226,28 +221,26 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "update_properties() returns HTTP 200" do
     log_in_as(users(:admin))
     user = users(:admin)
-    patch user_update_properties_path(user), {
-        xhr: true,
-        params: {
-            user: {
-                sysadmin: true
-            }
-        }
-    }
+    patch user_update_properties_path(user),
+          xhr: true,
+          params: {
+              user: {
+                  sysadmin: true
+              }
+          }
     assert_response :ok
   end
 
   test "update_properties() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
     user = users(:admin)
-    patch user_update_properties_path(user), {
-        xhr: true,
-        params: {
-            user: {
-                email: ""
-            }
-        }
-    }
+    patch user_update_properties_path(user),
+          xhr: true,
+          params: {
+              user: {
+                  email: ""
+              }
+          }
     assert_response :bad_request
   end
 
