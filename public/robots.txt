@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /auth
+Disallow: /identities
+Disallow: /invitees
+Disallow: /login
+Disallow: /logout
+Disallow: /netid-login
+Disallow: /reset-password
