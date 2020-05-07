@@ -26,7 +26,6 @@ Rails.application.routes.draw do
     match "/edit-unit-membership", to: "collections#edit_unit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
   end
-  match "/dashboard", to: "dashboard#index", via: :get
   match "/deposit", to: "submissions#agreement", via: :get
   resources :handles
   resources :local_identities, only: [:update], path: "identities" do

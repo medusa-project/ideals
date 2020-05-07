@@ -11,14 +11,6 @@
       %span.navbar-toggler-icon
     #navbar-supported-content.collapse.navbar-collapse
       %ul.navbar-nav.mr-auto
-        - if policy(:dashboard).index?
-          %li#dashboard-nav.nav-item
-            = link_to dashboard_path, class: "nav-link" do
-              %i.fa.fa-tachometer-alt
-              Dashboard
-              - list = to_do_list
-              - if list.total_items > 0
-                %span.badge.badge-pill.badge-danger= list.total_items
         %li#deposit-nav.nav-item
           = link_to deposit_path, class: "nav-link" do
             %i.fa.fa-plus

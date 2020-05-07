@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   include Pundit
 
   protect_from_forgery with: :null_session
-  helper_method :current_user, :logged_in?
+  helper_method :current_user, :logged_in?, :to_do_list
 
   rescue_from StandardError, with: :error_occurred
   rescue_from ActionView::MissingTemplate do |_exception|
@@ -122,6 +122,38 @@ class ApplicationController < ActionController::Base
 
   def results_params
     params.permit(:q, :sort, :start, :window, fq: [])
+  end
+
+  ##
+  # @return [ToDoList] The {ApplicationController#current_user current user}'s
+  #                    to-do list. The result is cached.
+  #
+  def to_do_list
+    if @list.nil?
+      @list = ToDoList.new
+      # Pending Invitees (if the user is allowed to act on them)
+      if policy(Invitee).approve?
+        count = Invitee.where(approval_state: ApprovalState::PENDING).count
+        if count > 0
+          @list.items << {
+              message: "Act on #{count} #{"invitee".pluralize(count)}",
+              url: invitees_path(approval_state: ApprovalState::PENDING)
+          }
+          @list.total_items += count
+        end
+      end
+
+      # Submissions
+      count = current_user.submitted_items.where(submitting: true).count
+      if count > 0
+        @list.items << {
+            message: "Resume #{count} #{"submission".pluralize(count)}",
+            url: deposit_path
+        }
+        @list.total_items += count
+      end
+    end
+    @list
   end
 
   ##

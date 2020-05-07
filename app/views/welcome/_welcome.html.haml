@@ -1,3 +1,15 @@
+- if logged_in? && to_do_list.total_items > 0
+  .card.text-white.bg-info.mb-3.float-right
+    .card-header
+      = icon_for(:info)
+      Action required on
+      = to_do_list.total_items
+      items
+    .card-body.pl-2.pb-2
+      %ul
+        - to_do_list.items.each do |item|
+          %li= link_to(item[:message], item[:url])
+
 %h1 Welcome to IDEALS
 %p IDEALS, the Illinois Digital Environment for Access to Learning and Scholarship, publishes research and scholarship from the University of Illinois at Urbana-Champaign.
 %ul
