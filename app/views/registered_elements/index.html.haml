@@ -15,17 +15,18 @@
     - @elements.each do |element|
       %tr
         %td
-          %button.btn.btn-light.btn-sm.edit-element{"data-element-name": element.name,
-                                                          "data-target": "#edit-element-modal",
-                                                          "data-toggle": "modal",
-                                                          type: "button"}
-            %i.fas.fa-pencil-alt
-            Edit
-          = link_to(registered_element_path(element), class: 'btn btn-danger btn-sm',
+          .btn-group-vertical
+            %button.btn.btn-light.btn-sm.edit-element{"data-element-name": element.name,
+                                                      "data-target": "#edit-element-modal",
+                                                      "data-toggle": "modal",
+                                                      type: "button"}
+              %i.fas.fa-pencil-alt
+              Edit
+            = link_to(registered_element_path(element), class: 'btn btn-sm btn-danger',
                                                         method: :delete,
                                                         data: { confirm: 'Are you sure you want to delete this element?' }) do
-            %i.fa.fa-trash
-            Delete
+              %i.fa.fa-trash
+              Delete
         %td
           %table.table.table-sm.table-borderless
             %tbody

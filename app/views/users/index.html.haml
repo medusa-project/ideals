@@ -22,8 +22,9 @@
                                                 ["Shiboleth", ShibbolethUser.to_s],
                                                 ["Local", LocalUser.to_s]]),
                    class: "custom-select"
-      = button_tag "Clear", type: "reset", class: "btn btn-outline-secondary ml-3"
-      = submit_tag "Filter", name: "", class: "btn btn-primary ml-1"
+      .btn-group
+        = button_tag "Clear", type: "reset", class: "btn btn-outline-secondary ml-3"
+        = submit_tag "Filter", name: "", class: "btn btn-primary"
 
 = render partial: "users"
 

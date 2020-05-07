@@ -28,7 +28,7 @@
                                                                               type: "button"}
               %i.far.fa-eye
               = Role.label(session[:role_limit])
-            .dropdown-menu.dropdown-menu-right{"aria-labelledby": "role-play-dropdown"}
+            .dropdown-menu{"aria-labelledby": "role-play-dropdown"}
               = link_to Role.label(Role::NO_LIMIT),
                         url_for(role: Role::NO_LIMIT),
                         class: "dropdown-item"

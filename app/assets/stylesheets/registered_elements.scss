@@ -2,7 +2,9 @@ body#registered_elements {
   table {
     tr td:first-child {
       width: 1px;
-      white-space: nowrap;
+      button, a {
+        white-space: nowrap;
+      }
     }
     table tr th:first-child {
       text-align: right;
@@ -11,7 +13,7 @@ body#registered_elements {
   }
   #add-element-modal, #edit-element-modal {
     textarea {
-      height: 15em;
+      height: 8em;
     }
   }
 }
