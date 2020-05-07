@@ -48,11 +48,8 @@ namespace :ideals do
   namespace :users do
     desc "Create a local sysadmin user"
     task :create_local_sysadmin, [:email, :password] => :environment do |task, args|
-      ActiveRecord::Base.transaction do
-        user = LocalUser.no_omniauth(args[:email])
-        user.update!(sysadmin: true)
-        LocalIdentity.create_for_user(user, args[:password])
-      end
+      LocalUser.create_sysadmin(email:    args[:email],
+                                password: args[:password])
     end
 
     desc "Create a Shibboleth user"

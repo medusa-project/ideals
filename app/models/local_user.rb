@@ -15,34 +15,31 @@ class LocalUser < User
   before_destroy :destroy_identity
 
   ##
-  # @param auth [Hash]
-  # @return [LocalUser] Instance corresponding to the given OmniAuth hash.
-  #                     Only instances with {LocalIdentity#activated activated
-  #                     identities} are returned.
+  # This is mainly for quickly creating local administrators in development.
+  # It should not be used in production as it does not proceed through the
+  # ordinary invitation & registration workflow.
   #
-  def self.from_omniauth(auth)
-    auth = auth.deep_symbolize_keys
-    return nil unless auth && auth[:uid] && auth[:info][:email]
-
-    email    = auth[:info][:email].strip
-    identity = LocalIdentity.find_by(email: email)
-
-    return nil unless identity&.activated
-
-    user = LocalUser.find_by(email: email)
-    if user
-      user.update_with_omniauth(auth)
-    else
-      user = LocalUser.create_with_omniauth(auth)
-    end
-    user
-  end
-
-  def self.create_no_omniauth(email)
-    create! do |user|
-      user.uid      = email
-      user.email    = email
-      user.name     = email
+  # @param email [String]
+  # @param password [String]
+  #
+  def self.create_sysadmin(email:, password:)
+    ActiveRecord::Base.transaction do
+      invitee = Invitee.create!(email: email,
+                                approval_state: ApprovalState::APPROVED,
+                                note: "Created as a sysadmin on the command "\
+                                      "line, bypassing the invitation process")
+      identity = LocalIdentity.create!(email:                 email,
+                                       name:                  email,
+                                       password:              password,
+                                       password_confirmation: password,
+                                       invitee:               invitee,
+                                       activated:             true,
+                                       activated_at:          Time.zone.now)
+      identity.build_user(email:    email,
+                          uid:      email,
+                          name:     email,
+                          type:     LocalUser.to_s,
+                          sysadmin: true)
     end
   end
 
@@ -64,9 +61,28 @@ class LocalUser < User
     end
   end
 
-  def self.no_omniauth(email)
-    LocalUser.create_no_omniauth(email) unless LocalUser.exists?(email: email)
-    LocalUser.find_by(email: email)
+  ##
+  # @param auth [Hash]
+  # @return [LocalUser] Instance corresponding to the given OmniAuth hash.
+  #                     Only instances with {LocalIdentity#activated activated
+  #                     identities} are returned.
+  #
+  def self.from_omniauth(auth)
+    auth = auth.deep_symbolize_keys
+    return nil unless auth && auth[:uid] && auth[:info][:email]
+
+    email    = auth[:info][:email].strip
+    identity = LocalIdentity.find_by(email: email)
+
+    return nil unless identity&.activated
+
+    user = LocalUser.find_by(email: email)
+    if user
+      user.update_with_omniauth(auth)
+    else
+      user = LocalUser.create_with_omniauth(auth)
+    end
+    user
   end
 
   ##

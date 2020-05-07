@@ -64,32 +64,6 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   has_secure_password
 
   ##
-  # Creates a counterpart for the given {LocalUser}. If one already exists, it
-  # is updated with the given password.
-  #
-  # @param user [LocalUser]
-  # @param password [String]
-  # @return [LocalIdentity]
-  #
-  def self.create_for_user(user, password)
-    invitee = Invitee.find_or_create_by(email: user.email)
-    invitee.update!(approval_state: ApprovalState::APPROVED,
-                    note: "Auto-created, bypassing the invitation process")
-
-    identity           = find_or_create_by(email: user.email)
-    salt               = BCrypt::Engine.generate_salt
-    encrypted_password = BCrypt::Engine.hash_secret(password, salt)
-    identity.update!(name:                  user.name,
-                     password:              password,
-                     password_confirmation: password,
-                     password_digest:       encrypted_password,
-                     invitee:               invitee,
-                     activated:             true,
-                     activated_at:          Time.zone.now)
-    identity
-  end
-
-  ##
   # @param string [String]
   # @return [String] Hash digest of the given string.
   #

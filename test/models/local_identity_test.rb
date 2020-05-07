@@ -18,19 +18,6 @@ class LocalIdentityTest < ActiveSupport::TestCase
     end
   end
 
-  # create_for_user()
-
-  test "create_for_user() creates a correct instance" do
-    user     = LocalUser.create!(uid:      "joe",
-                                 name:     "Joe",
-                                 email:    "joe@example.org")
-    identity = LocalIdentity.create_for_user(user, "password")
-    assert identity.activated
-    assert_not_nil identity.password_digest
-    assert_not_nil identity.password_confirmation
-    assert_not_nil identity.activated_at
-  end
-
   # new_token()
 
   test "new_token() returns a token" do

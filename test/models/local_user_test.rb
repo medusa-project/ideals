@@ -6,6 +6,31 @@ class LocalUserTest < ActiveSupport::TestCase
     @instance = users(:norights)
   end
 
+  # create_sysadmin()
+
+  test "create_sysadmin() creates a correct instance" do
+    email    = "test@example.org"
+    password = "password"
+    user     = LocalUser.create_sysadmin(email: email, password: password)
+
+    # check the Invitee
+    invitee  = Invitee.find_by_email(email)
+    assert invitee.approved?
+
+    # check the LocalIdentity
+    identity = invitee.identity
+    assert_equal email, identity.email
+    assert identity.activated
+
+    # check the LocalUser
+    assert_equal identity, user.identity
+    assert_equal email, user.email
+    assert_equal email, user.name
+    assert_equal email, user.uid
+    assert user.sysadmin
+    assert_nil user.phone
+  end
+
   # from_omniauth()
 
   test "from_omniauth() returns nil if the auth hash is empty" do
