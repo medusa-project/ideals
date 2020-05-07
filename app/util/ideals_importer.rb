@@ -459,20 +459,18 @@ class IdealsImporter
 
       if ::Configuration.instance.uofi_email_domains.include?(tld)
         unless User.find_by_email(email)
-          ShibbolethUser.create!(id:       id,
-                                 uid:      email,
-                                 email:    email,
-                                 name:     username,
-                                 username: username)
+          ShibbolethUser.create!(id:    id,
+                                 uid:   email,
+                                 email: email,
+                                 name:  username)
         end
       elsif email == "robbins.sd@gmail.com"
         # Many items were bulk-imported into IDEALS-DSpace under this email.
         unless User.find_by_email(email)
-          LocalUser.create!(id:       id,
-                            uid:      email,
-                            email:    email,
-                            name:     "Seth Robbins",
-                            username: username)
+          LocalUser.create!(id:    id,
+                            uid:   email,
+                            email: email,
+                            name:  "Seth Robbins")
         end
       end
       progress.report(row_num, "Importing users")

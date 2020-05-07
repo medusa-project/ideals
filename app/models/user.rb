@@ -21,7 +21,6 @@
 #                        Shibboleth (which is probably the EPPN). For
 #                        {IdentityUser}s, it's the email address.
 # * `updated_at`:        Managed by ActiveRecord.
-# * `username`:          Username.
 #
 class User < ApplicationRecord
 
@@ -48,8 +47,6 @@ class User < ApplicationRecord
   validates :name, presence: true
   validates :uid, presence: true
   validates_uniqueness_of :uid, case_sensitive: true
-  validates :username, presence: true
-  validates_uniqueness_of :username, case_sensitive: true
 
   before_save -> { email.downcase! }
 

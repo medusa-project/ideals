@@ -99,7 +99,7 @@ instance and named `dbname`.
 rails elasticsearch:purge
 rails db:reset
 rails "ideals_dspace:migrate[dbname,dbhost,dbuser]"
-rails "ideals:users:create_local_sysadmin[username,password]"
+rails "ideals:users:create_local_sysadmin[email,password]"
 rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
 ```
@@ -123,11 +123,8 @@ rails elasticsearch:reindex[2] # thread count
 $ rails server
 ```
 
-Development login credentials:
-
-* Email: `{username}@example.edu` (`username` is the one supplied to
-  `ideals:users:create_local_sysadmin` earlier)
-* Password: the one supplied to `ideals:users:create_local_sysadmin` earlier
+Login credentials are whatever were supplied to
+`ideals:users:create_local_sysadmin` earlier.
 
 # Branches & Environments
 

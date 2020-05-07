@@ -77,7 +77,6 @@ class LocalIdentitiesController < ApplicationController
     begin
       @identity.build_user(email:    @identity.email,
                            uid:      @identity.email,
-                           username: @identity.email,
                            name:     @identity.email,
                            type:     LocalUser.to_s) unless @identity.user
       @identity.update!(identity_params)
@@ -102,7 +101,7 @@ class LocalIdentitiesController < ApplicationController
 
   def identity_params
     params.require(:local_identity).permit(:password, :password_confirmation,
-                                           user_attributes: [:name, :phone, :username])
+                                           user_attributes: [:name, :phone])
   end
 
   def identity_password_params

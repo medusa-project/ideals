@@ -32,7 +32,7 @@ class UsersController < ApplicationController
     @start  = params[:start].to_i
     @window = window_size
     q = "%#{params[:q]}%"
-    @users  = User.where("name LIKE ? OR username LIKE ?", q, q).
+    @users  = User.where("name LIKE ? OR uid LIKE ?", q, q).
         where("type LIKE ?", "%#{params[:class]}").
         order(:name)
     @count            = @users.count

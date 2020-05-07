@@ -42,7 +42,6 @@ class LocalUser < User
     create! do |user|
       user.uid      = email
       user.email    = email
-      user.username = email
       user.name     = email
     end
   end
@@ -59,10 +58,9 @@ class LocalUser < User
     return nil unless invitee.expires_at >= Time.current
 
     create! do |user|
-      user.uid      = email
-      user.email    = email
-      user.name     = auth[:info][:name]
-      user.username = email
+      user.uid   = email
+      user.email = email
+      user.name  = auth[:info][:name]
     end
   end
 
@@ -87,10 +85,9 @@ class LocalUser < User
     email = auth[:info][:email].strip
     return nil unless email
 
-    update!(uid:      email,
-            email:    email,
-            username: email.split("@").first,
-            name:     auth[:info][:name])
+    update!(uid:   email,
+            email: email,
+            name:  auth[:info][:name])
   end
 
   private

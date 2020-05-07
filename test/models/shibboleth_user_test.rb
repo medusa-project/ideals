@@ -7,6 +7,12 @@ class ShibbolethUserTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # netid()
+
+  test "netid() returns the NetID" do
+    assert_equal "shib", @instance.netid
+  end
+
   # sysadmin
 
   test "sysadmin cannot be set to true" do

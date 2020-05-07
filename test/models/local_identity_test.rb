@@ -22,7 +22,6 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   test "create_for_user() creates a correct instance" do
     user     = LocalUser.create!(uid:      "joe",
-                                 username: "joe",
                                  name:     "Joe",
                                  email:    "joe@example.org")
     identity = LocalIdentity.create_for_user(user, "password")

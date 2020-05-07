@@ -11,7 +11,6 @@ json.results do
     json.id user.id
     json.uri user_url(user)
     json.uid user.uid
-    json.username user.username
     json.name user.name
     json.email user.email
   end

@@ -44,28 +44,25 @@ class ShibbolethUser < User
 
   def self.create_with_omniauth(auth)
     create! do |user|
-      user.uid      = auth["uid"]
-      user.email    = auth["info"]["email"]
-      user.username = (auth["info"]["email"]).split("@").first
-      user.name     = display_name((auth["info"]["email"]).split("@").first)
+      user.uid   = auth["uid"]
+      user.email = auth["info"]["email"]
+      user.name  = display_name((auth["info"]["email"]).split("@").first)
     end
   end
 
   def self.create_no_omniauth(email)
     create! do |user|
-      user.uid      = email
-      user.email    = email
-      user.username = email.split("@").first
-      user.name     = email.split("@").first
+      user.uid   = email
+      user.email = email
+      user.name  = email.split("@").first
     end
   end
 
   def update_with_omniauth(auth)
     update!(
-      uid:      auth["uid"],
-      email:    auth["info"]["email"],
-      username: (auth["info"]["email"]).split("@").first,
-      name:     ShibbolethUser.display_name((auth["info"]["email"]).split("@").first)
+      uid:   auth["uid"],
+      email: auth["info"]["email"],
+      name:  ShibbolethUser.display_name((auth["info"]["email"]).split("@").first)
     )
   end
 
@@ -95,12 +92,16 @@ class ShibbolethUser < User
     netid
   end
 
+  def netid
+    self.class.netid_from_email(self.email)
+  end
+
   ##
   # @return [Boolean]
   #
   def sysadmin?
     group = Configuration.instance.admin[:ad_group]
-    LdapQuery.new.is_member_of?(group, self.username)
+    LdapQuery.new.is_member_of?(group, self.netid)
   end
 
   private

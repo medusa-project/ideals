@@ -147,7 +147,7 @@ class UserTest < ActiveSupport::TestCase
   test "email must be unique" do
     email = @instance.email
     assert_raises ActiveRecord::RecordInvalid do
-      LocalUser.create!(email: email, name: email, uid: email, username: email)
+      LocalUser.create!(email: email, name: email, uid: email)
     end
   end
 
@@ -209,8 +209,7 @@ class UserTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::RecordInvalid do
       LocalUser.create!(email: "random12345@example.org",
                         name: uid,
-                        uid: uid,
-                        username: uid)
+                        uid: uid)
     end
   end
 
@@ -227,25 +226,6 @@ class UserTest < ActiveSupport::TestCase
   test "unit_admin?() returns false when the user is not an administrator of
   the given unit" do
     assert !@instance.unit_admin?(units(:unit1))
-  end
-
-  # username
-
-  test "username is required" do
-    @instance.username = nil
-    assert !@instance.valid?
-    @instance.username = "test"
-    assert @instance.valid?
-  end
-
-  test "username must be unique" do
-    username = @instance.username
-    assert_raises ActiveRecord::RecordInvalid do
-      LocalUser.create!(email: "random12345@example.org",
-                        name: username,
-                        uid: username,
-                        username: username)
-    end
   end
 
 end

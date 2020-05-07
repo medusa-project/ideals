@@ -7,14 +7,14 @@
 %table.table
   %thead
     %tr
-      %th Username
+      %th UID
       %th Name
       %th Email
       %th Authentication Type
   %tbody
     - @users.each do |user|
       %tr
-        %td= link_to(user.username, user.becomes(User))
+        %td= link_to(user.uid, user.becomes(User))
         %td= user.name
         %td= link_to(user.email, "mailto:#{user.email}")
         %td= user.type

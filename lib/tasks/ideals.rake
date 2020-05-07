@@ -47,10 +47,9 @@ namespace :ideals do
 
   namespace :users do
     desc "Create a local sysadmin user"
-    task :create_local_sysadmin, [:username, :password] => :environment do |task, args|
-      username = args[:username]
+    task :create_local_sysadmin, [:email, :password] => :environment do |task, args|
       ActiveRecord::Base.transaction do
-        user = LocalUser.no_omniauth("#{username}@example.edu")
+        user = LocalUser.no_omniauth(args[:email])
         user.update!(sysadmin: true)
         LocalIdentity.create_for_user(user, args[:password])
       end

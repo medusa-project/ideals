@@ -216,7 +216,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
                   password_confirmation: "MyNewPassword123",
                   user_attributes: {
                       name: "New Name",
-                      username: "new"
+                      phone: "555-555-5555"
                   }
               }
           }
@@ -234,7 +234,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
                   password_confirmation: "MyNewPassword123",
                   user_attributes: {
                       name: "New Name",
-                      username: "new"
+                      phone: "555-555-5555"
                   }
               }
           }
@@ -255,7 +255,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
                   password_confirmation: "ThisDoesNotMatch123",
                   user_attributes: {
                       name: "New Name",
-                      username: "new"
+                      phone: "555-555-5555"
                   }
               }
           }
@@ -269,7 +269,6 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     token    = identity.registration_token
     name     = "New Name"
     phone    = "555-555-5555"
-    username = "new"
     password = "MyNewPassword123"
 
     assert_emails 1 do
@@ -281,8 +280,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
                     password_confirmation: password,
                     user_attributes: {
                         name:     name,
-                        phone:    phone,
-                        username: username
+                        phone:    phone
                     }
                 }
             }
@@ -290,7 +288,6 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
       user = identity.user
       assert_equal name, user.name
       assert_equal phone, user.phone
-      assert_equal username, user.username
     end
   end
 
@@ -308,7 +305,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
                   password_confirmation: password,
                   user_attributes: {
                       name: "New Name",
-                      username: "new"
+                      phone: "555-555-5555"
                   }
               }
           }

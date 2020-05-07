@@ -22,7 +22,7 @@
           .error-messages
             - # populated via ajax by shared/_validation_messages.js.erb
 
-          = f.hidden_field :note, value: "Invited by user #{current_user.username}"
+          = f.hidden_field :note, value: "Invited by #{current_user.name}"
 
           .form-group
             = f.label :email, "Email"
