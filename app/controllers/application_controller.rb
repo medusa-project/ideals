@@ -36,11 +36,13 @@ class ApplicationController < ActionController::Base
   end
 
   def store_location
-    return nil unless request.get?
-    if !["/auth/failure", login_path, logout_path, netid_login_path].include?(request.path) &&
-        !request.xhr? # don't store ajax calls
-      session[:previous_url] = request.fullpath
-      session[:login_return_uri] = request.env["REQUEST_URI"]
+    if request.get? && !request.xhr?
+      ignored_paths = ["/auth/failure", "/auth/shibboleth/callback", login_path,
+                       logout_path, netid_login_path]
+      if !ignored_paths.include?(request.path)
+        session[:previous_url]     = request.fullpath
+        session[:login_return_url] = request.env["REQUEST_URI"]
+      end
     end
   end
 

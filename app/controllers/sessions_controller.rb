@@ -16,6 +16,9 @@ class SessionsController < ApplicationController
     redirect_to(shibboleth_login_path(Ideals::Application.shibboleth_host))
   end
 
+  ##
+  # Responds to `GET/POST /auth/shibboleth/callback`.
+  #
   def create
     auth = request.env["omniauth.auth"]
     user = nil
@@ -25,8 +28,6 @@ class SessionsController < ApplicationController
       user = ShibbolethUser.from_omniauth(auth)
     when "identity"
       user = LocalUser.from_omniauth(auth)
-    else
-      unauthorized
     end
 
     if user&.id
@@ -49,7 +50,7 @@ class SessionsController < ApplicationController
   protected
 
   def return_url
-    session[:login_return_uri] || root_url
+    session[:login_return_url] || root_url
   end
 
   def shibboleth_login_path(host)
