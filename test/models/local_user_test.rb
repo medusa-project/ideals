@@ -6,12 +6,12 @@ class LocalUserTest < ActiveSupport::TestCase
     @instance = users(:norights)
   end
 
-  # create_sysadmin()
+  # create_manually()
 
-  test "create_sysadmin() creates a correct instance" do
+  test "create_manually() creates a correct instance" do
     email    = "test@example.org"
     password = "password"
-    user     = LocalUser.create_sysadmin(email: email, password: password)
+    user     = LocalUser.create_manually(email: email, password: password)
 
     # check the Invitee
     invitee  = Invitee.find_by_email(email)
@@ -27,7 +27,7 @@ class LocalUserTest < ActiveSupport::TestCase
     assert_equal email, user.email
     assert_equal email, user.name
     assert_equal email, user.uid
-    assert user.sysadmin
+    assert !user.sysadmin
     assert_nil user.phone
   end
 

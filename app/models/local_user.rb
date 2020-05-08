@@ -22,7 +22,7 @@ class LocalUser < User
   # @param email [String]
   # @param password [String]
   #
-  def self.create_sysadmin(email:, password:)
+  def self.create_manually(email:, password:)
     ActiveRecord::Base.transaction do
       invitee = Invitee.create!(email: email,
                                 approval_state: ApprovalState::APPROVED,
@@ -38,8 +38,7 @@ class LocalUser < User
       identity.build_user(email:    email,
                           uid:      email,
                           name:     email,
-                          type:     LocalUser.to_s,
-                          sysadmin: true)
+                          type:     LocalUser.to_s)
     end
   end
 

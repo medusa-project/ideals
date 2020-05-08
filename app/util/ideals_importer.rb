@@ -467,10 +467,9 @@ class IdealsImporter
       elsif email == "robbins.sd@gmail.com"
         # Many items were bulk-imported into IDEALS-DSpace under this email.
         unless User.find_by_email(email)
-          LocalUser.create!(id:    id,
-                            uid:   email,
-                            email: email,
-                            name:  "Seth Robbins")
+          user = LocalUser.create_manually(email: email,
+                                           password: SecureRandom.hex)
+          user.update!(name: "Seth Robbins")
         end
       end
       progress.report(row_num, "Importing users")
