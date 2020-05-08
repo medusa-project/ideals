@@ -65,13 +65,11 @@ class UsersController < ApplicationController
   end
 
   ##
-  # Responds to `PATCH/POST /users/:id`
+  # Responds to `PATCH/PUT /users/:id/update-privileges`
   #
   def update_privileges
     begin
-      ActiveRecord::Base.transaction do
-        @user.update!(privileges_params)
-      end
+      @user.update!(privileges_params)
     rescue
       render partial: "shared/validation_messages",
              locals: { object: @user },
@@ -83,13 +81,11 @@ class UsersController < ApplicationController
   end
 
   ##
-  # Responds to `PATCH/POST /users/:id`
+  # Responds to `PATCH/PUT /users/:id/update-properties`
   #
   def update_properties
     begin
-      ActiveRecord::Base.transaction do
-        @user.update!(properties_params)
-      end
+      @user.update!(properties_params)
     rescue
       render partial: "shared/validation_messages",
              locals: { object: @user },
@@ -119,4 +115,5 @@ class UsersController < ApplicationController
   def properties_params
     params.require(:user).permit(:email, :name, :phone)
   end
+
 end
