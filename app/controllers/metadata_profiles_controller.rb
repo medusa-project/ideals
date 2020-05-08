@@ -12,7 +12,7 @@ class MetadataProfilesController < ApplicationController
       clone = @profile.dup
       clone.save!
     rescue => e
-      handle_error(e)
+      flash['error'] = "#{e}"
       redirect_back fallback_location: metadata_profile_path(@profile)
     else
       flash['success'] = "Cloned #{@profile.name} as \"#{clone.name}\"."
