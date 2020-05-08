@@ -17,6 +17,10 @@ class LocalIdentityPolicy < ApplicationPolicy
     true
   end
 
+  def edit_password?
+    self?
+  end
+
   def new_password?
     true
   end
@@ -31,6 +35,19 @@ class LocalIdentityPolicy < ApplicationPolicy
 
   def update?
     true
+  end
+
+  def update_password?
+    self?
+  end
+
+  private
+
+  def self?
+    if user
+      return (role >= Role::LOGGED_IN && user.id == identity.user&.id)
+    end
+    false
   end
 
 end

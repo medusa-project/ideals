@@ -30,9 +30,13 @@ Rails.application.routes.draw do
   resources :handles
   resources :local_identities, only: [:update], path: "identities" do
     match "/activate", to: "local_identities#activate", via: :get
+    match "/edit-password", to: "local_identities#edit_password", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/register", to: "local_identities#register", via: :get
     match "/reset-password", to: "local_identities#new_password", via: :get
     match "/reset-password", to: "local_identities#reset_password", via: [:patch, :post]
+    match "/update-password", to: "local_identities#update_password", via: [:patch, :post],
+          constraints: lambda { |request| request.xhr? }
   end
   resources :invitees, except: [:edit, :update] do
     collection do

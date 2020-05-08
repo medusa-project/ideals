@@ -2,15 +2,24 @@
 -#
 -# user [User]
 
-- if user.kind_of?(LocalUser) && policy(user.becomes(User)).edit_properties?
+- if user.kind_of?(LocalUser)
   .btn-group.float-right{role: "group"}
-    // Edit Properties button
-    %button.btn.btn-light.edit-properties{"data-user-id": user.id,
-                                          "data-target": "#edit-properties-modal",
-                                          "data-toggle": "modal",
-                                          type: "button"}
-      %i.fas.fa-pencil-alt
-      Edit Properties
+    - if policy(user.becomes(User)).edit_properties?
+      -# Edit Properties button
+      %button.btn.btn-light.edit-properties{"data-user-id": user.id,
+                                            "data-target": "#edit-properties-modal",
+                                            "data-toggle": "modal",
+                                            type: "button"}
+        %i.fas.fa-pencil-alt
+        Edit Properties
+    - if policy(user.identity).edit_password?
+      -# Change Password button
+      %button.btn.btn-light.change-password{"data-identity-id": user.identity.id,
+                                            "data-target": "#change-password-modal",
+                                            "data-toggle": "modal",
+                                            type: "button"}
+        %i.fas.fa-key
+        Change Password
 
 %dl
   %dt UID
@@ -26,3 +35,5 @@
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-properties-modal", title: "Edit Properties" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "change-password-modal", title: "Change Password" }

@@ -6,14 +6,17 @@
 #
 class LocalIdentitiesController < ApplicationController
 
-  before_action :ensure_logged_out
+  before_action :ensure_logged_in, only: [:edit_password, :update_password]
+  before_action :ensure_logged_out, except: [:edit_password, :update_password]
   before_action :set_identity
-  before_action :authorize_identity, only: [:register, :update]
+  before_action :authorize_identity, only: [:edit_password, :register, :update,
+                                            :update_password]
   before_action :pre_validate_activation, only: :activate
   before_action :pre_validate_password_reset, only: [:new_password,
                                                      :reset_password]
   before_action :setup_registration_view, only: :register
   before_action :pre_validate_registration, only: [:register, :update]
+  before_action :validate_current_password, only: :update_password
 
   ##
   # Supports incoming links from emails after registration.
@@ -23,6 +26,14 @@ class LocalIdentitiesController < ApplicationController
   def activate
     @identity.activate
     redirect_to login_path
+  end
+
+  ##
+  # Responds to `GET /identities/:id/edit-password` (XHR only)
+  #
+  def edit_password
+    render partial: "local_identities/password_form",
+           locals: { identity: @identity }
   end
 
   ##
@@ -93,6 +104,24 @@ class LocalIdentitiesController < ApplicationController
     end
   end
 
+  ##
+  # Handles input from the form rendered by {edit_password}.
+  #
+  # Responds to `PATCH/PUT /identities/:id/update-password` (XHR only)
+  #
+  def update_password
+    begin
+      @identity.update!(identity_password_params)
+    rescue
+      render partial: "shared/validation_messages",
+             locals: { object: @identity },
+             status: :bad_request
+    else
+      flash['success'] = "Your password has been changed."
+      render "shared/reload"
+    end
+  end
+
   private
 
   def authorize_identity
@@ -154,6 +183,14 @@ class LocalIdentitiesController < ApplicationController
 
   def setup_registration_view
     @user = LocalUser.new
+  end
+
+  def validate_current_password
+    unless @identity.authenticated?(:password, params[:current_password])
+      render partial: "shared/validation_messages",
+             locals: { object: RuntimeError.new("Current password is invalid.") },
+             status: :bad_request
+    end
   end
 
 end

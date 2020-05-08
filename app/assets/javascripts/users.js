@@ -35,6 +35,13 @@ const UserView = function() {
             $("#edit-properties-modal .modal-body").html(data);
         });
     });
+    $("button.change-password").on("click", function() {
+        const id = $(this).data("identity-id");
+        const url = ROOT_URL + "/identities/" + id + "/edit-password";
+        $.get(url, function(data) {
+            $("#change-password-modal .modal-body").html(data);
+        });
+    });
 
     const queryArgs = new URLSearchParams(window.location.search);
     if (queryArgs.has("start")) {

@@ -10,6 +10,12 @@ norights:
   note: Sample note
   expires_at: <%= Time.now + Invitee::EXPIRATION %>
 
+norights2:
+  email: norights2@example.edu
+  approval_state: <%= ApprovalState::APPROVED %>
+  note: Sample note
+  expires_at: <%= Time.now + Invitee::EXPIRATION %>
+
 pending:
   email: pending@example.edu
   approval_state: <%= ApprovalState::PENDING %>

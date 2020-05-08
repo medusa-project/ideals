@@ -36,6 +36,47 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_url
   end
 
+  # edit_password()
+
+  test "edit_password() redirects to login URL for logged-out users" do
+    identity = local_identities(:admin)
+    get local_identity_edit_password_path(identity), xhr: true
+    assert_redirected_to login_url
+  end
+
+  test "edit_password() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    identity = local_identities(:admin)
+    get local_identity_edit_password_path(identity), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_password() returns HTTP 403 for users other than the user whose
+  password is being changed" do
+    log_in_as(users(:admin))
+    identity = local_identities(:norights)
+    get local_identity_edit_password_path(identity), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_password() returns HTTP 200 for authorized users" do
+    log_in_as(users(:admin))
+    identity = local_identities(:admin)
+    get local_identity_edit_password_path(identity), xhr: true
+    assert_response :ok
+  end
+
+  test "edit_password() respects role limits" do
+    log_in_as(users(:admin))
+    identity = local_identities(:admin)
+    get local_identity_edit_password_path(identity), xhr: true
+    assert_response :ok
+
+    get local_identity_edit_password_path(identity,
+                                          role: Role::LOGGED_OUT), xhr: true
+    assert_response :forbidden
+  end
+
   # new_password()
 
   test "new_password() redirects to root path for logged-in users" do
@@ -311,6 +352,93 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
           }
     assert flash['success'].start_with?("Thanks for registering!")
     assert_redirected_to root_url
+  end
+
+  # update_password()
+
+  test "update_password() redirects to login page for logged-out users" do
+    identity = local_identities(:admin)
+    patch local_identity_update_password_path(identity), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "update_password() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    identity = local_identities(:admin)
+    patch local_identity_update_password_path(identity), xhr: true
+    assert_response :forbidden
+  end
+
+  test "update_password() returns HTTP 400 if the current password is not supplied" do
+    log_in_as(users(:admin))
+    identity = local_identities(:admin)
+    password = "MyNewPassword123"
+    patch local_identity_update_password_path(identity),
+          xhr: true,
+          params: {
+              local_identity: {
+                  password: password,
+                  password_confirmation: password
+              }
+          }
+    assert_response :bad_request
+  end
+
+  test "update_password() returns HTTP 400 if the current password is incorrect" do
+    log_in_as(users(:admin))
+    identity = local_identities(:admin) # password is `password`
+    password = "MyNewPassword123"
+    patch local_identity_update_password_path(identity),
+          xhr: true,
+          params: {
+              current_password: "bogus",
+              local_identity: {
+                  password: password,
+                  password_confirmation: password
+              }
+          }
+    assert_response :bad_request
+  end
+
+  test "update_password() returns HTTP 400 if the new password does not match
+  the confirmation" do
+    log_in_as(users(:admin))
+    identity = local_identities(:admin) # password is `password`
+
+    patch local_identity_update_password_path(identity),
+          xhr: true,
+          params: {
+              current_password: "password",
+              local_identity: {
+                  password: "MyNewPassword123",
+                  password_confirmation: "wrong"
+              }
+          }
+    assert_response :bad_request
+  end
+
+  test "update_password() updates the password and returns HTTP 200" do
+    log_in_as(users(:norights))
+    identity = local_identities(:norights)
+    password = "MyNewPassword123"
+    patch local_identity_update_password_path(identity),
+          xhr: true,
+          params: {
+              current_password: "password",
+              local_identity: {
+                  password: password,
+                  password_confirmation: password
+              }
+          }
+    assert_response :ok
+    identity.reload
+    assert identity.authenticated?(:password, password)
+  end
+
+  test "update_password() returns HTTP 404 for nonexistent identities" do
+    log_in_as(users(:admin))
+    patch "/identities/99999999/update-password", xhr: true
+    assert_response :not_found
   end
 
 end

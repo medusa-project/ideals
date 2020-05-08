@@ -10,6 +10,7 @@ admin: # TODO: rename to local_admin
   email: admin@example.edu
   phone: (888) 555-1234
   sysadmin: true
+  identity: admin
 
 norights:
   type: LocalUser
@@ -19,6 +20,17 @@ norights:
   email: norights@example.edu
   phone: (888) 555-1234
   sysadmin: false
+  identity: norights
+
+norights2:
+  type: LocalUser
+  identity: norights2
+  uid: norights2@example.edu
+  name: I have no rights
+  email: norights2@example.edu
+  phone: (888) 555-1234
+  sysadmin: false
+  identity: norights2
 
 shibboleth:
   type: ShibbolethUser
@@ -35,3 +47,4 @@ unit1_unit2_unit1_admin:
   email: bob@example.edu
   phone: (888) 555-1234
   sysadmin: false
+  identity: unit1_unit2_unit1_admin

@@ -19,6 +19,40 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     assert policy.activate?
   end
 
+  # edit_password?()
+
+  test "edit_password?() returns false with a nil user context" do
+    policy = LocalIdentityPolicy.new(nil, @identity)
+    assert !policy.edit_password?
+  end
+
+  test "edit_password?() does not authorize non-sysadmins other than the user
+  being edited" do
+    context = UserContext.new(users(:norights2), Role::NO_LIMIT)
+    policy  = LocalIdentityPolicy.new(context, @identity)
+    assert !policy.edit_password?
+  end
+
+  test "edit_password?() does not authorize sysadmins other than the user
+  being edited" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = LocalIdentityPolicy.new(context, @identity)
+    assert !policy.edit_password?
+  end
+
+  test "edit_password?() authorizes the same user as the one being edited" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = LocalIdentityPolicy.new(context, @identity)
+    assert policy.edit_password?
+  end
+
+  test "edit_password?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = LocalIdentityPolicy.new(context, @identity)
+    assert !policy.edit_password?
+  end
+
   # new_password?()
 
   test "new_password?() returns true with a nil user" do
@@ -69,6 +103,40 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     context = UserContext.new(users(:norights), Role::NO_LIMIT)
     policy  = LocalIdentityPolicy.new(context, @identity)
     assert policy.update?
+  end
+
+  # update_password?()
+
+  test "update_password?() returns false with a nil user context" do
+    policy = LocalIdentityPolicy.new(nil, @identity)
+    assert !policy.update_password?
+  end
+
+  test "update_password?() does not authorize non-sysadmins other than the user
+  being updated" do
+    context = UserContext.new(users(:norights2), Role::NO_LIMIT)
+    policy = LocalIdentityPolicy.new(context, @identity)
+    assert !policy.update_password?
+  end
+
+  test "update_password?() does not authorize sysadmins other than the user
+  being updated" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy = LocalIdentityPolicy.new(context, @identity)
+    assert !policy.update_password?
+  end
+
+  test "update_password?() authorizes the same user" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy = LocalIdentityPolicy.new(context, @identity)
+    assert policy.update_password?
+  end
+
+  test "update_password?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = LocalIdentityPolicy.new(context, @identity)
+    assert !policy.update_password?
   end
 
 end
