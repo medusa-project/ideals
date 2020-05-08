@@ -42,8 +42,10 @@ class InviteesController < ApplicationController
     @invitee = Invitee.new(invitee_params)
     authorize(@invitee)
     begin
-      @invitee.save!
-      @invitee.invite
+      ActiveRecord::Base.transaction do
+        @invitee.save!
+        @invitee.invite
+      end
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @invitee.errors.any? ? @invitee : e },
@@ -67,8 +69,10 @@ class InviteesController < ApplicationController
     @invitee = Invitee.new(invitee_params)
     authorize(@invitee)
     begin
-      @invitee.save!
-      @invitee.send_reception_emails
+      ActiveRecord::Base.transaction do
+        @invitee.save!
+        @invitee.send_reception_emails
+      end
     rescue => e
       flash['error'] = "#{e}"
       redirect_to new_invitee_url
