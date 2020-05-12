@@ -61,6 +61,13 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.create?
   end
 
+  test "create?() works with class objects" do
+    user    = users(:norights)
+    context = UserContext.new(user, Role::NO_LIMIT)
+    policy  = CollectionPolicy.new(context, Collection)
+    assert !policy.create?
+  end
+
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
     context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
@@ -228,6 +235,13 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     context = UserContext.new(users(:admin), Role::NO_LIMIT)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.new?
+  end
+
+  test "new?() works with class objects" do
+    user    = users(:norights)
+    context = UserContext.new(user, Role::NO_LIMIT)
+    policy  = CollectionPolicy.new(context, Collection)
+    assert !policy.new?
   end
 
   test "new?() respects role limits" do

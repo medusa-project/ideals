@@ -20,9 +20,11 @@ class CollectionPolicy < ApplicationPolicy
   def create?
     return false unless user
     if role >= Role::SYSTEM_ADMINISTRATOR
-      return true if user.sysadmin? || user.effective_manager?(collection)
+      return true if user.sysadmin? ||
+          (collection.is_a?(Collection) && user.effective_manager?(collection))
     elsif role >= Role::COLLECTION_MANAGER
-      return true if user.effective_manager?(collection)
+      return true if collection.is_a?(Collection) &&
+          user.effective_manager?(collection)
     end
     false
   end
