@@ -20,13 +20,19 @@
         = ::Configuration.instance.mail[:from]
 
 = form_for(@invitee, url: create_unsolicited_invitees_path) do |f|
-  .form-group
-    = f.label :email
-    = f.text_field :email, class: "form-control", required: true
-  .form-group
-    = f.label :note, "Purpose"
-    = f.text_area :note, class: "form-control", required: true
-  .form-group
-    = recaptcha_tags
-  .form-group
-    = f.submit "Submit Request", class: "btn btn-primary"
+  .row.form-group
+    = f.label :email, class: "col-sm-2 col-form-label"
+    .col-sm-10
+      = f.text_field :email, class: "form-control", required: true
+  .row.form-group
+    = f.label :note, "Purpose", class: "col-sm-2 col-form-label"
+    .col-sm-10
+      = f.text_area :note, class: "form-control", required: true
+  .row.form-group
+    .col-sm-2
+    .col-sm-10
+      = recaptcha_tags
+  .row.form-group
+    .col-sm-2
+    .col-sm-10
+      = f.submit "Submit Request", class: "btn btn-primary"

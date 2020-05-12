@@ -9,24 +9,34 @@
   = hidden_field_tag "_method", "patch"
 
   = f.fields_for(:user, @user.becomes(User)) do |u|
-    .form-group
-      = u.label :name
-      = u.text_field :name, class: "form-control", required: true
-    .form-group
-      = u.label :phone
-      = u.phone_field :phone, class: "form-control"
+    .row.form-group
+      = u.label :name, class: "col-sm-3 col-form-label"
+      .col-sm-9
+        = u.text_field :name, class: "form-control", required: true
+    .row.form-group
+      = u.label :phone, class: "col-sm-3 col-form-label"
+      .col-sm-9
+        = u.phone_field :phone, class: "form-control"
 
-  .form-group
-    = f.label :email
-    = f.text_field :email, class: "form-control", disabled: true
-  .form-group
-    = f.label :password
-    = f.password_field :password, class: "form-control", required: true
-  .form-group
-    = f.label :password_confirmation
-    = f.password_field :password_confirmation, class: "form-control", required: true
+  .row.form-group
+    = f.label :email, class: "col-sm-3 col-form-label"
+    .col-sm-9.col-form-label
+      = f.object.email
+  .row.form-group
+    = f.label :password, class: "col-sm-3 col-form-label"
+    .col-sm-9
+      = f.password_field :password, class: "form-control", required: true
+  .row.form-group
+    = f.label :password_confirmation, class: "col-sm-3 col-form-label"
+    .col-sm-9
+      = f.password_field :password_confirmation, class: "form-control", required: true
 
-  .form-group
-    = recaptcha_tags
+  .row.form-group
+    .col-sm-3
+    .col-sm-9
+      = recaptcha_tags
 
-  %button.btn.btn-primary{type: "submit"} Register
+  .row
+    .col-sm-3
+    .col-sm-9
+      %button.btn.btn-primary{type: "submit"} Register
