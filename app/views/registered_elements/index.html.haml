@@ -10,40 +10,35 @@
 
 %h1 Element Registry
 
-%table.table
-  %tbody
-    - @elements.each do |element|
-      %tr
-        %td
-          .btn-group-vertical
-            %button.btn.btn-light.btn-sm.edit-element{"data-element-name": element.name,
-                                                      "data-target": "#edit-element-modal",
-                                                      "data-toggle": "modal",
-                                                      type: "button"}
-              %i.fas.fa-pencil-alt
-              Edit
-            = link_to(registered_element_path(element), class: 'btn btn-sm btn-danger',
-                                                        method: :delete,
-                                                        data: { confirm: 'Are you sure you want to delete this element?' }) do
-              %i.fa.fa-trash
-              Delete
-        %td
-          %table.table.table-sm.table-borderless
-            %tbody
-              %tr
-                %th Label:
-                %td= element.label
-              %tr
-                %th Name:
-                %td
-                  %code= element.name
-              %tr
-                %th URI:
-                %td
-                  %code= element.uri
-              %tr
-                %th Scope Note:
-                %td= simple_format(element.scope_note)
+- @elements.each do |element|
+  .card.mb-3
+    .card-body
+      .btn-group.float-right
+        %button.btn.btn-light.btn-sm.edit-element{"data-element-name": element.name,
+                                                  "data-target": "#edit-element-modal",
+                                                  "data-toggle": "modal",
+                                                  type: "button"}
+          %i.fas.fa-pencil-alt
+          Edit
+        = link_to(registered_element_path(element), class: 'btn btn-sm btn-danger',
+                                                    method: :delete,
+                                                    data: { confirm: 'Are you sure you want to delete this element?' }) do
+          %i.fa.fa-trash
+          Delete
+      %h5.card-title= element.label
+      .row
+        .col-sm-2.text-right
+          %strong Name
+        .col-sm-10
+          %code= element.name
+        .col-sm-2.text-right
+          %strong URI
+        .col-sm-10
+          %code= element.uri
+        .col-sm-2.text-right
+          %strong Scope Note
+        .col-sm-10
+          = simple_format(element.scope_note)
 
 = render partial: 'add_modal'
 = render partial: "shared/ajax_modal",
