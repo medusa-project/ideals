@@ -1,6 +1,11 @@
 - provide :body_id, "edit_submission"
 - provide :title, "Submit an Item"
 
+.alert.alert-light
+  = icon_for(:info)
+  Changes are saved automatically. You can leave this page at any time and
+  return to it later.
+
 .btn-group.float-right{role: "group"}
   / Cancel button
   = link_to(submission_path(@resource), class: "btn btn-danger",
@@ -8,12 +13,7 @@
                                         method: :delete,
                                         data: { confirm: "Are you sure you want to cancel this submission? Once canceled, it cannot be retrieved!" }) do
     %i.fa.fa-stop
-    Cancel
-
-.alert.alert-light
-  = icon_for(:info)
-  Changes are saved automatically. You can leave this page at any time and
-  return to it later.
+    Cancel Submission
 
 %h1 Submit an Item
 

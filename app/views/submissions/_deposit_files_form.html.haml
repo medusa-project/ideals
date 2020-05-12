@@ -1,9 +1,5 @@
 -# frozen_string_literal: true
 
-.alert.alert-light
-  = icon_for(:warning)
-  Filenames must be unique, and directory structure is not preserved.
-
 = form_for(@resource, url: submission_path(@resource), remote: true,
            html: { id: "files-form" }) do |f|
   = token_tag(nil)
@@ -36,15 +32,19 @@
   %input#file-chooser{type: "file", multiple: true}
 
   #file-drop-zone.bg-light
-    %i.fa.fa-upload
-    Attach files (not folders) by dropping them here or selecting them.
+    %div.mb-3
+      %i.fa.fa-upload
+      Attach files (not folders) by dropping them here or selecting them.
+    %div
+      %small Filenames must be unique, and directory structure is not preserved.
 
   .text-center.mb-3.mt-3
-    %button.btn.btn-light.step-3-to-2{type: "button"}
-      %i.fa.fa-arrow-left
-      Previous Step
-    = f.hidden_field :submitting, value: "false"
-    = f.submit("Complete Submission", class: "btn btn-primary")
+    .btn-group{role: "group"}
+      %button.btn.btn-light.step-3-to-2{type: "button"}
+        %i.fa.fa-arrow-left
+        Previous Step
+      = f.hidden_field :submitting, value: "false"
+      = f.submit("Complete Submission", class: "btn btn-primary")
 
 #complete-modal.modal.fade{tabindex: "-1", role: "dialog",
                            "data-backdrop": "static",
