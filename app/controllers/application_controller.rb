@@ -37,9 +37,10 @@ class ApplicationController < ActionController::Base
 
   def store_location
     if request.get? && !request.xhr?
-      ignored_paths = ["/auth/failure", "/auth/shibboleth/callback", login_path,
-                       logout_path, netid_login_path]
-      if !ignored_paths.include?(request.path)
+      ignored_paths = ["/auth/failure", "/auth/shibboleth/callback",
+                       "/Shibboleth.sso/Login", login_path, logout_path,
+                       netid_login_path]
+      unless ignored_paths.include?(request.path)
         session[:previous_url]     = request.fullpath
         session[:login_return_url] = request.env["REQUEST_URI"]
       end
@@ -47,7 +48,7 @@ class ApplicationController < ActionController::Base
   end
 
   def redirect_path
-    session[:previous_url] || main_app.root_url
+    session[:previous_url] || root_url
   end
 
   protected
