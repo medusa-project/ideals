@@ -53,7 +53,7 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
-  config.assets.check_precompiled_asset = false
+  config.assets.check_precompiled_asset = true
 
   # Log to the console at debug level but disable the log file.
   config.log_level = :debug
