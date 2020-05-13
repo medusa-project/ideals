@@ -418,8 +418,8 @@ const ideals_ready = function () {
         $('a[href="' + lastTab + '"]').click();
     }
 
-    // Don't allow disabled anchors to be clicked.
-    $("a[disabled='disabled']").on("click", function() {
+    // Don't allow disabled elements to be clicked.
+    $("[disabled='disabled']").on("click", function() {
         return false;
     });
 };
