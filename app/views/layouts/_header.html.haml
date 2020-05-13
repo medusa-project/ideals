@@ -23,7 +23,7 @@
           = link_to "https://wiki.illinois.edu//wiki/display/IDEALS/IDEALS+Resources+and+Information", class: 'nav-link' do
             = icon_for(:info)
             About
-      = form_tag items_path, method: "get", class: "form-inline my-2 my-lg-0 mr-3" do
+      = form_tag items_path, method: "get", class: "form-inline mr-3" do
         .input-group.mr-3
           %input.form-control{name: "q", type: "search", placeholder: "Search", "aria-label": "Search"}
           .input-group-append
