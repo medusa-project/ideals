@@ -51,7 +51,7 @@ class IdealsMailer < ApplicationMailer
     config       = ::Configuration.instance
     @invitee_url = "#{config.website[:base_url]}/invitees/#{invitee.id}"
     mail(to: [config.mail[:from]],
-         subject: "Action required on a new IDEALS user")
+         subject: "#{subject_prefix} Action required on a new IDEALS user")
   end
 
   ##
@@ -68,20 +68,18 @@ class IdealsMailer < ApplicationMailer
   end
 
   def contact_help(params) # TODO: use this or lose it
-    subject = "#{subject_prefix} IDEALS] Help Request"
     @params = params
     mail(from:    @params["help-email"],
          to:      [::Configuration.instance.mail[:from],
                    @params["help-email"]],
-         subject: subject)
+         subject: "#{subject_prefix} Help Request")
   end
 
   def error(error_text)
     @error_text = error_text
-    subject = "#{subject_prefix} IDEALS] System Error"
     mail(reply_to: NO_REPLY_ADDRESS,
-         to: ::Configuration.instance.admin[:tech_mail_list],
-         subject: subject)
+         to:       ::Configuration.instance.admin[:tech_mail_list],
+         subject:  "#{subject_prefix} System Error")
   end
 
   ##
@@ -110,12 +108,12 @@ class IdealsMailer < ApplicationMailer
   # Used to test email delivery. See also the `mail:test` rake task.
   #
   def test(recipient)
-    mail(to: recipient, subject: "Hello from IDEALS")
+    mail(to: recipient, subject: "#{subject_prefix} Hello from IDEALS")
   end
 
   private
 
   def subject_prefix
-    "[#{Rails.env.to_s.upcase}:"
+    "[#{Rails.env.to_s.upcase}: IDEALS]"
   end
 end

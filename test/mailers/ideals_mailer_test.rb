@@ -71,7 +71,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     config = Configuration.instance
     assert_equal [config.mail[:from]], email.from
     assert_equal [config.mail[:from]], email.to
-    assert_equal "Action required on a new IDEALS user", email.subject
+    assert_equal "[TEST: IDEALS] Action required on a new IDEALS user", email.subject
 
     invitee_url = "#{config.website[:base_url]}/invitees/#{invitee.id}"
 
@@ -158,7 +158,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [Configuration.instance.mail[:from]], email.from
     assert_equal [recipient], email.to
-    assert_equal "Hello from IDEALS", email.subject
+    assert_equal "[TEST: IDEALS] Hello from IDEALS", email.subject
 
     assert_equal render_template("test.txt"), email.text_part.body.raw_source
     assert_equal render_template("test.html"), email.html_part.body.raw_source
