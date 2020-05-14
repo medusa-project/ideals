@@ -1,13 +1,7 @@
 - provide :body_id, "edit_submission"
 - provide :title, "Submit an Item"
 
-.alert.alert-light
-  = icon_for(:info)
-  Changes are saved automatically. You can leave this page at any time and
-  return to it later.
-
 .btn-group.float-right{role: "group"}
-  / Cancel button
   = link_to(submission_path(@resource), class: "btn btn-danger",
                                         role: "button",
                                         method: :delete,
@@ -16,6 +10,11 @@
     Cancel Submission
 
 %h1 Submit an Item
+
+.alert.alert-light
+  = icon_for(:info)
+  Changes are saved automatically. You can leave this page at any time and
+  return to it later.
 
 %ul.nav.nav-pills.nav-justified{role: "tablist"}
   %li.nav-item

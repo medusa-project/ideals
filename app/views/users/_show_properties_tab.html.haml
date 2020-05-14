@@ -12,7 +12,7 @@
                                             type: "button"}
         %i.fas.fa-pencil-alt
         Edit Properties
-    - if policy(user.identity).edit_password?
+    - if user.identity && policy(user.identity).edit_password?
       -# Change Password button
       %button.btn.btn-light.change-password{"data-identity-id": user.identity.id,
                                             "data-target": "#change-password-modal",
@@ -28,9 +28,9 @@
   %dd= link_to(user.email, "mailto:#{user.email}")
   %dt Phone
   %dd= user.phone ? link_to(user.phone, "tel:#{user.phone}") : "None"
-  %dt Type
-  %dd= user.type
-  %dt Created
+  %dt Account Type
+  %dd= user.type.chomp('User')
+  %dt Account Created
   %dd= local_time user.created_at
 
 = render partial: "shared/ajax_modal",

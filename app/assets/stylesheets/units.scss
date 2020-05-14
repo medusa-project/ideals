@@ -1,12 +1,13 @@
 body#list_units {
   .page-content {
     ul {
-      font-size: 14pt;
-      font-weight: 600;
+      font-size: 16pt;
       list-style: none;
       margin-left: 0;
       padding-left: 0;
-
+      a:hover {
+        text-decoration: none;
+      }
       button.btn-link {
         color: black;
         padding: 0.1em 0.5em 0.1em 0;
