@@ -4,6 +4,9 @@ jobs:
   build:
     name: Test in Ubuntu
     runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      SECRET_KEY_BASE: whateverdoesntmatter
     services:
       postgres:
         image: postgres:12-alpine
@@ -31,14 +34,8 @@ jobs:
           bundle config set without "production"
           bundle install --jobs 4 --retry 3
       - name: Prepare the database
-        env:
-          RAILS_ENV: test
-          SECRET_KEY_BASE: whateverdoesntmatter
         run: bin/rails db:prepare
       - name: Run the tests
-        env:
-          RAILS_ENV: test
-          SECRET_KEY_BASE: whateverdoesntmatter
         # N.B. 1: Ideally we would run Elasticsearch in a service like we do
         # PostgreSQL above, but we need to use a plugin that isn't included in
         # ES's standard Dockerfile. So instead we have to build a custom image
@@ -55,6 +52,5 @@ jobs:
           sleep 30
           bin/rails "elasticsearch:indexes:create[ideals_test]"
           bin/rails test
-      # TODO: Rails 6.0.2 has a bug that causes this to fail. Enable it once migrated to rails 6.0.3.
-      #- name: Check class names
-      #  run: bin/rails zeitwerk:check
+      - name: Check class names
+        run: bin/rails zeitwerk:check
