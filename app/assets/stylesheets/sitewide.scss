@@ -8,9 +8,8 @@
       white-space: nowrap;
     }
   }
-  form.form-inline {
-    margin-right: 0;
-    padding-right: 0;
+  input[type=search] {
+    width: 180px;
   }
 }
 

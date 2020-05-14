@@ -294,24 +294,24 @@ module ApplicationHelper
   end
 
   ##
-  # @param resources [Enumerable<Object>]
-  # @param primary_id [Integer] ID of a resource in `resources` to visually
-  #        mark as "primary."
-  # @param default_id [Integer] ID of a resource in `resources` to visually
-  #        mark as "default."
+  # @param resources [Enumerable<Describable>]
+  # @param primary_id [Integer] ID of a resource in `resources` to indicate as
+  #                             "primary."
+  # @param default_id [Integer] ID of a resource in `resources` to indicate as
+  #                             "default."
   # @return [String] HTML listing.
   #
   def resource_list(resources, primary_id: nil, default_id: nil)
     html = StringIO.new
     resources.each do |resource|
-      html << "<div class=\"media resource-list\">"
+      html << "<div class=\"media resource-list mb-3\">"
       html <<   "<div class=\"thumbnail\">"
       html <<     link_to(resource) do
                     icon_for(resource)
                   end
       html <<   "</div>"
       html <<   "<div class=\"media-body\">"
-      html <<     "<h5 class=\"mt-0\">"
+      html <<     "<h5 class=\"mt-0 mb-0\">"
       html <<       link_to(resource.title, resource)
       if primary_id == resource.id
         html <<     " <span class=\"badge badge-primary\">PRIMARY</span>"
