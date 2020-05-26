@@ -61,11 +61,18 @@ class BitstreamsController < ApplicationController
   # Responds to `GET /items/:item_id/bitstreams/:id`
   #
   def show
-    s3_request = {
-        bucket: @bitstream.item.in_archive ? "" : # TODO: in_archive
-                    ::Configuration.instance.aws[:bucket],
-        key:    @bitstream.key
-    }
+    config = ::Configuration.instance
+    if @bitstream.item.in_archive
+      s3_request = {
+          bucket: config.medusa[:bucket],
+          key:    @bitstream.medusa_key
+      }
+    else
+      s3_request = {
+          bucket: config.aws[:bucket],
+          key:    @bitstream.staging_key
+      }
+    end
 
     if !request.headers['Range']
       status = "200 OK"

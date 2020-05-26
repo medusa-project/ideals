@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_07_163044) do
+ActiveRecord::Schema.define(version: 2020_05_26_165407) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 2020_05_07_163044) do
   end
 
   create_table "bitstreams", force: :cascade do |t|
-    t.string "key", null: false
+    t.string "staging_key"
     t.bigint "length"
     t.bigint "item_id"
     t.datetime "created_at", precision: 6, null: false
@@ -46,7 +46,9 @@ ActiveRecord::Schema.define(version: 2020_05_07_163044) do
     t.string "media_type"
     t.string "original_filename"
     t.string "medusa_uuid"
-    t.index ["key"], name: "index_bitstreams_on_key", unique: true
+    t.string "medusa_key"
+    t.index ["medusa_key"], name: "index_bitstreams_on_medusa_key", unique: true
+    t.index ["staging_key"], name: "index_bitstreams_on_staging_key", unique: true
   end
 
   create_table "collections", force: :cascade do |t|

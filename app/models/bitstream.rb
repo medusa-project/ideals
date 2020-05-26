@@ -6,19 +6,23 @@
 #
 # * `created_at`:        Managed by ActiveRecord.
 # * `item_id`:           Foreign key to {Item}.
-# * `key`:               S3 object key.
 # * `length`:            Size in bytes.
 # * `media_type`:        Media/MIME type.
+# * `medusa_key`:        S3 object key in the Medusa bucket. Set only when the
+#                        bitstream has been ingested into Medusa.
 # * `medusa_uuid`:       UUID of the corresponding binary in the Medusa
 #                        Collection Registry. Will be nil if the bitstream has
 #                        not yet been ingested.
 # * `original_filename`: Filename of the bitstream as submitted by the user.
+# * `staging_key`:       S3 object key in the application bucket. Set only when
+#                        the bitstream exists in staging.
 # * `updated_at`:        Managed by ActiveRecord.
 #
 class Bitstream < ApplicationRecord
   belongs_to :item
 
-  validates :key, presence: { allow_blank: false }, uniqueness: true
+  validates :medusa_key, presence: { allow_blank: true }, uniqueness: true
+  validates :staging_key, presence: { allow_blank: true }, uniqueness: true
   validates_numericality_of :length, greater_than_or_equal_to: 0, allow_blank: true
   validates_format_of :media_type, with: /[\w+-]+\/[\w+-]+/, allow_blank: true
   validates_format_of :medusa_uuid,
@@ -38,7 +42,7 @@ class Bitstream < ApplicationRecord
   #
   def self.new_in_staging(item, filename, length)
     Bitstream.new(item:              item,
-                  key:               staging_key(item.id, filename),
+                  staging_key:       staging_key(item.id, filename),
                   original_filename: filename,
                   length:            length)
   end
@@ -57,7 +61,8 @@ class Bitstream < ApplicationRecord
   #
   def delete_object
     s3_client.delete_object(bucket: ::Configuration.instance.aws[:bucket],
-                            key:    self.key)
+                            key:    self.staging_key)
+    # TODO: handle bitstreams in Medusa
   end
 
   ##
@@ -65,7 +70,7 @@ class Bitstream < ApplicationRecord
   #
   def upload_to_staging(io)
     s3_client.put_object(bucket: ::Configuration.instance.aws[:bucket],
-                         key:    self.key,
+                         key:    self.staging_key,
                          body:   io)
   end
 

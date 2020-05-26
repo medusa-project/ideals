@@ -17,4 +17,4 @@
         - if policy(@item).show_sysadmin_content?
           %br
           %span
-            = bs.key
+            = bs.staging_key || bs.medusa_key
