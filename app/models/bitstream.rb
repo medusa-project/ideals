@@ -11,8 +11,8 @@
 # * `medusa_key`:        S3 object key in the Medusa bucket. Set only when the
 #                        bitstream has been ingested into Medusa.
 # * `medusa_uuid`:       UUID of the corresponding binary in the Medusa
-#                        Collection Registry. Will be nil if the bitstream has
-#                        not yet been ingested.
+#                        Collection Registry. Set only after the bitstream has
+#                        been ingested.
 # * `original_filename`: Filename of the bitstream as submitted by the user.
 # * `staging_key`:       S3 object key in the application bucket. Set only when
 #                        the bitstream exists in staging.
@@ -33,6 +33,21 @@ class Bitstream < ApplicationRecord
   before_destroy :delete_object
 
   STAGING_KEY_PREFIX = "submissions"
+
+  ##
+  # Computes a destination Medusa key based on the given arguments.
+  #
+  # @param handle [String]
+  # @param filename [String]
+  # @return [String]
+  # @raises ArgumentError if either argument is blank.
+  #
+  def self.medusa_key(handle, filename)
+    raise ArgumentError, "Handle is blank" if handle.blank?
+    raise ArgumentError, "Filename is blank" if filename.blank?
+    config = ::Configuration.instance
+    [config.medusa[:medusa_path_root], handle, filename].join("/")
+  end
 
   ##
   # @param item [Item]
@@ -61,7 +76,7 @@ class Bitstream < ApplicationRecord
   #
   def delete_object
     s3_client.delete_object(bucket: ::Configuration.instance.aws[:bucket],
-                            key:    self.staging_key)
+                            key:    self.staging_key) if self.staging_key
     # TODO: handle bitstreams in Medusa
   end
 

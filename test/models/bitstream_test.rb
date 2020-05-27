@@ -17,6 +17,26 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  # medusa_key()
+
+  test "medusa_key() raises an error if the handle argument is blank" do
+    assert_raises ArgumentError do
+      Bitstream.medusa_key("", "cats.jpg")
+    end
+  end
+
+  test "medusa_key() raises an error if the filename argument is blank" do
+    assert_raises ArgumentError do
+      Bitstream.medusa_key("handle", "")
+    end
+  end
+
+  test "medusa_key() returns a correct key" do
+    config = ::Configuration.instance
+    assert_equal "#{config.medusa[:medusa_path_root]}/handle/cats.jpg",
+                 Bitstream.medusa_key("handle", "cats.jpg")
+  end
+
   # new_in_staging()
 
   test "new_in_staging() returns a correct instance" do
