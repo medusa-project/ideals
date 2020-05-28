@@ -103,6 +103,56 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
+  # data?()
+
+  test "data?() returns true with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert policy.data?
+  end
+
+  test "data?() restricts undiscoverable items by default" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, items(:undiscoverable))
+    assert !policy.data?
+  end
+
+  test "data?() restricts submitting items by default" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, items(:submitting))
+    assert !policy.data?
+  end
+
+  test "data?() restricts withdrawn items by default" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, items(:withdrawn))
+    assert !policy.data?
+  end
+
+  test "data?() authorizes sysadmins to undiscoverable items" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, items(:undiscoverable))
+    assert policy.data?
+  end
+
+  test "data?() authorizes sysadmins to submitting items" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, items(:submitting))
+    assert policy.data?
+  end
+
+  test "data?() authorizes sysadmins to withdrawn items" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, items(:withdrawn))
+    assert policy.data?
+  end
+
+  test "data?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, items(:withdrawn))
+    assert !policy.data?
+  end
+
   # destroy?()
 
   test "destroy?() returns false with a nil user" do

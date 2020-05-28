@@ -8,13 +8,13 @@ class BitstreamsController < ApplicationController
 
   LOGGER = CustomLogger.new(BitstreamsController)
 
-  before_action :ensure_logged_in, except: :show
+  before_action :ensure_logged_in, except: [:data, :show]
 
   before_action :set_item, only: :create
   before_action :authorize_item, only: :create
 
-  before_action :set_bitstream, only: [:destroy, :show]
-  before_action :authorize_bitstream, only: [:destroy, :show]
+  before_action :set_bitstream, except: :create
+  before_action :authorize_bitstream, except: :create
 
   ##
   # Accepts raw files (i.e. not `multipart/form-data`) via the file upload
@@ -46,32 +46,24 @@ class BitstreamsController < ApplicationController
   end
 
   ##
-  # Deletes {Bitstream}s via the file table in the submission form.
-  #
-  # Responds to `DELETE /items/:item_id/bitstreams/:id`
-  #
-  def destroy
-    @bitstream.destroy!
-    head :no_content
-  end
-
-  ##
   # Returns a bitstream's data.
   #
-  # Responds to `GET /items/:item_id/bitstreams/:id`
+  # Responds to `GET /items/:item_id/bitstreams/:id/data`
   #
-  def show
+  def data
     config = ::Configuration.instance
-    if @bitstream.item.in_archive
+    if @bitstream.medusa_key.present?
       s3_request = {
           bucket: config.medusa[:bucket],
           key:    @bitstream.medusa_key
       }
-    else
+    elsif @bitstream.exists_in_staging
       s3_request = {
           bucket: config.aws[:bucket],
           key:    @bitstream.staging_key
       }
+    else
+      raise IOError, "This bitstream has no corresponding storage object."
     end
 
     if !request.headers['Range']
@@ -115,6 +107,25 @@ class BitstreamsController < ApplicationController
     response.stream.close
   end
 
+  ##
+  # Deletes {Bitstream}s via the file table in the submission form.
+  #
+  # Responds to `DELETE /items/:item_id/bitstreams/:id`
+  #
+  def destroy
+    @bitstream.destroy!
+    head :no_content
+  end
+
+  ##
+  # Returns a bitstream's properties (in JSON format only).
+  #
+  # Responds to `GET /items/:item_id/bitstreams/:id`
+  #
+  def show
+    request.format = :json
+  end
+
   private
 
   def authorize_bitstream
@@ -128,7 +139,11 @@ class BitstreamsController < ApplicationController
   end
 
   def set_bitstream
-    @bitstream = Bitstream.find(params[:id]) if params[:id]
+    if params[:id]
+      @bitstream = Bitstream.find(params[:id])
+    elsif params[:bitstream_id]
+      @bitstream = Bitstream.find(params[:bitstream_id])
+    end
   end
 
   def set_item

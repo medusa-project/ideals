@@ -61,6 +61,13 @@ class ItemPolicy < ApplicationPolicy
     false
   end
 
+  ##
+  # N.B.: this is used by {BitstreamsController}.
+  #
+  def data?
+    show?
+  end
+
   def destroy?
     update?
   end

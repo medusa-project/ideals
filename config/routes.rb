@@ -48,7 +48,9 @@ Rails.application.routes.draw do
     match "/resend-email", to: "invitees#resend_email", via: [:patch, :post]
   end
   resources :items, except: :new do
-    resources :bitstreams, only: [:create, :destroy, :show]
+    resources :bitstreams, only: [:create, :destroy, :show] do
+      match "/data", to: "bitstreams#data", via: :get
+    end
     match "/edit-membership", to: "items#edit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-metadata", to: "items#edit_metadata", via: :get,
