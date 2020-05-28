@@ -105,7 +105,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       get item_bitstream_path(item, bitstream)
       assert_response :ok
     ensure
-      bitstream.delete_object
+      bitstream.delete_from_staging
     end
   end
 
@@ -123,7 +123,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       get item_bitstream_path(item, bitstream)
       assert_response :forbidden
     ensure
-      bitstream.delete_object
+      bitstream.delete_from_staging
     end
   end
 
@@ -141,7 +141,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       get item_bitstream_path(item, bitstream)
       assert_response :forbidden
     ensure
-      bitstream.delete_object
+      bitstream.delete_from_staging
     end
   end
 
@@ -159,7 +159,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       get item_bitstream_path(item, bitstream)
       assert_response :forbidden
     ensure
-      bitstream.delete_object
+      bitstream.delete_from_staging
     end
   end
 
@@ -184,7 +184,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       get item_bitstream_path(item, bitstream, role: Role::LOGGED_OUT)
       assert_response :forbidden
     ensure
-      bitstream.delete_object
+      bitstream.delete_from_staging
     end
   end
 

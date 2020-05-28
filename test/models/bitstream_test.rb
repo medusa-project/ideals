@@ -57,9 +57,13 @@ class BitstreamTest < ActiveSupport::TestCase
                  Bitstream.staging_key(30, "cats.jpg")
   end
 
-  # delete_object()
+  # delete_from_staging()
 
-  test "delete_object() deletes the corresponding object" do
+  test "delete_from_staging() does nothing if the instance has no corresponding object" do
+    @instance.delete_from_staging # assert no errors
+  end
+
+  test "delete_from_staging() deletes the corresponding object" do
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
     File.open(fixture, "r") do |file|
@@ -76,17 +80,13 @@ class BitstreamTest < ActiveSupport::TestCase
     assert obj.exists?
 
     # Delete it.
-    @instance.delete_object
+    @instance.delete_from_staging
 
     # Check that it has been deleted.
     s3 = Aws::S3::Resource.new
     obj = s3.bucket(::Configuration.instance.aws[:bucket]).
         object(@instance.staging_key)
     assert !obj.exists?
-  end
-
-  test "delete_object() does nothing if the instance has no corresponding object" do
-    @instance.delete_object # assert no errors
   end
 
   # length
@@ -151,7 +151,7 @@ class BitstreamTest < ActiveSupport::TestCase
           object(@instance.staging_key)
       assert obj.exists?
     ensure
-      @instance.delete_object
+      @instance.delete_from_staging
     end
   end
 

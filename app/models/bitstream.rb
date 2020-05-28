@@ -30,7 +30,7 @@ class Bitstream < ApplicationRecord
                       message: 'UUID is invalid',
                       allow_blank: true
 
-  before_destroy :delete_object
+  before_destroy :delete_from_staging
 
   STAGING_KEY_PREFIX = "submissions"
 
@@ -74,10 +74,9 @@ class Bitstream < ApplicationRecord
   ##
   # Deletes the corresponding object from the application S3 bucket.
   #
-  def delete_object
+  def delete_from_staging
     s3_client.delete_object(bucket: ::Configuration.instance.aws[:bucket],
-                            key:    self.staging_key) if self.staging_key
-    # TODO: handle bitstreams in Medusa
+                            key:    self.staging_key) if self.exists_in_staging
   end
 
   ##
