@@ -89,6 +89,15 @@ class BitstreamTest < ActiveSupport::TestCase
     assert !obj.exists?
   end
 
+  # exists_in_staging
+
+  test "exists_in_staging cannot be set to true when staging_key is blank" do
+    @instance.staging_key = nil
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.update!(exists_in_staging: true)
+    end
+  end
+
   # length
 
   test "length must be greater than or equal to zero" do
@@ -119,14 +128,15 @@ class BitstreamTest < ActiveSupport::TestCase
 
   # staging_key
 
-  test "staging_key may be nil" do
+  test "staging_key may be nil when exists_in_staging is false" do
+    @instance.exists_in_staging = false
     @instance.staging_key = nil
     assert @instance.valid?
   end
 
   test "staging_key must be unique" do
     @instance.update!(staging_key:"cats")
-    assert_raises ActiveRecord::RecordInvalid do
+    assert_raises ActiveRecord::RecordNotUnique do
       Bitstream.create!(staging_key: "cats",
                         item: items(:item1))
     end

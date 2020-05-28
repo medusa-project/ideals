@@ -5,6 +5,8 @@
 # # Attributes
 #
 # * `created_at`:        Managed by ActiveRecord.
+# * `exists_in_staging`: Whether a corresponding object exists in the staging
+#                        "area" (key prefix) of the application S3 bucket.
 # * `item_id`:           Foreign key to {Item}.
 # * `length`:            Size in bytes.
 # * `media_type`:        Media/MIME type.
@@ -14,21 +16,22 @@
 #                        Collection Registry. Set only after the bitstream has
 #                        been ingested.
 # * `original_filename`: Filename of the bitstream as submitted by the user.
-# * `staging_key`:       S3 object key in the application bucket. Set only when
-#                        the bitstream exists in staging.
+# * `staging_key`:       S3 object key in the application bucket. May be set
+#                        even though the bitstream does not exist in staging--
+#                        check `exists_in_staging` to be sure.
 # * `updated_at`:        Managed by ActiveRecord.
 #
 class Bitstream < ApplicationRecord
   belongs_to :item
 
-  validates :medusa_key, presence: { allow_blank: true }, uniqueness: true
-  validates :staging_key, presence: { allow_blank: true }, uniqueness: true
   validates_numericality_of :length, greater_than_or_equal_to: 0, allow_blank: true
   validates_format_of :media_type, with: /[\w+-]+\/[\w+-]+/, allow_blank: true
   validates_format_of :medusa_uuid,
                       with: /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/,
                       message: 'UUID is invalid',
                       allow_blank: true
+
+  validate :validate_staging_properties
 
   before_destroy :delete_from_staging
 
@@ -50,6 +53,10 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # Creates a new instance that is not yet persisted. Call {upload_to_staging}
+  # on the returned instance to upload data to the corresponding location, and
+  # then invoke {save} on the instance.
+  #
   # @param item [Item]
   # @param filename [String]
   # @param length [Integer]
@@ -77,6 +84,7 @@ class Bitstream < ApplicationRecord
   def delete_from_staging
     s3_client.delete_object(bucket: ::Configuration.instance.aws[:bucket],
                             key:    self.staging_key) if self.exists_in_staging
+    self.update!(exists_in_staging: false)
   end
 
   ##
@@ -86,6 +94,7 @@ class Bitstream < ApplicationRecord
     s3_client.put_object(bucket: ::Configuration.instance.aws[:bucket],
                          key:    self.staging_key,
                          body:   io)
+    self.update!(exists_in_staging: true)
   end
 
   private
@@ -93,6 +102,13 @@ class Bitstream < ApplicationRecord
   def s3_client
     @s3_client = Aws::S3::Client.new unless @s3_client
     @s3_client
+  end
+
+  def validate_staging_properties
+    if exists_in_staging && staging_key.blank?
+      errors.add(:base, "Instance is marked as existing in staging, but its "\
+          "staging key is blank.")
+    end
   end
 
 end
