@@ -1,9 +1,14 @@
-.dialog.text-center
-  %h2 We're sorry, but something went wrong.
+.text-center.mt-4
+  %h2.mb-4 We're sorry, but something went wrong.
   %hr
+  %p Details have been logged, and system administrators have been notified.
   %p
-    Details have been logged.
-    %b
     IDEALS @ Illinois administrators may be contacted at:
     %a{href: "mailto:#{::Configuration.instance.mail[:from]}"}
       = ::Configuration.instance.mail[:from]
+
+- if Rails.env.development?
+  %hr
+  %h2 Details
+  %code
+    %pre= @message

@@ -70,27 +70,37 @@ class ApplicationController < ActionController::Base
       end
 
     else
-      exception_string = "Error on #{::Configuration.instance.website[:base_url]}"
-      exception_string += "\nclass: #{exception.class}"
-      exception_string += "\nmessage: #{exception.message}\n"
-      exception_string += Time.now.utc.iso8601
-      exception_string += "\nstack:\n"
+      io = StringIO.new
+      io << "Error on #{request.url}\n"
+      io << "Class:   #{exception.class}\n"
+      io << "Message: #{exception.message}\n"
+      io << "Time:    #{Time.now.iso8601}\n"
+      io << "User:    #{current_user.name}\n" if current_user
+      io << "\nStack Trace:\n"
       exception.backtrace.each do |line|
-        exception_string += line
-        exception_string += "\n"
+        io << line
+        io << "\n"
       end
 
-      Rails.logger.warn(exception_string)
+      @message = io.string
+      Rails.logger.warn(@message)
 
       unless Rails.env.development?
-        exception_string += "\nCurrent User: #{current_user.name} | #{current_user.email}" if current_user
-        notification = IdealsMailer.error(exception_string)
+        notification = IdealsMailer.error(@message)
         notification.deliver_now
       end
+
       respond_to do |format|
-        format.html { render "errors/error500", status: :internal_server_error }
-        format.json { render nothing: true, status: :internal_server_error }
-        format.xml { render xml: {status: 500}.to_xml }
+        format.html do
+          render "errors/error500",
+                 status: :internal_server_error,
+                 content_type: "text/html"
+        end
+        format.all do
+          render plain: "HTTP 500 Internal Server Error",
+                 status: :internal_server_error,
+                 content_type: "text/plain"
+        end
       end
     end
   end
