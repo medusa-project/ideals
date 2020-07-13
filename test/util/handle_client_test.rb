@@ -17,7 +17,7 @@ class HandleClientTest < ActiveSupport::TestCase
     begin
       # create a handle
       url = "http://example.org/test"
-      @client.create_url_handle(handle, url)
+      @client.create_url_handle(handle: handle, url: url)
       # verify that it exists
       struct = @client.get_handle(handle)
       assert_equal "HS_ADMIN", struct[0]['type']
@@ -38,7 +38,7 @@ class HandleClientTest < ActiveSupport::TestCase
 
     # create a handle
     url = "http://example.org/test"
-    @client.create_url_handle(handle, url)
+    @client.create_url_handle(handle: handle, url: url)
     # verify that it exists
     struct = @client.get_handle(handle)
     assert_equal "HS_ADMIN", struct[0]['type']

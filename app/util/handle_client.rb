@@ -9,7 +9,7 @@ class HandleClient
   # @param url [String] Destination URL.
   # @return [void]
   #
-  def create_url_handle(handle, url)
+  def create_url_handle(handle:, url:)
     value = JSON.generate({
         handle: handle,
         values: [
