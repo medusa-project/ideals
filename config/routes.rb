@@ -9,9 +9,6 @@ Rails.application.routes.draw do
   match "/logout", to: "sessions#destroy", as: :logout, via: :all
   match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: [:get, :post]
 
-  # handle routing
-  get '/handle/:prefix/:suffix', to: 'handles#resolve'
-
   resources :collections, except: [:edit, :new] do
     match "/children", to: "collections#children", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -27,7 +24,6 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
   end
   match "/deposit", to: "submissions#agreement", via: :get
-  resources :handles
   resources :local_identities, only: [:update], path: "identities" do
     match "/activate", to: "local_identities#activate", via: :get
     match "/edit-password", to: "local_identities#edit_password", via: :get,
