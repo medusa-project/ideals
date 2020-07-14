@@ -4,6 +4,8 @@
 #
 class HandleClient
 
+  LOGGER = CustomLogger.new(HandleClient)
+
   ##
   # @param handle [String]
   # @param url [String] Destination URL.
@@ -37,8 +39,9 @@ class HandleClient
             }
         ]
     })
-    response = client.put("#{api_endpoint}/handles/#{handle}", value,
-                          'Content-Type': "application/json")
+    handle_url = "#{api_endpoint}/handles/#{handle}"
+    LOGGER.debug("create_url_handle(): #{handle_url} -> #{url}")
+    response = client.put(handle_url, value, 'Content-Type': "application/json")
     struct = JSON.parse(response.body)
     handle_response(struct, "message")
   end
@@ -48,7 +51,9 @@ class HandleClient
   # @return [void]
   #
   def delete_handle(handle)
-    response = client.delete("#{api_endpoint}/handles/#{handle}")
+    handle_url = "#{api_endpoint}/handles/#{handle}"
+    LOGGER.debug("delete_handle(): #{handle_url}")
+    response = client.delete(handle_url)
     struct = JSON.parse(response.body)
     handle_response(struct, "message")
   end
