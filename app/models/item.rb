@@ -100,7 +100,7 @@ class Item < ApplicationRecord
 
   breadcrumbs parent: :primary_collection, label: :title
 
-  before_save :assign_handle, if: -> { discoverable && handle.nil? }
+  after_save :assign_handle, if: -> { discoverable && handle.nil? }
 
   ##
   # @param submitter [User]

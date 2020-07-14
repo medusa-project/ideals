@@ -99,7 +99,7 @@ class Collection < ApplicationRecord
 
   validate :validate_parent
 
-  before_save :assign_handle, if: -> { handle.nil? }
+  after_save :assign_handle, if: -> { handle.nil? }
   after_save :ensure_default_uniqueness
 
   breadcrumbs parent: :primary_unit, label: :title

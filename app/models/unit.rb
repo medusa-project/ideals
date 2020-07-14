@@ -37,7 +37,7 @@ class Unit < ApplicationRecord
   validates :title, presence: true
   validate :validate_parent, :validate_primary_administrator
 
-  before_save :assign_handle, if: -> { handle.nil? }
+  after_save :assign_handle, if: -> { handle.nil? }
   after_create :create_default_collection, unless: -> { IdealsImporter.instance.running? }
   before_destroy :validate_empty
 
