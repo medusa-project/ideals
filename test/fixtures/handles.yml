@@ -1,0 +1,4 @@
+handle1:
+  prefix: <%= ::Configuration.instance.handles[:prefix] %>
+  suffix: 5000
+  item: item1

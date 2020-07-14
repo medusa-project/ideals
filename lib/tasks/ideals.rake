@@ -18,15 +18,6 @@ namespace :ideals do
     end
   end
 
-  namespace :handles do
-    desc "Delete all handles"
-    task delete: :environment do
-      ActiveRecord::Base.transaction do
-        Handle.all.destroy_all
-      end
-    end
-  end
-
   namespace :items do
     desc "Delete all items"
     task delete: :environment do

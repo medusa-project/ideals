@@ -263,6 +263,23 @@ class CollectionTest < ActiveSupport::TestCase
         filter(Collection::IndexFields::ID, @instance.index_id).count
   end
 
+  # save()
+
+  test "save() creates an associated handle" do
+    assert_nil @instance.handle
+    @instance.save!
+    assert_not_nil @instance.handle
+  end
+
+  test "save() does not replace an associated handle" do
+    @instance.save!
+    handle = @instance.handle
+    @instance.updated_at = Time.now # dirty the instance
+    @instance.save!
+    @instance.reload
+    assert_equal handle.id, @instance.handle.id
+  end
+
   # title() (Describable concern)
 
   test "title() returns the title element value" do

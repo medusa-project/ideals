@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_28_142014) do
+ActiveRecord::Schema.define(version: 2020_07_13_152422) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -75,13 +75,14 @@ ActiveRecord::Schema.define(version: 2020_05_28_142014) do
   end
 
   create_table "handles", force: :cascade do |t|
-    t.string "handle"
-    t.integer "resource_type_id"
-    t.integer "resource_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "prefix"
-    t.integer "suffix"
+    t.string "prefix", null: false
+    t.serial "suffix", null: false
+    t.bigint "unit_id"
+    t.bigint "collection_id"
+    t.bigint "item_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["suffix"], name: "index_handles_on_suffix", unique: true
   end
 
   create_table "invitees", force: :cascade do |t|
@@ -255,6 +256,9 @@ ActiveRecord::Schema.define(version: 2020_05_28_142014) do
   add_foreign_key "collections_items", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections_units", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections_units", "units", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "handles", "collections", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "handles", "items", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "handles", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "collections", column: "primary_collection_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict

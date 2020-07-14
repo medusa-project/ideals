@@ -92,12 +92,15 @@ class Item < ApplicationRecord
   has_many :bitstreams
   has_and_belongs_to_many :collections
   has_many :elements, class_name: "AscribedElement"
+  has_one :handle
   belongs_to :primary_collection, class_name: "Collection",
              foreign_key: "primary_collection_id", optional: true
   belongs_to :submitter, class_name: "User", inverse_of: "submitted_items",
              optional: true
 
   breadcrumbs parent: :primary_collection, label: :title
+
+  before_save :assign_handle, if: -> { discoverable && handle.nil? }
 
   ##
   # @param submitter [User]
@@ -247,6 +250,18 @@ class Item < ApplicationRecord
   def primary_unit
     #noinspection RubyYardReturnMatch
     self.primary_collection&.primary_unit
+  end
+
+
+  private
+
+  ##
+  # @return [void]
+  #
+  def assign_handle
+    if self.discoverable && self.handle.nil?
+      self.handle = Handle.create!(item: self)
+    end
   end
 
 end

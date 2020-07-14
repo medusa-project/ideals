@@ -24,6 +24,7 @@ class Unit < ApplicationRecord
   has_many :administering_users, through: :administrators,
            class_name: "User", source: :user
   has_and_belongs_to_many :collections
+  has_one :handle
   belongs_to :parent, class_name: "Unit", foreign_key: "parent_id", optional: true
   has_one :primary_administrator_relationship, -> { where(primary: true) },
           class_name: "Administrator"
@@ -36,6 +37,7 @@ class Unit < ApplicationRecord
   validates :title, presence: true
   validate :validate_parent, :validate_primary_administrator
 
+  before_save :assign_handle, if: -> { handle.nil? }
   after_create :create_default_collection, unless: -> { IdealsImporter.instance.running? }
   before_destroy :validate_empty
 
@@ -189,6 +191,15 @@ class Unit < ApplicationRecord
   end
 
   private
+
+  ##
+  # @return [void]
+  #
+  def assign_handle
+    if self.handle.nil?
+      self.handle = Handle.create!(unit: self)
+    end
+  end
 
   ##
   # Ensures that the unit cannot be destroyed unless it is empty.

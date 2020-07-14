@@ -209,6 +209,30 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 1, Item.search.filter(Item::IndexFields::ID, @instance.index_id).count
   end
 
+  # save()
+
+  test "save() creates an associated handle if discoverable" do
+    @instance = items(:item2)
+    assert_nil @instance.handle
+    @instance.update!(discoverable: true)
+    assert_not_nil @instance.handle
+  end
+
+  test "save() does not replace an associated handle if discoverable" do
+    @instance = items(:item2)
+    @instance.update!(discoverable: true)
+    handle = @instance.handle
+    @instance.save!
+    @instance.reload
+    assert_equal handle.id, @instance.handle.id
+  end
+
+  test "save() does not create an associated handle if not discoverable" do
+    @instance = items(:item2)
+    @instance.update!(discoverable: false)
+    assert_nil @instance.handle
+  end
+
   # title() (Describable concern)
 
   test "title() returns the title element value" do

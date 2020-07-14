@@ -210,6 +210,23 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal @instance, units(:unit1_unit2).root_parent
   end
 
+  # save()
+
+  test "save() creates an associated handle" do
+    assert_nil @instance.handle
+    @instance.save!
+    assert_not_nil @instance.handle
+  end
+
+  test "save() does not replace an associated handle" do
+    @instance.save!
+    handle = @instance.handle
+    @instance.updated_at = Time.now # dirty the instance
+    @instance.save!
+    @instance.reload
+    assert_equal handle.id, @instance.handle.id
+  end
+
   # title
 
   test "title must be present" do

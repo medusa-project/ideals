@@ -79,6 +79,7 @@ class Collection < ApplicationRecord
 
   has_many :collections, foreign_key: "parent_id", dependent: :restrict_with_exception
   has_many :elements, class_name: "AscribedElement"
+  has_one :handle
   has_and_belongs_to_many :items
   belongs_to :metadata_profile, inverse_of: :collections, optional: true
   belongs_to :primary_unit, class_name: "Unit",
@@ -98,6 +99,7 @@ class Collection < ApplicationRecord
 
   validate :validate_parent
 
+  before_save :assign_handle, if: -> { handle.nil? }
   after_save :ensure_default_uniqueness
 
   breadcrumbs parent: :primary_unit, label: :title
@@ -257,6 +259,15 @@ class Collection < ApplicationRecord
   end
 
   private
+
+  ##
+  # @return [void]
+  #
+  def assign_handle
+    if self.handle.nil?
+      self.handle = Handle.create!(collection: self)
+    end
+  end
 
   ##
   # Sets other instances with the same primary unit as "not unit-default" if
