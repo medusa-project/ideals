@@ -55,6 +55,14 @@ class HandleClient
 
   ##
   # @param handle [String]
+  # @return [Boolean]
+  #
+  def exists?(handle)
+    get_handle(handle).present?
+  end
+
+  ##
+  # @param handle [String]
   # @return [Enumerable<Hash>,nil] Handle structure, or nil if the handle does
   #         not exist.
   # @raises [IOError]

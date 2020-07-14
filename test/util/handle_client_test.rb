@@ -48,6 +48,33 @@ class HandleClientTest < ActiveSupport::TestCase
     assert_nil @client.get_handle(handle)
   end
 
+  # exists?()
+
+  test "exists?() returns true for an existing handle" do
+    config = ::Configuration.instance
+    skip unless config.handles[:api][:basic_user].present?
+
+    prefix = config.handles[:prefix]
+    handle = "#{prefix}/ideals-test-#{SecureRandom.hex}"
+    begin
+      # create a handle
+      url = "http://example.org/test"
+      @client.create_url_handle(handle: handle, url: url)
+      # verify that it exists
+      assert @client.exists?(handle)
+    ensure
+      # clean up
+      @client.delete_handle(handle)
+    end
+  end
+
+  test "exists?() returns false for a non-existing handle" do
+    config = ::Configuration.instance
+    prefix = config.handles[:prefix]
+    handle = "#{prefix}/bogus-#{SecureRandom.hex}"
+    assert !@client.exists?(handle)
+  end
+
   # get_handle()
 
   test "get_handle() returns the expected handle" do
