@@ -8,23 +8,29 @@
       Edit Properties
 
 %dl
-- if @item.submitter
-  - submitter = @item.submitter.becomes(User)
-  %dt Submitter
+  %dt Handle URI
   %dd
-    - if policy(submitter).show?
-      = link_to(submitter.name, submitter)
+    - if @item.handle
+      = @item.handle.url
     - else
-      = submitter.name
-%dt In Submission Process
-%dd= @item.submitting
-%dt In Archive
-%dd= @item.in_archive
-%dt Discoverable
-%dd= @item.discoverable
-%dt Withdrawn
-%dd= @item.withdrawn
-%dt Created
-%dd= local_time @item.created_at
-%dt Last Updated
-%dd= local_time @item.updated_at
+      None
+  - if @item.submitter
+    - submitter = @item.submitter.becomes(User)
+    %dt Submitter
+    %dd
+      - if policy(submitter).show?
+        = link_to(submitter.name, submitter)
+      - else
+        = submitter.name
+  %dt In Submission Process
+  %dd= @item.submitting
+  %dt In Archive
+  %dd= @item.in_archive
+  %dt Discoverable
+  %dd= @item.discoverable
+  %dt Withdrawn
+  %dd= @item.withdrawn
+  %dt Created
+  %dd= local_time @item.created_at
+  %dt Last Updated
+  %dd= local_time @item.updated_at

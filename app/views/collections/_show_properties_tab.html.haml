@@ -9,11 +9,13 @@
 
 .clearfix
 .row
-  .col-md-8
+  .col-md-7
     = metadata_as_dl(@collection.elements, @metadata_profile)
-  .col-md-4
-    - if policy(@collection).show_properties?
-      %dl
+  .col-md-5
+    %dl
+      %dt Handle URI
+      %dd= @collection.handle&.url
+      - if policy(@collection).show_properties?
         %dt Metadata Profile
         %dd
           - if @collection.metadata_profile
