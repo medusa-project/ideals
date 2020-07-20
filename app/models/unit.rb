@@ -37,7 +37,7 @@ class Unit < ApplicationRecord
   validates :title, presence: true
   validate :validate_parent, :validate_primary_administrator
 
-  after_save :assign_handle, if: -> { handle.nil? }
+  after_save :assign_handle, if: -> { handle.nil? && !IdealsImporter.instance.running? }
   after_create :create_default_collection, unless: -> { IdealsImporter.instance.running? }
   before_destroy :validate_empty
 
@@ -196,7 +196,7 @@ class Unit < ApplicationRecord
   # @return [void]
   #
   def assign_handle
-    if self.handle.nil?
+    if self.handle.nil? && !IdealsImporter.instance.running?
       self.handle = Handle.create!(unit: self)
     end
   end

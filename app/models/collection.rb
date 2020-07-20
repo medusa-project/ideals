@@ -99,7 +99,7 @@ class Collection < ApplicationRecord
 
   validate :validate_parent
 
-  after_save :assign_handle, if: -> { handle.nil? }
+  after_save :assign_handle, if: -> { handle.nil? && !IdealsImporter.instance.running? }
   after_save :ensure_default_uniqueness
 
   breadcrumbs parent: :primary_unit, label: :title
@@ -264,7 +264,7 @@ class Collection < ApplicationRecord
   # @return [void]
   #
   def assign_handle
-    if self.handle.nil?
+    if self.handle.nil? && !IdealsImporter.instance.running?
       self.handle = Handle.create!(collection: self)
     end
   end

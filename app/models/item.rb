@@ -100,7 +100,8 @@ class Item < ApplicationRecord
 
   breadcrumbs parent: :primary_collection, label: :title
 
-  after_save :assign_handle, if: -> { discoverable && handle.nil? }
+  after_save :assign_handle, if: -> {
+    discoverable && handle.nil? && !IdealsImporter.instance.running? }
 
   ##
   # @param submitter [User]
@@ -259,7 +260,7 @@ class Item < ApplicationRecord
   # @return [void]
   #
   def assign_handle
-    if self.discoverable && self.handle.nil?
+    if self.discoverable && self.handle.nil? && !IdealsImporter.instance.running?
       self.handle = Handle.create!(item: self)
     end
   end
