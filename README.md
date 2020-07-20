@@ -17,6 +17,8 @@ This is a getting-started guide for developers.
   [ICU analysis plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html)
   installed
 * An S3 endpoint, such as AWS S3 or [Minio Server](https://min.io)
+* Handle server (currently we are using the demo one in development & test, but
+  that's probably bad practice)
 
 # Installation
 
