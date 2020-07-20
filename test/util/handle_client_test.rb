@@ -3,6 +3,7 @@ require 'test_helper'
 class HandleClientTest < ActiveSupport::TestCase
 
   setup do
+    skip if Rails.env.ci? # TODO: get a handle server working in CI
     @client = HandleClient.new
   end
 
