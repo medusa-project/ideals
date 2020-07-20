@@ -52,7 +52,15 @@ class HandleTest < ActiveSupport::TestCase
 
   # put_to_server()
 
-  test "put_to_server() saves the handle to the handle server" do
+  test "put_to_server() raises an error if the prefix is not supported by the
+  handle server" do
+    @instance.prefix = "bogus"
+    assert_raises RuntimeError do
+      @instance.put_to_server
+    end
+  end
+
+  test "put_to_server() saves a valid handle to the handle server" do
     client = HandleClient.new
     begin
       assert !client.exists?(@instance.handle)

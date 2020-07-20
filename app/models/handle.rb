@@ -26,7 +26,8 @@ class Handle < ApplicationRecord
   belongs_to :item, optional: true
 
   before_save :assign_prefix, if: -> { self.prefix.blank? }
-  after_save :put_to_server, unless: -> { self.transient }
+  after_save :put_to_server, if: -> { !self.transient &&
+      self.prefix == ::Configuration.instance.handles[:prefix] }
   after_destroy :delete_from_server, unless: -> { self.transient }
 
   validate :validate_entity_association
@@ -68,9 +69,15 @@ class Handle < ApplicationRecord
   # exist on the handle server, it is created; otherwise it is updated.
   #
   # @return [void]
+  # @raises [RuntimeError] if the instance's prefix is not supported by the
+  #         handle server.
   #
   def put_to_server
-    base_url = ::Configuration.instance.website[:base_url]
+    config = ::Configuration.instance
+    if self.prefix != config.handles[:prefix]
+      raise "Prefix #{self.prefix} is not supported by the handle server"
+    end
+    base_url = config.website[:base_url]
     helpers  = Rails.application.routes.url_helpers
     if self.unit
       entity_url = helpers.unit_url(self.unit, host: base_url)
