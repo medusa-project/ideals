@@ -40,7 +40,7 @@ class IdealsImporter
       begin
         Bitstream.create!(id:         row_arr[1].to_i,
                           item_id:    row_arr[0].to_i,
-                          key:        row_arr[2],
+                          medusa_key: row_arr[2],
                           length:     row_arr[6].to_i,
                           media_type: row_arr[7])
       rescue ActiveRecord::RecordNotFound
@@ -245,18 +245,29 @@ class IdealsImporter
       next if row_num == 0 # skip header row
 
       row          = line.split(",")
-      handle       = row[1]
-      handle_parts = handle.split("/")
+      handle_parts = row[1].split("/")
+      prefix       = handle_parts.first
+      suffix       = handle_parts.last
+      handle       = nil
 
       progress.report(row_num, "Importing handles")
-      Handle.create!(id:               row[0].to_i,
-                     handle:           handle,
-                     prefix:           handle_parts[0].to_i,
-                     suffix:           handle_parts[1].to_i,
-                     resource_type_id: row[2].to_i,
-                     resource_id:      row[3].to_i)
+
+      case row[2].to_i
+      when ResourceType::UNIT
+        unit   = Unit.find_by(id: row[3].to_i)
+        handle = unit&.build_handle(prefix: prefix, suffix: suffix)
+      when ResourceType::COLLECTION
+        collection = Collection.find_by(id: row[3].to_i)
+        handle     = collection&.build_handle(prefix: prefix, suffix: suffix)
+      when ResourceType::ITEM
+        item   = Item.find_by(id: row[3].to_i)
+        handle = item&.build_handle(prefix: prefix, suffix: suffix)
+      else
+        # Getting here would be unexpected, but also unrecoverable
+      end
+      handle&.save!
     end
-    update_pkey_sequence("handles")
+    Handle.set_suffix_start(Handle.order(suffix: :desc).limit(1).first.suffix + 1)
   ensure
     @running = false
   end
