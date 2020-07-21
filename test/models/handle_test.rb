@@ -86,7 +86,7 @@ class HandleTest < ActiveSupport::TestCase
     handle.item = items(:item1)
     handle.transient = true
     handle.save
-    assert_equal prefix, handle.prefix
+    assert_equal prefix.to_s, handle.prefix
   end
 
   test "save() saves the handle to the handle server" do
