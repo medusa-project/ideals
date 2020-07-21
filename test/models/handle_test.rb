@@ -21,7 +21,7 @@ class HandleTest < ActiveSupport::TestCase
   # delete_from_server()
 
   test "delete_from_server() deletes the handle from the handle server" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
     client = HandleClient.new
     assert !client.exists?(@instance.handle)
@@ -34,7 +34,7 @@ class HandleTest < ActiveSupport::TestCase
   # exists_on_server?()
 
   test "exists_on_server?() deletes the handle from the handle server" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
     begin
       assert !@instance.exists_on_server?
       @instance.put_to_server
@@ -57,7 +57,7 @@ class HandleTest < ActiveSupport::TestCase
 
   test "put_to_server() raises an error if the prefix is not supported by the
   handle server" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
     @instance.prefix = "bogus"
     assert_raises RuntimeError do
@@ -66,7 +66,7 @@ class HandleTest < ActiveSupport::TestCase
   end
 
   test "put_to_server() saves a valid handle to the handle server" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
     client = HandleClient.new
     begin
@@ -90,7 +90,7 @@ class HandleTest < ActiveSupport::TestCase
   end
 
   test "save() saves the handle to the handle server" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
     client = HandleClient.new
     begin

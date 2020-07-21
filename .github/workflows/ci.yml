@@ -36,6 +36,8 @@ jobs:
       - name: Prepare the database
         run: bin/rails db:prepare
       - name: Run the tests
+        env:
+          CI: 1
         # N.B. 1: Ideally we would run Elasticsearch in a service like we do
         # PostgreSQL above, but we need to use a plugin that isn't included in
         # ES's standard Dockerfile. So instead we have to build a custom image

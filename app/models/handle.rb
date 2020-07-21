@@ -27,8 +27,8 @@ class Handle < ApplicationRecord
 
   before_save :assign_prefix, if: -> { self.prefix.blank? }
   after_save :put_to_server, if: -> { !self.transient &&
-      self.prefix == ::Configuration.instance.handles[:prefix] && !Rails.env.ci? }
-  after_destroy :delete_from_server, unless: -> { self.transient && !Rails.env.ci? }
+      self.prefix == ::Configuration.instance.handles[:prefix] && !ENV['CI'] == '1' }
+  after_destroy :delete_from_server, unless: -> { self.transient && !ENV['CI'] == '1' }
 
   validate :validate_entity_association
 

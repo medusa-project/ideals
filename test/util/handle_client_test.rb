@@ -9,7 +9,7 @@ class HandleClientTest < ActiveSupport::TestCase
   # create_url_handle()
 
   test "create_url_handle() creates a handle" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
     config = ::Configuration.instance
     skip unless config.handles[:api][:basic_user].present?
@@ -32,7 +32,7 @@ class HandleClientTest < ActiveSupport::TestCase
   # delete_handle()
 
   test "delete_handle() deletes a handle" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
     config = ::Configuration.instance
     skip unless config.handles[:api][:basic_user].present?
@@ -55,7 +55,7 @@ class HandleClientTest < ActiveSupport::TestCase
   # exists?()
 
   test "exists?() returns true for an existing handle" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
     config = ::Configuration.instance
     skip unless config.handles[:api][:basic_user].present?
@@ -75,7 +75,7 @@ class HandleClientTest < ActiveSupport::TestCase
   end
 
   test "exists?() returns false for a non-existing handle" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
     config = ::Configuration.instance
     prefix = config.handles[:prefix]
@@ -86,7 +86,7 @@ class HandleClientTest < ActiveSupport::TestCase
   # get_handle()
 
   test "get_handle() returns the expected handle" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
     config = ::Configuration.instance
     skip unless config.handles[:api][:basic_user].present?
@@ -98,7 +98,7 @@ class HandleClientTest < ActiveSupport::TestCase
   end
 
   test "get_handle() returns nil for a nonexistent handle" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
     config = ::Configuration.instance
     skip unless config.handles[:api][:basic_user].present?
@@ -110,7 +110,7 @@ class HandleClientTest < ActiveSupport::TestCase
   # get_handles()
 
   test "get_handles() returns the expected handles" do
-    skip if Rails.env.ci? # TODO: get a handle server working in CI
+    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
     config = ::Configuration.instance
     skip unless config.handles[:api][:basic_user].present?
