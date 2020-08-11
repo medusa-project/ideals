@@ -9,7 +9,10 @@ namespace :elasticsearch do
 
     desc 'Create an index'
     task :create, [:name] => :environment do |task, args|
-      ElasticsearchClient.instance.create_index(args[:name])
+      client = ElasticsearchClient.instance
+      unless client.index_exists?(args[:name])
+        client.create_index(args[:name])
+      end
     end
 
     desc 'Create an index alias'
