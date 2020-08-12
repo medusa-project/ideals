@@ -158,11 +158,17 @@ invokes YARD to generate HTML documentation for the code base.
 # Tests & Continuous Integration
 
 Minitest is used for model and controller tests. Some tests depend on
-Elasticsearch and most depend on PostgreSQL. A few depend on an S3 server.
-`rails test` runs the tests.
+Elasticsearch and most depend on PostgreSQL. A few depend on an S3 server
+and/or RabbitMQ. `rails test` runs the tests. It's perfectly legitimate to
+install all of this on your local machine and run the tests there too.
 
-There is also a continuous integration setup using
-[GitHub Actions](https://github.com/features/actions). The
-`.github/workflows/ci.yml` file defines the container fleet, including all
-required services (Elasticsearch, PostgreSQL, and Minio), which run in separate
-containers.
+But because it can be a hassle to get all of this working, you can also
+use `docker-compose`, which will initialize a container, copy the IDEALS code
+base into it, spin up all of the service containers, and run the tests:
+
+```sh
+docker-compose up --exit-code-from ideals
+```
+
+The above is how tests are run in continuous integration, which uses
+[GitHub Actions](https://github.com/features/actions).
