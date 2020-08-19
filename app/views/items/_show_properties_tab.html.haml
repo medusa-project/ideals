@@ -11,7 +11,7 @@
   %dt Handle URI
   %dd
     - if @item.handle
-      = @item.handle.url
+      = link_to(@item.handle.url, @item.handle.url)
     - else
       None
   - if @item.submitter
