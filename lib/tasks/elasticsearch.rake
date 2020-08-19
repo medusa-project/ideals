@@ -69,7 +69,6 @@ namespace :elasticsearch do
     # N.B.: orphaned documents are not deleted.
     num_threads = args[:num_threads].to_i
     num_threads = 1 if num_threads == 0
-    User.reindex_all(num_threads: num_threads)
     Unit.reindex_all(num_threads: num_threads)
     Collection.reindex_all(num_threads: num_threads)
     Item.reindex_all(num_threads: num_threads)
