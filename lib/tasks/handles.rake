@@ -7,8 +7,11 @@ namespace :handles do
 
   desc 'Create/update handles for all database entities'
   task :put_all => :environment do |task, args|
-    Handle.all.each do |handle|
+    count = Handle.count
+    progress = Progress.new(count)
+    Handle.all.each_with_index do |handle, i|
       handle.put_to_server
+      progress.report(i, "Uploading handles")
     end
   end
 
