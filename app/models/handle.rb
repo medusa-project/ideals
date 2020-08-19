@@ -61,6 +61,8 @@ class Handle < ApplicationRecord
   # @return [String] Full handle.
   #
   def handle
+    config = ::Configuration.instance
+    prefix = config.handles[:prefix]
     "#{prefix}/#{suffix}"
   end
 
@@ -74,9 +76,6 @@ class Handle < ApplicationRecord
   #
   def put_to_server
     config = ::Configuration.instance
-    if self.prefix != config.handles[:prefix]
-      raise "Prefix #{self.prefix} is not supported by the handle server"
-    end
     base_url = config.website[:base_url]
     helpers  = Rails.application.routes.url_helpers
     if self.unit
