@@ -167,7 +167,7 @@ use `docker-compose`, which will initialize a container, copy the IDEALS code
 base into it, spin up all of the service containers, and run the tests:
 
 ```sh
-docker-compose up --exit-code-from ideals
+docker-compose up --build --exit-code-from ideals
 ```
 
 The above is how tests are run in continuous integration, which uses
