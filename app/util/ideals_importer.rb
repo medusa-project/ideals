@@ -335,14 +335,14 @@ class IdealsImporter
       discoverable  = row[5] == "t"
 
       # Skip submitterless items (items whose submitting user has not been
-      # imported due to not being a UofI user). This is temporary.
-      if User.find_by(id: submitter_id)
+      # imported due to not being a UofI user).
+      if User.exists?(submitter_id)
         Item.create!(id:                    id,
                      submitter_id:          submitter_id,
                      submitting:            submitting,
                      withdrawn:             withdrawn,
                      discoverable:          discoverable,
-                     primary_collection_id: collection_id)
+                     primary_collection_id: collection_id) unless Item.exists?(id)
       end
       progress.report(row_num, "Importing items")
     end
@@ -457,9 +457,11 @@ class IdealsImporter
 
       row = line.split("|").map(&:strip)
       id  = row[0].to_i
-      # The eperson table contains all kinds of crap. Some of the email
+      # The eperson table contains all kinds of junk. Some of the email
       # addresses are invalid and some are in "spam avoidance format," like
-      # "user at uiuc dot edu". For now, we're going to import only UofI users.
+      # "user at uiuc dot edu". For now, we're going to import only UofI users,
+      # because many of the rest are users who signed up once thinking it
+      # would enable them to access something and then never returned.
       email = row[1].strip.
           gsub('"', "").
           gsub(/(\w+) at (\w+) dot (\w+)/, "\\1@\\2.\\3")
