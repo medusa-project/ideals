@@ -305,7 +305,8 @@ const SubmissionForm = function() {
         DISALLOWED_LC_FILENAMES.add("thumbs.db");
 
         const filesTable = filesForm.find("table.files");
-        let numUploadingFiles = 0, numUploadedFiles = 0;
+        let numUploadingFiles = 0;
+        let numUploadedFiles = filesTable.find("tr").length;
 
         /**
          * Adds a file to the table. (It has probably not finished uploading
