@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_13_152422) do
+ActiveRecord::Schema.define(version: 2020_08_11_161224) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -85,6 +85,17 @@ ActiveRecord::Schema.define(version: 2020_07_13_152422) do
     t.index ["suffix"], name: "index_handles_on_suffix", unique: true
   end
 
+  create_table "ingest_responses", force: :cascade do |t|
+    t.text "as_text"
+    t.string "status"
+    t.datetime "response_time"
+    t.string "staging_key"
+    t.string "medusa_key"
+    t.string "uuid"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "invitees", force: :cascade do |t|
     t.string "email", null: false
     t.datetime "expires_at", null: false
@@ -135,6 +146,24 @@ ActiveRecord::Schema.define(version: 2020_07_13_152422) do
     t.index ["collection_id", "user_id"], name: "index_managers_on_collection_id_and_user_id", unique: true
     t.index ["collection_id"], name: "index_managers_on_collection_id"
     t.index ["user_id"], name: "index_managers_on_user_id"
+  end
+
+  create_table "medusa_ingests", force: :cascade do |t|
+    t.string "ideals_class", null: false
+    t.string "ideals_identifier", null: false
+    t.string "staging_key", null: false
+    t.string "target_key", null: false
+    t.string "staging_path"
+    t.string "request_status"
+    t.string "medusa_path"
+    t.string "medusa_uuid"
+    t.datetime "response_time"
+    t.string "error_text"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["medusa_uuid"], name: "index_medusa_ingests_on_medusa_uuid", unique: true
+    t.index ["staging_key"], name: "index_medusa_ingests_on_staging_key", unique: true
+    t.index ["target_key"], name: "index_medusa_ingests_on_target_key", unique: true
   end
 
   create_table "metadata_profile_elements", force: :cascade do |t|

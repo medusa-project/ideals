@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ideals_class: <%= Bitstream.to_s %>
+  ideals_identifier: bitstream1
+  staging_path: /path/to/bitstream1
+  request_status: MyString
+  medusa_path: bitstream1
+  medusa_uuid: ad53aeed-0df7-4eed-9f00-43fda291d553
+  response_time: 2020-05-18 09:09:42
+  error_text:
+  staging_key: bitstream1
+  target_key: bitstream1
+
+two:
+  ideals_class: <%= Bitstream.to_s %>
+  ideals_identifier: bitstream2
+  staging_path: /path/to/bitstream2
+  request_status: MyString
+  medusa_path: bitstream2
+  medusa_uuid: f6d28553-a73d-4d40-9d7d-665a3fa4aa1c
+  response_time: 2020-05-18 09:09:42
+  error_text:
+  staging_key: bitstream2
+  target_key: bitstream2

@@ -11,10 +11,12 @@ gem "autoprefixer-rails"
 gem 'aws-sdk-s3', '~> 1'
 # Use ActiveModel has_secure_password for local identity users
 gem "bcrypt", "~> 3.1.7"
-# No Bootstrap! This is provided by scars-bootstrap-theme instead.
+# No Bootstrap! This is provided by scars-bootstrap-theme.
 #gem "bootstrap"
-# Use Boxr to interact with Box API
-# gem "boxr"
+# Handles RabbitMQ messages.
+gem 'bunny'
+gem 'amq-protocol'
+gem 'amqp_helper', '~>0.2.0', git: 'https://github.com/medusa-project/amqp_helper.git'
 # Provides all of our icons.
 gem "font-awesome-sass", "~> 5.6"
 # All HTML templates are written in HAML
@@ -55,9 +57,6 @@ gem "daemons"
 gem "delayed_job_active_record"
 gem "progress_job"
 # gem 'delayed_job_heartbeat_plugin'
-
-# Use bunny to handle RabbitMQ messages
-gem "bunny", "2.8.1"
 
 # Use builder to support sitemaps generator
 gem "builder", "~> 3.2", ">= 3.2.2"

@@ -7,6 +7,10 @@ class ItemTest < ActiveSupport::TestCase
     @instance = items(:item1)
   end
 
+  teardown do
+    AmqpHelper::Connector[:ideals].clear_queues(MedusaIngest.outgoing_queue)
+  end
+
   # base-level tests
 
   test "destroying an instance destroys its dependent AscribedElements" do
@@ -185,6 +189,25 @@ class ItemTest < ActiveSupport::TestCase
     assert_nil @instance.element("bogus")
   end
 
+  # ingest_into_medusa()
+
+  test "ingest_into_medusa() raises an error if the handle is not set" do
+    @instance.handle.destroy!
+    @instance.handle = nil
+    assert_raises do
+      @instance.ingest_into_medusa
+    end
+  end
+
+  test "ingest_into_medusa() ingests all associated bitstreams into Medusa" do
+    @instance.ingest_into_medusa
+    @instance.bitstreams.each do
+      AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+        assert message.present?
+      end
+    end
+  end
+
   # metadata_profile()
 
   test "metadata_profile() returns the primary collection's effective metadata profile" do
@@ -211,14 +234,14 @@ class ItemTest < ActiveSupport::TestCase
 
   # save()
 
-  test "save() creates an associated handle if discoverable" do
+  test "save() creates an associated handle if not set" do
     @instance = items(:item2)
     assert_nil @instance.handle
     @instance.update!(discoverable: true)
     assert_not_nil @instance.handle
   end
 
-  test "save() does not replace an associated handle if discoverable" do
+  test "save() does not replace an associated handle" do
     @instance = items(:item2)
     @instance.update!(discoverable: true)
     handle = @instance.handle
@@ -227,10 +250,13 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal handle.id, @instance.handle.id
   end
 
-  test "save() does not create an associated handle if not discoverable" do
-    @instance = items(:item2)
-    @instance.update!(discoverable: false)
-    assert_nil @instance.handle
+  test "save() sends an ingest message" do
+    @instance.update!(discoverable: true)
+    @instance.bitstreams.each do
+      AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+        assert message.present?
+      end
+    end
   end
 
   # title() (Describable concern)

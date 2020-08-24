@@ -1,0 +1,2 @@
+class IngestResponse < ApplicationRecord
+end

@@ -19,6 +19,10 @@ This is a getting-started guide for developers.
 * An S3 endpoint, such as AWS S3 or [Minio Server](https://min.io)
 * Handle server (currently we are using the demo one in development & test, but
   that's probably bad practice)
+* RabbitMQ
+
+Homebrew is a convenient way of installing all of the above except
+Elasticsearch, which, as of this writing, is stuck on the 5.x series.
 
 # Installation
 
@@ -86,6 +90,28 @@ in your `development.yml`.)
 
 Note 2: the above does not apply to the test index. This index will be
 recreated automatically when the tests are run.
+
+## Configure RabbitMQ
+
+```sh
+$ brew install rabbitmq
+$ brew services start rabbitmq
+# Add /usr/local/sbin to $PATH
+$ rabbitmq-plugins enable rabbitmq_management
+
+# Add yourself as an admin user and grant permissions to yourself
+$ rabbitmqctl add_user <username> <password>
+$ rabbitmqctl set_user_tags <username> administrator
+$ rabbitmqctl set_permissions -p / <username> '.*' '.*' '.*'
+```
+Open the management interface at http://localhost:15672.
+Log in using the credentials you just created
+In the Queues tab, in the "Add a new queue" section, add two queues named
+`ideals_to_medusa` `medusa_to_ideals`, both with default properties.
+Then restart RabbitMQ:
+```sh
+$ brew services restart rabbitmq
+```
 
 ## Migrate content from IDEALS-DSpace into the application
 

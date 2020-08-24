@@ -48,8 +48,7 @@ class Bitstream < ApplicationRecord
   def self.medusa_key(handle, filename)
     raise ArgumentError, "Handle is blank" if handle.blank?
     raise ArgumentError, "Filename is blank" if filename.blank?
-    config = ::Configuration.instance
-    [config.medusa[:medusa_path_root], handle, filename].join("/")
+    [handle, filename].join("/")
   end
 
   ##
@@ -88,6 +87,23 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # @raises [RuntimeException] if the instance does not exist in staging or
+  #         already exists in Medusa.
+  #
+  def upload_to_medusa
+    raise "Bitstream does not exist in staging" if self.staging_key.blank?
+    raise "Bitstream already exists in Medusa: #{self.medusa_uuid}" if
+        self.medusa_uuid.present?
+
+    target_key = self.class.medusa_key(self.item.handle,
+                                       self.original_filename)
+    MedusaIngest.send_bitstream_to_medusa(self, target_key)
+  end
+
+  ##
+  # Writes the given IO to the staging "area" (key prefix) of the application
+  # S3 bucket.
+  #
   # @param io [IO]
   #
   def upload_to_staging(io)

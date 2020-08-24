@@ -8,6 +8,10 @@ class BitstreamTest < ActiveSupport::TestCase
     create_bucket
   end
 
+  teardown do
+    AmqpHelper::Connector[:ideals].clear_queues(MedusaIngest.outgoing_queue)
+  end
+
   def create_bucket
     client   = Aws::S3::Client.new
     resource = Aws::S3::Resource.new
@@ -32,8 +36,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "medusa_key() returns a correct key" do
-    config = ::Configuration.instance
-    assert_equal "#{config.medusa[:medusa_path_root]}/handle/cats.jpg",
+    assert_equal "handle/cats.jpg",
                  Bitstream.medusa_key("handle", "cats.jpg")
   end
 
@@ -139,6 +142,33 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::RecordNotUnique do
       Bitstream.create!(staging_key: "cats",
                         item: items(:item1))
+    end
+  end
+
+  # upload_to_medusa()
+
+  test "upload_to_medusa() raises an error if the staging key is blank" do
+    @instance.staging_key = nil
+    assert_raises do
+      @instance.upload_to_medusa
+    end
+  end
+
+  test "upload_to_medusa() raises an error if a Medusa UUID is already present" do
+    @instance.medusa_uuid = SecureRandom.uuid
+    assert_raises do
+      @instance.upload_to_medusa
+    end
+  end
+
+  test "upload_to_medusa() sends a message to the queue" do
+    @instance.upload_to_medusa
+    AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+      assert_equal "ingest", message['operation']
+      assert_equal "bogus", message['staging_key']
+      assert_equal "20.500.12644/5000/escher_lego.jpg", message['target_key']
+      assert_equal @instance.class.to_s, message['pass_through']['class']
+      assert_equal @instance.id.to_s, message['pass_through']['identifier']
     end
   end
 

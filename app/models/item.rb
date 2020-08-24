@@ -100,8 +100,12 @@ class Item < ApplicationRecord
 
   breadcrumbs parent: :primary_collection, label: :title
 
+  # Order is important, as the item cannot be ingested into Medusa until it
+  # has a handle.
   after_save :assign_handle, if: -> {
-    discoverable && handle.nil? && !IdealsImporter.instance.running? }
+    handle.nil? && !IdealsImporter.instance.running? }
+  after_save :ingest_into_medusa, if: -> {
+    handle.present? && !IdealsImporter.instance.running? }
 
   ##
   # @param submitter [User]
@@ -233,6 +237,21 @@ class Item < ApplicationRecord
     self.primary_collection&.effective_submission_profile || SubmissionProfile.default
   end
 
+  ##
+  # Uploads all of the instance's associated [Bitstream]s into Medusa.
+  #
+  # @return [void]
+  #
+  def ingest_into_medusa
+    raise "Handle is not set" if self.handle.blank?
+    self.bitstreams.each do |bs|
+      bs.upload_to_medusa rescue nil
+    end
+  end
+
+  ##
+  # @return [String]
+  #
   def label
     title
   end
@@ -260,7 +279,7 @@ class Item < ApplicationRecord
   # @return [void]
   #
   def assign_handle
-    if self.discoverable && self.handle.nil? && !IdealsImporter.instance.running?
+    if self.handle.blank? && !IdealsImporter.instance.running?
       self.handle = Handle.create!(item: self)
     end
   end
