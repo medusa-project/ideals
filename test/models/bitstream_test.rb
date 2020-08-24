@@ -147,16 +147,24 @@ class BitstreamTest < ActiveSupport::TestCase
 
   # upload_to_medusa()
 
+  test "upload_to_medusa() raises an error if the ID is blank" do
+    @instance = Bitstream.new
+    @instance.item = items(:item1)
+    assert_raises ArgumentError do
+      @instance.upload_to_medusa
+    end
+  end
+
   test "upload_to_medusa() raises an error if the staging key is blank" do
     @instance.staging_key = nil
-    assert_raises do
+    assert_raises ArgumentError do
       @instance.upload_to_medusa
     end
   end
 
   test "upload_to_medusa() raises an error if a Medusa UUID is already present" do
     @instance.medusa_uuid = SecureRandom.uuid
-    assert_raises do
+    assert_raises AlreadyExistsError do
       @instance.upload_to_medusa
     end
   end

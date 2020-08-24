@@ -87,14 +87,10 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # @raises [RuntimeException] if the instance does not exist in staging or
-  #         already exists in Medusa.
+  # @raises [RuntimeException] if the instance does not have an ID or staging
+  #         key, or already exists in Medusa.
   #
   def upload_to_medusa
-    raise "Bitstream does not exist in staging" if self.staging_key.blank?
-    raise "Bitstream already exists in Medusa: #{self.medusa_uuid}" if
-        self.medusa_uuid.present?
-
     target_key = self.class.medusa_key(self.item.handle,
                                        self.original_filename)
     MedusaIngest.send_bitstream_to_medusa(self, target_key)

@@ -136,11 +136,15 @@ class MedusaIngest < ApplicationRecord
   ##
   # @param bitstream [Bitstream]
   # @param target_key [String]
-  # @raises ArgumentError
+  # @raises [ArgumentError] if the given bitstream does not have an ID or
+  #         staging key.
+  # @raises [AlreadyExistsError] if the given bitstream already has a Medusa
+  #         UUID.
   #
   def self.send_bitstream_to_medusa(bitstream, target_key)
-    raise ArgumentError, "Bitstream already has a Medusa UUID" if bitstream.medusa_uuid.present?
+    raise ArgumentError, "Bitstream has not been saved yet" if bitstream.id.blank?
     raise ArgumentError, "Bitstream's staging key is nil" if bitstream.staging_key.blank?
+    raise AlreadyExistsError, "Bitstream already exists in Medusa" if bitstream.medusa_uuid.present?
 
     medusa_ingest = MedusaIngest.create!(
         staging_key:       bitstream.staging_key,

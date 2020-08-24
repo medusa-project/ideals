@@ -136,6 +136,19 @@ class ItemTest < ActiveSupport::TestCase
                  doc[title.registered_element.indexed_name]
   end
 
+  # assign_handle()
+
+  test "assign_handle() raises an error if the instance already has a handle" do
+    @instance.assign_handle
+    assert_not_nil @instance.handle
+  end
+
+  test "assign_handle() assigns a handle" do
+    item = items(:described)
+    item.assign_handle
+    assert_not_nil item.handle
+  end
+
   # description() (Describable concern)
 
   test "description() returns the description element value" do
@@ -235,24 +248,30 @@ class ItemTest < ActiveSupport::TestCase
 
   # save()
 
-  test "save() creates an associated handle if not set" do
+  test "save() creates an associated handle if no longer submitting" do
     @instance = items(:item2)
     assert_nil @instance.handle
-    @instance.update!(discoverable: true)
+    @instance.update!(submitting: false)
     assert_not_nil @instance.handle
   end
 
-  test "save() does not replace an associated handle" do
+  test "save() does not replace an associated handle if no longer submitting" do
     @instance = items(:item2)
-    @instance.update!(discoverable: true)
+    @instance.update!(submitting: false)
     handle = @instance.handle
     @instance.save!
     @instance.reload
     assert_equal handle.id, @instance.handle.id
   end
 
+  test "save() does not create an associated handle if submitting" do
+    @instance = items(:item2)
+    @instance.update!(submitting: true)
+    assert_nil @instance.handle
+  end
+
   test "save() sends an ingest message" do
-    @instance.update!(discoverable: true)
+    @instance.update!(submitting: false)
     @instance.bitstreams.each do
       AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
         assert message.present?

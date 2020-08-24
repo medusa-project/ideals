@@ -81,9 +81,9 @@ class MedusaIngestTest < ActiveSupport::TestCase
   end
 
   test "send_bitstream_to_medusa() raises an error if the bitstream does not
-  have a Medusa UUID" do
-    bitstream = Bitstream.new(staging_key: "cats")
-    assert_raises do
+  have an ID" do
+    bitstream = Bitstream.new(staging_key: "cats", medusa_uuid: "cats")
+    assert_raises ArgumentError do
       MedusaIngest.send_bitstream_to_medusa(bitstream, "target_key")
     end
   end
@@ -91,7 +91,16 @@ class MedusaIngestTest < ActiveSupport::TestCase
   test "send_bitstream_to_medusa() raises an error if the bitstream does not
   have a staging key" do
     bitstream = Bitstream.new(medusa_uuid: "cats")
-    assert_raises do
+    assert_raises ArgumentError do
+      MedusaIngest.send_bitstream_to_medusa(bitstream, "target_key")
+    end
+  end
+
+  test "send_bitstream_to_medusa() raises an error if the bitstream has a
+  Medusa UUID" do
+    bitstream = bitstreams(:item1_jpg)
+    bitstream.medusa_uuid = SecureRandom.uuid
+    assert_raises AlreadyExistsError do
       MedusaIngest.send_bitstream_to_medusa(bitstream, "target_key")
     end
   end

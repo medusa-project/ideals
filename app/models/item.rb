@@ -103,9 +103,9 @@ class Item < ApplicationRecord
   # Order is important, as the item cannot be ingested into Medusa until it
   # has a handle.
   after_save :assign_handle, if: -> {
-    handle.nil? && !IdealsImporter.instance.running? }
+    !submitting && handle.nil? && !IdealsImporter.instance.running? }
   after_save :ingest_into_medusa, if: -> {
-    handle.present? && !IdealsImporter.instance.running? }
+    !submitting && handle.present? && !IdealsImporter.instance.running? }
 
   ##
   # @param submitter [User]
@@ -220,6 +220,13 @@ class Item < ApplicationRecord
   end
 
   ##
+  # @return [void]
+  #
+  def assign_handle
+    self.handle = Handle.create!(item: self)
+  end
+
+  ##
   # @return [MetadataProfile] The primary collection's metadata profile, or the
   #                           {MetadataProfile#default default profile} if not
   #                           set.
@@ -245,7 +252,10 @@ class Item < ApplicationRecord
   def ingest_into_medusa
     raise "Handle is not set" if self.handle.blank?
     self.bitstreams.each do |bs|
-      bs.upload_to_medusa rescue nil
+      begin
+        bs.upload_to_medusa
+      rescue AlreadyExistsError
+      end
     end
   end
 
@@ -270,18 +280,6 @@ class Item < ApplicationRecord
   def primary_unit
     #noinspection RubyYardReturnMatch
     self.primary_collection&.primary_unit
-  end
-
-
-  private
-
-  ##
-  # @return [void]
-  #
-  def assign_handle
-    if self.handle.blank? && !IdealsImporter.instance.running?
-      self.handle = Handle.create!(item: self)
-    end
   end
 
 end
