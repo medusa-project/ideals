@@ -8,7 +8,13 @@
       Edit Properties
 
 %dl
-  %dt Handle URI
+  %dt Handle.net URI
+  %dd
+    - if @item.handle
+      = link_to(@item.handle.handle_net_url, @item.handle.handle_net_url)
+    - else
+      None
+  %dt Local Handle URI
   %dd
     - if @item.handle
       = link_to(@item.handle.url, @item.handle.url)
