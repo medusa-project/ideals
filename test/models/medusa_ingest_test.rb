@@ -80,47 +80,4 @@ class MedusaIngestTest < ActiveSupport::TestCase
                  MedusaIngest.outgoing_queue
   end
 
-  test "send_bitstream_to_medusa() raises an error if the bitstream does not
-  have an ID" do
-    bitstream = Bitstream.new(staging_key: "cats", medusa_uuid: "cats")
-    assert_raises ArgumentError do
-      MedusaIngest.send_bitstream_to_medusa(bitstream, "target_key")
-    end
-  end
-
-  test "send_bitstream_to_medusa() raises an error if the bitstream does not
-  have a staging key" do
-    bitstream = Bitstream.new(medusa_uuid: "cats")
-    assert_raises ArgumentError do
-      MedusaIngest.send_bitstream_to_medusa(bitstream, "target_key")
-    end
-  end
-
-  test "send_bitstream_to_medusa() raises an error if the bitstream has a
-  Medusa UUID" do
-    bitstream = bitstreams(:item1_jpg)
-    bitstream.medusa_uuid = SecureRandom.uuid
-    assert_raises AlreadyExistsError do
-      MedusaIngest.send_bitstream_to_medusa(bitstream, "target_key")
-    end
-  end
-
-  test "send_bitstream_to_medusa() sends a correct message" do
-    bitstream = bitstreams(:item1_jpg)
-    MedusaIngest.send_bitstream_to_medusa(bitstream, "target_key")
-
-    AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
-      expected = {
-          operation:    "ingest",
-          staging_key:  bitstream.staging_key,
-          target_key:   "target_key",
-          pass_through: {
-              class:      Bitstream.to_s,
-              identifier: "#{bitstream.id}"
-          }
-      }.deep_stringify_keys
-      assert_equal expected, message
-    end
-  end
-
 end

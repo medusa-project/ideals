@@ -133,43 +133,6 @@ class MedusaIngest < ApplicationRecord
     ::Configuration.instance.medusa[:outgoing_queue]
   end
 
-  ##
-  # @param bitstream [Bitstream]
-  # @param target_key [String]
-  # @raises [ArgumentError] if the given bitstream does not have an ID or
-  #         staging key.
-  # @raises [AlreadyExistsError] if the given bitstream already has a Medusa
-  #         UUID.
-  #
-  def self.send_bitstream_to_medusa(bitstream, target_key)
-    raise ArgumentError, "Bitstream has not been saved yet" if bitstream.id.blank?
-    raise ArgumentError, "Bitstream's staging key is nil" if bitstream.staging_key.blank?
-    raise AlreadyExistsError, "Bitstream already exists in Medusa" if bitstream.medusa_uuid.present?
-
-    ingest = MedusaIngest.find_by_staging_key(bitstream.staging_key)
-    ingest = MedusaIngest.new(staging_key: bitstream.staging_key) unless ingest
-    ingest.target_key        = target_key
-    ingest.ideals_class      = Bitstream.to_s
-    ingest.ideals_identifier = bitstream.id
-    ingest.save!
-    ingest.send_medusa_ingest_message
-  end
-
-  ##
-  # @param item [Item]
-  # @raises ArgumentError if any of the item's bitstreams already have Medusa
-  #         UUIDs or are not in staging.
-  #
-  def self.send_item_bitstreams_to_medusa(item)
-    item.bitstreams.each do |bitstream|
-      bitstream_target_key = Bitstream.medusa_key(item.handle,
-                                                  bitstream.original_filename)
-      unless MedusaIngest.find_by(target_key: bitstream_target_key)
-        MedusaIngest.send_bitstream_to_medusa(bitstream, bitstream_target_key)
-      end
-    end
-  end
-
   def send_medusa_ingest_message
     AmqpHelper::Connector[:ideals].send_message(self.class.outgoing_queue,
                                                 medusa_ingest_message)

@@ -88,13 +88,26 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # @raises [RuntimeException] if the instance does not have an ID or staging
-  #         key, or already exists in Medusa.
+  # @raises [ArgumentError] if the given bitstream does not have an ID or
+  #         staging key.
+  # @raises [AlreadyExistsError] if the given bitstream already has a Medusa
+  #         UUID.
+  #
   #
   def upload_to_medusa
-    target_key = self.class.medusa_key(self.item.handle,
+    target_key = self.class.medusa_key(self.item.handle.handle,
                                        self.original_filename)
-    MedusaIngest.send_bitstream_to_medusa(self, target_key)
+    raise ArgumentError, "Bitstream has not been saved yet" if self.id.blank?
+    raise ArgumentError, "Bitstream's staging key is nil" if self.staging_key.blank?
+    raise AlreadyExistsError, "Bitstream already exists in Medusa" if self.medusa_uuid.present?
+
+    ingest = MedusaIngest.find_by_staging_key(self.staging_key)
+    ingest = MedusaIngest.new(staging_key: self.staging_key) unless ingest
+    ingest.target_key        = target_key
+    ingest.ideals_class      = Bitstream.to_s
+    ingest.ideals_identifier = self.id
+    ingest.save!
+    ingest.send_medusa_ingest_message
   end
 
   ##
