@@ -35,7 +35,8 @@ class Bitstream < ApplicationRecord
 
   before_destroy :delete_from_staging
 
-  STAGING_KEY_PREFIX = "submissions"
+  # This must be a location that Medusa is configured to monitor
+  STAGING_KEY_PREFIX = "uploads"
 
   ##
   # Computes a destination Medusa key based on the given arguments.
