@@ -25,14 +25,12 @@ development:
   <<:        *default
   :ssl:      false
   :host:     <%= dev_config['amqp'] ? dev_config['amqp']['host'] : nil %>
-  :port:     <%= dev_config['amqp'] ? dev_config['amqp']['port'] : nil %>
   :user:     <%= dev_config['amqp'] ? dev_config['amqp']['user'] : nil %>
   :password: <%= dev_config['amqp'] ? dev_config['amqp']['password'] : nil %>
 
 test:
   <<:        *default
   :host:     <%= test_config['amqp'] ? test_config['amqp']['host'] : nil %>
-  :port:     <%= test_config['amqp'] ? test_config['amqp']['port'] : nil %>
   :user:     <%= test_config['amqp'] ? test_config['amqp']['user'] : nil %>
   :password: <%= test_config['amqp'] ? test_config['amqp']['password'] : nil %>
 
@@ -46,7 +44,6 @@ demo:
   <<:        *default
   :ssl:      true
   :host:     <%= amqp ? amqp[:host] : nil %>
-  :port:     <%= amqp ? amqp[:port] : nil %>
   :user:     <%= amqp ? amqp[:user] : nil %>
   :password: <%= amqp ? amqp[:password] : nil %>
   :vhost:    medusa
@@ -56,7 +53,6 @@ production:
   <<:        *default
   :ssl:      true
   :host:     <%= amqp ? amqp[:host] : nil %>
-  :port:     <%= amqp ? amqp[:port] : nil %>
   :user:     <%= amqp ? amqp[:user] : nil %>
   :password: <%= amqp ? amqp[:password] : nil %>
   :vhost:    medusa
