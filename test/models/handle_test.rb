@@ -53,6 +53,13 @@ class HandleTest < ActiveSupport::TestCase
                  @instance.handle
   end
 
+  # handle_net_url()
+
+  test "handle_net_url() returns a correct value" do
+    expected = ["https://hdl.handle.net/", @instance.handle].join
+    assert_equal expected, @instance.handle_net_url
+  end
+
   # put_to_server()
 
   test "put_to_server() raises an error if the prefix is not supported by the

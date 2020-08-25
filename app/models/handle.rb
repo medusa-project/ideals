@@ -67,6 +67,15 @@ class Handle < ApplicationRecord
   end
 
   ##
+  # Handle.net URL.
+  #
+  # @see url
+  #
+  def handle_net_url
+    ["https://hdl.handle.net/", self.handle].join
+  end
+
+  ##
   # Saves the instance to the handle server. If the handle does not already
   # exist on the handle server, it is created; otherwise it is updated.
   #
@@ -94,6 +103,11 @@ class Handle < ApplicationRecord
     self.handle
   end
 
+  ##
+  # URL of the handle on the local handle server.
+  #
+  # @see handle_net_url
+  #
   def url
     sprintf("%s/%s",
             ::Configuration.instance.handles[:base_url],
