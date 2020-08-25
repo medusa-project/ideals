@@ -146,12 +146,13 @@ class MedusaIngest < ApplicationRecord
     raise ArgumentError, "Bitstream's staging key is nil" if bitstream.staging_key.blank?
     raise AlreadyExistsError, "Bitstream already exists in Medusa" if bitstream.medusa_uuid.present?
 
-    medusa_ingest = MedusaIngest.create!(
-        staging_key:       bitstream.staging_key,
-        target_key:        target_key,
-        ideals_class:      Bitstream.to_s,
-        ideals_identifier: bitstream.id)
-    medusa_ingest.send_medusa_ingest_message
+    ingest = MedusaIngest.find_by_staging_key(bitstream.staging_key)
+    ingest = MedusaIngest.new(staging_key: bitstream.staging_key) unless ingest
+    ingest.target_key        = target_key
+    ingest.ideals_class      = Bitstream.to_s
+    ingest.ideals_identifier = bitstream.id
+    ingest.save!
+    ingest.send_medusa_ingest_message
   end
 
   ##
