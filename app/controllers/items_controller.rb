@@ -15,6 +15,7 @@ class ItemsController < ApplicationController
   # @see cancel_submission
   #
   def destroy
+    collection = @item.primary_collection
     begin
       @item.destroy!
     rescue => e
@@ -24,7 +25,7 @@ class ItemsController < ApplicationController
       flash['success'] = @item.title.present? ?
                              "Item \"#{@item.title}\" deleted." : "Item deleted."
     ensure
-      redirect_to @item.primary_collection
+      redirect_to collection || root_url
     end
   end
 
