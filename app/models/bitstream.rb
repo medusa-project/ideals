@@ -103,7 +103,7 @@ class Bitstream < ApplicationRecord
 
     # The staging key is relative to STAGING_KEY_PREFIX, because Medusa is
     # configured to look only within that prefix.
-    staging_key_ = [item_id, filename].join("/")
+    staging_key_ = [self.item.id, self.original_filename].join("/")
     ingest = MedusaIngest.find_by_staging_key(staging_key_)
     ingest = MedusaIngest.new(staging_key: staging_key_) unless ingest
     ingest.target_key        = target_key
