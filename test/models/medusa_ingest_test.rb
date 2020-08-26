@@ -29,7 +29,7 @@ class MedusaIngestTest < ActiveSupport::TestCase
     hash = {
         "status"        => "ok",
         "response_time" => Time.current.iso8601,
-        "staging_key"   => medusa_ingests(:one).staging_path,
+        "staging_key"   => medusa_ingests(:one).staging_key,
         "medusa_key"    => "cats",
         "uuid"          => SecureRandom.uuid
     }
@@ -57,7 +57,7 @@ class MedusaIngestTest < ActiveSupport::TestCase
     hash = {
         "status"       => "error",
         "error"        => "something happened",
-        "staging_path" => medusa_ingests(:one).staging_path
+        "staging_key" => medusa_ingests(:one).staging_key
     }
     MedusaIngest.on_medusa_message(JSON.generate(hash))
 
@@ -65,7 +65,7 @@ class MedusaIngestTest < ActiveSupport::TestCase
     assert_equal hash['status'], response.status
 
     ingest = MedusaIngest.
-        where(staging_path: hash["staging_path"]).
+        where(staging_key: hash["staging_key"]).
         order(created_at: :desc).
         limit(1).first
     assert_equal hash['status'], ingest.request_status

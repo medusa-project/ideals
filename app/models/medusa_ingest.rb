@@ -21,7 +21,6 @@
 # * `request_status`    Set by a response message from Medusa.
 # * `response_time`     Arrival time of the response message from Medusa.
 # * `staging_key`       Key of the staging object in the application S3 bucket.
-# * `staging_path`      TODO: get rid of this?
 # * `target_key`        Key of the target object in the Medusa S3 bucket.
 # * `updated_at`        Managed by ActiveRecord.
 #
@@ -111,8 +110,8 @@ class MedusaIngest < ApplicationRecord
   # @private
   #
   def self.on_medusa_failed_message(response_hash)
-    error_string = "Failed to ingest into Medusa: #{response_hash.to_yaml}"
-    ingests      = MedusaIngest.where(staging_key: response_hash["staging_path"])
+    error_string = "Failed to ingest into Medusa:\n\n#{response_hash.to_yaml}"
+    ingests      = MedusaIngest.where(staging_key: response_hash["staging_key"])
     if ingests.any?
       ingest = ingests.first
       ingest.update!(request_status: response_hash['status'],
@@ -120,7 +119,7 @@ class MedusaIngest < ApplicationRecord
                      response_time:  Time.current.iso8601)
     else
       error_string += "\n\nCould not find file for Medusa failure message: "\
-          "#{response_hash['staging_path']}"
+          "#{response_hash['staging_key']}"
     end
     IdealsMailer.error(error_string).deliver_now
   end

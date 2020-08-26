@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_11_161224) do
+ActiveRecord::Schema.define(version: 2020_08_26_133912) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -153,7 +153,6 @@ ActiveRecord::Schema.define(version: 2020_08_11_161224) do
     t.string "ideals_identifier", null: false
     t.string "staging_key", null: false
     t.string "target_key", null: false
-    t.string "staging_path"
     t.string "request_status"
     t.string "medusa_path"
     t.string "medusa_uuid"
