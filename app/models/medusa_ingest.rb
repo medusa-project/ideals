@@ -102,6 +102,12 @@ class MedusaIngest < ApplicationRecord
       else
         bitstream.update!(medusa_uuid: response_hash['uuid'],
                           medusa_key:  response_hash['medusa_key'])
+        # If all of the item's bitstreams have a Medusa UUID, mark the item as
+        # in archive
+        all_item_bitstreams = bitstream.item.bitstreams
+        if all_item_bitstreams.where('medusa_uuid IS NOT NULL').count == all_item_bitstreams.count
+          bitstream.item.update!(in_archive: true)
+        end
       end
     end
   end

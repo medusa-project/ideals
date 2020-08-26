@@ -101,8 +101,11 @@ class Bitstream < ApplicationRecord
     raise ArgumentError, "Bitstream's staging key is nil" if self.staging_key.blank?
     raise AlreadyExistsError, "Bitstream already exists in Medusa" if self.medusa_uuid.present?
 
-    ingest = MedusaIngest.find_by_staging_key(self.staging_key)
-    ingest = MedusaIngest.new(staging_key: self.staging_key) unless ingest
+    # The staging key is relative to STAGING_KEY_PREFIX, because Medusa is
+    # configured to look only within that prefix.
+    staging_key_ = [item_id, filename].join("/")
+    ingest = MedusaIngest.find_by_staging_key(staging_key_)
+    ingest = MedusaIngest.new(staging_key: staging_key_) unless ingest
     ingest.target_key        = target_key
     ingest.ideals_class      = Bitstream.to_s
     ingest.ideals_identifier = self.id
