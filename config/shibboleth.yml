@@ -8,6 +8,7 @@ development:
     - sn
     - nickname
     - givenName
+    - member
   request_type: header
   info_fields:
     name: displayName
@@ -23,6 +24,7 @@ test:
     - sn
     - nickname
     - givenName
+    - member
   request_type: header
   info_fields:
     name: displayName
@@ -38,6 +40,7 @@ demo:
     - sn
     - nickname
     - givenName
+    - member
   request_type: header
   info_fields:
     name: displayName
@@ -53,6 +56,7 @@ production:
     - sn
     - nickname
     - givenName
+    - member
   request_type: header
   info_fields:
     name: displayName

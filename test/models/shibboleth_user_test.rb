@@ -13,14 +13,6 @@ class ShibbolethUserTest < ActiveSupport::TestCase
     assert_equal "shib", @instance.netid
   end
 
-  # sysadmin
-
-  test "sysadmin cannot be set to true" do
-    assert_raises ActiveRecord::RecordInvalid do
-      @instance.update!(sysadmin: true)
-    end
-  end
-
   # sysadmin?()
 
   test "sysadmin?() returns true when the user is a member of the sysadmin AD group" do

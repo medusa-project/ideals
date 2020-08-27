@@ -4,11 +4,9 @@
 # Concrete implementation of {User}. This type of user comes from the
 # shibboleth authentication strategy. All Shibboleth users have NetIDs and
 # whether or not they are a {sysadmin? sysadmin} is determined by their
-# membership in the AD group named in the `admin/ad_group` configuration key.
+# membership in the AD group named in the `admin/ad_group_urn` configuration key.
 #
 class ShibbolethUser < User
-
-  validate :sysadmin_not_allowed
 
   def self.from_omniauth(auth)
     return nil unless auth && auth[:uid]
@@ -59,10 +57,14 @@ class ShibbolethUser < User
   end
 
   def update_with_omniauth(auth)
+    member_info     = auth['extra']['raw_info']['member']
+    member_info_arr = member_info.split(";")
+    admin_group     = Configuration.instance.admin[:ad_group_urn]
     update!(
-      uid:   auth["uid"],
-      email: auth["info"]["email"],
-      name:  ShibbolethUser.display_name((auth["info"]["email"]).split("@").first)
+      uid:      auth["uid"],
+      email:    auth["info"]["email"],
+      name:     ShibbolethUser.display_name((auth["info"]["email"]).split("@").first),
+      sysadmin: member_info_arr.include?(admin_group)
     )
   end
 
@@ -100,21 +102,7 @@ class ShibbolethUser < User
   # @return [Boolean]
   #
   def sysadmin?
-    group = Configuration.instance.admin[:ad_group]
-    LdapQuery.new.is_member_of?(group, self.netid)
-  end
-
-  private
-
-  ##
-  # Ensures that the `sysadmin` property is not set to `true`, as this is only
-  # available for {LocalUser}s. For instances of this class, sysadmin-ness
-  # is obtained from Active Directory.
-  #
-  def sysadmin_not_allowed
-    if self.sysadmin
-      errors.add(:sysadmin, "cannot be set to true for #{self.class}s")
-    end
+    sysadmin
   end
 
 end
