@@ -106,6 +106,7 @@ class Item < ApplicationRecord
     !submitting && handle.nil? && !IdealsImporter.instance.running? }
   after_save :ingest_into_medusa, if: -> {
     !submitting && handle.present? && !IdealsImporter.instance.running? }
+  before_destroy :restrict_in_archive_deletion
 
   ##
   # @param submitter [User]
@@ -280,6 +281,13 @@ class Item < ApplicationRecord
   def primary_unit
     #noinspection RubyYardReturnMatch
     self.primary_collection&.primary_unit
+  end
+
+
+  private
+
+  def restrict_in_archive_deletion
+    raise "Archived items cannot be deleted" if self.in_archive
   end
 
 end

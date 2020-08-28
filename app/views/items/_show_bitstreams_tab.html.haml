@@ -15,22 +15,28 @@
             .col-md-4
               %dl
                 %dt Media Type
-                %dd= bs.media_type
+                %dd
+                  - if bs.media_type
+                    = bs.media_type
+                  - else
+                    Unknown
                 %dt Size
-                %dd= bs.length
+                %dd= number_to_human_size(bs.length)
             .col-md-8
               %dl
-                - if bs.staging_key
+                - if bs.exists_in_staging && bs.staging_key
                   %dt Staging Key
                   %dd= bs.staging_key
                 - if bs.medusa_uuid
-                  %dt Medusa Key
-                  %dd= bs.medusa_key
                   %dt Medusa UUID
-                  %dd= bs.medusa_uuid
+                  %dd= link_to(bs.medusa_uuid, bs.medusa_url)
+                  %dt Medusa Key
+                  %dd
+                    %code= bs.medusa_key
         - else
           %span
           - if bs.media_type.present?
             = bs.media_type
-            &bull;
+          - else
+            Unknown
           = number_to_human_size(bs.length)

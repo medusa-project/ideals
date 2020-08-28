@@ -11,18 +11,6 @@ class ItemTest < ActiveSupport::TestCase
     AmqpHelper::Connector[:ideals].clear_queues(MedusaIngest.outgoing_queue)
   end
 
-  # base-level tests
-
-  test "destroying an instance destroys its dependent AscribedElements" do
-    item = items(:described)
-    elements = item.elements
-    assert elements.count > 0
-    item.destroy!
-    elements.each do |element|
-      assert element.destroyed?
-    end
-  end
-
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
@@ -159,6 +147,32 @@ class ItemTest < ActiveSupport::TestCase
   test "description() returns an empty string when there is no description element" do
     item = items(:undescribed)
     assert_equal "", item.description
+  end
+
+  # destroy()
+
+  test "destroy() fails for in-archive items" do
+    item = items(:in_archive)
+    assert_raises do
+      item.destroy!
+    end
+  end
+
+  test "destroy() succeeds for not-in-archive items" do
+    item = items(:submitting)
+    item.destroy!
+    assert item.destroyed?
+  end
+
+  test "destroy() destroys dependent AscribedElements" do
+    item = items(:described)
+    item.in_archive = false # make it destroyable
+    elements = item.elements
+    assert elements.count > 0
+    item.destroy!
+    elements.each do |element|
+      assert element.destroyed?
+    end
   end
 
   # effective_metadata_profile()

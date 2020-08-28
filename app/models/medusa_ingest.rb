@@ -91,23 +91,20 @@ class MedusaIngest < ApplicationRecord
 
     if file_class == Bitstream.to_s
       bitstream = Bitstream.find_by(id: response_hash['pass_through']['identifier'])
-      if !bitstream
-        IdealsMailer.error("Bitstream not found for ingest-succeeded "\
-            "message from Medusa: #{response_hash.to_yaml}").deliver_now
-        return false
-      elsif bitstream.medusa_uuid.blank?
-        IdealsMailer.error("Bitstream ingest failure: "\
-            "#{response_hash.to_yaml}").deliver_now
-        return false
-      else
+      if bitstream
         bitstream.update!(medusa_uuid: response_hash['uuid'],
                           medusa_key:  response_hash['medusa_key'])
+        # Now that it has been successfully ingested, delete it from staging.
+        bitstream.delete_from_staging
         # If all of the item's bitstreams have a Medusa UUID, mark the item as
         # in archive
         all_item_bitstreams = bitstream.item.bitstreams
         if all_item_bitstreams.where('medusa_uuid IS NOT NULL').count == all_item_bitstreams.count
           bitstream.item.update!(in_archive: true)
         end
+      else
+        IdealsMailer.error("Bitstream not found for ingest-succeeded "\
+            "message from Medusa: #{response_hash.to_yaml}").deliver_now
       end
     end
   end

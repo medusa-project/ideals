@@ -10,15 +10,15 @@
 # * `item_id`:           Foreign key to {Item}.
 # * `length`:            Size in bytes.
 # * `media_type`:        Media/MIME type.
-# * `medusa_key`:        S3 object key in the Medusa bucket. Set only when the
-#                        bitstream has been ingested into Medusa.
+# * `medusa_key`:        Full object key within the Medusa S3 bucket. Set only
+#                        once the bitstream has been ingested into Medusa.
 # * `medusa_uuid`:       UUID of the corresponding binary in the Medusa
 #                        Collection Registry. Set only after the bitstream has
 #                        been ingested.
 # * `original_filename`: Filename of the bitstream as submitted by the user.
-# * `staging_key`:       S3 object key in the application bucket. May be set
-#                        even though the bitstream does not exist in staging--
-#                        check `exists_in_staging` to be sure.
+# * `staging_key`:       Full object key in the application S3 bucket. May be
+#                        set even though the bitstream does not exist in
+#                        staging--check `exists_in_staging` to be sure.
 # * `updated_at`:        Managed by ActiveRecord.
 #
 class Bitstream < ApplicationRecord
@@ -39,7 +39,10 @@ class Bitstream < ApplicationRecord
   STAGING_KEY_PREFIX = "uploads"
 
   ##
-  # Computes a destination Medusa key based on the given arguments.
+  # Computes a destination Medusa key based on the given arguments. The key is
+  # relative to the file group key prefix, which is known only by Medusa, so
+  # the return value will be different than the value of {medusa_key}, which
+  # includes the prefix.
   #
   # @param handle [String]
   # @param filename [String]
@@ -84,7 +87,20 @@ class Bitstream < ApplicationRecord
   def delete_from_staging
     s3_client.delete_object(bucket: ::Configuration.instance.aws[:bucket],
                             key:    self.staging_key) if self.exists_in_staging
-    self.update!(exists_in_staging: false)
+    self.update!(exists_in_staging: false,
+                 staging_key: nil)
+  end
+
+  ##
+  # @return [String] Full URL of the instance's corresponding Medusa file, or
+  #         nil if does not exist in Medusa.
+  #
+  def medusa_url
+    if self.medusa_uuid
+      [::Configuration.instance.medusa[:base_url].chomp("/"),
+       "uuids",
+       self.medusa_uuid].join("/")
+    end
   end
 
   ##

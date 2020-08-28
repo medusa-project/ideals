@@ -38,6 +38,15 @@ undescribed:
 submitting:
   submitter: admin
   submitting: true
+  in_archive: false
+  discoverable: false
+  withdrawn: false
+  collections:
+    - collection1
+
+in_archive:
+  submitter: admin
+  submitting: false
   in_archive: true
   discoverable: true
   withdrawn: false
@@ -56,6 +65,7 @@ undiscoverable:
 withdrawn:
   submitter: admin
   submitting: false
+  in_archive: true
   discoverable: false
   withdrawn: false
   collections:

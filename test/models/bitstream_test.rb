@@ -67,6 +67,34 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "delete_from_staging() deletes the corresponding object" do
+    config = ::Configuration.instance
+
+    # Write a file to the bucket.
+    fixture = file_fixture("escher_lego.jpg")
+    File.open(fixture, "r") do |file|
+      @instance = Bitstream.new_in_staging(items(:item1),
+                                           File.basename(fixture),
+                                           File.size(fixture))
+      @instance.upload_to_staging(file)
+    end
+
+    staging_key = @instance.staging_key
+
+    # Check that the file exists in the bucket.
+    obj = Aws::S3::Object.new(bucket_name: config.aws[:bucket],
+                              key:         staging_key)
+    assert obj.exists?
+
+    # Delete it.
+    @instance.delete_from_staging
+
+    # Check that it has been deleted.
+    obj = Aws::S3::Object.new(bucket_name: config.aws[:bucket],
+                              key:         staging_key)
+    assert !obj.exists?
+  end
+
+  test "delete_from_staging() updates the instance properties" do
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
     File.open(fixture, "r") do |file|
@@ -77,19 +105,16 @@ class BitstreamTest < ActiveSupport::TestCase
     end
 
     # Check that the file exists in the bucket.
-    s3 = Aws::S3::Resource.new
-    obj = s3.bucket(::Configuration.instance.aws[:bucket]).
-        object(@instance.staging_key)
+    obj = Aws::S3::Object.new(bucket_name: ::Configuration.instance.aws[:bucket],
+                              key:         @instance.staging_key)
     assert obj.exists?
 
     # Delete it.
     @instance.delete_from_staging
 
-    # Check that it has been deleted.
-    s3 = Aws::S3::Resource.new
-    obj = s3.bucket(::Configuration.instance.aws[:bucket]).
-        object(@instance.staging_key)
-    assert !obj.exists?
+    # Check that the properties have been updated.
+    assert !@instance.exists_in_staging
+    assert_nil @instance.staging_key
   end
 
   # exists_in_staging
@@ -110,6 +135,21 @@ class BitstreamTest < ActiveSupport::TestCase
     assert @instance.valid?
     @instance.length = 1
     assert @instance.valid?
+  end
+
+  # medusa_url()
+
+  test "medusa_url() returns a correct URL when medusa_uuid is set" do
+    @instance.medusa_uuid = "cats"
+    expected = [::Configuration.instance.medusa[:base_url],
+                "uuids",
+                @instance.medusa_uuid].join("/")
+    assert_equal expected, @instance.medusa_url
+  end
+
+  test "medusa_url() returns nil when medusa_uuid is not set" do
+    @instance.medusa_uuid = nil
+    assert_nil @instance.medusa_url
   end
 
   # medusa_uuid

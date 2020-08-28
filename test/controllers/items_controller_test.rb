@@ -25,7 +25,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() destroys the item" do
     log_in_as(users(:admin))
-    item = items(:item1)
+    item = items(:submitting) # a destroyable item
     assert_difference "Item.count", -1 do
       delete item_path(item)
     end
