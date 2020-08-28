@@ -7,8 +7,6 @@
 # # Attributes
 #
 # * `created_at` Managed by ActiveRecord.
-# * `prefix`     Handle prefix. This is sourced from the configuration and
-#                should not be set manually.
 # * `suffix`     Portion of the handle following the prefix. This is an auto-
 #                incrementing value and should not be set manually.
 # * `updated_at` Managed by ActiveRecord.
@@ -25,9 +23,7 @@ class Handle < ApplicationRecord
   belongs_to :collection, optional: true
   belongs_to :item, optional: true
 
-  before_save :assign_prefix, if: -> { self.prefix.blank? }
-  after_save :put_to_server, if: -> { !self.transient &&
-      self.prefix == ::Configuration.instance.handles[:prefix] && !ENV['CI'] == '1' }
+  after_save :put_to_server, if: -> { !self.transient && !ENV['CI'] == '1' }
   after_destroy :delete_from_server, unless: -> { self.transient && !ENV['CI'] == '1' }
 
   validate :validate_entity_association
@@ -61,8 +57,6 @@ class Handle < ApplicationRecord
   # @return [String] Full handle.
   #
   def handle
-    config = ::Configuration.instance
-    prefix = config.handles[:prefix]
     "#{prefix}/#{suffix}"
   end
 
@@ -73,6 +67,13 @@ class Handle < ApplicationRecord
   #
   def handle_net_url
     ["https://hdl.handle.net/", self.handle].join
+  end
+
+  ##
+  # @return [String]
+  #
+  def prefix
+    ::Configuration.instance.handles[:prefix]
   end
 
   ##
@@ -114,13 +115,8 @@ class Handle < ApplicationRecord
             self.handle)
   end
 
-  private
 
-  def assign_prefix
-    if self.prefix.blank?
-      self.prefix = ::Configuration.instance.handles[:prefix]
-    end
-  end
+  private
 
   ##
   # Ensures that the instance is associated with one and only one entity.

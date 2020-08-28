@@ -255,13 +255,13 @@ class IdealsImporter
       case row[2].to_i
       when ResourceType::UNIT
         unit   = Unit.find_by(id: row[3].to_i)
-        handle = unit&.build_handle(prefix: prefix, suffix: suffix)
+        handle = unit&.build_handle(suffix: suffix)
       when ResourceType::COLLECTION
         collection = Collection.find_by(id: row[3].to_i)
-        handle     = collection&.build_handle(prefix: prefix, suffix: suffix)
+        handle     = collection&.build_handle(suffix: suffix)
       when ResourceType::ITEM
         item   = Item.find_by(id: row[3].to_i)
-        handle = item&.build_handle(prefix: prefix, suffix: suffix)
+        handle = item&.build_handle(suffix: suffix)
       else
         # Getting here would be unexpected, but also unrecoverable
       end

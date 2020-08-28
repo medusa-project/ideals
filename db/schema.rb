@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_28_155609) do
+ActiveRecord::Schema.define(version: 2020_08_28_160915) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -75,7 +75,6 @@ ActiveRecord::Schema.define(version: 2020_08_28_155609) do
   end
 
   create_table "handles", force: :cascade do |t|
-    t.string "prefix", null: false
     t.serial "suffix", null: false
     t.bigint "unit_id"
     t.bigint "collection_id"

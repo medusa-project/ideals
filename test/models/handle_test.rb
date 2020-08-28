@@ -66,7 +66,7 @@ class HandleTest < ActiveSupport::TestCase
   handle server" do
     skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
 
-    @instance.prefix = "bogus"
+    ::Configuration.instance.handles[:prefix] = "bogus"
     assert_raises RuntimeError do
       @instance.put_to_server
     end
