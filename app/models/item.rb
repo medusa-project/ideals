@@ -11,7 +11,7 @@
 #    happens one time only during the {IdealsImporter migration of data from
 #    IDEALS-DSpace into this application}.
 #     a. In the former case, the item is marked `submitting = true`,
-#        `in_archive = false`, `withdrawn = false`, `discoverable = false`.
+#        `withdrawn = false`, `discoverable = false`.
 #     b. In the latter case, the above properties are carried over from
 #        IDEALS-DSpace.
 # 2. Submission. In this stage, its properties are edited, metadata is
@@ -21,13 +21,13 @@
 #    moved into Medusa.
 # 5. Withdrawal. This is an optional stage.
 #
-# |                     | submitting | in_archive | discoverable | withdrawn |
-# |---------------------|------------|------------|--------------|-----------|
-# | Creation            |    true    |   false    |    false     |   false   |
-# | Submission          |    true    |   false    |    false     |   false   |
-# | Submission Complete |    false   |   false    |     true     |   false   |
-# | Ingest Into Medusa  |    false   |    true    |     true     |   false   |
-# | Withdrawal          |    false   |   true?    |    false     |   false   |
+# |                     | submitting | discoverable | withdrawn |
+# |---------------------|------------|--------------|-----------|
+# | Creation            |    true    |    false     |   false   |
+# | Submission          |    true    |    false     |   false   |
+# | Submission Complete |    false   |     true     |   false   |
+# | Ingest Into Medusa  |    false   |     true     |   false   |
+# | Withdrawal          |    false   |    false     |   false   |
 #
 # # Indexing
 #
@@ -42,8 +42,6 @@
 #                           means it should not be included in search results,
 #                           and its metadata should not be available except to
 #                           administrators.
-# * `in_archive`            Whether the item's bitstreams have been archived in
-#                           the Medusa Collection Registry.
 # * `primary_collection_id` Foreign key to {Collection}.
 # * `submitter_id`          Foreign key to {User}.
 # * `submitting`            Indicates that the item is in the submission
@@ -117,7 +115,6 @@ class Item < ApplicationRecord
     item = Item.create!(submitter: submitter,
                         primary_collection_id: primary_collection_id,
                         submitting: true,
-                        in_archive: false,
                         discoverable: false)
     # For every element with placeholder text in the item's effective
     # submission profile, ascribe a metadata element with a value of that text.
@@ -246,6 +243,14 @@ class Item < ApplicationRecord
   end
 
   ##
+  # @return [Boolean] Whether all of the instance's associated Bitstreams have
+  #         been ingested into Medusa.
+  #
+  def in_archive?
+    self.bitstreams.where(medusa_uuid: nil).count > 0
+  end
+
+  ##
   # Uploads all of the instance's associated [Bitstream]s into Medusa.
   #
   # @return [void]
@@ -287,7 +292,7 @@ class Item < ApplicationRecord
   private
 
   def restrict_in_archive_deletion
-    raise "Archived items cannot be deleted" if self.in_archive
+    raise "Archived items cannot be deleted" if self.in_archive?
   end
 
 end

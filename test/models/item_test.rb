@@ -37,7 +37,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal submission_profile_elements(:default_subject).placeholder_text,
                  item.element("dc:subject").string
     assert item.submitting
-    assert !item.in_archive
     assert !item.discoverable
     assert !item.withdrawn
   end
@@ -152,7 +151,7 @@ class ItemTest < ActiveSupport::TestCase
   # destroy()
 
   test "destroy() fails for in-archive items" do
-    item = items(:in_archive)
+    item = items(:item1)
     assert_raises do
       item.destroy!
     end
@@ -166,7 +165,6 @@ class ItemTest < ActiveSupport::TestCase
 
   test "destroy() destroys dependent AscribedElements" do
     item = items(:described)
-    item.in_archive = false # make it destroyable
     elements = item.elements
     assert elements.count > 0
     item.destroy!

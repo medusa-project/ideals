@@ -61,7 +61,6 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "data() returns HTTP 200" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:item1)
-    item.update!(in_archive: false)
     bitstream = Bitstream.new_in_staging(item,
                                          File.basename(fixture),
                                          File.size(fixture))

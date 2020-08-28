@@ -37,7 +37,6 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
       item = Item.order(created_at: :desc).first
       assert item.submitting
       assert !item.discoverable
-      assert !item.in_archive
       assert !item.withdrawn
     end
   end
