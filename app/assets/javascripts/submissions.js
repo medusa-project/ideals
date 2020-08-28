@@ -70,6 +70,9 @@ const SubmissionForm = function() {
     // Files section
     const filesForm       = form.filter("#files-form");
     const fileTable       = new FileTable();
+    // Files section
+    const completionForm  = form.filter("#completion-form");
+
 
     var lastEditedInput;
 
@@ -523,7 +526,7 @@ const SubmissionForm = function() {
     // form. (There is no need since everything has been submitted via XHR
     // already.) Instead, all it does is validate and then open the
     // "submission complete" modal.
-    filesForm.find("input[type=submit]").on("click", function(e) {
+    completionForm.find("input[type=submit]").on("click", function(e) {
         if (!self.validateMetadata(true)) {
             $("#metadata-tab").click();
             e.preventDefault();
@@ -535,7 +538,7 @@ const SubmissionForm = function() {
         }
     });
 
-    filesForm.on("submit", function() {
+    completionForm.on("submit", function() {
         $("#complete-modal").modal("show");
     });
 };
