@@ -24,6 +24,8 @@
                 %dd= number_to_human_size(bs.length)
             .col-md-8
               %dl
+                %dt Database ID
+                %dd= bs.id
                 - if bs.exists_in_staging && bs.staging_key
                   %dt Staging Key
                   %dd= bs.staging_key
