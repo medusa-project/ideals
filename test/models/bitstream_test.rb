@@ -212,9 +212,11 @@ class BitstreamTest < ActiveSupport::TestCase
   test "upload_to_medusa() sends a message to the queue" do
     @instance.upload_to_medusa
     AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+      config = ::Configuration.instance
       assert_equal "ingest", message['operation']
       assert_equal "969722354/escher_lego.jpg", message['staging_key']
-      assert_equal "20.500.12644/5000/escher_lego.jpg", message['target_key']
+      assert_equal "#{config.handles[:prefix]}/5000/escher_lego.jpg",
+                   message['target_key']
       assert_equal @instance.class.to_s, message['pass_through']['class']
       assert_equal @instance.id.to_s, message['pass_through']['identifier']
     end
