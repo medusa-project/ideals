@@ -23,8 +23,8 @@ class Handle < ApplicationRecord
   belongs_to :collection, optional: true
   belongs_to :item, optional: true
 
-  after_save :put_to_server, if: -> { !self.transient && !ENV['CI'] == '1' }
-  after_destroy :delete_from_server, unless: -> { self.transient && !ENV['CI'] == '1' }
+  after_save :put_to_server, unless: -> { self.transient }
+  after_destroy :delete_from_server, unless: -> { self.transient }
 
   validate :validate_entity_association
 
@@ -85,7 +85,7 @@ class Handle < ApplicationRecord
   #         handle server.
   #
   def put_to_server
-    config = ::Configuration.instance
+    config   = ::Configuration.instance
     base_url = config.website[:base_url]
     helpers  = Rails.application.routes.url_helpers
     if self.unit

@@ -10,19 +10,19 @@ This is a getting-started guide for developers.
 
 * [JIRA Project](https://bugs.library.illinois.edu/projects/IR)
 
-# Requirements
+# Dependencies
 
 * PostgreSQL >= 9.x
 * Elasticsearch >= 7.x with the
   [ICU analysis plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html)
   installed
 * An S3 endpoint, such as AWS S3 or [Minio Server](https://min.io)
-* Handle server (currently we are using the demo one in development & test, but
-  that's probably bad practice)
+* A Handle.net server. (See the
+  [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally)
+  for setup instructions.)
 * RabbitMQ
 
-Homebrew is a convenient way of installing all of the above except
-Elasticsearch, which, as of this writing, is stuck on the 5.x series.
+(This stuff is all up and running in docker-compose; see the testing section.)
 
 # Installation
 
@@ -113,6 +113,11 @@ Then restart RabbitMQ:
 $ brew services restart rabbitmq
 ```
 
+## Configure the Handle.net server
+
+Refer to the instructions in the
+[SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally).
+
 ## Migrate content from IDEALS-DSpace into the application
 
 Currently the migration process requires dropping the existing database and
@@ -184,18 +189,17 @@ invokes YARD to generate HTML documentation for the code base.
 
 # Tests & Continuous Integration
 
-Minitest is used for model and controller tests. Some tests depend on
-Elasticsearch and most depend on PostgreSQL. A few depend on an S3 server
-and/or RabbitMQ. `rails test` runs the tests. It's perfectly legitimate to
-install all of this on your local machine and run the tests there too.
+Minitest is used for model and controller tests. `rails test` runs the tests.
 
-But because it can be a hassle to get all of this working, you can also
-use `docker-compose`, which will initialize a container, copy the IDEALS code
-base into it, spin up all of the service containers, and run the tests:
+Tests may depend on any or all of the dependent services (Elasticsearch,
+RabbitMQ, etc.). It's perfectly legitimate to install all of that stuff on your
+local machine and run the tests there. You can also use `docker-compose`, which
+will initialize a container, copy the IDEALS code base into it, spin up all of
+the service containers, and run the tests:
 
 ```sh
 docker-compose up --build --exit-code-from ideals
 ```
 
-The above is how tests are run in continuous integration, which uses
+This is how tests are run in continuous integration, which uses
 [GitHub Actions](https://github.com/features/actions).

@@ -21,8 +21,6 @@ class HandleTest < ActiveSupport::TestCase
   # delete_from_server()
 
   test "delete_from_server() deletes the handle from the handle server" do
-    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
-
     client = HandleClient.new
     assert !client.exists?(@instance.handle)
     @instance.put_to_server
@@ -34,7 +32,6 @@ class HandleTest < ActiveSupport::TestCase
   # exists_on_server?()
 
   test "exists_on_server?() deletes the handle from the handle server" do
-    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
     begin
       assert !@instance.exists_on_server?
       @instance.put_to_server
@@ -62,19 +59,7 @@ class HandleTest < ActiveSupport::TestCase
 
   # put_to_server()
 
-  test "put_to_server() raises an error if the prefix is not supported by the
-  handle server" do
-    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
-
-    ::Configuration.instance.handles[:prefix] = "bogus"
-    assert_raises RuntimeError do
-      @instance.put_to_server
-    end
-  end
-
   test "put_to_server() saves a valid handle to the handle server" do
-    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
-
     client = HandleClient.new
     begin
       assert !client.exists?(@instance.handle)
@@ -87,18 +72,7 @@ class HandleTest < ActiveSupport::TestCase
 
   # save()
 
-  test "save() assigns a prefix" do
-    prefix = ::Configuration.instance.handles[:prefix]
-    handle = Handle.new
-    handle.item = items(:item1)
-    handle.transient = true
-    handle.save
-    assert_equal prefix.to_s, handle.prefix
-  end
-
   test "save() saves the handle to the handle server" do
-    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
-
     client = HandleClient.new
     begin
       assert !client.exists?(@instance.handle)

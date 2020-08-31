@@ -217,7 +217,6 @@ class ItemTest < ActiveSupport::TestCase
   # ingest_into_medusa()
 
   test "ingest_into_medusa() raises an error if the handle is not set" do
-    skip if ENV['CI'] == '1' # TODO: get a handle server working in CI
     @instance.handle.destroy!
     @instance.handle = nil
     assert_raises do

@@ -1,6 +1,6 @@
 ##
 # @see https://wiki.illinois.edu/wiki/display/scrs/Handle+Server
-# @see http://hdl.handle.net/20.1000/113
+# @see https://hdl.handle.net/20.1000/113
 #
 class HandleClient
 
@@ -42,8 +42,7 @@ class HandleClient
     handle_url = "#{api_endpoint}/handles/#{handle}"
     LOGGER.debug("create_url_handle(): #{handle_url} -> #{url}")
     response = client.put(handle_url, value, 'Content-Type': "application/json")
-    struct = JSON.parse(response.body)
-    handle_response(struct, "message")
+    handle_response("PUT", handle_url, response)
   end
 
   ##
@@ -54,8 +53,7 @@ class HandleClient
     handle_url = "#{api_endpoint}/handles/#{handle}"
     LOGGER.debug("delete_handle(): #{handle_url}")
     response = client.delete(handle_url)
-    struct = JSON.parse(response.body)
-    handle_response(struct, "message")
+    handle_response("DELETE", handle_url, response)
   end
 
   ##
@@ -63,7 +61,9 @@ class HandleClient
   # @return [Boolean]
   #
   def exists?(handle)
-    get_handle(handle).present?
+    url = "#{api_endpoint}/handles/#{handle}"
+    response = client.head(url)
+    response.status < 300
   end
 
   ##
@@ -73,15 +73,25 @@ class HandleClient
   # @raises [IOError]
   #
   def get_handle(handle)
-    response = client.get("#{api_endpoint}/handles/#{handle}")
+    url = "#{api_endpoint}/handles/#{handle}"
+    response = client.get(url)
+    if response.status >= 400
+      if response.status == 404
+        return nil
+      else
+        raise IOError, "Got HTTP #{response.status} for GET #{url}"
+      end
+    end
     struct = JSON.parse(response.body)
-    handle_response(struct, "values")
+    struct['values']
   end
 
-  def get_handles(prefix)
-    response = client.get("#{api_endpoint}/handles?prefix=#{prefix}")
+  def get_handles
+    url = "#{api_endpoint}/handles?prefix=#{prefix}"
+    response = client.get(url)
+    handle_response("GET", url, response)
     struct = JSON.parse(response.body)
-    handle_response(struct, "handles")
+    struct['handles']
   end
 
   private
@@ -108,6 +118,7 @@ class HandleClient
       user     = api_user.gsub(":", "%3A")
       secret   = api_secret
       @client = HTTPClient.new do
+        # The server cert is self-signed.
         self.ssl_config.verify_mode = OpenSSL::SSL::VERIFY_NONE
         self.force_basic_auth = true
         uri    = URI.parse(endpoint)
@@ -118,17 +129,11 @@ class HandleClient
     @client
   end
 
-  def handle_response(struct, success_key)
-    case struct['responseCode']
-    when 1
-      return struct[success_key]
-    when 100
-      return nil
-    when 402
-      raise IOError, "Unauthorized"
-    else
-      raise IOError, struct['message']
+  def handle_response(method, url, response)
+    if response.status >= 400 && response.status != 404
+      raise IOError, "Got HTTP #{response.status} for #{method} #{url}"
     end
+    nil
   end
 
 end

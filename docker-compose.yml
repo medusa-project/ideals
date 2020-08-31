@@ -20,6 +20,11 @@ services:
       context: .
       dockerfile: docker/Dockerfile-elasticsearch
     hostname: elasticsearch
+  handle:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-handle
+    hostname: handle
   minio:
     image: minio/minio
     environment:
@@ -28,7 +33,6 @@ services:
     hostname: minio
     command: server /data
   rabbitmq:
-    image: rabbitmq:latest
     build:
       context: .
       dockerfile: docker/Dockerfile-rabbitmq
