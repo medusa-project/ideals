@@ -1,4 +1,6 @@
-FROM rabbitmq:latest
+# The parent Dockerfile has a lot of layers which may lead to "max depth
+# exceeded" messages. This version is known to work.
+FROM rabbitmq:3.8.5
 
 ENV RABBITMQ_DEFAULT_USER=ideals
 ENV RABBITMQ_DEFAULT_PASS=password
