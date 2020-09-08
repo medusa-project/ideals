@@ -7,6 +7,14 @@ GIT
       bunny-mock
 
 GIT
+  remote: https://github.com/medusa-project/medusa-client.git
+  revision: 3499a25ee5221fe5b503b0c7b34fd1ec54bc73e6
+  branch: release/1.0
+  specs:
+    medusa-client (1.0.0)
+      httpclient
+
+GIT
   remote: https://github.com/medusa-project/scars-bootstrap-theme.git
   revision: 8aeee15063941c277924a04ff5e3f77f884e5cb1
   branch: release/bootstrap-4.4
@@ -313,6 +321,7 @@ DEPENDENCIES
   jquery-rails
   js_cookie_rails
   local_time
+  medusa-client!
   mini_racer
   modernizr-rails
   omniauth-identity

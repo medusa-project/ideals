@@ -143,6 +143,7 @@ and/or the database user is different from the default.
 
 ```sh
 ~/bin/stop-rails
+rails medusa:delete_all_bitstreams
 rails elasticsearch:purge
 rails db:reset
 rails "ideals_dspace:migrate[dbname,dbhost,dbuser,dbpass]"
@@ -194,11 +195,11 @@ Minitest is used for model and controller tests. `rails test` runs the tests.
 Tests may depend on any or all of the dependent services (Elasticsearch,
 RabbitMQ, etc.). It's perfectly legitimate to install all of that stuff on your
 local machine and run the tests there. You can also use `docker-compose`, which
-will initialize a container, copy the IDEALS code base into it, spin up all of
-the service containers, and run the tests:
+will initialize a container, copy the code base into it, spin up all of the
+service containers, and run the tests:
 
 ```sh
-docker-compose up --build --exit-code-from ideals
+$ docker-compose up --build --exit-code-from ideals
 ```
 
 This is how tests are run in continuous integration, which uses
