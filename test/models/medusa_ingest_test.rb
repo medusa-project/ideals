@@ -23,9 +23,9 @@ class MedusaIngestTest < ActiveSupport::TestCase
     assert !MedusaIngest.message_valid?(hash)
   end
 
-  test "on_medusa_message() creates an IngestResponse for a succeeded message" do
+  test "on_medusa_message() creates an IncomingMessage for a succeeded message" do
     skip # TODO: fix this
-    IngestResponse.destroy_all
+    IncomingMessage.destroy_all
     hash = {
         "status"        => "ok",
         "response_time" => Time.current.iso8601,
@@ -35,12 +35,12 @@ class MedusaIngestTest < ActiveSupport::TestCase
     }
     MedusaIngest.on_medusa_message(JSON.generate(hash))
 
-    response = IngestResponse.limit(1).first
-    assert_equal hash['status'], response.status
-    assert_equal hash['response_time'], response.response_time.iso8601
-    assert_equal hash['staging_key'], response.staging_key
-    assert_equal hash['medusa_key'], response.medusa_key
-    assert_equal hash['uuid'], response.uuid
+    message = IncomingMessage.limit(1).first
+    assert_equal hash['status'], message.status
+    assert_equal hash['response_time'], message.response_time.iso8601
+    assert_equal hash['staging_key'], message.staging_key
+    assert_equal hash['medusa_key'], message.medusa_key
+    assert_equal hash['uuid'], message.uuid
 
     ingest = MedusaIngest.where(staging_key: hash["staging_key"]).limit(1).first
     assert_equal hash['medusa_key'], ingest.medusa_key
@@ -51,9 +51,9 @@ class MedusaIngestTest < ActiveSupport::TestCase
     # TODO: test the bitstream
   end
 
-  test "on_medusa_message() creates an IngestResponse for a failed message" do
+  test "on_medusa_message() creates an IncomingMessage for a failed message" do
     skip # TODO: fix this
-    IngestResponse.destroy_all
+    IncomingMessage.destroy_all
     hash = {
         "status"       => "error",
         "error"        => "something happened",
@@ -61,7 +61,7 @@ class MedusaIngestTest < ActiveSupport::TestCase
     }
     MedusaIngest.on_medusa_message(JSON.generate(hash))
 
-    response = IngestResponse.limit(1).first
+    response = IncomingMessage.limit(1).first
     assert_equal hash['status'], response.status
 
     ingest = MedusaIngest.

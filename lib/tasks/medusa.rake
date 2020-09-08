@@ -1,6 +1,6 @@
 namespace :medusa do
-  desc "Fetch Medusa RabbitMQ ingest response messages"
-  task :fetch_ingest_responses => :environment do
+  desc "Fetch Medusa RabbitMQ messages"
+  task :fetch_messages => :environment do
     while true
       AmqpHelper::Connector[:ideals].with_message(MedusaIngest.incoming_queue) do |payload|
         exit if payload.nil?

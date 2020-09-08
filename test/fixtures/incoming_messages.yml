@@ -3,7 +3,6 @@
 one:
   as_text: MyText
   status: MyString
-  response_time: 2020-08-11 11:12:24
   staging_key: MyString
   medusa_key: MyString
   uuid: MyString
@@ -11,7 +10,6 @@ one:
 two:
   as_text: MyText
   status: MyString
-  response_time: 2020-08-11 11:12:24
   staging_key: MyString
   medusa_key: MyString
   uuid: MyString

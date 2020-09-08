@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class IngestResponseTest < ActiveSupport::TestCase
+class IncomingMessageTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

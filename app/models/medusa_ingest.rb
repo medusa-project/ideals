@@ -47,20 +47,19 @@ class MedusaIngest < ApplicationRecord
     end
   end
 
-  def self.on_medusa_message(response)
-    response_hash = JSON.parse(response)
+  def self.on_medusa_message(incoming_message)
+    response_hash = JSON.parse(incoming_message)
     if MedusaIngest.message_valid?(response_hash) && response_hash['status'] == "ok"
-      ingest_response = IngestResponse.new(status:        "ok",
-                                           response_time: Time.current.iso8601,
-                                           staging_key:   response_hash['staging_key'],
-                                           medusa_key:    response_hash['medusa_key'],
-                                           uuid:          response_hash['uuid'])
-      ingest_response.as_text = response
-      ingest_response.save!
+      incoming_message = IncomingMessage.new(status:        "ok",
+                                             staging_key:   response_hash['staging_key'],
+                                             medusa_key:    response_hash['medusa_key'],
+                                             uuid:          response_hash['uuid'])
+      incoming_message.as_text = incoming_message
+      incoming_message.save!
       on_medusa_succeeded_message(response_hash)
     else
-      IngestResponse.create!(as_text: response,
-                             status:  response_hash['status'])
+      MessageResponse.create!(as_text: incoming_message,
+                              status:  response_hash['status'])
       on_medusa_failed_message(response_hash)
     end
   end

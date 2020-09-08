@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_28_160915) do
+ActiveRecord::Schema.define(version: 2020_09_08_185315) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -84,10 +84,9 @@ ActiveRecord::Schema.define(version: 2020_08_28_160915) do
     t.index ["suffix"], name: "index_handles_on_suffix", unique: true
   end
 
-  create_table "ingest_responses", force: :cascade do |t|
+  create_table "incoming_messages", force: :cascade do |t|
     t.text "as_text"
     t.string "status"
-    t.datetime "response_time"
     t.string "staging_key"
     t.string "medusa_key"
     t.string "uuid"
