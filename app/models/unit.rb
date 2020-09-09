@@ -4,6 +4,13 @@
 # See the documentation of {Indexed} for a detailed explanation of how indexing
 # works.
 #
+# # Attributes
+#
+# * `created_at` Managed by ActiveRecord.
+# * `parent_id`  Foreign key to a parent {Unit}.
+# * `title`      Unit title.
+# * `updated_at` Managed by ActiveRecord.
+#
 class Unit < ApplicationRecord
   include Breadcrumb
   include Indexed
@@ -136,7 +143,12 @@ class Unit < ApplicationRecord
   # importer instead has to invoke this method on all units **after** all
   # collections have been imported.
   #
+  # @return [Collection]
+  #
   def create_default_collection
+    if self.collections.where(unit_default: true).count > 0
+      raise "This unit already has a default collection."
+    end
     config = ::Configuration.instance
     transaction do
       col = Collection.create!(primary_unit_id: self.id, unit_default: true)
@@ -150,6 +162,7 @@ class Unit < ApplicationRecord
       col.elements.build(registered_element: reg_description_element,
                          string: "This collection was created automatically "\
                            "along with its parent unit.").save!
+      col
     end
   end
 

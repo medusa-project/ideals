@@ -106,6 +106,24 @@ class UnitTest < ActiveSupport::TestCase
     assert units(:unit1_unit2).child?
   end
 
+  # create_default_collection()
+
+  test "create_default_collection() raises an error if the unit already has a
+  default collection" do
+    assert_raises do
+      @instance.create_default_collection
+    end
+  end
+
+  test "create_default_collection() creates a correct default collection" do
+    @instance.collections.destroy_all
+    col = @instance.create_default_collection
+    assert col.unit_default
+    assert_equal "Default collection for #{@instance.title}", col.title
+    assert_equal "This collection was created automatically along with its parent unit.",
+                 col.description
+  end
+
   # default_collection()
 
   test "default_collection() returns the default collection" do
