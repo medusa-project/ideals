@@ -60,6 +60,27 @@ class BitstreamTest < ActiveSupport::TestCase
                  Bitstream.staging_key(30, "cats.jpg")
   end
 
+  # delete_from_medusa()
+
+  test "delete_from_medusa() does nothing if medusa_uuid is not set" do
+    @instance.delete_from_medusa
+    AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+      assert_nil message
+    end
+  end
+
+  test "delete_from_medusa() sends a correct message if medusa_uuid is set" do
+    @instance = bitstreams(:item1_in_medusa)
+    @instance.delete_from_medusa
+    AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+      puts message
+      assert_equal "delete", message['operation']
+      assert_equal @instance.medusa_uuid, message['uuid']
+      assert_equal @instance.class.to_s, message['pass_through']['class']
+      assert_equal @instance.id, message['pass_through']['identifier']
+    end
+  end
+
   # delete_from_staging()
 
   test "delete_from_staging() does nothing if the instance has no corresponding object" do
@@ -126,6 +147,43 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  # ingest_into_medusa()
+
+  test "ingest_into_medusa() raises an error if the ID is blank" do
+    @instance = Bitstream.new
+    @instance.item = items(:item1)
+    assert_raises ArgumentError do
+      @instance.ingest_into_medusa
+    end
+  end
+
+  test "ingest_into_medusa() raises an error if the staging key is blank" do
+    @instance.staging_key = nil
+    assert_raises ArgumentError do
+      @instance.ingest_into_medusa
+    end
+  end
+
+  test "ingest_into_medusa() raises an error if a Medusa UUID is already present" do
+    @instance.medusa_uuid = SecureRandom.uuid
+    assert_raises AlreadyExistsError do
+      @instance.ingest_into_medusa
+    end
+  end
+
+  test "ingest_into_medusa() sends a message to the queue" do
+    @instance.ingest_into_medusa
+    AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+      config = ::Configuration.instance
+      assert_equal "ingest", message['operation']
+      assert_equal "969722354/escher_lego.jpg", message['staging_key']
+      assert_equal "#{config.handles[:prefix]}/5000/escher_lego.jpg",
+                   message['target_key']
+      assert_equal @instance.class.to_s, message['pass_through']['class']
+      assert_equal @instance.id.to_s, message['pass_through']['identifier']
+    end
+  end
+
   # length
 
   test "length must be greater than or equal to zero" do
@@ -182,43 +240,6 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::RecordNotUnique do
       Bitstream.create!(staging_key: "cats",
                         item: items(:item1))
-    end
-  end
-
-  # upload_to_medusa()
-
-  test "upload_to_medusa() raises an error if the ID is blank" do
-    @instance = Bitstream.new
-    @instance.item = items(:item1)
-    assert_raises ArgumentError do
-      @instance.upload_to_medusa
-    end
-  end
-
-  test "upload_to_medusa() raises an error if the staging key is blank" do
-    @instance.staging_key = nil
-    assert_raises ArgumentError do
-      @instance.upload_to_medusa
-    end
-  end
-
-  test "upload_to_medusa() raises an error if a Medusa UUID is already present" do
-    @instance.medusa_uuid = SecureRandom.uuid
-    assert_raises AlreadyExistsError do
-      @instance.upload_to_medusa
-    end
-  end
-
-  test "upload_to_medusa() sends a message to the queue" do
-    @instance.upload_to_medusa
-    AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
-      config = ::Configuration.instance
-      assert_equal "ingest", message['operation']
-      assert_equal "969722354/escher_lego.jpg", message['staging_key']
-      assert_equal "#{config.handles[:prefix]}/5000/escher_lego.jpg",
-                   message['target_key']
-      assert_equal @instance.class.to_s, message['pass_through']['class']
-      assert_equal @instance.id.to_s, message['pass_through']['identifier']
     end
   end
 

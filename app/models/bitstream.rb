@@ -34,6 +34,7 @@ class Bitstream < ApplicationRecord
   validate :validate_staging_properties
 
   before_destroy :delete_from_staging
+  before_destroy :delete_from_medusa, if: -> { Rails.env.demo? }
 
   # This must be a location that Medusa is configured to monitor
   STAGING_KEY_PREFIX = "uploads"
@@ -82,6 +83,18 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # Sends a message to Medusa to delete the corresponding object.
+  #
+  # This should only be done in the demo environment. The production Medusa
+  # instance shouldn't even honor delete messages.
+  #
+  def delete_from_medusa
+    return nil if self.medusa_uuid.blank?
+    AmqpHelper::Connector[:ideals].send_message(MedusaIngest.outgoing_queue,
+                                                medusa_delete_message)
+  end
+
+  ##
   # Deletes the corresponding object from the application S3 bucket.
   #
   def delete_from_staging
@@ -92,25 +105,11 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # @return [String] Full URL of the instance's corresponding Medusa file, or
-  #         nil if does not exist in Medusa.
-  #
-  def medusa_url
-    if self.medusa_uuid
-      [::Configuration.instance.medusa[:base_url].chomp("/"),
-       "uuids",
-       self.medusa_uuid].join("/")
-    end
-  end
-
-  ##
-  # @raises [ArgumentError] if the given bitstream does not have an ID or
-  #         staging key.
-  # @raises [AlreadyExistsError] if the given bitstream already has a Medusa
-  #         UUID.
+  # @raises [ArgumentError] if the bitstream does not have an ID or staging key.
+  # @raises [AlreadyExistsError] if the bitstream already has a Medusa UUID.
   #
   #
-  def upload_to_medusa
+  def ingest_into_medusa
     target_key = self.class.medusa_key(self.item.handle.handle,
                                        self.original_filename)
     raise ArgumentError, "Bitstream has not been saved yet" if self.id.blank?
@@ -126,7 +125,19 @@ class Bitstream < ApplicationRecord
     ingest.ideals_class      = Bitstream.to_s
     ingest.ideals_identifier = self.id
     ingest.save!
-    ingest.send_medusa_ingest_message
+    ingest.send_message
+  end
+
+  ##
+  # @return [String] Full URL of the instance's corresponding Medusa file, or
+  #         nil if does not exist in Medusa.
+  #
+  def medusa_url
+    if self.medusa_uuid
+      [::Configuration.instance.medusa[:base_url].chomp("/"),
+       "uuids",
+       self.medusa_uuid].join("/")
+    end
   end
 
   ##
@@ -143,6 +154,21 @@ class Bitstream < ApplicationRecord
   end
 
   private
+
+  ##
+  # @return [Hash]
+  # @see https://github.com/medusa-project/medusa-collection-registry/blob/master/README-amqp-accrual.md
+  #
+  def medusa_delete_message
+    {
+        operation: "delete",
+        uuid:      self.medusa_uuid,
+        pass_through: {
+            class:      Bitstream.to_s,
+            identifier: self.id
+        }
+    }
+  end
 
   def s3_client
     @s3_client = Aws::S3::Client.new unless @s3_client

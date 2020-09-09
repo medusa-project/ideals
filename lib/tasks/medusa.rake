@@ -20,10 +20,11 @@ namespace :medusa do
 
   desc "Fetch Medusa RabbitMQ messages"
   task :fetch_messages => :environment do
+    queue = ::Configuration.instance.medusa[:incoming_queue]
     while true
-      AmqpHelper::Connector[:ideals].with_message(MedusaIngest.incoming_queue) do |payload|
+      AmqpHelper::Connector[:ideals].with_message(queue) do |payload|
         exit if payload.nil?
-        MedusaIngest.on_medusa_message(payload)
+        IncomingMessage.handle(payload)
       end
     end
   end
@@ -35,7 +36,7 @@ namespace :medusa do
       ingest.update!(request_status: "resent",
                      error_text: nil,
                      response_time: nil)
-      ingest.send_medusa_ingest_message
+      ingest.send_message
     end
   end
 

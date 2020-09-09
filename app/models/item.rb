@@ -259,8 +259,9 @@ class Item < ApplicationRecord
     raise "Handle is not set" if self.handle.blank?
     self.bitstreams.each do |bs|
       begin
-        bs.upload_to_medusa
+        bs.ingest_into_medusa
       rescue AlreadyExistsError
+        # fine
       end
     end
   end
