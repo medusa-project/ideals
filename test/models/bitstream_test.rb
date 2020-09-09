@@ -3,7 +3,7 @@ require 'test_helper'
 class BitstreamTest < ActiveSupport::TestCase
 
   setup do
-    @instance = bitstreams(:item1_jpg)
+    @instance = bitstreams(:item1_in_staging)
     assert @instance.valid?
     create_bucket
   end
@@ -70,7 +70,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "delete_from_medusa() sends a correct message if medusa_uuid is set" do
-    @instance = bitstreams(:item1_in_medusa)
+    @instance = bitstreams(:item2_in_medusa)
     @instance.delete_from_medusa
     AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
       puts message

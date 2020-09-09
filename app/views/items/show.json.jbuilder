@@ -4,7 +4,7 @@ json.set! "class", @item.class.to_s
 json.uri item_url(@item, format: :json)
 
 if policy(@item).show?
-  json.extract! @item, :id, :submitting, :in_archive?, :discoverable, :withdrawn, :created_at, :updated_at
+  json.extract! @item, :id, :submitting, :exists_in_medusa?, :discoverable, :withdrawn, :created_at, :updated_at
   json.primary_collection do
     json.id @item.primary_collection_id
     json.uri collection_url(@item.primary_collection_id, format: :json)

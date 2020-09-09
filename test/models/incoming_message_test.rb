@@ -7,7 +7,7 @@ class IncomingMessageTest < ActiveSupport::TestCase
   test "handle() handles an ingest-succeeded message" do
     IncomingMessage.destroy_all
     ingest      = medusa_ingests(:one)
-    bitstream   = bitstreams(:item1_jpg)
+    bitstream   = bitstreams(:item1_in_staging)
     medusa_uuid = SecureRandom.uuid
     medusa_message = {
         'status'       => "ok",
@@ -76,7 +76,7 @@ class IncomingMessageTest < ActiveSupport::TestCase
   end
 
   test "handle() deletes any bitstream corresponding to a delete-succeeded message" do
-    bitstream = bitstreams(:item1_in_medusa)
+    bitstream = bitstreams(:item2_in_medusa)
     medusa_message = {
         'status'    => "ok",
         'operation' => "delete",

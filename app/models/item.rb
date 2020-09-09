@@ -103,7 +103,7 @@ class Item < ApplicationRecord
   after_save :assign_handle, if: -> {
     !submitting && handle.nil? && !IdealsImporter.instance.running? }
   after_save :ingest_into_medusa, if: -> {
-    !submitting && handle.present? && !IdealsImporter.instance.running? }
+    !submitting && handle.present? && !exists_in_medusa? && !IdealsImporter.instance.running? }
   before_destroy :restrict_in_archive_deletion
 
   ##
@@ -246,12 +246,12 @@ class Item < ApplicationRecord
   # @return [Boolean] Whether all of the instance's associated Bitstreams have
   #         been ingested into Medusa.
   #
-  def in_archive?
-    self.bitstreams.where(medusa_uuid: nil).count > 0
+  def exists_in_medusa?
+    self.bitstreams.where.not(medusa_uuid: nil).count > 0
   end
 
   ##
-  # Uploads all of the instance's associated [Bitstream]s into Medusa.
+  # Uploads all of the instance's associated {Bitstream}s into Medusa.
   #
   # @return [void]
   #

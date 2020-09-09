@@ -7,7 +7,7 @@ item1:
   collections:
     - collection1
 
-item2:
+in_medusa:
   submitter: admin
   submitting: false
   discoverable: true

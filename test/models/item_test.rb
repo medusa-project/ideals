@@ -151,7 +151,7 @@ class ItemTest < ActiveSupport::TestCase
   # destroy()
 
   test "destroy() fails for in-archive items" do
-    item = items(:item1)
+    item = items(:in_medusa)
     assert_raises do
       item.destroy!
     end
@@ -260,14 +260,14 @@ class ItemTest < ActiveSupport::TestCase
   # save()
 
   test "save() creates an associated handle if no longer submitting" do
-    @instance = items(:item2)
+    @instance = items(:in_medusa)
     assert_nil @instance.handle
     @instance.update!(submitting: false)
     assert_not_nil @instance.handle
   end
 
   test "save() does not replace an associated handle if no longer submitting" do
-    @instance = items(:item2)
+    @instance = items(:in_medusa)
     @instance.update!(submitting: false)
     handle = @instance.handle
     @instance.save!
@@ -276,12 +276,12 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "save() does not create an associated handle if submitting" do
-    @instance = items(:item2)
+    @instance = items(:in_medusa)
     @instance.update!(submitting: true)
     assert_nil @instance.handle
   end
 
-  test "save() sends an ingest message" do
+  test "save() sends an ingest message if not submitting" do
     @instance.update!(submitting: false)
     @instance.bitstreams.each do
       AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|

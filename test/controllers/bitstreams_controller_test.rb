@@ -158,26 +158,26 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   # destroy()
 
   test "destroy() redirects to login page for logged-out users" do
-    delete item_bitstream_path(items(:item1), bitstreams(:item1_jpg))
+    delete item_bitstream_path(items(:item1), bitstreams(:item1_in_staging))
     assert_redirected_to login_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete item_bitstream_path(items(:item1), bitstreams(:item1_jpg))
+    delete item_bitstream_path(items(:item1), bitstreams(:item1_in_staging))
     assert_response :forbidden
   end
 
   test "destroy() destroys the bitstream" do
     log_in_as(users(:admin))
     assert_difference "Bitstream.count", -1 do
-      delete item_bitstream_path(items(:item1), bitstreams(:item1_jpg))
+      delete item_bitstream_path(items(:item1), bitstreams(:item1_in_staging))
     end
   end
 
   test "destroy() returns HTTP 204 for an existing bitstream" do
     log_in_as(users(:admin))
-    delete item_bitstream_path(items(:item1), bitstreams(:item1_jpg))
+    delete item_bitstream_path(items(:item1), bitstreams(:item1_in_staging))
     assert_response :no_content
   end
 
@@ -191,7 +191,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "show() returns HTTP 200" do
     item = items(:item1)
-    bs   = bitstreams(:item1_jpg)
+    bs   = bitstreams(:item1_in_staging)
     get item_bitstream_path(item, bs, format: :json)
     assert_response :ok
   end
