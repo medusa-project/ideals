@@ -138,6 +138,18 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_nil @instance.staging_key
   end
 
+  # dspace_relative_path()
+
+  test "dspace_relative_path() returns nil when dspace_id is not set" do
+    assert_nil @instance.dspace_relative_path
+  end
+
+  test "dspace_relative_path() returns the correct path" do
+    @instance.dspace_id = "125415979481218159291827549801925969929"
+    assert_equal "/12/54/15/125415979481218159291827549801925969929",
+                 @instance.dspace_relative_path
+  end
+
   # exists_in_staging
 
   test "exists_in_staging cannot be set to true when staging_key is blank" do

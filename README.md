@@ -150,6 +150,8 @@ rails "ideals_dspace:migrate[dbname,dbhost,dbuser,dbpass]"
 rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
 rails handles:put_all
+# This user must authorize your SSH key for passwordless login
+rails "ideals_dspace:bitstreams:copy_into_medusa[ideals_dspace_ssh_user]"
 ```
 
 ## Run the web app

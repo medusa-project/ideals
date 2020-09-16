@@ -36,6 +36,8 @@ gem "local_time"
 gem 'medusa-client', git: 'https://github.com/medusa-project/medusa-client.git'
 # JavaScript runtime
 gem 'mini_racer', platforms: :ruby
+# Used to copy files (bitstreams) out of IDEALS-DSpace during a migration.
+gem 'net-scp'
 # Enables local identity logins.
 gem "omniauth-identity"
 # Enables Shibboleth logins.

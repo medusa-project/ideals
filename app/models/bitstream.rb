@@ -109,6 +109,21 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # N.B.: this method is only used during migration and can be removed
+  # afterwards.
+  #
+  # @return [String] Path on the IDEALS-DSpace file system relative to the
+  #                  asset store root.
+  #
+  def dspace_relative_path
+    dspace_id.present? ? ["",
+                          dspace_id[0..1],
+                          dspace_id[2..3],
+                          dspace_id[4..5],
+                          dspace_id].join("/") : nil
+  end
+
+  ##
   # @raises [ArgumentError] if the bitstream does not have an ID or staging key.
   # @raises [AlreadyExistsError] if the bitstream already has a Medusa UUID.
   #
