@@ -5,6 +5,10 @@
 # # Attributes
 #
 # * `created_at`:        Managed by ActiveRecord.
+# * `dspace_id`:         `bitstream.internal_id` column value from
+#                        IDEALS-DSpace. This is only relevant during migration
+#                        out of that system and can be removed once migration
+#                        is complete.
 # * `exists_in_staging`: Whether a corresponding object exists in the staging
 #                        "area" (key prefix) of the application S3 bucket.
 # * `item_id`:           Foreign key to {Item}.

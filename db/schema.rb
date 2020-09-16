@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_08_185315) do
+ActiveRecord::Schema.define(version: 2020_09_16_150521) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 2020_09_08_185315) do
     t.string "medusa_uuid"
     t.string "medusa_key"
     t.boolean "exists_in_staging", default: false, null: false
+    t.string "dspace_id"
     t.index ["medusa_key"], name: "index_bitstreams_on_medusa_key", unique: true
     t.index ["staging_key"], name: "index_bitstreams_on_staging_key", unique: true
   end

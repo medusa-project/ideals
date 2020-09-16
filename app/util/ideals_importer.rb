@@ -36,11 +36,10 @@ class IdealsImporter
       next if row_num == 0 # skip header row
       row_arr = line.split("|").map(&:strip)
       progress.report(row_num, "Importing bitstreams")
-
       begin
         Bitstream.create!(id:         row_arr[1].to_i,
                           item_id:    row_arr[0].to_i,
-                          medusa_key: row_arr[2],
+                          dspace_id:  row_arr[2],
                           length:     row_arr[6].to_i,
                           media_type: row_arr[7])
       rescue ActiveRecord::RecordNotFound
