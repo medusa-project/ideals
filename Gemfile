@@ -33,7 +33,7 @@ gem "js_cookie_rails"
 gem "local_time"
 # High-level access to the Medusa Collection Registry's REST API
 #gem 'medusa-client', path: '/Users/alexd/Projects/GitHub/medusa-project/medusa-client'
-gem 'medusa-client', git: 'https://github.com/medusa-project/medusa-client.git', branch: 'release/1.0'
+gem 'medusa-client', git: 'https://github.com/medusa-project/medusa-client.git'
 # JavaScript runtime
 gem 'mini_racer', platforms: :ruby
 # Enables local identity logins.
