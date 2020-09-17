@@ -176,6 +176,21 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  test "ingest_into_medusa() raises an error if the owning item's handle does not have a suffix" do
+    @instance.item.handle.suffix = nil
+    assert_raises ArgumentError do
+      @instance.ingest_into_medusa
+    end
+  end
+
+  test "ingest_into_medusa() raises an error if the owning item does not have a handle" do
+    @instance.item.handle.destroy!
+    @instance.item.handle = nil
+    assert_raises ArgumentError do
+      @instance.ingest_into_medusa
+    end
+  end
+
   test "ingest_into_medusa() raises an error if the instance has already been
   submitted for ingest" do
     @instance.submitted_for_ingest = true

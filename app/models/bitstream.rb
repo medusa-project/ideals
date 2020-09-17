@@ -135,13 +135,14 @@ class Bitstream < ApplicationRecord
   #
   #
   def ingest_into_medusa
-    target_key = self.class.medusa_key(self.item.handle.handle,
-                                       self.original_filename)
     raise ArgumentError, "Bitstream has not been saved yet" if self.id.blank?
     raise ArgumentError, "Bitstream's staging key is nil" if self.staging_key.blank?
+    raise ArgumentError, "Bitstream's item does not have a handle" unless self.item.handle&.suffix&.present?
     raise AlreadyExistsError, "Bitstream has already been submitted for ingest" if self.submitted_for_ingest
     raise AlreadyExistsError, "Bitstream already exists in Medusa" if self.medusa_uuid.present?
 
+    target_key = self.class.medusa_key(self.item.handle.handle,
+                                       self.original_filename)
     Bitstream.transaction do
       # The staging key is relative to STAGING_KEY_PREFIX because Medusa is
       # configured to look only within that prefix.
