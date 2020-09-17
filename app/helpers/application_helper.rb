@@ -6,11 +6,20 @@ module ApplicationHelper
   # Formats a boolean for display.
   #
   # @param boolean [Boolean]
+  # @param style [Symbol] `:check` or `:word`
   # @return [String]
   #
-  def boolean(boolean)
-    raw(boolean ? '<span class="text-success">&check;</span>' :
-            '<span class="text-danger">&times;</span>')
+  def boolean(boolean, style: :check)
+    if style == :check
+      class_  = boolean ? 'text-success' : 'text-danger'
+      content = boolean ? '&check;' : '&times;'
+      html    = "<span class=\"#{class_}\">#{content}</span>"
+    else
+      class_  = boolean ? 'badge-success' : 'badge-danger'
+      content = boolean ? 'YES' : 'NO'
+      html    = "<span class=\"badge #{class_}\">#{content}</span>"
+    end
+    raw(html)
   end
 
   ##
