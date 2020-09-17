@@ -332,6 +332,7 @@ module ApplicationHelper
         date    = resource.elements.
             select{ |e| e.name == config.elements[:date] }.
             map{ |e| Time.new(e.string).year.to_s }.
+            reject{ |e| e == "0" }.
             join(", ")
         info_parts  = []
         info_parts << creator if creator.present?
