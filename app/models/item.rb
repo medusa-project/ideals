@@ -293,7 +293,7 @@ class Item < ApplicationRecord
   private
 
   def restrict_in_archive_deletion
-    raise "Archived items cannot be deleted" if self.in_archive?
+    raise "Archived items cannot be deleted" if self.exists_in_medusa?
   end
 
 end
