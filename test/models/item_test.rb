@@ -224,11 +224,23 @@ class ItemTest < ActiveSupport::TestCase
     end
   end
 
-  test "ingest_into_medusa() ingests all associated bitstreams into Medusa" do
+  test "ingest_into_medusa() ingests all associated not-yet-submitted-for-ingest
+  bitstreams into Medusa" do
     @instance.ingest_into_medusa
     @instance.bitstreams.each do
       AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
         assert message.present?
+      end
+    end
+  end
+
+  test "ingest_into_medusa() does not try to ingest associated bitstreams that
+  have already been submitted for ingest" do
+    @instance.bitstreams.update_all(submitted_for_ingest: true)
+    @instance.ingest_into_medusa
+    @instance.bitstreams.each do
+      AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+        assert message.blank?
       end
     end
   end

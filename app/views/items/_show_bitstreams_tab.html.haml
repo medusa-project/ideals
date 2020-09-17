@@ -26,6 +26,8 @@
               %dl
                 %dt Database ID
                 %dd= bs.id
+                %dt Submitted For Ingest
+                %dd= boolean(bs.submitted_for_ingest, style: :word)
                 - if bs.exists_in_staging && bs.staging_key
                   %dt Staging Key
                   %dd= bs.staging_key

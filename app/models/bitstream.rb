@@ -4,26 +4,30 @@
 #
 # # Attributes
 #
-# * `created_at`:        Managed by ActiveRecord.
-# * `dspace_id`:         `bitstream.internal_id` column value from
-#                        IDEALS-DSpace. This is only relevant during migration
-#                        out of that system and can be removed once migration
-#                        is complete.
-# * `exists_in_staging`: Whether a corresponding object exists in the staging
-#                        "area" (key prefix) of the application S3 bucket.
-# * `item_id`:           Foreign key to {Item}.
-# * `length`:            Size in bytes.
-# * `media_type`:        Media/MIME type.
-# * `medusa_key`:        Full object key within the Medusa S3 bucket. Set only
-#                        once the bitstream has been ingested into Medusa.
-# * `medusa_uuid`:       UUID of the corresponding binary in the Medusa
-#                        Collection Registry. Set only after the bitstream has
-#                        been ingested.
-# * `original_filename`: Filename of the bitstream as submitted by the user.
-# * `staging_key`:       Full object key in the application S3 bucket. May be
-#                        set even though the bitstream does not exist in
-#                        staging--check `exists_in_staging` to be sure.
-# * `updated_at`:        Managed by ActiveRecord.
+# * `created_at`:           Managed by ActiveRecord.
+# * `dspace_id`:            `bitstream.internal_id` column value from
+#                           IDEALS-DSpace. This is only relevant during
+#                           migration out of that system and can be removed
+#                           once migration is complete.
+# * `exists_in_staging`:    Whether a corresponding object exists in the
+#                           staging "area" (key prefix) of the application S3
+#                           bucket.
+# * `item_id`:              Foreign key to {Item}.
+# * `length`:               Size in bytes.
+# * `media_type`:           Media/MIME type.
+# * `medusa_key`:           Full object key within the Medusa S3 bucket. Set
+#                           only once the bitstream has been ingested into
+#                           Medusa.
+# * `medusa_uuid`:          UUID of the corresponding binary in the Medusa
+#                           Collection Registry. Set only after the bitstream
+#                           has been ingested.
+# * `original_filename`:    Filename of the bitstream as submitted by the user.
+# * `staging_key`:          Full object key in the application S3 bucket. May
+#                           be set even though the bitstream does not exist in
+#                           staging--check `exists_in_staging` to be sure.
+# * `submitted_for_ingest`: Set to `true` after an ingest message has been sent
+#                           to Medusa.
+# * `updated_at`:           Managed by ActiveRecord.
 #
 class Bitstream < ApplicationRecord
   belongs_to :item
@@ -133,18 +137,22 @@ class Bitstream < ApplicationRecord
                                        self.original_filename)
     raise ArgumentError, "Bitstream has not been saved yet" if self.id.blank?
     raise ArgumentError, "Bitstream's staging key is nil" if self.staging_key.blank?
+    raise AlreadyExistsError, "Bitstream has already been submitted for ingest" if self.submitted_for_ingest
     raise AlreadyExistsError, "Bitstream already exists in Medusa" if self.medusa_uuid.present?
 
-    # The staging key is relative to STAGING_KEY_PREFIX, because Medusa is
-    # configured to look only within that prefix.
-    staging_key_ = [self.item.id, self.original_filename].join("/")
-    ingest = MedusaIngest.find_by_staging_key(staging_key_)
-    ingest = MedusaIngest.new(staging_key: staging_key_) unless ingest
-    ingest.target_key        = target_key
-    ingest.ideals_class      = Bitstream.to_s
-    ingest.ideals_identifier = self.id
-    ingest.save!
-    ingest.send_message
+    Bitstream.transaction do
+      # The staging key is relative to STAGING_KEY_PREFIX because Medusa is
+      # configured to look only within that prefix.
+      staging_key_ = [self.item.id, self.original_filename].join("/")
+      ingest = MedusaIngest.find_by_staging_key(staging_key_)
+      ingest = MedusaIngest.new(staging_key: staging_key_) unless ingest
+      ingest.target_key        = target_key
+      ingest.ideals_class      = Bitstream.to_s
+      ingest.ideals_identifier = self.id
+      ingest.save!
+      ingest.send_message
+      self.update!(submitted_for_ingest: true)
+    end
   end
 
   ##

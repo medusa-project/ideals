@@ -176,6 +176,14 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  test "ingest_into_medusa() raises an error if the instance has already been
+  submitted for ingest" do
+    @instance.submitted_for_ingest = true
+    assert_raises AlreadyExistsError do
+      @instance.ingest_into_medusa
+    end
+  end
+
   test "ingest_into_medusa() raises an error if a Medusa UUID is already present" do
     @instance.medusa_uuid = SecureRandom.uuid
     assert_raises AlreadyExistsError do

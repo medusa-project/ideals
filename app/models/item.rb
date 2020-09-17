@@ -244,7 +244,10 @@ class Item < ApplicationRecord
 
   ##
   # @return [Boolean] Whether all of the instance's associated Bitstreams have
-  #         been ingested into Medusa.
+  #                   been ingested into Medusa. Note that there is a delay
+  #                   between the time a bitstream is submitted for ingest and
+  #                   the time the ingest is complete, during which this method
+  #                   will continue to return `false`.
   #
   def exists_in_medusa?
     self.bitstreams.where.not(medusa_uuid: nil).count > 0
@@ -257,9 +260,9 @@ class Item < ApplicationRecord
   #
   def ingest_into_medusa
     raise "Handle is not set" if self.handle.blank?
-    self.bitstreams.each do |bs|
+    self.bitstreams.where(submitted_for_ingest: false).each do |bitstream|
       begin
-        bs.ingest_into_medusa
+        bitstream.ingest_into_medusa
       rescue AlreadyExistsError
         # fine
       end

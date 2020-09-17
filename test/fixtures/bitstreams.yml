@@ -2,6 +2,7 @@
 
 item1_in_staging:
   exists_in_staging: true
+  submitted_for_ingest: false
   staging_key: bogus
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   media_type: image/jpeg
@@ -12,6 +13,7 @@ item1_in_staging:
 
 item2_in_medusa:
   exists_in_staging: false
+  submitted_for_ingest: true
   staging_key: test/test/escher_lego2.jpg
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   media_type: image/jpeg
