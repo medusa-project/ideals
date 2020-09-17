@@ -61,7 +61,7 @@ class Bitstream < ApplicationRecord
   def self.medusa_key(handle, filename)
     raise ArgumentError, "Handle is blank" if handle.blank?
     raise ArgumentError, "Filename is blank" if filename.blank?
-    [handle, filename].join("/")
+    [handle, filename.gsub('/', '')].join("/")
   end
 
   ##
