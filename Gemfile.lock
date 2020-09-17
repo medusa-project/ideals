@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/medusa-project/medusa-client.git
-  revision: 9b5eda441f554261d3840035508ed4040adee443
+  revision: ce4fcde26c081f08470887a22554eb89f2d7f5e6
   specs:
     medusa-client (1.0.0)
       httpclient
