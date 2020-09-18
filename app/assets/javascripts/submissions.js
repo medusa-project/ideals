@@ -73,7 +73,6 @@ const SubmissionForm = function() {
     // Files section
     const completionForm  = form.filter("#completion-form");
 
-
     var lastEditedInput;
 
     $("button.step-1-to-2").on("click", function() {
@@ -215,17 +214,19 @@ const SubmissionForm = function() {
         self.save(collectionsMenu);
     });
 
-    // Restore initial unit & collection selection values.
-    const unitID = $("[name='item[initial_primary_collection_unit_id]']").val();
-    if (unitID > 0) {
-        fetchCollectionsForUnit(unitID, function() {
-            unitsMenu.val(unitID);
-            const collectionID = $("[name='item[initial_primary_collection_id]']").val();
-            if (collectionID > 0) {
-                collectionsMenu.val(collectionID);
-            }
-        });
+    // Restore initial unit & collection selection values. If there is nothing
+    // to restore, select the first unit & its first collection.
+    let unitID = $("[name='item[initial_primary_collection_unit_id]']").val();
+    if (unitID < 1) {
+        unitID = unitsMenu.find("option:first-child").val();
     }
+    fetchCollectionsForUnit(unitID, function() {
+        unitsMenu.val(unitID);
+        const collectionID = $("[name='item[initial_primary_collection_id]']").val();
+        if (collectionID > 0) {
+            collectionsMenu.val(collectionID);
+        }
+    });
 
     /************************* Metadata section ****************************/
 
