@@ -5,20 +5,11 @@ class BitstreamTest < ActiveSupport::TestCase
   setup do
     @instance = bitstreams(:item1_in_staging)
     assert @instance.valid?
-    create_bucket
+    Bitstream.create_bucket
   end
 
   teardown do
     AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
-  end
-
-  def create_bucket
-    client   = Aws::S3::Client.new
-    resource = Aws::S3::Resource.new
-    bucket   = ::Configuration.instance.aws[:bucket]
-    unless resource.bucket(bucket).exists?
-      client.create_bucket(bucket: bucket)
-    end
   end
 
   # medusa_key()

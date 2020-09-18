@@ -49,6 +49,20 @@ class Bitstream < ApplicationRecord
   STAGING_KEY_PREFIX = "uploads"
 
   ##
+  # For use in testing only.
+  #
+  def self.create_bucket
+    raise "Not going to create a bucket in this environment" unless
+        %w(development test).include?(Rails.env)
+    client   = Aws::S3::Client.new
+    resource = Aws::S3::Resource.new
+    bucket   = ::Configuration.instance.aws[:bucket]
+    unless resource.bucket(bucket).exists?
+      client.create_bucket(bucket: bucket)
+    end
+  end
+
+  ##
   # Computes a destination Medusa key based on the given arguments. The key is
   # relative to the file group key prefix, which is known only by Medusa, so
   # the return value will be different than the value of {medusa_key}, which

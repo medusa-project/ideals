@@ -2,6 +2,10 @@ require 'test_helper'
 
 class MessageHandlerTest < ActiveSupport::TestCase
 
+  setup do
+    Bitstream.create_bucket
+  end
+
   # handle()
 
   test "handle() handles an ingest-succeeded message" do
