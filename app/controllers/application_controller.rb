@@ -156,14 +156,16 @@ class ApplicationController < ActionController::Base
         end
       end
 
-      # Submissions
-      count = current_user.submitted_items.where(submitting: true).count
-      if count > 0
-        @list.items << {
-            message: "Resume #{count} #{"submission".pluralize(count)}",
-            url: deposit_path
-        }
-        @list.total_items += count
+      # Submissions (outside of the submission view)
+      if controller_name != "submissions" && action_name != "edit"
+        count = current_user.submitted_items.where(submitting: true).count
+        if count > 0
+          @list.items << {
+              message: "Resume #{count} #{"submission".pluralize(count)}",
+              url: deposit_path
+          }
+          @list.total_items += count
+        end
       end
     end
     @list
