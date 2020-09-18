@@ -8,7 +8,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   teardown do
-    AmqpHelper::Connector[:ideals].clear_queues(MedusaIngest.outgoing_queue)
+    AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
   end
 
   # delete_document() (Indexed concern)
@@ -228,7 +228,7 @@ class ItemTest < ActiveSupport::TestCase
   bitstreams into Medusa" do
     @instance.ingest_into_medusa
     @instance.bitstreams.each do
-      AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
         assert message.present?
       end
     end
@@ -239,7 +239,7 @@ class ItemTest < ActiveSupport::TestCase
     @instance.bitstreams.update_all(submitted_for_ingest: true)
     @instance.ingest_into_medusa
     @instance.bitstreams.each do
-      AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
         assert message.blank?
       end
     end
@@ -296,7 +296,7 @@ class ItemTest < ActiveSupport::TestCase
   test "save() sends an ingest message if not submitting" do
     @instance.update!(submitting: false)
     @instance.bitstreams.each do
-      AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
         assert message.present?
       end
     end

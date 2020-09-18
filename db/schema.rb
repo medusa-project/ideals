@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_17_174545) do
+ActiveRecord::Schema.define(version: 2020_09_18_151710) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -86,16 +86,6 @@ ActiveRecord::Schema.define(version: 2020_09_17_174545) do
     t.index ["suffix"], name: "index_handles_on_suffix", unique: true
   end
 
-  create_table "incoming_messages", force: :cascade do |t|
-    t.text "as_text"
-    t.string "status"
-    t.string "staging_key"
-    t.string "medusa_key"
-    t.string "uuid"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
-
   create_table "invitees", force: :cascade do |t|
     t.string "email", null: false
     t.datetime "expires_at", null: false
@@ -146,21 +136,20 @@ ActiveRecord::Schema.define(version: 2020_09_17_174545) do
     t.index ["user_id"], name: "index_managers_on_user_id"
   end
 
-  create_table "medusa_ingests", force: :cascade do |t|
-    t.string "ideals_class", null: false
-    t.string "ideals_identifier", null: false
-    t.string "staging_key", null: false
-    t.string "target_key", null: false
-    t.string "request_status"
-    t.string "medusa_path"
+  create_table "messages", force: :cascade do |t|
+    t.string "staging_key"
+    t.string "target_key"
+    t.string "status"
+    t.string "medusa_key"
     t.string "medusa_uuid"
     t.datetime "response_time"
     t.string "error_text"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["medusa_uuid"], name: "index_medusa_ingests_on_medusa_uuid", unique: true
-    t.index ["staging_key"], name: "index_medusa_ingests_on_staging_key", unique: true
-    t.index ["target_key"], name: "index_medusa_ingests_on_target_key", unique: true
+    t.string "operation", null: false
+    t.bigint "bitstream_id"
+    t.text "raw_request"
+    t.text "raw_response"
   end
 
   create_table "metadata_profile_elements", force: :cascade do |t|
@@ -291,6 +280,7 @@ ActiveRecord::Schema.define(version: 2020_09_17_174545) do
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :nullify
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict

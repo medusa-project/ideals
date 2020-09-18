@@ -31,6 +31,7 @@
 #
 class Bitstream < ApplicationRecord
   belongs_to :item
+  has_many :messages
 
   validates_numericality_of :length, greater_than_or_equal_to: 0, allow_blank: true
   validates_format_of :media_type, with: /[\w+-]+\/[\w+-]+/, allow_blank: true
@@ -98,8 +99,11 @@ class Bitstream < ApplicationRecord
   #
   def delete_from_medusa
     return nil if self.medusa_uuid.blank?
-    AmqpHelper::Connector[:ideals].send_message(MedusaIngest.outgoing_queue,
-                                                medusa_delete_message)
+    message = self.messages.build(operation:   Message::Operation::DELETE,
+                                  medusa_uuid: self.medusa_uuid,
+                                  medusa_key:  self.medusa_key)
+    message.save!
+    message.send_message
   end
 
   ##
@@ -115,8 +119,8 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # N.B.: this method is only used during migration and can be removed
-  # afterwards.
+  # This method is only used during migration out of IDEALS-DSpace. It can be
+  # removed afterwards.
   #
   # @return [String] Path on the IDEALS-DSpace file system relative to the
   #                  asset store root.
@@ -133,7 +137,6 @@ class Bitstream < ApplicationRecord
   # @raises [ArgumentError] if the bitstream does not have an ID or staging key.
   # @raises [AlreadyExistsError] if the bitstream already has a Medusa UUID.
   #
-  #
   def ingest_into_medusa
     raise ArgumentError, "Bitstream has not been saved yet" if self.id.blank?
     raise ArgumentError, "Bitstream's staging key is nil" if self.staging_key.blank?
@@ -141,21 +144,17 @@ class Bitstream < ApplicationRecord
     raise AlreadyExistsError, "Bitstream has already been submitted for ingest" if self.submitted_for_ingest
     raise AlreadyExistsError, "Bitstream already exists in Medusa" if self.medusa_uuid.present?
 
-    target_key = self.class.medusa_key(self.item.handle.handle,
-                                       self.original_filename)
-    Bitstream.transaction do
-      # The staging key is relative to STAGING_KEY_PREFIX because Medusa is
-      # configured to look only within that prefix.
-      staging_key_ = [self.item.id, self.original_filename].join("/")
-      ingest = MedusaIngest.find_by_staging_key(staging_key_)
-      ingest = MedusaIngest.new(staging_key: staging_key_) unless ingest
-      ingest.target_key        = target_key
-      ingest.ideals_class      = Bitstream.to_s
-      ingest.ideals_identifier = self.id
-      ingest.save!
-      ingest.send_message
-      self.update!(submitted_for_ingest: true)
-    end
+    # The staging key is relative to STAGING_KEY_PREFIX because Medusa is
+    # configured to look only within that prefix.
+    staging_key_ = [self.item.id, self.original_filename].join("/")
+    target_key   = self.class.medusa_key(self.item.handle.handle,
+                                         self.original_filename)
+    message = self.messages.build(operation:   Message::Operation::INGEST,
+                                  staging_key: staging_key_,
+                                  target_key:  target_key)
+    message.save!
+    message.send_message
+    self.update!(submitted_for_ingest: true)
   end
 
   ##
@@ -185,20 +184,6 @@ class Bitstream < ApplicationRecord
 
   private
 
-  ##
-  # @return [Hash]
-  # @see https://github.com/medusa-project/medusa-collection-registry/blob/master/README-amqp-accrual.md
-  #
-  def medusa_delete_message
-    {
-        operation: "delete",
-        uuid:      self.medusa_uuid,
-        pass_through: {
-            class:      Bitstream.to_s,
-            identifier: self.id
-        }
-    }
-  end
 
   def s3_client
     @s3_client = Aws::S3::Client.new unless @s3_client

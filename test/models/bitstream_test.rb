@@ -9,7 +9,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   teardown do
-    AmqpHelper::Connector[:ideals].clear_queues(MedusaIngest.outgoing_queue)
+    AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
   end
 
   def create_bucket
@@ -64,7 +64,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "delete_from_medusa() does nothing if medusa_uuid is not set" do
     @instance.delete_from_medusa
-    AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
       assert_nil message
     end
   end
@@ -72,7 +72,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "delete_from_medusa() sends a correct message if medusa_uuid is set" do
     @instance = bitstreams(:item2_in_medusa)
     @instance.delete_from_medusa
-    AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
       puts message
       assert_equal "delete", message['operation']
       assert_equal @instance.medusa_uuid, message['uuid']
@@ -208,14 +208,14 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "ingest_into_medusa() sends a message to the queue" do
     @instance.ingest_into_medusa
-    AmqpHelper::Connector[:ideals].with_parsed_message(MedusaIngest.outgoing_queue) do |message|
+    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
       config = ::Configuration.instance
       assert_equal "ingest", message['operation']
       assert_equal "969722354/escher_lego.jpg", message['staging_key']
       assert_equal "#{config.handles[:prefix]}/5000/escher_lego.jpg",
                    message['target_key']
       assert_equal @instance.class.to_s, message['pass_through']['class']
-      assert_equal @instance.id.to_s, message['pass_through']['identifier']
+      assert_equal @instance.id, message['pass_through']['identifier']
     end
   end
 

@@ -1,0 +1,71 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# ingests
+
+ingest_no_response:
+  operation:     ingest
+  bitstream:     item1_in_staging
+  status:
+  medusa_key:
+  medusa_uuid:
+  response_time:
+  error_text:
+  staging_key:   staging/cat
+  target_key:    target/cat
+
+successful_ingest:
+  operation:     ingest
+  bitstream:     item2_in_medusa
+  status:        ok
+  medusa_key:    target/dog
+  medusa_uuid:   f6d28553-a73d-4d40-9d7d-665a3fa4aa1c
+  response_time: <%= Time.now %>
+  error_text:
+  staging_key:   staging/dog
+  target_key:    target/dog
+
+failed_ingest:
+  operation:     ingest
+  bitstream:     item2_in_medusa
+  status:        error
+  medusa_key:
+  medusa_uuid:
+  response_time: <%= Time.now %>
+  error_text:    Something went wrong.
+  staging_key:   staging/parrot
+  target_key:    target/parrot
+
+# deletes
+
+delete_no_response:
+  operation:     delete
+  bitstream:     item2_in_medusa
+  status:
+  medusa_key:
+  medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
+  response_time:
+  error_text:
+  staging_key:   staging/horse
+  target_key:    target/horse
+
+successful_delete:
+  operation:     delete
+  bitstream:     item2_in_medusa
+  status:        ok
+  medusa_key:    target/cow
+  medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
+  response_time: <%= Time.now %>
+  error_text:
+  staging_key:   staging/cow
+  target_key:    target/cow
+
+failed_delete:
+  operation:     delete
+  bitstream:     item2_in_medusa
+  status:        error
+  medusa_key:    target/alpaca
+  medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
+  response_time: <%= Time.now %>
+  error_text:    Something went wrong.
+  staging_key:   staging/alpaca
+  target_key:    target/alpaca

@@ -13,31 +13,28 @@ namespace :medusa do
           operation: "delete",
           uuid:      node.uuid
       }
-      AmqpHelper::Connector[:ideals].send_message(MedusaIngest.outgoing_queue,
+      AmqpHelper::Connector[:ideals].send_message(Message.outgoing_queue,
                                                   message)
     end
   end
 
-  desc "Fetch Medusa RabbitMQ messages"
-  task :fetch_messages => :environment do
-    queue = ::Configuration.instance.medusa[:incoming_queue]
-    while true
-      AmqpHelper::Connector[:ideals].with_message(queue) do |payload|
-        exit if payload.nil?
-        IncomingMessage.handle(payload)
+  namespace :messages do
+
+    desc "Fetch Medusa RabbitMQ messages"
+    task :fetch => :environment do
+      while true
+        AmqpHelper::Connector[:ideals].with_message(Message.incoming_queue) do |payload|
+          exit if payload.nil?
+          MessageHandler.handle(payload)
+        end
       end
     end
-  end
 
-  desc "Resend failed Medusa messages"
-  task :retry_failed => :environment do
-    failed_ingests = MedusaIngest.where(request_status: "error")
-    failed_ingests.each do |ingest|
-      ingest.update!(request_status: "resent",
-                     error_text: nil,
-                     response_time: nil)
-      ingest.send_message
+    desc "Resend failed Medusa messages"
+    task :retry_failed => :environment do
+      Message.where(status: "error").each(&:resend)
     end
+
   end
 
 end
