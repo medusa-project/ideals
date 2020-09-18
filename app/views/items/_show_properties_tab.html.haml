@@ -29,11 +29,11 @@
       - else
         = submitter.name
   %dt In Submission Process
-  %dd= @item.submitting
+  %dd= boolean(@item.submitting, style: :word)
   %dt Discoverable
-  %dd= @item.discoverable
+  %dd= boolean(@item.discoverable, style: :word)
   %dt Withdrawn
-  %dd= @item.withdrawn
+  %dd= boolean(@item.withdrawn, style: :word, invert_color: true)
   %dt Created
   %dd= local_time @item.created_at
   %dt Last Updated

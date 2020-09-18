@@ -7,16 +7,19 @@ module ApplicationHelper
   #
   # @param boolean [Boolean]
   # @param style [Symbol] `:check` or `:word`
+  # @param invert_color [Boolean]
   # @return [String]
   #
-  def boolean(boolean, style: :check)
+  def boolean(boolean, style: :check, invert_color: false)
     if style == :check
-      class_  = boolean ? 'text-success' : 'text-danger'
       content = boolean ? '&check;' : '&times;'
+      boolean = !boolean if invert_color
+      class_  = boolean ? 'text-success' : 'text-danger'
       html    = "<span class=\"#{class_}\">#{content}</span>"
     else
-      class_  = boolean ? 'badge-success' : 'badge-danger'
       content = boolean ? 'YES' : 'NO'
+      boolean = !boolean if invert_color
+      class_  = boolean ? 'badge-success' : 'badge-danger'
       html    = "<span class=\"badge #{class_}\">#{content}</span>"
     end
     raw(html)
