@@ -2,6 +2,10 @@ require 'test_helper'
 
 class MessageTest < ActiveSupport::TestCase
 
+  setup do
+    AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
+  end
+
   teardown do
     AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
   end
