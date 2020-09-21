@@ -75,6 +75,12 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
     assert_equal @instance.registered_element.label, @instance.label
   end
 
+  # name()
+
+  test "name() returns the label of the associated RegisteredElement" do
+    assert_equal @instance.registered_element.name, @instance.name
+  end
+
   # submission_profile
 
   test "submission_profile is required" do

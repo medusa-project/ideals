@@ -66,6 +66,13 @@ class SubmissionProfileElement < ApplicationRecord
   end
 
   ##
+  # @return [String] The `name` property of the associated {RegisteredElement}.
+  #
+  def name
+    self.registered_element&.name
+  end
+
+  ##
   # @return [Vocabulary] Instance corresponding to {vocabulary_key}, if set;
   #                      otherwise `nil`.
   #
