@@ -121,6 +121,19 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "data() returns HTTP 404 for missing bitstreams" do
+    get item_bitstream_data_path(items(:item1), 9999999)
+    assert_response :not_found
+  end
+
+  test "data() returns HTTP 500 when the underlying data is missing" do
+    item      = items(:item1)
+    bitstream = Bitstream.new_in_staging(item, "cats.jpg", 234234)
+    bitstream.save!
+    get item_bitstream_data_path(item, bitstream)
+    assert_response :internal_server_error
+  end
+
   test "data() respects role limits" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:withdrawn) # (an item that only sysadmins have access to)
