@@ -133,7 +133,7 @@ class ItemTest < ActiveSupport::TestCase
   test "assign_handle() assigns a handle" do
     item = items(:described)
     item.assign_handle
-    assert_not_nil item.handle
+    assert_not_nil item.handle.suffix
   end
 
   # description() (Describable concern)
@@ -269,37 +269,17 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 1, Item.search.filter(Item::IndexFields::ID, @instance.index_id).count
   end
 
-  # save()
+  # required_elements_present?()
 
-  test "save() creates an associated handle if no longer submitting" do
-    @instance = items(:in_medusa)
-    assert_nil @instance.handle
-    @instance.update!(submitting: false)
-    assert_not_nil @instance.handle
+  test "required_elements_present?() returns false if not all required elements are present" do
+    @instance.elements.destroy_all
+    assert !@instance.required_elements_present?
   end
 
-  test "save() does not replace an associated handle if no longer submitting" do
-    @instance = items(:in_medusa)
-    @instance.update!(submitting: false)
-    handle = @instance.handle
-    @instance.save!
-    @instance.reload
-    assert_equal handle.id, @instance.handle.id
-  end
-
-  test "save() does not create an associated handle if submitting" do
-    @instance = items(:in_medusa)
-    @instance.update!(submitting: true)
-    assert_nil @instance.handle
-  end
-
-  test "save() sends an ingest message if not submitting" do
-    @instance.update!(submitting: false)
-    @instance.bitstreams.each do
-      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
-        assert message.present?
-      end
-    end
+  test "required_elements_present?() returns true if all required elements are present" do
+    @instance.elements.build(registered_element: registered_elements(:title),
+                             string: "Title").save
+    assert @instance.required_elements_present?
   end
 
   # title() (Describable concern)

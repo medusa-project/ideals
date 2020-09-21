@@ -35,3 +35,9 @@ item_subject:
   uri:
   registered_element: subject
   item: described
+
+submitting_item_title:
+  string: Some title
+  uri:
+  registered_element: title
+  item: submitting

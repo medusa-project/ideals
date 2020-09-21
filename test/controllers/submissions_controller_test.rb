@@ -4,6 +4,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     setup_elasticsearch
+    Bitstream.create_bucket
   end
 
   teardown do
@@ -21,6 +22,79 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:norights))
     get deposit_path
     assert_response :ok
+  end
+
+  # complete()
+
+  test "complete() redirects to login page for logged-out users" do
+    item = items(:submitting)
+    post submission_complete_path(item)
+    assert_redirected_to login_path
+  end
+
+  test "complete() returns HTTP 200 for logged-in users" do
+    item = items(:submitting)
+    log_in_as(item.submitter)
+    post submission_complete_path(item)
+    assert_response :no_content
+  end
+
+  test "complete() returns HTTP 302 when an item has already been submitted" do
+    item = items(:item1)
+    assert !item.submitting
+    log_in_as(item.submitter)
+    post submission_complete_path(item)
+    assert_redirected_to root_path
+  end
+
+  test "complete() returns HTTP 400 when the item is missing any required metadata fields" do
+    item = items(:submitting)
+    item.elements.destroy_all
+    log_in_as(item.submitter)
+    post submission_complete_path(item)
+    assert_response :bad_request
+  end
+
+  test "complete() returns HTTP 400 when the item has no associated bitstreams" do
+    item = items(:submitting)
+    item.bitstreams.destroy_all
+    log_in_as(item.submitter)
+    post submission_complete_path(item)
+    assert_response :bad_request
+  end
+
+  test "complete() creates an associated handle" do
+    item = items(:submitting)
+    assert_nil item.handle
+    log_in_as(item.submitter)
+    post submission_complete_path(item)
+
+    item.reload
+    assert_not_nil item.handle
+  end
+
+  test "complete() sends an ingest message to Medusa" do
+    item = items(:submitting)
+    assert_nil item.handle
+    log_in_as(item.submitter)
+    post submission_complete_path(item)
+
+    item.reload
+    item.bitstreams.each do
+      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+        assert message.present?
+      end
+    end
+  end
+
+  test "complete() updates the item's submitting attribute" do
+    item = items(:submitting)
+    assert item.submitting
+    log_in_as(item.submitter)
+    post submission_complete_path(item)
+
+    item.reload
+    assert !item.submitting
   end
 
   # create()

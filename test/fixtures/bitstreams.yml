@@ -21,3 +21,14 @@ item2_in_medusa:
   medusa_key: test/test/escher_lego2.jpg
   medusa_uuid: 3d2a99d5-2f5b-401e-80c1-864a95e3acf7
   item: in_medusa
+
+submitting_in_staging:
+  exists_in_staging: true
+  submitted_for_ingest: false
+  staging_key: submitting_bogus
+  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  media_type: image/jpeg
+  original_filename: escher_lego.jpg
+  medusa_key:
+  medusa_uuid:
+  item: submitting

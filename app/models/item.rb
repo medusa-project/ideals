@@ -98,12 +98,6 @@ class Item < ApplicationRecord
 
   breadcrumbs parent: :primary_collection, label: :title
 
-  # Order is important, as the item cannot be ingested into Medusa until it
-  # has a handle.
-  after_save :assign_handle, if: -> {
-    !submitting && handle.nil? && !IdealsImporter.instance.running? }
-  after_save :ingest_into_medusa, if: -> {
-    !submitting && handle.present? && !exists_in_medusa? && !IdealsImporter.instance.running? }
   before_destroy :restrict_in_archive_deletion
 
   ##
@@ -222,6 +216,7 @@ class Item < ApplicationRecord
   #
   def assign_handle
     self.handle = Handle.create!(item: self)
+    self.handle.reload # to read the suffix, which is autoincrementing
   end
 
   ##
@@ -290,6 +285,22 @@ class Item < ApplicationRecord
   def primary_unit
     #noinspection RubyYardReturnMatch
     self.primary_collection&.primary_unit
+  end
+
+  ##
+  # N.B. This is not a model validation because instances are allowed to be
+  # missing elements during the submission process.
+  #
+  # @return [Boolean] Whether all {SubmissionProfileElement#required required
+  #                   elements} in the {effective_submission_profile effective
+  #                   submission profile} have been ascribed to the instance.
+  #
+  def required_elements_present?
+    self.effective_submission_profile.elements.where(required: true).each do |spe|
+      return false unless self.elements.find{ |ae| ae.name == spe.name &&
+          (ae.string.present? || ae.uri.present?) }
+    end
+    true
   end
 
 

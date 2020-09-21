@@ -18,6 +18,10 @@ class SubmissionPolicy < ApplicationPolicy
     create?
   end
 
+  def complete?
+    update?
+  end
+
   def create?
     user && role >= Role::LOGGED_IN
   end

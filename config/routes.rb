@@ -65,7 +65,9 @@ Rails.application.routes.draw do
     match "/clone", to: "submission_profiles#clone", via: :post
     resources :submission_profile_elements, path: "elements", except: [:new, :index, :show]
   end
-  resources :submissions, except: [:index, :show]
+  resources :submissions, except: [:index, :show] do
+    match "/complete", to: "submissions#complete", via: :post
+  end
   resources :units, except: [:edit, :new] do
     match "/children", to: "units#children", via: :get,
           constraints: lambda { |request| request.xhr? }

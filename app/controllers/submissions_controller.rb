@@ -7,9 +7,9 @@
 class SubmissionsController < ApplicationController
 
   before_action :ensure_logged_in
-  before_action :set_item, only: [:destroy, :edit, :update]
+  before_action :set_item, only: [:complete, :destroy, :edit, :update]
   before_action :authorize_item, only: [:destroy, :update]
-  before_action :check_submitting, only: [:destroy, :edit, :update]
+  before_action :check_submitting, only: [:complete, :destroy, :edit, :update]
 
   ##
   # Displays the deposit agreement. At the end of the agreement is a submit
@@ -24,6 +24,32 @@ class SubmissionsController < ApplicationController
     @submissions = current_user.submitted_items.
         where(submitting: true).
         order(:updated_at)
+  end
+
+  ##
+  # Completes an in-progress submission. The intent is for the submission
+  # form's complete-submission button to POST to this via XHR.
+  #
+  # Responds to `POST /submissions/:id/complete`
+  #
+  def complete
+    unless @resource.submitting
+      render plain: "Resource is not in a submitting state.",
+             status: :conflict and return
+    end
+    # This is also validated on the client, but do it here too to be safe.
+    unless @resource.required_elements_present?
+      render plain: "Item is missing required elements.",
+             status: :bad_request and return
+    end
+    # This is also validated on the client, but do it here too to be safe.
+    if @resource.bitstreams.count < 1
+      render plain: "Item has no associated bitstreams.",
+             status: :bad_request and return
+    end
+    @resource.assign_handle
+    @resource.ingest_into_medusa
+    @resource.update!(submitting: false)
   end
 
   ##
@@ -108,18 +134,16 @@ class SubmissionsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:primary_collection_id, :submitter_id,
-                                 :submitting)
+    params.require(:item).permit(:primary_collection_id, :submitter_id)
   end
 
   def set_item
-    @resource = Item.find(params[:id])
+    @resource = Item.find(params[:id] || params[:submission_id])
   end
 
   ##
   # Builds and ascribes {AscribedElement}s to the item based on user input.
-  # This is done manually because to do it using Rails nested attributes would
-  # be harder.
+  # Doing this manually is easier than using Rails nested attributes.
   #
   def build_metadata
     if params[:elements].present?
@@ -127,7 +151,7 @@ class SubmissionsController < ApplicationController
         @resource.elements.destroy_all
         params[:elements].select{ |e| e[:string].present? }.each do |element|
           @resource.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
-                                   string:             element[:string])
+                                   string:             element[:string]).save
         end
       end
     end
