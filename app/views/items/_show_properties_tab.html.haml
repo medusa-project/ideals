@@ -29,7 +29,7 @@
       - else
         = submitter.name
   %dt In Submission Process
-  %dd= boolean(@item.submitting, style: :word)
+  %dd= boolean(@item.submitting, style: :word, omit_color: true)
   %dt Discoverable
   %dd= boolean(@item.discoverable, style: :word)
   %dt Withdrawn
