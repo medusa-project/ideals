@@ -51,7 +51,7 @@ class UsersController < ApplicationController
     @items  = Item.search.
         aggregations(false).
         filter(Item::IndexFields::SUBMITTER, @user.id).
-        filter(Item::IndexFields::SUBMITTING, false).
+        must_not(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
         order(params[:sort]).
         limit(@window).
         start(@start)
@@ -60,7 +60,7 @@ class UsersController < ApplicationController
     @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
     @permitted_params = params.permit(:start, :window)
     @submissions      = @user.submitted_items.
-        where(submitting: true).
+        where(stage: Item::Stages::SUBMITTING).
         order(updated_at: :desc)
   end
 

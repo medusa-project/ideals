@@ -41,7 +41,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "complete() returns HTTP 302 when an item has already been submitted" do
     item = items(:item1)
-    assert !item.submitting
+    assert !item.submitting?
     log_in_as(item.submitter)
     post submission_complete_path(item)
     assert_redirected_to root_path
@@ -89,12 +89,12 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "complete() updates the item's submitting attribute" do
     item = items(:submitting)
-    assert item.submitting
+    assert item.submitting?
     log_in_as(item.submitter)
     post submission_complete_path(item)
 
     item.reload
-    assert !item.submitting
+    assert !item.submitting?
   end
 
   # create()
@@ -109,9 +109,8 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "Item.count" do
       post submissions_path
       item = Item.order(created_at: :desc).first
-      assert item.submitting
+      assert item.submitting?
       assert !item.discoverable
-      assert !item.withdrawn
     end
   end
 

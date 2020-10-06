@@ -17,8 +17,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
       scope    = ItemPolicy::Scope.new(context, relation)
       assert_equal [
                        [Item::IndexFields::DISCOVERABLE, true],
-                       [Item::IndexFields::SUBMITTING, false],
-                       [Item::IndexFields::WITHDRAWN, false]
+                       [Item::IndexFields::STAGE, Item::Stages::APPROVED]
                    ],
                    scope.resolve.instance_variable_get("@filters")
     end
@@ -29,8 +28,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
       scope    = ItemPolicy::Scope.new(context, relation)
       assert_equal [
                        [Item::IndexFields::DISCOVERABLE, true],
-                       [Item::IndexFields::SUBMITTING, false],
-                       [Item::IndexFields::WITHDRAWN, false]
+                       [Item::IndexFields::STAGE, Item::Stages::APPROVED]
                    ],
                    scope.resolve.instance_variable_get("@filters")
     end
@@ -176,8 +174,8 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = UserContext.new(user, Role::NO_LIMIT)
 
-    @item.submitter  = user
-    @item.submitting = true
+    @item.submitter = user
+    @item.stage     = Item::Stages::SUBMITTING
 
     policy = ItemPolicy.new(context, @item)
     assert policy.destroy?
@@ -187,8 +185,8 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = UserContext.new(user, Role::NO_LIMIT)
 
-    @item.submitter  = user
-    @item.submitting = false
+    @item.submitter = user
+    @item.stage     = Item::Stages::APPROVED
 
     policy = ItemPolicy.new(context, @item)
     assert !policy.destroy?
@@ -578,7 +576,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user = users(:norights)
     context = UserContext.new(user, Role::NO_LIMIT)
     @item.submitter = user
-    @item.submitting = true
+    @item.stage     = Item::Stages::SUBMITTING
     policy = ItemPolicy.new(context, @item)
     assert policy.update?
   end
@@ -590,7 +588,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     collection.submitting_users << user
     collection.save!
     @item.submitter = user
-    @item.submitting = false
+    @item.stage     = Item::Stages::APPROVED
     policy = ItemPolicy.new(context, @item)
     assert !policy.update?
   end

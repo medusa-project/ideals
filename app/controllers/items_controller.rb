@@ -118,8 +118,7 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:discoverable, :primary_collection_id,
-                                 :withdrawn)
+    params.require(:item).permit(:discoverable, :primary_collection_id, :stage)
   end
 
   def set_item

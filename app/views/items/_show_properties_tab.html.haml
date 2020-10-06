@@ -28,12 +28,10 @@
         = link_to(submitter.name, submitter)
       - else
         = submitter.name
-  %dt In Submission Process
-  %dd= boolean(@item.submitting, style: :word, omit_color: true)
+  %dt Lifecycle Stage
+  %dd= Item::Stages.constants.find{ |c| @item.stage == Item::Stages.const_get(c) }&.to_s&.downcase&.capitalize
   %dt Discoverable
   %dd= boolean(@item.discoverable, style: :word)
-  %dt Withdrawn
-  %dd= boolean(@item.withdrawn, style: :word, invert_color: true)
   %dt Created
   %dd= local_time @item.created_at
   %dt Last Updated

@@ -22,7 +22,7 @@ class SubmissionsController < ApplicationController
   #
   def agreement
     @submissions = current_user.submitted_items.
-        where(submitting: true).
+        where(stage: Item::Stages::SUBMITTING).
         order(:updated_at)
   end
 
@@ -33,7 +33,8 @@ class SubmissionsController < ApplicationController
   # Responds to `POST /submissions/:id/complete`
   #
   def complete
-    unless @resource.submitting
+    # TODO: rename @resource to @item
+    unless @resource.submitting?
       render plain: "Resource is not in a submitting state.",
              status: :conflict and return
     end
@@ -49,7 +50,7 @@ class SubmissionsController < ApplicationController
     end
     @resource.assign_handle
     @resource.ingest_into_medusa
-    @resource.update!(submitting: false)
+    @resource.update!(stage: Item::Stages::SUBMITTED)
   end
 
   ##
@@ -123,11 +124,11 @@ class SubmissionsController < ApplicationController
   end
 
   ##
-  # Ensures that an {Item} is only operated on when it is {Item#submitting
-  # marked as being in the submission process}.
+  # Ensures that an {Item} is only operated on when it is in the
+  # {Item::Stages::SUBMITTING submission process}.
   #
   def check_submitting
-    unless @resource.submitting
+    unless @resource.submitting?
       flash['error'] = "This item has already been submitted."
       redirect_back fallback_location: root_path
     end

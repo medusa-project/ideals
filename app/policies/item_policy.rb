@@ -23,8 +23,7 @@ class ItemPolicy < ApplicationPolicy
         relation
       else
         relation.filter(Item::IndexFields::DISCOVERABLE, true).
-            filter(Item::IndexFields::SUBMITTING, false).
-            filter(Item::IndexFields::WITHDRAWN, false)
+            filter(Item::IndexFields::STAGE, Item::Stages::APPROVED)
       end
     end
   end
@@ -90,7 +89,7 @@ class ItemPolicy < ApplicationPolicy
 
   def show?
     (role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?) ||
-        (@item.discoverable && !@item.withdrawn && !@item.submitting)
+        (@item.approved? && @item.discoverable)
   end
 
   ##
@@ -136,7 +135,7 @@ class ItemPolicy < ApplicationPolicy
       return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
       # all users can update their own submissions
       return true if role >= Role::COLLECTION_SUBMITTER &&
-          user == item.submitter && item.submitting
+          user == item.submitter && item.submitting?
 
       item.all_collections.each do |collection|
         # unit admins can update items within their units

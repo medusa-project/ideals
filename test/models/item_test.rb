@@ -36,9 +36,9 @@ class ItemTest < ActiveSupport::TestCase
                  item.element("dc:description").string
     assert_equal submission_profile_elements(:default_subject).placeholder_text,
                  item.element("dc:subject").string
-    assert item.submitting
+    assert item.submitting?
     assert !item.discoverable
-    assert !item.withdrawn
+    assert !item.withdrawn?
   end
 
   # reindex_all() (Indexed concern)
@@ -92,6 +92,18 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 2, @instance.all_units.length
   end
 
+  # approved?()
+
+  test "approved?() returns true when the stage is set to APPROVED" do
+    @instance.stage = Item::Stages::APPROVED
+    assert @instance.approved?
+  end
+
+  test "approved?() returns false when the stage is not set to APPROVED" do
+    @instance.stage = Item::Stages::SUBMITTING
+    assert !@instance.approved?
+  end
+
   # as_indexed_json()
 
   test "as_indexed_json() returns the correct structure" do
@@ -101,7 +113,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_empty doc[Item::IndexFields::COLLECTIONS]
     assert_not_empty doc[Item::IndexFields::CREATED]
     assert doc[Item::IndexFields::DISCOVERABLE]
-    assert !doc[Item::IndexFields::SUBMITTING]
     assert_not_empty doc[Item::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Item::IndexFields::LAST_MODIFIED]
@@ -109,11 +120,11 @@ class ItemTest < ActiveSupport::TestCase
                  doc[Item::IndexFields::PRIMARY_COLLECTION]
     assert_equal @instance.primary_collection.primary_unit.id,
                  doc[Item::IndexFields::PRIMARY_UNIT]
+    assert_equal Item::Stages::APPROVED, doc[Item::IndexFields::STAGE]
     assert_equal @instance.submitter.id,
                  doc[Item::IndexFields::SUBMITTER]
     assert_not_empty doc[Item::IndexFields::UNIT_TITLES]
     assert_not_empty doc[Item::IndexFields::UNITS]
-    assert !doc[Item::IndexFields::WITHDRAWN]
 
     item = items(:described)
     doc = item.as_indexed_json
@@ -282,6 +293,17 @@ class ItemTest < ActiveSupport::TestCase
     assert @instance.required_elements_present?
   end
 
+  # submitting?()
+
+  test "submitting?() returns true when the stage is set to SUBMITTING" do
+    @instance.stage = Item::Stages::SUBMITTING
+    assert @instance.submitting?
+  end
+
+  test "submitting?() returns false when the stage is not set to SUBMITTING" do
+    assert !@instance.submitting?
+  end
+
   # title() (Describable concern)
 
   test "title() returns the title element value" do
@@ -292,6 +314,25 @@ class ItemTest < ActiveSupport::TestCase
   test "title() returns an empty string when there is no title element" do
     item = items(:undescribed)
     assert_equal "", item.title
+  end
+
+  # validate()
+
+  test "validate() ensures that the stage is set correctly" do
+    assert @instance.validate
+    @instance.stage = 999
+    assert !@instance.validate
+  end
+
+  # withdrawn?()
+
+  test "withdrawn?() returns true when the stage is set to WITHDRAWN" do
+    @instance.stage = Item::Stages::WITHDRAWN
+    assert @instance.withdrawn?
+  end
+
+  test "withdrawn?() returns false when the stage is not set to WITHDRAWN" do
+    assert !@instance.withdrawn?
   end
 
 end

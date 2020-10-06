@@ -11,7 +11,7 @@ class WelcomeController < ApplicationController
     user = current_user
     if user
       @submissions_in_progress = user.submitted_items.
-          where(submitting: true).
+          where(stage: Item::Stages::SUBMITTING).
           order(updated_at: :desc)
     end
   rescue Errno::ECONNREFUSED

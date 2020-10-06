@@ -336,10 +336,16 @@ class IdealsImporter
       # Skip submitterless items (items whose submitting user has not been
       # imported due to not being a UofI user).
       if User.exists?(submitter_id)
+        if withdrawn
+          stage = Item::Stages::WITHDRAWN
+        elsif submitting
+          stage = Item::Stages::SUBMITTING
+        else
+          stage = Item::Stages::APPROVED
+        end
         Item.create!(id:                    id,
                      submitter_id:          submitter_id,
-                     submitting:            submitting,
-                     withdrawn:             withdrawn,
+                     stage:                 stage,
                      discoverable:          discoverable,
                      primary_collection_id: collection_id) unless Item.exists?(id)
       end

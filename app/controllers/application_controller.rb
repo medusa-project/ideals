@@ -158,7 +158,7 @@ class ApplicationController < ActionController::Base
 
       # Submissions (outside of the submission view)
       if controller_name != "submissions" && action_name != "edit"
-        count = current_user.submitted_items.where(submitting: true).count
+        count = current_user.submitted_items.where(stage: Item::Stages::SUBMITTING).count
         if count > 0
           @list.items << {
               message: "Resume #{count} #{"submission".pluralize(count)}",

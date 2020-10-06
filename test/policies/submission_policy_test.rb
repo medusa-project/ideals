@@ -49,7 +49,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = UserContext.new(user, Role::NO_LIMIT)
     @item.submitter = user
-    @item.submitting = true
+    @item.stage     = Item::Stages::SUBMITTING
     policy = SubmissionPolicy.new(context, @item)
     assert policy.complete?
   end
@@ -58,7 +58,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = UserContext.new(user, Role::NO_LIMIT)
     @item.submitter = user
-    @item.submitting = false
+    @item.stage     = Item::Stages::APPROVED
     policy = SubmissionPolicy.new(context, @item)
     assert !policy.complete?
   end
@@ -125,8 +125,8 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes the submission owner if the item is submitting" do
     user    = users(:norights)
     context = UserContext.new(user, Role::NO_LIMIT)
-    @item.submitter  = user
-    @item.submitting = true
+    @item.submitter = user
+    @item.stage     = Item::Stages::SUBMITTING
     policy = SubmissionPolicy.new(context, @item)
     assert policy.destroy?
   end
@@ -135,7 +135,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = UserContext.new(user, Role::NO_LIMIT)
     @item.submitter = user
-    @item.submitting = false
+    @item.stage     = Item::Stages::APPROVED
     policy = SubmissionPolicy.new(context, @item)
     assert !policy.destroy?
   end
@@ -203,7 +203,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = UserContext.new(user, Role::NO_LIMIT)
     @item.submitter = user
-    @item.submitting = true
+    @item.stage     = Item::Stages::SUBMITTING
     policy = SubmissionPolicy.new(context, @item)
     assert policy.edit?
   end
@@ -212,7 +212,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = UserContext.new(user, Role::NO_LIMIT)
     @item.submitter = user
-    @item.submitting = false
+    @item.stage     = Item::Stages::APPROVED
     policy = SubmissionPolicy.new(context, @item)
     assert !policy.edit?
   end
@@ -280,7 +280,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = UserContext.new(user, Role::NO_LIMIT)
     @item.submitter = user
-    @item.submitting = true
+    @item.stage     = Item::Stages::SUBMITTING
     policy = SubmissionPolicy.new(context, @item)
     assert policy.update?
   end
@@ -289,7 +289,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = UserContext.new(user, Role::NO_LIMIT)
     @item.submitter = user
-    @item.submitting = false
+    @item.stage     = Item::Stages::APPROVED
     policy = SubmissionPolicy.new(context, @item)
     assert !policy.update?
   end

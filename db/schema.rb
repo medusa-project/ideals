@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_18_151710) do
+ActiveRecord::Schema.define(version: 2020_10_05_160622) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -98,16 +98,14 @@ ActiveRecord::Schema.define(version: 2020_09_18_151710) do
   end
 
   create_table "items", force: :cascade do |t|
-    t.boolean "withdrawn", default: false, null: false
-    t.boolean "discoverable", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "primary_collection_id"
     t.bigint "submitter_id"
-    t.boolean "submitting", default: true, null: false
+    t.boolean "discoverable", default: false, null: false
+    t.integer "stage", default: 0, null: false
     t.index ["discoverable"], name: "index_items_on_discoverable"
-    t.index ["submitting"], name: "index_items_on_submitting"
-    t.index ["withdrawn"], name: "index_items_on_withdrawn"
+    t.index ["stage"], name: "index_items_on_stage"
   end
 
   create_table "local_identities", force: :cascade do |t|

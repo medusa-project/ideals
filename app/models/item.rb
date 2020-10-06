@@ -5,29 +5,8 @@
 #
 # # Lifecycle
 #
-# An item goes through several "life stages":
-#
-# 1. Creation. This happens during {SubmissionsController submission}. It also
-#    happens one time only during the {IdealsImporter migration of data from
-#    IDEALS-DSpace into this application}.
-#     a. In the former case, the item is marked `submitting = true`,
-#        `withdrawn = false`, `discoverable = false`.
-#     b. In the latter case, the above properties are carried over from
-#        IDEALS-DSpace.
-# 2. Submission. In this stage, its properties are edited, metadata is
-#    ascribed, and bitstreams are attached/detached.
-# 3. Submission complete.
-# 4. Ingest into Medusa, where the bitstreams' corresponding files/objects are
-#    moved into Medusa.
-# 5. Withdrawal. This is an optional stage.
-#
-# |                     | submitting | discoverable | withdrawn |
-# |---------------------|------------|--------------|-----------|
-# | Creation            |    true    |    false     |   false   |
-# | Submission          |    true    |    false     |   false   |
-# | Submission Complete |    false   |     true     |   false   |
-# | Ingest Into Medusa  |    false   |     true     |   false   |
-# | Withdrawal          |    false   |    false     |   false   |
+# An item proceeds through several "life stages", indicated by the {stage}
+# attribute and documented in the {Stages} class.
 #
 # # Indexing
 #
@@ -43,13 +22,10 @@
 #                           and its metadata should not be available except to
 #                           administrators.
 # * `primary_collection_id` Foreign key to {Collection}.
+# * `stage`                 Lifecycle stage, whose value is one of the {Stages}
+#                           constant values.
 # * `submitter_id`          Foreign key to {User}.
-# * `submitting`            Indicates that the item is in the submission
-#                           process. This is more-or-less an inversion of
-#                           DSpace's `in_archive` property.
 # * `updated_at`            Managed by ActiveRecord.
-# * `withdrawn`             An administrator has made the item inaccessible,
-#                           but not totally deleted it.
 #
 # # Relationships
 #
@@ -80,11 +56,55 @@ class Item < ApplicationRecord
     LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     PRIMARY_COLLECTION = "i_primary_collection_id"
     PRIMARY_UNIT       = "i_primary_unit_id"
+    STAGE              = "i_stage"
     SUBMITTER          = "i_submitter_id"
-    SUBMITTING         = "b_submitting"
     UNIT_TITLES        = "k_unit_titles"
     UNITS              = "i_unit_ids"
-    WITHDRAWN          = "b_withdrawn"
+  end
+
+  ##
+  # Class containing valid values for the {Item#stage} attribute.
+  #
+  class Stages
+    ##
+    # A newly created item. An item may not be in this stage for long (or maybe
+    # even at all) as most items are created at the beginning of a submission,
+    # which would place them in the {SUBMITTING} stage. This stage allows for
+    # items to be created outside of a submission, whether or not that ends up
+    # being a use case.
+    NEW        = 0
+
+    ##
+    # An item that is going through the submission workflow. In this stage, its
+    # properties are edited, metadata is ascribed, and {Bitstream}s are
+    # attached/detached. (The bitstreams are staged in the application S3
+    # bucket.)
+    SUBMITTING = 100
+
+    ##
+    # An item that has gone through the submission workflow but has not yet
+    # been reviewed.
+    SUBMITTED  = 200
+
+    ##
+    # An item that has completed the submission workflow and been approved by
+    # an administrator. Once approved, its bitstreams are ingested into Medusa
+    # and their staging counterparts deleted.
+    APPROVED   = 300
+
+    ##
+    # An item that has completed the submission workflow and been rejected by
+    # an administrator.
+    #REJECTED   = 350
+
+    ##
+    # An item that has been withdrawn, a.k.a. made no longer discoverable, by
+    # an administrator.
+    WITHDRAWN  = 400
+
+    def self.all
+      Item::Stages.constants.map{ |c| Item::Stages::const_get(c) }
+    end
   end
 
   has_many :bitstreams
@@ -100,6 +120,8 @@ class Item < ApplicationRecord
 
   before_destroy :restrict_in_archive_deletion
 
+  validates :stage, inclusion: { in: Stages.all }
+
   ##
   # @param submitter [User]
   # @param primary_collection_id [Integer]
@@ -108,7 +130,7 @@ class Item < ApplicationRecord
   def self.new_for_submission(submitter:, primary_collection_id:)
     item = Item.create!(submitter: submitter,
                         primary_collection_id: primary_collection_id,
-                        submitting: true,
+                        stage: Item::Stages::SUBMITTING,
                         discoverable: false)
     # For every element with placeholder text in the item's effective
     # submission profile, ascribe a metadata element with a value of that text.
@@ -178,12 +200,19 @@ class Item < ApplicationRecord
   end
 
   ##
+  # @return [Boolean] Whether {stage} is set to {Stages#APPROVED}.
+  #
+  def approved?
+    self.stage == Stages::APPROVED
+  end
+
+  ##
   # @return [Hash] Indexable JSON representation of the instance.
   #
   def as_indexed_json
     doc = {}
     doc[IndexFields::CLASS]              = self.class.to_s
-    collections = self.all_collections
+    collections                          = self.all_collections
     doc[IndexFields::COLLECTION_TITLES]  = collections.map(&:title)
     doc[IndexFields::COLLECTIONS]        = collections.map(&:id)
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
@@ -192,19 +221,16 @@ class Item < ApplicationRecord
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
     doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection_id
     doc[IndexFields::PRIMARY_UNIT]       = self.primary_unit&.id
+    doc[IndexFields::STAGE]              = self.stage
     doc[IndexFields::SUBMITTER]          = self.submitter_id
-    doc[IndexFields::SUBMITTING]         = self.submitting
-    units = self.all_units
+    units                                = self.all_units
     doc[IndexFields::UNIT_TITLES]        = units.map(&:title)
     doc[IndexFields::UNITS]              = units.map(&:id)
-    doc[IndexFields::WITHDRAWN]          = self.withdrawn
 
     # Index ascribed metadata elements into dynamic fields.
     self.elements.each do |element|
       field = element.registered_element.indexed_name
-      unless doc[field]&.respond_to?(:each)
-        doc[field] = []
-      end
+      doc[field] = [] unless doc[field]&.respond_to?(:each)
       doc[field] << element.string[0..ElasticsearchClient::MAX_KEYWORD_FIELD_LENGTH]
     end
 
@@ -276,7 +302,7 @@ class Item < ApplicationRecord
   #                           {Collection}.
   #
   def metadata_profile
-    primary_collection.effective_metadata_profile
+    primary_collection&.effective_metadata_profile
   end
 
   ##
@@ -301,6 +327,20 @@ class Item < ApplicationRecord
           (ae.string.present? || ae.uri.present?) }
     end
     true
+  end
+
+  ##
+  # @return [Boolean] Whether {stage} is set to {Stages#SUBMITTING}.
+  #
+  def submitting?
+    self.stage == Stages::SUBMITTING
+  end
+
+  ##
+  # @return [Boolean] Whether {stage} is set to {Stages#WITHDRAWN}.
+  #
+  def withdrawn?
+    self.stage == Stages::WITHDRAWN
   end
 
 

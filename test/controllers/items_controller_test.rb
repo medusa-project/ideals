@@ -147,9 +147,9 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     Item.reindex_all
     ElasticsearchClient.instance.refresh
 
-    expected_count = Item.where(withdrawn: false,
-                                discoverable: true,
-                                submitting: false).count
+    expected_count = Item.where(discoverable: true).
+        where.not(stage: [Item::Stages::SUBMITTING, Item::Stages::WITHDRAWN]).
+        count
 
     get items_path(format: :json)
     struct = JSON.parse(response.body)

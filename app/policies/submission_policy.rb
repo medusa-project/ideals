@@ -41,7 +41,7 @@ class SubmissionPolicy < ApplicationPolicy
       return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
       # all users can update their own submissions
       return true if role >= Role::COLLECTION_SUBMITTER &&
-          user == item.submitter && item.submitting
+          user == item.submitter && item.submitting?
 
       item.all_collections.each do |collection|
         # collection managers can update items within their collections

@@ -26,9 +26,9 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
     Item.reindex_all
     ElasticsearchClient.instance.refresh
 
-    expected_count = Item.where(withdrawn: false,
-                                discoverable: true,
-                                submitting: false).count
+    expected_count = Item.where(discoverable: true).
+        where.not(stage: [Item::Stages::SUBMITTING, Item::Stages::WITHDRAWN]).
+        count
 
     get root_path
     assert response.body.include?("Search across #{expected_count} items")

@@ -1,56 +1,49 @@
 item1:
   submitter: admin
-  submitting: false
+  stage: <%= Item::Stages::APPROVED %>
   discoverable: true
-  withdrawn: false
   primary_collection: collection1
   collections:
     - collection1
 
 in_medusa:
   submitter: admin
-  submitting: false
+  stage: <%= Item::Stages::APPROVED %>
   discoverable: true
-  withdrawn: false
   collections:
     - collection1
 
 described:
   submitter: admin
-  submitting: false
+  stage: <%= Item::Stages::APPROVED %>
   discoverable: true
-  withdrawn: false
   collections:
     - collection1
 
 undescribed:
   submitter: admin
-  submitting: false
+  stage: <%= Item::Stages::APPROVED %>
   discoverable: true
-  withdrawn: false
   collections:
     - collection1
 
 submitting:
   submitter: admin
-  submitting: true
+  stage: <%= Item::Stages::SUBMITTING %>
   discoverable: false
-  withdrawn: false
   collections:
     - collection1
 
 undiscoverable:
   submitter: admin
-  submitting: false
+  stage: <%= Item::Stages::APPROVED %>
   discoverable: false
-  withdrawn: false
   collections:
     - collection1
 
 withdrawn:
   submitter: admin
-  submitting: false
+  stage: <%= Item::Stages::WITHDRAWN %>
   discoverable: false
-  withdrawn: false
   collections:
     - collection1

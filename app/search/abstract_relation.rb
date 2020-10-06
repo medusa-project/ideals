@@ -46,6 +46,7 @@ class AbstractRelation
     @exact_match  = false
     @filters      = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @limit        = ElasticsearchClient::MAX_RESULT_WINDOW
+    @must_nots    = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @orders       = [] # Array<Hash<Symbol,String>> with :field and :direction keys
     # Hash<Symbol,String> Hash with :field and :query keys
     # Note to subclass implementations: the raw value should not be passed to
@@ -120,6 +121,7 @@ class AbstractRelation
   # @param value [Object] Single value or an array of "OR" values.
   # @return [self]
   # @see remove_filter
+  # @see must_not
   #
   def filter(field, value)
     @filters << [field, value]
@@ -133,6 +135,20 @@ class AbstractRelation
   #
   def limit(limit)
     @limit = limit.to_i
+    @loaded = false
+    self
+  end
+
+  ##
+  # Inverse of {filter}.
+  #
+  # @param field [String]
+  # @param value [Object] Single value or an array of "OR" values.
+  # @return [self]
+  # @see filter
+  #
+  def must_not(field, value)
+    @must_nots << [field, value]
     @loaded = false
     self
   end
@@ -407,6 +423,25 @@ class AbstractRelation
                       else
                         j.term do
                           j.set! key_value[0], key_value[1]
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+              if @must_nots.any?
+                j.must_not do
+                  @must_nots.each do |key_value|
+                    unless key_value[1].nil?
+                      j.child! do
+                        if key_value[0].respond_to?(:each)
+                          j.terms do
+                            j.set! key_value[0], key_value[1]
+                          end
+                        else
+                          j.term do
+                            j.set! key_value[0], key_value[1]
+                          end
                         end
                       end
                     end
