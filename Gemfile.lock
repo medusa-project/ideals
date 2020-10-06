@@ -189,7 +189,7 @@ GEM
     net-scp (2.0.0)
       net-ssh (>= 2.6.5, < 6.0.0)
     net-ssh (5.2.0)
-    nio4r (2.5.2)
+    nio4r (2.5.4)
     nokogiri (1.10.9)
       mini_portile2 (~> 2.4.0)
     omniauth (1.9.1)
@@ -212,7 +212,7 @@ GEM
     pg (1.2.3)
     progress_job (0.0.4)
       delayed_job
-    puma (4.3.3)
+    puma (5.0.2)
       nio4r (~> 2.0)
     pundit (2.1.0)
       activesupport (>= 3.0.0)
@@ -343,7 +343,7 @@ DEPENDENCIES
   yard
 
 RUBY VERSION
-   ruby 2.7.1p83
+   ruby 2.7.2p137
 
 BUNDLED WITH
    2.1.4
