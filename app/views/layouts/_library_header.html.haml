@@ -50,6 +50,7 @@
 
           -# Administration menu
           .btn-group{role: "group"}
+            - ir = policy(Item).review?
             - re = policy(RegisteredElement).index?
             - mp = policy(MetadataProfile).index?
             - sp = policy(SubmissionProfile).index?
@@ -64,6 +65,11 @@
                 %i.fa.fa-lock-open
                 Administration
               .dropdown-menu{"aria-labelledby": "administration-dropdown"}
+                - if ir
+                  = link_to items_review_path, class: "dropdown-item" do
+                    %i.fa.fa-tasks
+                    Review Submitted Items
+                .dropdown-divider
                 - if re
                   = link_to registered_elements_path, class: "dropdown-item" do
                     = icon_for(RegisteredElement)
@@ -103,7 +109,10 @@
           .dropdown-menu.dropdown-menu-right{"aria-labelledby": "user-dropdown"}
             - if to_do_list.total_items > 0
               - to_do_list.items.each do |item|
-                %li= link_to(item[:message], item[:url], class: "dropdown-item")
+                %li
+                  = link_to(item[:url], class: "dropdown-item") do
+                    %i.fa.fa-exclamation-triangle.text-danger
+                    = item[:message]
               %li.dropdown-divider
             = link_to user_path(current_user), class: "dropdown-item" do
               = icon_for(:info)

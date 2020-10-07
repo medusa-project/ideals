@@ -95,7 +95,7 @@ class Item < ApplicationRecord
     ##
     # An item that has completed the submission workflow and been rejected by
     # an administrator.
-    #REJECTED   = 350
+    REJECTED   = 350
 
     ##
     # An item that has been withdrawn, a.k.a. made no longer discoverable, by

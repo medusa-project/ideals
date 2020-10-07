@@ -385,6 +385,58 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.index?
   end
 
+  # process_review?()
+
+  test "process_review?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.process_review?
+  end
+
+  test "process_review?() does not authorize non-sysadmins" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.process_review?
+  end
+
+  test "process_review?() authorizes sysadmins" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy = ItemPolicy.new(context, @item)
+    assert policy.process_review?
+  end
+
+  test "process_review?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.process_review?
+  end
+
+  # review?()
+
+  test "review?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.review?
+  end
+
+  test "review?() does not authorize non-sysadmins" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.review?
+  end
+
+  test "review?() authorizes sysadmins" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy = ItemPolicy.new(context, @item)
+    assert policy.review?
+  end
+
+  test "review?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.review?
+  end
+
   # show?()
 
   test "show?() returns true with a nil user" do

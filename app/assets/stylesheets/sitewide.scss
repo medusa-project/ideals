@@ -14,8 +14,14 @@
 }
 
 .resource-list {
+  .check {
+    height: 80px;
+    display: flex;
+    align-items: center;
+  }
   .thumbnail {
     font-size: 4em;
+    height: 80px;
     a {
       color: $gray-600;
       display: flex;

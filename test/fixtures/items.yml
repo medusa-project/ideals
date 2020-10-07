@@ -34,6 +34,13 @@ submitting:
   collections:
     - collection1
 
+submitted:
+  submitter: admin
+  stage: <%= Item::Stages::SUBMITTED %>
+  discoverable: false
+  collections:
+    - collection1
+
 undiscoverable:
   submitter: admin
   stage: <%= Item::Stages::APPROVED %>

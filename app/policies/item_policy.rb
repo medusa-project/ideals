@@ -87,6 +87,17 @@ class ItemPolicy < ApplicationPolicy
     true
   end
 
+  def process_review?
+    review?
+  end
+
+  def review?
+    if user
+      return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
+    end
+    false
+  end
+
   def show?
     (role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?) ||
         (@item.approved? && @item.discoverable)

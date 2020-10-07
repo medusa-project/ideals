@@ -48,8 +48,6 @@ class SubmissionsController < ApplicationController
       render plain: "Item has no associated bitstreams.",
              status: :bad_request and return
     end
-    @resource.assign_handle
-    @resource.ingest_into_medusa
     @resource.update!(stage: Item::Stages::SUBMITTED)
   end
 

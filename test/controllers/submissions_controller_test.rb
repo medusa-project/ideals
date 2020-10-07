@@ -63,38 +63,14 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  test "complete() creates an associated handle" do
-    item = items(:submitting)
-    assert_nil item.handle
-    log_in_as(item.submitter)
-    post submission_complete_path(item)
-
-    item.reload
-    assert_not_nil item.handle
-  end
-
-  test "complete() sends an ingest message to Medusa" do
-    item = items(:submitting)
-    assert_nil item.handle
-    log_in_as(item.submitter)
-    post submission_complete_path(item)
-
-    item.reload
-    item.bitstreams.each do
-      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
-        assert message.present?
-      end
-    end
-  end
-
-  test "complete() updates the item's submitting attribute" do
+  test "complete() updates the item's stage attribute" do
     item = items(:submitting)
     assert item.submitting?
     log_in_as(item.submitter)
     post submission_complete_path(item)
 
     item.reload
-    assert !item.submitting?
+    assert_equal Item::Stages::SUBMITTED, item.stage
   end
 
   # create()

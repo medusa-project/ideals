@@ -43,6 +43,8 @@ Rails.application.routes.draw do
     match "/reject", to: "invitees#reject", via: [:patch, :post]
     match "/resend-email", to: "invitees#resend_email", via: [:patch, :post]
   end
+  match "/items/review", to: "items#review", via: :get
+  match "/items/process_review", to: "items#process_review", via: :post
   resources :items, except: :new do
     resources :bitstreams, only: [:create, :destroy, :show] do
       match "/data", to: "bitstreams#data", via: :get

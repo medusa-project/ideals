@@ -156,7 +156,19 @@ class ApplicationController < ActionController::Base
         end
       end
 
-      # Submissions (outside of the submission view)
+      # Items pending review
+      if policy(Item).review?
+        count = Item.where(stage: Item::Stages::SUBMITTED).count
+        if count > 0
+          @list.items << {
+              message: "Review #{count} #{"item".pluralize(count)}",
+              url: items_review_path
+          }
+          @list.total_items += count
+        end
+      end
+
+      # Submissions to complete (outside of the submission view)
       if controller_name != "submissions" && action_name != "edit"
         count = current_user.submitted_items.where(stage: Item::Stages::SUBMITTING).count
         if count > 0

@@ -80,6 +80,56 @@ class ItemsController < ApplicationController
   end
 
   ##
+  # Processes form input from {review}.
+  #
+  # Responds to `POST /items/process_review`
+  #
+  def process_review
+    authorize Item
+    if params[:items]&.respond_to?(:each)
+      case params[:verb]
+      when "approve"
+        params[:items].each do |item_id|
+          item = Item.find(item_id)
+          item.assign_handle
+          item.ingest_into_medusa
+          item.update!(stage: Item::Stages::APPROVED)
+        end
+        flash['success'] = "Approved #{params[:items].length} items."
+      when "reject"
+        params[:items].each do |item_id|
+          item = Item.find(item_id)
+          item.update!(stage: Item::Stages::REJECTED)
+        end
+        flash['success'] = "Rejected #{params[:items].length} items."
+      else
+        flash['error'] = "Unrecognized verb (this is probably a bug)"
+        redirect_back fallback_location: items_review_path and return
+      end
+      ElasticsearchClient.instance.refresh
+    end
+    redirect_back fallback_location: items_review_path
+  end
+
+  ##
+  # Responds to `GET /items/review`
+  #
+  def review
+    authorize Item
+    @start  = results_params[:start].to_i
+    @window = window_size
+    @items  = Item.search.
+        aggregations(false).
+        filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
+        #order(Item::IndexFields::CREATED => :desc).
+        start(@start).
+        limit(@window)
+    @count            = @items.count
+    @current_page     = @items.page
+    @permitted_params = results_params
+  end
+
+  ##
   # Responds to `GET /items/:id`
   #
   def show

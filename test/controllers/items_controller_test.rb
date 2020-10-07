@@ -156,6 +156,99 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_equal expected_count, struct['numResults']
   end
 
+  # process_review()
+
+  test "process_review() redirects to login page for logged-out users" do
+    post items_process_review_path
+    assert_redirected_to login_path
+  end
+
+  test "process_review() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    post items_process_review_path
+    assert_response :forbidden
+  end
+
+  test "process_review() redirects to the reivew page for authorized users" do
+    log_in_as(users(:admin))
+    post items_process_review_path
+    assert_redirected_to items_review_path
+  end
+
+  test "process_review() approves items" do
+    log_in_as(users(:admin))
+    item = items(:submitted)
+    post items_process_review_path,
+         params: {
+             items: [item.id],
+             verb: "approve"
+         }
+    assert_redirected_to items_review_path
+    item.reload
+    assert_equal Item::Stages::APPROVED, item.stage
+  end
+
+  test "process_review() creates an associated handle for approved items" do
+    item = items(:submitted)
+    assert_nil item.handle
+    log_in_as(users(:admin))
+    post items_process_review_path,
+         params: {
+             items: [item.id],
+             verb: "approve"
+         }
+    item.reload
+    assert_not_nil item.handle
+  end
+
+  test "process_review() sends an ingest message to Medusa for approved items" do
+    item = items(:submitted)
+    log_in_as(users(:admin))
+    post items_process_review_path,
+         params: {
+             items: [item.id],
+             verb: "approve"
+         }
+    item.reload
+    item.bitstreams.each do
+      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+        assert message.present?
+      end
+    end
+  end
+
+  test "process_review() rejects items" do
+    log_in_as(users(:admin))
+    item = items(:submitted)
+    post items_process_review_path,
+         params: {
+             items: [item.id],
+             verb: "reject"
+         }
+    assert_redirected_to items_review_path
+    item.reload
+    assert_equal Item::Stages::REJECTED, item.stage
+  end
+
+  # review()
+
+  test "review() redirects to login page for logged-out users" do
+    get items_review_path
+    assert_redirected_to login_path
+  end
+
+  test "review() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get items_review_path
+    assert_response :forbidden
+  end
+
+  test "review() returns HTTP 200" do
+    log_in_as(users(:admin))
+    get items_review_path
+    assert_response :ok
+  end
+
   # show()
 
   test "show() returns HTTP 200" do
