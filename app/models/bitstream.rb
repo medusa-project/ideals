@@ -124,6 +124,7 @@ class Bitstream < ApplicationRecord
   # Deletes the corresponding object from the application S3 bucket.
   #
   def delete_from_staging
+    return unless self.exists_in_staging
     s3_client.delete_object(bucket: ::Configuration.instance.aws[:bucket],
                             key:    self.staging_key)
   rescue Aws::S3::Errors::NotFound
