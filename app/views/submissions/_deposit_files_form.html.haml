@@ -3,40 +3,7 @@
 = form_for(@resource, url: submission_path(@resource), remote: true,
            html: { id: "files-form" }) do |f|
   = token_tag(nil)
-
-  #files-messages.error-messages
-    -# populated via ajax by shared/_validation_messages.js.erb
-
-  -# Read in JavaScript to determine where to upload files to.
-  = hidden_field_tag "item_bitstreams_uri", item_bitstreams_url(f.object)
-
-  -# This table is modified by DepositForm/FileTable.addFile() (JavaScript).
-  -# Its structure must be kept in sync with that code.
-  %table.table.table-sm.files
-    %tbody
-      - @resource.bitstreams.order(:original_filename).each do |bs|
-        %tr{"data-uri":      item_bitstream_path(@resource, bs),
-            "data-filename": bs.original_filename}
-          %td
-            %i.fa.fa-check.text-success
-          %td= bs.original_filename
-          %td= number_to_human_size(bs.length)
-          %td
-          %td
-            %button.btn.btn-sm.btn-danger.remove
-              %i.fa.fa-minus
-              Remove
-
-  -# This input is hidden via CSS. JavaScript sends #file-dropzone click events
-  -# to it in order to open a file selection dialog.
-  %input#file-chooser{type: "file", multiple: true}
-
-  #file-drop-zone.bg-light
-    %div.mb-3
-      %i.fa.fa-upload
-      Attach files (not folders) by dropping them here or selecting them.
-    %div
-      %small Filenames must be unique, and directory structure is not preserved.
+  = render partial: "deposit_files_form_uploads", locals: { item: f.object }
 
 = form_for(@resource, url: submission_path(@resource), remote: true,
            html: { id: "completion-form" }) do |f|

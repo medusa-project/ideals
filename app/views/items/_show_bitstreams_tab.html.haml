@@ -1,3 +1,12 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@item).edit_bitstreams?
+    %button.btn.btn-light.edit-item-bitstreams{"data-item-id": @item.id,
+                                               "data-target": "#edit-item-bitstreams-modal",
+                                               "data-toggle": "modal",
+                                               role: "button"}
+      %i.fas.fa-pencil-alt
+      Edit Bitstreams
+
 %ul.list-unstyled
   - @bitstreams.each do |bs|
     %li.media.mb-3
@@ -44,3 +53,8 @@
           - else
             Unknown
           = number_to_human_size(bs.length)
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-item-bitstreams-modal",
+                   title: "Edit Bitstreams",
+                   size: "lg" }

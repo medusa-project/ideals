@@ -67,6 +67,26 @@ const IDEALS = {
         };
 
         /**
+         * Sends an message to Medusa to ingest a file that exists in staging.
+         *
+         * @param uri [String]         Bitstream URI.
+         * @param onSuccess {Function} Function accepting a string argument.
+         *                             The string is the URI of the created
+         *                             bitstream.
+         * @param onError {Function}   Function accepting an {XMLHttpRequest}
+         *                             argument.
+         */
+        this.post = function(uri, onSuccess, onError) {
+            $.ajax({
+                type: "POST",
+                url: uri,
+                headers: { "X-CSRF-Token": CSRF_TOKEN },
+                success: onSuccess,
+                error: onError
+            });
+        };
+
+        /**
          * Sends a file to the server, creating a new Bitstream attached to an
          * Item.
          *
@@ -194,6 +214,303 @@ const IDEALS = {
                 }
             });
         }
+    },
+
+    /**
+     * Manages the file-upload feature. This  consists of a table displaying
+     * all of an item's bitstreams along with remove buttons for each, as well
+     * as a drop zone for uploading files which, once uploaded, appear in the
+     * table.
+     *
+     * The file upload feature is used in both public submission view and
+     * private edit-item view.
+     *
+     * To simplify the implementation, we try to reject uploads of directories.
+     *
+     * @constructor
+     */
+    ItemFileUploader: function() {
+        const DISALLOWED_LC_FILENAMES = new Set(); // lowercase for easy checking
+        DISALLOWED_LC_FILENAMES.add(".ds_store");
+        DISALLOWED_LC_FILENAMES.add("thumbs.db");
+
+        const filesForm       = $("#files-form");
+        const filesTable      = filesForm.find("table.files");
+        let numUploadingFiles = 0;
+        let numUploadedFiles  = filesTable.find("tr").length;
+
+        /**
+         * Adds a file to the table and uploads it to staging. If a file with
+         * the same name already exists in the table, the upload is cancelled
+         * and an alert is shown.
+         *
+         * @param file {File}
+         */
+        const addFile = function(file) {
+            // Reject empty files
+            if (file.size < 1) {
+                return;
+            }
+            // If the file's name is disallowed
+            if (DISALLOWED_LC_FILENAMES.has(file.name.toLowerCase())) {
+                return;
+            }
+            // If a file with the same name has already been added
+            if (getFilenames().has(file.name)) {
+                alert("A file named " + file.name +
+                    " has already been uploaded. Please rename it and try again.");
+                return;
+            }
+            // All clear.
+            // N.B.: This structure must be kept in sync with the structure in
+            // the view template (deposit_files_form_uploads).
+            filesTable.append("<tr data-filename='" + file.name + "'>" +
+                "    <td></td>" +
+                "    <td>" + file.name + "</td>" +
+                "    <td>" + IDEALS.Util.formatBytes(file.size) + "</td>" +
+                "    <td>" +
+                "        <div class='progress'>" +
+                "            <div class='progress-bar' role='progressbar' " +
+                "                 style='width: 0' aria-valuenow='0'" +
+                "                 aria-valuemin='0' aria-valuemax='100'></div>" +
+                "        </div>" +
+                "    </td>" +
+                "    <td></td>" + // ingest button (admin only)
+                "    <td></td>" + // remove button
+                "</tr>");
+            uploadFile(file);
+        };
+
+        /**
+         * @returns {Set<String>}
+         */
+        const getFilenames = function() {
+            const filenames = new Set();
+            filesTable.find("tr").each(function() {
+                filenames.add($(this).data("filename"));
+            });
+            return filenames;
+        };
+
+        /**
+         * To be called when a file upload is complete.
+         *
+         * @param row {jQuery}
+         * @param bitstreamURI {String}
+         */
+        const markRowUploadToStagingComplete = function(row, bitstreamURI) {
+            row.data("uri", bitstreamURI);
+            row.find("td:first-child").html("<i class='fa fa-check text-success'></i>");
+            row.find(".progress").remove();
+
+            // "Ingest Into Medusa" button (only available to admins)
+            if (window.location.pathname.match(/^\/items\/\d+/)) {
+                const ingestCell = row.find("td:nth-child(5)");
+                ingestCell.html(
+                    "<button class='btn btn-sm btn-light ingest' type='button'>" +
+                    "   <i class='fa fa-upload'></i> Ingest Into Medusa" +
+                    "</button>");
+                ingestCell.find("button.ingest").on("click", function () {
+                    onIngestFileButtonClicked($(this));
+                });
+            }
+            // "Remove" button
+            const removalCell = row.find("td:last-child");
+            removalCell.html(
+                "<button class='btn btn-sm btn-danger remove' type='button'>" +
+                "   <i class='fa fa-minus'></i> Remove" +
+                "</button>");
+            removalCell.find("button.remove").on("click", function() {
+                onRemoveFileButtonClicked($(this));
+            });
+        };
+
+        /**
+         * To be called when a file upload fails.
+         *
+         * @param row {jQuery}
+         */
+        const markRowUploadToStagingFailed = function(row) {
+            row.find("td:first-child").html("<i class='fa fa-times text-danger'></i>");
+            row.find(".progress").remove();
+
+            // "Ingest Into Medusa" button (only available to admins)
+            if (window.location.pathname.match(/^\/items\/\d+/)) {
+                const ingestCell = row.find("td:nth-child(5)");
+                ingestCell.html(
+                    "<button class='btn btn-sm btn-light ingest' type='button'>" +
+                    "   <i class='fa fa-upload'></i> Ingest Into Medusa" +
+                    "</button>");
+                ingestCell.find("button.ingest").on("click", function () {
+                    onIngestFileButtonClicked($(this));
+                });
+            }
+            // "Remove" button
+            const removalCell = row.find("td:last-child");
+            removalCell.html(
+                "<button class='btn btn-sm btn-danger remove' type='button'>" +
+                "   <i class='fa fa-minus'></i> Remove" +
+                "</button>");
+            removalCell.find("button.remove").on("click", function() {
+                onRemoveFileButtonClicked($(this));
+            });
+        };
+
+        /**
+         * @returns {number}
+         */
+        this.numUploadedFiles = function() {
+            return numUploadedFiles;
+        };
+
+        /**
+         * @returns {number}
+         */
+        this.numUploadingFiles = function() {
+            return numUploadingFiles;
+        };
+
+        /**
+         * Ingests a file into Medusa.
+         *
+         * @param button {jQuery}
+         */
+        const onIngestFileButtonClicked = function(button) {
+            const row          = button.parents("tr");
+            const bitstreamURI = row.data("uri") + "/ingest";
+            const onSuccess    = function() {
+                button.fadeOut(IDEALS.FADE_TIME, function() {
+                    button.parent().html("<span class='text-success'>" +
+                        "<i class='fa fa-check'></i> Message Sent</span>");
+                    row.find("button.remove").remove();
+                    button.remove();
+                });
+            };
+            const onError      = function(xhr, status, error) {
+                console.error(xhr);
+                console.error(status);
+                console.error(error);
+                alert("There was an error ingesting the file. If this error " +
+                    "persists, please contact IDEALS staff.");
+            };
+            new IDEALS.Client().post(bitstreamURI, onSuccess, onError);
+        };
+
+        /**
+         * Removes a file from staging.
+         *
+         * @param button {jQuery}
+         */
+        const onRemoveFileButtonClicked = function(button) {
+            const row          = button.parents("tr");
+            const bitstreamURI = row.data("uri");
+            const onSuccess    = function() {
+                row.fadeOut(IDEALS.FADE_TIME, function() {
+                    row.remove();
+                    numUploadedFiles--;
+                });
+            };
+            const onError      = function(xhr, status, error) {
+                console.error(xhr);
+                console.error(status);
+                console.error(error);
+                alert("There was an error removing the file. If this error " +
+                    "persists, please contact IDEALS staff.");
+            };
+            new IDEALS.Client().delete(bitstreamURI, onSuccess, onError);
+        };
+
+        const uploadFile = function(file) {
+            const fileRow     = filesTable.find("tr[data-filename='" + file.name + "']");
+            const progressBar = fileRow.find(".progress-bar");
+            numUploadingFiles++;
+
+            const onProgressChanged = function(e) {
+                const complete = Math.round(e.loaded / e.total * 100);
+                progressBar.attr("aria-valuenow", complete);
+                progressBar.css("width", complete + "%");
+            };
+            const onComplete = function(bitstreamURI) {
+                numUploadingFiles--;
+                numUploadedFiles++;
+                markRowUploadToStagingComplete(fileRow, bitstreamURI);
+            };
+            const onError = function(xhr) {
+                numUploadingFiles--;
+                markRowUploadToStagingFailed(fileRow);
+            };
+            new IDEALS.Client().uploadFile(file,
+                $("input[name=item_bitstreams_uri]").val(),
+                onProgressChanged, onComplete, onError);
+        };
+
+        filesTable.find("button.ingest").on("click", function(e) {
+            e.preventDefault();
+            onIngestFileButtonClicked($(this));
+        });
+        filesTable.find("button.remove").on("click", function(e) {
+            e.preventDefault();
+            onRemoveFileButtonClicked($(this));
+        });
+
+        // The file chooser is a file input, hidden via CSS, that is virtually
+        // clicked when the drop zone is clicked in order to open a file
+        // selection dialog.
+        const fileChooser = $("#file-chooser");
+        fileChooser.on("change", function() {
+            const files = this.files;
+            for (let i = 0; i < files.length; i++) {
+                addFile(files[i]);
+            }
+        });
+
+        const dropZone = $("#file-drop-zone");
+        dropZone.on("dragover", function(e) {
+            e.preventDefault();
+            e.originalEvent.dataTransfer.dropEffect = "copy";
+        });
+        dropZone.on("click", function(e) {
+            e.preventDefault();
+            fileChooser.click();
+        });
+        dropZone.on("drop", function(e) {
+            e.preventDefault();
+            e = e.originalEvent;
+            if (e.dataTransfer.items) {
+                for (let i = 0; i < e.dataTransfer.items.length; i++) {
+                    const item = e.dataTransfer.items[i];
+                    // We want to distinguish between files and directories
+                    // and ignore the directories. One would think that
+                    // checking the `kind` property here would be all that is
+                    // needed, but one would be forgetting that this is cross-
+                    // browser JavaScript we are dealing with.
+                    if (item.kind === "file") {
+                        // So we utilize a weird technique by which we employ a
+                        // FileReader to try to read the file. If it's a
+                        // directory, FileReader should conk out somehow. But
+                        // again, this is cross-browser JavaScript, so maybe it
+                        // won't.
+                        const file   = item.getAsFile();
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            // It's probably a file. At least, we tried.
+                            addFile(file);
+                        };
+                        reader.onerror = function(e) {
+                            // It's a directory or something else happened that
+                            // we can't recover from.
+                        };
+                        reader.readAsBinaryString(file);
+                    }
+                }
+            } else {
+                for (let i = 0; i < e.dataTransfer.files.length; i++) {
+                    const file = e.dataTransfer.files[i];
+                    addFile(file);
+                }
+            }
+        });
+
     },
 
     MetadataEditor: function() {

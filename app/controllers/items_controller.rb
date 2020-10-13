@@ -3,11 +3,12 @@
 class ItemsController < ApplicationController
 
   before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_item, only: [:destroy, :edit_membership, :edit_metadata,
-                                  :edit_properties, :show, :update]
-  before_action :authorize_item, only: [:destroy, :edit_membership,
-                                        :edit_metadata, :edit_properties,
-                                        :show, :update]
+  before_action :set_item, only: [:destroy, :edit_bitstreams, :edit_membership,
+                                  :edit_metadata, :edit_properties, :show,
+                                  :update]
+  before_action :authorize_item, only: [:destroy, :edit_bitstreams,
+                                        :edit_membership, :edit_metadata,
+                                        :edit_properties, :show, :update]
 
   ##
   # Responds to `DELETE /items/:id`
@@ -27,6 +28,16 @@ class ItemsController < ApplicationController
     ensure
       redirect_to collection || root_url
     end
+  end
+
+  ##
+  # Used for editing bitstreams attached to already-submitted items.
+  #
+  # Responds to GET `/items/:id/edit-bitstreams` (XHR only)
+  #
+  def edit_bitstreams
+    render partial: "items/bitstreams_form",
+           locals: { item: @item }
   end
 
   ##
@@ -187,8 +198,8 @@ class ItemsController < ApplicationController
         @item.elements.destroy_all
         params[:elements].each do |element|
           @item.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
-                                   string:             element[:string],
-                                   uri:                element[:uri])
+                               string:             element[:string],
+                               uri:                element[:uri])
         end
       end
     end

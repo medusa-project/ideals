@@ -1,0 +1,17 @@
+-# frozen_string_literal: true
+-#
+-# Required arguments:
+-#
+-# item [Item]
+-#
+
+= form_for(item, html: { id: "files-form" }, remote: true) do |f|
+  = token_tag(nil)
+
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  = render partial: "submissions/deposit_files_form_uploads",
+           locals: { item: f.object }
+
+.mb-3

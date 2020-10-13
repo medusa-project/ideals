@@ -15,6 +15,20 @@ const ItemsView = function() {
 const ItemView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
+    // XHR modals
+    $(".edit-item-bitstreams").on("click", function() {
+        const id  = $(this).data("item-id");
+        const url = ROOT_URL + "/items/" + id + "/edit-bitstreams";
+        $.get(url, function(data) {
+            const modal = $("#edit-item-bitstreams-modal");
+            modal.find(".modal-body").html(data);
+            // Reload the page in order to refresh the bitstream list.
+            modal.on("hidden.bs.modal", function() {
+                window.location.reload();
+            });
+            new IDEALS.ItemFileUploader();
+        });
+    });
     $(".edit-item-membership").on("click", function() {
         const id  = $(this).data("item-id");
         const url = ROOT_URL + "/items/" + id + "/edit-membership";

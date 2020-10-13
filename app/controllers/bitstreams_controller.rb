@@ -118,6 +118,21 @@ class BitstreamsController < ApplicationController
   end
 
   ##
+  # Ingests a bitstream into Medusa.
+  #
+  # Responds to `POST /items/:item_id/bitstreams/:id/ingest`
+  #
+  def ingest
+    @bitstream.ingest_into_medusa
+  rescue ArgumentError => e
+    render plain: "#{e}", status: :bad_request
+  rescue AlreadyExistsError => e
+    render plain: "#{e}", status: :conflict
+  else
+    head :no_content
+  end
+
+  ##
   # Returns a bitstream's properties (in JSON format only).
   #
   # Responds to `GET /items/:item_id/bitstreams/:id`

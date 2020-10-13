@@ -7,6 +7,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
+    AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
     log_out
   end
 
@@ -188,6 +189,75 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "destroy() returns HTTP 404 for a missing bitstream" do
     log_in_as(users(:admin))
     delete "/items/#{items(:item1).id}/bitstreams/999999"
+    assert_response :not_found
+  end
+
+  # ingest()
+
+  test "ingest() redirects to login page for logged-out users" do
+    post item_bitstream_ingest_path(items(:item1), bitstreams(:item1_in_staging))
+    assert_redirected_to login_path
+  end
+
+  test "ingest() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    post item_bitstream_ingest_path(items(:item1), bitstreams(:item1_in_staging))
+    assert_response :forbidden
+  end
+
+  test "ingest() returns HTTP 400 if the bitstream's staging key is nil" do
+    log_in_as(users(:admin))
+    bitstream = bitstreams(:item1_in_staging)
+    bitstream.update!(exists_in_staging: false, staging_key: nil)
+    post item_bitstream_ingest_path(items(:item1), bitstream)
+    assert_response :bad_request
+  end
+
+  test "ingest() returns HTTP 400 if the bitstream's item does not have a handle" do
+    log_in_as(users(:admin))
+    bitstream = bitstreams(:item1_in_staging)
+    item = bitstream.item
+    item.handle.destroy!
+    item.update!(handle: nil)
+    post item_bitstream_ingest_path(items(:item1), bitstream)
+    assert_response :bad_request
+  end
+
+  test "ingest() returns HTTP 409 if the bitstream has already been submitted for ingest" do
+    log_in_as(users(:admin))
+    bitstream = bitstreams(:item1_in_staging)
+    bitstream.update!(submitted_for_ingest: true)
+    post item_bitstream_ingest_path(items(:item1), bitstream)
+    assert_response :conflict
+  end
+
+  test "ingest() returns HTTP 409 if the bitstream already exists in Medusa" do
+    log_in_as(users(:admin))
+    bitstream = bitstreams(:item1_in_staging)
+    bitstream.update!(medusa_uuid: SecureRandom.uuid)
+    post item_bitstream_ingest_path(items(:item1), bitstream)
+    assert_response :conflict
+  end
+
+  test "ingest() ingests the bitstream" do
+    log_in_as(users(:admin))
+    bitstream = bitstreams(:item1_in_staging)
+    assert !bitstream.submitted_for_ingest
+
+    post item_bitstream_ingest_path(items(:item1), bitstream)
+    bitstream.reload
+    assert bitstream.submitted_for_ingest
+  end
+
+  test "ingest() returns HTTP 204 for a successful ingest" do
+    log_in_as(users(:admin))
+    post item_bitstream_ingest_path(items(:item1), bitstreams(:item1_in_staging))
+    assert_response :no_content
+  end
+
+  test "ingest() returns HTTP 404 for a missing bitstream" do
+    log_in_as(users(:admin))
+    post "/items/#{items(:item1).id}/bitstreams/999999/ingest"
     assert_response :not_found
   end
 

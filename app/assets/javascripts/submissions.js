@@ -72,7 +72,7 @@ const SubmissionForm = function() {
     const metadataForm    = form.filter("#metadata-form");
     // Files section
     const filesForm       = form.filter("#files-form");
-    const fileTable       = new FileTable();
+    const uploader        = new IDEALS.ItemFileUploader();
     // Files section
     const completionForm  = form.filter("#completion-form");
 
@@ -174,12 +174,12 @@ const SubmissionForm = function() {
     this.validateFiles = function() {
         setFilesError(null);
         // Check that at least one file has been uploaded.
-        if (fileTable.numUploadedFiles() < 1) {
+        if (uploader.numUploadedFiles() < 1) {
             setFilesError("You must upload at least one file.");
             return false;
         }
         // Check that there are no uploads in progress.
-        if (fileTable.numUploadingFiles() > 0) {
+        if (uploader.numUploadingFiles() > 0) {
             setFilesError("Wait for file uploads to complete.");
             return false;
         }
@@ -299,237 +299,10 @@ const SubmissionForm = function() {
 
     /*************************** Files section *****************************/
 
-    /**
-     * Manages the files table.
-     *
-     * To simplify the implementation, we try to reject uploads of directories.
-     *
-     * @constructor
-     */
-    function FileTable() {
-        const DISALLOWED_LC_FILENAMES = new Set(); // lowercase for easy checking
-        DISALLOWED_LC_FILENAMES.add(".ds_store");
-        DISALLOWED_LC_FILENAMES.add("thumbs.db");
-
-        const filesTable = filesForm.find("table.files");
-        let numUploadingFiles = 0;
-        let numUploadedFiles = filesTable.find("tr").length;
-
-        /**
-         * Adds a file to the table. (It has probably not finished uploading
-         * yet.) If a file with the same name already exists in the table, the
-         * upload is cancelled and an alert is generated.
-         *
-         * @param file {File}
-         */
-        this.addFile = function(file) {
-            // Reject empty files
-            if (file.size < 1) {
-                return;
-            }
-            // If the file's name is blacklisted from upload
-            if (DISALLOWED_LC_FILENAMES.has(file.name.toLowerCase())) {
-                return;
-            }
-            // If a file with the same name has already been added
-            if (getFilenames().has(file.name)) {
-                alert("A file named " + file.name +
-                    " has already been uploaded. Please rename it and try again.");
-                return;
-            }
-            // All clear.
-            // N.B.: This structure must be kept in sync with the structure in
-            // the template.
-            filesTable.append("<tr data-filename='" + file.name + "'>" +
-                "    <td></td>" +
-                "    <td>" + file.name + "</td>" +
-                "    <td>" + IDEALS.Util.formatBytes(file.size) + "</td>" +
-                "    <td>" +
-                "        <div class='progress'>" +
-                "            <div class='progress-bar' role='progressbar' " +
-                "                 style='width: 0' aria-valuenow='0'" +
-                "                 aria-valuemin='0' aria-valuemax='100'></div>" +
-                "        </div>" +
-                "    </td>" +
-                "    <td></td>" +
-                "</tr>");
-            uploadFile(file);
-        };
-
-        /**
-         * @returns {Set<String>}
-         */
-        const getFilenames = function() {
-            const filenames = new Set();
-            filesTable.find("tr").each(function() {
-                filenames.add($(this).data("filename"));
-            });
-            return filenames;
-        };
-
-        /**
-         * To be called when a file upload is complete.
-         *
-         * @param row {jQuery}
-         * @param bitstreamURI {String}
-         */
-        this.markRowCompleted = function(row, bitstreamURI) {
-            row.data("uri", bitstreamURI);
-            row.find("td:first-child").html("<i class='fa fa-check text-success'></i>");
-            row.find(".progress").remove();
-            const lastCell = row.find("td:last-child");
-            lastCell.html(
-                "<button class='btn btn-sm btn-danger remove' type='button'>" +
-                "   <i class='fa fa-minus'></i> Remove" +
-                "</button>");
-            lastCell.find(".remove").on("click", function() {
-                onRemoveFileButtonClicked($(this));
-            });
-        };
-
-        /**
-         * To be called when a file upload fails.
-         *
-         * @param row {jQuery}
-         */
-        this.markRowFailed = function(row) {
-            row.find("td:first-child").html("<i class='fa fa-times text-danger'></i>");
-            row.find(".progress").remove();
-            const lastCell = row.find("td:last-child");
-            lastCell.html(
-                "<button class='btn btn-sm btn-danger remove' type='button'>" +
-                "   <i class='fa fa-minus'></i> Remove" +
-                "</button>");
-            lastCell.find(".remove").on("click", function() {
-                onRemoveFileButtonClicked($(this));
-            });
-        };
-
-        /**
-         * @returns {number}
-         */
-        this.numUploadedFiles = function() {
-            return numUploadedFiles;
-        };
-
-        /**
-         * @returns {number}
-         */
-        this.numUploadingFiles = function() {
-            return numUploadingFiles;
-        };
-
-        const onRemoveFileButtonClicked = function(button) {
-            const row          = button.parents("tr");
-            const bitstreamURI = row.data("uri");
-            const onSuccess    = function() {
-                row.fadeOut(IDEALS.FADE_TIME, function() {
-                    row.remove();
-                    numUploadedFiles--;
-                });
-            };
-            const onError      = function(xhr, status, error) {
-                console.error(xhr);
-                console.error(status);
-                console.error(error);
-                alert("There was an error removing the file. If this error " +
-                    "persists, please contact IDEALS staff.");
-            };
-            new IDEALS.Client().delete(bitstreamURI, onSuccess, onError);
-        };
-
-        const uploadFile = function(file) {
-            const fileRow     = filesTable.find("tr[data-filename='" + file.name + "']");
-            const progressBar = fileRow.find(".progress-bar");
-            numUploadingFiles++;
-
-            const onProgressChanged = function(e) {
-                const complete = Math.round(e.loaded / e.total * 100);
-                progressBar.attr("aria-valuenow", complete);
-                progressBar.css("width", complete + "%");
-            };
-            const onComplete = function(bitstreamURI) {
-                numUploadingFiles--;
-                numUploadedFiles++;
-                fileTable.markRowCompleted(fileRow, bitstreamURI);
-            };
-            const onError = function(xhr) {
-                numUploadingFiles--;
-                fileTable.markRowFailed(fileRow);
-            };
-            new IDEALS.Client().uploadFile(file,
-                $("input[name=item_bitstreams_uri]").val(),
-                onProgressChanged, onComplete, onError);
-        };
-
-        filesTable.find("button.remove").on("click", function(e) {
-            e.preventDefault();
-            onRemoveFileButtonClicked($(this));
-        });
-
-        // The file chooser is a file input, hidden via CSS, that is virtually
-        // clicked when the drop zone is clicked in order to open a file
-        // selection dialog.
-        const fileChooser = $("#file-chooser");
-        fileChooser.on("change", function() {
-            const files = this.files;
-            for (let i = 0; i < files.length; i++) {
-                fileTable.addFile(files[i]);
-            }
-        });
-
-        const dropZone = $("#file-drop-zone");
-        dropZone.on("dragover", function(e) {
-            e.preventDefault();
-            e.originalEvent.dataTransfer.dropEffect = "copy";
-        });
-        dropZone.on("click", function(e) {
-            e.preventDefault();
-            fileChooser.click();
-        });
-        dropZone.on("drop", function(e) {
-            e.preventDefault();
-            e = e.originalEvent;
-            if (e.dataTransfer.items) {
-                for (let i = 0; i < e.dataTransfer.items.length; i++) {
-                    const item = e.dataTransfer.items[i];
-                    // We want to distinguish between files and directories
-                    // and ignore the directories. One would think that
-                    // checking the `kind` property here would be all that is
-                    // needed, but one would be forgetting that this is cross-
-                    // browser JavaScript we are dealing with.
-                    if (item.kind === "file") {
-                        // So we utilize a weird technique by which we employ a
-                        // FileReader to try to read the file. If it's a
-                        // directory, FileReader should conk out somehow. But
-                        // again, this is cross-browser JavaScript, so maybe it
-                        // won't.
-                        const file   = item.getAsFile();
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            // It's probably a file. At least, we tried.
-                            fileTable.addFile(file);
-                        };
-                        reader.onerror = function(e) {
-                            // It's a directory or something else happened that
-                            // we can't recover from.
-                        };
-                        reader.readAsBinaryString(file);
-                    }
-                }
-            } else {
-                for (let i = 0; i < e.dataTransfer.files.length; i++) {
-                    const file = e.dataTransfer.files[i];
-                    fileTable.addFile(file);
-                }
-            }
-        });
-    };
-
-    // N.B.: Rather than submitting the form, this button validates everything,
-    // sends a POST request to the submission-complete route, and finally opens
-    // the "submission complete" modal. (Everything in the form has been
-    // submitted via XHR already.)
+    // Rather than submitting the form, this button validates everything, sends
+    // a POST request to the submission-complete route, and finally opens the
+    // "submission complete" modal. (Everything in the form has been submitted
+    // via XHR already.)
     completionForm.find("input[type=submit]").on("click", function(e) {
         e.preventDefault();
         if (!self.validateMetadata(true)) {
