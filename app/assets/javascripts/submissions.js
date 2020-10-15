@@ -66,6 +66,7 @@ const SubmissionForm = function() {
     const self            = this;
     const form            = $("form.edit_item");
     // Properties section
+    const propertiesForm  = form.filter("#properties-form");
     const unitsMenu       = $("[name=unit_id]");
     const collectionsMenu = $("[name='item[primary_collection_id]']");
     // Metadata section
@@ -138,8 +139,8 @@ const SubmissionForm = function() {
         });
     };
 
-    const setFilesError = function(message) {
-        const messages = filesForm.find("#files-messages");
+    const setPropertiesError = function(message) {
+        const messages = propertiesForm.find("#properties-messages");
         messages.empty();
         if (message != null) {
             messages.html("<div class='alert alert-danger'>" + message + "</div>");
@@ -152,6 +153,25 @@ const SubmissionForm = function() {
         if (message != null) {
             messages.html("<div class='alert alert-danger'>" + message + "</div>");
         }
+    };
+
+    const setFilesError = function(message) {
+        const messages = filesForm.find("#files-messages");
+        messages.empty();
+        if (message != null) {
+            messages.html("<div class='alert alert-danger'>" + message + "</div>");
+        }
+    };
+
+    this.validateProperties = function() {
+        // Check that a collection has been selected.
+        if (collectionsMenu.val() > 0) {
+            setPropertiesError(null);
+        } else {
+            setPropertiesError("Please ensure that a collection has been selected.");
+            return false;
+        }
+        return true;
     };
 
     this.validateMetadata = function(includeRequired) {
@@ -305,6 +325,10 @@ const SubmissionForm = function() {
     // via XHR already.)
     completionForm.find("input[type=submit]").on("click", function(e) {
         e.preventDefault();
+        if (!self.validateProperties()) {
+            $("#properties-tab").click();
+            return false;
+        }
         if (!self.validateMetadata(true)) {
             $("#metadata-tab").click();
             return false;

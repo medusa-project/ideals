@@ -1,6 +1,7 @@
 -# frozen_string_literal: true
 
-= form_for(@resource, url: submission_path(@resource), remote: true) do |f|
+= form_for(@resource, url: submission_path(@resource), remote: true,
+           html: { id: "properties-form" }) do |f|
   = token_tag(nil)
 
   #properties-messages.error-messages
