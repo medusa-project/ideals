@@ -238,7 +238,7 @@ const SubmissionForm = function() {
     });
 
     // Restore initial unit & collection selection values. If there is nothing
-    // to restore, select the first unit & its first collection.
+    // to restore, select the first unit and its first collection.
     let unitID = $("[name='item[initial_primary_collection_unit_id]']").val();
     if (unitID < 1) {
         unitID = unitsMenu.find("option:first-child").val();
@@ -249,6 +249,7 @@ const SubmissionForm = function() {
         if (collectionID > 0) {
             collectionsMenu.val(collectionID);
         }
+        self.save(collectionsMenu);
     });
 
     /************************* Metadata section ****************************/
