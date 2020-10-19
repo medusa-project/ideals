@@ -235,9 +235,10 @@ module ApplicationHelper
   # @param per_page [Integer]
   # @param permitted_params [ActionController::Parameters]
   # @param max_links [Integer]
+  # @param start_arg [Symbol] Name of the `start` query argument.
   #
   def paginate(count:, page:, per_page:, permitted_params:,
-               max_links: MAX_PAGINATION_LINKS)
+               max_links: MAX_PAGINATION_LINKS, start_arg: :start)
     return '' if count <= per_page
     num_pages  = (count / per_page.to_f).ceil
     first_page = [1, page - (max_links / 2.0).floor].max
@@ -251,23 +252,23 @@ module ApplicationHelper
     last_start = (num_pages - 1) * per_page
     remote     = false
 
-    first_link = link_to(permitted_params.except(:start),
+    first_link = link_to(permitted_params.except(start_arg),
                          remote: remote, class: 'page-link', 'aria-label': 'First') do
       raw('<span aria-hidden="true">First</span>')
     end
-    prev_link = link_to(permitted_params.merge(start: prev_start),
+    prev_link = link_to(permitted_params.merge(start_arg => prev_start),
                         remote: remote,
                         class: 'page-link',
                         'aria-label': 'Previous') do
       raw('<span aria-hidden="true">&laquo;</span>')
     end
-    next_link = link_to(permitted_params.merge(start: next_start),
+    next_link = link_to(permitted_params.merge(start_arg => next_start),
                         remote: remote,
                         class: 'page-link',
                         'aria-label': 'Next') do
       raw('<span aria-hidden="true">&raquo;</span>')
     end
-    last_link = link_to(permitted_params.merge(start: last_start),
+    last_link = link_to(permitted_params.merge(start_arg => last_start),
                         remote: remote,
                         class: 'page-link',
                         'aria-label': 'Last') do
@@ -287,8 +288,8 @@ module ApplicationHelper
 
     (first_page..last_page).each do |p|
       start = (p - 1) * per_page
-      page_link = link_to((start == 0) ? permitted_params.except(:start) :
-                              permitted_params.merge(start: start), class: 'page-link', remote: remote) do
+      page_link = link_to((start == 0) ? permitted_params.except(start_arg) :
+                              permitted_params.merge(start_arg => start), class: 'page-link', remote: remote) do
         raw("#{p} #{(page == p) ?
                            '<span class="sr-only">(current)</span>' : ''}")
       end

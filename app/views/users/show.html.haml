@@ -19,6 +19,15 @@
                                "aria-controls": "privileges",
                                "aria-selected": "false"} Privileges
   %li.nav-item
+    %a#collections-tab.nav-link{"data-toggle": "tab",
+                                href: "#collections",
+                                role: "tab",
+                                "aria-controls": "collections",
+                                "aria-selected": "false"}
+      Submittable Collections
+      %span.badge.badge-pill.badge-secondary
+        = @collections_count
+  %li.nav-item
     %a#items-tab.nav-link{"data-toggle": "tab",
                           href: "#items",
                           role: "tab",
@@ -26,7 +35,7 @@
                           "aria-selected": "false"}
       Submitted Items
       %span.badge.badge-pill.badge-secondary
-        = @items.count
+        = @count
   %li.nav-item
     %a#submissions-tab.nav-link{"data-toggle": "tab",
                                 href: "#submissions",
@@ -35,7 +44,7 @@
                                 "aria-selected": "false"}
       Submissions In Progress
       %span.badge.badge-pill.badge-secondary
-        = @submissions.count
+        = @submissions_count
 
 
 .tab-content
@@ -46,6 +55,10 @@
   #privileges.tab-pane{role: "tabpanel",
                        "aria-labelledby": "privileges-tab"}
     = render partial: "show_privileges_tab", locals: { user: @user }
+
+  #collections.tab-pane{role: "tabpanel",
+                        "aria-labelledby": "collections-tab"}
+    = render partial: "show_collections_tab", locals: { user: @user }
 
   #items.tab-pane{role: "tabpanel", "aria-labelledby": "items-tab"}
     = render partial: "show_items_tab"

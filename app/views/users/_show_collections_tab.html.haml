@@ -1,0 +1,19 @@
+- pagination = paginate(count: @collections_count, |
+                        page: @current_collections_page, |
+                        per_page: @window, |
+                        permitted_params: @permitted_params, |
+                        start_arg: :collections_start) |
+
+.card.mb-3
+  #search-status.card-body.pt-3.pb-3
+    = search_status(@collections_count, @collections_start, @window, "collection")
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
+
+= resource_list(@submittable_collections)
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination

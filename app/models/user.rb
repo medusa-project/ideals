@@ -89,6 +89,19 @@ class User < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<Collection>] All collections to which the user is
+  #         authorized to submit an item.
+  #
+  def effective_submittable_collections
+    return Collection.all if sysadmin?
+    collections = Set.new
+    collections += self.administering_units.map(&:collections)
+    collections += self.managing_collections
+    collections += self.submitting_collections
+    collections
+  end
+
+  ##
   # @param collection [Collection]
   # @return [Boolean] Whether the instance is an effective submitter in the
   #                   given collection, either directly or as a collection

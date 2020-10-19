@@ -12,6 +12,24 @@ admin: # TODO: rename to local_admin
   sysadmin: true
   identity: admin
 
+collection1_collection1_manager:
+  type: LocalUser
+  uid: jane@example.edu
+  name: jane
+  email: jane@example.edu
+  phone: (888) 555-1234
+  sysadmin: false
+  identity: collection1_collection1_manager
+
+collection1_collection1_submitter:
+  type: LocalUser
+  uid: phil@example.edu
+  name: phil
+  email: phil@example.edu
+  phone: (888) 555-1234
+  sysadmin: false
+  identity: collection1_collection1_submitter
+
 norights:
   type: LocalUser
   identity: norights
