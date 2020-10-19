@@ -1,6 +1,6 @@
 -# frozen_string_literal: true
 
-= form_for(@resource, url: submission_path(@resource), remote: true,
+= form_for(@item, url: submission_path(@item), remote: true,
            html: { id: "metadata-form" }) do |f|
   = token_tag(nil)
 

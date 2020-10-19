@@ -33,22 +33,21 @@ class SubmissionsController < ApplicationController
   # Responds to `POST /submissions/:id/complete`
   #
   def complete
-    # TODO: rename @resource to @item
-    unless @resource.submitting?
+    unless @item.submitting?
       render plain: "Resource is not in a submitting state.",
              status: :conflict and return
     end
     # This is also validated on the client, but do it here too to be safe.
-    unless @resource.required_elements_present?
+    unless @item.required_elements_present?
       render plain: "Item is missing required elements.",
              status: :bad_request and return
     end
     # This is also validated on the client, but do it here too to be safe.
-    if @resource.bitstreams.count < 1
+    if @item.bitstreams.count < 1
       render plain: "Item has no associated bitstreams.",
              status: :bad_request and return
     end
-    @resource.update!(stage: Item::Stages::SUBMITTED)
+    @item.update!(stage: Item::Stages::SUBMITTED)
   end
 
   ##
@@ -73,7 +72,7 @@ class SubmissionsController < ApplicationController
   #
   def destroy
     begin
-      @resource.destroy!
+      @item.destroy!
     rescue => e
       flash['error'] = "#{e}"
     else
@@ -90,7 +89,7 @@ class SubmissionsController < ApplicationController
   # Responds to `GET /submissions/:id/edit`
   #
   def edit
-    @submission_profile = @resource.effective_submission_profile
+    @submission_profile = @item.effective_submission_profile
   end
 
   ##
@@ -101,13 +100,13 @@ class SubmissionsController < ApplicationController
       ActiveRecord::Base.transaction do
         # N.B.: this method does not handle file uploads; see
         # BinariesController.create().
-        @resource.update!(item_params)
+        @item.update!(item_params)
         build_metadata
-        @resource.save!
+        @item.save!
       end
     rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @resource.errors.any? ? @resource : e },
+             locals: { object: @item.errors.any? ? @item : e },
              status: :bad_request
     else
       head :no_content
@@ -117,7 +116,7 @@ class SubmissionsController < ApplicationController
   private
 
   def authorize_item
-    @resource ? authorize(@resource, policy_class: SubmissionPolicy) :
+    @item ? authorize(@item, policy_class: SubmissionPolicy) :
         skip_authorization
   end
 
@@ -126,7 +125,7 @@ class SubmissionsController < ApplicationController
   # {Item::Stages::SUBMITTING submission process}.
   #
   def check_submitting
-    unless @resource.submitting?
+    unless @item.submitting?
       flash['error'] = "This item has already been submitted."
       redirect_back fallback_location: root_path
     end
@@ -137,7 +136,7 @@ class SubmissionsController < ApplicationController
   end
 
   def set_item
-    @resource = Item.find(params[:id] || params[:submission_id])
+    @item = Item.find(params[:id] || params[:submission_id])
   end
 
   ##
@@ -147,10 +146,10 @@ class SubmissionsController < ApplicationController
   def build_metadata
     if params[:elements].present?
       ActiveRecord::Base.transaction do
-        @resource.elements.destroy_all
+        @item.elements.destroy_all
         params[:elements].select{ |e| e[:string].present? }.each do |element|
-          @resource.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
-                                   string:             element[:string]).save
+          @item.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
+                               string:             element[:string]).save
         end
       end
     end

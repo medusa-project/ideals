@@ -1,11 +1,11 @@
 -# frozen_string_literal: true
 
-= form_for(@resource, url: submission_path(@resource), remote: true,
+= form_for(@item, url: submission_path(@item), remote: true,
            html: { id: "files-form" }) do |f|
   = token_tag(nil)
   = render partial: "deposit_files_form_uploads", locals: { item: f.object }
 
-= form_for(@resource, url: submission_path(@resource), remote: true,
+= form_for(@item, url: submission_path(@item), remote: true,
            html: { id: "completion-form" }) do |f|
   = token_tag(nil)
   .text-center.mb-3.mt-3
@@ -13,7 +13,7 @@
       %button.btn.btn-light.step-3-to-2{type: "button"}
         %i.fa.fa-arrow-left
         Previous Step
-      = hidden_field_tag :complete_submission_path, submission_complete_path(@resource)
+      = hidden_field_tag :complete_submission_path, submission_complete_path(@item)
       = f.submit("Complete Submission", class: "btn btn-primary")
 
 = render partial: "submission_complete_modal"
