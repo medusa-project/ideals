@@ -17,9 +17,11 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal [identity.email], email.to
     assert_equal "Register your IDEALS account", email.subject
 
-    assert_equal render_template("account_approved.txt", url: identity.registration_url),
+    assert_equal render_template("account_approved.txt",
+                                 url: identity.registration_url),
                  email.text_part.body.raw_source
-    assert_equal render_template("account_approved.html", url: identity.registration_url),
+    assert_equal render_template("account_approved.html",
+                                 url: identity.registration_url),
                  email.html_part.body.raw_source
   end
 
@@ -54,9 +56,11 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal [identity.email], email.to
     assert_equal "You're ready to log in to IDEALS!", email.subject
 
-    assert_equal render_template("account_registered.txt", url: identity.activation_url),
+    assert_equal render_template("account_registered.txt",
+                                 url: identity.activation_url),
                  email.text_part.body.raw_source
-    assert_equal render_template("account_registered.html", url: identity.activation_url),
+    assert_equal render_template("account_registered.html",
+                                 url: identity.activation_url),
                  email.html_part.body.raw_source
   end
 
@@ -71,7 +75,8 @@ class IdealsMailerTest < ActionMailer::TestCase
     config = Configuration.instance
     assert_equal [config.mail[:from]], email.from
     assert_equal [config.mail[:from]], email.to
-    assert_equal "[TEST: IDEALS] Action required on a new IDEALS user", email.subject
+    assert_equal "[TEST: IDEALS] Action required on a new IDEALS user",
+                 email.subject
 
     invitee_url = "#{config.website[:base_url]}/invitees/#{invitee.id}"
 
@@ -130,6 +135,26 @@ class IdealsMailerTest < ActionMailer::TestCase
                  email.html_part.body.raw_source
   end
 
+  # item_submitted()
+
+  test "item_submitted() sends the expected email" do
+    item  = items(:submitted)
+    email = IdealsMailer.item_submitted(item).deliver_now
+    assert !ActionMailer::Base.deliveries.empty?
+
+    config = ::Configuration.instance
+    assert_equal [config.mail[:from]], email.from
+    assert_equal config.admin[:tech_mail_list], email.to
+    assert_equal "A new IDEALS item requires review", email.subject
+
+    assert_equal render_template("item_submitted.txt",
+                                 item_url: "http://localhost:3000/items/#{item.id}"),
+                 email.text_part.body.raw_source
+    assert_equal render_template("item_submitted.html",
+                                 item_url: "http://localhost:3000/items/#{item.id}"),
+                 email.html_part.body.raw_source
+  end
+
   # password_reset()
 
   test "password_reset() sends the expected email" do
@@ -143,9 +168,11 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal [identity.email], email.to
     assert_equal "Reset your IDEALS password", email.subject
 
-    assert_equal render_template("password_reset.txt", url: identity.password_reset_url),
+    assert_equal render_template("password_reset.txt",
+                                 url: identity.password_reset_url),
                  email.text_part.body.raw_source
-    assert_equal render_template("password_reset.html", url: identity.password_reset_url),
+    assert_equal render_template("password_reset.html",
+                                 url: identity.password_reset_url),
                  email.html_part.body.raw_source
   end
 

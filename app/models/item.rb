@@ -118,6 +118,7 @@ class Item < ApplicationRecord
 
   breadcrumbs parent: :primary_collection, label: :title
 
+  before_save :email_after_stage_change
   before_destroy :restrict_in_archive_deletion
 
   validates :stage, inclusion: { in: Stages.all }
@@ -314,7 +315,7 @@ class Item < ApplicationRecord
   end
 
   ##
-  # N.B. This is not a model validation because instances are allowed to be
+  # N.B.: This is not a model validation because instances are allowed to be
   # missing elements during the submission process.
   #
   # @return [Boolean] Whether all {SubmissionProfileElement#required required
@@ -327,6 +328,13 @@ class Item < ApplicationRecord
           (ae.string.present? || ae.uri.present?) }
     end
     true
+  end
+
+  ##
+  # @return [Boolean] Whether {stage} is set to {Stages#SUBMITTED}.
+  #
+  def submitted?
+    self.stage == Stages::SUBMITTED
   end
 
   ##
@@ -345,6 +353,12 @@ class Item < ApplicationRecord
 
 
   private
+
+  def email_after_stage_change
+    if self.stage_was == Stages::SUBMITTING && self.stage == Stages::SUBMITTED
+      IdealsMailer.item_submitted(self).deliver_now
+    end
+  end
 
   def restrict_in_archive_deletion
     raise "Archived items cannot be deleted" if self.exists_in_medusa?

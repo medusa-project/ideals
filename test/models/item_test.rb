@@ -2,6 +2,8 @@ require 'test_helper'
 
 class ItemTest < ActiveSupport::TestCase
 
+  include ActionMailer::TestHelper
+
   setup do
     setup_elasticsearch
     @instance = items(:item1)
@@ -291,6 +293,26 @@ class ItemTest < ActiveSupport::TestCase
     @instance.elements.build(registered_element: registered_elements(:title),
                              string: "Title").save
     assert @instance.required_elements_present?
+  end
+
+  # save()
+
+  test "save() sends an email when the stage changes from submitting to submitted" do
+    @instance = items(:submitting)
+    assert_emails 1 do
+      @instance.update!(stage: Item::Stages::SUBMITTED)
+    end
+  end
+
+  # submitted?()
+
+  test "submitted?() returns true when the stage is set to SUBMITTED" do
+    @instance.stage = Item::Stages::SUBMITTED
+    assert @instance.submitted?
+  end
+
+  test "submitted?() returns false when the stage is not set to SUBMITTED" do
+    assert !@instance.submitted?
   end
 
   # submitting?()

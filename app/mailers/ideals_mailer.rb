@@ -70,8 +70,7 @@ class IdealsMailer < ApplicationMailer
   def contact_help(params) # TODO: use this or lose it
     @params = params
     mail(from:    @params["help-email"],
-         to:      [::Configuration.instance.mail[:from],
-                   @params["help-email"]],
+         to:      [::Configuration.instance.mail[:from], @params["help-email"]],
          subject: "#{subject_prefix} Help Request")
   end
 
@@ -94,6 +93,22 @@ class IdealsMailer < ApplicationMailer
   def invited(identity)
     @identity = identity
     mail(to: @identity.email, subject: "Register for an IDEALS account")
+  end
+
+  ##
+  # @param item [Item]
+  #
+  def item_submitted(item)
+    config    = ::Configuration.instance
+    @item_url = item_url(item, host: config.website[:base_url])
+    if item.primary_collection&.managers&.any?
+      recipients = item.primary_collection.managers.map(&:email)
+    else
+      recipients = config.admin[:tech_mail_list] # TODO: use a different config key
+    end
+    mail(reply_to: NO_REPLY_ADDRESS,
+         to:       recipients,
+         subject:  "A new IDEALS item requires review")
   end
 
   ##
