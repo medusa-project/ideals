@@ -230,22 +230,22 @@ module ApplicationHelper
   end
 
   ##
-  # @param total_entities [Integer]
+  # @param count [Integer]
+  # @param page [Integer]
   # @param per_page [Integer]
   # @param permitted_params [ActionController::Parameters]
-  # @param current_page [Integer]
-  # @param max_links [Integer] Ideally an odd number.
+  # @param max_links [Integer]
   #
-  def paginate(total_entities, per_page, current_page, permitted_params,
-               max_links = MAX_PAGINATION_LINKS)
-    return '' if total_entities <= per_page
-    num_pages  = (total_entities / per_page.to_f).ceil
-    first_page = [1, current_page - (max_links / 2.0).floor].max
+  def paginate(count:, page:, per_page:, permitted_params:,
+               max_links: MAX_PAGINATION_LINKS)
+    return '' if count <= per_page
+    num_pages  = (count / per_page.to_f).ceil
+    first_page = [1, page - (max_links / 2.0).floor].max
     last_page  = [first_page + max_links - 1, num_pages].min
     first_page = last_page - max_links + 1 if
         last_page - first_page < max_links and num_pages > max_links
-    prev_page  = [1, current_page - 1].max
-    next_page  = [last_page, current_page + 1].min
+    prev_page  = [1, page - 1].max
+    next_page  = [last_page, page + 1].min
     prev_start = (prev_page - 1) * per_page
     next_start = (next_page - 1) * per_page
     last_start = (num_pages - 1) * per_page
@@ -279,29 +279,29 @@ module ApplicationHelper
     html << '<nav>'
     html <<   '<ul class="pagination">'
     html <<     sprintf('<li class="page-item %s">%s</li>',
-                        current_page == first_page ? 'disabled' : '',
+                        page == first_page ? 'disabled' : '',
                         first_link)
     html <<     sprintf('<li class="page-item %s">%s</li>',
-                        current_page == prev_page ? 'disabled' : '',
+                        page == prev_page ? 'disabled' : '',
                         prev_link)
 
-    (first_page..last_page).each do |page|
-      start = (page - 1) * per_page
+    (first_page..last_page).each do |p|
+      start = (p - 1) * per_page
       page_link = link_to((start == 0) ? permitted_params.except(:start) :
                               permitted_params.merge(start: start), class: 'page-link', remote: remote) do
-        raw("#{page} #{(page == current_page) ?
+        raw("#{p} #{(page == p) ?
                            '<span class="sr-only">(current)</span>' : ''}")
       end
       html << sprintf('<li class="page-item %s">%s</li>',
-                      page == current_page ? 'active' : '',
+                      page == p ? 'active' : '',
                       page_link)
 
     end
     html << sprintf('<li class="page-item %s">%s</li>',
-                    current_page == next_page ? 'disabled' : '',
+                    p == next_page ? 'disabled' : '',
                     next_link)
     html << sprintf('<li class="page-item %s">%s</li>',
-                    current_page == last_page ? 'disabled' : '',
+                    p == last_page ? 'disabled' : '',
                     last_link)
     html <<   '</ul>'
     html << '</nav>'
