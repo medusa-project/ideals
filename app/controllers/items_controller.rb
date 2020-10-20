@@ -132,7 +132,7 @@ class ItemsController < ApplicationController
     @items  = Item.search.
         aggregations(false).
         filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
-        #order(Item::IndexFields::CREATED => :desc).
+        order(Item::IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY).
         start(@start).
         limit(@window)
     @count            = @items.count

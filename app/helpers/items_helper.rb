@@ -3,7 +3,8 @@ module ItemsHelper
   ##
   # Renders a list of reviewable {Item}s.
   #
-  # @param items [Enumerable<Item>]
+  # @param items [Enumerable<Item>] Items grouped by unit and subgrouped by
+  #              collection.
   # @return [String] HTML listing.
   # @see ApplicationHelper#resource_list
   #
@@ -11,8 +12,28 @@ module ItemsHelper
     html = form_tag(items_process_review_path, method: :post, id: "review-form") do
       form = StringIO.new
       form << hidden_field_tag("verb", ""); # value set to approve or reject by JS
+      prev_unit = prev_collection = nil
       items.each do |item|
-        form << "<div class=\"media resource-list mb-3\">"
+        # Unit heading
+        unit = item.effective_primary_unit
+        if prev_unit != unit
+          form << "<h2>"
+          form <<   icon_for(unit)
+          form <<   " "
+          form <<   unit.title
+          form << "</h2>"
+        end
+        # Collection heading
+        collection = item.effective_primary_collection
+        if prev_collection != collection
+          form << "<h3 class=\"ml-3\">"
+          form <<   "&#8627; "
+          form <<   icon_for(collection)
+          form <<   " "
+          form <<   collection.title
+          form << "</h3>"
+        end
+        form << "<div class=\"media resource-list mb-3 ml-3\">"
         form <<   "<div class=\"check\">"
         form <<     check_box_tag("items[]", item.id)
         form <<   "</div>"
@@ -25,16 +46,6 @@ module ItemsHelper
         form <<     "<h5 class=\"mt-0 mb-0\">"
         form <<       link_to(item.title, item)
         form <<     "</h5>"
-        # Unit
-        form <<     link_to(item.primary_unit) do
-          icon_for(item.primary_unit) + " " + item.primary_unit.title
-        end
-        # Collection
-        form <<     " &rarr; "
-        form <<     link_to(item.primary_collection) do
-          icon_for(item.primary_collection) + " " + item.primary_collection.title
-        end
-        form <<     "<br>"
         # Submitter
         form <<     "Submitted by "
         form <<     link_to(item.submitter.becomes(User)) do
@@ -44,6 +55,8 @@ module ItemsHelper
         form <<     item.created_at.strftime("%B %d, %Y")
         form <<   "</div>"
         form << "</div>"
+        prev_unit       = unit
+        prev_collection = collection
       end
       raw(form.string)
     end

@@ -230,7 +230,17 @@ class Collection < ApplicationRecord
   #         the default profile if no profile is assigned.
   #
   def effective_metadata_profile
+    #noinspection RubyYardReturnMatch
     self.metadata_profile || MetadataProfile.default
+  end
+
+  ##
+  # @return [Unit] The primary unit, if set; otherwise, any other unit in the
+  #                {units} association.
+  #
+  def effective_primary_unit
+    #noinspection RubyYardReturnMatch
+    self.primary_unit || self.units.first
   end
 
   ##
@@ -238,6 +248,7 @@ class Collection < ApplicationRecord
   #         instance, or the default profile if no profile is assigned.
   #
   def effective_submission_profile
+    #noinspection RubyYardReturnMatch
     self.submission_profile || SubmissionProfile.default
   end
 

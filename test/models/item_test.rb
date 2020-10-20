@@ -115,6 +115,8 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_empty doc[Item::IndexFields::COLLECTIONS]
     assert_not_empty doc[Item::IndexFields::CREATED]
     assert doc[Item::IndexFields::DISCOVERABLE]
+    assert_match /\w+ \w* \w+/,
+                 doc[Item::IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY]
     assert_not_empty doc[Item::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Item::IndexFields::LAST_MODIFIED]
@@ -225,6 +227,48 @@ class ItemTest < ActiveSupport::TestCase
     @instance.primary_collection_id = nil
     assert_equal metadata_profiles(:default),
                  @instance.effective_metadata_profile
+  end
+
+  # effective_primary_collection()
+
+  test "effective_primary_collection() returns the primary collection when set" do
+    assert_equal @instance.primary_collection,
+                 @instance.effective_primary_collection
+  end
+
+  test "effective_primary_collection() returns another collection if the
+  primary collection is not set" do
+    @instance.primary_collection = nil
+    assert @instance.effective_primary_collection.kind_of?(Collection)
+  end
+
+  # effective_primary_unit()
+
+  test "effective_primary_unit() returns the primary collection's primary unit" do
+    assert_equal @instance.primary_collection.primary_unit,
+                 @instance.effective_primary_unit
+  end
+
+  test "effective_primary_unit() returns one of the primary collection's other
+  units if the primary is not set" do
+    col = @instance.primary_collection
+    col.primary_unit = nil
+    assert @instance.effective_primary_unit.kind_of?(Unit)
+  end
+
+  test "effective_primary_unit() returns another collection's primary unit if
+  the primary collection is not set" do
+    @instance.primary_collection = nil
+    assert @instance.effective_primary_unit.kind_of?(Unit)
+  end
+
+  test "effective_primary_unit() returns one of another collection's units if
+  no primaries are set" do
+    @instance.primary_collection = nil
+    @instance.collections.each do |col|
+      col.update!(primary_unit: nil)
+    end
+    assert @instance.effective_primary_unit.kind_of?(Unit)
   end
 
   # effective_submission_profile()

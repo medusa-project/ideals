@@ -51,6 +51,7 @@ class Item < ApplicationRecord
     COLLECTIONS        = "i_collection_ids"
     CREATED            = ElasticsearchIndex::StandardFields::CREATED
     DISCOVERABLE       = "b_discoverable"
+    GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY = "k_unit_collection_sort_key"
     ID                 = ElasticsearchIndex::StandardFields::ID
     LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
@@ -222,6 +223,8 @@ class Item < ApplicationRecord
     doc[IndexFields::COLLECTIONS]        = collections.map(&:id)
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
     doc[IndexFields::DISCOVERABLE]       = self.discoverable
+    doc[IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY] =
+        self.unit_and_collection_sort_key
     doc[IndexFields::LAST_INDEXED]       = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
     doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection_id
@@ -266,6 +269,24 @@ class Item < ApplicationRecord
   #
   def effective_metadata_profile
     self.primary_collection&.effective_metadata_profile || MetadataProfile.default
+  end
+
+  ##
+  # @return [Collection] The primary collection, if set; otherwise, any other
+  #                      collection in the {collections} association.
+  #
+  def effective_primary_collection
+    #noinspection RubyYardReturnMatch
+    self.primary_collection || self.collections.first
+  end
+
+  ##
+  # @return [Unit] The primary collection's primary unit, if set; otherwise,
+  #                any other unit of any collection in the {collections}
+  #                association.
+  #
+  def effective_primary_unit
+    self.effective_primary_collection&.effective_primary_unit
   end
 
   ##
@@ -389,6 +410,17 @@ class Item < ApplicationRecord
         !required_elements_present?
       errors.add(:elements, "is missing required elements")
     end
+  end
+
+  ##
+  # @return [String]
+  #
+  def unit_and_collection_sort_key
+    collection = self.effective_primary_collection
+    unit       = collection&.effective_primary_unit
+    item_title = self.title
+    item_title = item_title.present? ? item_title : self.id
+    [unit&.title, collection&.title, item_title].join(" ").strip
   end
 
 end

@@ -169,6 +169,17 @@ class CollectionTest < ActiveSupport::TestCase
                  @instance.effective_metadata_profile
   end
 
+  # effective_primary_unit()
+
+  test "effective_primary_unit() returns the primary unit if set" do
+    assert_equal @instance.primary_unit, @instance.effective_primary_unit
+  end
+
+  test "effective_primary_unit() returns another unit if the primary unit is not set" do
+    @instance.primary_unit = nil
+    assert @instance.effective_primary_unit.kind_of?(Unit)
+  end
+
   # effective_submission_profile()
 
   test "effective_submission_profile() returns the assigned submission profile" do
