@@ -25,6 +25,17 @@ module ItemsHelper
         form <<     "<h5 class=\"mt-0 mb-0\">"
         form <<       link_to(item.title, item)
         form <<     "</h5>"
+        # Unit
+        form <<     link_to(item.primary_unit) do
+          icon_for(item.primary_unit) + " " + item.primary_unit.title
+        end
+        # Collection
+        form <<     " &rarr; "
+        form <<     link_to(item.primary_collection) do
+          icon_for(item.primary_collection) + " " + item.primary_collection.title
+        end
+        form <<     "<br>"
+        # Submitter
         form <<     "Submitted by "
         form <<     link_to(item.submitter.becomes(User)) do
           icon_for(item.submitter) + " " + item.submitter.name
