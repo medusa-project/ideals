@@ -101,8 +101,8 @@ class IdealsMailer < ApplicationMailer
   def item_submitted(item)
     config    = ::Configuration.instance
     @item_url = item_url(item, host: config.website[:base_url])
-    if item.primary_collection&.managers&.any?
-      recipients = item.primary_collection.managers.map(&:email)
+    if item.primary_collection&.managing_users&.any?
+      recipients = item.primary_collection.managing_users.map(&:email)
     else
       recipients = config.admin[:tech_mail_list] # TODO: use a different config key
     end
