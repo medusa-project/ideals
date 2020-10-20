@@ -31,6 +31,14 @@
     = f.select :submission_profile_id, SubmissionProfile.all.pluck(:name, :id),
                { include_blank: true }, class: "custom-select"
 
+  .form-group
+    .form-check
+      = f.check_box :submissions_reviewed, class: 'form-check-input'
+      = f.label :submissions_reviewed, "Submissions Reviewed", class: "form-check-label"
+    %span.form-text.text-muted
+      %i.fa.fa-info-circle
+      Enabling this will not affect submitted items still in the review queue.
+
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel

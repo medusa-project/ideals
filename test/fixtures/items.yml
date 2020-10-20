@@ -10,6 +10,7 @@ in_medusa:
   submitter: admin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
+  primary_collection: collection1
   collections:
     - collection1
 
@@ -17,6 +18,7 @@ described:
   submitter: admin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
+  primary_collection: collection1
   collections:
     - collection1
 
@@ -24,6 +26,7 @@ undescribed:
   submitter: admin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
+  primary_collection: collection1
   collections:
     - collection1
 
@@ -31,6 +34,7 @@ submitting:
   submitter: admin
   stage: <%= Item::Stages::SUBMITTING %>
   discoverable: false
+  primary_collection: collection1
   collections:
     - collection1
 
@@ -38,6 +42,7 @@ submitted:
   submitter: admin
   stage: <%= Item::Stages::SUBMITTED %>
   discoverable: false
+  primary_collection: collection1
   collections:
     - collection1
 
@@ -45,6 +50,7 @@ undiscoverable:
   submitter: admin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: false
+  primary_collection: collection1
   collections:
     - collection1
 
@@ -52,5 +58,6 @@ withdrawn:
   submitter: admin
   stage: <%= Item::Stages::WITHDRAWN %>
   discoverable: false
+  primary_collection: collection1
   collections:
     - collection1

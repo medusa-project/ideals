@@ -1,6 +1,7 @@
 collection1:
   metadata_profile: default
   submission_profile: default
+  submissions_reviewed: true
   primary_unit: unit1
   unit_default: true
   units:
@@ -10,23 +11,28 @@ collection1:
 collection1_collection1:
   metadata_profile: default
   submission_profile: default
+  submissions_reviewed: true
   primary_unit: unit1
   parent: collection1
 
 collection1_collection1_collection1:
   metadata_profile: default
   submission_profile: default
+  submissions_reviewed: true
   primary_unit: unit1
   parent: collection1_collection1
 
 described:
   metadata_profile: default
   submission_profile: default
+  submissions_reviewed: true
 
 empty:
   metadata_profile: default
   submission_profile: default
+  submissions_reviewed: true
 
 undescribed:
   metadata_profile: default
   submission_profile: default
+  submissions_reviewed: true

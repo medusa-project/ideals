@@ -251,7 +251,8 @@ class CollectionsController < ApplicationController
   def collection_params
     params.require(:collection).permit(:metadata_profile_id, :parent_id,
                                        :primary_unit_id,
-                                       :submission_profile_id, :unit_default,
+                                       :submission_profile_id,
+                                       :submissions_reviewed, :unit_default,
                                        unit_ids: [])
   end
 end

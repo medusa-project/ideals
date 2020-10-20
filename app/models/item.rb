@@ -83,7 +83,9 @@ class Item < ApplicationRecord
 
     ##
     # An item that has gone through the submission workflow but has not yet
-    # been reviewed.
+    # been reviewed. This stage is only available when
+    # {Collection#submissions_reviewed submissions to the item's primary
+    # collection are reviewed}.
     SUBMITTED  = 200
 
     ##
@@ -253,7 +255,8 @@ class Item < ApplicationRecord
   #
   def complete_submission
     raise "Item is not in a submitting state." unless submitting?
-    update!(stage: Item::Stages::SUBMITTED)
+    update!(stage: self.primary_collection&.submissions_reviewed ?
+                       Stages::SUBMITTED : Stages::APPROVED)
   end
 
   ##

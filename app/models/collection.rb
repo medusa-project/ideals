@@ -23,6 +23,9 @@
 #                           {SubmissionProfile#default default profile}. In
 #                           most cases, {effective_submission_profile} should
 #                           be used instead of accessing this directly.
+# * `submissions_reviewed`  If true, items submitted to the collection are
+#                           subject to administrator review. Otherwise, they
+#                           are immediately approved.
 # * `unit_default`          Whether the instance is the default collection of
 #                           its primary unit.
 # * `updated_at`            Managed by ActiveRecord.

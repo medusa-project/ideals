@@ -159,10 +159,20 @@ class ItemTest < ActiveSupport::TestCase
     end
   end
 
-  test "complete_submission() updates the stage" do
+  test "complete_submission() updates the stage to submitted if the primary
+  collection reviews submissions" do
     item = items(:submitting)
+    item.primary_collection.submissions_reviewed = true
     item.complete_submission
     assert_equal Item::Stages::SUBMITTED, item.stage
+  end
+
+  test "complete_submission() updates the stage to approved if the primary
+  collection does not review submissions" do
+    item = items(:submitting)
+    item.primary_collection.submissions_reviewed = false
+    item.complete_submission
+    assert_equal Item::Stages::APPROVED, item.stage
   end
 
   # description() (Describable concern)

@@ -34,6 +34,8 @@
               = @submission_profile.name
           - else
             = raw("Not assigned (falling back to #{link_to(@submission_profile.name, @submission_profile)})")
+        %dt Submissions Reviewed
+        %dd= boolean(@collection.submissions_reviewed, style: :word, invert_color: true)
     %dl
       %dt Created
       %dd= local_time @collection.created_at

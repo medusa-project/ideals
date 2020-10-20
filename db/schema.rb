@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_05_160622) do
+ActiveRecord::Schema.define(version: 2020_10_20_153037) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,6 +62,7 @@ ActiveRecord::Schema.define(version: 2020_10_05_160622) do
     t.bigint "submission_profile_id"
     t.bigint "parent_id"
     t.boolean "unit_default", default: false, null: false
+    t.boolean "submissions_reviewed", default: true, null: false
   end
 
   create_table "collections_items", id: false, force: :cascade do |t|

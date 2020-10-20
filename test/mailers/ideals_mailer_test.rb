@@ -144,7 +144,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     config = ::Configuration.instance
     assert_equal [config.mail[:from]], email.from
-    assert_equal config.admin[:tech_mail_list], email.to
+    assert_equal ["admin@example.edu"], email.to
     assert_equal "A new IDEALS item requires review", email.subject
 
     assert_equal render_template("item_submitted.txt",
