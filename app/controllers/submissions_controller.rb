@@ -33,21 +33,11 @@ class SubmissionsController < ApplicationController
   # Responds to `POST /submissions/:id/complete`
   #
   def complete
-    unless @item.submitting?
-      render plain: "Resource is not in a submitting state.",
-             status: :conflict and return
-    end
-    # This is also validated on the client, but do it here too to be safe.
-    unless @item.required_elements_present?
-      render plain: "Item is missing required elements.",
-             status: :bad_request and return
-    end
-    # This is also validated on the client, but do it here too to be safe.
-    if @item.bitstreams.count < 1
-      render plain: "Item has no associated bitstreams.",
-             status: :bad_request and return
-    end
-    @item.update!(stage: Item::Stages::SUBMITTED)
+    @item.complete_submission
+  rescue ActiveRecord::RecordInvalid => e
+    render plain: "#{e}", status: :bad_request
+  rescue => e
+    render plain: "#{e}", status: :conflict
   end
 
   ##

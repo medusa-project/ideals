@@ -149,6 +149,22 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_nil item.handle.suffix
   end
 
+  # complete_submission()
+
+  test "complete_submission() raises an error if the instance is not in the
+  submitting stage" do
+    item = items(:submitted)
+    assert_raises do
+      item.complete_submission
+    end
+  end
+
+  test "complete_submission() updates the stage" do
+    item = items(:submitting)
+    item.complete_submission
+    assert_equal Item::Stages::SUBMITTED, item.stage
+  end
+
   # description() (Describable concern)
 
   test "description() returns the description element value" do
@@ -344,6 +360,22 @@ class ItemTest < ActiveSupport::TestCase
     assert @instance.validate
     @instance.stage = 999
     assert !@instance.validate
+  end
+
+  test "validate() ensures that a submission includes at least one bitstream" do
+    item = items(:submitting)
+    assert item.validate
+    item.bitstreams.destroy_all
+    item.stage = Item::Stages::SUBMITTED
+    assert !item.validate
+  end
+
+  test "validate() ensures that a submission includes all required elements" do
+    item = items(:submitting)
+    assert item.validate
+    item.elements.where(registered_element: registered_elements(:title)).destroy_all
+    item.stage = Item::Stages::SUBMITTED
+    assert !item.validate
   end
 
   # withdrawn?()

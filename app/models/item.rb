@@ -118,10 +118,12 @@ class Item < ApplicationRecord
 
   breadcrumbs parent: :primary_collection, label: :title
 
-  before_save :email_after_stage_change
+  before_save :email_after_submission
   before_destroy :restrict_in_archive_deletion
 
   validates :stage, inclusion: { in: Stages.all }
+  validate :submission_includes_bitstreams,
+           :submission_includes_required_elements
 
   ##
   # @param submitter [User]
@@ -247,6 +249,14 @@ class Item < ApplicationRecord
   end
 
   ##
+  # Called at the end of the submission process.
+  #
+  def complete_submission
+    raise "Item is not in a submitting state." unless submitting?
+    update!(stage: Item::Stages::SUBMITTED)
+  end
+
+  ##
   # @return [MetadataProfile] The primary collection's metadata profile, or the
   #                           {MetadataProfile#default default profile} if not
   #                           set.
@@ -354,14 +364,28 @@ class Item < ApplicationRecord
 
   private
 
-  def email_after_stage_change
-    if self.stage_was == Stages::SUBMITTING && self.stage == Stages::SUBMITTED
+  def email_after_submission
+    if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED
       IdealsMailer.item_submitted(self).deliver_now
     end
   end
 
   def restrict_in_archive_deletion
     raise "Archived items cannot be deleted" if self.exists_in_medusa?
+  end
+
+  def submission_includes_bitstreams
+    if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED &&
+        bitstreams.length < 1
+      errors.add(:bitstreams, "is empty")
+    end
+  end
+
+  def submission_includes_required_elements
+    if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED &&
+        !required_elements_present?
+      errors.add(:elements, "is missing required elements")
+    end
   end
 
 end
