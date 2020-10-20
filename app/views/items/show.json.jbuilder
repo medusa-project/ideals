@@ -36,7 +36,7 @@ if policy(@item).show?
     end
   end
 
-  json.bitstreams do
+  json.files do
     @item.bitstreams.order(:original_filename).each do |bitstream|
       json.child! do
         json.original_filename bitstream.original_filename

@@ -25,7 +25,9 @@
         %td
           -# progress bar injected here
         %td
-          - if controller_name == "items" && action_name == "edit_bitstreams" && bitstream.exists_in_staging && !bitstream.submitted_for_ingest && bitstream.medusa_uuid.blank?
+          - if controller_name == "items" && action_name == "edit_bitstreams" && |
+                bitstream.exists_in_staging && !bitstream.submitted_for_ingest && |
+                bitstream.medusa_uuid.blank? |
             %button.btn.btn-sm.btn-light.ingest
               %i.fa.fa-upload
               Ingest Into Medusa

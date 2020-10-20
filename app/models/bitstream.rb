@@ -2,6 +2,9 @@
 # Binary file/object associated with an {Item}. The "bitstream" terminology
 # comes from DSpace, which is what IDEALS used to be built on.
 #
+# The term "bitstream" is not exposed in the user interface. Throughout the UI,
+# bitstreams are called files. (IR-109)
+#
 # # Attributes
 #
 # * `created_at`:           Managed by ActiveRecord.

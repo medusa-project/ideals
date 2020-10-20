@@ -25,13 +25,13 @@
       = icon_for(:info)
       Properties
   %li.nav-item
-    %a#bitstreams-tab.nav-link{href: "#bitstreams-tab-content",
-                               "data-toggle": "tab",
-                               role: "tab",
-                               "aria-controls": "bitstreams-tab-content",
-                               "aria-selected": "true"}
+    %a#files-tab.nav-link{href: "#files-tab-content",
+                          "data-toggle": "tab",
+                          role: "tab",
+                          "aria-controls": "files-tab-content",
+                          "aria-selected": "true"}
       %i.fa.fa-file
-      Bitstreams
+      Files
       %span.badge.badge-secondary.badge-pill= @bitstreams.count
   %li.nav-item
     %a#collections-tab.nav-link{href: "#collections-tab-content",
@@ -60,9 +60,9 @@
                                         "aria-labelledby": "properties-tab"}
     = render partial: "show_properties_tab"
 
-  #bitstreams-tab-content.tab-pane.fade{role: "tabpanel",
-                                        "aria-labelledby": "bitstreams-tab"}
-    = render partial: "show_bitstreams_tab"
+  #files-tab-content.tab-pane.fade{role: "tabpanel",
+                                   "aria-labelledby": "files-tab"}
+    = render partial: "show_files_tab"
 
   #collections-tab-content.tab-pane{role: "tabpanel",
                                     "aria-labelledby": "collections-tab"}

@@ -1,0 +1,60 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@item).edit_bitstreams?
+    %button.btn.btn-light.edit-item-files{"data-item-id": @item.id,
+                                          "data-target": "#edit-item-files-modal",
+                                          "data-toggle": "modal",
+                                          role: "button"}
+      %i.fas.fa-pencil-alt
+      Edit Files
+
+%ul.list-unstyled
+  - @bitstreams.each do |bitstream|
+    %li.media.mb-3
+      .mr-3.type-icon
+        = icon_for(bitstream)
+      .media-body
+        %h5.mt-0.mb-1
+          = bitstream.original_filename
+          - if bitstream.exists_in_staging || bitstream.medusa_uuid.present?
+            = link_to(item_bitstream_data_path(@item, bitstream), class: "btn btn-sm btn-outline-primary") do
+              %i.fa.fa-download
+              Download
+        - if policy(@item).show_sysadmin_content?
+          .row
+            .col-md-4
+              %dl
+                %dt Media Type
+                %dd
+                  - if bitstream.media_type
+                    = bitstream.media_type
+                  - else
+                    Unknown
+                %dt Size
+                %dd= number_to_human_size(bitstream.length)
+            .col-md-8
+              %dl
+                %dt Database ID
+                %dd= bitstream.id
+                %dt Submitted For Ingest
+                %dd= boolean(bitstream.submitted_for_ingest, style: :word)
+                - if bitstream.exists_in_staging && bitstream.staging_key
+                  %dt Staging Key
+                  %dd= bitstream.staging_key
+                - if bitstream.medusa_uuid
+                  %dt Medusa UUID
+                  %dd= link_to(bitstream.medusa_uuid, bitstream.medusa_url)
+                  %dt Medusa Key
+                  %dd
+                    %code= bitstream.medusa_key
+        - else
+          %span
+          - if bitstream.media_type.present?
+            = bitstream.media_type
+          - else
+            Unknown
+          = number_to_human_size(bitstream.length)
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-item-files-modal",
+                   title: "Edit Files",
+                   size: "lg" }
