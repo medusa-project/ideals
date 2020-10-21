@@ -28,18 +28,24 @@ module UnitsHelper
   end
 
   ##
-  # @param include_root [Boolean]       Whether to include a blank entry at the
-  #                                     top, typically for root units.
+  # @param include_blank [Boolean]      Whether to include a blank entry at the
+  #                                     top.
+  # @param include_root [Boolean]       Whether to include a root entry at the
+  #                                     top.
   # @param parent_unit [Unit]           Not part of the public contract--ignore.
   # @param options [Enumerable<String>] Not part of the public contract--ignore.
   # @param level [Integer]              Not part of the public contract--ignore.
   # @return [Enumerable<String>]        Array of options for passing to
   #                                     {options_for_select}.
   #
-  def unit_tree_options(include_root: false,
+  def unit_tree_options(include_blank: false,
+                        include_root: false,
                         parent_unit: nil,
                         options: [],
                         level: 0)
+    if include_blank && level == 0
+      options << [nil, nil]
+    end
     if include_root && level == 0
       options << ["None (Root Level)", nil]
     end
@@ -55,10 +61,11 @@ module UnitsHelper
       indent   = "&nbsp;&nbsp;&nbsp;&nbsp;" * level
       arrow    = (level > 0) ? raw("&#8627; ") : ""
       options << [raw(indent + arrow + unit.title), unit.id]
-      unit_tree_options(include_root: false,
-                        parent_unit:  unit,
-                        options:      options,
-                        level:        level + 1)
+      unit_tree_options(include_blank: include_blank,
+                        include_root:  false,
+                        parent_unit:   unit,
+                        options:       options,
+                        level:         level + 1)
     end
     options
   end

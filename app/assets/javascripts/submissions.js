@@ -206,7 +206,7 @@ const SubmissionForm = function() {
         return true;
     };
 
-    /************************ Properties section ***************************/
+    /****************** Properties/Collections section *********************/
 
     const fetchCollectionsForUnit = function(unitID, onComplete) {
         collectionsMenu.attr("disabled", true);
@@ -238,19 +238,19 @@ const SubmissionForm = function() {
     });
 
     // Restore initial unit & collection selection values. If there is nothing
-    // to restore, select the first unit and its first collection.
+    // to restore, select the blank item in the unit menu, and hide the
+    // collection menu.
     let unitID = $("[name='item[initial_primary_collection_unit_id]']").val();
-    if (unitID < 1) {
-        unitID = unitsMenu.find("option:first-child").val();
+    if (unitID > 0) {
+        fetchCollectionsForUnit(unitID, function () {
+            unitsMenu.val(unitID);
+            const collectionID = $("[name='item[initial_primary_collection_id]']").val();
+            if (collectionID > 0) {
+                collectionsMenu.val(collectionID);
+            }
+            self.save(collectionsMenu);
+        });
     }
-    fetchCollectionsForUnit(unitID, function() {
-        unitsMenu.val(unitID);
-        const collectionID = $("[name='item[initial_primary_collection_id]']").val();
-        if (collectionID > 0) {
-            collectionsMenu.val(collectionID);
-        }
-        self.save(collectionsMenu);
-    });
 
     /************************* Metadata section ****************************/
 
