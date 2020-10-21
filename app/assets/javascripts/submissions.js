@@ -63,19 +63,20 @@ const SubmissionForm = function() {
     const ROOT_URL   = $("input[name=root_url]").val();
     const CSRF_TOKEN = $("input[name=authenticity_token]").val();
 
-    const self            = this;
-    const form            = $("form.edit_item");
+    const self              = this;
+    const form              = $("form.edit_item");
     // Properties section
-    const propertiesForm  = form.filter("#properties-form");
-    const unitsMenu       = $("[name=unit_id]");
-    const collectionsMenu = $("[name='item[primary_collection_id]']");
+    const propertiesForm    = form.filter("#properties-form");
+    const unitsMenu         = $("[name=unit_id]");
+    const collectionSection = $("#collection-section");
+    const collectionsMenu   = $("[name='item[primary_collection_id]']");
     // Metadata section
-    const metadataForm    = form.filter("#metadata-form");
+    const metadataForm      = form.filter("#metadata-form");
     // Files section
-    const filesForm       = form.filter("#files-form");
-    const uploader        = new IDEALS.ItemFileUploader();
+    const filesForm         = form.filter("#files-form");
+    const uploader          = new IDEALS.ItemFileUploader();
     // Files section
-    const completionForm  = form.filter("#completion-form");
+    const completionForm    = form.filter("#completion-form");
 
     var lastEditedInput;
 
@@ -209,7 +210,7 @@ const SubmissionForm = function() {
     /****************** Properties/Collections section *********************/
 
     const fetchCollectionsForUnit = function(unitID, onComplete) {
-        collectionsMenu.attr("disabled", true);
+        collectionSection.hide();
         new IDEALS.Client().fetchUnitCollections(unitID, function(data) {
             collectionsMenu.children().remove();
             if (data.length > 0) {
@@ -217,7 +218,7 @@ const SubmissionForm = function() {
                     collectionsMenu.append(
                         "<option value='" + value[1] + "'>" + value[0] + "</option>");
                 });
-                collectionsMenu.attr("disabled", false);
+                collectionSection.show();
             }
             if (onComplete) {
                 onComplete();
@@ -360,7 +361,7 @@ const SubmissionForm = function() {
  *
  * @constructor
  */
-const EditView = function() {
+const EditSubmissionView = function() {
     new SubmissionForm();
 };
 
@@ -368,6 +369,6 @@ $(document).ready(function() {
     if ($("body#agreement").length) {
         new AgreementView();
     } else if ($("body#edit_submission").length) {
-        new EditView();
+        new EditSubmissionView();
     }
 });

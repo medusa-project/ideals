@@ -17,30 +17,32 @@
     depositing your own research and unsure which collection to deposit into, |
     the Illinois Research and Scholarship (Open Collection) can be used. |
 
-  %p Select the unit into which you would like to deposit the item.
+  %section#unit-section
+    %p Select the unit into which you would like to deposit the item.
 
-  .row.mb-3
-    .col-sm-10
-      -# This element is used only to populate the collection-select menu.
-      = select_tag(:unit_id, options_for_select(unit_tree_options(include_blank: f.object&.primary_collection&.primary_unit_id.blank?)),
-                   class: "custom-select")
-    .col-sm-2
-      .message
-        .text-success
-          %i.fa.fa-check
-          Value saved
+    .row.mb-3
+      .col-sm-10
+        -# This element is used only to populate the collection-select menu.
+        = select_tag(:unit_id, options_for_select(unit_tree_options(include_blank: f.object&.primary_collection&.primary_unit_id.blank?)),
+                     class: "custom-select")
+      .col-sm-2
+        .message
+          .text-success
+            %i.fa.fa-check
+            Value saved
 
-  %p Then, select the collection into which you would like to deposit the item.
+  %section#collection-section{style: "display: none"}
+    %p Select the collection into which you would like to deposit the item.
 
-  .row.mb-3
-    .col-sm-10
-      = f.select(:primary_collection_id, options_for_select([]),
-                 {}, class: "custom-select", disabled: true)
-    .col-sm-2
-      .message
-        .text-success
-          %i.fa.fa-check
-          Value saved
+    .row.mb-3
+      .col-sm-10
+        = f.select(:primary_collection_id, options_for_select([]),
+                   {}, class: "custom-select")
+      .col-sm-2
+        .message
+          .text-success
+            %i.fa.fa-check
+            Value saved
 
   .text-center.mb-3
     %button.btn.btn-light.step-1-to-2{type: "button"}
