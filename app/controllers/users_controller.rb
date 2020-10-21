@@ -53,9 +53,11 @@ class UsersController < ApplicationController
     @collections_start        = params[:collections_start].to_i
     @submittable_collections  = @user.effective_submittable_collections
     @collections_count        = @submittable_collections.count
-    @submittable_collections  = @submittable_collections.
-        offset(@collections_start).
-        limit(@window)
+    if @submittable_collections.kind_of?(ActiveRecord::Relation)
+      @submittable_collections  = @submittable_collections
+          offset(@collections_start).
+          limit(@window)
+    end
     @current_collections_page = ((@collections_start / @window.to_f).ceil + 1 if @window > 0) || 1
 
     # Submitted Items tab content
