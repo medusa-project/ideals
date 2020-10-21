@@ -15,7 +15,8 @@
   .form-group
     = f.label :parent_id, "Parent Unit"
     = f.select(:parent_id,
-        options_for_select(unit_tree_options(true), f.object.parent&.id),
+        options_for_select(unit_tree_options(include_root: true),
+        f.object.parent&.id),
         {}, { class: "custom-select" })
 
   %p.form-text.text-muted
