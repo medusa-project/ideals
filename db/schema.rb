@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_20_153037) do
+ActiveRecord::Schema.define(version: 2020_10_22_153700) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -107,6 +107,23 @@ ActiveRecord::Schema.define(version: 2020_10_20_153037) do
     t.integer "stage", default: 0, null: false
     t.index ["discoverable"], name: "index_items_on_discoverable"
     t.index ["stage"], name: "index_items_on_stage"
+  end
+
+  create_table "ldap_groups", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_ldap_groups_on_name", unique: true
+  end
+
+  create_table "ldap_groups_user_groups", id: false, force: :cascade do |t|
+    t.bigint "ldap_group_id", null: false
+    t.bigint "user_group_id", null: false
+  end
+
+  create_table "ldap_groups_users", id: false, force: :cascade do |t|
+    t.bigint "ldap_group_id", null: false
+    t.bigint "user_id", null: false
   end
 
   create_table "local_identities", force: :cascade do |t|
@@ -233,6 +250,8 @@ ActiveRecord::Schema.define(version: 2020_10_20_153037) do
     t.string "name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "key", null: false
+    t.index ["key"], name: "index_user_groups_on_key", unique: true
     t.index ["name"], name: "index_user_groups_on_name", unique: true
   end
 
@@ -248,7 +267,6 @@ ActiveRecord::Schema.define(version: 2020_10_20_153037) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "type", null: false
-    t.boolean "sysadmin", default: false, null: false
     t.string "phone"
     t.bigint "local_identity_id"
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -276,6 +294,8 @@ ActiveRecord::Schema.define(version: 2020_10_20_153037) do
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "collections", column: "primary_collection_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "ldap_groups_user_groups", "ldap_groups"
+  add_foreign_key "ldap_groups_user_groups", "user_groups"
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "users", on_update: :cascade, on_delete: :cascade

@@ -90,12 +90,12 @@ class CollectionTest < ActiveSupport::TestCase
     assert_not_empty doc[Collection::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Collection::IndexFields::LAST_MODIFIED]
-    assert_equal [@instance.managing_users.first.id],
+    assert_equal @instance.effective_managers.map(&:id),
                  doc[Collection::IndexFields::MANAGERS]
     assert_nil doc[Collection::IndexFields::PARENT]
     assert_equal @instance.primary_unit_id,
                doc[Collection::IndexFields::PRIMARY_UNIT]
-    assert_equal [@instance.submitting_users.first.id],
+    assert_equal @instance.effective_submitters.map(&:id),
                  doc[Collection::IndexFields::SUBMITTERS]
     assert doc[Collection::IndexFields::UNIT_DEFAULT]
     assert_equal %w(Unit1 Unit2),

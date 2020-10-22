@@ -14,11 +14,13 @@
   %thead
     %tr
       %th Name
+      %th Key
   %tbody
     - @user_groups.each do |group|
       %tr
+        %td= link_to(group.name, group)
         %td
-          = link_to(group.name, group)
+          %code= link_to(group.key, group)
 
 = render partial: 'add_modal'
 = render partial: "shared/ajax_modal",

@@ -58,7 +58,8 @@ class UserGroupsController < ApplicationController
   # Responds to `GET /user-groups/:id`
   #
   def show
-    @users = @user_group.users.order(:name)
+    @users       = @user_group.users.order(:name)
+    @ldap_groups = @user_group.ldap_groups.order(:name)
   end
 
   ##
@@ -80,7 +81,8 @@ class UserGroupsController < ApplicationController
   private
 
   def user_group_params
-    params.require(:user_group).permit(:name)
+    params.require(:user_group).permit(:key, :name, ldap_group_ids: [],
+                                       user_ids: [])
   end
 
   def set_user_group

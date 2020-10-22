@@ -54,7 +54,7 @@ class UsersController < ApplicationController
     @submittable_collections  = @user.effective_submittable_collections
     @collections_count        = @submittable_collections.count
     if @submittable_collections.kind_of?(ActiveRecord::Relation)
-      @submittable_collections  = @submittable_collections
+      @submittable_collections  = @submittable_collections.
           offset(@collections_start).
           limit(@window)
     end

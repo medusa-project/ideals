@@ -15,7 +15,6 @@
 # * `name`:              The user's name in whatever format they choose to
 #                        provide it.
 # * `phone`:             The user's phone number.
-# * `sysadmin`:          Whether the user is a system administrator.
 # * `type`:              Supports Rails single-table inheritance (STI).
 # * `uid`:               For {ShibbolethUser}s, this is the UID provided by
 #                        Shibboleth (which is probably the EPPN). For
@@ -39,6 +38,7 @@ class User < ApplicationRecord
            inverse_of: :submitter
   has_many :submitters
   has_many :submitting_collections, through: :submitters, source: :collection
+  has_and_belongs_to_many :ldap_groups
   has_and_belongs_to_many :user_groups
 
   validates :email, presence: true, length: {maximum: 255},

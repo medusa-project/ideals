@@ -2,23 +2,22 @@
 
 ##
 # Concrete implementation of {User}. This type of user comes from the
-# shibboleth authentication strategy. All Shibboleth users have NetIDs and
-# whether or not they are a {sysadmin? sysadmin} is determined by their
-# membership in the AD group named in the `admin/ad_group_urn` configuration key.
+# Shibboleth authentication strategy. All Shibboleth users have NetIDs and
+# whether they are a {sysadmin? sysadmin} is determined by their membership in
+# an LDAP group ascribed to the {UserGroup#sysadmin sysadmin user group}.
 #
 class ShibbolethUser < User
 
+  ##
+  # @return [ShibbolethUser]
+  #
   def self.from_omniauth(auth)
-    return nil unless auth && auth[:uid]
-
     user = ShibbolethUser.find_by(uid: auth["uid"])
-
     if user
       user.update_with_omniauth(auth)
     else
       user = ShibbolethUser.create_with_omniauth(auth)
     end
-
     user
   end
 
@@ -40,14 +39,6 @@ class ShibbolethUser < User
     user
   end
 
-  def self.create_with_omniauth(auth)
-    create! do |user|
-      user.uid   = auth["uid"]
-      user.email = auth["info"]["email"]
-      user.name  = display_name((auth["info"]["email"]).split("@").first)
-    end
-  end
-
   def self.create_no_omniauth(email)
     create! do |user|
       user.uid   = email
@@ -56,16 +47,28 @@ class ShibbolethUser < User
     end
   end
 
+  def self.create_with_omniauth(auth)
+    create! do |user|
+      user.uid         = auth["uid"]
+      user.email       = auth["info"]["email"]
+      user.name        = display_name((auth["info"]["email"]).split("@").first)
+      user.ldap_groups = fetch_ldap_groups(auth)
+    end
+  end
+
+  def self.fetch_ldap_groups(auth)
+    groups = []
+    auth['extra']['raw_info']['member'].split(";").each do |group_name|
+      groups << LdapGroup.find_or_create_by(name: group_name)
+    end
+    groups
+  end
+
   def update_with_omniauth(auth)
-    member_info     = auth['extra']['raw_info']['member']
-    member_info_arr = member_info.split(";")
-    admin_group     = Configuration.instance.admin[:ad_group_urn]
-    update!(
-      uid:      auth["uid"],
-      email:    auth["info"]["email"],
-      name:     ShibbolethUser.display_name((auth["info"]["email"]).split("@").first),
-      sysadmin: member_info_arr.include?(admin_group)
-    )
+    update!(uid:         auth["uid"],
+            email:       auth["info"]["email"],
+            name:        ShibbolethUser.display_name((auth["info"]["email"]).split("@").first),
+            ldap_groups: self.class.fetch_ldap_groups(auth))
   end
 
   def self.display_name(email)
@@ -74,7 +77,7 @@ class ShibbolethUser < User
     return "Unknown" unless netid
 
     begin
-      response = open("https://quest.library.illinois.edu/directory/ad/person/#{netid}").read
+      response = URI.open("https://quest.library.illinois.edu/directory/ad/person/#{netid}").read
       xml_doc = Nokogiri::XML(response)
       xml_doc.remove_namespaces!
       display_name = xml_doc.xpath("//attr[@name='displayname']").text
@@ -102,7 +105,7 @@ class ShibbolethUser < User
   # @return [Boolean]
   #
   def sysadmin?
-    sysadmin
+    !(UserGroup.sysadmin.ldap_groups & self.ldap_groups).empty?
   end
 
 end

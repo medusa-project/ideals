@@ -1,7 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: User Group One
+sysadmin:
+  key: sysadmin
+  name: System Administrators
+  users:
+    - admin
+  ldap_groups:
+    - sysadmin
 
 unused:
+  key: unused
   name: Unused Group

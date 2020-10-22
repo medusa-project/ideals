@@ -19,6 +19,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              user_group: {
+                 key:  "cats",
                  name: "cats"
              }
          }
@@ -31,6 +32,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              user_group: {
+                 key:  "cats",
                  name: "cats"
              }
          }
@@ -44,6 +46,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
                user_group: {
+                   key:  "cats",
                    name: "cats"
                }
            }
@@ -56,6 +59,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              user_group: {
+                 key:  "cats",
                  name: ""
              }
          }
@@ -127,28 +131,28 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   # show()
 
   test "show() redirects to login page for logged-out users" do
-    get user_group_path(user_groups(:one))
+    get user_group_path(user_groups(:sysadmin))
     assert_redirected_to login_path
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get user_group_path(user_groups(:one))
+    get user_group_path(user_groups(:sysadmin))
     assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
     log_in_as(users(:admin))
-    get user_group_path(user_groups(:one))
+    get user_group_path(user_groups(:sysadmin))
     assert_response :ok
   end
 
   test "show() respects role limits" do
     log_in_as(users(:admin))
-    get user_group_path(user_groups(:one))
+    get user_group_path(user_groups(:sysadmin))
     assert_response :ok
 
-    get user_group_path(user_groups(:one), role: Role::LOGGED_OUT)
+    get user_group_path(user_groups(:sysadmin), role: Role::LOGGED_OUT)
     assert_response :forbidden
   end
 
@@ -167,11 +171,12 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() updates a user group" do
     log_in_as(users(:admin))
-    group = user_groups(:one)
+    group = user_groups(:sysadmin)
     patch user_group_path(group),
           xhr: true,
           params: {
               user_group: {
+                  key:  "cats",
                   name: "cats"
               }
           }
@@ -181,11 +186,12 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 200" do
     log_in_as(users(:admin))
-    group = user_groups(:one)
+    group = user_groups(:sysadmin)
     patch user_group_path(group),
           xhr: true,
           params: {
               user_group: {
+                  key:  "cats",
                   name: "cats"
               }
           }
@@ -194,11 +200,12 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:admin))
-    group = user_groups(:one)
+    group = user_groups(:sysadmin)
     patch user_group_path(group),
           xhr: true,
           params: {
               user_group: {
+                  key:  "cats",
                   name: "" # invalid
               }
           }

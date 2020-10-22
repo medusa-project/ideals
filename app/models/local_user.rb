@@ -92,8 +92,11 @@ class LocalUser < User
     identity.activated
   end
 
+  ##
+  # @return [Boolean]
+  #
   def sysadmin?
-    sysadmin
+    self.user_groups.include?(UserGroup.sysadmin)
   end
 
   def update_with_omniauth(auth)

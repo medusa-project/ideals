@@ -21,16 +21,31 @@
 
 %h1= @user_group.name
 
-%h2 Users
+.row
+  .col-sm-7
+    %h2 LDAP Groups
 
-%table.table
-  %tbody
-    - if @users.any?
-      - @users.each do |user|
-        %tr
-          %td= link_to(user.name, user.becomes(User))
-    - else
-      %p None
+    %table.table
+      %tbody
+        - if @ldap_groups.any?
+          - @ldap_groups.each do |group|
+            %tr
+              %td
+                %code= group.name
+        - else
+          %p None
+
+  .col-sm-5
+    %h2 Local Users
+
+    %table.table
+      %tbody
+        - if @users.any?
+          - @users.each do |user|
+            %tr
+              %td= link_to(user.name, user.becomes(User))
+        - else
+          %p None
 
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-user-group-modal", title: "Edit User Group" }
+         locals: { id: "edit-user-group-modal", title: "Edit User Group", size: :lg }

@@ -6,24 +6,19 @@
 -#
 = form_for(user.becomes(User), url: user_update_privileges_path(user), remote: true) do |f|
   .error-messages
-    - # populated via ajax by shared/_validation_messages.js.erb
+    -# populated via ajax by shared/_validation_messages.js.erb
 
-  -# For ShibbolethUsers, this property is provided by AD.
+  -# For ShibbolethUsers, user group inclusion is determined by LDAP group membership.
   - if user.kind_of?(LocalUser)
-    .form-group
+    %h5 User Groups
+    = hidden_field_tag "user[user_group_ids][]"
+    - UserGroup.all.order(:name).each do |group|
       .form-check
-        = f.check_box :sysadmin, class: "form-check-input"
-        = f.label :sysadmin, "System Administrator", class: "form-check-label"
-
-  %h5 User Groups
-  = hidden_field_tag "user[user_group_ids][]"
-  - UserGroup.all.order(:name).each do |group|
-    .form-check
-      = check_box_tag "user[user_group_ids][]", group.id,
-                      f.object.user_groups.include?(group),
-                      { id: "user_user_group_ids_#{group.id}", class: "form-check-input" }
-      = label_tag "user_user_group_ids_#{group.id}",
-      group.name, class: "form-check-label"
+        = check_box_tag "user[user_group_ids][]", group.id,
+                        f.object.user_groups.include?(group),
+                        { id: "user_user_group_ids_#{group.id}", class: "form-check-input" }
+        = label_tag "user_user_group_ids_#{group.id}",
+        group.name, class: "form-check-label"
 
   .clearfix
     .float-right

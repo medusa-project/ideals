@@ -9,7 +9,6 @@ admin: # TODO: rename to local_admin
   name: admin
   email: admin@example.edu
   phone: (888) 555-1234
-  sysadmin: true
   identity: admin
 
 collection1_collection1_manager:
@@ -18,7 +17,6 @@ collection1_collection1_manager:
   name: jane
   email: jane@example.edu
   phone: (888) 555-1234
-  sysadmin: false
   identity: collection1_collection1_manager
 
 collection1_collection1_submitter:
@@ -27,7 +25,6 @@ collection1_collection1_submitter:
   name: phil
   email: phil@example.edu
   phone: (888) 555-1234
-  sysadmin: false
   identity: collection1_collection1_submitter
 
 norights:
@@ -37,7 +34,6 @@ norights:
   name: I have no rights
   email: norights@example.edu
   phone: (888) 555-1234
-  sysadmin: false
   identity: norights
 
 norights2:
@@ -47,7 +43,6 @@ norights2:
   name: I have no rights
   email: norights2@example.edu
   phone: (888) 555-1234
-  sysadmin: false
   identity: norights2
 
 shibboleth:
@@ -56,7 +51,15 @@ shibboleth:
   name: Shib Boleth, Esq.
   email: shib@illinois.edu
   phone: (888) 555-1234
-  sysadmin: false
+
+shibboleth_admin:
+  type: ShibbolethUser
+  uid: shibadmin@illinois.edu
+  name: Shibboleth Admin
+  email: shibadmin@illinois.edu
+  phone: (888) 555-1235
+  ldap_groups:
+    - sysadmin
 
 unit1_unit2_unit1_admin:
   type: LocalUser
@@ -64,5 +67,4 @@ unit1_unit2_unit1_admin:
   name: bob
   email: bob@example.edu
   phone: (888) 555-1234
-  sysadmin: false
   identity: unit1_unit2_unit1_admin

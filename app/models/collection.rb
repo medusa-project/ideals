@@ -209,7 +209,7 @@ class Collection < ApplicationRecord
   def effective_managers
     set = Set.new
     # Add sysadmins.
-    set += User.where(sysadmin: true)
+    set += UserGroup.sysadmin.all_users
     # Add administrators of the primary unit.
     set += primary_unit.all_administrators if primary_unit
     # Add administrators of other units.

@@ -13,8 +13,6 @@
       Edit Privileges
 
 %dl
-  %dt System Administrator
-  %dd= user.sysadmin? ? "Yes" : "No"
   %dt User Groups
   %dd
     - if user.user_groups.any?
@@ -23,6 +21,13 @@
           %li= link_to(group.name, group)
     - else
       None
+  - if user.kind_of?(ShibbolethUser)
+    %dt LDAP Groups
+    %dd
+      %ul
+        - user.ldap_groups.each do |group|
+          %li
+            %code= group.name
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-privileges-modal", title: "Edit Privileges" }

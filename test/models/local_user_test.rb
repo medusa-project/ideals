@@ -27,7 +27,7 @@ class LocalUserTest < ActiveSupport::TestCase
     assert_equal email, user.email
     assert_equal email, user.name
     assert_equal email, user.uid
-    assert !user.sysadmin
+    assert !user.sysadmin?
     assert_nil user.phone
   end
 
@@ -107,7 +107,8 @@ class LocalUserTest < ActiveSupport::TestCase
 
   # activated?()
 
-  test "activated?() returns false when the associated identity has not been activated" do
+  test "activated?() returns false when the associated identity has not been
+  activated" do
     @instance.identity.update_attribute(:activated, false)
     assert !@instance.activated?
   end
@@ -138,11 +139,12 @@ class LocalUserTest < ActiveSupport::TestCase
 
   # sysadmin?()
 
-  test "sysadmin?() returns true when the user is sysadmin" do
+  test "sysadmin?() returns true when the user belongs to the sysadmin user group" do
     assert users(:admin).sysadmin?
   end
 
-  test "sysadmin?() returns false when the user is not a sysadmin" do
+  test "sysadmin?() returns false when the user does not belong to the sysadmin
+  user group" do
     assert !@instance.sysadmin?
   end
 

@@ -152,11 +152,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               user: {
-                  sysadmin: true
+                  user_group_ids: [user_groups(:unused).id]
               }
           }
     user.reload
-    assert user.sysadmin?
+    assert_equal [user_groups(:unused)], user.user_groups
   end
 
   test "update_privileges() returns HTTP 200" do
@@ -166,7 +166,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               user: {
-                  sysadmin: true
+                  user_group_ids: [user_groups(:unused).id]
               }
           }
     assert_response :ok
@@ -178,7 +178,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     patch user_update_privileges_path(user),
           xhr: true,
           params: {
-              user_groups: [999999]
+              user_group_ids: [999999]
           }
     assert_response :bad_request
   end

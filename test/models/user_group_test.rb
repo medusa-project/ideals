@@ -3,14 +3,63 @@ require 'test_helper'
 class UserGroupTest < ActiveSupport::TestCase
 
   setup do
-    @instance = user_groups(:one)
+    @instance = user_groups(:sysadmin)
     assert @instance.valid?
   end
 
-  test "name must be unique" do
+  # sysadmin()
+
+  test "sysadmin() returns the sysadmin group" do
+    assert_not_nil UserGroup.sysadmin
+  end
+
+  # all_users()
+
+  test "all_users() returns associated LocalUsers" do
+    assert @instance.all_users.include?(users(:admin))
+  end
+
+  test "all_users() returns ShibbolethUsers belonging to an associated LDAP group" do
+    assert @instance.all_users.include?(users(:shibboleth_admin))
+  end
+
+  # key
+
+  test "key must be present" do
     assert_raises ActiveRecord::RecordInvalid do
-      UserGroup.create!(name: @instance.name)
+      @instance.update!(key: "")
     end
+  end
+
+  test "key must be unique" do
+    assert_raises ActiveRecord::RecordNotUnique do
+      UserGroup.create!(key: @instance.key,
+                        name: SecureRandom.hex)
+    end
+  end
+
+  # name
+
+  test "name must be present" do
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.update!(name: "")
+    end
+  end
+
+  test "name must be unique" do
+    assert_raises ActiveRecord::RecordNotUnique do
+      UserGroup.create!(key: SecureRandom.hex,
+                        name: @instance.name)
+    end
+  end
+
+  # users
+
+  test "users can contain only LocalUsers" do
+    @instance.users << users(:admin)
+    assert @instance.valid?
+    @instance.users << users(:shibboleth)
+    assert !@instance.valid?
   end
 
 end
