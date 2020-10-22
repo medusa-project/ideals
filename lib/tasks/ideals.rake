@@ -41,7 +41,8 @@ namespace :ideals do
     task :create_local_sysadmin, [:email, :password] => :environment do |task, args|
       user = LocalUser.create_manually(email:    args[:email],
                                        password: args[:password])
-      user.update!(sysadmin: true)
+      user.user_groups << UserGroup.sysadmin
+      user.save!
     end
 
     desc "Create a Shibboleth user"

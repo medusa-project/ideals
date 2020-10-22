@@ -225,7 +225,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               user: {
-                  sysadmin: true
+                  phone: "555-5155"
               }
           }
     assert_response :ok
