@@ -34,6 +34,7 @@ const ItemView = function() {
         const url = ROOT_URL + "/items/" + id + "/edit-membership";
         $.get(url, function(data) {
             $("#edit-item-membership-modal .modal-body").html(data);
+            new IDEALS.CollectionSelectMenus();
         });
     });
     $(".edit-item-metadata").on("click", function() {

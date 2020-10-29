@@ -7,11 +7,20 @@
 
 = form_for(item, remote: true) do |f|
   .error-messages
-    - # populated via ajax by shared/_validation_messages.js.erb
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  = hidden_field_tag :initial_primary_collection_unit_id, f.object.primary_collection&.primary_unit_id
+  = hidden_field_tag :initial_primary_collection_id, f.object.primary_collection_id
+
+  .form-group
+    = f.label :unit_id, "Unit"
+    = select_tag(:unit_id, options_for_select(unit_tree_options(include_blank: f.object&.primary_collection&.primary_unit_id.blank?)),
+                 class: "custom-select")
 
   .form-group
     = f.label :primary_collection_id, "Primary Collection"
-    TODO: write this
+    = f.select(:primary_collection_id, options_for_select([]),
+               {}, class: "custom-select")
 
   .clearfix
     .float-right
