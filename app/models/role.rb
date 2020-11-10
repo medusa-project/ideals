@@ -22,6 +22,13 @@ class Role
   LOGGED_OUT           = 0
 
   ##
+  # @return [Enumerable<Integer>]
+  #
+  def self.all
+    Role.constants.map { |c| Role.const_get(c) }
+  end
+
+  ##
   # @param value [Integer] One of the constant values.
   # @return [String] English label for the value.
   #
