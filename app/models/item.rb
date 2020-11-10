@@ -106,7 +106,7 @@ class Item < ApplicationRecord
     WITHDRAWN  = 400
 
     def self.all
-      Item::Stages.constants.map{ |c| Item::Stages::const_get(c) }
+      Item::Stages.constants.map{ |c| Item::Stages::const_get(c) }.sort
     end
   end
 

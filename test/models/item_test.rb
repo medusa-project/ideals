@@ -13,6 +13,12 @@ class ItemTest < ActiveSupport::TestCase
     AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
   end
 
+  # Stages
+
+  test "Stages.all() returns values in order" do
+    assert_equal Item::Stages::all.sort, Item::Stages::all
+  end
+
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
