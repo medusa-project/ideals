@@ -253,6 +253,15 @@ class BitstreamTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # role_id
+
+  test "role_id must be a valid role ID" do
+    @instance.role_id = 99999
+    assert !@instance.valid?
+    @instance.role_id = Role::COLLECTION_MANAGER
+    assert @instance.valid?
+  end
+
   # staging_key
 
   test "staging_key may be nil when exists_in_staging is false" do

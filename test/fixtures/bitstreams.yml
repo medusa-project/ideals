@@ -10,6 +10,7 @@ item1_in_staging:
   medusa_key:
   medusa_uuid:
   item: item1
+  role_id: 0
 
 item2_in_medusa:
   exists_in_staging: false
@@ -21,6 +22,7 @@ item2_in_medusa:
   medusa_key: test/test/escher_lego2.jpg
   medusa_uuid: 3d2a99d5-2f5b-401e-80c1-864a95e3acf7
   item: in_medusa
+  role_id: 0
 
 submitting_in_staging:
   exists_in_staging: true
@@ -32,3 +34,4 @@ submitting_in_staging:
   medusa_key:
   medusa_uuid:
   item: submitting
+  role_id: 0
