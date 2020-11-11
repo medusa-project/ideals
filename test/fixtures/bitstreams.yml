@@ -3,7 +3,7 @@
 item1_in_staging:
   exists_in_staging: true
   submitted_for_ingest: false
-  staging_key: bogus
+  staging_key: item1_in_staging
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   media_type: image/jpeg
   original_filename: escher_lego.jpg
@@ -27,11 +27,35 @@ item2_in_medusa:
 submitting_in_staging:
   exists_in_staging: true
   submitted_for_ingest: false
-  staging_key: submitting_bogus
+  staging_key: submitting_in_staging
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   media_type: image/jpeg
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
   item: submitting
+  role_id: 0
+
+undiscoverable_in_staging:
+  exists_in_staging: true
+  submitted_for_ingest: false
+  staging_key: undiscoverable_in_staging
+  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  media_type: image/jpeg
+  original_filename: escher_lego.jpg
+  medusa_key:
+  medusa_uuid:
+  item: undiscoverable
+  role_id: 0
+
+withdrawn_in_staging:
+  exists_in_staging: true
+  submitted_for_ingest: false
+  staging_key: withdrawn_in_staging
+  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  media_type: image/jpeg
+  original_filename: escher_lego.jpg
+  medusa_key:
+  medusa_uuid:
+  item: withdrawn
   role_id: 0

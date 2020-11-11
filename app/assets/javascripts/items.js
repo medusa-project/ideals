@@ -16,6 +16,15 @@ const ItemView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
     // XHR modals
+    $(".edit-bitstream").on("click", function() {
+        const item_id      = $(this).data("item-id");
+        const bitstream_id = $(this).data("bitstream-id");
+        const url          = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
+            bitstream_id + "/edit";
+        $.get(url, function(data) {
+            $("#edit-bitstream-modal .modal-body").html(data);
+        });
+    });
     $(".edit-item-membership").on("click", function() {
         const id  = $(this).data("item-id");
         const url = ROOT_URL + "/items/" + id + "/edit-membership";

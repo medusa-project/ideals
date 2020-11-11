@@ -18,12 +18,6 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    post item_bitstreams_path(items(:item1))
-    assert_response :forbidden
-  end
-
   test "create() returns HTTP 200" do
     skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
     log_in_as(users(:admin))
@@ -192,6 +186,39 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # edit()
+
+  test "edit() redirects to login page for logged-out users" do
+    item      = items(:item1)
+    bitstream = item.bitstreams.first
+    get edit_item_bitstream_path(item, bitstream), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    item      = items(:item1)
+    bitstream = item.bitstreams.first
+    get edit_item_bitstream_path(item, bitstream), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:admin))
+    item      = items(:item1)
+    bitstream = item.bitstreams.first
+    get edit_item_bitstream_path(item, bitstream)
+    assert_response :not_found
+  end
+
+  test "edit() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:admin))
+    item      = items(:item1)
+    bitstream = item.bitstreams.first
+    get edit_item_bitstream_path(item, bitstream), xhr: true
+    assert_response :ok
+  end
+
   # ingest()
 
   test "ingest() redirects to login page for logged-out users" do
@@ -347,6 +374,67 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     ensure
       bitstream.delete_from_staging
     end
+  end
+
+  # update()
+
+  test "update() redirects to login page for logged-out users" do
+    bitstream = bitstreams(:item1_in_staging)
+    patch item_bitstream_path(bitstream.item, bitstream)
+    assert_redirected_to login_path
+  end
+
+  test "update() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    bitstream = bitstreams(:item1_in_staging)
+    patch item_bitstream_path(bitstream.item, bitstream)
+    assert_response :forbidden
+  end
+  
+  test "update() updates a bitstream" do
+    log_in_as(users(:admin))
+    bitstream = bitstreams(:item1_in_staging)
+    patch item_bitstream_path(bitstream.item, bitstream),
+          xhr: true,
+          params: {
+              bitstream: {
+                  role_id: Role::UNIT_ADMINISTRATOR
+              }
+          }
+    bitstream.reload
+    assert_equal Role::UNIT_ADMINISTRATOR, bitstream.role_id
+  end
+
+  test "update() returns HTTP 200" do
+    log_in_as(users(:admin))
+    bitstream = bitstreams(:item1_in_staging)
+    patch item_bitstream_path(bitstream.item, bitstream),
+          xhr: true,
+          params: {
+              bitstream: {
+                  role_id: Role::UNIT_ADMINISTRATOR
+              }
+          }
+    assert_response :ok
+  end
+
+  test "update() returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:admin))
+    bitstream = bitstreams(:item1_in_staging)
+    patch item_bitstream_path(bitstream.item, bitstream),
+          xhr: true,
+          params: {
+              bitstream: {
+                  role_id: 9999
+              }
+          }
+    assert_response :bad_request
+  end
+
+  test "update() returns HTTP 404 for nonexistent collections" do
+    log_in_as(users(:admin))
+    patch "/items/#{items(:item1).id}/bitstreams/bogus"
+    assert_response :not_found
   end
 
 end

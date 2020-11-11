@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-##
-# N.B.: This controller has no corresponding policy class. {ItemPolicy} is used
-# instead.
-#
 class BitstreamsController < ApplicationController
 
   LOGGER = CustomLogger.new(BitstreamsController)
@@ -11,8 +7,6 @@ class BitstreamsController < ApplicationController
   before_action :ensure_logged_in, except: [:data, :show]
 
   before_action :set_item, only: :create
-  before_action :authorize_item, only: :create
-
   before_action :set_bitstream, except: :create
   before_action :authorize_bitstream, except: :create
 
@@ -118,6 +112,17 @@ class BitstreamsController < ApplicationController
   end
 
   ##
+  # Used for editing bitstream properties.
+  #
+  # Responds to GET `/items/:item_id/bitstreams/:id/edit` (XHR only)
+  #
+  def edit
+    raise ActiveRecord::RecordNotFound unless request.xhr?
+    render partial: "bitstreams/edit_form",
+           locals: { bitstream: @bitstream }
+  end
+
+  ##
   # Ingests a bitstream into Medusa.
   #
   # Responds to `POST /items/:item_id/bitstreams/:id/ingest`
@@ -141,24 +146,35 @@ class BitstreamsController < ApplicationController
     request.format = :json
   end
 
+  ##
+  # Responds to `PATCH/PUT /items/:id/bitstreams/:id`
+  #
+  def update
+    begin
+      @bitstream.update!(bitstream_params)
+    rescue => e
+      render partial: "shared/validation_messages",
+             locals: { object: @bitstream.errors.any? ? @bitstream : e },
+             status: :bad_request
+    else
+      flash['success'] = "Bitstream \"#{@bitstream.original_filename}\" updated."
+      render "shared/reload"
+    end
+  end
+
+
   private
 
   def authorize_bitstream
-    @bitstream ? authorize(@bitstream.item, policy_class: ItemPolicy) :
-        skip_authorization
+    @bitstream ? authorize(@bitstream) : skip_authorization
   end
 
-  def authorize_item
-    @item ? authorize(@item, policy_class: ItemPolicy) :
-        skip_authorization
+  def bitstream_params
+    params.require(:bitstream).permit(:role_id)
   end
 
   def set_bitstream
-    if params[:id]
-      @bitstream = Bitstream.find(params[:id])
-    elsif params[:bitstream_id]
-      @bitstream = Bitstream.find(params[:bitstream_id])
-    end
+    @bitstream = Bitstream.find(params[:id] || params[:bitstream_id])
   end
 
   def set_item

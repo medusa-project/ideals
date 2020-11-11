@@ -46,7 +46,7 @@ Rails.application.routes.draw do
   match "/items/review", to: "items#review", via: :get
   match "/items/process_review", to: "items#process_review", via: :post
   resources :items, except: :new do
-    resources :bitstreams, only: [:create, :destroy, :show] do
+    resources :bitstreams do
       match "/data", to: "bitstreams#data", via: :get
       match "/ingest", to: "bitstreams#ingest", via: :post
     end

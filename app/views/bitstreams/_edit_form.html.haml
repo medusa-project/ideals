@@ -1,0 +1,26 @@
+-# frozen_string_literal: true
+-#
+-# Required arguments:
+-#
+-# bitstream [Bitstream]
+-#
+
+- role_options = Role.constants.map{ |r| [Role.label(Role.const_get(r)), Role.const_get(r)]}.sort_by{ |r| r[1] }.reverse
+
+= form_for([bitstream.item, bitstream], remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :role_id, "Minimum Access Role"
+    = f.select(:role_id,
+               options_for_select(role_options, f.object.role_id),
+               {},
+               class: 'custom-select')
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Edit", class: 'btn btn-primary')
+
+.mb-3
