@@ -71,10 +71,6 @@ class ItemPolicy < ApplicationPolicy
     update?
   end
 
-  def edit_bitstreams?
-    update?
-  end
-
   def edit_membership?
     update?
   end
@@ -92,7 +88,7 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def ingest?
-    edit_bitstreams?
+    upload_bitstreams?
   end
 
   def process_review?
@@ -168,6 +164,10 @@ class ItemPolicy < ApplicationPolicy
       end
     end
     false
+  end
+
+  def upload_bitstreams?
+    update?
   end
 
 end

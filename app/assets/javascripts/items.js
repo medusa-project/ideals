@@ -16,19 +16,6 @@ const ItemView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
     // XHR modals
-    $(".edit-item-files").on("click", function() {
-        const id  = $(this).data("item-id");
-        const url = ROOT_URL + "/items/" + id + "/edit-bitstreams";
-        $.get(url, function(data) {
-            const modal = $("#edit-item-files-modal");
-            modal.find(".modal-body").html(data);
-            // Reload the page in order to refresh the file list.
-            modal.on("hidden.bs.modal", function() {
-                window.location.reload();
-            });
-            new IDEALS.ItemFileUploader();
-        });
-    });
     $(".edit-item-membership").on("click", function() {
         const id  = $(this).data("item-id");
         const url = ROOT_URL + "/items/" + id + "/edit-membership";
@@ -50,6 +37,19 @@ const ItemView = function() {
         const url = ROOT_URL + "/items/" + id + "/edit-properties";
         $.get(url, function(data) {
             $("#edit-item-properties-modal .modal-body").html(data);
+        });
+    });
+    $(".upload-item-files").on("click", function() {
+        const id  = $(this).data("item-id");
+        const url = ROOT_URL + "/items/" + id + "/upload-bitstreams";
+        $.get(url, function(data) {
+            const modal = $("#upload-item-files-modal");
+            modal.find(".modal-body").html(data);
+            // Reload the page in order to refresh the file list.
+            modal.on("hidden.bs.modal", function() {
+                window.location.reload();
+            });
+            new IDEALS.ItemFileUploader();
         });
     });
 };

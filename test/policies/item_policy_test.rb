@@ -234,52 +234,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  # edit_bitstreams?()
-
-  test "edit_bitstreams?() returns false with a nil user" do
-    policy = ItemPolicy.new(nil, @item)
-    assert !policy.edit_bitstreams?
-  end
-
-  test "edit_bitstreams?() is restrictive by default" do
-    context = UserContext.new(users(:norights), Role::NO_LIMIT)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.edit_bitstreams?
-  end
-
-  test "edit_bitstreams?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
-    policy  = ItemPolicy.new(context, @item)
-    assert policy.edit_bitstreams?
-  end
-
-  test "edit_bitstreams?() authorizes unit admins" do
-    user    = users(:norights)
-    context = UserContext.new(user, Role::NO_LIMIT)
-    unit    = @item.primary_collection.units.first
-    unit.administrators.build(user: user)
-    unit.save!
-    policy = ItemPolicy.new(context, @item)
-    assert policy.edit_bitstreams?
-  end
-
-  test "edit_bitstreams?() authorizes collection managers" do
-    user       = users(:norights)
-    context    = UserContext.new(user, Role::NO_LIMIT)
-    collection = @item.primary_collection
-    collection.managers.build(user: user)
-    collection.save!
-    policy = ItemPolicy.new(context, @item)
-    assert policy.edit_bitstreams?
-  end
-
-  test "edit_bitstreams?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.edit_bitstreams?
-  end
-
   # edit_membership?()
 
   test "edit_membership?() returns false with a nil user" do
@@ -775,6 +729,52 @@ class ItemPolicyTest < ActiveSupport::TestCase
     context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.update?
+  end
+
+  # upload_bitstreams?()
+
+  test "upload_bitstreams?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.upload_bitstreams?
+  end
+
+  test "upload_bitstreams?() is restrictive by default" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.upload_bitstreams?
+  end
+
+  test "upload_bitstreams?() authorizes sysadmins" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.upload_bitstreams?
+  end
+
+  test "upload_bitstreams?() authorizes unit admins" do
+    user    = users(:norights)
+    context = UserContext.new(user, Role::NO_LIMIT)
+    unit    = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.upload_bitstreams?
+  end
+
+  test "upload_bitstreams?() authorizes collection managers" do
+    user       = users(:norights)
+    context    = UserContext.new(user, Role::NO_LIMIT)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.upload_bitstreams?
+  end
+
+  test "upload_bitstreams?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.upload_bitstreams?
   end
 
 end

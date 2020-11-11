@@ -1,11 +1,11 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@item).edit_bitstreams?
-    %button.btn.btn-light.edit-item-files{"data-item-id": @item.id,
-                                          "data-target": "#edit-item-files-modal",
-                                          "data-toggle": "modal",
-                                          role: "button"}
-      %i.fas.fa-pencil-alt
-      Edit Files
+  - if policy(@item).upload_bitstreams?
+    %button.btn.btn-light.upload-item-files{"data-item-id": @item.id,
+                                            "data-target": "#upload-item-files-modal",
+                                            "data-toggle": "modal",
+                                            role: "button"}
+      %i.fas.fa-upload
+      Upload Files
 
 %ul.list-unstyled
   - @bitstreams.each do |bitstream|
@@ -55,6 +55,6 @@
           = number_to_human_size(bitstream.length)
 
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-item-files-modal",
-                   title: "Edit Files",
+         locals: { id: "upload-item-files-modal",
+                   title: "Upload Files",
                    size: "lg" }

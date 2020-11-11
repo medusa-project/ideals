@@ -50,13 +50,13 @@ Rails.application.routes.draw do
       match "/data", to: "bitstreams#data", via: :get
       match "/ingest", to: "bitstreams#ingest", via: :post
     end
-    match "/edit-bitstreams", to: "items#edit_bitstreams", via: :get,
-          constraints: lambda { |request| request.xhr? }
     match "/edit-membership", to: "items#edit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-metadata", to: "items#edit_metadata", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "items#edit_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/upload-bitstreams", to: "items#upload_bitstreams", via: :get,
           constraints: lambda { |request| request.xhr? }
   end
   resources :metadata_profiles, path: "metadata-profiles" do

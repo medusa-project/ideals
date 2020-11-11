@@ -3,12 +3,12 @@
 class ItemsController < ApplicationController
 
   before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_item, only: [:destroy, :edit_bitstreams, :edit_membership,
-                                  :edit_metadata, :edit_properties, :show,
-                                  :update]
-  before_action :authorize_item, only: [:destroy, :edit_bitstreams,
-                                        :edit_membership, :edit_metadata,
-                                        :edit_properties, :show, :update]
+  before_action :set_item, only: [:destroy, :edit_membership, :edit_metadata,
+                                  :edit_properties, :show, :update,
+                                  :upload_bitstreams]
+  before_action :authorize_item, only: [:destroy, :edit_membership,
+                                        :edit_metadata, :edit_properties,
+                                        :show, :update, :upload_bitstreams]
 
   ##
   # Responds to `DELETE /items/:id`
@@ -28,16 +28,6 @@ class ItemsController < ApplicationController
     ensure
       redirect_to collection || root_url
     end
-  end
-
-  ##
-  # Used for editing bitstreams attached to already-submitted items.
-  #
-  # Responds to GET `/items/:id/edit-bitstreams` (XHR only)
-  #
-  def edit_bitstreams
-    render partial: "items/bitstreams_form",
-           locals: { item: @item }
   end
 
   ##
@@ -171,6 +161,17 @@ class ItemsController < ApplicationController
       render "shared/reload"
     end
   end
+
+  ##
+  # Used for uploading bitstreams to already-submitted items.
+  #
+  # Responds to GET `/items/:id/upload-bitstreams` (XHR only)
+  #
+  def upload_bitstreams
+    render partial: "items/upload_bitstreams_form",
+           locals: { item: @item }
+  end
+
 
   private
 
