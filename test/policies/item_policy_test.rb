@@ -625,6 +625,52 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.show_all_metadata?
   end
 
+  # show_properties?()
+
+  test "show_properties?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.show_properties?
+  end
+
+  test "show_properties?() is restrictive by default" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_properties?
+  end
+
+  test "show_properties?() authorizes sysadmins" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.show_properties?
+  end
+
+  test "show_properties?() authorizes unit admins" do
+    user    = users(:norights)
+    context = UserContext.new(user, Role::NO_LIMIT)
+    unit    = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.show_properties?
+  end
+
+  test "show_properties?() authorizes collection managers" do
+    user    = users(:norights)
+    context = UserContext.new(user, Role::NO_LIMIT)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.show_properties?
+  end
+
+  test "show_properties?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_properties?
+  end
+
   # show_sysadmin_content?()
 
   test "show_sysadmin_content?() returns false with a nil user" do

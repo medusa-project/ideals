@@ -40,4 +40,30 @@ body#show_item {
       }
     }
   }
+  .col-md-6.handle {
+    margin: 0 auto;
+    text-align: center;
+    .card.handle {
+      a {
+        color: white;
+      }
+    }
+  }
+  h5.card-title {
+    margin-bottom: 0;
+  }
+  dl.metadata, dl.properties, dl.files {
+    display: grid;
+    grid-template-columns: 26% auto;
+    dt {
+      grid-column: 1;
+    }
+    dd {
+      grid-column: 2;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+  }
 }

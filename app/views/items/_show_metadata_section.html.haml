@@ -1,11 +1,12 @@
-.btn-group.float-right{role: "group"}
+%h2.mt-5
+  Description
   - if policy(@item).edit_metadata?
     %button.btn.btn-light.edit-item-metadata{"data-item-id": @item.id,
                                              "data-target": "#edit-item-metadata-modal",
                                              "data-toggle": "modal",
                                              role: "button"}
       %i.fas.fa-pencil-alt
-      Edit Metadata
+      Edit
 
 - if policy(@item).show_all_metadata?
   .row

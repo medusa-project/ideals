@@ -1,5 +1,15 @@
 // This stylesheet contains styles for elements that may appear in multiple
 // views.
+//
+// N.B.: before adding rules to this file, consider whether it might be better
+// to add them to https://github.com/medusa-project/scars-bootstrap-theme.
+
+h1 {
+  line-height: 1.1em;
+  small {
+    font-size: 0.6em;
+  }
+}
 
 #navbar-supported-content {
   .nav-item {

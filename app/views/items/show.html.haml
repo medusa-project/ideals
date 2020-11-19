@@ -6,72 +6,36 @@
 %h1
   = icon_for(@item)
   = @item.title
+  %br
+  %small= @item.elements.select{ |e| e.name == "dc:creator" }.map(&:string).join(", ")
 
-%ul.nav.nav-tabs{role: "tablist"}
-  %li.nav-item
-    %a#metadata-tab.nav-link.active{href: "#metadata-tab-content",
-                                    "data-toggle": "tab",
-                                    role: "tab",
-                                    "aria-controls": "metadata-tab-content",
-                                    "aria-selected": "true"}
-      = icon_for(AscribedElement)
-      Metadata
-  %li.nav-item
-    %a#properties-tab.nav-link{href: "#properties-tab-content",
-                               "data-toggle": "tab",
-                               role: "tab",
-                               "aria-controls": "properties-tab-content",
-                               "aria-selected": "true"}
-      = icon_for(:info)
-      Properties
-  %li.nav-item
-    %a#files-tab.nav-link{href: "#files-tab-content",
-                          "data-toggle": "tab",
-                          role: "tab",
-                          "aria-controls": "files-tab-content",
-                          "aria-selected": "true"}
-      %i.fa.fa-file
-      Files
-      %span.badge.badge-secondary.badge-pill= @bitstreams.count
-  %li.nav-item
-    %a#collections-tab.nav-link{href: "#collections-tab-content",
-                                "data-toggle": "tab",
-                                role: "tab",
-                                "aria-controls": "collections-tab-content",
-                                "aria-selected": "true"}
-      = icon_for(Collection)
-      Owning Collections
-  - if policy(@item).show_access?
-    %li.nav-item
-      %a#access-tab.nav-link{href: "#access-tab-content",
-                             "data-toggle": "tab",
-                             role: "tab",
-                             "aria-controls": "access-tab-content",
-                             "aria-selected": "true"}
-        %i.fa.fa-users
-        Access
+%hr
 
-.tab-content
-  #metadata-tab-content.tab-pane.fade.show.active{role: "tabpanel",
-                                                  "aria-labelledby": "metadata-tab"}
-    = render partial: "show_metadata_tab"
+- if @item.handle
+  .row
+    .col-md-6.col-lg-5.handle
+      .card.text-white.bg-primary.handle.mt-3
+        .card-header
+          Use this link to cite this item:
+        .card-body
+          = link_to(@item.handle.handle_net_url, @item.handle.handle_net_url)
 
-  #properties-tab-content.tab-pane.fade{role: "tabpanel",
-                                        "aria-labelledby": "properties-tab"}
-    = render partial: "show_properties_tab"
+= render partial: "show_files_section"
+= render partial: "show_metadata_section"
 
-  #files-tab-content.tab-pane.fade{role: "tabpanel",
-                                   "aria-labelledby": "files-tab"}
-    = render partial: "show_files_tab"
+%h2.mt-5
+  Owning Collections
+  - if policy(@item).edit_membership?
+    %button.btn.btn-light.edit-item-membership{"data-item-id": @item.id,
+                                               "data-target": "#edit-item-membership-modal",
+                                               "data-toggle": "modal",
+                                               role: "button"}
+      %i.fas.fa-pencil-alt
+      Change
+= resource_list(@collections, primary_id: @item.primary_collection_id)
 
-  #collections-tab-content.tab-pane{role: "tabpanel",
-                                    "aria-labelledby": "collections-tab"}
-    = render partial: "show_collections_tab"
-
-  - if policy(@item).show_access?
-    #access-tab-content.tab-pane{role: "tabpanel",
-                                 "aria-labelledby": "access-tab"}
-      = render partial: "show_access_tab"
+= render partial: "show_properties_section"
+= render partial: "show_access_section"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-item-membership-modal",

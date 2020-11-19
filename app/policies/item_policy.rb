@@ -136,6 +136,13 @@ class ItemPolicy < ApplicationPolicy
   end
 
   ##
+  # N.B.: this is not a controller method.
+  #
+  def show_properties?
+    show_access?
+  end
+
+  ##
   # N.B.: this is used only in views and doesn't correspond to a controller
   # method.
   #

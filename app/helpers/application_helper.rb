@@ -199,7 +199,7 @@ module ApplicationHelper
   #
   def metadata_as_dl(ascribed_elements, profile = nil)
     html = StringIO.new
-    html << "<dl>"
+    html << "<dl class=\"metadata\">"
     all_elements = profile ?
                        profile.elements.where(visible: true).order(:index) :
                        RegisteredElement.all.order(:label)

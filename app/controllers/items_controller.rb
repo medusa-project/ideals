@@ -138,7 +138,10 @@ class ItemsController < ApplicationController
     if @item.primary_collection
       @collections = @collections.unshift(@item.primary_collection)
     end
-    @bitstreams = @item.bitstreams.order(:original_filename)
+    @bitstreams = @item.bitstreams.
+        where("exists_in_staging = ? OR medusa_uuid IS NOT NULL OR true = ?",
+              true, policy(@item).show_sysadmin_content?).
+        order(:original_filename)
   end
 
   ##

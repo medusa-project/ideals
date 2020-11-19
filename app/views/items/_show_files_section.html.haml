@@ -1,0 +1,58 @@
+- show_sysadmin_content = policy(@item).show_sysadmin_content?
+
+- if @bitstreams.any?
+  %h2.mt-3
+    Files
+    - if policy(@item).upload_bitstreams?
+      %button.btn.btn-light.upload-item-files{"data-item-id": @item.id,
+                                            "data-target": "#upload-item-files-modal",
+                                            "data-toggle": "modal",
+                                            role: "button"}
+        %i.fas.fa-upload
+        Upload
+
+- @bitstreams.each do |bitstream|
+  .card.mb-3
+    .card-body
+      .float-right
+        .btn-group{role: "group"}
+          = link_to(item_bitstream_data_path(@item, bitstream), class: "btn btn-sm btn-success") do
+            %i.fa.fa-download
+            = "Download (#{number_to_human_size(bitstream.length)})"
+          - if show_sysadmin_content
+            %button.btn.btn-sm.btn-light.edit-bitstream{"data-item-id": bitstream.item_id,
+                                                        "data-bitstream-id": bitstream.id,
+                                                        "data-target": "#edit-bitstream-modal",
+                                                        "data-toggle": "modal",
+                                                        type: "button"}
+              %i.fas.fa-pencil-alt
+              Edit
+      %h5.card-title
+        = icon_for(bitstream)
+        = bitstream.original_filename
+      - if show_sysadmin_content
+        %dl.files.mb-0.mt-3
+          %dt Database ID
+          %dd= bitstream.id
+          %dt Submitted For Ingest
+          %dd= boolean(bitstream.submitted_for_ingest, style: :word)
+          - if bitstream.exists_in_staging && bitstream.staging_key
+            %dt Staging Key
+            %dd
+              %code= bitstream.staging_key
+          - if bitstream.medusa_uuid
+            %dt Medusa UUID
+            %dd= link_to(bitstream.medusa_uuid, bitstream.medusa_url)
+            %dt Medusa Key
+            %dd
+              %code= bitstream.medusa_key
+          %dt Minimum Access Role
+          %dd= Role.label(bitstream.role_id)
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "upload-item-files-modal",
+                   title: "Upload Files",
+                   size: "lg" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-bitstream-modal",
+                   title: "Edit Bitstream" }
