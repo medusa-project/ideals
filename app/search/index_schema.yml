@@ -35,7 +35,6 @@ settings:
       search:
         tokenizer: standard
         filter:
-        - standard
         - lowercase
         - custom_stopper
         - custom_stemmer
