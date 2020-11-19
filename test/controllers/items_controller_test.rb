@@ -280,10 +280,10 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "show() respects role limits" do
     log_in_as(users(:admin))
     get item_path(items(:item1))
-    assert_select("#access-tab")
+    assert_select("dl.properties")
 
     get item_path(items(:item1), role: Role::LOGGED_OUT)
-    assert_select("#access-tab", false)
+    assert_select("dl.properties", false)
   end
 
   # update()

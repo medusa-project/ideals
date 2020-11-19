@@ -110,8 +110,9 @@ class IdealsMailerTest < ActionMailer::TestCase
     email = IdealsMailer.error("Something broke").deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
+    config = ::Configuration.instance
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.reply_to
-    assert_equal Configuration.instance.admin[:tech_mail_list], email.to
+    assert_equal config.admin[:tech_mail_list], email.to
     assert_equal "[TEST: IDEALS] System Error", email.subject
     assert_equal "Something broke\r\n\r\n", email.body.raw_source
   end
