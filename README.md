@@ -135,6 +135,7 @@ rails "ideals_dspace:migrate[dbname,dbhost,dbuser,dbpass]"
 rails "ideals:users:create_local_sysadmin[email,password]"
 rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
+rails handles:put_all
 ```
 N.B.: (`dbhost` etc.) are only required if the database is on a different host
 and/or the database user is different from the default.

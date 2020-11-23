@@ -59,6 +59,12 @@ namespace :ideals_dspace do
                  args[:source_db_host],
                  args[:source_db_user],
                  args[:source_db_password],
+                 "export_bitstream_bundles.sql",
+                 :import_bitstream_bundles)
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 args[:source_db_password],
                  "export_bitstream_metadata.sql",
                  :import_bitstream_metadata)
     end

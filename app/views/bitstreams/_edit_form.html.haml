@@ -5,11 +5,19 @@
 -# bitstream [Bitstream]
 -#
 
-- role_options = Role.constants.map{ |r| [Role.label(Role.const_get(r)), Role.const_get(r)]}.sort_by{ |r| r[1] }.reverse
+- bundle_options = Bitstream::Bundle.constants.map{ |r| [Bitstream::Bundle.label(Bitstream::Bundle.const_get(r)), Bitstream::Bundle.const_get(r)]}
+- role_options   = Role.constants.map{ |r| [Role.label(Role.const_get(r)), Role.const_get(r)]}.sort_by{ |r| r[1] }.reverse
 
 = form_for([bitstream.item, bitstream], remote: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :bundle, "Bundle"
+    = f.select(:bundle,
+               options_for_select(bundle_options, f.object.bundle),
+               {},
+               class: 'custom-select')
 
   .form-group
     = f.label :role_id, "Minimum Access Role"

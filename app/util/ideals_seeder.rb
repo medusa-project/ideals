@@ -4,8 +4,6 @@
 class IdealsSeeder
 
   def seed
-    UserGroup.create!(name: "System Administrators")
-
     update_registered_element_labels
     seed_metadata_profiles
     seed_submission_profiles

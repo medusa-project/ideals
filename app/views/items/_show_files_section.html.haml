@@ -34,6 +34,8 @@
         %dl.files.mb-0.mt-3
           %dt Database ID
           %dd= bitstream.id
+          %dt Bundle
+          %dd= Bitstream::Bundle.label(bitstream.bundle)
           %dt Submitted For Ingest
           %dd= boolean(bitstream.submitted_for_ingest, style: :word)
           - if bitstream.exists_in_staging && bitstream.staging_key

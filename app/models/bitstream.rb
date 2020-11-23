@@ -7,6 +7,7 @@
 #
 # # Attributes
 #
+# * `bundle`                One of the {Bundle} constant values.
 # * `created_at`:           Managed by ActiveRecord.
 # * `dspace_id`:            `bitstream.internal_id` column value from
 #                           IDEALS-DSpace. This is only relevant during
@@ -39,6 +40,7 @@ class Bitstream < ApplicationRecord
   belongs_to :item
   has_many :messages
 
+  validates_inclusion_of :bundle, in: -> (value) { Bundle.all }
   validates_numericality_of :length, greater_than_or_equal_to: 0, allow_blank: true
   validates_format_of :media_type, with: /[\w+-]+\/[\w+-]+/, allow_blank: true
   validates_format_of :medusa_uuid,
@@ -53,6 +55,47 @@ class Bitstream < ApplicationRecord
 
   # This must be a location that Medusa is configured to monitor
   STAGING_KEY_PREFIX = "uploads"
+
+  ##
+  # Contains constants corresponding to the allowed values of {bundle}.
+  #
+  class Bundle
+    CONTENT         = 0
+    TEXT            = 1
+    LICENSE         = 2
+    METADATA        = 3
+    CONVERSION      = 4
+    THUMBNAIL       = 5
+    ARCHIVE         = 6
+    SOURCE          = 7
+    BRANDED_PREVIEW = 8
+    NOTES           = 9
+
+    ##
+    # @return [Enumerable<Integer>]
+    #
+    def self.all
+      Bundle.constants.map { |c| Bundle.const_get(c) }
+    end
+
+    ##
+    # @param value [Integer] One of the constant values.
+    # @return [String] English label for the value.
+    #
+    def self.label(value)
+      label = Bundle.constants
+          .find{ |c| Bundle.const_get(c) == value }
+          .to_s
+          .split("_")
+          .map(&:capitalize)
+          .join(" ")
+      if label.present?
+        return label
+      else
+        raise ArgumentError, "No bundle with value #{value}"
+      end
+    end
+  end
 
   ##
   # For use in testing only.

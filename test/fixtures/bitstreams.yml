@@ -11,6 +11,7 @@ item1_in_staging:
   medusa_uuid:
   item: item1
   role_id: 0
+  bundle: <%= Bitstream::Bundle::CONTENT %>
 
 item2_in_medusa:
   exists_in_staging: false
@@ -23,6 +24,7 @@ item2_in_medusa:
   medusa_uuid: 3d2a99d5-2f5b-401e-80c1-864a95e3acf7
   item: in_medusa
   role_id: 0
+  bundle: <%= Bitstream::Bundle::CONTENT %>
 
 submitting_in_staging:
   exists_in_staging: true
@@ -35,6 +37,7 @@ submitting_in_staging:
   medusa_uuid:
   item: submitting
   role_id: 0
+  bundle: <%= Bitstream::Bundle::CONTENT %>
 
 undiscoverable_in_staging:
   exists_in_staging: true
@@ -47,6 +50,7 @@ undiscoverable_in_staging:
   medusa_uuid:
   item: undiscoverable
   role_id: 0
+  bundle: <%= Bitstream::Bundle::CONTENT %>
 
 withdrawn_in_staging:
   exists_in_staging: true
@@ -59,3 +63,4 @@ withdrawn_in_staging:
   medusa_uuid:
   item: withdrawn
   role_id: 0
+  bundle: <%= Bitstream::Bundle::CONTENT %>

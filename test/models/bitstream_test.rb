@@ -2,6 +2,26 @@ require 'test_helper'
 
 class BitstreamTest < ActiveSupport::TestCase
 
+  class BundleTest < ActiveSupport::TestCase
+
+    test "all() returns all constant values" do
+      assert_equal Bitstream::Bundle.constants.map{ |c| Bitstream::Bundle.const_get(c) }.sort,
+                   Bitstream::Bundle.all.sort
+    end
+
+    test "label() returns a correct label" do
+      assert_equal "Branded Preview",
+                   Bitstream::Bundle.label(Bitstream::Bundle::BRANDED_PREVIEW)
+    end
+
+    test "label() raises an error for an illegal argument" do
+      assert_raises ArgumentError do
+        Bitstream::Bundle.label(99999)
+      end
+    end
+
+  end
+
   setup do
     @instance = bitstreams(:item1_in_staging)
     assert @instance.valid?
@@ -49,6 +69,15 @@ class BitstreamTest < ActiveSupport::TestCase
   test "staging_key() returns a correct key" do
     assert_equal "#{Bitstream::STAGING_KEY_PREFIX}/30/cats.jpg",
                  Bitstream.staging_key(30, "cats.jpg")
+  end
+
+  # bundle
+
+  test "bundle must be a valid bundle" do
+    @instance.bundle = 99999
+    assert !@instance.valid?
+    @instance.bundle = Bitstream::Bundle::CONTENT
+    assert @instance.valid?
   end
 
   # delete_from_medusa()

@@ -56,6 +56,61 @@ class IdealsImporter
   ##
   # @param csv_pathname [String]
   #
+  def import_bitstream_bundles(csv_pathname)
+    @running = true
+    LOGGER.debug("import_bitstream_bundles(): importing %s", csv_pathname)
+
+    line_count = count_lines(csv_pathname)
+    progress   = Progress.new(line_count)
+
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
+
+      row_arr = line.split("|").map(&:strip)
+      bs_id   = row_arr[1].to_i
+      string  = row_arr[0]&.strip
+      next unless string.present?
+
+      progress.report(row_num, "Importing bitstream bundles")
+      begin
+        b = Bitstream.find(bs_id)
+        case string
+        when "LICENSE"
+          bundle = Bitstream::Bundle::LICENSE
+        when "METADATA"
+          bundle = Bitstream::Bundle::METADATA
+        when "ORIGINAL"
+          bundle = Bitstream::Bundle::CONTENT
+        when "TEXT"
+          bundle = Bitstream::Bundle::TEXT
+        when "CONVERSION"
+          bundle = Bitstream::Bundle::CONVERSION
+        when "THUMBNAIL"
+          bundle = Bitstream::Bundle::THUMBNAIL
+        when "ARCHIVE"
+          bundle = Bitstream::Bundle::ARCHIVE
+        when "SOURCE"
+          bundle = Bitstream::Bundle::SOURCE
+        when "BRANDED_PREVIEW"
+          bundle = Bitstream::Bundle::BRANDED_PREVIEW
+        when "NOTES"
+          bundle = Bitstream::Bundle::NOTES
+        else
+          raise ArgumentError, "Unrecognized bundle: #{string}"
+        end
+        b.update!(bundle: bundle)
+      rescue ActiveRecord::RecordNotFound
+        # The Bitstream does not exist. This implies an inconsistent source
+        # database; there is not much we can do.
+      end
+    end
+  ensure
+    @running = false
+  end
+
+  ##
+  # @param csv_pathname [String]
+  #
   def import_bitstream_metadata(csv_pathname)
     @running = true
     LOGGER.debug("import_bitstream_metadata(): importing %s", csv_pathname)
@@ -245,7 +300,6 @@ class IdealsImporter
 
       row          = line.split(",")
       handle_parts = row[1].split("/")
-      prefix       = handle_parts.first
       suffix       = handle_parts.last
       handle       = nil
 
