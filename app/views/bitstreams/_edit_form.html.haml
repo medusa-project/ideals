@@ -20,9 +20,9 @@
                class: 'custom-select')
 
   .form-group
-    = f.label :role_id, "Minimum Access Role"
-    = f.select(:role_id,
-               options_for_select(role_options, f.object.role_id),
+    = f.label :role, "Minimum Access Role"
+    = f.select(:role,
+               options_for_select(role_options, f.object.role),
                {},
                class: 'custom-select')
 

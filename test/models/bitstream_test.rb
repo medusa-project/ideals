@@ -282,12 +282,12 @@ class BitstreamTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
-  # role_id
+  # role
 
-  test "role_id must be a valid role ID" do
-    @instance.role_id = 99999
+  test "role must be a valid role ID" do
+    @instance.role = 99999
     assert !@instance.valid?
-    @instance.role_id = Role::COLLECTION_MANAGER
+    @instance.role = Role::COLLECTION_MANAGER
     assert @instance.valid?
   end
 

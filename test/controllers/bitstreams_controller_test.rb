@@ -398,11 +398,11 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               bitstream: {
-                  role_id: Role::UNIT_ADMINISTRATOR
+                  role: Role::UNIT_ADMINISTRATOR
               }
           }
     bitstream.reload
-    assert_equal Role::UNIT_ADMINISTRATOR, bitstream.role_id
+    assert_equal Role::UNIT_ADMINISTRATOR, bitstream.role
   end
 
   test "update() returns HTTP 200" do
@@ -412,7 +412,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               bitstream: {
-                  role_id: Role::UNIT_ADMINISTRATOR
+                  role: Role::UNIT_ADMINISTRATOR
               }
           }
     assert_response :ok
@@ -425,7 +425,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               bitstream: {
-                  role_id: 9999
+                  role: 9999
               }
           }
     assert_response :bad_request

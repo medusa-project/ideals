@@ -170,7 +170,7 @@ class BitstreamsController < ApplicationController
   end
 
   def bitstream_params
-    params.require(:bitstream).permit(:bundle, :role_id)
+    params.require(:bitstream).permit(:bundle, :role)
   end
 
   def set_bitstream

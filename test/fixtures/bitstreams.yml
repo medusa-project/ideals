@@ -10,7 +10,7 @@ item1_in_staging:
   medusa_key:
   medusa_uuid:
   item: item1
-  role_id: 0
+  role: 0
   bundle: <%= Bitstream::Bundle::CONTENT %>
 
 item2_in_medusa:
@@ -23,7 +23,7 @@ item2_in_medusa:
   medusa_key: test/test/escher_lego2.jpg
   medusa_uuid: 3d2a99d5-2f5b-401e-80c1-864a95e3acf7
   item: in_medusa
-  role_id: 0
+  role: 0
   bundle: <%= Bitstream::Bundle::CONTENT %>
 
 license_bundle:
@@ -36,7 +36,7 @@ license_bundle:
   medusa_key:
   medusa_uuid:
   item: item1
-  role_id: 0
+  role: 0
   bundle: <%= Bitstream::Bundle::LICENSE %>
 
 role_limited:
@@ -49,7 +49,7 @@ role_limited:
   medusa_key:
   medusa_uuid:
   item: item1
-  role_id: <%= Role::SYSTEM_ADMINISTRATOR %>
+  role: <%= Role::SYSTEM_ADMINISTRATOR %>
   bundle: <%= Bitstream::Bundle::CONTENT %>
 
 submitting_in_staging:
@@ -62,7 +62,7 @@ submitting_in_staging:
   medusa_key:
   medusa_uuid:
   item: submitting
-  role_id: 0
+  role: 0
   bundle: <%= Bitstream::Bundle::CONTENT %>
 
 undiscoverable_in_staging:
@@ -75,7 +75,7 @@ undiscoverable_in_staging:
   medusa_key:
   medusa_uuid:
   item: undiscoverable
-  role_id: 0
+  role: 0
   bundle: <%= Bitstream::Bundle::CONTENT %>
 
 withdrawn_in_staging:
@@ -88,5 +88,5 @@ withdrawn_in_staging:
   medusa_key:
   medusa_uuid:
   item: withdrawn
-  role_id: 0
+  role: 0
   bundle: <%= Bitstream::Bundle::CONTENT %>

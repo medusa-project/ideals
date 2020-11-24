@@ -56,7 +56,7 @@
             %dt Exists in Medusa
             %dd= boolean(false, style: :word)
           %dt Minimum Access Role
-          %dd= Role.label(bitstream.role_id)
+          %dd= Role.label(bitstream.role)
 
 = render partial: "shared/ajax_modal",
          locals: { id: "upload-item-files-modal",

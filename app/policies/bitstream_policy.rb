@@ -41,7 +41,7 @@ class BitstreamPolicy < ApplicationPolicy
   def download?
     if show?
       if role
-        if role >= bitstream.role_id &&
+        if role >= bitstream.role &&
             (bitstream.bundle == Bitstream::Bundle::CONTENT ||
                 user&.effective_manager?(bitstream.item.primary_collection))
           return true

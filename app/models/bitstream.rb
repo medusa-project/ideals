@@ -26,7 +26,7 @@
 #                           Collection Registry. Set only after the bitstream
 #                           has been ingested.
 # * `original_filename`:    Filename of the bitstream as submitted by the user.
-# * `role_id`:              One of the {Role} constant values indicating the
+# * `role`:                 One of the {Role} constant values indicating the
 #                           minimum-privileged role required to access the
 #                           instance.
 # * `staging_key`:          Full object key in the application S3 bucket. May
@@ -47,7 +47,7 @@ class Bitstream < ApplicationRecord
                       with: /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/,
                       message: 'UUID is invalid',
                       allow_blank: true
-  validates_inclusion_of :role_id, in: -> (value) { Role.all }
+  validates_inclusion_of :role, in: -> (value) { Role.all }
   validate :validate_staging_properties
 
   before_destroy :delete_from_staging
@@ -231,14 +231,6 @@ class Bitstream < ApplicationRecord
        "uuids",
        self.medusa_uuid].join("/")
     end
-  end
-
-  ##
-  # @return [Integer] One of the {Role} constant values indicating the minimum
-  #                   role required to access the instance.
-  #
-  def role
-    role_id
   end
 
   ##
