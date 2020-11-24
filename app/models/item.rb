@@ -263,6 +263,14 @@ class Item < ApplicationRecord
   end
 
   ##
+  # @return [String] Comma-delimited list of all values of all `dc:creator`
+  #                  elements.
+  #
+  def creators
+    self.elements.select{ |e| e.name == "dc:creator" }.map(&:string).join(", ")
+  end
+
+  ##
   # @return [MetadataProfile] The primary collection's metadata profile, or the
   #                           {MetadataProfile#default default profile} if not
   #                           set.

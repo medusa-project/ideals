@@ -6,6 +6,12 @@ title:
   label: Title
   scope_note:
 
+creator:
+  name: dc:creator
+  uri: http://purl.org/dc/terms/creator
+  label: Creator
+  scope_note:
+
 description:
   name: dc:description
   uri: http://purl.org/dc/terms/description

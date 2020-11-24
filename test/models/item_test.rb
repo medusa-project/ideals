@@ -183,6 +183,16 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal Item::Stages::APPROVED, item.stage
   end
 
+  # creators()
+
+  test "creators() returns a correct string" do
+    @instance.elements.build(registered_element: registered_elements(:creator),
+                             string: "Creator 1")
+    @instance.elements.build(registered_element: registered_elements(:creator),
+                             string: "Creator 2")
+    assert_equal "Creator 1, Creator 2", @instance.creators
+  end
+
   # description() (Describable concern)
 
   test "description() returns the description element value" do
