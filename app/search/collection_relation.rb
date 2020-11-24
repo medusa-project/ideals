@@ -53,12 +53,12 @@ class CollectionRelation < AbstractRelation
           if @query.present?
             j.must do
               if !@exact_match
-                # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
-                j.query_string do
+                # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
+                j.simple_query_string do
                   j.query sanitized_query
                   j.default_operator 'AND'
                   j.lenient true
-                  j.default_field @query[:field]
+                  j.fields [@query[:field]]
                 end
               else
                 j.term do
