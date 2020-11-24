@@ -118,6 +118,24 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.data?
   end
 
+  test "data?() respects bitstream role limits" do
+    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
+    assert !policy.data?
+  end
+
+  test "data?() restricts non-content bitstreams to non-collection managers" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    assert !policy.data?
+  end
+
+  test "data?() authorizes non-content bitstreams to collection managers" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    assert policy.data?
+  end
+
   # destroy?()
 
   test "destroy?() returns false with a nil user" do
@@ -190,6 +208,74 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert !policy.destroy?
+  end
+
+  # download?()
+
+  test "download?() returns true with a nil user" do
+    policy = BitstreamPolicy.new(nil, @bitstream)
+    assert policy.download?
+  end
+
+  test "download?() restricts undiscoverable items by default" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    assert !policy.download?
+  end
+
+  test "download?() restricts submitting items by default" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    assert !policy.download?
+  end
+
+  test "download?() restricts withdrawn items by default" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    assert !policy.download?
+  end
+
+  test "download?() authorizes sysadmins to undiscoverable items" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    assert policy.download?
+  end
+
+  test "download?() authorizes sysadmins to submitting items" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    assert policy.download?
+  end
+
+  test "download?() authorizes sysadmins to withdrawn items" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    assert policy.download?
+  end
+
+  test "download?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    assert !policy.download?
+  end
+
+  test "download?() respects bitstream role limits" do
+    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
+    assert !policy.download?
+  end
+
+  test "download?() restricts non-content bitstreams to non-collection managers" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    assert !policy.download?
+  end
+
+  test "download?() authorizes non-content bitstreams to collection managers" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    assert policy.download?
   end
 
   # edit?()

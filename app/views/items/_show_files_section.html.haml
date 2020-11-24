@@ -16,9 +16,10 @@
     .card-body
       .float-right
         .btn-group{role: "group"}
-          = link_to(item_bitstream_data_path(@item, bitstream), class: "btn btn-sm btn-success") do
-            %i.fa.fa-download
-            = "Download (#{number_to_human_size(bitstream.length)})"
+          - if policy(bitstream).download?
+            = link_to(item_bitstream_data_path(@item, bitstream), class: "btn btn-sm btn-success") do
+              %i.fa.fa-download
+              = "Download (#{number_to_human_size(bitstream.length)})"
           - if show_sysadmin_content
             %button.btn.btn-sm.btn-light.edit-bitstream{"data-item-id": bitstream.item_id,
                                                         "data-bitstream-id": bitstream.id,
@@ -36,18 +37,24 @@
           %dd= bitstream.id
           %dt Bundle
           %dd= Bitstream::Bundle.label(bitstream.bundle)
-          %dt Submitted For Ingest
-          %dd= boolean(bitstream.submitted_for_ingest, style: :word)
           - if bitstream.exists_in_staging && bitstream.staging_key
             %dt Staging Key
             %dd
               %code= bitstream.staging_key
+          - else
+            %dt Exists in Staging
+            %dd= boolean(false, style: :word)
+          %dt Submitted For Ingest
+          %dd= boolean(bitstream.submitted_for_ingest, style: :word)
           - if bitstream.medusa_uuid
             %dt Medusa UUID
             %dd= link_to(bitstream.medusa_uuid, bitstream.medusa_url)
             %dt Medusa Key
             %dd
               %code= bitstream.medusa_key
+          - else
+            %dt Exists in Medusa
+            %dd= boolean(false, style: :word)
           %dt Minimum Access Role
           %dd= Role.label(bitstream.role_id)
 

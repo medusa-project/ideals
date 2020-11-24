@@ -26,6 +26,32 @@ item2_in_medusa:
   role_id: 0
   bundle: <%= Bitstream::Bundle::CONTENT %>
 
+license_bundle:
+  exists_in_staging: true
+  submitted_for_ingest: false
+  staging_key: license_bundle
+  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  media_type: image/jpeg
+  original_filename: escher_lego.jpg
+  medusa_key:
+  medusa_uuid:
+  item: item1
+  role_id: 0
+  bundle: <%= Bitstream::Bundle::LICENSE %>
+
+role_limited:
+  exists_in_staging: true
+  submitted_for_ingest: false
+  staging_key: role_limited_in_staging
+  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  media_type: image/jpeg
+  original_filename: escher_lego.jpg
+  medusa_key:
+  medusa_uuid:
+  item: item1
+  role_id: <%= Role::SYSTEM_ADMINISTRATOR %>
+  bundle: <%= Bitstream::Bundle::CONTENT %>
+
 submitting_in_staging:
   exists_in_staging: true
   submitted_for_ingest: false

@@ -31,11 +31,26 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def data?
-    show?
+    download?
   end
 
   def destroy?
     update?
+  end
+
+  def download?
+    if show?
+      if role
+        if role >= bitstream.role_id &&
+            (bitstream.bundle == Bitstream::Bundle::CONTENT ||
+                user&.effective_manager?(bitstream.item.primary_collection))
+          return true
+        end
+        return false
+      end
+      return true
+    end
+    false
   end
 
   def edit?
@@ -47,8 +62,9 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def show?
-    (role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?) ||
-        (bitstream.item.approved? && bitstream.item.discoverable)
+    (bitstream.item.approved? && bitstream.item.discoverable ||
+        (role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?)) &&
+        (bitstream.exists_in_staging || bitstream.medusa_uuid.present?)
   end
 
   def update?
