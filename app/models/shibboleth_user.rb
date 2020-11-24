@@ -58,8 +58,8 @@ class ShibbolethUser < User
 
   def self.fetch_ldap_groups(auth)
     groups = []
-    auth['extra']['raw_info']['member'].split(";").each do |group_name|
-      groups << LdapGroup.find_or_create_by(name: group_name)
+    auth['extra']['raw_info']['member'].split(";").each do |group_urn|
+      groups << LdapGroup.find_or_create_by(urn: group_urn)
     end
     groups
   end

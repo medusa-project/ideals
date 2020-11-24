@@ -124,6 +124,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "data() returns HTTP 500 when the underlying data is missing" do
     item      = items(:item1)
     bitstream = Bitstream.new_in_staging(item, "cats.jpg", 234234)
+    bitstream.exists_in_staging = true
     bitstream.save!
     get item_bitstream_data_path(item, bitstream)
     assert_response :internal_server_error
