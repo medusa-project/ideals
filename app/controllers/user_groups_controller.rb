@@ -59,7 +59,7 @@ class UserGroupsController < ApplicationController
   #
   def show
     @users       = @user_group.users.order(:name)
-    @ldap_groups = @user_group.ldap_groups.order(:name)
+    @ldap_groups = @user_group.ldap_groups.order(:urn)
   end
 
   ##

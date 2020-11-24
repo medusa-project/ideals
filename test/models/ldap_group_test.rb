@@ -6,17 +6,30 @@ class LdapGroupTest < ActiveSupport::TestCase
     @instance = ldap_groups(:sysadmin)
   end
 
-  # name
+  # short_name()
 
-  test "name cannot be blank" do
+  test "short_name() returns a correct value" do
+    @instance.urn = "urn:system admin"
+    assert_equal "System Admin", @instance.short_name
+  end
+
+  # to_s()
+
+  test "to_s() returns a correct value" do
+    assert_equal @instance.urn, @instance.to_s
+  end
+
+  # urn
+
+  test "urn cannot be blank" do
     assert_raises ActiveRecord::RecordInvalid do
-      LdapGroup.create!(name: "")
+      LdapGroup.create!(urn: "")
     end
   end
 
-  test "name must be unique" do
+  test "urn must be unique" do
     assert_raises ActiveRecord::RecordNotUnique do
-      LdapGroup.create!(name: @instance.name)
+      LdapGroup.create!(urn: @instance.urn)
     end
   end
 

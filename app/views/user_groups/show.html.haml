@@ -3,7 +3,7 @@
 
 .btn-group.float-right{role: "group"}
   - if policy(@user_group).edit?
-    / Edit button
+    -# Edit button
     %button.btn.btn-light.edit-user-group{"data-target": "#edit-user-group-modal",
                                           "data-toggle": "modal",
                                           "data-user-group-id": @user_group.id,
@@ -11,7 +11,7 @@
       %i.fa.fa-pencil-alt
       Edit
   - if policy(@user_group).destroy?
-    / Delete button
+    -# Delete button
     = link_to(user_group_path(@user_group), class: "btn btn-danger",
                                             role: "button",
                                             method: :delete,
@@ -24,28 +24,24 @@
 .row
   .col-sm-8
     %h2 LDAP Groups
-
-    %table.table
-      %tbody
-        - if @ldap_groups.any?
-          - @ldap_groups.each do |group|
-            %tr
-              %td
-                %code= group.name
-        - else
-          %p None
+    - if @ldap_groups.any?
+      %ul
+        - @ldap_groups.each do |group|
+          %li
+            %strong= group.short_name
+            %br
+            %code= group.urn
+    - else
+      %p None
 
   .col-sm-4
     %h2 Local Users
-
-    %table.table
-      %tbody
-        - if @users.any?
-          - @users.each do |user|
-            %tr
-              %td= link_to(user.name, user.becomes(User))
-        - else
-          %p None
+    - if @users.any?
+      %ul
+        - @users.each do |user|
+          %li= link_to(user.name, user.becomes(User))
+    - else
+      %p None
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-user-group-modal", title: "Edit User Group", size: :lg }
