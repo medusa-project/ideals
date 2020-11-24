@@ -8,9 +8,9 @@ body#list_items, body#list_collections {
 }
 
 body#show_item {
-  .type-icon {
+  .creators {
     color: $gray-600;
-    font-size: 5em;
+    font-weight: normal;
   }
   #edit-item-metadata-modal {
     textarea {

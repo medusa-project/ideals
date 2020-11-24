@@ -6,8 +6,8 @@
 %h1
   = icon_for(@item)
   = @item.title
-  %br
-  %small= @item.elements.select{ |e| e.name == "dc:creator" }.map(&:string).join(", ")
+
+%h4.creators= @item.creators
 
 %hr
 
