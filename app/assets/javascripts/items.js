@@ -69,19 +69,9 @@ const ItemView = function() {
  * @constructor
  */
 const ReviewItemsView = function() {
-    $('.check-all').on('click', function() {
-        const checkboxes = $('#items input[type=checkbox]');
-        const checked    = ($(this).data('checked') === 'true');
-        if (checked) {
-            checkboxes.prop('checked', false);
-            $(this).data('checked', 'false');
-            $(this).html('<i class="far fa-check-square"></i> Check All');
-        } else {
-            checkboxes.prop('checked', true);
-            $(this).data('checked', 'true');
-            $(this).html('<i class="far fa-minus-square"></i> Uncheck All');
-        }
-    });
+    new IDEALS.CheckAllButton($('.check-all'),
+                              $('#items input[type=checkbox]'));
+
     const form = $('form#review-form');
     const verb = form.find("[name=verb]");
     $('.approve-checked').on('click', function() {

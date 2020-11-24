@@ -126,6 +126,29 @@ const IDEALS = {
     },
 
     /**
+     * Enables a "check-all" button that checks and unchecks all of a given set
+     * of checkboxes.
+     *
+     * @param button {jQuery} "Check all" button element.
+     * @param checkboxes {jQuery} Collection of checkboxes.
+     * @constructor
+     */
+    CheckAllButton: function(button, checkboxes) {
+        button.on('click', function() {
+            const checked = ($(this).data('checked') === 'true');
+            if (checked) {
+                checkboxes.prop('checked', false);
+                $(this).data('checked', 'false');
+                $(this).html('<i class="far fa-check-square"></i> Check All');
+            } else {
+                checkboxes.prop('checked', true);
+                $(this).data('checked', 'true');
+                $(this).html('<i class="far fa-minus-square"></i> Uncheck All');
+            }
+        });
+    },
+
+    /**
      * Enables two select menus: one for selecting a unit, and a dependent menu
      * for selecting a collection within the unit.
      *
