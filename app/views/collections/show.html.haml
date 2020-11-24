@@ -40,6 +40,16 @@
                           "aria-selected": "true"}
       = icon_for(Item)
       Items
+  - if @review_count > 0 && policy(@collection).review_submissions?
+    %li.nav-item
+      %a#review-submissions-tab.nav-link{href: "#review-submissions-tab-content",
+                                         "data-toggle": "tab",
+                                         role: "tab",
+                                         "aria-controls": "review-submissions-tab-content",
+                                         "aria-selected": "true"}
+        %i.fa.fa-tasks
+        Review Submissions
+        %small.badge-pill.badge-danger= @review_count
   - if policy(@collection).edit_access?
     %li.nav-item
       %a#access-tab.nav-link{href: "#access-tab-content",
@@ -67,6 +77,11 @@
   #items-tab-content.tab-pane.fade.show{role: "tabpanel",
                                         "aria-labelledby": "items-tab"}
     = render partial: "show_items_tab"
+
+  - if @review_count > 0 && policy(@collection).review_submissions?
+    #review-submissions-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                       "aria-labelledby": "review-submissions-tab"}
+      = render partial: "show_review_submissions_tab"
 
   - if policy(@collection).edit_access?
     #access-tab-content.tab-pane.fade.show{role: "tabpanel",

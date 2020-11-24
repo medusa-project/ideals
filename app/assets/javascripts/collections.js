@@ -6,6 +6,21 @@
 const CollectionView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
+    // Review Submissions tab
+    new IDEALS.CheckAllButton($('.check-all'),
+        $('#review-form input[type=checkbox]'));
+
+    const form = $('form#review-form');
+    const verb = form.find("[name=verb]");
+    $('.approve-checked').on('click', function() {
+        verb.val("approve");
+        form.submit();
+    });
+    $('.reject-checked').on('click', function() {
+        verb.val("reject");
+        form.submit();
+    });
+
     $('.edit-collection-access').on("click", function() {
         const id = $(this).data("collection-id");
         const url = ROOT_URL + "/collections/" + id + "/edit-access";

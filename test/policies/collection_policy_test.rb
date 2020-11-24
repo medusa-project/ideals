@@ -251,6 +251,41 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
+  # review_submissions?()
+
+  test "review_submissions?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.review_submissions?
+  end
+
+  test "review_submissions?() is restrictive by default" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.review_submissions?
+  end
+
+  test "review_submissions?() authorizes sysadmins" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.review_submissions?
+  end
+
+  test "review_submissions?() authorizes collection managers" do
+    user = users(:norights)
+    user.managing_collections << @collection
+    user.save!
+    context = UserContext.new(user, Role::NO_LIMIT)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.review_submissions?
+  end
+
+  test "review_submissions?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.review_submissions?
+  end
+
   # show?()
 
   test "show?() returns true with a nil user" do

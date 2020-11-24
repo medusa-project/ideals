@@ -57,13 +57,20 @@ class CollectionPolicy < ApplicationPolicy
     create?
   end
 
+  ##
+  # N.B.: this method doesn't correspond to a controller method.
+  #
+  def review_submissions?
+    role && role >= Role::COLLECTION_MANAGER &&
+        user&.effective_manager?(collection)
+  end
+
   def show?
     true
   end
 
   ##
-  # N.B.: this method is used in views and does not correspond to a controller
-  # method.
+  # N.B.: this method doesn't correspond to a controller method.
   #
   def show_properties?
     role && role >= Role::COLLECTION_MANAGER &&

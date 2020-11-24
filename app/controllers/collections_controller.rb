@@ -142,6 +142,7 @@ class CollectionsController < ApplicationController
     @start  = params[:start].to_i
     @window = window_size
     @items  = Item.search.
+        aggregations(false).
         filter(Item::IndexFields::COLLECTIONS, params[:id]).
         order(params[:sort]).
         start(@start).
@@ -160,7 +161,19 @@ class CollectionsController < ApplicationController
         include_children(true).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999)
-    a = 3
+    # Review Submissions tab
+    @review_start  = results_params[:start].to_i
+    @review_window = window_size
+    @review_items  = Item.search.
+        aggregations(false).
+        filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
+        filter(Item::IndexFields::COLLECTIONS, params[:id]).
+        order(Item::IndexFields::CREATED).
+        start(@review_start).
+        limit(@review_window)
+    @review_count            = @review_items.count
+    @review_current_page     = @review_items.page
+    @review_permitted_params = results_params
   end
 
   ##
