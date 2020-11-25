@@ -15,6 +15,8 @@ const ItemsView = function() {
 const ItemView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
+    new IDEALS.CopyButton($(".copy"), $(".permalink"));
+
     // XHR modals
     $(".edit-bitstream").on("click", function() {
         const item_id      = $(this).data("item-id");

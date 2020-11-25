@@ -12,13 +12,12 @@
 %hr
 
 - if @item.handle
-  .row
-    .col-md-6.col-lg-5.handle
-      .card.text-white.bg-primary.handle.mt-3
-        .card-header
-          Use this link to cite this item:
-        .card-body
-          = link_to(@item.handle.handle_net_url, @item.handle.handle_net_url)
+  %h2.mt-5 Permalink
+  %p.permalink
+    = @item.handle.handle_net_url
+    %button.btn.btn-light.btn-sm.copy
+      %i.fas.fa-paste
+      Copy
 
 = render partial: "show_files_section"
 = render partial: "show_metadata_section"
