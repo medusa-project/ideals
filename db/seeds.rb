@@ -1,5 +1,8 @@
-UserGroup.create!(key: "sysadmin",
-                  name: "System Administrators")
+ug = UserGroup.create!(key: "sysadmin",
+                       name: "System Administrators")
+lg = LdapGroup.create!(urn: "urn:mace:uiuc.edu:urbana:library:units:ideals:library ideals admin")
+ug.ldap_groups << lg
+ug.save!
 
 puts <<-eos
 

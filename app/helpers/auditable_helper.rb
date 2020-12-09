@@ -11,7 +11,7 @@ module AuditableHelper
     events.each do |event|
       html << '<div class="card">'
       html <<   "<h5 id=\"event-header-#{event.id}\" class=\"card-header\">"
-      html <<     "<div type=\"button\" data-toggle=\"collapse\" "\
+      html <<     "<div data-toggle=\"collapse\" "\
                     "data-target=\"#event-#{event.id}\" aria-expanded=\"true\" "\
                     "aria-controls=\"event-#{event.id}\">"
       case event.event_type
@@ -61,7 +61,7 @@ module AuditableHelper
   # @return [String] HTML string.
   #
   def diff(model1, model2)
-    return '' unless model1 && model2
+    return "" unless model1 || model2
     data = ModelUtils.diff(model1, model2)
     return "" if data.empty?
     html = StringIO.new

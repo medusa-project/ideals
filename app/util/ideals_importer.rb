@@ -348,7 +348,7 @@ class IdealsImporter
       string    = row_arr[3]&.strip
       next unless string.present?
 
-      progress.report(row_num, "Importing item metadata")
+      progress.report(row_num, "Importing item metadata (1/2)")
       begin
         AscribedElement.create!(registered_element: reg_elem,
                                 item_id: item_id,
@@ -360,6 +360,17 @@ class IdealsImporter
         # IDEALS-DSpace does not have a hard elements-items foreign key and
         # there is some inconsistency, which we have not much choice but to
         # ignore.
+      end
+    end
+
+    progress = Progress.new(Item.count)
+    Item.uncached do
+      Item.order(:id).find_each.with_index do |item, index|
+        Event.create!(event_type:    Event::Type::CREATE,
+                      item:          item,
+                      after_changes: item,
+                      description:   "Item imported from IDEALS-DSpace.")
+        progress.report(index, "Assigning create events to items (2/2)")
       end
     end
   ensure
@@ -397,17 +408,11 @@ class IdealsImporter
         else
           stage = Item::Stages::APPROVED
         end
-        unless Item.exists?(id)
-          item = Item.create!(id:                    id,
-                              submitter_id:          submitter_id,
-                              stage:                 stage,
-                              discoverable:          discoverable,
-                              primary_collection_id: collection_id)
-          Event.create!(event_type:    Event::Type::CREATE,
-                        item:          item,
-                        after_changes: item,
-                        description:   "Item imported from IDEALS-DSpace.")
-        end
+        Item.create!(id:                    id,
+                     submitter_id:          submitter_id,
+                     stage:                 stage,
+                     discoverable:          discoverable,
+                     primary_collection_id: collection_id) unless Item.exists?(id)
       end
       progress.report(row_num, "Importing items")
     end
