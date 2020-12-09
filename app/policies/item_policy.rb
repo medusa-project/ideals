@@ -136,7 +136,16 @@ class ItemPolicy < ApplicationPolicy
   end
 
   ##
-  # N.B.: this is not a controller method.
+  # N.B.: this is used only in views and doesn't correspond to a controller
+  # method.
+  #
+  def show_events?
+    show_access?
+  end
+
+  ##
+  # N.B.: this is used only in views and doesn't correspond to a controller
+  # method.
   #
   def show_properties?
     show_access?

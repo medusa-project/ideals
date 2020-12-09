@@ -3,6 +3,13 @@
 ##
 # Encapsulates a unit of intellectual content.
 #
+# # Creating, updating, and deleting
+#
+# Most creates and updates should be done through {CreateItemCommand}. This
+# will ensure that an appropriate {Event} is created and associated with the
+# instance. Deleting can still be done directly on the instance without use of
+# a {Command}.
+#
 # # Lifecycle
 #
 # An item proceeds through several "life stages", indicated by the {stage}
@@ -37,6 +44,7 @@
 #                        instance resides.
 #
 class Item < ApplicationRecord
+  include Auditable
   include Breadcrumb
   include Describable
   include Indexed
@@ -113,6 +121,7 @@ class Item < ApplicationRecord
   has_many :bitstreams
   has_and_belongs_to_many :collections
   has_many :elements, class_name: "AscribedElement"
+  has_many :events
   has_one :handle
   belongs_to :primary_collection, class_name: "Collection",
              foreign_key: "primary_collection_id", optional: true
@@ -127,26 +136,6 @@ class Item < ApplicationRecord
   validates :stage, inclusion: { in: Stages.all }
   validate :submission_includes_bitstreams,
            :submission_includes_required_elements
-
-  ##
-  # @param submitter [User]
-  # @param primary_collection_id [Integer]
-  # @return [Item] New persisted instance.
-  #
-  def self.new_for_submission(submitter:, primary_collection_id:)
-    item = Item.create!(submitter: submitter,
-                        primary_collection_id: primary_collection_id,
-                        stage: Item::Stages::SUBMITTING,
-                        discoverable: false)
-    # For every element with placeholder text in the item's effective
-    # submission profile, ascribe a metadata element with a value of that text.
-    item.effective_submission_profile.elements.
-        where("LENGTH(placeholder_text) > ?", 0).each do |sp_element|
-      item.elements.build(registered_element: sp_element.registered_element,
-                          string: sp_element.placeholder_text).save!
-    end
-    item
-  end
 
   ##
   # @return [Enumerable<User>] All managers of all owning collections,
@@ -213,6 +202,25 @@ class Item < ApplicationRecord
   end
 
   ##
+  # Overrides {Auditable#as_change_hash}.
+  #
+  def as_change_hash
+    hash = super
+    # Add ascribed elements.
+    self.elements.each do |element|
+      hash["element:#{element.name}:string"] = element.string
+      hash["element:#{element.name}:uri"]    = element.uri
+    end
+    # Add bitstreams.
+    self.bitstreams.each do |bitstream|
+      bitstream.as_change_hash.each do |k, v|
+        hash["bitstream:#{bitstream.original_filename}:#{k}"] = v
+      end
+    end
+    hash
+  end
+
+  ##
   # @return [Hash] Indexable JSON representation of the instance.
   #
   def as_indexed_json
@@ -251,15 +259,6 @@ class Item < ApplicationRecord
   def assign_handle
     self.handle = Handle.create!(item: self)
     self.handle.reload # to read the suffix, which is autoincrementing
-  end
-
-  ##
-  # Called at the end of the submission process.
-  #
-  def complete_submission
-    raise "Item is not in a submitting state." unless submitting?
-    update!(stage: self.primary_collection&.submissions_reviewed ?
-                       Stages::SUBMITTED : Stages::APPROVED)
   end
 
   ##

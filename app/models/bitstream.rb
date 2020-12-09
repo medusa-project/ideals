@@ -37,6 +37,8 @@
 # * `updated_at`:           Managed by ActiveRecord.
 #
 class Bitstream < ApplicationRecord
+  include Auditable
+
   belongs_to :item
   has_many :messages
 

@@ -33,22 +33,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal count - 1, Item.search.count
   end
 
-  # new_for_submission()
-
-  test "new_for_submission() returns the expected instance" do
-    submitter  = users(:admin)
-    collection = collections(:collection1)
-    item = Item.new_for_submission(submitter: submitter,
-                                   primary_collection_id: collection.id)
-    assert_equal submission_profile_elements(:default_description).placeholder_text,
-                 item.element("dc:description").string
-    assert_equal submission_profile_elements(:default_subject).placeholder_text,
-                 item.element("dc:subject").string
-    assert item.submitting?
-    assert !item.discoverable
-    assert !item.withdrawn?
-  end
-
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
@@ -112,6 +96,24 @@ class ItemTest < ActiveSupport::TestCase
     assert !@instance.approved?
   end
 
+  # as_change_hash()
+
+  test "as_change_hash() returns the correct structure" do
+    @instance = items(:described)
+    hash = @instance.as_change_hash
+    # we will assume that if one property is correct, the rest are
+    assert hash['discoverable']
+
+    # test associated elements
+    assert_equal "Some title", hash['element:dc:title:string']
+
+    # test bitstreams
+    @instance = items(:item1)
+    hash = @instance.as_change_hash
+    assert_equal "escher_lego.jpg",
+                 hash['bitstream:escher_lego.jpg:original_filename']
+  end
+
   # as_indexed_json()
 
   test "as_indexed_json() returns the correct structure" do
@@ -155,32 +157,6 @@ class ItemTest < ActiveSupport::TestCase
     item = items(:described)
     item.assign_handle
     assert_not_nil item.handle.suffix
-  end
-
-  # complete_submission()
-
-  test "complete_submission() raises an error if the instance is not in the
-  submitting stage" do
-    item = items(:submitted)
-    assert_raises do
-      item.complete_submission
-    end
-  end
-
-  test "complete_submission() updates the stage to submitted if the primary
-  collection reviews submissions" do
-    item = items(:submitting)
-    item.primary_collection.submissions_reviewed = true
-    item.complete_submission
-    assert_equal Item::Stages::SUBMITTED, item.stage
-  end
-
-  test "complete_submission() updates the stage to approved if the primary
-  collection does not review submissions" do
-    item = items(:submitting)
-    item.primary_collection.submissions_reviewed = false
-    item.complete_submission
-    assert_equal Item::Stages::APPROVED, item.stage
   end
 
   # creators()

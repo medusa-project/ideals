@@ -406,6 +406,20 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_equal Role::UNIT_ADMINISTRATOR, bitstream.role
   end
 
+  test "update() creates an associated Event" do
+    log_in_as(users(:admin))
+    bitstream = bitstreams(:item1_in_staging)
+    assert_difference "Event.count" do
+      patch item_bitstream_path(bitstream.item, bitstream),
+            xhr: true,
+            params: {
+              bitstream: {
+                role: Role::UNIT_ADMINISTRATOR
+              }
+            }
+    end
+  end
+
   test "update() returns HTTP 200" do
     log_in_as(users(:admin))
     bitstream = bitstreams(:item1_in_staging)

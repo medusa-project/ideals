@@ -92,15 +92,24 @@ class ItemsController < ApplicationController
       when "approve"
         params[:items].each do |item_id|
           item = Item.find(item_id)
-          item.assign_handle
-          item.ingest_into_medusa
-          item.update!(stage: Item::Stages::APPROVED)
+          UpdateItemCommand.new(item: item,
+                                user: current_user,
+                                description: "Item was approved, assigned a "\
+                                "handle, and ingested into Medusa.").execute do
+            item.assign_handle
+            item.ingest_into_medusa
+            item.update!(stage: Item::Stages::APPROVED)
+          end
         end
         flash['success'] = "Approved #{params[:items].length} items."
       when "reject"
         params[:items].each do |item_id|
           item = Item.find(item_id)
-          item.update!(stage: Item::Stages::REJECTED)
+          UpdateItemCommand.new(item: item,
+                                user: current_user,
+                                description: "Item was rejected.").execute do
+            item.update!(stage: Item::Stages::REJECTED)
+          end
         end
         flash['success'] = "Rejected #{params[:items].length} items."
       else
@@ -148,7 +157,8 @@ class ItemsController < ApplicationController
   #
   def update
     begin
-      ActiveRecord::Base.transaction do
+      UpdateItemCommand.new(item: @item,
+                            user: current_user).execute do
         @item.update!(item_params)
         build_metadata
         @item.save!
@@ -199,7 +209,7 @@ class ItemsController < ApplicationController
     if params[:elements].present?
       ActiveRecord::Base.transaction do
         @item.elements.destroy_all
-        params[:elements].each do |element|
+        params[:elements].select{ |e| e[:string].present? }.each do |element|
           @item.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
                                string:             element[:string],
                                uri:                element[:uri])

@@ -397,11 +397,17 @@ class IdealsImporter
         else
           stage = Item::Stages::APPROVED
         end
-        Item.create!(id:                    id,
-                     submitter_id:          submitter_id,
-                     stage:                 stage,
-                     discoverable:          discoverable,
-                     primary_collection_id: collection_id) unless Item.exists?(id)
+        unless Item.exists?(id)
+          item = Item.create!(id:                    id,
+                              submitter_id:          submitter_id,
+                              stage:                 stage,
+                              discoverable:          discoverable,
+                              primary_collection_id: collection_id)
+          Event.create!(event_type:    Event::Type::CREATE,
+                        item:          item,
+                        after_changes: item,
+                        description:   "Item imported from IDEALS-DSpace.")
+        end
       end
       progress.report(row_num, "Importing items")
     end

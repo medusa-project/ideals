@@ -33,7 +33,13 @@ class SubmissionsController < ApplicationController
   # Responds to `POST /submissions/:id/complete`
   #
   def complete
-    @item.complete_submission
+    raise "Item is not in a submitting state." unless @item.submitting?
+    UpdateItemCommand.new(item:        @item,
+                          user:        current_user,
+                          description: "Completed the submission process.").execute do
+      @item.update!(stage: @item.primary_collection&.submissions_reviewed ?
+                             Item::Stages::SUBMITTED : Item::Stages::APPROVED)
+    end
   rescue ActiveRecord::RecordInvalid => e
     render plain: "#{e}", status: :bad_request
   rescue => e
@@ -47,8 +53,9 @@ class SubmissionsController < ApplicationController
   # Responds to `POST /submissions`.
   #
   def create
-    item = Item.new_for_submission(submitter: current_user,
-                                   primary_collection_id: params[:primary_collection_id])
+    command = CreateItemCommand.new(submitter:             current_user,
+                                    primary_collection_id: params[:primary_collection_id])
+    item = command.execute
     authorize item, policy_class: SubmissionPolicy # this should always succeed
     redirect_to edit_submission_path(item)
   end
@@ -88,8 +95,10 @@ class SubmissionsController < ApplicationController
   def update
     begin
       ActiveRecord::Base.transaction do
-        # N.B.: this method does not handle file uploads; see
+        # N.B. 1: this method does not handle file uploads; see
         # BinariesController.create().
+        # N.B. 2: this is not done via UpdateItemCommand because there is no
+        # need to record an event for every edit of a submission-in-progress.
         @item.update!(item_params)
         build_metadata
         @item.save!

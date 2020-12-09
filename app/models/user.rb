@@ -29,6 +29,7 @@ class User < ApplicationRecord
              foreign_key: "local_identity_id", inverse_of: :user, optional: true
   has_many :administrators
   has_many :administering_units, through: :administrators, source: :unit
+  has_many :events
   has_many :invitees, inverse_of: :inviting_user, foreign_key: :inviting_user_id
   has_many :managers
   has_many :managing_collections, through: :managers, source: :collection

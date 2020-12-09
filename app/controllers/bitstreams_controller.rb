@@ -48,13 +48,13 @@ class BitstreamsController < ApplicationController
     config = ::Configuration.instance
     if @bitstream.medusa_key.present?
       s3_request = {
-          bucket: config.medusa[:bucket],
-          key:    @bitstream.medusa_key
+        bucket: config.medusa[:bucket],
+        key:    @bitstream.medusa_key
       }
     elsif @bitstream.exists_in_staging
       s3_request = {
-          bucket: config.aws[:bucket],
-          key:    @bitstream.staging_key
+        bucket: config.aws[:bucket],
+        key:    @bitstream.staging_key
       }
     else
       raise IOError, "This bitstream has no corresponding storage object."
@@ -151,7 +151,11 @@ class BitstreamsController < ApplicationController
   #
   def update
     begin
-      @bitstream.update!(bitstream_params)
+      UpdateItemCommand.new(item: @bitstream.item,
+                            user: current_user,
+                            description: "Updated an associated bitstream.").execute do
+        @bitstream.update!(bitstream_params)
+      end
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @bitstream.errors.any? ? @bitstream : e },

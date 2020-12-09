@@ -49,9 +49,6 @@ body#show_item {
       }
     }
   }
-  h5.card-title {
-    margin-bottom: 0;
-  }
   dl.metadata, dl.properties, dl.files {
     display: grid;
     grid-template-columns: 26% auto;
@@ -65,5 +62,22 @@ body#show_item {
       list-style: none;
       padding-left: 0;
     }
+  }
+  #events-accordion {
+    div[type=button] {
+      user-select: none;
+      a {
+        text-decoration: none;
+      }
+    }
+  }
+  .diff-added {
+    background-color: #e1fce1;
+  }
+  .diff-changed {
+    background-color: #fdf5d7;
+  }
+  .diff-removed {
+    background-color: #fdecec;
   }
 }
