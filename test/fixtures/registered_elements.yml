@@ -18,6 +18,12 @@ description:
   label: Description
   scope_note:
 
+identifier:
+  name: dcterms:identifier
+  uri: http://purl.org/dc/terms/identifier
+  label: Identifier
+  scope_note:
+
 subject:
   name: dc:subject
   uri: http://purl.org/dc/terms/subject

@@ -159,6 +159,12 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_nil item.handle.suffix
   end
 
+  test "assign_handle() creates an identifier element" do
+    item = items(:described)
+    item.assign_handle
+    assert_equal item.handle.url, item.element("dcterms:identifier").uri
+  end
+
   # creators()
 
   test "creators() returns a correct string" do

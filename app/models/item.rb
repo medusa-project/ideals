@@ -254,11 +254,20 @@ class Item < ApplicationRecord
   end
 
   ##
+  # Creates a new {Handle}, assigns it to the instance, and creates an
+  # associated `dcterms:identifier` {AscribedElement} with a URI value of the
+  # handle URI.
+  #
   # @return [void]
   #
   def assign_handle
     self.handle = Handle.create!(item: self)
-    self.handle.reload # to read the suffix, which is autoincrementing
+    # Reload it in order to read the suffix, which is autoincrementing.
+    self.handle.reload
+    # Assign a dcterms:identifier element with a URI value of the handle URI.
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:identifier"),
+                        string:             self.handle.url,
+                        uri:                self.handle.url)
   end
 
   ##
