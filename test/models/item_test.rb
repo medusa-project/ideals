@@ -84,6 +84,20 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 2, @instance.all_units.length
   end
 
+  # approve()
+
+  test "approve() sets the stage to approved" do
+    item = items(:described)
+    item.approve
+    assert_equal Item::Stages::APPROVED, item.stage
+  end
+
+  test "approve() creates an associated dcterms:available element" do
+    item = items(:described)
+    item.approve
+    assert_not_nil item.element("dcterms:available").string
+  end
+
   # approved?()
 
   test "approved?() returns true when the stage is set to APPROVED" do
@@ -182,7 +196,15 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal Item::Stages::APPROVED, item.stage
   end
 
-  test "complete_submission() creates an associated dateSubmitted element" do
+  test "complete_submission() creates an associated dcterms:available element
+  if the collection is not reviewing submissions" do
+    item = items(:described)
+    item.primary_collection.submissions_reviewed = false
+    item.complete_submission
+    assert_not_nil item.element("dcterms:available").string
+  end
+
+  test "complete_submission() creates an associated dcterms:dateSubmitted element" do
     item = items(:described)
     item.complete_submission
     assert_not_nil item.element("dcterms:dateSubmitted").string

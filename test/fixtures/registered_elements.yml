@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-title:
-  name: dc:title
-  uri: http://purl.org/dc/terms/title
-  label: Title
+available:
+  name: dcterms:available
+  uri: http://purl.org/dc/terms/available
+  label: Date Available
   scope_note:
 
 creator:
@@ -34,6 +34,12 @@ subject:
   name: dc:subject
   uri: http://purl.org/dc/terms/subject
   label: Subject
+  scope_note:
+
+title:
+  name: dc:title
+  uri: http://purl.org/dc/terms/title
+  label: Title
   scope_note:
 
 unused:

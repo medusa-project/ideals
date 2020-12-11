@@ -98,7 +98,8 @@ class ItemsController < ApplicationController
                                 "handle, and ingested into Medusa.").execute do
             item.assign_handle
             item.ingest_into_medusa
-            item.update!(stage: Item::Stages::APPROVED)
+            item.approve
+            item.save!
           end
         end
         flash['success'] = "Approved #{params[:items].length} items."

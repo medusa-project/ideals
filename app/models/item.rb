@@ -195,6 +195,19 @@ class Item < ApplicationRecord
   end
 
   ##
+  # Sets {stage} to {Stages::APPROVED} and creates an associated
+  # `dcterms:available` {AscribedElement} with a string value of the current
+  # ISO-8601 date/time.
+  #
+  # @return [void]
+  #
+  def approve
+    self.stage = Stages::APPROVED
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
+                        string:             Time.now.iso8601)
+  end
+
+  ##
   # @return [Boolean] Whether {stage} is set to {Stages#APPROVED}.
   #
   def approved?
@@ -278,8 +291,11 @@ class Item < ApplicationRecord
   # @return [void]
   #
   def complete_submission
-    update!(stage: self.primary_collection&.submissions_reviewed ?
-                     Stages::SUBMITTED : Stages::APPROVED)
+    if self.primary_collection&.submissions_reviewed
+      self.update!(stage: Stages::SUBMITTED)
+    else
+      self.approve
+    end
     # Assign a dcterms:dateSubmitted element with a string value of the current
     # ISO-8601 date/time.
     self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:dateSubmitted"),
