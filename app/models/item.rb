@@ -271,6 +271,22 @@ class Item < ApplicationRecord
   end
 
   ##
+  # Updates the {stage} property and creates an associated
+  # `dcterms:dateSubmitted` element with a string value of the current ISO-8601
+  # date/time.
+  #
+  # @return [void]
+  #
+  def complete_submission
+    update!(stage: self.primary_collection&.submissions_reviewed ?
+                     Stages::SUBMITTED : Stages::APPROVED)
+    # Assign a dcterms:dateSubmitted element with a string value of the current
+    # ISO-8601 date/time.
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:dateSubmitted"),
+                        string:             Time.now.iso8601)
+  end
+
+  ##
   # @return [String] Comma-delimited list of all values of all `dc:creator`
   #                  elements.
   #

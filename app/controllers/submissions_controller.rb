@@ -37,8 +37,8 @@ class SubmissionsController < ApplicationController
     UpdateItemCommand.new(item:        @item,
                           user:        current_user,
                           description: "Completed the submission process.").execute do
-      @item.update!(stage: @item.primary_collection&.submissions_reviewed ?
-                             Item::Stages::SUBMITTED : Item::Stages::APPROVED)
+      @item.complete_submission
+      @item.save!
     end
   rescue ActiveRecord::RecordInvalid => e
     render plain: "#{e}", status: :bad_request

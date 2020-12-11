@@ -12,6 +12,12 @@ creator:
   label: Creator
   scope_note:
 
+dateSubmitted:
+  name: dcterms:dateSubmitted
+  uri: http://purl.org/dc/terms/dateSubmitted
+  label: Date Submitted
+  scope_note:
+
 description:
   name: dc:description
   uri: http://purl.org/dc/terms/description

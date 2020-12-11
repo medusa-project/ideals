@@ -165,6 +165,29 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal item.handle.url, item.element("dcterms:identifier").uri
   end
 
+  # complete_submission()
+
+  test "complete_submission() sets the stage to submitted if the collection is
+  reviewing submissions" do
+    item = items(:described)
+    item.complete_submission
+    assert_equal Item::Stages::SUBMITTED, item.stage
+  end
+
+  test "complete_submission() sets the stage to approved if the collection is
+  not reviewing submissions" do
+    item = items(:described)
+    item.primary_collection.submissions_reviewed = false
+    item.complete_submission
+    assert_equal Item::Stages::APPROVED, item.stage
+  end
+
+  test "complete_submission() creates an associated dateSubmitted element" do
+    item = items(:described)
+    item.complete_submission
+    assert_not_nil item.element("dcterms:dateSubmitted").string
+  end
+
   # creators()
 
   test "creators() returns a correct string" do
