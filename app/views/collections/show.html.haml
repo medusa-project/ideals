@@ -3,90 +3,87 @@
 
 = render partial: "show_button_group"
 
-%h1
+%h1.mb-3
   =icon_for(@collection)
   =@collection.title
 
-%ul.nav.nav-tabs{role: "tablist"}
-  %li.nav-item
-    %a#metadata-tab.nav-link.active{href: "#properties-tab-content",
-                                    "data-toggle": "tab",
-                                    role: "tab",
-                                    "aria-controls": "properties-tab-content",
-                                    "aria-selected": "true"}
-      = icon_for(:info)
-      Properties
-  %li.nav-item
-    %a#unit-membership-tab.nav-link{href: "#unit-membership-tab-content",
-                                    "data-toggle": "tab",
-                                    role: "tab",
-                                    "aria-controls": "unit-membership-tab-content",
-                                    "aria-selected": "true"}
-      = icon_for(Unit)
-      Owning Units
-  %li.nav-item
-    %a#collection-membership-tab.nav-link{href: "#collection-membership-tab-content",
-                                          "data-toggle": "tab",
-                                          role: "tab",
-                                          "aria-controls": "collection-membership-tab-content",
-                                          "aria-selected": "true"}
-      = icon_for(Collection)
-      Collection Membership
-  %li.nav-item
-    %a#items-tab.nav-link{href: "#items-tab-content",
-                          "data-toggle": "tab",
-                          role: "tab",
-                          "aria-controls": "items-tab-content",
-                          "aria-selected": "true"}
-      = icon_for(Item)
-      Items
-  - if @review_count > 0 && policy(@collection).review_submissions?
-    %li.nav-item
-      %a#review-submissions-tab.nav-link{href: "#review-submissions-tab-content",
-                                         "data-toggle": "tab",
-                                         role: "tab",
-                                         "aria-controls": "review-submissions-tab-content",
-                                         "aria-selected": "true"}
-        %i.fa.fa-tasks
-        Review Submissions
-        %small.badge-pill.badge-danger= @review_count
-  - if policy(@collection).edit_access?
-    %li.nav-item
-      %a#access-tab.nav-link{href: "#access-tab-content",
-                             "data-toggle": "tab",
-                             role: "tab",
-                             "aria-controls": "access-tab-content",
-                             "aria-selected": "true"}
-        %i.fa.fa-users
-        Access
+.row
+  .col-3
+    .nav.flex-column.nav-pills{role: "tablist",
+                               "aria-orientation": "vertical"}
+      %a#metadata-tab.nav-link.active{href: "#properties-tab-content",
+                                      "data-toggle": "pill",
+                                      role: "tab",
+                                      "aria-controls": "properties-tab-content",
+                                      "aria-selected": "true"}
+        = icon_for(:info)
+        Properties
+      %a#unit-membership-tab.nav-link{href: "#unit-membership-tab-content",
+                                      "data-toggle": "tab",
+                                      role: "tab",
+                                      "aria-controls": "unit-membership-tab-content",
+                                      "aria-selected": "false"}
+        = icon_for(Unit)
+        Owning Units
+      %a#collection-membership-tab.nav-link{href: "#collection-membership-tab-content",
+                                            "data-toggle": "tab",
+                                            role: "tab",
+                                            "aria-controls": "collection-membership-tab-content",
+                                            "aria-selected": "false"}
+        = icon_for(Collection)
+        Collection Membership
+      %a#items-tab.nav-link{href: "#items-tab-content",
+                            "data-toggle": "tab",
+                            role: "tab",
+                            "aria-controls": "items-tab-content",
+                            "aria-selected": "false"}
+        = icon_for(Item)
+        Items
+      - if @review_count > 0 && policy(@collection).review_submissions?
+        %a#review-submissions-tab.nav-link{href: "#review-submissions-tab-content",
+                                           "data-toggle": "tab",
+                                           role: "tab",
+                                           "aria-controls": "review-submissions-tab-content",
+                                           "aria-selected": "false"}
+          %i.fa.fa-tasks
+          Review Submissions
+          %small.badge-pill.badge-danger= @review_count
+      - if policy(@collection).edit_access?
+        %a#access-tab.nav-link{href: "#access-tab-content",
+                               "data-toggle": "tab",
+                               role: "tab",
+                               "aria-controls": "access-tab-content",
+                               "aria-selected": "false"}
+          %i.fa.fa-users
+          Access
 
+  .col-9
+    .tab-content
+      #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                                        "aria-labelledby": "properties-tab"}
+        = render partial: "show_properties_tab"
 
-.tab-content
-  #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
-                                                    "aria-labelledby": "properties-tab"}
-    = render partial: "show_properties_tab"
+      #unit-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                      "aria-labelledby": "unit-membership-tab"}
+        = render partial: "show_units_tab"
 
-  #unit-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                  "aria-labelledby": "unit-membership-tab"}
-    = render partial: "show_units_tab"
+      #collection-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                            "aria-labelledby": "collection-membership-tab"}
+        = render partial: "show_collections_tab"
 
-  #collection-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                        "aria-labelledby": "collection-membership-tab"}
-    = render partial: "show_collections_tab"
+      #items-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                            "aria-labelledby": "items-tab"}
+        = render partial: "show_items_tab"
 
-  #items-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                        "aria-labelledby": "items-tab"}
-    = render partial: "show_items_tab"
+      - if @review_count > 0 && policy(@collection).review_submissions?
+        #review-submissions-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                           "aria-labelledby": "review-submissions-tab"}
+          = render partial: "show_review_submissions_tab"
 
-  - if @review_count > 0 && policy(@collection).review_submissions?
-    #review-submissions-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                       "aria-labelledby": "review-submissions-tab"}
-      = render partial: "show_review_submissions_tab"
-
-  - if policy(@collection).edit_access?
-    #access-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                           "aria-labelledby": "access-tab"}
-      = render partial: "show_access_tab"
+      - if policy(@collection).edit_access?
+        #access-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                               "aria-labelledby": "access-tab"}
+          = render partial: "show_access_tab"
 
 = render partial: "collections/add_modal",
          locals: { primary_unit: @collection.primary_unit,

@@ -8,11 +8,11 @@
 - if @items.count.positive?
   = form_tag(collection_path(@collection), method: :get, class: "filter") do
     .row.justify-content-between
-      .col-4
+      .col-5
         .input-group.mb-3.filter-field
           = hidden_field_tag("fq[]", "#{Item::IndexFields::COLLECTION_TITLES}:#{@collection.title}")
           = filter_field(icon: "fa fa-filter", submit_text: "Filter")
-      .col-4
+      .col-5
         .input-group
           = sort_menu(MetadataProfile.default)
   = render partial: "items/listing"
