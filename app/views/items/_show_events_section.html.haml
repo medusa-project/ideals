@@ -1,5 +1,5 @@
 - if policy(@item).show_events?
   - events = @item.events.order(created_at: :desc)
   - if events.any?
-    %h2.mt-5 Events
+    %h2.mt-5 Change Log
     = events(events)
