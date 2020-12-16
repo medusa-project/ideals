@@ -80,7 +80,7 @@ class BitstreamsController < ApplicationController
 
     LOGGER.debug('show(): requesting %s', s3_request)
 
-    client      = Aws::S3::Client.new
+    client      = S3Client.instance
     s3_response = client.head_object(s3_request)
 
     response.status                         = status

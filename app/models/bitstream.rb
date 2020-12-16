@@ -105,10 +105,9 @@ class Bitstream < ApplicationRecord
   def self.create_bucket
     raise "Not going to create a bucket in this environment" unless
         %w(development test).include?(Rails.env)
-    client   = Aws::S3::Client.new
-    resource = Aws::S3::Resource.new
-    bucket   = ::Configuration.instance.aws[:bucket]
-    unless resource.bucket(bucket).exists?
+    client = S3Client.instance
+    bucket = ::Configuration.instance.aws[:bucket]
+    unless S3Client.instance.bucket_exists?(bucket)
       client.create_bucket(bucket: bucket)
     end
   end
@@ -176,8 +175,8 @@ class Bitstream < ApplicationRecord
   #
   def delete_from_staging
     return unless self.exists_in_staging
-    s3_client.delete_object(bucket: ::Configuration.instance.aws[:bucket],
-                            key:    self.staging_key)
+    S3Client.instance.delete_object(bucket: ::Configuration.instance.aws[:bucket],
+                                    key:    self.staging_key)
   rescue Aws::S3::Errors::NotFound
     # That's OK
   ensure
@@ -242,19 +241,13 @@ class Bitstream < ApplicationRecord
   # @param io [IO]
   #
   def upload_to_staging(io)
-    s3_client.put_object(bucket: ::Configuration.instance.aws[:bucket],
-                         key:    self.staging_key,
-                         body:   io)
+    S3Client.instance.put_object(bucket: ::Configuration.instance.aws[:bucket],
+                                 key:    self.staging_key,
+                                 body:   io)
     self.update!(exists_in_staging: true)
   end
 
   private
-
-
-  def s3_client
-    @s3_client = Aws::S3::Client.new unless @s3_client
-    @s3_client
-  end
 
   def validate_staging_properties
     if exists_in_staging && staging_key.blank?

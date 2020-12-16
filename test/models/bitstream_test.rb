@@ -122,17 +122,15 @@ class BitstreamTest < ActiveSupport::TestCase
     staging_key = @instance.staging_key
 
     # Check that the file exists in the bucket.
-    obj = Aws::S3::Object.new(bucket_name: config.aws[:bucket],
-                              key:         staging_key)
-    assert obj.exists?
+    assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+                                            key:    staging_key)
 
     # Delete it.
     @instance.delete_from_staging
 
     # Check that it has been deleted.
-    obj = Aws::S3::Object.new(bucket_name: config.aws[:bucket],
-                              key:         staging_key)
-    assert !obj.exists?
+    assert !S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+                                             key:    staging_key)
   end
 
   test "delete_from_staging() updates the instance properties" do
@@ -146,9 +144,9 @@ class BitstreamTest < ActiveSupport::TestCase
     end
 
     # Check that the file exists in the bucket.
-    obj = Aws::S3::Object.new(bucket_name: ::Configuration.instance.aws[:bucket],
-                              key:         @instance.staging_key)
-    assert obj.exists?
+    config = ::Configuration.instance
+    assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+                                            key:    @instance.staging_key)
 
     # Delete it.
     @instance.delete_from_staging
@@ -321,10 +319,9 @@ class BitstreamTest < ActiveSupport::TestCase
       end
 
       # Check that the file exists in the bucket.
-      s3 = Aws::S3::Resource.new
-      obj = s3.bucket(::Configuration.instance.aws[:bucket]).
-          object(@instance.staging_key)
-      assert obj.exists?
+      config = ::Configuration.instance
+      assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+                                              key:    @instance.staging_key)
     ensure
       @instance.delete_from_staging
     end
