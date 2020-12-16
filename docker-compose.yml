@@ -6,7 +6,7 @@ services:
   ideals:
     build:
       context: .
-      dockerfile: docker/Dockerfile-ideals
+      dockerfile: docker/ideals/Dockerfile
     depends_on: # N.B: docker-compose will NOT actually wait for these to start, hence the `sleep` in the command
       - postgres
       - elasticsearch
@@ -24,12 +24,12 @@ services:
   elasticsearch:
     build:
       context: .
-      dockerfile: docker/Dockerfile-elasticsearch
+      dockerfile: docker/elasticsearch/Dockerfile
     hostname: elasticsearch
   handle:
     build:
       context: .
-      dockerfile: docker/Dockerfile-handle
+      dockerfile: docker/handle/Dockerfile
     hostname: handle
   minio:
     image: minio/minio
@@ -41,5 +41,5 @@ services:
   rabbitmq:
     build:
       context: .
-      dockerfile: docker/Dockerfile-rabbitmq
+      dockerfile: docker/rabbitmq/Dockerfile
     hostname: rabbitmq

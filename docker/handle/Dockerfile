@@ -15,7 +15,7 @@ RUN curl --silent -O https://www.handle.net/hnr-source/handle-9.2.0-distribution
 
 # Create the data directory
 RUN mkdir -p /home/handle/handle-server
-COPY docker/handle-server /home/handle/handle-server
+COPY docker/handle/handle-server /home/handle/handle-server
 
 RUN chown -R $user:$user $home
 USER $user
