@@ -82,3 +82,12 @@ body#show_item {
     background-color: #fdecec;
   }
 }
+
+body#review_items {
+  h2, h3 {
+    a {
+      color: black;
+      text-decoration: none;
+    }
+  }
+}
