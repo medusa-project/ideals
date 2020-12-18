@@ -220,9 +220,19 @@ class Item < ApplicationRecord
   def as_change_hash
     hash = super
     # Add ascribed elements.
+    # Because there may be multiple elements with the same name, we maintain a
+    # map of name -> count pairs and append the count to the name if it is > 1.
+    element_counts = {}
     self.elements.each do |element|
-      hash["element:#{element.name}:string"] = element.string
-      hash["element:#{element.name}:uri"]    = element.uri
+      if element_counts[element.name].present?
+        element_counts[element.name] += 1
+      else
+        element_counts[element.name] = 1
+      end
+      key = "element:#{element.name}"
+      key += "-#{element_counts[element.name]}" if element_counts[element.name] > 1
+      hash["#{key}:string"] = element.string
+      hash["#{key}:uri"]    = element.uri
     end
     # Add bitstreams.
     self.bitstreams.each do |bitstream|

@@ -114,12 +114,16 @@ class ItemTest < ActiveSupport::TestCase
 
   test "as_change_hash() returns the correct structure" do
     @instance = items(:described)
+    # add another title to test handling of multiple same-named elements
+    @instance.elements.build(registered_element: registered_elements(:title),
+                             string: "Alternate title")
     hash = @instance.as_change_hash
     # we will assume that if one property is correct, the rest are
     assert hash['discoverable']
 
     # test associated elements
     assert_equal "Some title", hash['element:dc:title:string']
+    assert_equal "Alternate title", hash['element:dc:title-2:string']
 
     # test bitstreams
     @instance = items(:item1)
