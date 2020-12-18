@@ -64,7 +64,8 @@ body#show_item {
     }
   }
   #events-accordion {
-    div[type=button] {
+    .card-header {
+      cursor: pointer;
       user-select: none;
       a {
         text-decoration: none;
