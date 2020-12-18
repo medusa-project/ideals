@@ -37,7 +37,7 @@
         = label_tag "user_group_ldap_group_ids_#{group.id}",
         group.short_name, class: "form-check-label"
       %br
-      %code= group.urn
+      %code.text-secondary= group.urn
 
   .clearfix
     .float-right
