@@ -28,7 +28,7 @@
 
   %h5 LDAP Groups
   = hidden_field_tag "user_group[ldap_group_ids][]"
-  - LdapGroup.all.order(:urn).each do |group|
+  - LdapGroup.all.sort_by(&:short_name).each do |group|
     .form-check
       %strong
         = check_box_tag "user_group[ldap_group_ids][]", group.id,
