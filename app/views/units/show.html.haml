@@ -7,71 +7,73 @@
   = icon_for(@unit)
   = @unit.title
 
-%ul.nav.nav-tabs{role: "tablist"}
-  %li.nav-item
-    %a#properties-tab.nav-link.active{"aria-controls": "properties-tab-content",
-                                      "aria-selected": "false",
-                                      "data-toggle": "tab",
-                                      href: "#properties-tab-content",
-                                      role: "tab"}
-      = icon_for(:info)
-      Properties
-  %li.nav-item
-    %a#units-tab.nav-link{"aria-controls": "units-tab-content",
-                          "aria-selected": "false",
-                          "data-toggle": "tab",
-                          href: "#units-tab-content",
-                          role: "tab"}
-      = icon_for(Unit)
-      Unit Membership
-  %li.nav-item
-    %a#collections-tab.nav-link{"aria-controls": "collections-tab-content",
-                                "aria-selected": "false",
-                                "data-toggle": "tab",
-                                href: "#collections-tab-content",
-                                role: "tab"}
-      = icon_for(Collection)
-      Collections
-  %li.nav-item
-    %a#items-tab.nav-link{href: "#items-tab-content",
-                          "data-toggle": "tab",
-                          role: "tab",
-                          "aria-controls": "items-tab-content",
-                          "aria-selected": "true"}
-      = icon_for(Item)
-      Items
-  - if policy(@unit).edit_access?
-    %li.nav-item
-      %a#access-tab.nav-link{"aria-controls": "access-tab-content",
-                             "aria-selected": "false",
-                             "data-toggle": "tab",
-                             href: "#access-tab-content",
-                             role: "tab"}
-        %i.fa.fa-users
-        Access
+.row
+  .col-sm-5.col-md-4.col-lg-3
+    %ul.nav.nav-pills.flex-column{role: "tablist",
+                                  "aria-orientation": "vertical"}
+      %li.nav-item
+        %a#properties-tab.nav-link.active{"aria-controls": "properties-tab-content",
+                                          "aria-selected": "false",
+                                          "data-toggle": "pill",
+                                          href: "#properties-tab-content",
+                                          role: "tab"}
+          = icon_for(:info)
+          Properties
+      %li.nav-item{role: "presentation"}
+        %a#units-tab.nav-link{"aria-controls": "units-tab-content",
+                              "aria-selected": "false",
+                              "data-toggle": "pill",
+                              href: "#units-tab-content",
+                              role: "tab"}
+          = icon_for(Unit)
+          Unit Membership
+      %li.nav-item{role: "presentation"}
+        %a#collections-tab.nav-link{"aria-controls": "collections-tab-content",
+                                    "aria-selected": "false",
+                                    "data-toggle": "pill",
+                                    href: "#collections-tab-content",
+                                    role: "tab"}
+          = icon_for(Collection)
+          Collections
+      %li.nav-item{role: "presentation"}
+        %a#items-tab.nav-link{href: "#items-tab-content",
+                              "data-toggle": "pill",
+                              role: "tab",
+                              "aria-controls": "items-tab-content",
+                              "aria-selected": "true"}
+          = icon_for(Item)
+          Items
+      - if policy(@unit).edit_access?
+        %li.nav-item{role: "presentation"}
+          %a#access-tab.nav-link{"aria-controls": "access-tab-content",
+                                 "aria-selected": "false",
+                                 "data-toggle": "pill",
+                                 href: "#access-tab-content",
+                                 role: "tab"}
+            %i.fa.fa-users
+            Access
 
+  .tab-content.col-sm-7.col-md-8.col-lg-9
+    #properties-tab-content.tab-pane.fade.show.active{"aria-labelledby": "properties-tab",
+                                                      role: "tabpanel"}
+      = render partial: "show_properties_tab"
 
-.tab-content
-  #properties-tab-content.tab-pane.fade.show.active{"aria-labelledby": "properties-tab",
-                                                    role: "tabpanel"}
-    = render partial: "show_properties_tab"
+    #units-tab-content.tab-pane.fade{"aria-labelledby": "units-tab",
+                                     role: "tabpanel"}
+      = render partial: "show_membership_tab"
 
-  #units-tab-content.tab-pane.fade{"aria-labelledby": "units-tab",
-                                   role: "tabpanel"}
-    = render partial: "show_membership_tab"
+    #collections-tab-content.tab-pane.fade{"aria-labelledby": "collections-tab",
+                                           role: "tabpanel"}
+      = render partial: "show_collections_tab"
 
-  #collections-tab-content.tab-pane.fade{"aria-labelledby": "collections-tab",
-                                         role: "tabpanel"}
-    = render partial: "show_collections_tab"
+    #items-tab-content.tab-pane.fade{"aria-labelledby": "items-tab",
+                                     role: "tabpanel"}
+      = render partial: "show_items_tab"
 
-  #items-tab-content.tab-pane.fade{"aria-labelledby": "items-tab",
-                                   role: "tabpanel"}
-    = render partial: "show_items_tab"
-
-  - if policy(@unit).edit_access?
-    #access-tab-content.tab-pane.fade{"aria-labelledby": "access-tab",
-                                      role: "tabpanel"}
-      = render partial: "show_access_tab"
+    - if policy(@unit).edit_access?
+      #access-tab-content.tab-pane.fade{"aria-labelledby": "access-tab",
+                                        role: "tabpanel"}
+        = render partial: "show_access_tab"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-unit-properties-modal",

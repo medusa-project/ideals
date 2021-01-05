@@ -24,10 +24,13 @@
   - if user.kind_of?(ShibbolethUser)
     %dt LDAP Groups
     %dd
-      %ul
-        - user.ldap_groups.each do |group|
-          %li
-            %code= group.name
+      - if user.ldap_groups.any?
+        %ul
+          - user.ldap_groups.each do |group|
+            %li
+              %code= group.name
+      - else
+        None
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-privileges-modal", title: "Edit Privileges" }

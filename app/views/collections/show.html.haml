@@ -8,7 +8,7 @@
   =@collection.title
 
 .row
-  .col-3
+  .col-sm-5.col-md-4.col-lg-3
     .nav.flex-column.nav-pills{role: "tablist",
                                "aria-orientation": "vertical"}
       %a#metadata-tab.nav-link.active{href: "#properties-tab-content",
@@ -19,21 +19,21 @@
         = icon_for(:info)
         Properties
       %a#unit-membership-tab.nav-link{href: "#unit-membership-tab-content",
-                                      "data-toggle": "tab",
+                                      "data-toggle": "pill",
                                       role: "tab",
                                       "aria-controls": "unit-membership-tab-content",
                                       "aria-selected": "false"}
         = icon_for(Unit)
         Owning Units
       %a#collection-membership-tab.nav-link{href: "#collection-membership-tab-content",
-                                            "data-toggle": "tab",
+                                            "data-toggle": "pill",
                                             role: "tab",
                                             "aria-controls": "collection-membership-tab-content",
                                             "aria-selected": "false"}
         = icon_for(Collection)
         Collection Membership
       %a#items-tab.nav-link{href: "#items-tab-content",
-                            "data-toggle": "tab",
+                            "data-toggle": "pill",
                             role: "tab",
                             "aria-controls": "items-tab-content",
                             "aria-selected": "false"}
@@ -57,33 +57,32 @@
           %i.fa.fa-users
           Access
 
-  .col-9
-    .tab-content
-      #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
-                                                        "aria-labelledby": "properties-tab"}
-        = render partial: "show_properties_tab"
+  .tab-content.col-sm-7.col-md-8.col-lg-9
+    #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                                      "aria-labelledby": "properties-tab"}
+      = render partial: "show_properties_tab"
 
-      #unit-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                      "aria-labelledby": "unit-membership-tab"}
-        = render partial: "show_units_tab"
+    #unit-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                    "aria-labelledby": "unit-membership-tab"}
+      = render partial: "show_units_tab"
 
-      #collection-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                            "aria-labelledby": "collection-membership-tab"}
-        = render partial: "show_collections_tab"
+    #collection-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                          "aria-labelledby": "collection-membership-tab"}
+      = render partial: "show_collections_tab"
 
-      #items-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                            "aria-labelledby": "items-tab"}
-        = render partial: "show_items_tab"
+    #items-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                          "aria-labelledby": "items-tab"}
+      = render partial: "show_items_tab"
 
-      - if @review_count > 0 && policy(@collection).review_submissions?
-        #review-submissions-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                           "aria-labelledby": "review-submissions-tab"}
-          = render partial: "show_review_submissions_tab"
+    - if @review_count > 0 && policy(@collection).review_submissions?
+      #review-submissions-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                         "aria-labelledby": "review-submissions-tab"}
+        = render partial: "show_review_submissions_tab"
 
-      - if policy(@collection).edit_access?
-        #access-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                               "aria-labelledby": "access-tab"}
-          = render partial: "show_access_tab"
+    - if policy(@collection).edit_access?
+      #access-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                             "aria-labelledby": "access-tab"}
+        = render partial: "show_access_tab"
 
 = render partial: "collections/add_modal",
          locals: { primary_unit: @collection.primary_unit,

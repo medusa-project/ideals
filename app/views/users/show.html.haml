@@ -5,63 +5,67 @@
   =icon_for(@user)
   =@user.name
 
-%ul.nav.nav-tabs{role: "tablist"}
-  %li.nav-item
-    %a#properties-tab.nav-link.active{"data-toggle": "tab",
-                                      href: "#properties",
-                                      role: "tab",
-                                      "aria-controls": "properties",
-                                      "aria-selected": "true"} Properties
-  %li.nav-item
-    %a#privileges-tab.nav-link{"data-toggle": "tab",
-                               href: "#privileges",
-                               role: "tab",
-                               "aria-controls": "privileges",
-                               "aria-selected": "false"} Privileges
-  %li.nav-item
-    %a#collections-tab.nav-link{"data-toggle": "tab",
-                                href: "#collections",
-                                role: "tab",
-                                "aria-controls": "collections",
-                                "aria-selected": "false"}
-      Submittable Collections
-      %span.badge.badge-pill.badge-secondary
-        = @collections_count
-  %li.nav-item
-    %a#items-tab.nav-link{"data-toggle": "tab",
-                          href: "#items",
-                          role: "tab",
-                          "aria-controls": "items",
-                          "aria-selected": "false"}
-      Submitted Items
-      %span.badge.badge-pill.badge-secondary
-        = @count
-  %li.nav-item
-    %a#submissions-tab.nav-link{"data-toggle": "tab",
-                                href: "#submissions",
-                                role: "tab",
-                                "aria-controls": "submissions",
-                                "aria-selected": "false"}
-      Submissions In Progress
-      %span.badge.badge-pill.badge-secondary
-        = @submissions_count
+.row
+  .col-sm-5.col-md-4.col-lg-3
+    %ul.nav.nav-pills.flex-column{role: "tablist",
+                                  "aria-orientation": "vertical"}
+      %li.nav-item{role: "presentation"}
+        %a#properties-tab.nav-link.active{"data-toggle": "pill",
+                                          href: "#properties",
+                                          role: "tab",
+                                          "aria-controls": "properties",
+                                          "aria-selected": "true"} Properties
+      %li.nav-item{role: "presentation"}
+        %a#privileges-tab.nav-link{"data-toggle": "pill",
+                                   href: "#privileges",
+                                   role: "tab",
+                                   "aria-controls": "privileges",
+                                   "aria-selected": "false"} Privileges
+      %li.nav-item{role: "presentation"}
+        %a#collections-tab.nav-link{"data-toggle": "pill",
+                                    href: "#collections",
+                                    role: "tab",
+                                    "aria-controls": "collections",
+                                    "aria-selected": "false"}
+          Submittable Collections
+          %span.badge.badge-pill.badge-secondary
+            = @collections_count
+      %li.nav-item{role: "presentation"}
+        %a#items-tab.nav-link{"data-toggle": "pill",
+                              href: "#items",
+                              role: "tab",
+                              "aria-controls": "items",
+                              "aria-selected": "false"}
+          Submitted Items
+          %span.badge.badge-pill.badge-secondary
+            = @count
+      %li.nav-item{role: "presentation"}
+        %a#submissions-tab.nav-link{"data-toggle": "pill",
+                                    href: "#submissions",
+                                    role: "tab",
+                                    "aria-controls": "submissions",
+                                    "aria-selected": "false"}
+          Submissions In Progress
+          %span.badge.badge-pill.badge-secondary
+            = @submissions_count
 
+  .tab-content.col-sm-7.col-md-8.col-lg-9
+    #properties.tab-pane.fade.show.active{role: "tabpanel",
+                                          "aria-labelledby": "properties-tab"}
+      = render partial: "show_properties_tab", locals: { user: @user }
 
-.tab-content
-  #properties.tab-pane.show.active{role: "tabpanel",
-                                   "aria-labelledby": "properties-tab"}
-    = render partial: "show_properties_tab", locals: { user: @user }
+    #privileges.tab-pane.fade{role: "tabpanel",
+                              "aria-labelledby": "privileges-tab"}
+      = render partial: "show_privileges_tab", locals: { user: @user }
 
-  #privileges.tab-pane{role: "tabpanel",
-                       "aria-labelledby": "privileges-tab"}
-    = render partial: "show_privileges_tab", locals: { user: @user }
+    #collections.tab-pane.fade{role: "tabpanel",
+                               "aria-labelledby": "collections-tab"}
+      = render partial: "show_collections_tab", locals: { user: @user }
 
-  #collections.tab-pane{role: "tabpanel",
-                        "aria-labelledby": "collections-tab"}
-    = render partial: "show_collections_tab", locals: { user: @user }
+    #items.tab-pane.fade{role: "tabpanel",
+                         "aria-labelledby": "items-tab"}
+      = render partial: "show_items_tab"
 
-  #items.tab-pane{role: "tabpanel", "aria-labelledby": "items-tab"}
-    = render partial: "show_items_tab"
-
-  #submissions.tab-pane{role: "tabpanel", "aria-labelledby": "submissions-tab"}
-    = render partial: "show_submissions_tab"
+    #submissions.tab-pane{role: "tabpanel",
+                          "aria-labelledby": "submissions-tab"}
+      = render partial: "show_submissions_tab"
