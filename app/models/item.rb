@@ -114,7 +114,11 @@ class Item < ApplicationRecord
     WITHDRAWN  = 400
 
     def self.all
-      Item::Stages.constants.map{ |c| Item::Stages::const_get(c) }.sort
+      self.constants.map{ |c| self.const_get(c) }.sort
+    end
+
+    def self.label_for(value)
+      self.constants.find{ |c| self.const_get(c) == value }&.to_s&.downcase
     end
   end
 
@@ -219,6 +223,7 @@ class Item < ApplicationRecord
   #
   def as_change_hash
     hash = super
+    hash['stage'] = Stages::label_for(hash['stage'])
     # Add ascribed elements.
     # Because there may be multiple elements with the same name, we maintain a
     # map of name -> count pairs and append the count to the name if it is > 1.
