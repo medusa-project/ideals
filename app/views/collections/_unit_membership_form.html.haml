@@ -5,11 +5,11 @@
 -# collection [Collection]
 -# primary_unit [Unit]
 
-- options = unit_tree_options
+- options = unit_tree_options(include_only_admin: true)
 
 = form_for(collection, remote: true) do |f|
   .error-messages
-    - # populated via ajax by shared/_validation_messages.js.erb
+    -# populated via ajax by shared/_validation_messages.js.erb
 
   .form-group
     = f.label :primary_unit_id, "Primary Unit"

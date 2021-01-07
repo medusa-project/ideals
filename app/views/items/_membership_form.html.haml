@@ -14,7 +14,9 @@
 
   .form-group
     = f.label :unit_id, "Unit"
-    = select_tag(:unit_id, options_for_select(unit_tree_options(include_blank: f.object&.primary_collection&.primary_unit_id.blank?)),
+    - unit_options = unit_tree_options(include_only_admin: true, |
+                                       include_blank: f.object&.primary_collection&.primary_unit_id.blank?) |
+    = select_tag(:unit_id, options_for_select(unit_options),
                  class: "custom-select")
 
   .form-group

@@ -32,6 +32,10 @@ module UnitsHelper
   #                                     top.
   # @param include_root [Boolean]       Whether to include a root entry at the
   #                                     top.
+  # @param include_only_admin [Boolean] Whether to include only units of which
+  #                                     the {ApplicationController#current_user
+  #                                     current user} is an effective
+  #                                     administrator.
   # @param parent_unit [Unit]           Not part of the public contract--ignore.
   # @param options [Enumerable<String>] Not part of the public contract--ignore.
   # @param level [Integer]              Not part of the public contract--ignore.
@@ -40,6 +44,7 @@ module UnitsHelper
   #
   def unit_tree_options(include_blank: false,
                         include_root: false,
+                        include_only_admin: false,
                         parent_unit: nil,
                         options: [],
                         level: 0)
@@ -56,6 +61,9 @@ module UnitsHelper
       units.parent_unit(parent_unit)
     else
       units.include_children(false)
+    end
+    if include_only_admin
+      units = units.select{ |u| current_user.effective_unit_admin?(u) }
     end
     units.each do |unit|
       indent   = "&nbsp;&nbsp;&nbsp;&nbsp;" * level
