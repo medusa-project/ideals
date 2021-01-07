@@ -13,6 +13,21 @@ class UnitPolicy < ApplicationPolicy
     @unit = unit
   end
 
+  ##
+  # Invoked from {UnitsController#update} to ensure that a user cannot move a
+  # unit to another unit of which s/he is not an effective administrator.
+  #
+  def change_parent?(new_parent_id)
+    if user
+      return true if new_parent_id == unit.parent_id
+      return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
+      if role >= Role::UNIT_ADMINISTRATOR
+        return user.effective_unit_admin?(Unit.find(new_parent_id))
+      end
+    end
+    false
+  end
+
   def children?
     true
   end

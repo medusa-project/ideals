@@ -6,6 +6,36 @@ class UnitPolicyTest < ActiveSupport::TestCase
     @unit = units(:unit1)
   end
 
+  # change_parent?()
+
+  test "change_parent?() returns false with a nil user" do
+    unit2 = units(:unit2)
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.change_parent?(unit2.id)
+  end
+
+  test "change_parent?() is restrictive by default" do
+    context = UserContext.new(users(:norights), Role::NO_LIMIT)
+    unit2 = units(:unit2)
+    policy = UnitPolicy.new(context, @unit)
+    assert !policy.change_parent?(unit2.id)
+  end
+
+  test "change_parent?() authorizes sysadmins" do
+    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    unit2 = units(:unit2)
+    policy = UnitPolicy.new(context, @unit)
+    assert policy.change_parent?(unit2.id)
+  end
+
+  test "change_parent?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    unit2 = units(:unit2)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.change_parent?(unit2.id)
+  end
+
   # children?()
 
   test "children?() returns true with a nil user" do

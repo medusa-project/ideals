@@ -75,7 +75,7 @@ class ItemTest < ActiveSupport::TestCase
   # all_unit_administrators()
 
   test "all_unit_administrators() returns the expected users" do
-    assert_equal 1, @instance.all_unit_administrators.length
+    assert_equal 2, @instance.all_unit_administrators.length
   end
 
   # all_units()

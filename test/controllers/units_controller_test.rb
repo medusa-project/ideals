@@ -269,6 +269,21 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test "update() returns HTTP 403 when updating the unit parent_id to a unit of
+  which the current user is not an effective administrator" do
+    log_in_as(users(:unit1_admin))
+    unit = units(:unit1)
+    unit.update!(primary_administrator: nil) # child units cannot have a primary admin
+    patch unit_path(unit),
+          xhr: true,
+          params: {
+            unit: {
+              parent_id: units(:unit2).id
+            }
+          }
+    assert_response :forbidden
+  end
+
   test "update() updates a unit" do
     log_in_as(users(:admin))
     unit = units(:unit1)
