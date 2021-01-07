@@ -180,6 +180,11 @@ class CollectionsController < ApplicationController
   # Responds to `PATCH/PUT /collections/:id`
   #
   def update
+    if params[:collection][:parent_id] &&
+      !policy(@unit).change_parent?(params[:collection][:parent_id])
+      raise Pundit::NotAuthorizedError,"Cannot move a collection into a "\
+            "collection of which you are not an effective manager."
+    end
     begin
       ActiveRecord::Base.transaction do
         assign_users

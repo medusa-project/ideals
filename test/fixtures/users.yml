@@ -13,9 +13,9 @@ admin: # TODO: rename to local_admin
 
 collection1_collection1_manager:
   type: LocalUser
-  uid: jane@example.edu
-  name: jane
-  email: jane@example.edu
+  uid: collection1_collection1_manager@example.edu
+  name: Collection1 Collection1 Manager
+  email: collection1_collection1_manager@example.edu
   phone: (888) 555-1234
   identity: collection1_collection1_manager
 

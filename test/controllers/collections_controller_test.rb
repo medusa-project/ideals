@@ -332,6 +332,21 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  test "update() returns HTTP 403 when updating the collection parent_id to a
+  collection of which the current user is not an effective manager" do
+    log_in_as(users(:collection1_collection1_manager))
+    collection = collections(:collection1_collection1)
+    patch collection_path(collection),
+          xhr: true,
+          params: {
+            collection: {
+              parent_id: collections(:described).id
+            }
+          }
+    assert_response :forbidden
+  end
+
+
   test "update() returns HTTP 404 for nonexistent collections" do
     log_in_as(users(:admin))
     patch "/collections/bogus"

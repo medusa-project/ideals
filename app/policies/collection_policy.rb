@@ -13,6 +13,22 @@ class CollectionPolicy < ApplicationPolicy
     @collection = collection
   end
 
+  ##
+  # Invoked from {CollectionsController#update} to ensure that a user cannot
+  # move a collection to another collection of which s/he is not an effective
+  # manager.
+  #
+  def change_parent?(new_parent_id)
+    if user
+      return true if new_parent_id == collection.parent_id
+      return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
+      if role >= Role::COLLECTION_MANAGER
+        return user.effective_manager?(Collection.find(new_parent_id))
+      end
+    end
+    false
+  end
+
   def children?
     true
   end
