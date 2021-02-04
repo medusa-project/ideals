@@ -3,7 +3,7 @@
 # `local_identities.yml`. (This is a requirement of the omniauth-identity gem.)
 #
 
-admin:
+local_sysadmin:
   type: LocalUser
   uid: admin@example.edu
   name: admin

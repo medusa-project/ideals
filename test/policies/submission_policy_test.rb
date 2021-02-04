@@ -21,7 +21,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
 
   test "agreement?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_OUT)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_OUT)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.agreement?
   end
@@ -40,7 +40,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   end
 
   test "complete?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = SubmissionPolicy.new(context, @item)
     assert policy.complete?
   end
@@ -98,7 +98,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
 
   test "complete?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.complete?
   end
@@ -117,7 +117,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = SubmissionPolicy.new(context, @item)
     assert policy.destroy?
   end
@@ -175,7 +175,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.destroy?
   end
@@ -194,7 +194,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = SubmissionPolicy.new(context, @item)
     assert policy.edit?
   end
@@ -252,7 +252,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.edit?
   end
@@ -271,7 +271,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = SubmissionPolicy.new(context, @item)
     assert policy.update?
   end
@@ -329,7 +329,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.update?
   end

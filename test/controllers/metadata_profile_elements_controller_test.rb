@@ -33,7 +33,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post metadata_profile_metadata_profile_elements_path(@profile),
          xhr: true,
          params: {
@@ -48,7 +48,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates an element" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     assert_difference "MetadataProfileElement.count" do
       post metadata_profile_metadata_profile_elements_path(@profile),
            xhr: true,
@@ -64,7 +64,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post metadata_profile_metadata_profile_elements_path(@profile),
          xhr: true,
          params: {
@@ -93,7 +93,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the element" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     element = metadata_profile_elements(:default_title)
     assert_difference "MetadataProfileElement.count", -1 do
       delete metadata_profile_metadata_profile_element_path(element.metadata_profile,
@@ -102,7 +102,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing element" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     element = metadata_profile_elements(:default_title)
     delete metadata_profile_metadata_profile_element_path(element.metadata_profile,
                                                           element)
@@ -110,7 +110,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 404 for a missing element" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     delete metadata_profile_path(@profile) + "/elements/9999"
     assert_response :not_found
   end
@@ -131,7 +131,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 200 for authorized users" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     element = metadata_profile_elements(:default_title)
     get edit_metadata_profile_metadata_profile_element_path(@profile, element)
     assert_response :ok
@@ -153,7 +153,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() updates an element" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     element = metadata_profile_elements(:default_title)
     patch metadata_profile_metadata_profile_element_path(@profile, element),
           xhr: true,
@@ -169,7 +169,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     element = metadata_profile_elements(:default_title)
     patch metadata_profile_metadata_profile_element_path(@profile, element),
           xhr: true,
@@ -185,7 +185,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     element = metadata_profile_elements(:default_title)
     patch metadata_profile_metadata_profile_element_path(@profile, element),
           xhr: true,
@@ -200,7 +200,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent elements" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     patch metadata_profile_path(@profile) + "/elements/9999"
     assert_response :not_found
   end

@@ -27,7 +27,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post user_groups_path,
          xhr: true,
          params: {
@@ -40,7 +40,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates a user group" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     assert_difference "UserGroup.count" do
       post user_groups_path,
            xhr: true,
@@ -54,7 +54,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post user_groups_path,
          xhr: true,
          params: {
@@ -80,7 +80,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the group" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     group = user_groups(:unused)
     assert_difference "UserGroup.count", -1 do
       delete user_group_path(group)
@@ -88,14 +88,14 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing group" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     group = user_groups(:unused)
     delete user_group_path(group)
     assert_redirected_to user_groups_path
   end
 
   test "destroy() returns HTTP 404 for a missing group" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     delete "/user-groups/99999"
     assert_response :not_found
   end
@@ -114,13 +114,13 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     get user_groups_path
     assert_response :ok
   end
 
   test "index() respects role limits" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     get user_groups_path
     assert_response :ok
 
@@ -142,13 +142,13 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() returns HTTP 200 for authorized users" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     get user_group_path(user_groups(:sysadmin))
     assert_response :ok
   end
 
   test "show() respects role limits" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     get user_group_path(user_groups(:sysadmin))
     assert_response :ok
 
@@ -170,7 +170,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() updates a user group" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     group = user_groups(:sysadmin)
     patch user_group_path(group),
           xhr: true,
@@ -185,7 +185,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     group = user_groups(:sysadmin)
     patch user_group_path(group),
           xhr: true,
@@ -199,7 +199,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     group = user_groups(:sysadmin)
     patch user_group_path(group),
           xhr: true,
@@ -213,7 +213,7 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent user groups" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     patch "/user-groups/99999"
     assert_response :not_found
   end

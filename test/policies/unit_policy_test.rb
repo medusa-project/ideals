@@ -22,7 +22,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "change_parent?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     unit2 = units(:unit2)
     policy = UnitPolicy.new(context, @unit)
     assert policy.change_parent?(unit2.id)
@@ -30,7 +30,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "change_parent?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     unit2 = units(:unit2)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.change_parent?(unit2.id)
@@ -76,7 +76,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.create?
   end
@@ -89,7 +89,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.create?
   end
@@ -108,14 +108,14 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.destroy?
   end
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.destroy?
   end
@@ -134,14 +134,14 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_access?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UnitPolicy.new(context, @unit)
     assert policy.edit_access?
   end
 
   test "edit_access?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.edit_access?
   end
@@ -160,14 +160,14 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_membership?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.edit_membership?
   end
 
   test "edit_membership?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.edit_membership?
   end
@@ -186,14 +186,14 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_properties?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UnitPolicy.new(context, @unit)
     assert policy.edit_properties?
   end
 
   test "edit_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.edit_properties?
   end
@@ -225,20 +225,20 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() returns true when the target object is a Unit" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = UnitPolicy.new(context, Unit)
     assert policy.new?
   end
 
   test "new?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UnitPolicy.new(context, @unit)
     assert policy.new?
   end
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.new?
   end
@@ -270,14 +270,14 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UnitPolicy.new(context, @unit)
     assert policy.update?
   end
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.update?
   end

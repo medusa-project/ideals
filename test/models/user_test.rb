@@ -22,7 +22,7 @@ class UserTest < ActiveSupport::TestCase
   # effective_institution_admin?()
 
   test "effective_institution_admin?() returns true if the user is a sysadmin" do
-    @instance = users(:admin)
+    @instance = users(:local_sysadmin)
     assert @instance.effective_institution_admin?(@instance.institution)
   end
 
@@ -41,7 +41,7 @@ class UserTest < ActiveSupport::TestCase
   # effective_manager?()
 
   test "effective_manager?() returns true when the user is a sysadmin" do
-    @instance = users(:admin)
+    @instance = users(:local_sysadmin)
     collection = collections(:collection1)
     assert @instance.effective_manager?(collection)
   end
@@ -80,7 +80,7 @@ class UserTest < ActiveSupport::TestCase
   # effective_submitter?()
 
   test "effective_submitter?() returns true when the user is a sysadmin" do
-    @instance = users(:admin)
+    @instance = users(:local_sysadmin)
     collection = collections(:collection1)
     assert @instance.effective_submitter?(collection)
   end
@@ -129,7 +129,7 @@ class UserTest < ActiveSupport::TestCase
   test "effective_submittable_collections() returns all collections for
   sysadmins" do
     assert_equal Collection.count,
-                 users(:admin).effective_submittable_collections.count
+                 users(:local_sysadmin).effective_submittable_collections.count
   end
 
   test "effective_submittable_collections() returns all unit collections for
@@ -161,7 +161,7 @@ class UserTest < ActiveSupport::TestCase
   # effective_unit_admin?()
 
   test "effective_unit_admin?() returns true when the user is a sysadmin" do
-    @instance = users(:admin)
+    @instance = users(:local_sysadmin)
     unit      = units(:unit1)
     assert @instance.effective_unit_admin?(unit)
   end

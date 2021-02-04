@@ -20,14 +20,14 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_privileges?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
     assert policy.edit_privileges?
   end
 
   test "edit_privileges?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.edit_privileges?
   end
@@ -53,14 +53,14 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_properties?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
     assert policy.edit_properties?
   end
 
   test "edit_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.edit_properties?
   end
@@ -79,14 +79,14 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserPolicy.new(context, User)
     assert policy.index?
   end
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.index?
   end
@@ -105,14 +105,14 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "invite?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
     assert policy.invite?
   end
 
   test "invite?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.invite?
   end
@@ -131,14 +131,14 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
     assert policy.show?
   end
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.show?
   end
@@ -157,14 +157,14 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_privileges?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
     assert policy.update_privileges?
   end
 
   test "update_privileges?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.update_privileges?
   end
@@ -189,14 +189,14 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_properties?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
     assert policy.update_properties?
   end
 
   test "update_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.update_properties?
   end

@@ -16,7 +16,7 @@ class UserGroupTest < ActiveSupport::TestCase
   # all_users()
 
   test "all_users() returns associated LocalUsers" do
-    assert @instance.all_users.include?(users(:admin))
+    assert @instance.all_users.include?(users(:local_sysadmin))
   end
 
   test "all_users() returns ShibbolethUsers belonging to an associated LDAP group" do
@@ -56,7 +56,7 @@ class UserGroupTest < ActiveSupport::TestCase
   # users
 
   test "users can contain only LocalUsers" do
-    @instance.users << users(:admin)
+    @instance.users << users(:local_sysadmin)
     assert @instance.valid?
     @instance.users << users(:shibboleth)
     assert !@instance.valid?

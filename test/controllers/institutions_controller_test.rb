@@ -62,7 +62,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post institutions_path,
          xhr: true,
          params: {
@@ -89,7 +89,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the institution" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     institution = institutions(:empty)
     delete institution_path(institution)
     assert_raises ActiveRecord::RecordNotFound do
@@ -98,14 +98,14 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing institution" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     institution = institutions(:somewhere)
     delete institution_path(institution)
     assert_redirected_to institutions_path
   end
 
   test "destroy() returns HTTP 404 for a missing institution" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     delete "/institutions/bogus"
     assert_response :not_found
   end
@@ -126,7 +126,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 200" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     institution = institutions(:somewhere)
     get edit_institution_path(institution), xhr: true
     assert_response :ok
@@ -205,7 +205,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() updates an institution" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     institution = institutions(:somewhere)
     patch institution_path(institution),
           xhr: true,
@@ -221,7 +221,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     institution = institutions(:somewhere)
     patch institution_path(institution),
           xhr: true,
@@ -236,7 +236,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     institution = institutions(:somewhere)
     patch institution_path(institution),
           xhr: true,
@@ -249,7 +249,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent institutions" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     patch "/institutions/bogus"
     assert_response :not_found
   end

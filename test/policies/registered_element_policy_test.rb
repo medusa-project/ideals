@@ -20,14 +20,14 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.create?
   end
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = RegisteredElementPolicy.new(context, @item)
     assert !policy.create?
   end
@@ -46,14 +46,14 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.destroy?
   end
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = RegisteredElementPolicy.new(context, @item)
     assert !policy.destroy?
   end
@@ -72,14 +72,14 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = RegisteredElementPolicy.new(context, @element)
     assert policy.edit?
   end
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = RegisteredElementPolicy.new(context, @item)
     assert !policy.edit?
   end
@@ -98,14 +98,14 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = RegisteredElementPolicy.new(context, RegisteredElement)
     assert policy.index?
   end
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = RegisteredElementPolicy.new(context, @item)
     assert !policy.index?
   end
@@ -124,14 +124,14 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = RegisteredElementPolicy.new(context, @element)
     assert policy.new?
   end
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = RegisteredElementPolicy.new(context, @item)
     assert !policy.new?
   end
@@ -150,14 +150,14 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.show?
   end
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = RegisteredElementPolicy.new(context, @item)
     assert !policy.show?
   end
@@ -176,14 +176,14 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = RegisteredElementPolicy.new(context, @element)
     assert policy.update?
   end
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = RegisteredElementPolicy.new(context, @item)
     assert !policy.update?
   end

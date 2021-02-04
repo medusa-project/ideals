@@ -45,12 +45,12 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200 for authorized users" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post collections_path,
          xhr: true,
          params: {
              collection: {
-                 manager_id: users(:admin).id,
+                 manager_id: users(:local_sysadmin).id,
                  primary_unit_id: units(:unit1).id
              },
              elements: {
@@ -61,13 +61,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates a collection" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     assert_difference "Collection.count" do
       post collections_path,
            xhr: true,
            params: {
                collection: {
-                   manager_id: users(:admin).id,
+                   manager_id: users(:local_sysadmin).id,
                    primary_unit_id: units(:unit1).id
                },
                elements: {
@@ -78,7 +78,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post collections_path,
          xhr: true,
          params: {
@@ -103,7 +103,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the collection" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:empty)
     delete "/collections/#{collection.id}"
     assert_raises ActiveRecord::RecordNotFound do
@@ -112,7 +112,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing collection" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     primary_unit = collection.primary_unit
     delete collection_path(collection)
@@ -120,7 +120,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 404 for a missing collections" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     delete "/collections/bogus"
     assert_response :not_found
   end
@@ -141,14 +141,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_access() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     get collection_edit_access_path(collection)
     assert_response :not_found
   end
 
   test "edit_access() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     get collection_edit_access_path(collection), xhr: true
     assert_response :ok
@@ -170,14 +170,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_collection_membership() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     get collection_edit_collection_membership_path(collection)
     assert_response :not_found
   end
 
   test "edit_collection_membership() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     get collection_edit_collection_membership_path(collection), xhr: true
     assert_response :ok
@@ -199,14 +199,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_properties() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     get collection_edit_properties_path(collection)
     assert_response :not_found
   end
 
   test "edit_properties() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     get collection_edit_properties_path(collection), xhr: true
     assert_response :ok
@@ -228,14 +228,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_unit_membership() returns HTTP 200 for non-XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     get collection_edit_unit_membership_path(collection)
     assert_response :not_found
   end
 
   test "edit_unit_membership() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     get collection_edit_unit_membership_path(collection), xhr: true
     assert_response :ok
@@ -266,7 +266,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() respects role limits" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     get collection_path(collections(:collection1))
     assert_select("#access-tab")
 
@@ -290,7 +290,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() updates a collection" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     patch collection_path(collection),
           xhr: true,
@@ -307,20 +307,20 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     patch collection_path(collection),
           xhr: true,
           params: {
               collection: {
-                  managing_user_ids: [ users(:admin).id ]
+                  managing_user_ids: [ users(:local_sysadmin).id ]
               }
           }
     assert_response :ok
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     patch collection_path(collection),
           xhr: true,
@@ -348,7 +348,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
 
   test "update() returns HTTP 404 for nonexistent collections" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     patch "/collections/bogus"
     assert_response :not_found
   end

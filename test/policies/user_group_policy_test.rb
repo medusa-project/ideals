@@ -32,7 +32,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.create?
   end
@@ -45,7 +45,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.create?
   end
@@ -76,7 +76,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.destroy?
   end
@@ -89,7 +89,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.destroy?
   end
@@ -120,7 +120,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.edit?
   end
@@ -133,7 +133,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.edit?
   end
@@ -164,7 +164,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserGroupPolicy.new(context, UserGroup)
     assert policy.index?
   end
@@ -177,7 +177,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.index?
   end
@@ -208,7 +208,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.new?
   end
@@ -221,7 +221,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.new?
   end
@@ -252,7 +252,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.show?
   end
@@ -265,7 +265,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.show?
   end
@@ -296,7 +296,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.update?
   end
@@ -309,7 +309,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.update?
   end

@@ -28,7 +28,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post registered_elements_path,
          xhr: true,
          params: {
@@ -42,7 +42,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates an element" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     assert_difference "RegisteredElement.count" do
       post registered_elements_path,
            xhr: true,
@@ -57,7 +57,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post registered_elements_path,
          xhr: true,
          params: {
@@ -82,7 +82,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the element" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     element = registered_elements(:unused)
     assert_difference "RegisteredElement.count", -1 do
       delete registered_element_path(element)
@@ -90,14 +90,14 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing element" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     element = registered_elements(:title)
     delete registered_element_path(element)
     assert_redirected_to registered_elements_path
   end
 
   test "destroy() returns HTTP 404 for a missing element" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     delete "/elements/bogus"
     assert_response :not_found
   end
@@ -116,13 +116,13 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     get registered_elements_path
     assert_response :ok
   end
 
   test "index() respects role limits" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     get registered_elements_path
     assert_response :ok
 
@@ -144,7 +144,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() updates an element" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     element = registered_elements(:title)
     patch "/elements/#{element.name}",
           xhr: true,
@@ -161,7 +161,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     element = registered_elements(:title)
     patch registered_element_path(element),
           xhr: true,
@@ -175,7 +175,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     element = registered_elements(:title)
     patch registered_element_path(element),
           xhr: true,
@@ -188,7 +188,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent elements" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     patch "/elements/bogus"
     assert_response :not_found
   end

@@ -140,7 +140,7 @@ class LocalUserTest < ActiveSupport::TestCase
   # sysadmin?()
 
   test "sysadmin?() returns true when the user belongs to the sysadmin user group" do
-    assert users(:admin).sysadmin?
+    assert users(:local_sysadmin).sysadmin?
   end
 
   test "sysadmin?() returns false when the user does not belong to the sysadmin

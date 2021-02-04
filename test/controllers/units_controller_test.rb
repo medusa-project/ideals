@@ -83,7 +83,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post units_path,
          xhr: true,
          params: {
@@ -110,7 +110,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the unit" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     # choose a unit with no dependent collections or units to make setup easier
     unit = units(:empty)
     delete unit_path(unit)
@@ -120,14 +120,14 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing unit" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
     delete unit_path(unit)
     assert_redirected_to units_path
   end
 
   test "destroy() returns HTTP 404 for a missing unit" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     delete "/units/bogus"
     assert_response :not_found
   end
@@ -148,14 +148,14 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_access() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
     get unit_edit_access_path(unit)
     assert_response :not_found
   end
 
   test "edit_access() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
     get unit_edit_access_path(unit), xhr: true
     assert_response :ok
@@ -177,14 +177,14 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_membership() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
     get unit_edit_membership_path(unit)
     assert_response :not_found
   end
 
   test "edit_membership() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
     get unit_edit_membership_path(unit), xhr: true
     assert_response :ok
@@ -206,14 +206,14 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_properties() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
     get unit_edit_properties_path(unit)
     assert_response :not_found
   end
 
   test "edit_properties() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
     get unit_edit_properties_path(unit), xhr: true
     assert_response :ok
@@ -246,7 +246,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() respects role limits" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     get unit_path(units(:unit1))
     assert_select("#access-tab")
 
@@ -285,7 +285,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() updates a unit" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
     patch unit_path(unit),
           xhr: true,
@@ -299,7 +299,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
     patch unit_path(unit),
           xhr: true,
@@ -312,7 +312,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
     patch unit_path(unit),
           xhr: true,
@@ -325,7 +325,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent units" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     patch "/units/bogus"
     assert_response :not_found
   end

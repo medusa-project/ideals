@@ -201,7 +201,7 @@ class UnitTest < ActiveSupport::TestCase
   test "primary_administrator cannot be set on child units" do
     unit = units(:unit1_unit2)
     assert unit.valid?
-    unit.primary_administrator = users(:admin)
+    unit.primary_administrator = users(:local_sysadmin)
     unit.reload
     assert !unit.valid?
   end

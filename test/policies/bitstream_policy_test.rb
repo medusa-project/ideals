@@ -20,7 +20,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert policy.create?
   end
@@ -63,7 +63,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert !policy.create?
   end
@@ -94,32 +94,32 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   end
 
   test "data?() authorizes sysadmins to undiscoverable items" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
     assert policy.data?
   end
 
   test "data?() authorizes sysadmins to submitting items" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
     assert policy.data?
   end
 
   test "data?() authorizes sysadmins to withdrawn items" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
     assert policy.data?
   end
 
   test "data?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
     assert !policy.data?
   end
 
   test "data?() respects bitstream role limits" do
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
     assert !policy.data?
   end
@@ -131,7 +131,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   end
 
   test "data?() authorizes non-content bitstreams to collection managers" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
     assert policy.data?
   end
@@ -150,7 +150,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert policy.destroy?
   end
@@ -205,7 +205,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert !policy.destroy?
   end
@@ -236,32 +236,32 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   end
 
   test "download?() authorizes sysadmins to undiscoverable items" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
     assert policy.download?
   end
 
   test "download?() authorizes sysadmins to submitting items" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
     assert policy.download?
   end
 
   test "download?() authorizes sysadmins to withdrawn items" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
     assert policy.download?
   end
 
   test "download?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
     assert !policy.download?
   end
 
   test "download?() respects bitstream role limits" do
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
     assert !policy.download?
   end
@@ -273,7 +273,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   end
 
   test "download?() authorizes non-content bitstreams to collection managers" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
     assert policy.download?
   end
@@ -292,7 +292,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert policy.edit?
   end
@@ -319,7 +319,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert !policy.edit?
   end
@@ -338,7 +338,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   end
 
   test "ingest?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert policy.ingest?
   end
@@ -365,7 +365,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
   test "ingest?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert !policy.ingest?
   end
@@ -396,26 +396,26 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins to undiscoverable items" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
     assert policy.show?
   end
 
   test "show?() authorizes sysadmins to submitting items" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
     assert policy.show?
   end
 
   test "show?() authorizes sysadmins to withdrawn items" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
     assert policy.show?
   end
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
     assert !policy.show?
   end
@@ -434,7 +434,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert policy.update?
   end
@@ -493,7 +493,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert !policy.update?
   end

@@ -20,7 +20,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.create?
   end
@@ -46,7 +46,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.destroy?
   end
@@ -73,7 +73,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.edit?
   end
@@ -113,7 +113,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.index?
   end
@@ -139,7 +139,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.new?
   end
@@ -166,7 +166,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.show?
   end
@@ -205,7 +205,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.update?
   end

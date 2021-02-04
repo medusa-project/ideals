@@ -22,7 +22,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "change_parent?() authorizes sysadmins" do
-    context     = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context     = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     collection2 = collections(:described)
     policy      = CollectionPolicy.new(context, @collection)
     assert policy.change_parent?(collection2.id)
@@ -30,7 +30,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   test "change_parent?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context     = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context     = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     collection2 = collections(:described)
     policy      = CollectionPolicy.new(context, @collection)
     assert !policy.change_parent?(collection2.id)
@@ -63,7 +63,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.create?
   end
@@ -100,7 +100,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.create?
   end
@@ -119,14 +119,14 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.destroy?
   end
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.destroy?
   end
@@ -145,14 +145,14 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_access?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.edit_access?
   end
 
   test "edit_access?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.edit_access?
   end
@@ -171,14 +171,14 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_collection_membership?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.edit_collection_membership?
   end
 
   test "edit_collection_membership?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.edit_collection_membership?
   end
@@ -197,14 +197,14 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_properties?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy   = CollectionPolicy.new(context, @collection)
     assert policy.edit_properties?
   end
 
   test "edit_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.edit_properties?
   end
@@ -223,14 +223,14 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_unit_membership?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.edit_unit_membership?
   end
 
   test "edit_unit_membership?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.edit_unit_membership?
   end
@@ -262,7 +262,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.new?
   end
@@ -276,7 +276,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.new?
   end
@@ -295,7 +295,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "review_submissions?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.review_submissions?
   end
@@ -311,7 +311,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   test "review_submissions?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.review_submissions?
   end
@@ -343,7 +343,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_properties?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.show_properties?
   end
@@ -359,7 +359,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   test "show_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.show_properties?
   end
@@ -378,7 +378,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "submit_item?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.submit_item?
   end
@@ -419,7 +419,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   test "submit_item?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::LOGGED_IN)
+    context = UserContext.new(users(:local_sysadmin), Role::LOGGED_IN)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.submit_item?
   end
@@ -438,7 +438,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes sysadmins" do
-    context = UserContext.new(users(:admin), Role::NO_LIMIT)
+    context = UserContext.new(users(:local_sysadmin), Role::NO_LIMIT)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.update?
   end
@@ -468,7 +468,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = UserContext.new(users(:admin), Role::COLLECTION_SUBMITTER)
+    context = UserContext.new(users(:local_sysadmin), Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.update?
   end

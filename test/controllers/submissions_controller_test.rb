@@ -81,7 +81,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates an item" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     assert_difference "Item.count" do
       post submissions_path
       item = Item.order(created_at: :desc).first
@@ -91,7 +91,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() redirects to item-edit view" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post submissions_path
     submission = Item.order(created_at: :desc).limit(1).first
     assert_redirected_to edit_submission_path(submission)
@@ -111,7 +111,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the item" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:submitting)
     assert_difference "Item.count", -1 do
       delete submission_path(item)
@@ -119,20 +119,20 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing item" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     submission = items(:submitting)
     delete submission_path(submission)
     assert_redirected_to root_path
   end
 
   test "destroy() returns HTTP 404 for a missing item" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     delete "/submissions/99999"
     assert_response :not_found
   end
 
   test "destroy() redirects back when an item has already been submitted" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:item1)
     delete submission_path(item)
     assert_redirected_to root_url
@@ -176,7 +176,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() updates an item" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     collection = collections(:empty)
     item       = items(:submitting)
     patch submission_path(item),
@@ -191,7 +191,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 204" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:submitting)
     patch submission_path(item),
           xhr: true,
@@ -204,7 +204,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:submitting)
     patch submission_path(item),
           xhr: true,
@@ -217,13 +217,13 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent items" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     patch "/submissions/bogus"
     assert_response :not_found
   end
 
   test "update() redirects back when an item has already been submitted" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:item1)
     patch submission_path(item)
     assert_redirected_to root_url

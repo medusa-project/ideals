@@ -24,7 +24,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the item" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:submitting) # a destroyable item
     assert_difference "Item.count", -1 do
       delete item_path(item)
@@ -32,14 +32,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing item" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     submission = items(:item1)
     delete item_path(submission)
     assert_redirected_to submission.primary_collection
   end
 
   test "destroy() returns HTTP 404 for a missing item" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     delete "/items/99999"
     assert_response :not_found
   end
@@ -60,14 +60,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_membership() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:item1)
     get item_edit_membership_path(item)
     assert_response :not_found
   end
 
   test "edit_membership() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:item1)
     get item_edit_membership_path(item), xhr: true
     assert_response :ok
@@ -89,14 +89,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_metadata() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:item1)
     get item_edit_metadata_path(item)
     assert_response :not_found
   end
 
   test "edit_metadata() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:item1)
     get item_edit_metadata_path(item), xhr: true
     assert_response :ok
@@ -118,14 +118,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_properties() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:item1)
     get item_edit_properties_path(item)
     assert_response :not_found
   end
 
   test "edit_properties() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:item1)
     get item_edit_properties_path(item), xhr: true
     assert_response :ok
@@ -170,13 +170,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "process_review() redirects to the reivew page for authorized users" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post items_process_review_path
     assert_redirected_to items_review_path
   end
 
   test "process_review() approves items" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:submitted)
     post items_process_review_path,
          params: {
@@ -191,7 +191,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "process_review() creates an associated handle for approved items" do
     item = items(:submitted)
     assert_nil item.handle
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post items_process_review_path,
          params: {
              items: [item.id],
@@ -203,7 +203,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "process_review() sends an ingest message to Medusa for approved items" do
     item = items(:submitted)
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     post items_process_review_path,
          params: {
              items: [item.id],
@@ -218,7 +218,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "process_review() rejects items" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:submitted)
     post items_process_review_path,
          params: {
@@ -244,7 +244,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "review() returns HTTP 200" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     get items_review_path
     assert_response :ok
   end
@@ -278,7 +278,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() respects role limits" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     get item_path(items(:item1))
     assert_select("dl.properties")
 
@@ -306,14 +306,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "upload_bitstreams() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:item1)
     get item_upload_bitstreams_path(item)
     assert_response :not_found
   end
 
   test "upload_bitstreams() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:admin))
+    log_in_as(users(:local_sysadmin))
     item = items(:item1)
     get item_upload_bitstreams_path(item), xhr: true
     assert_response :ok
