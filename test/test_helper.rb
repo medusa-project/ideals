@@ -21,10 +21,26 @@ class ActiveSupport::TestCase
   end
 
   def log_in_as(user)
-    post '/auth/identity/callback', params: {
+    if user.kind_of?(ShibbolethUser)
+      # N.B. 1: See "request_type option" section for info about using
+      # omniauth-shibboleth in development:
+      # https://github.com/toyokazu/omniauth-shibboleth
+      #
+      # N.B. 2: the keys in the params hash must be present in
+      # config/shibboleth.xml.
+      post "/auth/shibboleth/callback", params: {
+        "Shib-Session-ID": SecureRandom.hex,
+        eppn:              user.uid,
+        displayName:       user.name,
+        mail:              user.email,
+        "org-dn":          user.org_dn
+      }
+    else
+      post "/auth/identity/callback", params: {
         auth_key: user.email,
         password: "password"
-    }
+      }
+    end
   end
 
   def log_out

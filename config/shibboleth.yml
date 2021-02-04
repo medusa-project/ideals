@@ -9,7 +9,7 @@ development:
     - nickname
     - givenName
     - member
-  request_type: header
+  request_type: params
   info_fields:
     name: displayName
     email: mail
@@ -25,7 +25,7 @@ test:
     - nickname
     - givenName
     - member
-  request_type: header
+  request_type: params
   info_fields:
     name: displayName
     email: mail

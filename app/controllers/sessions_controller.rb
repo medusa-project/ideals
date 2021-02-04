@@ -17,7 +17,7 @@ class SessionsController < ApplicationController
   end
 
   ##
-  # Responds to `GET/POST /auth/shibboleth/callback`.
+  # Responds to `GET/POST /auth/:provider/callback`.
   #
   def create
     auth = request.env["omniauth.auth"]
