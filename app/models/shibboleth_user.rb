@@ -48,6 +48,11 @@ class ShibbolethUser < User
   end
 
   def self.create_with_omniauth(auth)
+    # By design, logging in wipes out certain existing user properties and
+    # replaces them with current information from the Shib SP. By supplying
+    # this custom attribute, we can preserve the user properties that are set
+    # up in test fixture data.
+    return if auth['extra']['raw_info']['overwriteUserAttrs'] == "false"
     create! do |user|
       user.uid         = auth["uid"]
       user.email       = auth["info"]["email"]
@@ -68,11 +73,13 @@ class ShibbolethUser < User
   end
 
   def update_with_omniauth(auth)
-    update!(uid:         auth["uid"],
-            email:       auth["info"]["email"],
-            name:        ShibbolethUser.display_name((auth["info"]["email"]).split("@").first),
-            org_dn:      auth["extra"]['raw_info']['org-dn'],
-            ldap_groups: self.class.fetch_ldap_groups(auth))
+    # see inline comment in create_with_omniauth()
+    return if auth['extra']['raw_info']['overwriteUserAttrs'] == "false"
+    self.uid         = auth["uid"]
+    self.email       = auth["info"]["email"]
+    self.name        = ShibbolethUser.display_name((auth["info"]["email"]).split("@").first)
+    self.org_dn      = auth["extra"]['raw_info']['org-dn']
+    self.ldap_groups = self.class.fetch_ldap_groups(auth)
   end
 
   def self.display_name(email)

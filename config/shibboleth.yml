@@ -27,6 +27,7 @@ test:
     - nickname
     - givenName
     - member
+    - overwriteUserAttrs # custom property needed in testing
   request_type: params
   info_fields:
     name: displayName
