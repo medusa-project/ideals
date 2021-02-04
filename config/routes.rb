@@ -24,6 +24,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
   end
   match "/deposit", to: "submissions#agreement", via: :get
+  resources :institutions, param: :key
   resources :local_identities, only: [:update], path: "identities" do
     match "/activate", to: "local_identities#activate", via: :get
     match "/edit-password", to: "local_identities#edit_password", via: :get,

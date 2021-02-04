@@ -7,19 +7,23 @@
 #
 # # Attributes
 #
-# * `created_at`:        Managed by ActiveRecord.
-# * `email`:             Email address.
-# * `local_identity_id`: Foreign key to {LocalIdentity}. Used only by
-#                        {LocalUser}s; set during processing of the
-#                        registration form.
-# * `name`:              The user's name in whatever format they choose to
-#                        provide it.
-# * `phone`:             The user's phone number.
-# * `type`:              Supports Rails single-table inheritance (STI).
-# * `uid`:               For {ShibbolethUser}s, this is the UID provided by
-#                        Shibboleth (which is probably the EPPN). For
-#                        {IdentityUser}s, it's the email address.
-# * `updated_at`:        Managed by ActiveRecord.
+# * `created_at`        Managed by ActiveRecord.
+# * `email`             Email address.
+# * `local_identity_id` Foreign key to {LocalIdentity}. Used only by
+#                       {LocalUser}s; set during processing of the
+#                       registration form.
+# * `name`              The user's name in whatever format they choose to
+#                       provide it.
+# * `org_dn`            `eduPersonOrgDN` property supplied by Shibboleth. Only
+#                       {ShibbolethUser}s have this. This is used to create an
+#                       association between a user and an {Institution} (via
+#                       `institution_id`).
+# * `phone`             The user's phone number.
+# * `type`              Supports Rails single-table inheritance (STI).
+# * `uid`               For {ShibbolethUser}s, this is the UID provided by
+#                       Shibboleth (which is probably the EPPN). For
+#                       {IdentityUser}s, it's the email address.
+# * `updated_at:        Managed by ActiveRecord.
 #
 class User < ApplicationRecord
 
@@ -121,6 +125,15 @@ class User < ApplicationRecord
   end
 
   ##
+  # @param institution [Institution]
+  # @return [Boolean] Whether the instance is effectively an administrator of
+  #                   the given institution.
+  #
+  def effective_institution_admin?(institution)
+    sysadmin? || institution_admin?(institution)
+  end
+
+  ##
   # @param unit [Unit]
   # @return [Boolean] Whether the instance is effectively an administrator of
   #                   the given unit.
@@ -136,6 +149,24 @@ class User < ApplicationRecord
       return true if unit_admin?(parent)
     end
     false
+  end
+
+  ##
+  # @return [Institution,nil] Institution with a matching org DN.
+  #
+  def institution
+    self.org_dn ? Institution.find_by_org_dn(self.org_dn) : nil
+  end
+
+  ##
+  # @param institution [Institution]
+  # @return [Boolean] Whether the instance is an administrator of their own
+  #                   institution.
+  #
+  def institution_admin?(institution)
+    return false unless institution
+    # TODO: We need an institution-admin AD group
+    self.org_dn == institution.org_dn
   end
 
   ##
@@ -163,6 +194,14 @@ class User < ApplicationRecord
   #
   def submitter?(collection)
     collection.submitters.where(user_id: self.id).count > 0
+  end
+
+  ##
+  # @return [Boolean] Whether the user is a system administrator, i.e. can do
+  #                   absolutely anything.
+  #
+  def sysadmin?
+    raise "Subclasses must override sysadmin?()"
   end
 
   ##

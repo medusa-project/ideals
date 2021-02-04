@@ -40,8 +40,8 @@ class UnitPolicy < ApplicationPolicy
     if user
       return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
       return true if unit != Unit &&
-          role >= Role::UNIT_ADMINISTRATOR &&
-          unit.administrators.where(user_id: user.id).count > 0
+        role >= Role::INSTITUTION_ADMINISTRATOR &&
+        user.institution_admin?(user.institution)
     end
     false
   end
@@ -83,6 +83,12 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def update?
-    create?
+    if user
+      return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
+      return true if unit != Unit &&
+        role >= Role::UNIT_ADMINISTRATOR &&
+        unit.administrators.where(user_id: user.id).count > 0
+    end
+    false
   end
 end

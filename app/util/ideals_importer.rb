@@ -239,6 +239,13 @@ class IdealsImporter
   #
   def import_communities(csv_pathname)
     @running = true
+
+    # Create an institution in which to put them, if it does not already exist.
+    institution = Institution.find_by_key("uiuc") ||
+      Institution.create!(name:   "Will get overwritten",
+                          key:    "Will get overwritten",
+                          org_dn: Institution::UIUC_ORG_DN)
+
     LOGGER.debug("import_communities(): importing %s", csv_pathname)
 
     line_count = count_lines(csv_pathname)
@@ -252,7 +259,9 @@ class IdealsImporter
       title        = row_arr[1].strip
 
       progress.report(row_num, "Importing communities")
-      Unit.create!(id: community_id, title: title)
+      Unit.create!(id: community_id,
+                   title: title,
+                   institution: institution)
     end
     update_pkey_sequence("units")
   ensure
@@ -542,10 +551,11 @@ class IdealsImporter
 
       if ::Configuration.instance.uofi_email_domains.include?(tld)
         unless User.find_by_email(email)
-          ShibbolethUser.create!(id:    id,
-                                 uid:   email,
-                                 email: email,
-                                 name:  username)
+          ShibbolethUser.create!(id:     id,
+                                 uid:    email,
+                                 email:  email,
+                                 name:   username,
+                                 org_dn: Institution::UIUC_ORG_DN)
         end
       elsif email == "robbins.sd@gmail.com"
         # Many items were bulk-imported into IDEALS-DSpace under this email.

@@ -52,14 +52,17 @@ class ShibbolethUser < User
       user.uid         = auth["uid"]
       user.email       = auth["info"]["email"]
       user.name        = display_name((auth["info"]["email"]).split("@").first)
+      user.org_dn      = auth["extra"]['raw_info']['org-dn']
       user.ldap_groups = fetch_ldap_groups(auth)
     end
   end
 
   def self.fetch_ldap_groups(auth)
     groups = []
-    auth['extra']['raw_info']['member'].split(";").each do |group_urn|
-      groups << LdapGroup.find_or_create_by(urn: group_urn)
+    if auth['extra']['raw_info']['member']
+      auth['extra']['raw_info']['member'].split(";").each do |group_urn|
+        groups << LdapGroup.find_or_create_by(urn: group_urn)
+      end
     end
     groups
   end
@@ -68,6 +71,7 @@ class ShibbolethUser < User
     update!(uid:         auth["uid"],
             email:       auth["info"]["email"],
             name:        ShibbolethUser.display_name((auth["info"]["email"]).split("@").first),
+            org_dn:      auth["extra"]['raw_info']['org-dn'],
             ldap_groups: self.class.fetch_ldap_groups(auth))
   end
 

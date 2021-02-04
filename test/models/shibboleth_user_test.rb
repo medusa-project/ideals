@@ -22,6 +22,7 @@ class ShibbolethUserTest < ActiveSupport::TestCase
                 "unscoped-affiliation": "member;staff;employee",
                 uid: "example",
                 sn: "Example",
+                "org-dn": Institution::UIUC_ORG_DN,
                 nickname: "",
                 givenName: "Example",
                 member: "urn:mace:uiuc.edu:urbana:library:units:ideals:library ideals admin"
@@ -43,6 +44,7 @@ class ShibbolethUserTest < ActiveSupport::TestCase
     user = ShibbolethUser.from_omniauth(self.class.auth_hash)
     assert_equal "example@illinois.edu", user.uid
     assert_equal "example@illinois.edu", user.email
+    assert_equal Institution::UIUC_ORG_DN, user.org_dn
   end
 
   test "from_omniauth() creates corresponding LdapGroups for all of the user's

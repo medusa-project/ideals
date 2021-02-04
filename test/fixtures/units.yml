@@ -1,20 +1,26 @@
 unit1:
   title: Unit1
+  institution: uiuc
 
 unit1_unit1:
   title: Unit1 Subunit1
   parent: unit1
+  institution: uiuc
 
 unit1_unit2:
   title: Unit1 Subunit2
   parent: unit1
+  institution: uiuc
 
 unit1_unit2_unit1:
   title: Unit1 Subunit2 Unit1
   parent: unit1_unit2
+  institution: uiuc
 
 unit2:
   title: Unit2
+  institution: uiuc
 
 empty:
   title: Empty Unit
+  institution: uiuc

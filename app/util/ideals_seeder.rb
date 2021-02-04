@@ -4,12 +4,21 @@
 class IdealsSeeder
 
   def seed
+    seed_institutions
     update_registered_element_labels
     seed_metadata_profiles
     seed_submission_profiles
   end
 
   private
+
+  def seed_institutions
+    # Check first, as this might have got created in a database migration.
+    unless Institution.find_by_key("uiuc")
+      Institution.create!(key: "uiuc",
+                          name: "University of Illinois at Urbana-Champaign")
+    end
+  end
 
   def seed_metadata_profiles
     # For the list of elements to include, see:

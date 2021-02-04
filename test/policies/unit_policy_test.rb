@@ -81,6 +81,12 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.create?
   end
 
+  test "create?() authorizes institution admins" do
+    context = UserContext.new(users(:somewhere_admin), Role::NO_LIMIT)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.create?
+  end
+
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
     context = UserContext.new(users(:admin), Role::LOGGED_IN)

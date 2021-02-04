@@ -6,10 +6,11 @@
 #
 # # Attributes
 #
-# * `created_at` Managed by ActiveRecord.
-# * `parent_id`  Foreign key to a parent {Unit}.
-# * `title`      Unit title.
-# * `updated_at` Managed by ActiveRecord.
+# * `created_at`     Managed by ActiveRecord.
+# * `institution_id` Foreign key to {Institution}.
+# * `parent_id`      Foreign key to a parent {Unit}.
+# * `title`          Unit title.
+# * `updated_at`     Managed by ActiveRecord.
 #
 class Unit < ApplicationRecord
   include Breadcrumb
@@ -27,19 +28,22 @@ class Unit < ApplicationRecord
     TITLE                 = "t_title"
   end
 
+  belongs_to :institution
+  belongs_to :parent, class_name: "Unit", foreign_key: "parent_id", optional: true
+
   has_many :administrators
   has_many :administering_users, through: :administrators,
            class_name: "User", source: :user
-  has_and_belongs_to_many :collections
+  has_many :units, foreign_key: "parent_id", dependent: :restrict_with_exception
   has_one :handle
-  belongs_to :parent, class_name: "Unit", foreign_key: "parent_id", optional: true
   has_one :primary_administrator_relationship, -> { where(primary: true) },
           class_name: "Administrator"
   has_one :primary_administrator, through: :primary_administrator_relationship,
           source: :user
   scope :top, -> { where(parent_id: nil) }
   scope :bottom, -> { where(children.count == 0) }
-  has_many :units, foreign_key: "parent_id", dependent: :restrict_with_exception
+
+  has_and_belongs_to_many :collections
 
   validates :title, presence: true
   validate :validate_parent, :validate_primary_administrator

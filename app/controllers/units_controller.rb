@@ -55,6 +55,7 @@ class UnitsController < ApplicationController
   #
   def create
     @unit = Unit.new(unit_params)
+    @unit.institution = current_user.institution
     authorize @unit
     begin
       ActiveRecord::Base.transaction do
@@ -184,6 +185,7 @@ class UnitsController < ApplicationController
       render 'shared/reload'
     end
   end
+
 
   private
 

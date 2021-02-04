@@ -6,6 +6,7 @@ development:
     - unscoped-affiliation
     - uid
     - sn
+    - org-dn
     - nickname
     - givenName
     - member
@@ -22,6 +23,7 @@ test:
     - unscoped-affiliation
     - uid
     - sn
+    - org-dn
     - nickname
     - givenName
     - member
@@ -38,6 +40,7 @@ demo:
     - unscoped-affiliation
     - uid
     - sn
+    - org-dn
     - nickname
     - givenName
     - member
@@ -54,6 +57,7 @@ production:
     - unscoped-affiliation
     - uid
     - sn
+    - org-dn
     - nickname
     - givenName
     - member

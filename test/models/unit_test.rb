@@ -10,7 +10,8 @@ class UnitTest < ActiveSupport::TestCase
   # create()
 
   test "create() creates a default collection" do
-    unit = Unit.create!(title: "New Unit")
+    unit = Unit.create!(title: "New Unit",
+                        institution: institutions(:somewhere))
     assert_equal 1, unit.all_collections.length
     col = unit.all_collections.first
     assert col.unit_default

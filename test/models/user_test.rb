@@ -19,6 +19,25 @@ class UserTest < ActiveSupport::TestCase
     assert_nil User.from_autocomplete_string(string)
   end
 
+  # effective_institution_admin?()
+
+  test "effective_institution_admin?() returns true if the user is a sysadmin" do
+    @instance = users(:admin)
+    assert @instance.effective_institution_admin?(@instance.institution)
+  end
+
+  # TODO: this test will go away when we have an institution-admin AD group
+  test "effective_institution_admin?() returns true if the user is a member of
+  the given institution" do
+    @instance = users(:shibboleth)
+    assert @instance.effective_institution_admin?(@instance.institution)
+  end
+
+  test "effective_institution_admin?() returns false if the user is not a
+  member of the given institution" do
+    assert !@instance.effective_institution_admin?(institutions(:somewhere))
+  end
+
   # effective_manager?()
 
   test "effective_manager?() returns true when the user is a sysadmin" do
@@ -185,6 +204,41 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
+  # institution()
+
+  test "institution() returns the institution with matching org DN" do
+    @instance = users(:shibboleth)
+    assert_equal institutions(:uiuc), @instance.institution
+  end
+
+  test "institution() returns nil when there is no institution with matching org DN" do
+    @instance.org_dn = "bogus"
+    assert_nil @instance.institution
+  end
+
+  test "institution() returns nil when the instance does not have an org DN" do
+    @instance.org_dn = nil
+    assert_nil @instance.institution
+  end
+
+  # institution_admin?()
+
+  # TODO: this test will go away when we have an institution-admin AD group
+  test "institution_admin?() returns true if the user is a member of the given
+  institution" do
+    @instance = users(:shibboleth)
+    assert @instance.institution_admin?(@instance.institution)
+  end
+
+  test "institution_admin?() returns false if the user is not a member of the
+  given institution" do
+    assert !@instance.institution_admin?(institutions(:somewhere))
+  end
+
+  test "institution_admin?() returns false for a nil argument" do
+    assert !@instance.institution_admin?(nil)
+  end
+
   # manager?()
 
   test "manager?() returns true when the user is a manager of the given collection" do
@@ -218,6 +272,14 @@ class UserTest < ActiveSupport::TestCase
 
   test "submitter?() returns false when the user is not a submitter in the given collection" do
     assert !@instance.submitter?(collections(:collection1))
+  end
+
+  # sysadmin?()
+
+  test "sysadmin?() raises an error" do
+    assert_raises do
+      @instance.becomes(User).sysadmin?
+    end
   end
 
   # to_autocomplete()

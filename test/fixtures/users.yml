@@ -1,15 +1,17 @@
 ##
-# N.B.: every user in this file MUST have a corresponding LocalIdentity in
+# N.B.: every LocalUser in this file MUST have a corresponding LocalIdentity in
 # `local_identities.yml`. (This is a requirement of the omniauth-identity gem.)
 #
 
-admin: # TODO: rename to local_admin
+admin:
   type: LocalUser
   uid: admin@example.edu
   name: admin
   email: admin@example.edu
   phone: (888) 555-1234
   identity: admin
+  user_groups:
+    - sysadmin
 
 collection1_collection1_manager:
   type: LocalUser
@@ -34,7 +36,6 @@ norights:
   name: I have no rights
   email: norights@example.edu
   phone: (888) 555-1234
-  identity: norights
 
 norights2:
   type: LocalUser
@@ -43,7 +44,6 @@ norights2:
   name: I have no rights
   email: norights2@example.edu
   phone: (888) 555-1234
-  identity: norights2
 
 shibboleth:
   type: ShibbolethUser
@@ -52,14 +52,37 @@ shibboleth:
   email: shib@illinois.edu
   phone: (888) 555-1234
 
+  org_dn: <%= Institution::UIUC_ORG_DN %>
+  identity: shibboleth
+
 shibboleth_admin:
   type: ShibbolethUser
   uid: shibadmin@illinois.edu
   name: Shibboleth Admin
   email: shibadmin@illinois.edu
   phone: (888) 555-1235
+  org_dn: <%= Institution::UIUC_ORG_DN %>
+  identity: shibboleth_admin
   ldap_groups:
     - sysadmin
+
+somewhere:
+  type: ShibbolethUser
+  uid: user@somewhere.edu
+  name: Somewhere.edu Normal User
+  email: name@somewhere.edu
+  phone: (888) 555-1234
+  org_dn: o=University of Somewhere,dc=somewhere,dc=edu
+  identity: somewhere
+
+somewhere_admin:
+  type: ShibbolethUser
+  uid: admin@somewhere.edu
+  name: Somewhere.edu Institution Administrator
+  email: admin@somewhere.edu
+  phone: (888) 555-1235
+  org_dn: o=University of Somewhere,dc=somewhere,dc=edu
+  identity: somewhere_admin
 
 unit1_admin:
   type: LocalUser
@@ -68,6 +91,7 @@ unit1_admin:
   email: unit1_admin@example.edu
   phone: (888) 555-1234
   identity: unit1_admin
+  org_dn: o=Example University,dc=example,dc=edu
 
 unit1_unit2_unit1_admin:
   type: LocalUser
@@ -76,3 +100,4 @@ unit1_unit2_unit1_admin:
   email: unit1_unit2_unit1_admin@example.edu
   phone: (888) 555-1234
   identity: unit1_unit2_unit1_admin
+  org_dn: o=Example University,dc=example,dc=edu

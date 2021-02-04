@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_07_163156) do
+ActiveRecord::Schema.define(version: 2021_02_02_200954) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -98,6 +98,16 @@ ActiveRecord::Schema.define(version: 2020_12_07_163156) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["suffix"], name: "index_handles_on_suffix", unique: true
+  end
+
+  create_table "institutions", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "name", null: false
+    t.string "org_dn", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["key"], name: "index_institutions_on_key", unique: true
+    t.index ["name"], name: "index_institutions_on_name", unique: true
   end
 
   create_table "invitees", force: :cascade do |t|
@@ -257,6 +267,7 @@ ActiveRecord::Schema.define(version: 2020_12_07_163156) do
     t.bigint "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "institution_id"
   end
 
   create_table "user_groups", force: :cascade do |t|
@@ -282,6 +293,7 @@ ActiveRecord::Schema.define(version: 2020_12_07_163156) do
     t.string "type", null: false
     t.string "phone"
     t.bigint "local_identity_id"
+    t.string "org_dn"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["name"], name: "index_users_on_name"
     t.index ["uid"], name: "index_users_on_uid", unique: true
@@ -321,6 +333,7 @@ ActiveRecord::Schema.define(version: 2020_12_07_163156) do
   add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "units", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "units", "units", column: "parent_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "user_groups_users", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "user_groups_users", "users", on_update: :cascade, on_delete: :cascade
