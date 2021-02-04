@@ -32,7 +32,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200 for authorized users" do
-    log_in_as(users(:shibboleth_admin))
+    log_in_as(users(:uiuc_admin))
     post institutions_path,
          xhr: true,
          params: {
@@ -46,7 +46,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates an institution" do
-    user = users(:shibboleth_admin)
+    user = users(:uiuc_admin)
     log_in_as(user)
     assert_difference "Institution.count" do
       post institutions_path,
@@ -146,7 +146,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:shibboleth_admin))
+    log_in_as(users(:uiuc_admin))
     get institutions_path
     assert_response :ok
   end
@@ -165,7 +165,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "new() returns HTTP 200 for authorized users" do
-    log_in_as(users(:shibboleth_admin))
+    log_in_as(users(:uiuc_admin))
     get new_institution_path
     assert_response :ok
   end
@@ -178,13 +178,13 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:shibboleth))
+    log_in_as(users(:uiuc))
     get institution_path(institutions(:somewhere))
     assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
-    log_in_as(users(:shibboleth_admin))
+    log_in_as(users(:uiuc_admin))
     get institution_path(institutions(:somewhere))
     assert_response :ok
   end

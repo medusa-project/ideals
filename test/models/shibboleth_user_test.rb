@@ -3,7 +3,7 @@ require 'test_helper'
 class ShibbolethUserTest < ActiveSupport::TestCase
 
   setup do
-    @instance = users(:shibboleth)
+    @instance = users(:uiuc)
     assert @instance.valid?
   end
 
@@ -64,7 +64,7 @@ class ShibbolethUserTest < ActiveSupport::TestCase
 
   test "sysadmin?() returns true when the user is a member of an LDAP group
   included in the sysadmin user group" do
-    @instance = users(:shibboleth_admin)
+    @instance = users(:uiuc_admin)
     assert @instance.sysadmin?
   end
 

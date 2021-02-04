@@ -45,7 +45,7 @@ norights2:
   email: norights2@example.edu
   phone: (888) 555-1234
 
-shibboleth:
+uiuc:
   type: ShibbolethUser
   uid: shib@illinois.edu
   name: Shib Boleth, Esq.
@@ -55,7 +55,7 @@ shibboleth:
   org_dn: <%= Institution::UIUC_ORG_DN %>
   identity: shibboleth
 
-shibboleth_admin:
+uiuc_admin:
   type: ShibbolethUser
   uid: shibadmin@illinois.edu
   name: Shibboleth Admin

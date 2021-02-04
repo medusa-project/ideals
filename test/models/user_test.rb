@@ -29,7 +29,7 @@ class UserTest < ActiveSupport::TestCase
   # TODO: this test will go away when we have an institution-admin AD group
   test "effective_institution_admin?() returns true if the user is a member of
   the given institution" do
-    @instance = users(:shibboleth)
+    @instance = users(:uiuc)
     assert @instance.effective_institution_admin?(@instance.institution)
   end
 
@@ -207,7 +207,7 @@ class UserTest < ActiveSupport::TestCase
   # institution()
 
   test "institution() returns the institution with matching org DN" do
-    @instance = users(:shibboleth)
+    @instance = users(:uiuc)
     assert_equal institutions(:uiuc), @instance.institution
   end
 
@@ -226,7 +226,7 @@ class UserTest < ActiveSupport::TestCase
   # TODO: this test will go away when we have an institution-admin AD group
   test "institution_admin?() returns true if the user is a member of the given
   institution" do
-    @instance = users(:shibboleth)
+    @instance = users(:uiuc)
     assert @instance.institution_admin?(@instance.institution)
   end
 

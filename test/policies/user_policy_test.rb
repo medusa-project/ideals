@@ -41,7 +41,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "edit_properties?() does not authorize non-sysadmins other than the one
   being edited" do
-    context = UserContext.new(users(:shibboleth), Role::NO_LIMIT)
+    context = UserContext.new(users(:uiuc), Role::NO_LIMIT)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.edit_properties?
   end
@@ -125,7 +125,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() does not authorize non-sysadmins" do
-    context = UserContext.new(users(:shibboleth), Role::NO_LIMIT)
+    context = UserContext.new(users(:uiuc), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
     assert !policy.show?
   end
@@ -177,7 +177,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_properties?() does not authorize non-sysadmins" do
-    context = UserContext.new(users(:shibboleth), Role::NO_LIMIT)
+    context = UserContext.new(users(:uiuc), Role::NO_LIMIT)
     policy = UserPolicy.new(context, @object_user)
     assert !policy.update_properties?
   end

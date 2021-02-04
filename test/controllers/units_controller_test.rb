@@ -58,7 +58,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200 for authorized users" do
-    log_in_as(users(:shibboleth_admin))
+    log_in_as(users(:uiuc_admin))
     post units_path,
          xhr: true,
          params: {
@@ -70,7 +70,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates a unit" do
-    log_in_as(users(:shibboleth_admin))
+    log_in_as(users(:uiuc_admin))
     assert_difference "Unit.count" do
       post units_path,
            xhr: true,
