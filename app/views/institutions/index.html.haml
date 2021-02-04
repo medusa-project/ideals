@@ -1,0 +1,17 @@
+- provide :title, "Institutions"
+
+-if policy(Institution).new?
+  .btn-group.float-right{role: "group"}
+    -# Add Institution button
+    %button.btn.btn-light{"data-target": "#add-institution-modal",
+                          "data-toggle": "modal", type: "button"}
+      %i.fa.fa-plus
+      Add Institution
+
+%h1 Institutions
+
+%ul
+- @institutions.each do |institution|
+  %li= link_to(institution.name, institution)
+
+= render partial: "institutions/add_modal", locals: { institution: @new_institution }

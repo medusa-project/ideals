@@ -29,34 +29,22 @@
               %i.far.fa-eye
               = Role.label(session[:role_limit])
             .dropdown-menu{"aria-labelledby": "role-play-dropdown"}
-              = link_to Role.label(Role::NO_LIMIT),
-                        url_for(role: Role::NO_LIMIT),
-                        class: "dropdown-item"
-              = link_to Role.label(Role::UNIT_ADMINISTRATOR),
-                        url_for(role: Role::UNIT_ADMINISTRATOR),
-                        class: "dropdown-item"
-              = link_to Role.label(Role::COLLECTION_MANAGER),
-                        url_for(role: Role::COLLECTION_MANAGER),
-                        class: "dropdown-item"
-              = link_to Role.label(Role::COLLECTION_SUBMITTER),
-                        url_for(role: Role::COLLECTION_SUBMITTER),
-                        class: "dropdown-item"
-              = link_to Role.label(Role::LOGGED_IN),
-                        url_for(role: Role::LOGGED_IN),
-                        class: "dropdown-item"
-              = link_to Role.label(Role::LOGGED_OUT),
-                        url_for(role: Role::LOGGED_OUT),
-                        class: "dropdown-item"
+              - Role.all.sort.reverse.each do |role|
+                = link_to Role.label(role),
+                          url_for(role: role),
+                          class: "dropdown-item"
 
           -# Administration menu
           .btn-group{role: "group"}
-            - ir = policy(Item).review?
-            - re = policy(RegisteredElement).index?
-            - mp = policy(MetadataProfile).index?
-            - sp = policy(SubmissionProfile).index?
-            - iv = policy(Invitee).index?
-            - u  = policy(User).index?
-            - ug = policy(UserGroup).index?
+            - insts = policy(Institution).index?
+            - inst  = policy(Institution).show?
+            - ir    = policy(Item).review?
+            - re    = policy(RegisteredElement).index?
+            - mp    = policy(MetadataProfile).index?
+            - sp    = policy(SubmissionProfile).index?
+            - iv    = policy(Invitee).index?
+            - u     = policy(User).index?
+            - ug    = policy(UserGroup).index?
             - if re || mp || sp || u || ug
               %button#administration-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
                                                                                      "aria-haspopup": "true",
@@ -95,6 +83,16 @@
                   = link_to user_groups_path, class: "dropdown-item" do
                     %i.fa.fa-users
                     User Groups
+                - if insts || inst
+                  .dropdown-divider
+                  - if insts
+                    = link_to institutions_path, class: "dropdown-item" do
+                      = icon_for(Institution)
+                      Institutions
+                  - if inst && current_user&.institution
+                    = link_to institution_path(current_user.institution), class: "dropdown-item" do
+                      = icon_for(Institution)
+                      My Institution
 
         -# User menu
         .btn-group{role: "group"}

@@ -1,0 +1,21 @@
+-# @param institution [Institution]
+
+= form_for(institution, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :name, "Name"
+    = f.text_field :name, class: 'form-control', disabled: !f.object.new_record?
+  .form-group
+    = f.label :key, "Key"
+    = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
+  .form-group
+    = f.label :org_dn, "Organization DN"
+    = f.text_field :org_dn, class: 'form-control'
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit(f.object.new_record? ? "Create Institution" : "Edit Institution",
+                 class: "btn btn-primary")

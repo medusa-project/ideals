@@ -167,6 +167,8 @@ module ApplicationHelper
       end
     when "Collection"
       icon = "far fa-folder-open"
+    when "Institution"
+      icon = "fa fa-university"
     when "Item"
       icon = "fa fa-cube"
     when "MetadataProfile", "SubmissionProfile"

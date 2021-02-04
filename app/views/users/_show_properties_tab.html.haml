@@ -30,6 +30,17 @@
   %dd= user.phone ? link_to(user.phone, "tel:#{user.phone}") : "None"
   %dt Account Type
   %dd= user.type.chomp('User')
+  - if user.kind_of?(ShibbolethUser)
+    - if user.institution
+      %dt Institution
+      %dd= link_to(user.institution.name, user.institution)
+    - else
+      %dt Organization DN
+      %dd
+        - if user.org_dn # should always be true
+          %code= user.org_dn
+        - else
+          None
   %dt Account Created
   %dd= local_time user.created_at
 

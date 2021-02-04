@@ -1,5 +1,10 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+empty:
+  key: empty
+  name: Institution With No Users Or Units
+  org_dn: empty
+
 somewhere:
   key: somewhere
   name: University of Somewhere

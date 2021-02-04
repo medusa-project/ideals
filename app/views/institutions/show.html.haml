@@ -1,0 +1,39 @@
+- provide :body_id, "show_institution"
+- provide :title, @institution.name
+
+
+.btn-group.float-right{role: "group"}
+  - if policy(@institution).edit?
+    -# Edit button
+    %button.btn.btn-light.edit-institution{"data-target": "#edit-institution-modal",
+                                           "data-toggle": "modal", type: "button",
+                                           "data-institution-key": @institution.key }
+      %i.fa.fa-pencil-alt
+      Edit
+  - if @institution.units.count == 0 && policy(@institution).destroy?
+    -# Delete button
+    = link_to(institution_path(@institution), class: "btn btn-danger",
+                                              role: "button",
+                                              method: :delete,
+                                              data: { confirm: "Are you sure you want to delete this institution?" }) do
+      %i.fa.fa-trash
+      Delete
+
+%h1= @institution.name
+
+%dl
+  %dt Key
+  %dd
+    %code= @institution.key
+  %dt Organization DN
+  %dd
+    %code= @institution.org_dn
+
+- if @institution.users.any?
+  %h2 Users
+  %ul
+    - @institution.users.each do |user|
+      %li= link_to(user.name, user.becomes(User))
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-institution-modal", title: "Edit Institution" }
