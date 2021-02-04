@@ -184,7 +184,7 @@ module ApplicationHelper
         icon = "fa fa-exclamation-triangle"
       end
     when "Unit"
-      icon = "fa fa-university"
+      icon = "fa fa-building"
     when "User", "LocalUser", "ShibbolethUser"
       icon = "fa fa-user"
     else
