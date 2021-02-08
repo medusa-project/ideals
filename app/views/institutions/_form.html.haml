@@ -6,7 +6,7 @@
 
   .form-group
     = f.label :name, "Name"
-    = f.text_field :name, class: 'form-control', disabled: !f.object.new_record?
+    = f.text_field :name, class: 'form-control'
   .form-group
     = f.label :key, "Key"
     = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
