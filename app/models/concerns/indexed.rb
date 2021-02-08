@@ -3,6 +3,15 @@
 # almost all of the functionality they need except for {as_indexed_json}, which
 # must be overridden.
 #
+# # What Gets Indexed?
+#
+# Any entity that needs to appear in results that:
+#
+# 1. Are faceted
+# 2. Are natural-sorted
+# 3. Would require a complicated/impossible SQL query
+# 4. Need better performance than the database can provide
+#
 # # Querying
 #
 # A low-level interface to Elasticsearch is provided by {ElasticsearchClient},
