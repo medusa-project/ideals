@@ -11,6 +11,9 @@
     = f.label :key, "Key"
     = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
   .form-group
+    = f.label :fqdn, "Fully Qualified Domain Name (FQDN)"
+    = f.text_field :fqdn, class: 'form-control'
+  .form-group
     = f.label :org_dn, "Organization DN"
     = f.text_field :org_dn, class: 'form-control'
 

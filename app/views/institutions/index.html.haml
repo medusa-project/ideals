@@ -10,8 +10,18 @@
 
 %h1 Institutions
 
-%ul
-- @institutions.each do |institution|
-  %li= link_to(institution.name, institution)
+%table.table
+  %thead
+    %tr
+      %th Name
+      %th Key
+      %th FQDN
+  %tbody
+    - @institutions.each do |institution|
+      %tr
+        %td= link_to(institution.name, institution)
+        %td
+          %code= institution.key
+        %td= link_to(institution.fqdn, institution.url)
 
 = render partial: "institutions/add_modal", locals: { institution: @new_institution }

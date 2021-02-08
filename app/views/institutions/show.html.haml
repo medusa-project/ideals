@@ -25,6 +25,8 @@
   %dt Key
   %dd
     %code= @institution.key
+  %dt Fully Qualified Domain Name (FQDN)
+  %dd= link_to(@institution.fqdn, @institution.url)
   %dt Organization DN
   %dd
     %code= @institution.org_dn

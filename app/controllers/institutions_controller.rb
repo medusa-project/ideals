@@ -105,7 +105,7 @@ class InstitutionsController < ApplicationController
   def institution_params
     # Key and name are accepted during creation. For updates, they are
     # overwritten by the contents of org_dn.
-    params.require(:institution).permit(:key, :name, :org_dn)
+    params.require(:institution).permit(:fqdn, :key, :name, :org_dn)
   end
 
 end

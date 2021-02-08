@@ -12,9 +12,17 @@ class Institution < ApplicationRecord
 
   include Breadcrumb
 
-  UIUC_ORG_DN = "University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu"
+  UIUC_ORG_DN = "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu"
 
   has_many :units
+
+  # uniqueness enforced by database constraints
+  validates :fqdn, presence: true
+
+  validates_format_of :fqdn,
+                      # Rough but good enough
+                      # Credit: https://stackoverflow.com/a/20204811
+                      with: /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/
 
   # uniqueness enforced by database constraints
   validates :key, presence: true
@@ -33,6 +41,13 @@ class Institution < ApplicationRecord
 
   def to_param
     key
+  end
+
+  ##
+  # @return [String]
+  #
+  def url
+    "https://#{fqdn}"
   end
 
   ##

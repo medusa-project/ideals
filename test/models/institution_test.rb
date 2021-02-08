@@ -7,6 +7,22 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # fqdn
+
+  test "fqdn must be present" do
+    @instance.fqdn = nil
+    assert !@instance.valid?
+    @instance.fqdn = ""
+    assert !@instance.valid?
+  end
+
+  test "fqdn must be a valid FQDN" do
+    @instance.fqdn = "-invalid_"
+    assert !@instance.valid?
+    @instance.fqdn = "host-name.example.org"
+    assert @instance.valid?
+  end
+
   # key
 
   test "key must be present" do
@@ -32,6 +48,12 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.save!
     assert_equal "new", @instance.key
     assert_equal "New Name", @instance.name
+  end
+
+  # url()
+
+  test "url() returns a correct URL" do
+    assert_equal "https://#{@instance.fqdn}", @instance.url
   end
 
   # users()

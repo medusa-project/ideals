@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_02_200954) do
+ActiveRecord::Schema.define(version: 2021_02_08_154843) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -106,6 +106,8 @@ ActiveRecord::Schema.define(version: 2021_02_02_200954) do
     t.string "org_dn", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "fqdn", null: false
+    t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true
     t.index ["name"], name: "index_institutions_on_name", unique: true
   end
