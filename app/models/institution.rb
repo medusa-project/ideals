@@ -33,6 +33,8 @@ class Institution < ApplicationRecord
   # uniqueness enforced by database constraints
   validates :org_dn, presence: true
 
+  validate :disallow_key_changes
+
   before_save :set_properties
 
   def label
@@ -59,6 +61,12 @@ class Institution < ApplicationRecord
 
 
   private
+
+  def disallow_key_changes
+    if !new_record? && key_changed?
+      errors.add(:key, "cannot be changed")
+    end
+  end
 
   ##
   # Sets the key and name properties using the `org_dn` string.

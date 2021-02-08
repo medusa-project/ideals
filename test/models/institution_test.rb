@@ -32,6 +32,12 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  test "key cannot be changed" do
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.update!(key: "newvalue")
+    end
+  end
+
   # name
 
   test "name must be present" do
