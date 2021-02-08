@@ -39,14 +39,14 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   # edit_password()
 
   test "edit_password() redirects to login URL for logged-out users" do
-    identity = local_identities(:admin)
+    identity = local_identities(:local_sysadmin)
     get local_identity_edit_password_path(identity), xhr: true
     assert_redirected_to login_url
   end
 
   test "edit_password() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    identity = local_identities(:admin)
+    identity = local_identities(:local_sysadmin)
     get local_identity_edit_password_path(identity), xhr: true
     assert_response :forbidden
   end
@@ -61,14 +61,14 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_password() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
-    identity = local_identities(:admin)
+    identity = local_identities(:local_sysadmin)
     get local_identity_edit_password_path(identity), xhr: true
     assert_response :ok
   end
 
   test "edit_password() respects role limits" do
     log_in_as(users(:local_sysadmin))
-    identity = local_identities(:admin)
+    identity = local_identities(:local_sysadmin)
     get local_identity_edit_password_path(identity), xhr: true
     assert_response :ok
 
@@ -357,21 +357,21 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   # update_password()
 
   test "update_password() redirects to login page for logged-out users" do
-    identity = local_identities(:admin)
+    identity = local_identities(:local_sysadmin)
     patch local_identity_update_password_path(identity), xhr: true
     assert_redirected_to login_path
   end
 
   test "update_password() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    identity = local_identities(:admin)
+    identity = local_identities(:local_sysadmin)
     patch local_identity_update_password_path(identity), xhr: true
     assert_response :forbidden
   end
 
   test "update_password() returns HTTP 400 if the current password is not supplied" do
     log_in_as(users(:local_sysadmin))
-    identity = local_identities(:admin)
+    identity = local_identities(:local_sysadmin)
     password = "MyNewPassword123"
     patch local_identity_update_password_path(identity),
           xhr: true,
@@ -386,7 +386,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "update_password() returns HTTP 400 if the current password is incorrect" do
     log_in_as(users(:local_sysadmin))
-    identity = local_identities(:admin) # password is `password`
+    identity = local_identities(:local_sysadmin) # password is `password`
     password = "MyNewPassword123"
     patch local_identity_update_password_path(identity),
           xhr: true,
@@ -403,7 +403,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   test "update_password() returns HTTP 400 if the new password does not match
   the confirmation" do
     log_in_as(users(:local_sysadmin))
-    identity = local_identities(:admin) # password is `password`
+    identity = local_identities(:local_sysadmin) # password is `password`
 
     patch local_identity_update_password_path(identity),
           xhr: true,

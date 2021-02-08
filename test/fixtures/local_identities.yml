@@ -3,7 +3,7 @@
 # `users.yml`.
 #
 
-admin:
+local_sysadmin:
   email: admin@example.edu
   name: Admin
   activated: true

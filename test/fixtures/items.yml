@@ -1,5 +1,5 @@
 item1:
-  submitter: admin
+  submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
   primary_collection: collection1
@@ -7,7 +7,7 @@ item1:
     - collection1
 
 in_medusa:
-  submitter: admin
+  submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
   primary_collection: collection1
@@ -15,7 +15,7 @@ in_medusa:
     - collection1
 
 described:
-  submitter: admin
+  submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
   primary_collection: collection1
@@ -23,7 +23,7 @@ described:
     - collection1
 
 undescribed:
-  submitter: admin
+  submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
   primary_collection: collection1
@@ -31,7 +31,7 @@ undescribed:
     - collection1
 
 submitting:
-  submitter: admin
+  submitter: local_sysadmin
   stage: <%= Item::Stages::SUBMITTING %>
   discoverable: false
   primary_collection: collection1
@@ -39,7 +39,7 @@ submitting:
     - collection1
 
 submitted:
-  submitter: admin
+  submitter: local_sysadmin
   stage: <%= Item::Stages::SUBMITTED %>
   discoverable: false
   primary_collection: collection1
@@ -47,7 +47,7 @@ submitted:
     - collection1
 
 undiscoverable:
-  submitter: admin
+  submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: false
   primary_collection: collection1
@@ -55,7 +55,7 @@ undiscoverable:
     - collection1
 
 withdrawn:
-  submitter: admin
+  submitter: local_sysadmin
   stage: <%= Item::Stages::WITHDRAWN %>
   discoverable: false
   primary_collection: collection1

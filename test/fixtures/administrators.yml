@@ -5,7 +5,7 @@ unit1_admin:
 
 unit2_admin:
   unit: unit2
-  user: admin
+  user: local_sysadmin
   primary: true
 
 unit1_unit2_unit1:

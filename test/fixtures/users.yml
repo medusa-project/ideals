@@ -9,7 +9,7 @@ local_sysadmin:
   name: admin
   email: admin@example.edu
   phone: (888) 555-1234
-  identity: admin
+  identity: local_sysadmin
   user_groups:
     - sysadmin
 
@@ -51,9 +51,7 @@ uiuc:
   name: Shib Boleth, Esq.
   email: shib@illinois.edu
   phone: (888) 555-1234
-
   org_dn: <%= Institution::UIUC_ORG_DN %>
-  identity: shibboleth
 
 uiuc_admin:
   type: ShibbolethUser
@@ -62,7 +60,6 @@ uiuc_admin:
   email: shibadmin@illinois.edu
   phone: (888) 555-1235
   org_dn: <%= Institution::UIUC_ORG_DN %>
-  identity: shibboleth_admin
   ldap_groups:
     - sysadmin
 
@@ -73,7 +70,6 @@ somewhere:
   email: name@somewhere.edu
   phone: (888) 555-1234
   org_dn: o=University of Somewhere,dc=somewhere,dc=edu
-  identity: somewhere
 
 somewhere_admin:
   type: ShibbolethUser
@@ -82,7 +78,6 @@ somewhere_admin:
   email: admin@somewhere.edu
   phone: (888) 555-1235
   org_dn: o=University of Somewhere,dc=somewhere,dc=edu
-  identity: somewhere_admin
 
 unit1_admin:
   type: LocalUser

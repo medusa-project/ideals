@@ -4,7 +4,7 @@ sysadmin:
   key: sysadmin
   name: System Administrators
   users:
-    - admin
+    - local_sysadmin
   ldap_groups:
     - sysadmin
 
