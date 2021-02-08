@@ -29,6 +29,14 @@ module ApplicationHelper
   end
 
   ##
+  # @return [Institution]
+  #
+  def current_institution
+    Institution.find_by_fqdn(request.host) ||
+      Institution.find_by_org_dn(Institution::UIUC_ORG_DN)
+  end
+
+  ##
   # @param facets [Enumerable<Facet>]
   # @param permitted_params [ActionController::Parameters]
   # @return [String] HTML string.

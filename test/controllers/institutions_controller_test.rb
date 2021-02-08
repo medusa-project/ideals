@@ -25,6 +25,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
            institution: {
              name: "New Institution",
              key: "new",
+             fqdn: "new.org",
              org_dn: "new"
            }
          }
@@ -39,6 +40,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
            institution: {
              name: "New Institution",
              key: "new",
+             fqdn: "new.org",
              org_dn: "new"
            }
          }
@@ -55,6 +57,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
              institution: {
                name: "New Institution",
                key: "new",
+               fqdn: "new.org",
                org_dn: "new"
              }
            }
@@ -213,6 +216,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
             institution: {
               name: "New Institution",
               key: "new",
+              fqdn: "new.org",
               org_dn: "new"
             }
           }
@@ -229,6 +233,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
             institution: {
               name: "New Institution",
               key: "new",
+              fqdn: "new.org",
               org_dn: "new"
             }
           }

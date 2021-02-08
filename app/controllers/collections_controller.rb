@@ -21,6 +21,7 @@ class CollectionsController < ApplicationController
   #
   def children
     @collections = Collection.search.
+        institution(current_institution).
         filter(Collection::IndexFields::PARENT, @collection.id).
         filter(Collection::IndexFields::UNIT_DEFAULT, false).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
@@ -125,6 +126,7 @@ class CollectionsController < ApplicationController
     @start  = results_params[:start].to_i
     @window = window_size
     @collections = Collection.search.
+        institution(current_institution).
         aggregations(false).
         query_all(results_params[:q]).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
@@ -142,6 +144,7 @@ class CollectionsController < ApplicationController
     @start  = params[:start].to_i
     @window = window_size
     @items  = Item.search.
+        institution(current_institution).
         aggregations(false).
         filter(Item::IndexFields::COLLECTIONS, params[:id]).
         order(params[:sort]).
@@ -157,6 +160,7 @@ class CollectionsController < ApplicationController
     @submission_profile = @collection.effective_submission_profile
     # Subcollections tab
     @subcollections = Collection.search.
+        institution(current_institution).
         parent_collection(@collection).
         include_children(true).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
@@ -165,6 +169,7 @@ class CollectionsController < ApplicationController
     @review_start  = results_params[:start].to_i
     @review_window = window_size
     @review_items  = Item.search.
+        institution(current_institution).
         aggregations(false).
         filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
         filter(Item::IndexFields::COLLECTIONS, params[:id]).

@@ -6,7 +6,7 @@ class WelcomeController < ApplicationController
   # Responds to `GET /`
   #
   def index
-    @item_count = policy_scope(Item.search.aggregations(false).limit(0),
+    @item_count = policy_scope(Item.search.institution(current_institution).aggregations(false).limit(0),
                                policy_scope_class: ItemPolicy::Scope).count
     user = current_user
     if user

@@ -29,12 +29,13 @@ class ElasticsearchIndex
   # Standard fields present in all documents.
   #
   class StandardFields
-    CLASS         = "k_class"
-    CREATED       = "d_created"
-    ID            = "_id"
-    LAST_INDEXED  = "d_last_indexed"
-    LAST_MODIFIED = "d_last_modified"
-    SEARCH_ALL    = "search_all"
+    CLASS           = "k_class"
+    CREATED         = "d_created"
+    ID              = "_id"
+    INSTITUTION_KEY = "k_institution_key"
+    LAST_INDEXED    = "d_last_indexed"
+    LAST_MODIFIED   = "d_last_modified"
+    SEARCH_ALL      = "search_all"
   end
 
   SCHEMA = YAML.load_file(File.join(Rails.root, 'app', 'search', 'index_schema.yml'))

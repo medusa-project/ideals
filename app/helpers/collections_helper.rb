@@ -19,6 +19,7 @@ module CollectionsHelper
       options << [ "None (Root Level)", nil ]
     end
     collections = Collection.search.
+        institution(current_institution).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999)
     if unit

@@ -26,12 +26,12 @@ class CollectionTest < ActiveSupport::TestCase
     collections = Collection.all.limit(5)
     collections.each(&:reindex)
     refresh_elasticsearch
-    count = Collection.search.count
+    count = Collection.search.institution(institutions(:uiuc)).count
     assert count > 0
 
     Collection.delete_document(collections.first.index_id)
     refresh_elasticsearch
-    assert_equal count - 1, Collection.search.count
+    assert_equal count - 1, Collection.search.institution(institutions(:uiuc)).count
   end
 
   # search() (Indexed concern)
@@ -71,14 +71,19 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "reindex_all() reindexes all items" do
     setup_elasticsearch
-    assert_equal 0, Collection.search.count
+    institution = institutions(:uiuc)
+    assert_equal 0, Collection.search.institution(institution).count
 
     Collection.reindex_all
     refresh_elasticsearch
 
-    actual = Collection.search.count
+    actual = Collection.search.institution(institution).count
     assert actual > 0
-    assert_equal Collection.count, actual
+    assert_equal Collection.
+      joins('LEFT JOIN units ON units.id = collections.primary_unit_id').
+      joins('LEFT JOIN institutions ON institutions.id = units.institution_id').
+      where('institutions.id': institution.id).count,
+                 actual
   end
 
   # as_indexed_json()
@@ -273,12 +278,14 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "reindex reindexes the instance" do
     assert_equal 0, Collection.search.
+        institution(institutions(:uiuc)).
         filter(Collection::IndexFields::ID, @instance.index_id).count
 
     @instance.reindex
     refresh_elasticsearch
 
     assert_equal 1, Collection.search.
+        institution(institutions(:uiuc)).
         filter(Collection::IndexFields::ID, @instance.index_id).count
   end
 

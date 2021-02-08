@@ -63,6 +63,7 @@ class UsersController < ApplicationController
     # Submitted Items tab content
     @start = params[:items_start].to_i
     @items = Item.search.
+        institution(current_institution).
         aggregations(false).
         filter(Item::IndexFields::SUBMITTER, @user.id).
         must_not(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).

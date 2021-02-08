@@ -16,6 +16,14 @@ class ApplicationController < ActionController::Base
   after_action :copy_flash_to_response_headers
 
   ##
+  # @return [Institution] The institution whose FQDN corresponds to the
+  #                       X-Forwarded-Host request header.
+  #
+  def current_institution
+    helpers.current_institution
+  end
+
+  ##
   # @return [User] The logged-in user, or `nil` if there is none.
   #
   def current_user

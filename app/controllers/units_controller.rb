@@ -19,6 +19,7 @@ class UnitsController < ApplicationController
   def children
     raise ActionController::BadRequest if params[:unit_id].blank?
     @units = Unit.search.
+        institution(current_institution).
         filter(Unit::IndexFields::PARENT, params[:unit_id].to_i).
         include_children(true).
         order("#{Unit::IndexFields::TITLE}.sort").
@@ -38,6 +39,7 @@ class UnitsController < ApplicationController
   def collections
     raise ActionController::BadRequest if params[:unit_id].blank?
     @collections = Collection.search.
+        institution(current_institution).
         filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
         filter(Collection::IndexFields::UNIT_DEFAULT, false).
         include_children(false).
@@ -122,6 +124,7 @@ class UnitsController < ApplicationController
   #
   def index
     @units = Unit.search.
+        institution(current_institution).
         include_children(false).
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(9999)
@@ -135,12 +138,14 @@ class UnitsController < ApplicationController
     @new_unit = Unit.new
     # Subunits tab
     @subunits = Unit.search.
+        institution(current_institution).
         parent_unit(@unit).
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(999).
         to_a
     # Collections tab
     @collections = Collection.search.
+        institution(current_institution).
         filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999).
@@ -149,6 +154,7 @@ class UnitsController < ApplicationController
     @start = params[:start].to_i
     @window = window_size
     @items = Item.search.
+        institution(current_institution).
         query_all(params[:q]).
         filter(Item::IndexFields::UNITS, params[:id]).
         order(params[:sort]).

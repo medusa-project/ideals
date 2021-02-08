@@ -24,12 +24,12 @@ class UnitTest < ActiveSupport::TestCase
     units = Unit.all.limit(5)
     units.each(&:reindex)
     refresh_elasticsearch
-    count = Unit.search.count
+    count = Unit.search.institution(institutions(:uiuc)).count
     assert count > 0
 
     Unit.delete_document(units.first.index_id)
     refresh_elasticsearch
-    assert_equal count - 1, Unit.search.count
+    assert_equal count - 1, Unit.search.institution(institutions(:uiuc)).count
   end
 
   # search() (Indexed concern)
@@ -42,12 +42,18 @@ class UnitTest < ActiveSupport::TestCase
 
   test "reindex_all() reindexes all units" do
     setup_elasticsearch
-    assert_equal 0, Unit.search.include_children(true).count
+    assert_equal 0, Unit.search.
+      institution(institutions(:uiuc)).
+      include_children(true).
+      count
 
     Unit.reindex_all
     refresh_elasticsearch
 
-    actual = Unit.search.include_children(true).count
+    actual = Unit.search.
+      institution(institutions(:uiuc)).
+      include_children(true).
+      count
     assert actual > 0
     assert_equal Unit.count, actual
   end
@@ -84,11 +90,11 @@ class UnitTest < ActiveSupport::TestCase
 
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
-    assert_equal 8, doc.length
+    assert_equal 9, doc.length
     assert_not_empty doc[Unit::IndexFields::ADMINISTRATORS]
     assert_equal "Unit", doc[Unit::IndexFields::CLASS]
     assert_not_empty doc[Unit::IndexFields::CREATED]
-    assert_equal @institution.key, doc[Unit::IndexFields::INSTITUTION_KEY]
+    assert_equal @instance.institution.key, doc[Unit::IndexFields::INSTITUTION_KEY]
     assert_not_empty doc[Unit::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Unit::IndexFields::LAST_MODIFIED]
@@ -211,13 +217,17 @@ class UnitTest < ActiveSupport::TestCase
 
   test "reindex reindexes the instance" do
     assert_equal 0, Unit.search.
-        filter(Unit::IndexFields::ID, @instance.index_id).count
+        institution(institutions(:uiuc)).
+        filter(Unit::IndexFields::ID, @instance.index_id).
+        count
 
     @instance.reindex
     refresh_elasticsearch
 
     assert_equal 1, Unit.search.
-        filter(Unit::IndexFields::ID, @instance.index_id).count
+        institution(institutions(:uiuc)).
+        filter(Unit::IndexFields::ID, @instance.index_id).
+        count
   end
 
   # root_parent()

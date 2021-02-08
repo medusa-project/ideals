@@ -67,6 +67,7 @@ class ItemsController < ApplicationController
     @start  = results_params[:start].to_i
     @window = window_size
     @items = Item.search.
+        institution(current_institution).
         aggregations(true).
         query_all(results_params[:q]).
         facet_filters(results_params[:fq]).
@@ -130,6 +131,7 @@ class ItemsController < ApplicationController
     @start  = results_params[:start].to_i
     @window = window_size
     @items  = Item.search.
+        institution(current_institution).
         aggregations(false).
         filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
         order(Item::IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY).

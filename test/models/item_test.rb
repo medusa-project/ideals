@@ -25,25 +25,25 @@ class ItemTest < ActiveSupport::TestCase
     items = Item.all.limit(5)
     items.each(&:reindex)
     refresh_elasticsearch
-    count = Item.search.count
+    count = Item.search.institution(institutions(:uiuc)).count
     assert count > 0
 
     Item.delete_document(items.first.index_id)
     refresh_elasticsearch
-    assert_equal count - 1, Item.search.count
+    assert_equal count - 1, Item.search.institution(institutions(:uiuc)).count
   end
 
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
     setup_elasticsearch
-    assert_equal 0, Item.search.count
+    assert_equal 0, Item.search.institution(institutions(:uiuc)).count
 
     Item.reindex_all
     refresh_elasticsearch
 
     expected = Item.count
-    actual = Item.search.count
+    actual = Item.search.institution(institutions(:uiuc)).count
     assert actual > 0
     assert_equal expected, actual
   end
@@ -51,7 +51,7 @@ class ItemTest < ActiveSupport::TestCase
   # search() (Indexed concern)
 
   test "search() returns an ItemRelation" do
-    assert_kind_of ItemRelation, Item.search
+    assert_kind_of ItemRelation, Item.search.institution(institutions(:uiuc))
   end
 
   # all_collection_managers()
@@ -400,12 +400,18 @@ class ItemTest < ActiveSupport::TestCase
   # reindex() (Indexed concern)
 
   test "reindex reindexes the instance" do
-    assert_equal 0, Item.search.filter(Item::IndexFields::ID, @instance.index_id).count
+    assert_equal 0, Item.search.
+      institution(institutions(:uiuc)).
+      filter(Item::IndexFields::ID, @instance.index_id).
+      count
 
     @instance.reindex
     refresh_elasticsearch
 
-    assert_equal 1, Item.search.filter(Item::IndexFields::ID, @instance.index_id).count
+    assert_equal 1, Item.search.
+      institution(institutions(:uiuc)).
+      filter(Item::IndexFields::ID, @instance.index_id).
+      count
   end
 
   # required_elements_present?()

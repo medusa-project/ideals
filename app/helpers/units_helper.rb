@@ -55,6 +55,7 @@ module UnitsHelper
       options << ["None (Root Level)", nil]
     end
     units = Unit.search.
+        institution(current_institution).
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(999)
     if parent_unit

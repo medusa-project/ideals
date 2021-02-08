@@ -130,6 +130,16 @@ class AbstractRelation
   end
 
   ##
+  # @param institution [Institution]
+  # @return [self]
+  #
+  def institution(institution)
+    filter(ElasticsearchIndex::StandardFields::INSTITUTION_KEY, institution.key)
+    @loaded = false
+    self
+  end
+
+  ##
   # @param limit [Integer]
   # @return [self]
   #
@@ -316,6 +326,8 @@ class AbstractRelation
   def load
     return if @loaded
 
+    validate
+
     @response_json = get_response
 
     # Assemble the response aggregations into Facets. The order of the facets
@@ -474,6 +486,12 @@ class AbstractRelation
       end
     end
   end
+
+  def validate
+    raise "Must add an institution filter!" unless
+      @filters.map{ |f| f[0] }.include?(ElasticsearchIndex::StandardFields::INSTITUTION_KEY)
+  end
+
 
   private
 
