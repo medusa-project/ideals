@@ -61,6 +61,7 @@ class Item < ApplicationRecord
     DISCOVERABLE       = "b_discoverable"
     GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY = "k_unit_collection_sort_key"
     ID                 = ElasticsearchIndex::StandardFields::ID
+    INSTITUTION_KEY    = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
     LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     PRIMARY_COLLECTION = "i_primary_collection_id"
@@ -261,13 +262,14 @@ class Item < ApplicationRecord
     doc[IndexFields::DISCOVERABLE]       = self.discoverable
     doc[IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY] =
         self.unit_and_collection_sort_key
+    units                                = self.all_units
+    doc[IndexFields::INSTITUTION_KEY]    = units.first&.institution&.key
     doc[IndexFields::LAST_INDEXED]       = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
     doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection_id
     doc[IndexFields::PRIMARY_UNIT]       = self.primary_unit&.id
     doc[IndexFields::STAGE]              = self.stage
     doc[IndexFields::SUBMITTER]          = self.submitter_id
-    units                                = self.all_units
     doc[IndexFields::UNIT_TITLES]        = units.map(&:title)
     doc[IndexFields::UNITS]              = units.map(&:id)
 
@@ -386,6 +388,13 @@ class Item < ApplicationRecord
         # fine
       end
     end
+  end
+
+  ##
+  # @return [Institution]
+  #
+  def institution
+    primary_collection.primary_unit.institution
   end
 
   ##

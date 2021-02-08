@@ -66,18 +66,19 @@ class Collection < ApplicationRecord
   include Indexed
 
   class IndexFields
-    CLASS         = ElasticsearchIndex::StandardFields::CLASS
-    CREATED       = ElasticsearchIndex::StandardFields::CREATED
-    ID            = ElasticsearchIndex::StandardFields::ID
-    LAST_INDEXED  = ElasticsearchIndex::StandardFields::LAST_INDEXED
-    LAST_MODIFIED = ElasticsearchIndex::StandardFields::LAST_MODIFIED
-    MANAGERS      = "i_manager_id"
-    PARENT        = "i_parent_id"
-    PRIMARY_UNIT  = "i_primary_unit_id"
-    SUBMITTERS    = "i_submitter_id"
-    UNIT_DEFAULT  = "b_unit_default"
-    UNIT_TITLES   = "s_unit_titles"
-    UNITS         = "i_units"
+    CLASS           = ElasticsearchIndex::StandardFields::CLASS
+    CREATED         = ElasticsearchIndex::StandardFields::CREATED
+    ID              = ElasticsearchIndex::StandardFields::ID
+    INSTITUTION_KEY = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
+    LAST_INDEXED    = ElasticsearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED   = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    MANAGERS        = "i_manager_id"
+    PARENT          = "i_parent_id"
+    PRIMARY_UNIT    = "i_primary_unit_id"
+    SUBMITTERS      = "i_submitter_id"
+    UNIT_DEFAULT    = "b_unit_default"
+    UNIT_TITLES     = "s_unit_titles"
+    UNITS           = "i_units"
   end
 
   has_many :collections, foreign_key: "parent_id", dependent: :restrict_with_exception
@@ -179,17 +180,19 @@ class Collection < ApplicationRecord
   #
   def as_indexed_json
     doc = {}
-    doc[IndexFields::CLASS]         = self.class.to_s
-    doc[IndexFields::CREATED]       = self.created_at.utc.iso8601
-    doc[IndexFields::LAST_INDEXED]  = Time.now.utc.iso8601
-    doc[IndexFields::LAST_MODIFIED] = self.updated_at.utc.iso8601
-    doc[IndexFields::MANAGERS]      = self.effective_managers.map(&:id)
-    doc[IndexFields::PARENT]        = self.parent_id
-    doc[IndexFields::PRIMARY_UNIT]  = self.primary_unit_id
-    doc[IndexFields::SUBMITTERS]    = self.effective_submitters.map(&:id)
-    doc[IndexFields::UNIT_DEFAULT]  = self.unit_default
-    doc[IndexFields::UNIT_TITLES]   = self.all_units.map(&:title)
-    doc[IndexFields::UNITS]         = self.unit_ids
+    units                             = self.all_units
+    doc[IndexFields::CLASS]           = self.class.to_s
+    doc[IndexFields::CREATED]         = self.created_at.utc.iso8601
+    doc[IndexFields::INSTITUTION_KEY] = units.first&.institution&.key
+    doc[IndexFields::LAST_INDEXED]    = Time.now.utc.iso8601
+    doc[IndexFields::LAST_MODIFIED]   = self.updated_at.utc.iso8601
+    doc[IndexFields::MANAGERS]        = self.effective_managers.map(&:id)
+    doc[IndexFields::PARENT]          = self.parent_id
+    doc[IndexFields::PRIMARY_UNIT]    = self.primary_unit_id
+    doc[IndexFields::SUBMITTERS]      = self.effective_submitters.map(&:id)
+    doc[IndexFields::UNIT_DEFAULT]    = self.unit_default
+    doc[IndexFields::UNIT_TITLES]     = units.map(&:title)
+    doc[IndexFields::UNITS]           = self.unit_ids
 
     # Index ascribed metadata elements into dynamic fields.
     self.elements.each do |element|
@@ -266,6 +269,13 @@ class Collection < ApplicationRecord
       set += parent.submitting_users
     end
     set
+  end
+
+  ##
+  # @return [Institution]
+  #
+  def institution
+    primary_unit.institution
   end
 
   def label

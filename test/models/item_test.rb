@@ -143,6 +143,8 @@ class ItemTest < ActiveSupport::TestCase
     assert doc[Item::IndexFields::DISCOVERABLE]
     assert_match /\w+ \w* \w+/,
                  doc[Item::IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY]
+    assert_equal @instance.institution.key,
+                 doc[Item::IndexFields::INSTITUTION_KEY]
     assert_not_empty doc[Item::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Item::IndexFields::LAST_MODIFIED]
@@ -373,6 +375,13 @@ class ItemTest < ActiveSupport::TestCase
         assert message.blank?
       end
     end
+  end
+
+  # institution()
+
+  test "institution() returns the primary collection's primary unit's institution" do
+    assert_equal @instance.primary_collection.primary_unit.institution,
+                 @instance.institution
   end
 
   # metadata_profile()

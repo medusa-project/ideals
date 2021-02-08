@@ -21,6 +21,7 @@ class Unit < ApplicationRecord
     CLASS                 = ElasticsearchIndex::StandardFields::CLASS
     CREATED               = ElasticsearchIndex::StandardFields::CREATED
     ID                    = ElasticsearchIndex::StandardFields::ID
+    INSTITUTION_KEY       = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
     LAST_INDEXED          = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED         = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     PARENT                = "i_parent_id"
@@ -122,6 +123,7 @@ class Unit < ApplicationRecord
     doc[IndexFields::ADMINISTRATORS]        = self.administrators.map(&:user_id)
     doc[IndexFields::CLASS]                 = self.class.to_s
     doc[IndexFields::CREATED]               = self.created_at.utc.iso8601
+    doc[IndexFields::INSTITUTION_KEY]       = self.institution&.key
     doc[IndexFields::LAST_INDEXED]          = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]         = self.updated_at.utc.iso8601
     doc[IndexFields::PARENT]                = self.parent_id
