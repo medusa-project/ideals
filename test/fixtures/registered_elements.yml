@@ -1,48 +1,56 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 available:
+  institution: uiuc
   name: dcterms:available
   uri: http://purl.org/dc/terms/available
   label: Date Available
   scope_note:
 
 creator:
+  institution: uiuc
   name: dc:creator
   uri: http://purl.org/dc/terms/creator
   label: Creator
   scope_note:
 
 dateSubmitted:
+  institution: uiuc
   name: dcterms:dateSubmitted
   uri: http://purl.org/dc/terms/dateSubmitted
   label: Date Submitted
   scope_note:
 
 description:
+  institution: uiuc
   name: dc:description
   uri: http://purl.org/dc/terms/description
   label: Description
   scope_note:
 
 identifier:
+  institution: uiuc
   name: dcterms:identifier
   uri: http://purl.org/dc/terms/identifier
   label: Identifier
   scope_note:
 
 subject:
+  institution: uiuc
   name: dc:subject
   uri: http://purl.org/dc/terms/subject
   label: Subject
   scope_note:
 
 title:
+  institution: uiuc
   name: dc:title
   uri: http://purl.org/dc/terms/title
   label: Title
   scope_note:
 
 unused:
+  institution: uiuc
   name: unused
   uri: http://example.org/unused
   label: Unused

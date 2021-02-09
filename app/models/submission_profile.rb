@@ -28,6 +28,8 @@
 class SubmissionProfile < ApplicationRecord
   include Breadcrumb
 
+  belongs_to :institution
+
   has_many :collections, inverse_of: :submission_profile,
            dependent: :restrict_with_exception
   has_many :elements, -> { order(:index) },

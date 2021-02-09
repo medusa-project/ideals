@@ -5,7 +5,7 @@ class SubmissionProfilesController < ApplicationController
   before_action :authorize_profile, only: [:clone, :edit, :show, :update, :destroy]
 
   ##
-  # Responds to POST /admin/submission-profiles/:id/clone
+  # Responds to `POST /admin/submission-profiles/:id/clone`
   #
   def clone
     begin
@@ -66,8 +66,9 @@ class SubmissionProfilesController < ApplicationController
   #
   def index
     authorize SubmissionProfile
-    @profiles = SubmissionProfile.all.order(:name)
-    @new_profile = SubmissionProfile.new
+    institution  = current_institution
+    @profiles    = SubmissionProfile.where(institution: institution).order(:name)
+    @new_profile = SubmissionProfile.new(institution: institution)
   end
 
   ##
@@ -93,14 +94,14 @@ class SubmissionProfilesController < ApplicationController
              status: :bad_request
     else
       flash['success'] = "Submission profile \"#{@profile.name}\" updated."
-      render "shared/reload" # update.js.erb will reload the page
+      render "shared/reload"
     end
   end
 
   private
 
   def submission_profile_params
-    params.require(:submission_profile).permit(:default, :name)
+    params.require(:submission_profile).permit(:default, :institution_id, :name)
   end
 
   def set_profile

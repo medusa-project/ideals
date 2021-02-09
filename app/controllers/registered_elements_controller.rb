@@ -5,7 +5,7 @@ class RegisteredElementsController < ApplicationController
   before_action :authorize_element, only: [:edit, :update, :destroy]
 
   ##
-  # Responds to POST /elements XHR only)
+  # Responds to `POST /elements` (XHR only)
   #
   def create
     @element = RegisteredElement.new(registered_element_params)
@@ -23,7 +23,7 @@ class RegisteredElementsController < ApplicationController
   end
 
   ##
-  # Responds to DELETE /elements/:name
+  # Responds to `DELETE /elements/:name`
   #
   def destroy
     begin
@@ -38,7 +38,7 @@ class RegisteredElementsController < ApplicationController
   end
 
   ##
-  # Responds to GET /elements/:name (XHR only)
+  # Responds to `GET /elements/:name` (XHR only)
   #
   def edit
     render partial: 'registered_elements/form',
@@ -46,16 +46,17 @@ class RegisteredElementsController < ApplicationController
   end
 
   ##
-  # Responds to GET /elements
+  # Responds to `GET /elements`
   #
   def index
     authorize RegisteredElement
-    @elements = RegisteredElement.all.order(:name)
-    @new_element = RegisteredElement.new
+    institution  = current_institution
+    @elements    = RegisteredElement.where(institution: institution).order(:name)
+    @new_element = RegisteredElement.new(institution: institution)
   end
 
   ##
-  # Responds to PATCH /elements/:name (XHR only)
+  # Responds to `PATCH /elements/:name` (XHR only)
   #
   def update
     begin
@@ -66,14 +67,15 @@ class RegisteredElementsController < ApplicationController
              status: :bad_request
     else
       flash['success'] = "Element \"#{@element.name}\" updated."
-      render "shared/reload" # update.js.erb will reload the page
+      render "shared/reload"
     end
   end
 
   private
 
   def registered_element_params
-    params.require(:registered_element).permit(:label, :name, :scope_note, :uri)
+    params.require(:registered_element).permit(:institution_id, :label, :name,
+                                               :scope_note, :uri)
   end
 
   def set_element

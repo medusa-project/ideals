@@ -3,11 +3,14 @@
 default:
   name: Default Profile
   default: true
+  institution: uiuc
 
 empty:
   name: Empty Profile
   default: false
+  institution: uiuc
 
 unused:
   name: Unused Profile
   default: false
+  institution: uiuc

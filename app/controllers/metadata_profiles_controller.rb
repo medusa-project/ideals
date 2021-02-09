@@ -5,7 +5,7 @@ class MetadataProfilesController < ApplicationController
   before_action :authorize_profile, only: [:clone, :edit, :show, :update, :destroy]
 
   ##
-  # Responds to POST /admin/metadata-profiles/:id/clone
+  # Responds to `POST /admin/metadata-profiles/:id/clone`
   #
   def clone
     begin
@@ -66,8 +66,9 @@ class MetadataProfilesController < ApplicationController
   #
   def index
     authorize MetadataProfile
-    @profiles = MetadataProfile.all.order(:name)
-    @new_profile = MetadataProfile.new
+    institution  = current_institution
+    @profiles    = MetadataProfile.where(institution: institution).order(:name)
+    @new_profile = MetadataProfile.new(institution: institution)
   end
 
   ##
@@ -93,14 +94,14 @@ class MetadataProfilesController < ApplicationController
              status: :bad_request
     else
       flash['success'] = "Metadata profile \"#{@profile.name}\" updated."
-      render "shared/reload" # update.js.erb will reload the page
+      render "shared/reload"
     end
   end
 
   private
 
   def metadata_profile_params
-    params.require(:metadata_profile).permit(:default, :name)
+    params.require(:metadata_profile).permit(:default, :institution_id, :name)
   end
 
   def set_profile

@@ -19,6 +19,8 @@ class RegisteredElement < ApplicationRecord
   KEYWORD_FIELD_SUFFIX  = ".keyword"
   SORTABLE_FIELD_SUFFIX = ".sort"
 
+  belongs_to :institution
+
   has_many :metadata_profile_elements, inverse_of: :registered_element
   has_many :submission_profile_elements, inverse_of: :registered_element
 

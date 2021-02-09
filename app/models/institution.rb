@@ -14,6 +14,9 @@ class Institution < ApplicationRecord
 
   UIUC_ORG_DN = "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu"
 
+  has_many :metadata_profiles
+  has_many :registered_elements
+  has_many :submission_profiles
   has_many :units
 
   # uniqueness enforced by database constraints

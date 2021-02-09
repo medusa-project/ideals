@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_08_154843) do
+ActiveRecord::Schema.define(version: 2021_02_09_150334) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -215,6 +215,7 @@ ActiveRecord::Schema.define(version: 2021_02_08_154843) do
     t.boolean "default", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "institution_id", null: false
     t.index ["default"], name: "index_metadata_profiles_on_default"
     t.index ["name"], name: "index_metadata_profiles_on_name", unique: true
   end
@@ -226,6 +227,7 @@ ActiveRecord::Schema.define(version: 2021_02_08_154843) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "uri"
     t.string "label", null: false
+    t.bigint "institution_id", null: false
     t.index ["name"], name: "index_registered_elements_on_name", unique: true
     t.index ["uri"], name: "index_registered_elements_on_uri", unique: true
   end
@@ -252,6 +254,7 @@ ActiveRecord::Schema.define(version: 2021_02_08_154843) do
     t.boolean "default", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "institution_id", null: false
     t.index ["default"], name: "index_submission_profiles_on_default"
     t.index ["name"], name: "index_submission_profiles_on_name", unique: true
   end
