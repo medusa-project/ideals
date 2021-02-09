@@ -4,12 +4,12 @@ class CollectionPolicy < ApplicationPolicy
   attr_reader :user, :role, :collection
 
   ##
-  # @param user_context [UserContext]
+  # @param request_context [RequestContext]
   # @param collection [Collection]
   #
-  def initialize(user_context, collection)
-    @user       = user_context&.user
-    @role       = user_context&.role_limit || Role::NO_LIMIT
+  def initialize(request_context, collection)
+    @user       = request_context&.user
+    @role       = request_context&.role_limit || Role::NO_LIMIT
     @collection = collection
   end
 

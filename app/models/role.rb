@@ -7,7 +7,7 @@
 # web page as a lesser-privileged user would see it, without having to
 # literally alter their own privileges.
 #
-# @see UserContext
+# @see RequestContext
 #
 class Role
 

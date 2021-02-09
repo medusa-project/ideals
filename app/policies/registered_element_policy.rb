@@ -4,12 +4,12 @@ class RegisteredElementPolicy < ApplicationPolicy
   attr_reader :user, :role, :registered_element
 
   ##
-  # @param user_context [UserContext]
+  # @param request_context [RequestContext]
   # @param registered_element [RegisteredElement]
   #
-  def initialize(user_context, registered_element)
-    @user               = user_context&.user
-    @role               = user_context&.role_limit
+  def initialize(request_context, registered_element)
+    @user               = request_context&.user
+    @role               = request_context&.role_limit
     @registered_element = registered_element
   end
 

@@ -4,12 +4,12 @@ class InstitutionPolicy < ApplicationPolicy
   attr_reader :user, :role, :institution
 
   ##
-  # @param user_context [UserContext]
+  # @param request_context [RequestContext]
   # @param institution [Institution]
   #
-  def initialize(user_context, institution)
-    @user        = user_context&.user
-    @role        = user_context&.role_limit
+  def initialize(request_context, institution)
+    @user        = request_context&.user
+    @role        = request_context&.role_limit
     @institution = institution
   end
 

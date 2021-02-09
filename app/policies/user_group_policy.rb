@@ -4,12 +4,12 @@ class UserGroupPolicy < ApplicationPolicy
   attr_reader :user, :role, :user_group
 
   ##
-  # @param user_context [UserContext]
+  # @param request_context [RequestContext]
   # @param user_group [UserGroup]
   #
-  def initialize(user_context, user_group)
-    @user        = user_context&.user
-    @role        = user_context&.role_limit
+  def initialize(request_context, user_group)
+    @user        = request_context&.user
+    @role        = request_context&.role_limit
     @user_group  = user_group
   end
 

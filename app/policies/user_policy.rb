@@ -13,12 +13,12 @@ class UserPolicy < ApplicationPolicy
   attr_reader :subject_user, :role, :object_user
 
   ##
-  # @param user_context [UserContext]
+  # @param request_context [RequestContext]
   # @param object_user [User] The user to which access is being requested.
   #
-  def initialize(user_context, object_user)
-    @subject_user = user_context&.user
-    @role         = user_context&.role_limit
+  def initialize(request_context, object_user)
+    @subject_user = request_context&.user
+    @role         = request_context&.role_limit
     @object_user  = object_user
   end
 

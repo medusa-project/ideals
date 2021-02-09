@@ -5,12 +5,12 @@ class SubmissionPolicy < ApplicationPolicy
   attr_reader :user, :role, :item
 
   ##
-  # @param user_context [UserContext]
+  # @param request_context [RequestContext]
   # @param item [Item]
   #
-  def initialize(user_context, item)
-    @user = user_context&.user
-    @role = user_context&.role_limit
+  def initialize(request_context, item)
+    @user = request_context&.user
+    @role = request_context&.role_limit
     @item = item
   end
 

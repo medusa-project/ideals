@@ -4,12 +4,12 @@ class InviteePolicy < ApplicationPolicy
   attr_reader :user, :role, :invitee
 
   ##
-  # @param user_context [UserContext]
+  # @param request_context [RequestContext]
   # @param invitee [Invitee]
   #
-  def initialize(user_context, invitee)
-    @user    = user_context&.user
-    @role    = user_context&.role_limit || Role::NO_LIMIT
+  def initialize(request_context, invitee)
+    @user    = request_context&.user
+    @role    = request_context&.role_limit || Role::NO_LIMIT
     @invitee = invitee
   end
 

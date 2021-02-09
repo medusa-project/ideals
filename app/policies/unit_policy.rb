@@ -4,12 +4,12 @@ class UnitPolicy < ApplicationPolicy
   attr_reader :user, :role, :unit
 
   ##
-  # @param user_context [UserContext]
+  # @param request_context [RequestContext]
   # @param unit [Unit]
   #
-  def initialize(user_context, unit)
-    @user = user_context&.user
-    @role = user_context&.role_limit
+  def initialize(request_context, unit)
+    @user = request_context&.user
+    @role = request_context&.role_limit
     @unit = unit
   end
 

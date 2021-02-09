@@ -4,12 +4,12 @@ class MetadataProfilePolicy < ApplicationPolicy
   attr_reader :user, :role, :metadata_profile
 
   ##
-  # @param user_context [UserContext]
+  # @param request_context [RequestContext]
   # @param metadata_profile [MetadataProfile]
   #
-  def initialize(user_context, metadata_profile)
-    @user             = user_context&.user
-    @role             = user_context&.role_limit
+  def initialize(request_context, metadata_profile)
+    @user             = request_context&.user
+    @role             = request_context&.role_limit
     @metadata_profile = metadata_profile
   end
 

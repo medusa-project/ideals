@@ -4,12 +4,12 @@ class SubmissionProfilePolicy < ApplicationPolicy
   attr_reader :user, :role, :submission_profile
 
   ##
-  # @param user_context [UserContext]
+  # @param request_context [RequestContext]
   # @param submission_profile [SubmissionProfile]
   #
-  def initialize(user_context, submission_profile)
-    @user               = user_context&.user
-    @role               = user_context&.role_limit
+  def initialize(request_context, submission_profile)
+    @user               = request_context&.user
+    @role               = request_context&.role_limit
     @submission_profile = submission_profile
   end
 

@@ -12,7 +12,7 @@
 # (See "Additional context" in the
 # [Pundit README](https://github.com/varvet/pundit/blob/master/README.md)).
 #
-class UserContext
+class RequestContext
 
   # @return [User] Client user.
   attr_accessor :user

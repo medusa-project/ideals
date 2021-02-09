@@ -5,12 +5,12 @@ class BitstreamPolicy < ApplicationPolicy
   attr_reader :user, :role, :bitstream
 
   ##
-  # @param user_context [UserContext]
+  # @param request_context [RequestContext]
   # @param bitstream [Bitstream]
   #
-  def initialize(user_context, bitstream)
-    @user = user_context&.user
-    @role = user_context&.role_limit
+  def initialize(request_context, bitstream)
+    @user = request_context&.user
+    @role = request_context&.role_limit
     @bitstream = bitstream
   end
 

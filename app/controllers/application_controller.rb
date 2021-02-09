@@ -115,7 +115,7 @@ class ApplicationController < ActionController::Base
 
   ##
   # Overrides the "user" object supplied to Pundit policy methods. See
-  # {UserContext} for more information.
+  # {RequestContext} for more information.
   #
   def pundit_user
     # Read the role from the URL query and write it to the session so that it
@@ -130,7 +130,7 @@ class ApplicationController < ActionController::Base
       role_limit         ||= Role::NO_LIMIT
       session[:role_limit] = role_limit
     end
-    UserContext.new(current_user, role_limit)
+    RequestContext.new(current_user, role_limit)
   end
 
   def unauthorized
