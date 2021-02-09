@@ -10,12 +10,20 @@
   .form-group
     = f.label :key, "Key"
     = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
+    %p.text-muted
+      %i.fa.fa-info-circle
+      A short alphabetic string that uniquely identifies the institution.
+      Used only internally and cannot be changed later.
   .form-group
     = f.label :fqdn, "Fully Qualified Domain Name (FQDN)"
     = f.text_field :fqdn, class: 'form-control'
   .form-group
     = f.label :org_dn, "Organization DN"
     = f.text_field :org_dn, class: 'form-control'
+    %p.text-muted
+      %i.fa.fa-info-circle
+      Copy this value from the properties page of a user of this institution
+      who has signed in via Shibboleth.
 
   .clearfix
     .float-right
