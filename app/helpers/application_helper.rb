@@ -29,6 +29,11 @@ module ApplicationHelper
   end
 
   ##
+  # Returns the institution whose FQDN corresponds to the value of the
+  # `X-Forwarded-Host` header. This header should always be present in demo and
+  # production, but not in development or test, where a fallback is used
+  # instead.
+  #
   # @return [Institution]
   #
   def current_institution
