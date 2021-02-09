@@ -34,13 +34,12 @@
     - if user.institution
       %dt Institution
       %dd= link_to(user.institution.name, user.institution)
-    - else
-      %dt Organization DN
-      %dd
-        - if user.org_dn # should always be true
-          %code= user.org_dn
-        - else
-          None
+    %dt Organization DN
+    %dd
+      - if user.org_dn # should always be true
+        %code= user.org_dn
+      - else
+        None
   %dt Account Created
   %dd= local_time user.created_at
 
