@@ -17,7 +17,9 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.create?
   end
@@ -26,26 +28,38 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
-    policy  = UserGroupPolicy.new(context, @user_group)
+    subject_user = users(:norights)
+    context      = RequestContext.new(user:        subject_user,
+                                      institution: subject_user.institution,
+                                      role_limit:  Role::NO_LIMIT)
+    policy       = UserGroupPolicy.new(context, @user_group)
     assert policy.create?
   end
 
   test "create?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.create?
   end
 
   test "create?() does not authorize anybody else" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.create?
   end
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.create?
   end
@@ -61,7 +75,9 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.destroy?
   end
@@ -70,26 +86,37 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.destroy?
   end
 
   test "destroy?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.destroy?
   end
 
   test "destroy?() does not authorize anybody else" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.destroy?
   end
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.destroy?
   end
@@ -105,7 +132,9 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.edit?
   end
@@ -114,26 +143,37 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.edit?
   end
 
   test "edit?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.edit?
   end
 
   test "edit?() does not authorize anybody else" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
-    policy = UserGroupPolicy.new(context, @user_group)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.edit?
   end
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.edit?
   end
@@ -149,7 +189,9 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, UserGroup)
     assert policy.index?
   end
@@ -158,26 +200,37 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, UserGroup)
     assert policy.index?
   end
 
   test "index?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy = UserGroupPolicy.new(context, UserGroup)
     assert policy.index?
   end
 
   test "index?() does not authorize anybody else" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
-    policy = UserGroupPolicy.new(context, UserGroup)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = UserGroupPolicy.new(context, UserGroup)
     assert !policy.index?
   end
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.index?
   end
@@ -193,7 +246,9 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.new?
   end
@@ -202,26 +257,37 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.new?
   end
 
   test "new?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
-    policy = UserGroupPolicy.new(context, @user_group)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.new?
   end
 
   test "new?() does not authorize anybody else" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.new?
   end
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.new?
   end
@@ -237,7 +303,9 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.show?
   end
@@ -246,26 +314,37 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.show?
   end
 
   test "show?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.show?
   end
 
   test "show?() does not authorize anybody else" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
-    policy = UserGroupPolicy.new(context, @user_group)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.show?
   end
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.show?
   end
@@ -281,7 +360,9 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.update?
   end
@@ -290,26 +371,37 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user = users(:norights)
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
-    context = RequestContext.new(subject_user, Role::NO_LIMIT)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.update?
   end
 
   test "update?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.update?
   end
 
   test "update?() does not authorize anybody else" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy = UserGroupPolicy.new(context, @user_group)
     assert !policy.update?
   end
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.update?
   end

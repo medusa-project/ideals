@@ -14,20 +14,29 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "approve?() does not authorize non-sysadmins" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert !policy.approve?
   end
 
   test "approve?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert policy.approve?
   end
 
   test "approve?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = InviteePolicy.new(context, @item)
     assert !policy.approve?
   end
@@ -40,20 +49,29 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() does not authorize non-sysadmins" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert !policy.create?
   end
 
   test "create?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert policy.create?
   end
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = InviteePolicy.new(context, @item)
     assert !policy.create?
   end
@@ -66,13 +84,18 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "create_unsolicited?() does not authorize logged-in users" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert !policy.create_unsolicited?
   end
 
   test "create_unsolicited?() authorizes non-logged-in users" do
-    context = RequestContext.new(nil, Role::NO_LIMIT)
+    context = RequestContext.new(user:        nil,
+                                 institution: institutions(:uiuc),
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert policy.create_unsolicited?
   end
@@ -85,20 +108,29 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() does not authorize non-sysadmins" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert !policy.destroy?
   end
 
   test "destroy?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert policy.destroy?
   end
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = InviteePolicy.new(context, @item)
     assert !policy.destroy?
   end
@@ -111,20 +143,29 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() does not authorize non-sysadmins" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy = InviteePolicy.new(context, @invitee)
     assert !policy.index?
   end
 
   test "index?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy = InviteePolicy.new(context, @invitee)
     assert policy.index?
   end
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = InviteePolicy.new(context, @item)
     assert !policy.index?
   end
@@ -137,13 +178,18 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() does not authorize logged-in users" do
-    context = RequestContext.new(nil, Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
-    assert policy.new?
+    assert !policy.new?
   end
 
   test "new?() authorizes non-logged-in users" do
-    context = RequestContext.new(nil, Role::NO_LIMIT)
+    context = RequestContext.new(user:        nil,
+                                 institution: institutions(:uiuc),
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert policy.new?
   end
@@ -156,20 +202,29 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "reject?() does not authorize non-sysadmins" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert !policy.reject?
   end
 
   test "reject?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert policy.reject?
   end
 
   test "reject?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = InviteePolicy.new(context, @item)
     assert !policy.reject?
   end
@@ -182,20 +237,29 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "resend_email?() does not authorize non-sysadmins" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert !policy.resend_email?
   end
 
   test "resend_email?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy  = InviteePolicy.new(context, @invitee)
     assert policy.resend_email?
   end
 
   test "resend_email?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = InviteePolicy.new(context, @item)
     assert !policy.resend_email?
   end
@@ -208,20 +272,29 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() does not authorize non-sysadmins" do
-    context = RequestContext.new(users(:norights), Role::NO_LIMIT)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy = InviteePolicy.new(context, @invitee)
     assert !policy.show?
   end
 
   test "show?() authorizes sysadmins" do
-    context = RequestContext.new(users(:local_sysadmin), Role::NO_LIMIT)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
     policy = InviteePolicy.new(context, @invitee)
     assert policy.show?
   end
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    context = RequestContext.new(users(:local_sysadmin), Role::LOGGED_IN)
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = InviteePolicy.new(context, @item)
     assert !policy.show?
   end

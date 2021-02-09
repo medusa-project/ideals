@@ -130,7 +130,9 @@ class ApplicationController < ActionController::Base
       role_limit         ||= Role::NO_LIMIT
       session[:role_limit] = role_limit
     end
-    RequestContext.new(current_user, role_limit)
+    RequestContext.new(user:        current_user,
+                       institution: current_institution,
+                       role_limit:  role_limit)
   end
 
   def unauthorized

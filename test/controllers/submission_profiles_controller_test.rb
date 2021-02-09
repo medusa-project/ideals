@@ -56,25 +56,29 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    user = users(:uiuc_admin)
+    log_in_as(user)
     post submission_profiles_path,
          xhr: true,
          params: {
              submission_profile: {
-                 name: "cats"
+                 institution_id: user.institution.id,
+                 name:           "cats"
              }
          }
     assert_response :ok
   end
 
   test "create() creates a profile" do
-    log_in_as(users(:local_sysadmin))
+    user = users(:uiuc_admin)
+    log_in_as(user)
     assert_difference "SubmissionProfile.count" do
       post submission_profiles_path,
            xhr: true,
            params: {
                submission_profile: {
-                   name: "cats"
+                   institution_id: user.institution.id,
+                   name:           "cats"
                }
            }
     end

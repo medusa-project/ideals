@@ -28,26 +28,30 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    user = users(:uiuc_admin)
+    log_in_as(user)
     post registered_elements_path,
          xhr: true,
          params: {
              registered_element: {
-                 name: "cats",
-                 label: "Cats",
-                 scope_note: "Mammals"
+                 institution_id: user.institution.id,
+                 name:           "cats",
+                 label:          "Cats",
+                 scope_note:     "Mammals"
              }
          }
     assert_response :ok
   end
 
   test "create() creates an element" do
-    log_in_as(users(:local_sysadmin))
+    user = users(:uiuc_admin)
+    log_in_as(user)
     assert_difference "RegisteredElement.count" do
       post registered_elements_path,
            xhr: true,
            params: {
                registered_element: {
+                   institution_id: user.institution.id,
                    name: "cats",
                    label: "Cats",
                    scope_note: "Mammals"

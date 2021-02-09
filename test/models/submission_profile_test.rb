@@ -33,7 +33,9 @@ class SubmissionProfileTest < ActiveSupport::TestCase
 
   test "setting a profile as the default sets all other instances to not-default" do
     assert_equal 1, SubmissionProfile.where(default: true).count
-    SubmissionProfile.create!(name: "New Profile", default: true)
+    SubmissionProfile.create!(name:        "New Profile",
+                              institution: institutions(:uiuc),
+                              default:     true)
     assert_equal 1, SubmissionProfile.where(default: true).count
   end
 

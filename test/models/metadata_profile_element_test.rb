@@ -20,8 +20,9 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
   # create()
 
   test "create() updates indexes in the owning profile" do
-    reg_element = RegisteredElement.create!(name: "newElement",
-                                            label: "New Element")
+    reg_element = RegisteredElement.create!(institution: institutions(:uiuc),
+                                            name:        "newElement",
+                                            label:       "New Element")
     profile = metadata_profiles(:default)
     MetadataProfileElement.create!(index: 1,
                                    registered_element: reg_element,

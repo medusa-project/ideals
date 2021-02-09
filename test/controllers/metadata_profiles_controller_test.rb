@@ -56,25 +56,29 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    user = users(:uiuc_admin)
+    log_in_as(user)
     post metadata_profiles_path,
          xhr: true,
          params: {
              metadata_profile: {
-                 name: "cats"
+                 name:           "cats",
+                 institution_id: user.institution.id
              }
          }
     assert_response :ok
   end
 
   test "create() creates a profile" do
-    log_in_as(users(:local_sysadmin))
+    user = users(:uiuc_admin)
+    log_in_as(user)
     assert_difference "MetadataProfile.count" do
       post metadata_profiles_path,
            xhr: true,
            params: {
                metadata_profile: {
-                   name: "cats"
+                   institution_id: user.institution.id,
+                   name:           "cats"
                }
            }
     end

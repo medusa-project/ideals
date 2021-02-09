@@ -208,14 +208,14 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() updates an institution" do
-    log_in_as(users(:local_sysadmin))
-    institution = institutions(:somewhere)
+    user = users(:uiuc_admin)
+    log_in_as(user)
+    institution = user.institution
     patch institution_path(institution),
           xhr: true,
           params: {
             institution: {
               name: "New Institution",
-              key: "new",
               fqdn: "new.org",
               org_dn: "new"
             }
@@ -225,14 +225,14 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
-    institution = institutions(:somewhere)
+    user = users(:uiuc_admin)
+    log_in_as(user)
+    institution = user.institution
     patch institution_path(institution),
           xhr: true,
           params: {
             institution: {
               name: "New Institution",
-              key: "new",
               fqdn: "new.org",
               org_dn: "new"
             }

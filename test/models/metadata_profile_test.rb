@@ -33,7 +33,9 @@ class MetadataProfileTest < ActiveSupport::TestCase
 
   test "setting a profile as the default sets all other instances to not-default" do
     assert_equal 1, MetadataProfile.where(default: true).count
-    MetadataProfile.create!(name: "New Profile", default: true)
+    MetadataProfile.create!(name:        "New Profile",
+                            institution: institutions(:uiuc),
+                            default:     true)
     assert_equal 1, MetadataProfile.where(default: true).count
   end
 
