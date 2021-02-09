@@ -60,6 +60,7 @@ class CollectionsController < ApplicationController
   #
   def destroy
     primary_unit = @collection.primary_unit
+    title        = @collection.title
     begin
       ActiveRecord::Base.transaction do
         @collection.destroy!
@@ -68,7 +69,7 @@ class CollectionsController < ApplicationController
       flash['error'] = "#{e}"
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = "Collection \"#{@collection.title}\" deleted."
+      flash['success'] = "Collection \"#{title}\" deleted."
     ensure
       redirect_to primary_unit
     end
