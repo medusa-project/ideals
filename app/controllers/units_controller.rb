@@ -57,7 +57,6 @@ class UnitsController < ApplicationController
   #
   def create
     @unit = Unit.new(unit_params)
-    @unit.institution = current_user.institution
     authorize @unit
     begin
       ActiveRecord::Base.transaction do
@@ -223,6 +222,6 @@ class UnitsController < ApplicationController
   end
 
   def unit_params
-    params.require(:unit).permit(:title, :parent_id)
+    params.require(:unit).permit(:institution_id, :parent_id, :title)
   end
 end
