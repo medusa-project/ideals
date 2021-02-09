@@ -15,9 +15,8 @@
 # * `name`              The user's name in whatever format they choose to
 #                       provide it.
 # * `org_dn`            `eduPersonOrgDN` property supplied by Shibboleth. Only
-#                       {ShibbolethUser}s have this. This is used to create an
-#                       association between a user and an {Institution} (via
-#                       `institution_id`).
+#                       {ShibbolethUser}s have this. This is used as the
+#                       association column between {Institution}.
 # * `phone`             The user's phone number.
 # * `type`              Supports Rails single-table inheritance (STI).
 # * `uid`               For {ShibbolethUser}s, this is the UID provided by
