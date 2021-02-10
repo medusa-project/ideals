@@ -62,7 +62,7 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def show?
-    (bitstream.item.approved? && bitstream.item.discoverable ||
+    ((bitstream.item.approved? && bitstream.item.discoverable) ||
         (role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?)) &&
         (bitstream.exists_in_staging || bitstream.medusa_uuid.present?)
   end
