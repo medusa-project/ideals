@@ -146,11 +146,8 @@ class ItemsController < ApplicationController
   # Responds to `GET /items/:id`
   #
   def show
-    @collections = @item.collections.to_a
-    if @item.primary_collection
-      @collections = @collections.unshift(@item.primary_collection)
-    end
-    @bitstreams = @item.bitstreams.
+    @collections = @item.collections
+    @bitstreams  = @item.bitstreams.
         order(:original_filename).
         select{ |b| policy(b).show? }
   end
@@ -162,9 +159,19 @@ class ItemsController < ApplicationController
     begin
       UpdateItemCommand.new(item: @item,
                             user: current_user).execute do
-        @item.update!(item_params)
-        build_metadata
-        @item.save!
+        # If we are processing input from the edit-item-membership form
+        if params[:collection_item_memberships].respond_to?(:each)
+          @item.collection_item_memberships.destroy_all
+          params[:collection_item_memberships].each do |membership|
+            CollectionItemMembership.create!(collection_id: membership[:collection_id],
+                                             item_id:       @item.id,
+                                             primary:       (membership[:primary] == "true"))
+          end
+        else
+          @item.update!(item_params)
+          build_metadata
+          @item.save!
+        end
       end
     rescue => e
       render partial: "shared/validation_messages",
@@ -195,7 +202,9 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:discoverable, :primary_collection_id, :stage)
+    params.require(:item).permit(:discoverable, :stage,
+                                 collection_item_memberships_attributes: [
+                                   :collection_id, :id, :primary])
   end
 
   def set_item

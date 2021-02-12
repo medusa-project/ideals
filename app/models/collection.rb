@@ -81,17 +81,20 @@ class Collection < ApplicationRecord
     UNITS           = "i_units"
   end
 
-  has_many :collections, foreign_key: "parent_id", dependent: :restrict_with_exception
+  has_many :collections, foreign_key: "parent_id",
+           dependent: :restrict_with_exception
   has_many :elements, class_name: "AscribedElement"
   has_one :handle
-  has_and_belongs_to_many :items
+  has_many :collection_item_memberships
+  has_many :items, through: :collection_item_memberships
   belongs_to :metadata_profile, inverse_of: :collections, optional: true
   belongs_to :primary_unit, class_name: "Unit",
              foreign_key: "primary_unit_id", optional: true
   has_many :managers
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user
-  belongs_to :parent, class_name: "Collection", foreign_key: "parent_id", optional: true
+  belongs_to :parent, class_name: "Collection",
+             foreign_key: "parent_id", optional: true
   belongs_to :submission_profile, inverse_of: :collections, optional: true
   has_many :submitters
   has_many :submitting_users, through: :submitters,

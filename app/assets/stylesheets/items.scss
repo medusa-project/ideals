@@ -12,6 +12,14 @@ body#show_item {
     color: $gray-600;
     font-weight: normal;
   }
+  #edit-item-membership-modal {
+    .col-primary, .col-buttons {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  }
   #edit-item-metadata-modal {
     textarea {
       height: 5em;

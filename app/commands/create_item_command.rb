@@ -1,9 +1,8 @@
 class CreateItemCommand < Command
 
-  def initialize(submitter:,
-                 primary_collection_id:)
-    @submitter             = submitter
-    @primary_collection_id = primary_collection_id
+  def initialize(submitter:, primary_collection: nil)
+    @submitter          = submitter
+    @primary_collection = primary_collection
   end
 
   ##
@@ -11,10 +10,10 @@ class CreateItemCommand < Command
   #
   def execute
     Item.transaction do
-      item = Item.create!(submitter:             @submitter,
-                          primary_collection_id: @primary_collection_id,
-                          stage:                 Item::Stages::SUBMITTING,
-                          discoverable:          false)
+      item = Item.create!(submitter:          @submitter,
+                          primary_collection: @primary_collection,
+                          stage:              Item::Stages::SUBMITTING,
+                          discoverable:       false)
 
       # For every element with placeholder text in the item's effective
       # submission profile, ascribe a metadata element with a value of that

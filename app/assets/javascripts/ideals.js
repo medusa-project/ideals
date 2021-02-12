@@ -156,50 +156,88 @@ const IDEALS = {
      * DOM with the following names:
      *
      * 1. `unit_id`
-     * 2. `item[primary_collection_id]`
+     * 2. `collection_item_memberships[collection_id]`
      *
-     * There must also be two hidden fields:
+     * And also a `collection_item_memberships[primary]` radio.
      *
-     * 1. `initial_primary_collection_unit_id`
-     * 2. `initial_primary_collection_id`
+     * There must also be at least two hidden fields for each unit/collection
+     * pair:
+     *
+     * 1. `initial_unit_ids[]`
+     * 2. `initial_collection_ids[]`
      *
      * @constructor
      */
     CollectionSelectMenus: function() {
-        const unitsMenu       = $("[name=unit_id]");
-        const collectionsMenu = $("[name='item[primary_collection_id]']");
-
-        const fetchCollectionsForUnit = function(unitID, onComplete) {
+        /**
+         * @param unitMenu {jQuery} unit select menu or unit ID.
+         * @param onComplete Callback function.
+         */
+        const fetchCollectionsForUnit = function(unitMenu, onComplete) {
+            let unitID;
+            if (typeof unitMenu === "string") {
+                unitID   = unitMenu;
+                unitMenu = $(".unit-menu").filter(function() { return this.value === unitID });
+            } else {
+                unitID = unitMenu.val();
+            }
             new IDEALS.Client().fetchUnitCollections(unitID, function(data) {
-                collectionsMenu.children().remove();
+                const collectionMenu = unitMenu.parents(".unit-collection-combo").find(".collection-menu");
+                collectionMenu.children().remove();
                 if (data.length > 0) {
                     $.each(data, function (index, value) {
-                        collectionsMenu.append(
+                        collectionMenu.append(
                             "<option value='" + value[1] + "'>" + value[0] + "</option>");
                     });
                 }
                 if (onComplete) {
-                    onComplete();
+                    onComplete(collectionMenu);
                 }
             });
         };
-        unitsMenu.on("change", function() {
-            fetchCollectionsForUnit($(this).val());
-        });
 
-        // Restore initial unit & collection selection values. If there is
-        // nothing to restore, select the first unit.
-        let unitID = $("[name=initial_primary_collection_unit_id]").val();
-        if (unitID > 0) {
-            fetchCollectionsForUnit(unitID, function () {
-                unitsMenu.val(unitID);
-                const collectionID = $("[name='initial_primary_collection_id']").val();
-                if (collectionID > 0) {
-                    collectionsMenu.val(collectionID);
+        const attachEventListeners = function() {
+            $(".unit-menu").off("change").on("change", function() {
+                fetchCollectionsForUnit($(this));
+            });
+            $(".add-collection").off("click").on("click", function() {
+                // Clone the last unit/collection group.
+                const lastCombo = $(".unit-collection-combo:last");
+                const clone     = lastCombo.clone();
+                // Insert the clone into the DOM.
+                lastCombo.after(clone);
+                lastCombo.after("<hr>");
+                attachEventListeners();
+                return false;
+            });
+            $(".remove-collection").off("click").on("click", function() {
+                const combos = $(".unit-collection-combo");
+                if (combos.length > 1) {
+                    const lastCombo = combos.filter(":last");
+                    lastCombo.prev("hr").remove();
+                    lastCombo.remove();
                 }
-                self.save(collectionsMenu);
+                return false;
+            });
+            const radios = $('.primary');
+            radios.off("click").on("click", function() {
+                radios.prop("checked", false);
+                $(this).prop("checked", true);
+            });
+        };
+
+        // Restore initial unit & collection selections.
+        const initialUnitSelections       = $("[name='initial_unit_ids[]']");
+        const initialCollectionSelections = $("[name='initial_collection_ids[]']");
+        for (let i = 0; i < initialUnitSelections.length; i++) {
+            const unitID = initialUnitSelections.eq(i).val();
+            fetchCollectionsForUnit(unitID, function (collectionMenu) {
+                collectionMenu.val(initialCollectionSelections.eq(i).val());
+                collectionMenu.parents(".unit-collection-combo").find(".unit-menu").val(unitID);
             });
         }
+
+        attachEventListeners();
     },
 
     /**

@@ -6,10 +6,10 @@ json.uri item_url(@item, format: :json)
 if policy(@item).show?
   json.extract! @item, :id, :exists_in_medusa?, :discoverable, :created_at, :updated_at
   json.stage Item::Stages.constants.find{ |c| @item.stage == c }&.to_s&.downcase&.capitalize
-  if @item.primary_collection_id.present?
+  if @item.primary_collection
     json.primary_collection do
-      json.id @item.primary_collection_id
-      json.uri collection_url(@item.primary_collection_id, format: :json)
+      json.id @item.primary_collection.id
+      json.uri collection_url(@item.primary_collection, format: :json)
     end
   end
   json.collections do

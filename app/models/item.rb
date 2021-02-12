@@ -28,7 +28,6 @@
 #                           means it should not be included in search results,
 #                           and its metadata should not be available except to
 #                           administrators.
-# * `primary_collection_id` Foreign key to {Collection}.
 # * `stage`                 Lifecycle stage, whose value is one of the {Stages}
 #                           constant values.
 # * `submitter_id`          Foreign key to {User}.
@@ -124,16 +123,17 @@ class Item < ApplicationRecord
   end
 
   has_many :bitstreams
-  has_and_belongs_to_many :collections
+  has_many :collection_item_memberships
+  has_many :collections, through: :collection_item_memberships
   has_many :elements, class_name: "AscribedElement"
   has_many :events
   has_one :handle
-  belongs_to :primary_collection, class_name: "Collection",
-             foreign_key: "primary_collection_id", optional: true
+  has_one :primary_collection_membership, -> { where(primary: true) },
+          class_name: "CollectionItemMembership"
+  has_one :primary_collection, through: :primary_collection_membership,
+          class_name: "Collection", source: :collection
   belongs_to :submitter, class_name: "User", inverse_of: "submitted_items",
              optional: true
-
-  breadcrumbs parent: :primary_collection, label: :title
 
   before_save :email_after_submission
   before_destroy :restrict_in_archive_deletion
@@ -142,13 +142,15 @@ class Item < ApplicationRecord
   validate :submission_includes_bitstreams,
            :submission_includes_required_elements
 
+  breadcrumbs parent: :primary_collection, label: :title
+
   ##
   # @return [Enumerable<User>] All managers of all owning collections,
   #                            including the primary one.
   #
   def all_collection_managers
     bucket = Set.new
-    all_collections.each do |col|
+    collections.each do |col|
       bucket += col.managing_users
     end
     bucket
@@ -160,20 +162,9 @@ class Item < ApplicationRecord
   #
   def all_collection_submitters
     bucket = Set.new
-    all_collections.each do |col|
+    collections.each do |col|
       bucket += col.submitting_users
     end
-    bucket
-  end
-
-  ##
-  # @return [Enumerable<Collection>] All owning collections, including the
-  #                                  primary one.
-  #
-  def all_collections
-    bucket = Set.new
-    bucket << self.primary_collection if self.primary_collection_id
-    bucket += collections
     bucket
   end
 
@@ -182,7 +173,7 @@ class Item < ApplicationRecord
   #
   def all_units
     bucket = Set.new
-    all_collections.each do |collection|
+    collections.each do |collection|
       bucket += collection.all_units
     end
     bucket
@@ -255,7 +246,7 @@ class Item < ApplicationRecord
   def as_indexed_json
     doc = {}
     doc[IndexFields::CLASS]              = self.class.to_s
-    collections                          = self.all_collections
+    collections                          = self.collections
     doc[IndexFields::COLLECTION_TITLES]  = collections.map(&:title)
     doc[IndexFields::COLLECTIONS]        = collections.map(&:id)
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
@@ -266,7 +257,7 @@ class Item < ApplicationRecord
     doc[IndexFields::INSTITUTION_KEY]    = units.first&.institution&.key
     doc[IndexFields::LAST_INDEXED]       = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
-    doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection_id
+    doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection&.id
     doc[IndexFields::PRIMARY_UNIT]       = self.primary_unit&.id
     doc[IndexFields::STAGE]              = self.stage
     doc[IndexFields::SUBMITTER]          = self.submitter_id
@@ -337,8 +328,10 @@ class Item < ApplicationRecord
   end
 
   ##
+  #
   # @return [Collection] The primary collection, if set; otherwise, any other
   #                      collection in the {collections} association.
+  # @deprecated TODO: ensure that all items have a primary collection and get rid of this
   #
   def effective_primary_collection
     #noinspection RubyYardReturnMatch

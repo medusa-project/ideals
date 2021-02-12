@@ -417,11 +417,15 @@ class IdealsImporter
         else
           stage = Item::Stages::APPROVED
         end
-        Item.create!(id:                    id,
-                     submitter_id:          submitter_id,
-                     stage:                 stage,
-                     discoverable:          discoverable,
-                     primary_collection_id: collection_id) unless Item.exists?(id)
+        unless Item.exists?(id)
+          Item.create!(id:           id,
+                       submitter_id: submitter_id,
+                       stage:        stage,
+                       discoverable: discoverable)
+          CollectionItemMembership.create!(collection_id: collection_id,
+                                           item_id:       id,
+                                           primary:       true)
+        end
       end
       progress.report(row_num, "Importing items")
     end

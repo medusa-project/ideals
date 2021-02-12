@@ -50,7 +50,7 @@ class ItemPolicy < ApplicationPolicy
       # sysadmins can do anything
       return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
 
-      item.all_collections.each do |collection|
+      item.collections.each do |collection|
         # non-sysadmins can submit to collections for which they have submitter
         # privileges
         return true if role >= Role::COLLECTION_SUBMITTER &&
@@ -117,7 +117,7 @@ class ItemPolicy < ApplicationPolicy
         # sysadmins can see access
         return true if user.sysadmin?
       end
-      item.all_collections.each do |collection|
+      item.collections.each do |collection|
         # collection managers can see access of items within their collections
         return true if role >= Role::COLLECTION_MANAGER &&
             user.effective_manager?(collection)
@@ -168,7 +168,7 @@ class ItemPolicy < ApplicationPolicy
       return true if role >= Role::COLLECTION_SUBMITTER &&
           user == item.submitter && item.submitting?
 
-      item.all_collections.each do |collection|
+      item.collections.each do |collection|
         # unit admins can update items within their units
         collection.all_units.each do |unit|
           return true if role >= Role::UNIT_ADMINISTRATOR &&

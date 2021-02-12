@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_09_150334) do
+ActiveRecord::Schema.define(version: 2021_02_10_181652) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -52,8 +52,18 @@ ActiveRecord::Schema.define(version: 2021_02_09_150334) do
     t.boolean "submitted_for_ingest", default: false, null: false
     t.integer "role", default: 0, null: false
     t.integer "bundle", default: 0, null: false
+    t.integer "download_count", default: 0, null: false
     t.index ["medusa_key"], name: "index_bitstreams_on_medusa_key", unique: true
     t.index ["staging_key"], name: "index_bitstreams_on_staging_key", unique: true
+  end
+
+  create_table "collection_item_memberships", force: :cascade do |t|
+    t.bigint "collection_id", null: false
+    t.bigint "item_id", null: false
+    t.boolean "primary", default: false, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["collection_id", "item_id"], name: "index_collection_item_memberships_on_collection_id_and_item_id", unique: true
   end
 
   create_table "collections", force: :cascade do |t|
@@ -67,10 +77,10 @@ ActiveRecord::Schema.define(version: 2021_02_09_150334) do
     t.boolean "submissions_reviewed", default: true, null: false
   end
 
-  create_table "collections_items", id: false, force: :cascade do |t|
+  create_table "collections_items_deleteme", id: false, force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "item_id", null: false
-    t.index ["collection_id", "item_id"], name: "index_collections_items_on_collection_id_and_item_id", unique: true
+    t.index ["collection_id", "item_id"], name: "index_collections_items_deleteme_on_collection_id_and_item_id", unique: true
   end
 
   create_table "collections_units", id: false, force: :cascade do |t|
@@ -126,7 +136,7 @@ ActiveRecord::Schema.define(version: 2021_02_09_150334) do
   create_table "items", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "primary_collection_id"
+    t.bigint "primary_collection_id_deleteme"
     t.bigint "submitter_id"
     t.boolean "discoverable", default: false, null: false
     t.integer "stage", default: 0, null: false
@@ -310,12 +320,14 @@ ActiveRecord::Schema.define(version: 2021_02_09_150334) do
   add_foreign_key "ascribed_elements", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "collection_item_memberships", "collections", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "collection_item_memberships", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections", "collections", column: "parent_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "units", column: "primary_unit_id", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "collections_items", "collections", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "collections_items", "items", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "collections_items_deleteme", "collections", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "collections_items_deleteme", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections_units", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections_units", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "items", on_update: :cascade, on_delete: :cascade
@@ -324,7 +336,7 @@ ActiveRecord::Schema.define(version: 2021_02_09_150334) do
   add_foreign_key "handles", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "handles", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "items", "collections", column: "primary_collection_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "items", "collections", column: "primary_collection_id_deleteme", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "ldap_groups_user_groups", "ldap_groups"
   add_foreign_key "ldap_groups_user_groups", "user_groups"

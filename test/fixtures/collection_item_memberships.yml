@@ -1,0 +1,44 @@
+collection1_item1:
+  collection: collection1
+  item:       item1
+  primary:    true
+
+collection1_in_medusa:
+  collection: collection1
+  item:       in_medusa
+  primary:    true
+
+collection1_described:
+  collection: collection1
+  item:       described
+  primary:    true
+
+collection1_submitter:
+  collection: collection1
+  item:       submitter
+  primary:    true
+
+collection1_undescribed:
+  collection: collection1
+  item:       undescribed
+  primary:    true
+
+collection1_submitting:
+  collection: collection1
+  item:       submitting
+  primary:    true
+
+collection1_submitted:
+  collection: collection1
+  item:       submitted
+  primary:    true
+
+collection1_undiscoverable:
+  collection: collection1
+  item:       undiscoverable
+  primary:    true
+
+collection1_withdrawn:
+  collection: collection1
+  item:       withdrawn
+  primary:    true

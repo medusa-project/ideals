@@ -43,7 +43,7 @@ class SubmissionPolicy < ApplicationPolicy
       return true if role >= Role::COLLECTION_SUBMITTER &&
           user == item.submitter && item.submitting?
 
-      item.all_collections.each do |collection|
+      item.collections.each do |collection|
         # collection managers can update items within their collections
         return true if role >= Role::COLLECTION_MANAGER &&
             user.effective_manager?(collection)

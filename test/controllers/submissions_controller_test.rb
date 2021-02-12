@@ -187,7 +187,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
               }
           }
     item.reload
-    assert_equal collection.id, item.primary_collection_id
+    assert_equal collection.id, item.primary_collection.id
   end
 
   test "update() returns HTTP 204" do

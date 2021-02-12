@@ -9,20 +9,38 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  = hidden_field_tag :initial_primary_collection_unit_id, f.object.primary_collection&.primary_unit_id
-  = hidden_field_tag :initial_primary_collection_id, f.object.primary_collection_id
-
-  .form-group
-    = f.label :unit_id, "Unit"
-    - unit_options = unit_tree_options(include_only_admin: true, |
-                                       include_blank: f.object&.primary_collection&.primary_unit_id.blank?) |
-    = select_tag(:unit_id, options_for_select(unit_options),
-                 class: "custom-select")
-
-  .form-group
-    = f.label :primary_collection_id, "Primary Collection"
-    = f.select(:primary_collection_id, options_for_select([]),
-               {}, class: "custom-select")
+  - f.object.collection_item_memberships.each do |membership|
+    .row.unit-collection-combo
+      = hidden_field_tag "initial_unit_ids[]", membership.collection.primary_unit.id
+      = hidden_field_tag "initial_collection_ids[]", membership.collection.id
+      .col-sm-9
+        .form-group.row
+          = label_tag :unit_id, "Unit", class: "col-sm-2 col-form-label"
+          .col-sm-10
+            - unit_options = unit_tree_options(include_only_admin: true, |
+                                               include_blank: membership.collection.primary_unit.id.blank?) |
+            = select_tag(:unit_id, options_for_select(unit_options, membership.collection.primary_unit.id),
+                         class: "custom-select unit-menu")
+        .form-group.row
+          = label_tag('collection_item_memberships[][collection_id]', "Collection",
+                      class: "col-sm-2 col-form-label")
+          .col-sm-10
+            -# will by populated via JS
+            = select_tag('collection_item_memberships[][collection_id]', options_for_select([]),
+                         class: "custom-select collection-menu",
+                         data: { "unit-id": membership.collection.primary_unit.id })
+      .col-sm-1.col-primary
+        .form-check
+          = radio_button_tag('collection_item_memberships[][primary]', "true",
+                             checked: membership.primary,
+                             class: 'form-check-input primary')
+          = label_tag('collection_item_memberships[][primary]', "Primary")
+      .col-sm-2.col-buttons
+        .btn-group
+          %button.btn.btn-success.add-collection
+            %i.fa.fa-plus
+          %button.btn.btn-danger.remove-collection
+            %i.fa.fa-minus
 
   .clearfix
     .float-right

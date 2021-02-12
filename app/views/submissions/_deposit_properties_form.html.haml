@@ -9,7 +9,7 @@
 
   = f.hidden_field :submitter_id, value: current_user.id
   = f.hidden_field :initial_primary_collection_unit_id, value: f.object&.primary_collection&.primary_unit_id
-  = f.hidden_field :initial_primary_collection_id, value: f.object.primary_collection_id
+  = f.hidden_field :initial_primary_collection_id, value: f.object.primary_collection.id
 
   %p.text-info
     %i.fa.fa-info-circle
@@ -36,8 +36,8 @@
 
     .row.mb-3
       .col-sm-10
-        = f.select(:primary_collection_id, options_for_select([]),
-                   {}, class: "custom-select")
+        = select_tag("item[primary_collection_id]", options_for_select([]),
+                     class: "custom-select")
       .col-sm-2
         .message
           .text-success

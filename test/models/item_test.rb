@@ -66,12 +66,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 1, @instance.all_collection_submitters.length
   end
 
-  # all_collections()
-
-  test "all_collections() returns the expected collections" do
-    assert_equal 1, @instance.all_collections.length
-  end
-
   # all_unit_administrators()
 
   test "all_unit_administrators() returns the expected users" do
@@ -148,7 +142,7 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_empty doc[Item::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Item::IndexFields::LAST_MODIFIED]
-    assert_equal @instance.primary_collection_id,
+    assert_equal @instance.primary_collection.id,
                  doc[Item::IndexFields::PRIMARY_COLLECTION]
     assert_equal @instance.primary_collection.primary_unit.id,
                  doc[Item::IndexFields::PRIMARY_UNIT]
@@ -273,7 +267,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "effective_metadata_profile() falls back to the default profile if there
   is no primary collection assigned" do
-    @instance.primary_collection_id = nil
+    @instance.primary_collection = nil
     assert_equal metadata_profiles(:default),
                  @instance.effective_metadata_profile
   end
@@ -287,7 +281,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "effective_primary_collection() returns another collection if the
   primary collection is not set" do
-    @instance.primary_collection = nil
+    @instance.collection_item_memberships.update_all(primary: false)
     assert @instance.effective_primary_collection.kind_of?(Collection)
   end
 
@@ -307,13 +301,13 @@ class ItemTest < ActiveSupport::TestCase
 
   test "effective_primary_unit() returns another collection's primary unit if
   the primary collection is not set" do
-    @instance.primary_collection = nil
+    @instance.collection_item_memberships.update_all(primary: false)
     assert @instance.effective_primary_unit.kind_of?(Unit)
   end
 
   test "effective_primary_unit() returns one of another collection's units if
-  no primaries are set" do
-    @instance.primary_collection = nil
+  no primary collection is set" do
+    @instance.collection_item_memberships.update_all(primary: false)
     @instance.collections.each do |col|
       col.update!(primary_unit: nil)
     end
@@ -330,7 +324,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "effective_submission_profile() falls back to the default profile if
   there is no primary collection assigned" do
-    @instance.primary_collection_id = nil
+    @instance.primary_collection = nil
     assert_equal submission_profiles(:default),
                  @instance.effective_submission_profile
   end

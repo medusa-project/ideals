@@ -34,8 +34,9 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "destroy() returns HTTP 302 for an existing item" do
     log_in_as(users(:local_sysadmin))
     submission = items(:item1)
+    expected   = submission.primary_collection
     delete item_path(submission)
-    assert_redirected_to submission.primary_collection
+    assert_redirected_to expected
   end
 
   test "destroy() returns HTTP 404 for a missing item" do

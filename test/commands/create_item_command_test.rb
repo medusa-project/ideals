@@ -5,8 +5,8 @@ class CreateItemCommandTest < ActiveSupport::TestCase
   test "execute() returns the expected instance" do
     submitter  = users(:local_sysadmin)
     collection = collections(:collection1)
-    command    = CreateItemCommand.new(submitter:             submitter,
-                                       primary_collection_id: collection.id)
+    command    = CreateItemCommand.new(submitter:          submitter,
+                                       primary_collection: collection)
     item = command.execute
 
     assert_equal submission_profile_elements(:default_description).placeholder_text,
@@ -20,8 +20,8 @@ class CreateItemCommandTest < ActiveSupport::TestCase
     Event.destroy_all
 
     submitter = users(:local_sysadmin)
-    command   = CreateItemCommand.new(submitter:             submitter,
-                                      primary_collection_id: collections(:collection1).id)
+    command   = CreateItemCommand.new(submitter:          submitter,
+                                      primary_collection: collections(:collection1))
     item = command.execute
 
     event = Event.all.first

@@ -20,7 +20,7 @@ class BitstreamPolicy < ApplicationPolicy
       # sysadmins can do anything
       return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
 
-      bitstream.item.all_collections.each do |collection|
+      bitstream.item.collections.each do |collection|
         # non-sysadmins can submit to collections for which they have submitter
         # privileges
         return true if role >= Role::COLLECTION_SUBMITTER &&
@@ -73,7 +73,7 @@ class BitstreamPolicy < ApplicationPolicy
       # sysadmins can do anything
       return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
 
-      bitstream.item.all_collections.each do |collection|
+      bitstream.item.collections.each do |collection|
         # unit admins can update bitstreams within their units
         collection.all_units.each do |unit|
           return true if role >= Role::UNIT_ADMINISTRATOR &&

@@ -1,63 +1,42 @@
+# N.B.: All items must specify their collection membership in
+# collection_item_memberships.yml
+
 item1:
   submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
-  primary_collection: collection1
-  collections:
-    - collection1
 
 in_medusa:
   submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
-  primary_collection: collection1
-  collections:
-    - collection1
 
 described:
   submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
-  primary_collection: collection1
-  collections:
-    - collection1
 
 undescribed:
   submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
-  primary_collection: collection1
-  collections:
-    - collection1
 
 submitting:
   submitter: local_sysadmin
   stage: <%= Item::Stages::SUBMITTING %>
   discoverable: false
-  primary_collection: collection1
-  collections:
-    - collection1
 
 submitted:
   submitter: local_sysadmin
   stage: <%= Item::Stages::SUBMITTED %>
   discoverable: false
-  primary_collection: collection1
-  collections:
-    - collection1
 
 undiscoverable:
   submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
   discoverable: false
-  primary_collection: collection1
-  collections:
-    - collection1
 
 withdrawn:
   submitter: local_sysadmin
   stage: <%= Item::Stages::WITHDRAWN %>
   discoverable: false
-  primary_collection: collection1
-  collections:
-    - collection1

@@ -21,25 +21,15 @@
 
 = render partial: "show_files_section"
 = render partial: "show_metadata_section"
-
-%h2.mt-5
-  Owning Collections
-  - if policy(@item).edit_membership?
-    %button.btn.btn-light.edit-item-membership{"data-item-id": @item.id,
-                                               "data-target": "#edit-item-membership-modal",
-                                               "data-toggle": "modal",
-                                               role: "button"}
-      %i.fas.fa-pencil-alt
-      Change
-= resource_list(@collections, primary_id: @item.primary_collection_id)
-
+= render partial: "show_collections_section"
 = render partial: "show_properties_section"
 = render partial: "show_access_section"
 = render partial: "show_events_section"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-item-membership-modal",
-                   title: "Edit Membership" }
+                   title: "Edit Membership",
+                   size: :xl }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-item-metadata-modal",
                    title: "Edit Metadata",

@@ -53,9 +53,8 @@ class SubmissionsController < ApplicationController
   # Responds to `POST /submissions`.
   #
   def create
-    command = CreateItemCommand.new(submitter:             current_user,
-                                    primary_collection_id: params[:primary_collection_id])
-    item = command.execute
+    command = CreateItemCommand.new(submitter: current_user)
+    item    = command.execute
     authorize item, policy_class: SubmissionPolicy # this should always succeed
     redirect_to edit_submission_path(item)
   end
@@ -100,6 +99,10 @@ class SubmissionsController < ApplicationController
         # N.B. 2: this is not done via UpdateItemCommand because there is no
         # need to record an event for every edit of a submission-in-progress.
         @item.update!(item_params)
+        if params[:item][:primary_collection_id]
+          @item.primary_collection =
+            Collection.find(params[:item][:primary_collection_id])
+        end
         build_metadata
         @item.save!
       end
@@ -131,7 +134,7 @@ class SubmissionsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:primary_collection_id, :submitter_id)
+    params.require(:item).permit(:submitter_id)
   end
 
   def set_item
