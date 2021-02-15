@@ -8,8 +8,8 @@
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
 
-  / Include this only because `collection` is required in the params.
-  = f.hidden_field :primary_unit_id, value: f.object.primary_unit_id
+  -# Include this only because `collection` is required in the params.
+  = f.hidden_field :id, value: f.object.id
 
   .form-group
     = label_tag "elements_#{::Configuration.instance.elements[:title]}", "Title"
@@ -37,7 +37,7 @@
       = f.label :submissions_reviewed, "Submissions Reviewed", class: "form-check-label"
     %span.form-text.text-muted
       %i.fa.fa-info-circle
-      Enabling this will not affect submitted items still in the review queue.
+      Changing this will not affect submitted items that are still in the review queue.
 
   .clearfix
     .float-right

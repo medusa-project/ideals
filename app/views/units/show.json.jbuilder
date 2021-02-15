@@ -19,7 +19,7 @@ json.children do
   end
 end
 json.collections do
-  @unit.all_collections.each do |collection|
+  @unit.collections.each do |collection|
     json.child! do
       json.id collection.id
       json.uri collection_url(collection, format: :json)

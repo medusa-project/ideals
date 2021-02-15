@@ -8,7 +8,7 @@
     - # populated via ajax by shared/_validation_messages.js.erb
 
   = f.hidden_field :submitter_id, value: current_user.id
-  = f.hidden_field :initial_primary_collection_unit_id, value: f.object&.primary_collection&.primary_unit_id
+  = f.hidden_field :initial_primary_collection_unit_id, value: f.object&.primary_collection&.primary_unit&.id
   = f.hidden_field :initial_primary_collection_id, value: f.object.primary_collection.id
 
   %p.text-info
@@ -23,7 +23,7 @@
     .row.mb-3
       .col-sm-10
         -# This element is used only to populate the collection-select menu.
-        = select_tag(:unit_id, options_for_select(unit_tree_options(include_blank: f.object&.primary_collection&.primary_unit_id.blank?)),
+        = select_tag(:unit_id, options_for_select(unit_tree_options(include_blank: f.object&.primary_collection&.primary_unit&.id.blank?)),
                      class: "custom-select")
       .col-sm-2
         .message

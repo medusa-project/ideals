@@ -35,6 +35,8 @@ class Unit < ApplicationRecord
   has_many :administrators
   has_many :administering_users, through: :administrators,
            class_name: "User", source: :user
+  has_many :unit_collection_memberships
+  has_many :collections, through: :unit_collection_memberships
   has_many :units, foreign_key: "parent_id", dependent: :restrict_with_exception
   has_one :handle
   has_one :primary_administrator_relationship, -> { where(primary: true) },
@@ -43,8 +45,6 @@ class Unit < ApplicationRecord
           source: :user
   scope :top, -> { where(parent_id: nil) }
   scope :bottom, -> { where(children.count == 0) }
-
-  has_and_belongs_to_many :collections
 
   validates :title, presence: true
   validate :validate_parent, :validate_primary_administrator
@@ -93,13 +93,6 @@ class Unit < ApplicationRecord
     Unit.where("id IN (?)", results.
         select{ |row| row['id'] != self.id }.
         map{ |row| row['id'] })
-  end
-
-  ##
-  # @return [Enumerable<Collection>]
-  #
-  def all_collections
-    self.collections + Collection.where(primary_unit: self)
   end
 
   ##
@@ -152,23 +145,26 @@ class Unit < ApplicationRecord
   # @return [Collection]
   #
   def create_default_collection
-    if self.collections.where(unit_default: true).count > 0
+    if self.unit_collection_memberships.where(unit_default: true).count > 0
       raise "This unit already has a default collection."
     end
     config = ::Configuration.instance
     transaction do
-      col = Collection.create!(primary_unit_id: self.id, unit_default: true)
+      collection = Collection.create!
+      self.unit_collection_memberships.build(unit:         self,
+                                             collection:   collection,
+                                             unit_default: true).save!
 
       # Add title
       reg_title_element = RegisteredElement.find_by_name(config.elements[:title])
-      col.elements.build(registered_element: reg_title_element,
-                         string: "Default collection for #{self.title}").save!
+      collection.elements.build(registered_element: reg_title_element,
+                                string: "Default collection for #{self.title}").save!
       # Add description
       reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
-      col.elements.build(registered_element: reg_description_element,
-                         string: "This collection was created automatically "\
-                           "along with its parent unit.").save!
-      col
+      collection.elements.build(registered_element: reg_description_element,
+                                string: "This collection was created automatically "\
+                                    "along with its parent unit.").save!
+      collection
     end
   end
 
@@ -176,7 +172,7 @@ class Unit < ApplicationRecord
   # @return [Collection]
   #
   def default_collection
-    Collection.where(primary_unit: self, unit_default: true).limit(1).first
+    self.unit_collection_memberships.where(unit_default: true).limit(1).first&.collection
   end
 
   def label

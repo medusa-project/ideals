@@ -48,7 +48,7 @@ class SubmissionPolicy < ApplicationPolicy
         return true if role >= Role::COLLECTION_MANAGER &&
             user.effective_manager?(collection)
         # unit admins can update items within their units
-        collection.all_units.each do |unit|
+        collection.units.each do |unit|
           return true if role >= Role::UNIT_ADMINISTRATOR &&
               user.effective_unit_admin?(unit)
         end

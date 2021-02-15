@@ -80,7 +80,7 @@ class User < ApplicationRecord
     # Check for sysadmin.
     return true if sysadmin?
     # Check for unit admin.
-    collection.all_units.each do |unit|
+    collection.units.each do |unit|
       return true if effective_unit_admin?(unit)
     end
     # Check for manager of the collection itself.

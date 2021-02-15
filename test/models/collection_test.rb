@@ -61,12 +61,6 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal 2, @instance.all_unit_administrators.length
   end
 
-  # all_units()
-
-  test "all_units() returns the expected units" do
-    assert_equal 2, @instance.all_units.length
-  end
-
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
@@ -79,11 +73,7 @@ class CollectionTest < ActiveSupport::TestCase
 
     actual = Collection.search.institution(institution).count
     assert actual > 0
-    assert_equal Collection.
-      joins('LEFT JOIN units ON units.id = collections.primary_unit_id').
-      joins('LEFT JOIN institutions ON institutions.id = units.institution_id').
-      where('institutions.id': institution.id).count,
-                 actual
+    assert_equal Collection.count, actual
   end
 
   # as_indexed_json()
@@ -100,7 +90,7 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal @instance.effective_managers.map(&:id),
                  doc[Collection::IndexFields::MANAGERS]
     assert_nil doc[Collection::IndexFields::PARENT]
-    assert_equal @instance.primary_unit_id,
+    assert_equal @instance.primary_unit.id,
                doc[Collection::IndexFields::PRIMARY_UNIT]
     assert_equal @instance.effective_submitters.map(&:id),
                  doc[Collection::IndexFields::SUBMITTERS]
@@ -316,16 +306,6 @@ class CollectionTest < ActiveSupport::TestCase
   test "title() returns an empty string when there is no title element" do
     collection = collections(:undescribed)
     assert_equal "", collection.title
-  end
-
-  # unit_default
-
-  test "setting a profile as the unit default sets all other instances to
-  not-unit-default" do
-    unit = units(:unit1)
-    assert_equal 1, Collection.where(primary_unit: unit, unit_default: true).count
-    Collection.create!(primary_unit: unit, unit_default: true)
-    assert_equal 1, Collection.where(primary_unit: unit, unit_default: true).count
   end
 
   # units

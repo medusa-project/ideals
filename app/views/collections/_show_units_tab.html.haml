@@ -9,5 +9,5 @@
         %i.fas.fa-pencil-alt
         Change Unit Membership
 
-= resource_list(@collection.all_units.sort{ |u| u.title <=> u.title },
-                primary_id: @collection.primary_unit_id)
+= resource_list(@collection.units.sort_by(&:title),
+                primary_id: @collection.primary_unit.id)

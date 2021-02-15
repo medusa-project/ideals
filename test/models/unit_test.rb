@@ -12,10 +12,10 @@ class UnitTest < ActiveSupport::TestCase
   test "create() creates a default collection" do
     unit = Unit.create!(title: "New Unit",
                         institution: institutions(:somewhere))
-    assert_equal 1, unit.all_collections.length
-    col = unit.all_collections.first
-    assert col.unit_default
-    assert_equal "Default collection for #{unit.title}", col.title
+    assert_equal 1, unit.collections.length
+    m = unit.unit_collection_memberships.first
+    assert m.unit_default
+    assert_equal "Default collection for #{unit.title}", m.collection.title
   end
 
   # delete_document() (Indexed concern)
@@ -71,12 +71,6 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal 3, units(:unit1).all_children.count
   end
 
-  # all_collections()
-
-  test "all_collections() returns the correct collections" do
-    assert_equal 4, units(:unit1).all_collections.count
-  end
-
   # all_parents()
 
   test "all_parents() returns the parents" do
@@ -126,7 +120,7 @@ class UnitTest < ActiveSupport::TestCase
   test "create_default_collection() creates a correct default collection" do
     @instance.collections.destroy_all
     col = @instance.create_default_collection
-    assert col.unit_default
+    assert col.unit_collection_memberships.first.unit_default
     assert_equal "Default collection for #{@instance.title}", col.title
     assert_equal "This collection was created automatically along with its parent unit.",
                  col.description

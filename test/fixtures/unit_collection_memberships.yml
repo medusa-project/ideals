@@ -1,0 +1,38 @@
+unit1_collection1:
+  unit: unit1
+  collection: collection1
+  primary: true
+  unit_default: true
+
+unit1_collection1_collection1:
+  unit: unit1
+  collection: collection1_collection1
+  primary: true
+  unit_default: false
+
+unit1_collection1_collection1_collection1:
+  unit: unit1
+  collection: collection1_collection1_collection1
+  primary: true
+  unit_default: false
+
+unit2_collection1:
+  unit: unit2
+  collection: collection1
+  primary: false
+  unit_default: false
+
+unit1_described:
+  unit: unit1
+  collection: described
+  unit_default: false
+
+unit1_empty:
+  unit: unit1
+  collection: empty
+  unit_default: false
+
+unit1_undescribed:
+  unit: unit1
+  collection: undescribed
+  unit_default: false

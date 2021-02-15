@@ -9,9 +9,12 @@
 
 = form_for(Collection.new, remote: true) do |f|
   .error-messages
-    - # populated via ajax by shared/_validation_messages.js.erb
+    -# populated via ajax by shared/_validation_messages.js.erb
 
-  = f.hidden_field :primary_unit_id, value: primary_unit.id
+  -# needed only because collection is required by the params
+  = f.hidden_field :metadata_profile_id, value: f.object.metadata_profile_id
+
+  = hidden_field_tag :primary_unit_id, primary_unit.id
   - if parent
     = f.hidden_field :parent_id, value: parent.id
 

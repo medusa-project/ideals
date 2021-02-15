@@ -17,7 +17,6 @@
 #                           default profile}. In most cases,
 #                           {effective_metadata_profile} should be used instead
 #                           of accessing this directly.
-# * `primary_unit_id`       Foreign key to {Unit}.
 # * `submission_profile_id` Foreign key to {SubmissionProfile}. Instances
 #                           without this set should use the
 #                           {SubmissionProfile#default default profile}. In
@@ -26,8 +25,6 @@
 # * `submissions_reviewed`  If true, items submitted to the collection are
 #                           subject to administrator review. Otherwise, they
 #                           are immediately approved.
-# * `unit_default`          Whether the instance is the default collection of
-#                           its primary unit.
 # * `updated_at`            Managed by ActiveRecord.
 #
 # # Relationships
@@ -47,8 +44,6 @@
 #                         to the instance, if any (see the documentation of the
 #                         `metadata_profile_id` attribute).
 # * `parent`              References a parent {Collection}.
-# * `primary_unit`        References the primary {Unit} in which the instance
-#                         resides.
 # * `submission_profile`  References the {SubmissionProfile} directly assigned
 #                         to the instance, if any (see the documentation of the
 #                         `submission_profile_id` attribute).
@@ -57,8 +52,8 @@
 #                         {Item}s to the instance.
 # * `submitting_users`    More useful alternative to {submitters} that returns
 #                         {User}s instead.
-# * `units`               References all units to which the instance is
-#                         directly assigned. See also {all_units}.
+# * `units`               References all units to which the instance directly
+#                         belongs.
 #
 class Collection < ApplicationRecord
   include Breadcrumb
@@ -88,26 +83,25 @@ class Collection < ApplicationRecord
   has_many :collection_item_memberships
   has_many :items, through: :collection_item_memberships
   belongs_to :metadata_profile, inverse_of: :collections, optional: true
-  belongs_to :primary_unit, class_name: "Unit",
-             foreign_key: "primary_unit_id", optional: true
   has_many :managers
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user
   belongs_to :parent, class_name: "Collection",
              foreign_key: "parent_id", optional: true
+  has_one :primary_unit_membership, -> { where(primary: true) },
+          class_name: "UnitCollectionMembership"
+  has_one :primary_unit, through: :primary_unit_membership,
+          class_name: "Unit", source: :unit
   belongs_to :submission_profile, inverse_of: :collections, optional: true
   has_many :submitters
   has_many :submitting_users, through: :submitters,
            class_name: "User", source: :user
-  # N.B.: this association includes only directly associated units--not any of
-  # their parents or children--and it also doesn't include the primary unit.
-  # See {all_units} and {primary_unit}.
-  has_and_belongs_to_many :units
+  has_many :unit_collection_memberships
+  has_many :units, through: :unit_collection_memberships
 
   validate :validate_parent
 
   after_save :assign_handle, if: -> { handle.nil? && !IdealsImporter.instance.running? }
-  after_save :ensure_default_uniqueness
 
   breadcrumbs parent: :primary_unit, label: :title
 
@@ -154,25 +148,11 @@ class Collection < ApplicationRecord
   end
 
   ##
-  # @return [Enumerable<Unit>] All directly associated units, as well as all of
-  #         those units' parents, in undefined order.
-  #
-  def all_units
-    bucket = Set.new
-    bucket << self.primary_unit if self.primary_unit_id
-    units.each do |unit|
-      bucket << unit
-      bucket += unit.all_parents
-    end
-    bucket
-  end
-
-  ##
   # @return [Enumerable<User>]
   #
   def all_unit_administrators
     bucket = Set.new
-    all_units.each do |unit|
+    units.each do |unit|
       bucket += unit.all_administrators
     end
     bucket
@@ -183,7 +163,7 @@ class Collection < ApplicationRecord
   #
   def as_indexed_json
     doc = {}
-    units                             = self.all_units
+    units                             = self.units
     doc[IndexFields::CLASS]           = self.class.to_s
     doc[IndexFields::CREATED]         = self.created_at.utc.iso8601
     doc[IndexFields::INSTITUTION_KEY] = units.first&.institution&.key
@@ -191,9 +171,9 @@ class Collection < ApplicationRecord
     doc[IndexFields::LAST_MODIFIED]   = self.updated_at.utc.iso8601
     doc[IndexFields::MANAGERS]        = self.effective_managers.map(&:id)
     doc[IndexFields::PARENT]          = self.parent_id
-    doc[IndexFields::PRIMARY_UNIT]    = self.primary_unit_id
+    doc[IndexFields::PRIMARY_UNIT]    = self.primary_unit&.id
     doc[IndexFields::SUBMITTERS]      = self.effective_submitters.map(&:id)
-    doc[IndexFields::UNIT_DEFAULT]    = self.unit_default
+    doc[IndexFields::UNIT_DEFAULT]    = self.unit_default?
     doc[IndexFields::UNIT_TITLES]     = units.map(&:title)
     doc[IndexFields::UNITS]           = self.unit_ids
 
@@ -243,6 +223,7 @@ class Collection < ApplicationRecord
   ##
   # @return [Unit] The primary unit, if set; otherwise, any other unit in the
   #                {units} association.
+  # @deprecated TODO: ensure that all items have a primary collection and get rid of this
   #
   def effective_primary_unit
     #noinspection RubyYardReturnMatch
@@ -285,6 +266,11 @@ class Collection < ApplicationRecord
     title
   end
 
+  def unit_default?
+    self.unit_collection_memberships.pluck(:unit_default).find{ |m| m == true }
+  end
+
+
   private
 
   ##
@@ -293,19 +279,6 @@ class Collection < ApplicationRecord
   def assign_handle
     if self.handle.nil? && !IdealsImporter.instance.running?
       self.handle = Handle.create!(collection: self)
-    end
-  end
-
-  ##
-  # Sets other instances with the same primary unit as "not unit-default" if
-  # the instance is marked as unit-default.
-  #
-  def ensure_default_uniqueness
-    if self.unit_default
-      self.class.all.where('id != ? and primary_unit_id = ?',
-                           self.id, self.primary_unit_id).each do |instance|
-        instance.update!(unit_default: false)
-      end
     end
   end
 
@@ -319,7 +292,7 @@ class Collection < ApplicationRecord
         errors.add(:parent_id, "cannot be set to the same collection")
       elsif all_children.map(&:id).include?(self.parent_id)
         errors.add(:parent_id, "cannot be set to a child collection")
-      elsif self.parent.primary_unit_id != self.primary_unit_id
+      elsif self.parent.primary_unit != self.primary_unit
         errors.add(:parent_id, "cannot be set to a collection in a different unit")
       end
     end

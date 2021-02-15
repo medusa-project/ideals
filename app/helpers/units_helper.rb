@@ -12,7 +12,7 @@ module UnitsHelper
     html << "<ul>"
     units.each do |unit|
       html << "<li data-id=\"#{unit.id}\">"
-      if unit.all_children.length > 0 || unit.all_collections.reject(&:unit_default).length > 0
+      if unit.all_children.length > 0 || unit.unit_collection_memberships.where(unit_default: false).count > 0
         html <<   "<button class=\"btn btn-link expand\" type=\"button\" data-class=\"#{unit.class}\">"
         html <<     "<i class=\"far fa-plus-square\"></i>"
         html <<   "</button>"
@@ -36,6 +36,7 @@ module UnitsHelper
   #                                     the {ApplicationController#current_user
   #                                     current user} is an effective
   #                                     administrator.
+  # @param exclude_unit [Unit]          Unit to exclude from the list.
   # @param parent_unit [Unit]           Not part of the public contract--ignore.
   # @param options [Enumerable<String>] Not part of the public contract--ignore.
   # @param level [Integer]              Not part of the public contract--ignore.
@@ -45,6 +46,7 @@ module UnitsHelper
   def unit_tree_options(include_blank: false,
                         include_root: false,
                         include_only_admin: false,
+                        exclude_unit: nil,
                         parent_unit: nil,
                         options: [],
                         level: 0)
@@ -63,10 +65,10 @@ module UnitsHelper
     else
       units.include_children(false)
     end
-    if include_only_admin
+    if include_only_admin && current_user
       units = units.select{ |u| current_user.effective_unit_admin?(u) }
     end
-    units.each do |unit|
+    units.reject{ |u| u == exclude_unit }.each do |unit|
       indent   = "&nbsp;&nbsp;&nbsp;&nbsp;" * level
       arrow    = (level > 0) ? raw("&#8627; ") : ""
       options << [raw(indent + arrow + unit.title), unit.id]

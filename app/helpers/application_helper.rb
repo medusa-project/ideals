@@ -330,7 +330,7 @@ module ApplicationHelper
   #
   # @param resources [Enumerable<Describable>]
   # @param primary_id [Integer] ID of a resource in `resources` to indicate as
-  #                             "primary." TODO: is this needed?
+  #                             "primary."
   # @param default_id [Integer] ID of a resource in `resources` to indicate as
   #                             "default."
   # @return [String] HTML listing.

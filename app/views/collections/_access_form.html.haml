@@ -6,10 +6,10 @@
 -#
 = form_for(collection, remote: true) do |f|
   .error-messages
-    - # populated via ajax by shared/_validation_messages.js.erb
+    -# populated via ajax by shared/_validation_messages.js.erb
 
-  - # `collection` is required in the params
-  = f.hidden_field :primary_unit_id, value: f.object.primary_unit_id
+  -# `collection` is required in the params (but this attribute is not permitted)
+  = f.hidden_field :id, value: f.object.id
 
   .form-group
     %h5 Managers

@@ -5,8 +5,8 @@ json.uri collection_url(@collection, format: :json)
 json.extract! @collection, :id, :created_at, :updated_at
 
 json.primary_unit do
-  json.id @collection.primary_unit_id
-  json.uri unit_url(@collection.primary_unit_id, format: :json)
+  json.id @collection.primary_unit.id
+  json.uri unit_url(@collection.primary_unit.id, format: :json)
 end
 json.units do
   @collection.unit_ids.each do |unit_id|

@@ -35,7 +35,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              collection: {
-                 primary_unit_id: units(:unit1).id
+                 metadata_profile_id: metadata_profiles(:empty).id
              },
              elements: {
                  title: "New Collection"
@@ -49,9 +49,9 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     post collections_path,
          xhr: true,
          params: {
+             primary_unit_id: units(:unit1).id,
              collection: {
-                 manager_id: users(:local_sysadmin).id,
-                 primary_unit_id: units(:unit1).id
+                 manager_id: users(:local_sysadmin).id
              },
              elements: {
                  title: "New Collection"
@@ -66,9 +66,9 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
       post collections_path,
            xhr: true,
            params: {
+               primary_unit_id: units(:unit1).id,
                collection: {
-                   manager_id: users(:local_sysadmin).id,
-                   primary_unit_id: units(:unit1).id
+                   manager_id: users(:local_sysadmin).id
                },
                elements: {
                    title: "New Collection"
@@ -83,7 +83,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              collection: {
-                 primary_unit_id: 99999
+                 metadata_profile_id: 99999
              }
          }
     assert_response :bad_request
@@ -296,7 +296,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               collection: {
-                  primary_unit_id: collection.primary_unit_id
+                  metadata_profile_id: metadata_profiles(:empty).id
               },
               elements: {
                   "dc:description": "New description"
@@ -326,7 +326,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               collection: {
-                  primary_unit_id: 99999
+                  metadata_profile_id: 99999
               }
           }
     assert_response :bad_request

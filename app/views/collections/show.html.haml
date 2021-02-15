@@ -24,7 +24,7 @@
                                       "aria-controls": "unit-membership-tab-content",
                                       "aria-selected": "false"}
         = icon_for(Unit)
-        Owning Units
+        Unit Membership
       %a#collection-membership-tab.nav-link{href: "#collection-membership-tab-content",
                                             "data-toggle": "pill",
                                             role: "tab",
@@ -99,4 +99,5 @@
                    title: "Change Collection Membership" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-unit-membership-modal",
-                   title: "Change Unit Membership" }
+                   title: "Change Unit Membership",
+                   size: :lg }

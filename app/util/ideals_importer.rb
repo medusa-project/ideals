@@ -227,7 +227,9 @@ class IdealsImporter
 
       progress.report(row_num, "Importing collection-community joins")
       col = Collection.find(collection_id)
-      col.update!(primary_unit_id: group_id)
+      col.collection_item_memberships.build(unit_id: group_id,
+                                            collection: col,
+                                            primary: true).save!
     end
     update_pkey_sequence("collections")
   ensure

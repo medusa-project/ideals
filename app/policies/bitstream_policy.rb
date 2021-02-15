@@ -75,7 +75,7 @@ class BitstreamPolicy < ApplicationPolicy
 
       bitstream.item.collections.each do |collection|
         # unit admins can update bitstreams within their units
-        collection.all_units.each do |unit|
+        collection.units.each do |unit|
           return true if role >= Role::UNIT_ADMINISTRATOR &&
               user.effective_unit_admin?(unit)
         end

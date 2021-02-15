@@ -171,10 +171,10 @@ class Item < ApplicationRecord
   ##
   # @return [Enumerable<Unit>] All owning units.
   #
-  def all_units
+  def all_units # TODO: replace with has_many :through
     bucket = Set.new
     collections.each do |collection|
-      bucket += collection.all_units
+      bucket += collection.units
     end
     bucket
   end

@@ -37,6 +37,7 @@ class CollectionsController < ApplicationController
     authorize @collection
     begin
       ActiveRecord::Base.transaction do
+        @collection.primary_unit = Unit.find(params[:primary_unit_id])
         # Save now in order to obtain an ID with which to associate
         # AscribedElements in the next step.
         @collection.save!
@@ -186,8 +187,8 @@ class CollectionsController < ApplicationController
   # Responds to `PATCH/PUT /collections/:id`
   #
   def update
-    if params[:collection][:parent_id] &&
-      !policy(@unit).change_parent?(params[:collection][:parent_id])
+    if params[:collection] && params[:collection][:parent_id] &&
+        !policy(@collection).change_parent?(params[:collection][:parent_id])
       raise Pundit::NotAuthorizedError,"Cannot move a collection into a "\
             "collection of which you are not an effective manager."
     end
@@ -195,6 +196,11 @@ class CollectionsController < ApplicationController
       ActiveRecord::Base.transaction do
         assign_users
         build_metadata
+        if params[:primary_unit_id]
+          @collection.unit_collection_memberships.destroy_all
+          @collection.unit_collection_memberships.build(unit_id: params[:primary_unit_id],
+                                                        primary: true)
+        end
         @collection.update!(collection_params)
       end
     rescue => e
@@ -250,15 +256,15 @@ class CollectionsController < ApplicationController
 
       # Remove existing title & description
       @collection.elements.where(registered_element_id: [reg_title_element.id,
-                                                       reg_description_element.id]).destroy_all
+                                                         reg_description_element.id]).destroy_all
       # Add title
       title = params[:elements][config.elements[:title]]
       @collection.elements.build(registered_element: reg_title_element,
-                               string: title) if title.present?
+                                 string: title) if title.present?
       # Add description
       description = params[:elements][config.elements[:description]]
       @collection.elements.build(registered_element: reg_description_element,
-                               string: description) if description.present?
+                                 string: description) if description.present?
     end
   end
 
@@ -274,9 +280,8 @@ class CollectionsController < ApplicationController
 
   def collection_params
     params.require(:collection).permit(:metadata_profile_id, :parent_id,
-                                       :primary_unit_id,
                                        :submission_profile_id,
-                                       :submissions_reviewed, :unit_default,
+                                       :submissions_reviewed,
                                        unit_ids: [])
   end
 end
