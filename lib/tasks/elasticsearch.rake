@@ -64,6 +64,11 @@ namespace :elasticsearch do
     puts 'cURL equivalent: ' + curl_cmd
   end
 
+  desc 'Refresh'
+  task :refresh => :environment do
+    ElasticsearchClient.instance.refresh
+  end
+
   desc 'Reindex all database entities'
   task :reindex, [:num_threads] => :environment do |task, args|
     # N.B.: orphaned documents are not deleted.
