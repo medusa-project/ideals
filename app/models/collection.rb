@@ -100,6 +100,7 @@ class Collection < ApplicationRecord
   has_many :units, through: :unit_collection_memberships
 
   validate :validate_parent
+  validate :validate_primary_unit
 
   after_save :assign_handle, if: -> { handle.nil? && !IdealsImporter.instance.running? }
 
@@ -237,16 +238,6 @@ class Collection < ApplicationRecord
   end
 
   ##
-  # @return [Unit] The primary unit, if set; otherwise, any other unit in the
-  #                {units} association.
-  # @deprecated TODO: ensure that all items have a primary collection and get rid of this
-  #
-  def effective_primary_unit
-    #noinspection RubyYardReturnMatch
-    self.primary_unit || self.units.first
-  end
-
-  ##
   # @return [SubmissionProfile] The submission profile assigned to the
   #         instance, or the default profile if no profile is assigned.
   #
@@ -328,6 +319,13 @@ class Collection < ApplicationRecord
         errors.add(:parent_id, "cannot be set to a collection in a different unit")
       end
     end
+  end
+
+  ##
+  # Ensures that the instance has a primary unit.
+  #
+  def validate_primary_unit
+    errors.add(:primary_unit, "is not set") unless primary_unit
   end
 
 end

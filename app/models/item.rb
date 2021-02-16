@@ -351,7 +351,7 @@ class Item < ApplicationRecord
   #                association.
   #
   def effective_primary_unit
-    self.effective_primary_collection&.effective_primary_unit
+    self.effective_primary_collection&.primary_unit
   end
 
   ##
@@ -489,7 +489,7 @@ class Item < ApplicationRecord
   #
   def unit_and_collection_sort_key
     collection = self.effective_primary_collection
-    unit       = collection&.effective_primary_unit
+    unit       = collection&.primary_unit
     item_title = self.title
     item_title = item_title.present? ? item_title : self.id
     [unit&.title, collection&.title, item_title].join(" ").strip

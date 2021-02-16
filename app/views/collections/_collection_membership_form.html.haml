@@ -11,7 +11,7 @@
   .form-group
     = f.label :parent_id, "Parent Collection"
     = f.select(:parent_id,
-        options_for_select(f.object.effective_primary_unit.collections.reject{ |c| c.id == f.object.id }.reject{ |c| c.unit_default? }.map{ |c| [c.title, c.id] }, f.object.parent_id),
+        options_for_select(f.object.primary_unit.collections.reject{ |c| c.id == f.object.id }.reject{ |c| c.unit_default? }.map{ |c| [c.title, c.id] }, f.object.parent_id),
         { include_blank: true }, class: 'custom-select')
     %p.form-text.text-muted
       = icon_for(:info)
