@@ -13,6 +13,8 @@
 #                           IDEALS-DSpace. This is only relevant during
 #                           migration out of that system and can be removed
 #                           once migration is complete.
+# * `download_count`        Incremented atomically by {increment_download_count}
+#                           upon every successful download.
 # * `exists_in_staging`:    Whether a corresponding object exists in the
 #                           staging "area" (key prefix) of the application S3
 #                           bucket.
@@ -196,6 +198,16 @@ class Bitstream < ApplicationRecord
                           dspace_id[2..3],
                           dspace_id[4..5],
                           dspace_id].join("/") : nil
+  end
+
+  ##
+  # Atomically increments {download_count} in the database. The instance is
+  # **not** reloaded to reflect the new value.
+  #
+  def increment_download_count
+    safe_id = self.id.to_s.gsub(/[^0-9]/, "")
+    self.class.connection.execute(
+      "UPDATE bitstreams SET download_count = download_count + 1 WHERE id = #{safe_id}")
   end
 
   ##

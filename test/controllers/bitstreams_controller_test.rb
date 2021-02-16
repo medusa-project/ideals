@@ -62,6 +62,25 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "data() increments the bitstream's download count" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:item1)
+    bitstream = Bitstream.new_in_staging(item,
+                                         File.basename(fixture),
+                                         File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      get item_bitstream_data_path(item, bitstream)
+      bitstream.reload
+      assert_equal 1, bitstream.download_count
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
   test "data() returns HTTP 403 for submitting items" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:submitting)

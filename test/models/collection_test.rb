@@ -132,6 +132,36 @@ class CollectionTest < ActiveSupport::TestCase
     assert collections(:empty).destroy
   end
 
+  # download_count()
+
+  test "download_count() returns a correct count when not including children" do
+    bitstream_count = 0
+    @instance.items.each do |item|
+      item.bitstreams.each do |bitstream|
+        bitstream.update!(download_count: 3)
+        bitstream_count += 1
+      end
+    end
+    assert_equal bitstream_count * 3,
+                 @instance.download_count(include_children: false)
+  end
+
+  test "download_count() returns a correct count when including children" do
+    bitstream_count = 0
+    all_children = @instance.all_children
+    assert all_children.length > 1
+    all_children.each do |child_collection|
+      child_collection.items.each do |item|
+        item.bitstreams.each do |bitstream|
+          bitstream.update!(download_count: 3)
+          bitstream_count += 1
+        end
+      end
+    end
+    assert_equal bitstream_count * 3,
+                 @instance.download_count(include_children: true)
+  end
+
   # effective_managers()
 
   test "effective_managers() includes sysadmins" do
@@ -294,6 +324,36 @@ class CollectionTest < ActiveSupport::TestCase
     @instance.save!
     @instance.reload
     assert_equal handle.id, @instance.handle.id
+  end
+
+  # submitted_item_count()
+
+  test "submitted_item_count() returns a correct count when not including children" do
+    item_count = 0
+    @instance.items.each do |item|
+      item.update!(stage: Item::Stages::SUBMITTED)
+      item_count += 1
+    end
+    assert_equal item_count,
+                 @instance.submitted_item_count(include_children: false)
+  end
+
+  test "submitted_item_count() returns a correct count when including children" do
+    item_count = 0
+    all_children = @instance.all_children
+    assert all_children.length > 1
+    all_children.each do |child_collection|
+      child_collection.items.each do |item|
+        item.update!(stage: Item::Stages::SUBMITTED)
+        item_count += 1
+      end
+    end
+    @instance.items.each do |item|
+      item.update!(stage: Item::Stages::SUBMITTED)
+      item_count += 1
+    end
+    assert_equal item_count,
+                 @instance.submitted_item_count(include_children: true)
   end
 
   # title() (Describable concern)

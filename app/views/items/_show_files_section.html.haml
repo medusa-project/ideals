@@ -31,8 +31,10 @@
       %h5.card-title
         = icon_for(bitstream)
         = bitstream.original_filename
-      - if show_sysadmin_content
-        %dl.files.mb-0.mt-3
+      %dl.files.mb-0.mt-3
+        %dt Download Count
+        %dd= number_with_delimiter(bitstream.download_count)
+        - if show_sysadmin_content
           %dt Database ID
           %dd= bitstream.id
           %dt Bundle

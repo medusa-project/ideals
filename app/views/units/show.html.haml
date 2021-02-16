@@ -52,6 +52,14 @@
                                  role: "tab"}
             %i.fa.fa-users
             Access
+      %li.nav-item{role: "presentation"}
+        %a#statistics-tab.nav-link{"aria-controls": "statistics-tab-content",
+                                   "aria-selected": "false",
+                                   "data-toggle": "pill",
+                                   href: "#statistics-tab-content",
+                                   role: "tab"}
+          %i.fa.fa-chart-bar
+          Statistics
 
   .tab-content.col-sm-7.col-md-8.col-lg-9
     #properties-tab-content.tab-pane.fade.show.active{"aria-labelledby": "properties-tab",
@@ -74,6 +82,10 @@
       #access-tab-content.tab-pane.fade{"aria-labelledby": "access-tab",
                                         role: "tabpanel"}
         = render partial: "show_access_tab"
+
+    #statistics-tab-content.tab-pane.fade{"aria-labelledby": "access-tab",
+                                          role: "tabpanel"}
+      = render partial: "show_statistics_tab"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-unit-properties-modal",

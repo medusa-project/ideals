@@ -319,6 +319,13 @@ class Item < ApplicationRecord
   end
 
   ##
+  # @return [Integer] Total download count of all attached bitstreams.
+  #
+  def download_count
+    self.bitstreams.sum(:download_count)
+  end
+
+  ##
   # @return [MetadataProfile] The primary collection's metadata profile, or the
   #                           {MetadataProfile#default default profile} if not
   #                           set.

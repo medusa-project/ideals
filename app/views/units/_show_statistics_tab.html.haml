@@ -1,0 +1,9 @@
+%dl
+  %dt File Downloads
+  %dd= number_with_delimiter(@unit.download_count(include_children: true))
+  %dt Items Awaiting Review
+  %dd= number_with_delimiter(@unit.submitted_item_count(include_children: true))
+
+%p.text-info
+  %i.fa.fa-info-circle
+  Figures include all child units and all children of every collection.

@@ -190,6 +190,22 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # @param include_children [Boolean] Whether to include child collections in
+  #                                   the count.
+  # @return [Integer] Total download count of all bitstreams attached to all
+  #                   items in the collection.
+  #
+  def download_count(include_children: true)
+    count = 0
+    if include_children
+      self.all_children.each do |child|
+        count += child.download_count(include_children: false)
+      end
+    end
+    count + self.items.joins(:bitstreams).sum("bitstreams.download_count")
+  end
+
+  ##
   # @return [Set<User>] All users who are effectively managers of the instance.
   #
   def effective_managers
@@ -264,6 +280,22 @@ class Collection < ApplicationRecord
 
   def label
     title
+  end
+
+  ##
+  # @param include_children [Boolean] Whether to include child collections in
+  #                                   the count.
+  # @return [Integer] Total download count of all bitstreams attached to all
+  #                   items in the collection.
+  #
+  def submitted_item_count(include_children: true)
+    count = 0
+    if include_children
+      self.all_children.each do |child_collection|
+        count += child_collection.submitted_item_count(include_children: false)
+      end
+    end
+    count + self.items.where(stage: Item::Stages::SUBMITTED).count
   end
 
   def unit_default?

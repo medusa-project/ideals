@@ -177,6 +177,15 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  # increment_download_count()
+
+  test "increment_download_count() increments the download count" do
+    initial_count = @instance.download_count
+    @instance.increment_download_count
+    @instance.reload
+    assert_equal initial_count + 1, @instance.download_count
+  end
+
   # ingest_into_medusa()
 
   test "ingest_into_medusa() raises an error if the ID is blank" do

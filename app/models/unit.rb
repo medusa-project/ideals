@@ -175,6 +175,23 @@ class Unit < ApplicationRecord
     self.unit_collection_memberships.where(unit_default: true).limit(1).first&.collection
   end
 
+  ##
+  # @param include_children [Boolean] Whether to include child units in the
+  #                                   count.
+  # @return [Integer] Total download count of all bitstreams attached to all
+  #                   items in all of the unit's collections.
+  #
+  def download_count(include_children: true)
+    count = 0
+    if include_children
+      self.all_children.each do |child|
+        count += child.download_count(include_children: false)
+      end
+    end
+    count +
+      self.collections.map{ |c| c.download_count(include_children: true) }.sum
+  end
+
   def label
     title
   end
@@ -204,6 +221,24 @@ class Unit < ApplicationRecord
   def root_parent
     self.parent ? all_parents.last : self
   end
+
+  ##
+  # @param include_children [Boolean] Whether to include child units in the
+  #                                   count.
+  # @return [Integer] Total number of submitted items in all of the unit's
+  #                   collections.
+  #
+  def submitted_item_count(include_children: true)
+    count = 0
+    if include_children
+      self.all_children.each do |child|
+        count += child.submitted_item_count(include_children: false)
+      end
+    end
+    count +
+      self.collections.map{ |c| c.submitted_item_count(include_children: true) }.sum
+  end
+
 
   private
 

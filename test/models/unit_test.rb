@@ -155,6 +155,21 @@ class UnitTest < ActiveSupport::TestCase
     assert units(:empty).destroy
   end
 
+  # download_count()
+
+  test "download_count() returns a correct count" do
+    bitstream_count = 0
+    @instance.collections.each do |collection|
+      collection.items.each do |item|
+        item.bitstreams.each do |bitstream|
+          bitstream.update!(download_count: 3)
+          bitstream_count += 1
+        end
+      end
+    end
+    assert_equal bitstream_count * 3, @instance.download_count
+  end
+
   # parent_id
 
   test "parent_id cannot be set to the instance ID" do
@@ -249,6 +264,32 @@ class UnitTest < ActiveSupport::TestCase
     @instance.save!
     @instance.reload
     assert_equal handle.id, @instance.handle.id
+  end
+
+  # submitted_item_count()
+
+  test "submitted_item_count() returns a correct count when not including children" do
+    item_count = 0
+    @instance.collections.each do |collection|
+      collection.items.each do |item|
+        item.update!(stage: Item::Stages::SUBMITTED)
+        item_count += 1
+      end
+    end
+    assert_equal item_count,
+                 @instance.submitted_item_count(include_children: false)
+  end
+
+  test "submitted_item_count() returns a correct count when including children" do
+    item_count = 0
+    @instance.collections.each do |collection|
+      collection.items.each do |item|
+        item.update!(stage: Item::Stages::SUBMITTED)
+        item_count += 1
+      end
+    end
+    assert_equal item_count,
+                 @instance.submitted_item_count(include_children: true)
   end
 
   # title

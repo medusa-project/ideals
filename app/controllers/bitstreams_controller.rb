@@ -97,6 +97,8 @@ class BitstreamsController < ApplicationController
   rescue ActionController::Live::ClientDisconnected => e
     # Rescue this or else Rails will log it at error level.
     LOGGER.debug('show(): %s', e)
+  else
+    @bitstream.increment_download_count
   ensure
     response.stream.close
   end

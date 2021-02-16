@@ -9,6 +9,7 @@ item1_in_staging:
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
+  download_count: 0
   item: item1
   role: 0
   bundle: <%= Bitstream::Bundle::CONTENT %>
@@ -22,6 +23,7 @@ item2_in_medusa:
   original_filename: escher_lego2.jpg
   medusa_key: test/test/escher_lego2.jpg
   medusa_uuid: 3d2a99d5-2f5b-401e-80c1-864a95e3acf7
+  download_count: 0
   item: in_medusa
   role: 0
   bundle: <%= Bitstream::Bundle::CONTENT %>
@@ -35,6 +37,7 @@ license_bundle:
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
+  download_count: 0
   item: item1
   role: 0
   bundle: <%= Bitstream::Bundle::LICENSE %>
@@ -48,6 +51,7 @@ role_limited:
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
+  download_count: 0
   item: item1
   role: <%= Role::SYSTEM_ADMINISTRATOR %>
   bundle: <%= Bitstream::Bundle::CONTENT %>
@@ -61,6 +65,7 @@ submitting_in_staging:
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
+  download_count: 0
   item: submitting
   role: 0
   bundle: <%= Bitstream::Bundle::CONTENT %>
@@ -74,6 +79,7 @@ undiscoverable_in_staging:
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
+  download_count: 0
   item: undiscoverable
   role: 0
   bundle: <%= Bitstream::Bundle::CONTENT %>
@@ -87,6 +93,7 @@ withdrawn_in_staging:
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
+  download_count: 0
   item: withdrawn
   role: 0
   bundle: <%= Bitstream::Bundle::CONTENT %>

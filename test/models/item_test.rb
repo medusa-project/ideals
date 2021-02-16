@@ -257,6 +257,16 @@ class ItemTest < ActiveSupport::TestCase
     end
   end
 
+  # download_count()
+
+  test "download_count() returns a correct count" do
+    bitstream_count = @instance.bitstreams.count
+    @instance.bitstreams.each do |bitstream|
+      bitstream.update!(download_count: 3)
+    end
+    assert_equal bitstream_count * 3, @instance.download_count
+  end
+
   # effective_metadata_profile()
 
   test "effective_metadata_profile() returns the metadata profile assigned to
