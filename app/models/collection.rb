@@ -299,7 +299,7 @@ class Collection < ApplicationRecord
   end
 
   def unit_default?
-    self.unit_collection_memberships.pluck(:unit_default).find{ |m| m == true }
+    self.unit_collection_memberships.pluck(:unit_default).find{ |m| m == true }.present?
   end
 
 

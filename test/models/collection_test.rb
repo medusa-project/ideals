@@ -368,6 +368,16 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal "", collection.title
   end
 
+  # unit_default?()
+
+  test "unit_default?() returns false for a non-unit-default collection" do
+    assert !collections(:described).unit_default?
+  end
+
+  test "unit_default?() returns true for a unit-default collection" do
+    assert collections(:collection1).unit_default?
+  end
+
   # units
 
   test "units can be empty" do
