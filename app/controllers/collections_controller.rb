@@ -61,6 +61,7 @@ class CollectionsController < ApplicationController
   #
   def destroy
     primary_unit = @collection.primary_unit
+    parent       = @collection.parent
     title        = @collection.title
     begin
       ActiveRecord::Base.transaction do
@@ -72,7 +73,7 @@ class CollectionsController < ApplicationController
       ElasticsearchClient.instance.refresh
       flash['success'] = "Collection \"#{title}\" deleted."
     ensure
-      redirect_to primary_unit
+      redirect_to(parent || primary_unit)
     end
   end
 

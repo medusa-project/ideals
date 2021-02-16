@@ -111,7 +111,16 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "destroy() returns HTTP 302 for an existing collection" do
+  test "destroy() redirects to the parent collection, if available, for an
+  existing collection" do
+    log_in_as(users(:local_sysadmin))
+    collection   = collections(:collection1_collection1)
+    delete collection_path(collection)
+    assert_redirected_to collection.parent
+  end
+
+  test "destroy() redirects to the primary unit, if there is no parent
+  collection, for an existing collection" do
     log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     primary_unit = collection.primary_unit
