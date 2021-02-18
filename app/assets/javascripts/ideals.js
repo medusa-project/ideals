@@ -872,7 +872,7 @@ const ideals_ready = function () {
     $("[name=sort]").on("change", function() {
         $(this).parents("form:first").submit();
     });
-
+    /*
     // Save the last-selected tab in a cookie.
     $('a[data-toggle="tab"]').on('click', function(e) {
         Cookies.set('last_tab', $(e.target).attr('href'));
@@ -882,7 +882,7 @@ const ideals_ready = function () {
     const lastTab = Cookies.get('last_tab');
     if (lastTab) {
         $('a[href="' + lastTab + '"]').click();
-    }
+    }*/
 
     // Don't allow disabled elements to be clicked.
     $("[disabled='disabled']").on("click", function() {
