@@ -70,6 +70,13 @@ class User < ApplicationRecord
   end
 
   ##
+  # For compatibility with breadcrumbs.
+  #
+  def breadcrumb_label
+    name
+  end
+
+  ##
   # @param collection [Collection]
   # @return [Boolean] Whether the instance is an effective manager of the given
   #                   collection, either directly or as a unit or system
@@ -166,13 +173,6 @@ class User < ApplicationRecord
     return false unless institution
     # TODO: We need an institution-admin AD group
     self.org_dn == institution.org_dn
-  end
-
-  ##
-  # For compatibility with breadcrumbs.
-  #
-  def label
-    name
   end
 
   ##

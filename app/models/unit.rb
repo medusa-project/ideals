@@ -125,6 +125,10 @@ class Unit < ApplicationRecord
     doc
   end
 
+  def breadcrumb_label
+    title
+  end
+
   ##
   # @return [Boolean] Whether the instance if a child of another {Unit}.
   #
@@ -190,10 +194,6 @@ class Unit < ApplicationRecord
     end
     count +
       self.collections.map{ |c| c.download_count(include_children: true) }.sum
-  end
-
-  def label
-    title
   end
 
   ##

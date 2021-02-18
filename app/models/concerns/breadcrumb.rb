@@ -6,9 +6,9 @@ module Breadcrumb
   extend ActiveSupport::Concern
 
   module ClassMethods
-    def breadcrumbs(opts={})
+    def breadcrumbs(opts = {})
       @breadcrumb_parent_method = opts[:parent]
-      @breadcrumb_label_method = opts[:label]
+      @breadcrumb_label_method  = opts[:breadcrumb_label]
     end
 
     def breadcrumb_parent_method

@@ -48,6 +48,10 @@ class SubmissionProfile < ApplicationRecord
     SubmissionProfile.find_by_default(true)
   end
 
+  def breadcrumb_label
+    name
+  end
+
   ##
   # Overrides parent to intelligently clone an instance including all of its
   # elements.
@@ -64,9 +68,6 @@ class SubmissionProfile < ApplicationRecord
     clone
   end
 
-  def label
-    name
-  end
 
   private
 

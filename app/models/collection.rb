@@ -190,6 +190,10 @@ class Collection < ApplicationRecord
     doc
   end
 
+  def breadcrumb_label
+    title
+  end
+
   ##
   # @param include_children [Boolean] Whether to include child collections in
   #                                   the count.
@@ -267,10 +271,6 @@ class Collection < ApplicationRecord
   #
   def institution
     primary_unit.institution
-  end
-
-  def label
-    title
   end
 
   ##

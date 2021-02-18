@@ -50,6 +50,10 @@ class MetadataProfile < ApplicationRecord
     MetadataProfile.find_by_default(true)
   end
 
+  def breadcrumb_label
+    name
+  end
+
   ##
   # Overrides parent to intelligently clone an instance including all of its
   # elements.
@@ -73,9 +77,6 @@ class MetadataProfile < ApplicationRecord
     self.elements.where(facetable: true).order(:index)
   end
 
-  def label
-    name
-  end
 
   private
 

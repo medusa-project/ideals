@@ -16,7 +16,7 @@ class LdapGroup < ApplicationRecord
   # uniqueness enforced by database constraints
   validates :urn, presence: true
 
-  def label
+  def breadcrumb_label
     short_name
   end
 

@@ -40,7 +40,7 @@ class Institution < ApplicationRecord
 
   before_save :set_properties
 
-  def label
+  def breadcrumb_label
     name
   end
 

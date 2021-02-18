@@ -28,7 +28,7 @@ class UserGroup < ApplicationRecord
         where("ldap_groups_users.ldap_group_id IN (?)", self.ldap_group_ids)
   end
 
-  def label
+  def breadcrumb_label
     name
   end
 
