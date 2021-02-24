@@ -157,6 +157,7 @@ class Unit < ApplicationRecord
       collection = Collection.create!
       self.unit_collection_memberships.build(unit:         self,
                                              collection:   collection,
+                                             primary:      true,
                                              unit_default: true).save!
 
       # Add title

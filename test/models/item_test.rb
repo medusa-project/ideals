@@ -316,25 +316,9 @@ class ItemTest < ActiveSupport::TestCase
                  @instance.effective_primary_unit
   end
 
-  test "effective_primary_unit() returns one of the primary collection's other
-  units if the primary is not set" do
-    col = @instance.primary_collection
-    col.primary_unit = nil
-    assert @instance.effective_primary_unit.kind_of?(Unit)
-  end
-
   test "effective_primary_unit() returns another collection's primary unit if
   the primary collection is not set" do
     @instance.collection_item_memberships.update_all(primary: false)
-    assert @instance.effective_primary_unit.kind_of?(Unit)
-  end
-
-  test "effective_primary_unit() returns one of another collection's units if
-  no primary collection is set" do
-    @instance.collection_item_memberships.update_all(primary: false)
-    @instance.collections.each do |col|
-      col.update!(primary_unit: nil)
-    end
     assert @instance.effective_primary_unit.kind_of?(Unit)
   end
 
