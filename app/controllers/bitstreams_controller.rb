@@ -98,7 +98,7 @@ class BitstreamsController < ApplicationController
     # Rescue this or else Rails will log it at error level.
     LOGGER.debug('show(): %s', e)
   else
-    @bitstream.increment_download_count
+    @bitstream.add_download(user: current_user)
   ensure
     response.stream.close
   end

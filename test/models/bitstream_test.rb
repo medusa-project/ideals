@@ -71,6 +71,32 @@ class BitstreamTest < ActiveSupport::TestCase
                  Bitstream.staging_key(30, "cats.jpg")
   end
 
+  # add_download()
+
+  test "add_download() increments the download count" do
+    initial_count = @instance.download_count
+    @instance.add_download
+    @instance.reload
+    assert_equal initial_count + 1, @instance.download_count
+  end
+
+  test "add_download() creates an associated Event" do
+    user = users(:local_sysadmin)
+    assert_difference "Event.count" do
+      @instance.add_download(user: user)
+    end
+    event = Event.all.order(created_at: :desc).first
+    assert_equal @instance, event.bitstream
+    assert_equal "Download", event.description
+    assert_equal user, event.user
+  end
+
+  test "add_download() without a user argument creates a correct Event" do
+    assert_difference "Event.count" do
+      @instance.add_download
+    end
+  end
+
   # bundle
 
   test "bundle must be a valid bundle" do
@@ -156,6 +182,13 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_nil @instance.staging_key
   end
 
+  # download_count()
+
+  test "download_count() returns a correct value" do
+    @instance.events.build(event_type: Event::Type::DOWNLOAD).save!
+    assert_equal 1, @instance.download_count
+  end
+
   # dspace_relative_path()
 
   test "dspace_relative_path() returns nil when dspace_id is not set" do
@@ -175,15 +208,6 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::RecordInvalid do
       @instance.update!(exists_in_staging: true)
     end
-  end
-
-  # increment_download_count()
-
-  test "increment_download_count() increments the download count" do
-    initial_count = @instance.download_count
-    @instance.increment_download_count
-    @instance.reload
-    assert_equal initial_count + 1, @instance.download_count
   end
 
   # ingest_into_medusa()

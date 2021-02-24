@@ -1,12 +1,19 @@
 ##
+# Encapsulates some kind of event, characterized by one of the {Event#Type}
+# constant values. Records information like the triggering user, the model
+# object to which the event relates, and timestamp information.
+#
 # # Attributes
 #
 # * `after_changes`  JSON serialization of the associated {Item} after changes.
 # * `before_changes` JSON serialization of the associated {Item} after changes.
+# * `bitstream_id`   References the {Bitstream} to which the instance relates
+#                    (optional).
 # * `created_at`     Managed by ActiveRecord.
 # * `description`    English description of the event in past tense.
 # * `event_type`     One of the {Event::Type} constant values.
-# * `item_id`        References the {Item} to which the instance corresponds.
+# * `item_id`        References the {Item} to which the instance relates
+#                    (optional).
 # * `updated_at`     Managed by ActiveRecord.
 # * `user_id`        References the {User} who triggered the event. This may be
 #                    nil if the event was triggered by e.g. an automated
@@ -18,9 +25,10 @@ class Event < ApplicationRecord
   # Contains constant values for assignment to the {event_type} attribute.
   #
   class Type
-    CREATE = 0
-    DELETE = 1
-    UPDATE = 2
+    CREATE   = 0
+    DELETE   = 1
+    UPDATE   = 2
+    DOWNLOAD = 3
 
     def self.all
       Event::Type.constants.map{ |c| Event::Type::const_get(c) }
@@ -45,7 +53,8 @@ class Event < ApplicationRecord
     end
   end
 
-  belongs_to :item
+  belongs_to :bitstream, optional: true
+  belongs_to :item, optional: true
   belongs_to :user, optional: true
 
   validates :event_type, inclusion: { in: Type.all }
@@ -84,8 +93,8 @@ class Event < ApplicationRecord
   # Ensures that the instance is associated with an object.
   #
   def validate_associated_object
-    if item_id.nil?
-      errors.add(:base, "Not associated with an entity")
+    if bitstream_id.nil? && item_id.nil?
+      errors.add(:base, "is not associated with an entity")
     end
   end
 

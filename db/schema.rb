@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_15_193045) do
+ActiveRecord::Schema.define(version: 2021_02_22_150741) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -52,7 +52,6 @@ ActiveRecord::Schema.define(version: 2021_02_15_193045) do
     t.boolean "submitted_for_ingest", default: false, null: false
     t.integer "role", default: 0, null: false
     t.integer "bundle", default: 0, null: false
-    t.integer "download_count", default: 0, null: false
     t.index ["medusa_key"], name: "index_bitstreams_on_medusa_key", unique: true
     t.index ["staging_key"], name: "index_bitstreams_on_staging_key", unique: true
   end
@@ -82,9 +81,10 @@ ActiveRecord::Schema.define(version: 2021_02_15_193045) do
     t.text "description"
     t.text "before_changes"
     t.text "after_changes"
-    t.bigint "item_id", null: false
+    t.bigint "item_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "bitstream_id"
   end
 
   create_table "handles", force: :cascade do |t|
@@ -321,6 +321,7 @@ ActiveRecord::Schema.define(version: 2021_02_15_193045) do
   add_foreign_key "collections", "collections", column: "parent_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "events", "bitstreams", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "handles", "collections", on_update: :cascade, on_delete: :cascade

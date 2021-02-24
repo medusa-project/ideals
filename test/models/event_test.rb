@@ -12,7 +12,7 @@ class EventTest < ActiveSupport::TestCase
   class TypeTest < ActiveSupport::TestCase
 
     test "all() returns all types" do
-      assert_equal [0, 1, 2], Event::Type::all.sort
+      assert_equal [0, 1, 2, 3], Event::Type::all.sort
     end
 
     test "label() raises an error for an invalid type" do
@@ -34,10 +34,15 @@ class EventTest < ActiveSupport::TestCase
   # instance-level tests
 
   test "instance must be associated with an object" do
-    @instance.item = nil
+    @instance.bitstream = nil
+    @instance.item      = nil
     assert !@instance.valid?
 
     @instance.item = items(:item1)
+    assert @instance.valid?
+
+    @instance.bitstream = bitstreams(:item1_in_staging)
+    @instance.item      = nil
     assert @instance.valid?
   end
 

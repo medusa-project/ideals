@@ -262,9 +262,23 @@ class ItemTest < ActiveSupport::TestCase
   test "download_count() returns a correct count" do
     bitstream_count = @instance.bitstreams.count
     @instance.bitstreams.each do |bitstream|
-      bitstream.update!(download_count: 3)
+      bitstream.add_download
     end
-    assert_equal bitstream_count * 3, @instance.download_count
+    assert bitstream_count > 0
+    assert_equal bitstream_count, @instance.download_count
+  end
+
+  test "download_count() returns a correct count when supplying start and end times" do
+    bitstream_count = @instance.bitstreams.count
+    @instance.bitstreams.each do |bitstream|
+      bitstream.add_download
+    end
+
+    Event.where(event_type: Event::Type::DOWNLOAD).first.update!(created_at: 90.minutes.ago)
+
+    assert bitstream_count > 0
+    assert_equal 1, @instance.download_count(start_time: 2.hours.ago,
+                                             end_time:   1.hour.ago)
   end
 
   # effective_metadata_profile()

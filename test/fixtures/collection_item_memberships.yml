@@ -1,3 +1,5 @@
+# collection1 items
+
 collection1_item1:
   collection: collection1
   item:       item1
@@ -41,4 +43,11 @@ collection1_undiscoverable:
 collection1_withdrawn:
   collection: collection1
   item:       withdrawn
+  primary:    true
+
+# collection1_collection1 items
+
+collection1_collection1_item1:
+  collection: collection1_collection1
+  item:       collection1_collection1_item1
   primary:    true

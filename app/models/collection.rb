@@ -195,19 +195,29 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # @param start_time [Time]          Optional beginning of a time range.
+  # @param end_time [Time]            Optional end of a time range.
   # @param include_children [Boolean] Whether to include child collections in
   #                                   the count.
   # @return [Integer] Total download count of all bitstreams attached to all
   #                   items in the collection.
   #
-  def download_count(include_children: true)
+  def download_count(start_time: nil, end_time: nil, include_children: true)
     count = 0
     if include_children
       self.all_children.each do |child|
-        count += child.download_count(include_children: false)
+        count += child.download_count(start_time:       start_time,
+                                      end_time:         end_time,
+                                      include_children: false)
       end
     end
-    count + self.items.joins(:bitstreams).sum("bitstreams.download_count")
+    items = self.items.
+      joins("LEFT JOIN bitstreams ON bitstreams.item_id = items.id").
+      joins("LEFT JOIN events ON bitstreams.id = events.bitstream_id").
+      where("events.event_type": Event::Type::DOWNLOAD)
+    items = items.where("events.created_at >= ?", start_time) if start_time
+    items = items.where("events.created_at <= ?", end_time) if end_time
+    count + items.count
   end
 
   ##
@@ -274,19 +284,30 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # @param start_time [Time]          Optional beginning of a time range.
+  # @param end_time [Time]            Optional end of a time range.
   # @param include_children [Boolean] Whether to include child collections in
   #                                   the count.
   # @return [Integer] Total download count of all bitstreams attached to all
   #                   items in the collection.
   #
-  def submitted_item_count(include_children: true)
+  def submitted_item_count(start_time: nil,
+                           end_time: nil,
+                           include_children: true)
     count = 0
     if include_children
       self.all_children.each do |child_collection|
-        count += child_collection.submitted_item_count(include_children: false)
+        count += child_collection.submitted_item_count(start_time:       start_time,
+                                                       end_time:         end_time,
+                                                       include_children: false)
       end
     end
-    count + self.items.where(stage: Item::Stages::SUBMITTED).count
+    items = self.items.
+        joins("LEFT JOIN events ON items.id = events.item_id").
+        where("events.event_type": Event::Type::CREATE)
+    items = items.where("events.created_at >= ?", start_time) if start_time
+    items = items.where("events.created_at <= ?", end_time) if end_time
+    count + items.count
   end
 
   def unit_default?

@@ -13,8 +13,6 @@
 #                           IDEALS-DSpace. This is only relevant during
 #                           migration out of that system and can be removed
 #                           once migration is complete.
-# * `download_count`        Incremented atomically by {increment_download_count}
-#                           upon every successful download.
 # * `exists_in_staging`:    Whether a corresponding object exists in the
 #                           staging "area" (key prefix) of the application S3
 #                           bucket.
@@ -42,6 +40,7 @@ class Bitstream < ApplicationRecord
   include Auditable
 
   belongs_to :item
+  has_many :events
   has_many :messages
 
   validates_inclusion_of :bundle, in: -> (value) { Bundle.all }
@@ -158,6 +157,17 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # Creates an associated {Event} representing a download.
+  #
+  # @param user [User] Optional.
+  #
+  def add_download(user: nil)
+    self.events.build(event_type:  Event::Type::DOWNLOAD,
+                      description: "Download",
+                      user:        user).save!
+  end
+
+  ##
   # Sends a message to Medusa to delete the corresponding object.
   #
   # This should only be done in the demo environment. The production Medusa
@@ -186,11 +196,18 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # @return [Integer]
+  #
+  def download_count
+    self.events.where(event_type: Event::Type::DOWNLOAD).count
+  end
+
+  ##
   # This method is only used during migration out of IDEALS-DSpace. It can be
   # removed afterwards.
   #
-  # @return [String] Path on the IDEALS-DSpace file system relative to the
-  #                  asset store root.
+  # @return [String,nil] Path on the IDEALS-DSpace file system relative to the
+  #                      asset store root.
   #
   def dspace_relative_path
     dspace_id.present? ? ["",
@@ -198,16 +215,6 @@ class Bitstream < ApplicationRecord
                           dspace_id[2..3],
                           dspace_id[4..5],
                           dspace_id].join("/") : nil
-  end
-
-  ##
-  # Atomically increments {download_count} in the database. The instance is
-  # **not** reloaded to reflect the new value.
-  #
-  def increment_download_count
-    safe_id = self.id.to_s.gsub(/[^0-9]/, "")
-    self.class.connection.execute(
-      "UPDATE bitstreams SET download_count = download_count + 1 WHERE id = #{safe_id}")
   end
 
   ##

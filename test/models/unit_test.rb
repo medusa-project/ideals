@@ -162,12 +162,31 @@ class UnitTest < ActiveSupport::TestCase
     @instance.collections.each do |collection|
       collection.items.each do |item|
         item.bitstreams.each do |bitstream|
-          bitstream.update!(download_count: 3)
+          bitstream.add_download
           bitstream_count += 1
         end
       end
     end
-    assert_equal bitstream_count * 3, @instance.download_count
+    assert bitstream_count > 0
+    assert_equal bitstream_count, @instance.download_count
+  end
+
+  test "download_count() returns a correct count when supplying start and end
+  times" do
+    @instance.collections.each do |collection|
+      collection.items.each do |item|
+        item.bitstreams.each do |bitstream|
+          bitstream.add_download
+        end
+      end
+    end
+
+    Event.where(event_type: Event::Type::DOWNLOAD).
+      limit(1).
+      update_all(created_at: 90.minutes.ago)
+
+    assert_equal 1, @instance.download_count(start_time: 2.hours.ago,
+                                             end_time:   1.hour.ago)
   end
 
   # parent_id
@@ -269,27 +288,47 @@ class UnitTest < ActiveSupport::TestCase
   # submitted_item_count()
 
   test "submitted_item_count() returns a correct count when not including children" do
+    Event.destroy_all
     item_count = 0
     @instance.collections.each do |collection|
       collection.items.each do |item|
-        item.update!(stage: Item::Stages::SUBMITTED)
+        item.events.build(event_type: Event::Type::CREATE).save!
         item_count += 1
       end
     end
+    assert item_count > 0
     assert_equal item_count,
                  @instance.submitted_item_count(include_children: false)
   end
 
   test "submitted_item_count() returns a correct count when including children" do
+    Event.destroy_all
     item_count = 0
     @instance.collections.each do |collection|
       collection.items.each do |item|
-        item.update!(stage: Item::Stages::SUBMITTED)
+        item.events.build(event_type: Event::Type::CREATE).save!
         item_count += 1
       end
     end
     assert_equal item_count,
                  @instance.submitted_item_count(include_children: true)
+  end
+
+  test "submitted_item_count() returns a correct count when supplying start and
+  end times" do
+    Event.destroy_all
+    @instance.collections.each do |collection|
+      collection.items.each do |item|
+        item.events.build(event_type: Event::Type::CREATE).save!
+      end
+    end
+
+    Event.where(event_type: Event::Type::CREATE).
+      limit(1).
+      update_all(created_at: 90.minutes.ago)
+
+    assert_equal 1, @instance.submitted_item_count(start_time: 2.hours.ago,
+                                                   end_time:   1.hour.ago)
   end
 
   # title

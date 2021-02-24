@@ -1,6 +1,8 @@
 # N.B.: All items must specify their collection membership in
 # collection_item_memberships.yml
 
+# collection1 items
+
 item1:
   submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
@@ -40,3 +42,11 @@ withdrawn:
   submitter: local_sysadmin
   stage: <%= Item::Stages::WITHDRAWN %>
   discoverable: false
+
+# collection1_collection1 items
+
+collection1_collection1_item1:
+  submitter: local_sysadmin
+  stage: <%= Item::Stages::APPROVED %>
+  discoverable: true
+
