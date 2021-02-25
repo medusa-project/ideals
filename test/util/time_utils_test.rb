@@ -47,4 +47,18 @@ class TimeUtilsTest < ActiveSupport::TestCase
     assert_equal "01:15:02", TimeUtils.seconds_to_hms(4502)
   end
 
+  # ymd_to_time()
+
+  test "ymd_to_time() works with number arguments" do
+    assert_equal Time.new(2020, 3, 5), TimeUtils.ymd_to_time(2020, 3, 5)
+    assert_equal Time.new(2020, 3, 1), TimeUtils.ymd_to_time(2020, 3, nil)
+    assert_equal Time.new(2020, 1, 1), TimeUtils.ymd_to_time(2020, nil, nil)
+  end
+
+  test "ymd_to_time() works with string arguments" do
+    assert_equal Time.new(2020, 3, 5), TimeUtils.ymd_to_time("2020", "3", "5")
+    assert_equal Time.new(2020, 3, 1), TimeUtils.ymd_to_time("2020", "3", "")
+    assert_equal Time.new(2020, 1, 1), TimeUtils.ymd_to_time("2020", "", "")
+  end
+
 end

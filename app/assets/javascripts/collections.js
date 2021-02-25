@@ -21,12 +21,29 @@ const CollectionView = function() {
         form.submit();
     });
 
-    $('#statistics-tab').on('show.bs.tab', function (event) {
-        const id = $(this).data("collection-id");
-        const url = ROOT_URL + "/collections/" + id + "/statistics";
+    const stats_content = $("#statistics-xhr-content");
+    const refreshStatistics = function(id) {
+        const url = ROOT_URL + "/collections/" + id + "/statistics?" +
+            $("#statistics-tab-content form").serialize();
         $.get(url, function(data) {
-            $("#statistics-tab-content").html(data);
+            stats_content.prev().find(".spinner-border").hide();
+            stats_content.html(data);
         });
+    };
+
+    const stats_tab = $('#statistics-tab');
+    stats_tab.on('show.bs.tab', function() {
+        const id = $(this).data("collection-id");
+        refreshStatistics(id);
+    });
+    $("#statistics-tab-content input[type=submit]").on("click", function() {
+        // Remove existing content and show the spinner
+        stats_content.empty();
+        stats_content.prev().find(".spinner-border").show();
+
+        const id = stats_tab.data("collection-id");
+        refreshStatistics(id);
+        return false;
     });
 
     $('.edit-collection-access').on("click", function() {

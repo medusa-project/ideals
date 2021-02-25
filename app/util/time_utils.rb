@@ -50,4 +50,24 @@ class TimeUtils
             sec.round.to_s.rjust(2, "0"))
   end
 
+  ##
+  # Creates a {Time} instance from the given information. If the given year is
+  # nil, nil is returned.
+  #
+  # @param year [Object,nil]  Integer or object that can be converted to one.
+  # @param month [Object,nil] Integer or object that can be converted to one.
+  # @param day [Object,nil]   Integer or object that can be converted to one.
+  # @return [Time,nil]
+  #
+  def self.ymd_to_time(year, month, day)
+    time = nil
+    year = year.to_i
+    if year > 0
+      month = month.present? ? month.to_i : nil
+      day   = day.present? ? day.to_i : nil
+      time  = Time.new(year, month, day)
+    end
+    time
+  end
+
 end

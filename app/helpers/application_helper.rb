@@ -42,6 +42,29 @@ module ApplicationHelper
   end
 
   ##
+  # @return [String]
+  #
+  def date_range_picker
+    m_width = "4em"
+    y_width  = "6em"
+    html = StringIO.new
+    html << "<div class='form-group mr-4'>From:"
+    html <<   number_field_tag("from_month", nil, placeholder: "MM",
+                               class: "form-control ml-1 mr-1", style: "width: #{m_width}")
+    html <<   number_field_tag("from_year", nil, placeholder: "YYYY",
+                               class: "form-control", style: "width: #{y_width}")
+    html << "</div>"
+    html << "<div class='form-group mr-4'>To:"
+    html <<   number_field_tag("to_month", nil, placeholder: "MM",
+                               class: "form-control ml-1 mr-1", style: "width: #{m_width}")
+    html <<   number_field_tag("to_year", nil, placeholder: "YYYY",
+                               class: "form-control", style: "width: #{y_width}")
+    html << "</div>"
+    html << submit_tag("Go", class: "btn btn-primary")
+    raw(html.string)
+  end
+
+  ##
   # @param facets [Enumerable<Facet>]
   # @param permitted_params [ActionController::Parameters]
   # @return [String] HTML string.

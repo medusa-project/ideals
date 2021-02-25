@@ -169,13 +169,17 @@ class UnitsController < ApplicationController
   # Responds to `GET /units/:id/statistics`
   #
   def statistics
-    start_time = params[:start_time] ? Time.new(params[:start_time].to_i) : nil
-    end_time   = params[:end_time] ? Time.new(params[:end_time].to_i) : nil
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
 
-    @num_downloads        = @unit.download_count(start_time: start_time,
-                                                 end_time:   end_time)
-    @num_submitting_items = @unit.submitted_item_count(start_time: start_time,
-                                                       end_time:   end_time)
+    @num_downloads        = @unit.download_count(start_time: from_time,
+                                                 end_time:   to_time)
+    @num_submitting_items = @unit.submitted_item_count(start_time: from_time,
+                                                       end_time:   to_time)
     render partial: "show_statistics_tab"
   end
 

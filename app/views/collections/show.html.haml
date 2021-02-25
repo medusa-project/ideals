@@ -93,7 +93,13 @@
         = render partial: "show_access_tab"
     #statistics-tab-content.tab-pane.fade.show{role: "tabpanel",
                                                "aria-labelledby": "statistics-tab"}
-      = spinner
+      .card
+        .card-body
+          = form_tag(collection_statistics_path(@collection), class: "form-inline") do
+            = date_range_picker
+      .mt-3
+        = spinner
+      #statistics-xhr-content
 
 = render partial: "collections/add_modal",
          locals: { primary_unit: @collection.primary_unit,

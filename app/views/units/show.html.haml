@@ -86,7 +86,13 @@
 
     #statistics-tab-content.tab-pane.fade{"aria-labelledby": "access-tab",
                                           role: "tabpanel"}
-      = spinner
+      .card
+        .card-body
+          = form_tag(unit_statistics_path(@unit), class: "form-inline") do
+            = date_range_picker
+      .mt-3
+        = spinner
+      #statistics-xhr-content
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-unit-properties-modal",
