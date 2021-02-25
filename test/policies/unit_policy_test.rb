@@ -337,6 +337,22 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  # statistics?()
+
+  test "statistics?() returns true with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert policy.statistics?
+  end
+
+  test "statistics?() authorizes everyone" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.statistics?
+  end
+
   # update?()
 
   test "update?() returns false with a nil user" do

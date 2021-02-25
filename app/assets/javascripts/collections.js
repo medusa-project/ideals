@@ -21,6 +21,14 @@ const CollectionView = function() {
         form.submit();
     });
 
+    $('#statistics-tab').on('show.bs.tab', function (event) {
+        const id = $(this).data("collection-id");
+        const url = ROOT_URL + "/collections/" + id + "/statistics";
+        $.get(url, function(data) {
+            $("#statistics-tab-content").html(data);
+        });
+    });
+
     $('.edit-collection-access').on("click", function() {
         const id = $(this).data("collection-id");
         const url = ROOT_URL + "/collections/" + id + "/edit-access";

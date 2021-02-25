@@ -58,6 +58,7 @@
           Access
       %a#statistics-tab.nav-link{href: "#statistics-tab-content",
                                  "data-toggle": "tab",
+                                 "data-collection-id": @collection.id,
                                  role: "tab",
                                  "aria-controls": "statistics-tab-content",
                                  "aria-selected": "false"}
@@ -92,7 +93,7 @@
         = render partial: "show_access_tab"
     #statistics-tab-content.tab-pane.fade.show{role: "tabpanel",
                                                "aria-labelledby": "statistics-tab"}
-      = render partial: "show_statistics_tab"
+      = spinner
 
 = render partial: "collections/add_modal",
          locals: { primary_unit: @collection.primary_unit,

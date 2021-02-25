@@ -82,6 +82,10 @@ class UnitPolicy < ApplicationPolicy
     true
   end
 
+  def statistics?
+    show?
+  end
+
   def update?
     if user
       return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?

@@ -22,6 +22,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-unit-membership", to: "collections#edit_unit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/statistics", to: "collections#statistics", via: :get,
+          constraints: lambda { |request| request.xhr? }
   end
   match "/deposit", to: "submissions#agreement", via: :get
   resources :institutions, param: :key
@@ -84,6 +86,8 @@ Rails.application.routes.draw do
     match "/edit-membership", to: "units#edit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "units#edit_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/statistics", to: "units#statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
   end
   resources :user_groups, path: "user-groups", except: :new

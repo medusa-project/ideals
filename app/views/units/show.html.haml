@@ -56,6 +56,7 @@
         %a#statistics-tab.nav-link{"aria-controls": "statistics-tab-content",
                                    "aria-selected": "false",
                                    "data-toggle": "pill",
+                                   "data-unit-id": @unit.id,
                                    href: "#statistics-tab-content",
                                    role: "tab"}
           %i.fa.fa-chart-bar
@@ -85,7 +86,7 @@
 
     #statistics-tab-content.tab-pane.fade{"aria-labelledby": "access-tab",
                                           role: "tabpanel"}
-      = render partial: "show_statistics_tab"
+      = spinner
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-unit-properties-modal",

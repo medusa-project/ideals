@@ -477,6 +477,22 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_properties?
   end
 
+  # statistics?()
+
+  test "statistics?() returns true with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert policy.statistics?
+  end
+
+  test "statistics?() authorizes everyone" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.statistics?
+  end
+
   # submit_item?()
 
   test "submit_item?() returns false with a nil user" do

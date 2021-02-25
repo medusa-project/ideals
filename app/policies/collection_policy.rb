@@ -93,6 +93,10 @@ class CollectionPolicy < ApplicationPolicy
         user&.effective_manager?(collection)
   end
 
+  def statistics?
+    show?
+  end
+
   ##
   # N.B.: this method doesn't correspond to a controller method.
   #

@@ -1,17 +1,18 @@
 # frozen_string_literal: true
 
 class CollectionsController < ApplicationController
-  before_action :ensure_logged_in, except: [:children, :index, :show]
+  before_action :ensure_logged_in, except: [:children, :index, :show,
+                                            :statistics]
   before_action :set_collection, only: [:children, :show, :edit_access,
                                         :edit_collection_membership,
                                         :edit_properties,
-                                        :edit_unit_membership, :update,
-                                        :destroy]
+                                        :edit_unit_membership, :statistics,
+                                        :update, :destroy]
   before_action :authorize_collection, only: [:show, :edit_access,
                                               :edit_collection_membership,
                                               :edit_properties,
-                                              :edit_unit_membership, :update,
-                                              :destroy]
+                                              :edit_unit_membership,
+                                              :statistics, :update, :destroy]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the
@@ -182,6 +183,20 @@ class CollectionsController < ApplicationController
     @review_count            = @review_items.count
     @review_current_page     = @review_items.page
     @review_permitted_params = results_params
+  end
+
+  ##
+  # Responds to `GET /collections/:id/statistics`
+  #
+  def statistics
+    start_time = params[:start_time] ? Time.new(params[:start_time].to_i) : nil
+    end_time   = params[:end_time] ? Time.new(params[:end_time].to_i) : nil
+
+    @num_downloads        = @collection.download_count(start_time: start_time,
+                                                       end_time:   end_time)
+    @num_submitting_items = @collection.submitted_item_count(start_time: start_time,
+                                                             end_time:   end_time)
+    render partial: "show_statistics_tab"
   end
 
   ##

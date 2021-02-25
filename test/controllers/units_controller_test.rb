@@ -258,6 +258,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_select("#access-tab", false)
   end
 
+  # statistics()
+
+  test "statistics() returns HTTP 200" do
+    get unit_statistics_path(units(:unit1))
+    assert_response :ok
+  end
+
   # update()
 
   test "update() redirects to login page for logged-out users" do

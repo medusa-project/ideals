@@ -18,6 +18,14 @@ const UnitsView = function() {
 const UnitView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
+    $('#statistics-tab').on('show.bs.tab', function (event) {
+        const id = $(this).data("unit-id");
+        const url = ROOT_URL + "/units/" + id + "/statistics";
+        $.get(url, function(data) {
+            $("#statistics-tab-content").html(data);
+        });
+    });
+
     $('.edit-unit-access').on("click", function() {
         const id = $(this).data("unit-id");
         const url = ROOT_URL + "/units/" + id + "/edit-access";

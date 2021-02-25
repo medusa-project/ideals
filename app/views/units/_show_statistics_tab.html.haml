@@ -1,8 +1,8 @@
 %dl
   %dt File Downloads
-  %dd= number_with_delimiter(@unit.download_count(include_children: true))
+  %dd= number_with_delimiter(@num_downloads)
   %dt Items Awaiting Review
-  %dd= number_with_delimiter(@unit.submitted_item_count(include_children: true))
+  %dd= number_with_delimiter(@num_submitting_items)
 
 %p.text-info
   %i.fa.fa-info-circle

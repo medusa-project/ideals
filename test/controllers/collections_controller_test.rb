@@ -283,6 +283,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_select("#access-tab", false)
   end
 
+  # statistics()
+
+  test "statistics() returns HTTP 200" do
+    get collection_statistics_path(collections(:collection1))
+    assert_response :ok
+  end
+
   # update()
 
   test "update() redirects to login page for logged-out users" do

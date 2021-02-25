@@ -2,13 +2,13 @@
 
 class UnitsController < ApplicationController
   before_action :ensure_logged_in, except: [:children, :collections, :index,
-                                            :show]
+                                            :show, :statistics]
   before_action :set_unit, only: [:children, :collections, :edit_access,
                                   :edit_membership, :edit_properties, :show,
-                                  :update, :destroy]
+                                  :statistics, :update, :destroy]
   before_action :authorize_unit, only: [:children, :collections, :edit_access,
                                         :edit_membership, :edit_properties,
-                                        :show, :update, :destroy]
+                                        :show, :statistics, :update, :destroy]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the
@@ -163,6 +163,20 @@ class UnitsController < ApplicationController
     @count            = @items.count
     @current_page     = @items.page
     @permitted_params = results_params
+  end
+
+  ##
+  # Responds to `GET /units/:id/statistics`
+  #
+  def statistics
+    start_time = params[:start_time] ? Time.new(params[:start_time].to_i) : nil
+    end_time   = params[:end_time] ? Time.new(params[:end_time].to_i) : nil
+
+    @num_downloads        = @unit.download_count(start_time: start_time,
+                                                 end_time:   end_time)
+    @num_submitting_items = @unit.submitted_item_count(start_time: start_time,
+                                                       end_time:   end_time)
+    render partial: "show_statistics_tab"
   end
 
   ##
