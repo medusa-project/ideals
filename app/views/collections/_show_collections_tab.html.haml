@@ -22,3 +22,6 @@
 - if @subcollections.any?
   %h2 Child Collections
   = resource_list(@subcollections)
+
+- if !@collection.parent && @subcollections.empty?
+  %p THis collection has no parent or sub-collections.

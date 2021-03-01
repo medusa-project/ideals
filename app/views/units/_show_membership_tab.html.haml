@@ -17,3 +17,6 @@
 - if @subunits.any?
   %h2 Child Units
   = resource_list(@subunits)
+
+- if !@unit.parent && @subunits.empty?
+  %p This unit has no parent or sub-units.
