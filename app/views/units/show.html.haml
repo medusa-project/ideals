@@ -43,6 +43,16 @@
                               "aria-selected": "true"}
           = icon_for(Item)
           Items
+      - if policy(@unit).downloads?
+        %li.nav-item{role: "presentation"}
+          %a#downloads-tab.nav-link{href: "#downloads-tab-content",
+                                    "data-toggle": "tab",
+                                    "data-unit-id": @unit.id,
+                                    role: "tab",
+                                    "aria-controls": "downloads-tab-content",
+                                    "aria-selected": "false"}
+            %i.fa.fa-chart-bar
+            Downloads
       - if policy(@unit).edit_access?
         %li.nav-item{role: "presentation"}
           %a#access-tab.nav-link{"aria-controls": "access-tab-content",
@@ -52,15 +62,6 @@
                                  role: "tab"}
             %i.fa.fa-users
             Access
-      %li.nav-item{role: "presentation"}
-        %a#statistics-tab.nav-link{"aria-controls": "statistics-tab-content",
-                                   "aria-selected": "false",
-                                   "data-toggle": "pill",
-                                   "data-unit-id": @unit.id,
-                                   href: "#statistics-tab-content",
-                                   role: "tab"}
-          %i.fa.fa-chart-bar
-          Statistics
 
   .tab-content.col-sm-7.col-md-8.col-lg-9
     #properties-tab-content.tab-pane.fade.show.active{"aria-labelledby": "properties-tab",
@@ -79,20 +80,15 @@
                                      role: "tabpanel"}
       = render partial: "show_items_tab"
 
+    - if policy(@unit).downloads?
+      #downloads-tab-content.tab-pane.fade{role: "tabpanel",
+                                           "aria-labelledby": "downloads-tab"}
+        = render partial: "show_downloads_tab"
+
     - if policy(@unit).edit_access?
       #access-tab-content.tab-pane.fade{"aria-labelledby": "access-tab",
                                         role: "tabpanel"}
         = render partial: "show_access_tab"
-
-    #statistics-tab-content.tab-pane.fade{"aria-labelledby": "access-tab",
-                                          role: "tabpanel"}
-      .card
-        .card-body
-          = form_tag(unit_statistics_path(@unit), class: "form-inline") do
-            = date_range_picker
-      .mt-3
-        = spinner
-      #statistics-xhr-content
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-unit-properties-modal",

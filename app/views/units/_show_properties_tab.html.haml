@@ -10,6 +10,10 @@
 %dl
   %dt Handle URI
   %dd= @unit.handle&.url
+  %dt File Downloads
+  %dd= number_with_delimiter(@num_downloads)
+  %dt Items Awaiting Review
+  %dd= number_with_delimiter(@num_submitting_items)
   %dt Created
   %dd= local_time @unit.created_at
   %dt Updated

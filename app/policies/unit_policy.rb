@@ -58,6 +58,10 @@ class UnitPolicy < ApplicationPolicy
     end
   end
 
+  def downloads?
+    update?
+  end
+
   def edit_access?
     update?
   end
@@ -80,10 +84,6 @@ class UnitPolicy < ApplicationPolicy
 
   def show?
     true
-  end
-
-  def statistics?
-    show?
   end
 
   def update?

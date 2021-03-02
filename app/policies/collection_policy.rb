@@ -49,6 +49,10 @@ class CollectionPolicy < ApplicationPolicy
     create?
   end
 
+  def downloads?
+    show_properties?
+  end
+
   def edit_access?
     update?
   end
@@ -77,8 +81,7 @@ class CollectionPolicy < ApplicationPolicy
   # N.B.: this method doesn't correspond to a controller method.
   #
   def review_submissions?
-    role && role >= Role::COLLECTION_MANAGER &&
-        user&.effective_manager?(collection)
+    show_properties?
   end
 
   def show?
@@ -91,10 +94,6 @@ class CollectionPolicy < ApplicationPolicy
   def show_properties?
     role && role >= Role::COLLECTION_MANAGER &&
         user&.effective_manager?(collection)
-  end
-
-  def statistics?
-    show?
   end
 
   ##

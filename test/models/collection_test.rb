@@ -281,6 +281,65 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal @instance.primary_unit.institution, @instance.institution
   end
 
+  # item_download_counts()
+
+  test "item_download_counts() returns correct results with no arguments" do
+    Event.destroy_all
+    item_count = 0
+    @instance.items.each do |item|
+      item.bitstreams.each do |bitstream|
+        bitstream.add_download
+      end
+      # The query won't return items without a title.
+      item.elements.build(registered_element: registered_elements(:title),
+                          string: "This is the title").save!
+      item_count += 1 if item.bitstreams.any?
+    end
+
+    result = @instance.item_download_counts
+    assert_equal 5, result.length
+    assert_equal 3, result[0]['dl_count']
+  end
+
+  test "item_download_counts() returns correct results when supplying limit
+  and offset" do
+    Event.destroy_all
+    @instance.items.each do |item|
+      item.bitstreams.each do |bitstream|
+        bitstream.add_download
+      end
+      # The query won't return items without a title.
+      item.elements.build(registered_element: registered_elements(:title),
+                          string: "This is the title").save!
+    end
+
+    result = @instance.item_download_counts(offset: 1, limit: 2)
+    assert_equal 2, result.length
+    assert_equal 1, result[0]['dl_count']
+  end
+
+  test "item_download_counts() returns correct results when supplying start
+  and end times" do
+    Event.destroy_all
+    @instance.items.each do |item|
+      item.bitstreams.each do |bitstream|
+        bitstream.add_download
+      end
+      # The query won't return items without a title.
+      item.elements.build(registered_element: registered_elements(:title),
+                          string: "This is the title").save!
+    end
+
+    # Adjust the created_at property of one of the just-created bitstream
+    # download events to fit inside the time window.
+    Event.where(event_type: Event::Type::DOWNLOAD).all.first.update!(created_at: 90.minutes.ago)
+
+    result = @instance.item_download_counts(start_time: 2.hours.ago,
+                                            end_time:   1.hour.ago)
+    assert_equal 1, result.length
+    assert_equal 1, result[0]['dl_count']
+  end
+
   # parent_id
 
   test "parent_id cannot be set to the instance ID" do

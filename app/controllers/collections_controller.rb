@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 class CollectionsController < ApplicationController
-  before_action :ensure_logged_in, except: [:children, :index, :show,
-                                            :statistics]
-  before_action :set_collection, only: [:children, :show, :edit_access,
+  before_action :ensure_logged_in, except: [:children, :index, :show]
+  before_action :set_collection, only: [:children, :destroy, :downloads,
+                                        :edit_access,
                                         :edit_collection_membership,
-                                        :edit_properties,
-                                        :edit_unit_membership, :statistics,
-                                        :update, :destroy]
-  before_action :authorize_collection, only: [:show, :edit_access,
+                                        :edit_properties, :edit_unit_membership,
+                                        :show, :update]
+  before_action :authorize_collection, only: [:destroy, :downloads,
+                                              :edit_access,
                                               :edit_collection_membership,
                                               :edit_properties,
                                               :edit_unit_membership,
-                                              :statistics, :update, :destroy]
+                                              :show, :update]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the
@@ -76,6 +76,21 @@ class CollectionsController < ApplicationController
     ensure
       redirect_to(parent || primary_unit)
     end
+  end
+
+  ##
+  # Responds to `GET /collections/:id/downloads` (XHR only)
+  #
+  def downloads
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    @items = @collection.item_download_counts(start_time: from_time,
+                                              end_time:   to_time)
+    render partial: "show_downloads_tab_content"
   end
 
   ##
@@ -159,9 +174,14 @@ class CollectionsController < ApplicationController
     @current_page     = @items.page
     @permitted_params = params.permit(:q, :start)
 
+    # Properties tab
+    @num_downloads        = @collection.download_count
+    @num_submitting_items = @collection.submitted_item_count
+
     # Metadata tab
     @metadata_profile   = @collection.effective_metadata_profile
     @submission_profile = @collection.effective_submission_profile
+
     # Subcollections tab
     @subcollections = Collection.search.
         institution(current_institution).
@@ -169,6 +189,7 @@ class CollectionsController < ApplicationController
         include_children(true).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999)
+
     # Review Submissions tab
     @review_start  = results_params[:start].to_i
     @review_window = window_size
@@ -183,24 +204,6 @@ class CollectionsController < ApplicationController
     @review_count            = @review_items.count
     @review_current_page     = @review_items.page
     @review_permitted_params = results_params
-  end
-
-  ##
-  # Responds to `GET /collections/:id/statistics`
-  #
-  def statistics
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-
-    @num_downloads        = @collection.download_count(start_time: from_time,
-                                                       end_time:   to_time)
-    @num_submitting_items = @collection.submitted_item_count(start_time: from_time,
-                                                             end_time:   to_time)
-    render partial: "show_statistics_tab"
   end
 
   ##

@@ -18,26 +18,38 @@ collection_subject:
   registered_element: subject
   collection: described
 
-item_title:
+described_title:
   string: Some title
   uri:
   registered_element: title
   item: described
 
-item_description:
+described_description:
   string: Some description
   uri:
   registered_element: description
   item: described
 
-item_subject:
+described_subject:
   string: Some subject
   uri:
   registered_element: subject
   item: described
+
+in_medusa_title:
+  string: Some title
+  uri:
+  registered_element: title
+  item: in_medusa
 
 submitting_item_title:
   string: Some title
   uri:
   registered_element: title
   item: submitting
+
+submitted_item_title:
+  string: Some title
+  uri:
+  registered_element: title
+  item: submitted

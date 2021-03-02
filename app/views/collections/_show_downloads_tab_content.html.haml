@@ -1,0 +1,10 @@
+%table.table
+  %thead
+    %tr
+      %th Item
+      %th Download Count
+  %tbody
+    - @items.each do |row|
+      %tr
+        %td= link_to(row['title'], item_path(row['id']))
+        %td= number_with_delimiter(row['dl_count'])

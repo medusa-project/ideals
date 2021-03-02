@@ -18,6 +18,7 @@
                                       "aria-selected": "true"}
         = icon_for(:info)
         Properties
+
       %a#unit-membership-tab.nav-link{href: "#unit-membership-tab-content",
                                       "data-toggle": "pill",
                                       role: "tab",
@@ -25,6 +26,7 @@
                                       "aria-selected": "false"}
         = icon_for(Unit)
         Unit Membership
+
       %a#collection-membership-tab.nav-link{href: "#collection-membership-tab-content",
                                             "data-toggle": "pill",
                                             role: "tab",
@@ -32,6 +34,7 @@
                                             "aria-selected": "false"}
         = icon_for(Collection)
         Collection Membership
+
       %a#items-tab.nav-link{href: "#items-tab-content",
                             "data-toggle": "pill",
                             role: "tab",
@@ -39,7 +42,8 @@
                             "aria-selected": "false"}
         = icon_for(Item)
         Items
-      - if @review_count > 0 && policy(@collection).review_submissions?
+
+      - if policy(@collection).review_submissions?
         %a#review-submissions-tab.nav-link{href: "#review-submissions-tab-content",
                                            "data-toggle": "tab",
                                            role: "tab",
@@ -48,6 +52,17 @@
           %i.fa.fa-tasks
           Review Submissions
           %small.badge-pill.badge-danger= @review_count
+
+      - if policy(@collection).downloads?
+        %a#downloads-tab.nav-link{href: "#downloads-tab-content",
+                                  "data-toggle": "tab",
+                                  "data-collection-id": @collection.id,
+                                  role: "tab",
+                                  "aria-controls": "downloads-tab-content",
+                                  "aria-selected": "false"}
+          %i.fa.fa-chart-bar
+          Downloads
+
       - if policy(@collection).edit_access?
         %a#access-tab.nav-link{href: "#access-tab-content",
                                "data-toggle": "tab",
@@ -56,14 +71,6 @@
                                "aria-selected": "false"}
           %i.fa.fa-users
           Access
-      %a#statistics-tab.nav-link{href: "#statistics-tab-content",
-                                 "data-toggle": "tab",
-                                 "data-collection-id": @collection.id,
-                                 role: "tab",
-                                 "aria-controls": "statistics-tab-content",
-                                 "aria-selected": "false"}
-        %i.fa.fa-chart-bar
-        Statistics
 
   .tab-content.col-sm-7.col-md-8.col-lg-9
     #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
@@ -82,7 +89,12 @@
                                           "aria-labelledby": "items-tab"}
       = render partial: "show_items_tab"
 
-    - if @review_count > 0 && policy(@collection).review_submissions?
+    - if policy(@collection).downloads?
+      #downloads-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                "aria-labelledby": "downloads-tab"}
+        = render partial: "show_downloads_tab"
+
+    - if policy(@collection).review_submissions?
       #review-submissions-tab-content.tab-pane.fade.show{role: "tabpanel",
                                                          "aria-labelledby": "review-submissions-tab"}
         = render partial: "show_review_submissions_tab"
@@ -91,15 +103,6 @@
       #access-tab-content.tab-pane.fade.show{role: "tabpanel",
                                              "aria-labelledby": "access-tab"}
         = render partial: "show_access_tab"
-    #statistics-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                               "aria-labelledby": "statistics-tab"}
-      .card
-        .card-body
-          = form_tag(collection_statistics_path(@collection), class: "form-inline") do
-            = date_range_picker
-      .mt-3
-        = spinner
-      #statistics-xhr-content
 
 = render partial: "collections/add_modal",
          locals: { primary_unit: @collection.primary_unit,

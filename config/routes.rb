@@ -13,6 +13,8 @@ Rails.application.routes.draw do
     match "/children", to: "collections#children", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/deposit", to: "submissions#agreement", via: :get
+    match "/downloads", to: "collections#downloads", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-access", to: "collections#edit_access", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-collection-membership",
@@ -21,8 +23,6 @@ Rails.application.routes.draw do
     match "/edit-properties", to: "collections#edit_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-unit-membership", to: "collections#edit_unit_membership", via: :get,
-          constraints: lambda { |request| request.xhr? }
-    match "/statistics", to: "collections#statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
   end
   match "/deposit", to: "submissions#agreement", via: :get
@@ -81,13 +81,13 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/collections", to: "units#collections", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/downloads", to: "units#downloads", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-access", to: "units#edit_access", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-membership", to: "units#edit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "units#edit_properties", via: :get,
-          constraints: lambda { |request| request.xhr? }
-    match "/statistics", to: "units#statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
   end
   resources :user_groups, path: "user-groups", except: :new

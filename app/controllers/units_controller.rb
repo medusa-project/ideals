@@ -2,13 +2,14 @@
 
 class UnitsController < ApplicationController
   before_action :ensure_logged_in, except: [:children, :collections, :index,
-                                            :show, :statistics]
-  before_action :set_unit, only: [:children, :collections, :edit_access,
-                                  :edit_membership, :edit_properties, :show,
-                                  :statistics, :update, :destroy]
-  before_action :authorize_unit, only: [:children, :collections, :edit_access,
-                                        :edit_membership, :edit_properties,
-                                        :show, :statistics, :update, :destroy]
+                                            :show]
+  before_action :set_unit, only: [:children, :collections, :downloads,
+                                  :edit_access, :edit_membership,
+                                  :edit_properties, :show, :update, :destroy]
+  before_action :authorize_unit, only: [:children, :collections, :downloads,
+                                        :edit_access, :edit_membership,
+                                        :edit_properties, :show, :update,
+                                        :destroy]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the
@@ -92,6 +93,21 @@ class UnitsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /units/:id/downloads` (XHR only)
+  #
+  def downloads
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    @items = @unit.item_download_counts(start_time: from_time,
+                                        end_time:   to_time)
+    render partial: "show_downloads_tab_content"
+  end
+
+  ##
   # Used for editing access control.
   #
   # Responds to `GET /units/:id/edit-membership` (XHR only)
@@ -135,6 +151,11 @@ class UnitsController < ApplicationController
   #
   def show
     @new_unit = Unit.new
+
+    # Properties tab
+    @num_downloads        = @unit.download_count
+    @num_submitting_items = @unit.submitted_item_count
+
     # Subunits tab
     @subunits = Unit.search.
         institution(current_institution).
@@ -142,6 +163,7 @@ class UnitsController < ApplicationController
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(999).
         to_a
+
     # Collections tab
     @collections = Collection.search.
         institution(current_institution).
@@ -149,6 +171,7 @@ class UnitsController < ApplicationController
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         limit(999).
         to_a
+
     # Items tab
     @start = params[:start].to_i
     @window = window_size
@@ -163,24 +186,6 @@ class UnitsController < ApplicationController
     @count            = @items.count
     @current_page     = @items.page
     @permitted_params = results_params
-  end
-
-  ##
-  # Responds to `GET /units/:id/statistics`
-  #
-  def statistics
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-
-    @num_downloads        = @unit.download_count(start_time: from_time,
-                                                 end_time:   to_time)
-    @num_submitting_items = @unit.submitted_item_count(start_time: from_time,
-                                                       end_time:   to_time)
-    render partial: "show_statistics_tab"
   end
 
   ##
