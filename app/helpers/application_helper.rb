@@ -45,20 +45,20 @@ module ApplicationHelper
   # @return [String]
   #
   def date_range_picker
-    m_width = "4em"
-    y_width  = "6em"
+    m_options = (1..12)
+    y_options = (2020..Time.now.year + 1)
     html = StringIO.new
     html << "<div class='form-group mr-4'>From:"
-    html <<   number_field_tag("from_month", nil, placeholder: "MM",
-                               class: "form-control ml-1 mr-1", style: "width: #{m_width}")
-    html <<   number_field_tag("from_year", nil, placeholder: "YYYY",
-                               class: "form-control", style: "width: #{y_width}")
+    html <<   select_tag("from_month", options_for_select(m_options),
+                         class: "custom-select ml-1 mr-1")
+    html <<   select_tag("from_year", options_for_select(y_options),
+                         class: "custom-select")
     html << "</div>"
     html << "<div class='form-group mr-4'>To:"
-    html <<   number_field_tag("to_month", nil, placeholder: "MM",
-                               class: "form-control ml-1 mr-1", style: "width: #{m_width}")
-    html <<   number_field_tag("to_year", nil, placeholder: "YYYY",
-                               class: "form-control", style: "width: #{y_width}")
+    html <<   select_tag("to_month", options_for_select(m_options, selected: 12),
+                         class: "custom-select ml-1 mr-1")
+    html <<   select_tag("to_year", options_for_select(y_options, selected: Time.now.year + 1),
+                         class: "custom-select")
     html << "</div>"
     html << submit_tag("Go", class: "btn btn-primary")
     raw(html.string)
