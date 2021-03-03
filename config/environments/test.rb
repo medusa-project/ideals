@@ -50,4 +50,6 @@ Rails.application.configure do
   config.logger = ActiveSupport::Logger.new(nil)
 
   config.assets.check_precompiled_asset = false
+
+  config.hosts += %w(ideals-host1.local ideals-host2.local)
 end

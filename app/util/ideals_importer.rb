@@ -3,20 +3,21 @@
 # Methods work in conjunction with the SQL scripts in the `scripts` directory.
 #
 # This class is intended to be used with a fresh, empty database. It is a
-# Singleton because other application component(s) may need to know when it is
+# Singleton because other application components may need to know when it is
 # running.
 #
 # N.B.: methods must be invoked in a certain order. See the
 # `ideals_dspace:migrate` rake task.
 #
 # N.B. 2: methods do not create or update objects within transactions, which
-# means that they don't get reindexed. This is in order to save time by
+# means that objects don't get reindexed. This is in order to save time by
 # avoiding multiple indexings of the same object. Resources should be reindexed
 # manually after import, perhaps using the `elasticsearch:reindex` rake task.
 #
 class IdealsImporter
 
-  LOGGER = CustomLogger.new(IdealsImporter)
+  LOGGER      = CustomLogger.new(IdealsImporter)
+  UIUC_ORG_DN = "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu"
 
   include Singleton
 
@@ -246,7 +247,7 @@ class IdealsImporter
     institution = Institution.find_by_key("uiuc") ||
       Institution.create!(name:   "Will get overwritten",
                           key:    "Will get overwritten",
-                          org_dn: Institution::UIUC_ORG_DN)
+                          org_dn: UIUC_ORG_DN)
 
     LOGGER.debug("import_communities(): importing %s", csv_pathname)
 
@@ -561,7 +562,7 @@ class IdealsImporter
                                  uid:    email,
                                  email:  email,
                                  name:   username,
-                                 org_dn: Institution::UIUC_ORG_DN)
+                                 org_dn: UIUC_ORG_DN)
         end
       elsif email == "robbins.sd@gmail.com"
         # Many items were bulk-imported into IDEALS-DSpace under this email.

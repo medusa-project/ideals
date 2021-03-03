@@ -38,7 +38,7 @@ module ApplicationHelper
   #
   def current_institution
     Institution.find_by_fqdn(request.host) ||
-      Institution.find_by_org_dn(Institution::UIUC_ORG_DN)
+      Institution.find_by_org_dn(Institution::DEFAULT_ORG_DN)
   end
 
   ##
@@ -51,8 +51,8 @@ module ApplicationHelper
     html << "<div class='form-group mr-4'>From:"
     html <<   select_tag("from_month", options_for_select(m_options),
                          class: "custom-select ml-1 mr-1")
-    html <<   select_tag("from_year", options_for_select(y_options),
-                         class: "custom-select")
+    html <<   select_tag("from_year", options_for_select(y_options,
+                         class: "custom-select"))
     html << "</div>"
     html << "<div class='form-group mr-4'>To:"
     html <<   select_tag("to_month", options_for_select(m_options, selected: 12),

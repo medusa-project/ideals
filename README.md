@@ -164,6 +164,30 @@ $ rails server
 Login credentials are whatever were supplied to
 `ideals:users:create_local_sysadmin` earlier.
 
+# Multi-Tenancy
+
+When a request is made to the web app through a reverse proxy server (which is
+always expected to be the case in the demo and production environments), the
+proxy supplies an `X-Forwarded-Host` header that conveys the fully-qualified
+domain name (FQDN) via which the app was accessed. The `current_institution()`
+method of `ApplicationController` (and `ApplicationHelper`) returns the
+Institution model associated with this FQDN in order to tailor the
+functionality to a particular institution.
+
+In other environments, multi-tenancy can be tested by adding a couple of lines
+to `/etc/hosts`:
+
+```
+127.0.0.1 ideals-host1.local
+127.0.0.1 ideals-host2.local
+```
+
+(See also the `config.hosts` key in the `config/environments/*.rb` files.)
+
+Then, you can access http://ideals-host1:3000 and http://ideals-host2:3000 in
+order to play around with multi-tenancy.
+
+
 # Branches & Environments
 
 | Rails Environment | Git Branch                 | Machine                | Configuration File                       |

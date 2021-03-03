@@ -12,7 +12,8 @@ class Institution < ApplicationRecord
 
   include Breadcrumb
 
-  UIUC_ORG_DN = "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu"
+  # Used by the default institution in seed data.
+  DEFAULT_ORG_DN = "o=Default Organization,dc=example,dc=org"
 
   has_many :metadata_profiles
   has_many :registered_elements

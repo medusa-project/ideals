@@ -66,6 +66,8 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
+  config.hosts += %w(ideals-host1.local ideals-host2.local)
+
   # ActionMailer configuration
   require "configuration"
   mail_config = ::Configuration.instance.mail

@@ -33,6 +33,7 @@ class UsersController < ApplicationController
     @window = window_size
     q = "%#{params[:q]}%"
     @users  = User.where("name LIKE ? OR uid LIKE ?", q, q).
+        where(org_dn: current_institution.org_dn).
         where("type LIKE ?", "%#{params[:class]}").
         order(:name)
     @count            = @users.count
