@@ -51,8 +51,8 @@ module ApplicationHelper
     html << "<div class='form-group mr-4'>From:"
     html <<   select_tag("from_month", options_for_select(m_options),
                          class: "custom-select ml-1 mr-1")
-    html <<   select_tag("from_year", options_for_select(y_options,
-                         class: "custom-select"))
+    html <<   select_tag("from_year", options_for_select(y_options),
+                         class: "custom-select")
     html << "</div>"
     html << "<div class='form-group mr-4'>To:"
     html <<   select_tag("to_month", options_for_select(m_options, selected: 12),
