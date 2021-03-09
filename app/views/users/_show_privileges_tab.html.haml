@@ -28,7 +28,7 @@
         %ul
           - user.ldap_groups.each do |group|
             %li
-              %code= group.name
+              %code= group.short_name
       - else
         None
 
