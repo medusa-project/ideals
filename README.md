@@ -132,7 +132,6 @@ instance and named `dbname`.
 rails elasticsearch:purge
 rails db:reset
 rails "ideals_dspace:migrate[dbname,dbhost,dbuser,dbpass]"
-rails "ideals:users:create_local_sysadmin[email,password]"
 rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
 rails handles:put_all
@@ -155,14 +154,23 @@ rails handles:put_all
 rails "ideals_dspace:bitstreams:copy_into_medusa[ideals_dspace_ssh_user]"
 ```
 
+## Create a user account
+
+There are two main categories of accounts: local identity, where account
+information is stored locally in the database, and Shibboleth, where account
+info is provided by a Shibboleth SP/IdP. There are rake tasks to create
+sysadmins of both types:
+
+```sh
+rails "ideals:users:create_local_sysadmin[email,password]"
+rails "ideals:users:create_shib_sysadmin[netid]"
+```
+
 ## Run the web app
 
 ```sh
 $ rails server
 ```
-
-Login credentials are whatever were supplied to
-`ideals:users:create_local_sysadmin` earlier.
 
 # Multi-Tenancy
 
@@ -174,12 +182,14 @@ method of `ApplicationController` (and `ApplicationHelper`) returns the
 Institution model associated with this FQDN in order to tailor the
 functionality to a particular institution.
 
-In other environments, multi-tenancy can be tested by adding a couple of lines
-to `/etc/hosts`:
+In other environments, multi-tenancy can be tested by adding some lines to
+`/etc/hosts`:
 
 ```
 127.0.0.1 ideals-host1.local
 127.0.0.1 ideals-host2.local
+# this is only used for testing data imported from "old IDEALS"
+127.0.0.1 ideals-uiuc.local
 ```
 
 (See also the `config.hosts` key in the `config/environments/*.rb` files.)

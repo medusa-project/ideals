@@ -51,5 +51,5 @@ Rails.application.configure do
 
   config.assets.check_precompiled_asset = false
 
-  config.hosts += %w(ideals-host1.local ideals-host2.local)
+  config.hosts += %w(ideals-host1.local ideals-host2.local ideals-uiuc.local)
 end

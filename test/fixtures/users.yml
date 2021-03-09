@@ -51,7 +51,7 @@ uiuc:
   name: Shib Boleth, Esq.
   email: shib@illinois.edu
   phone: (888) 555-1234
-  org_dn: <%= Institution::UIUC_ORG_DN %>
+  org_dn: <%= ShibbolethUser::UIUC_ORG_DN %>
 
 uiuc_admin:
   type: ShibbolethUser
@@ -59,7 +59,7 @@ uiuc_admin:
   name: Shibboleth Admin
   email: shibadmin@illinois.edu
   phone: (888) 555-1235
-  org_dn: <%= Institution::UIUC_ORG_DN %>
+  org_dn: <%= ShibbolethUser::UIUC_ORG_DN %>
   ldap_groups:
     - sysadmin
 

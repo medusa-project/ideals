@@ -16,8 +16,7 @@
 #
 class IdealsImporter
 
-  LOGGER      = CustomLogger.new(IdealsImporter)
-  UIUC_ORG_DN = "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu"
+  LOGGER = CustomLogger.new(IdealsImporter)
 
   include Singleton
 
@@ -247,7 +246,7 @@ class IdealsImporter
     institution = Institution.find_by_key("uiuc") ||
       Institution.create!(name:   "Will get overwritten",
                           key:    "Will get overwritten",
-                          org_dn: UIUC_ORG_DN)
+                          org_dn: ShibbolethUser::UIUC_ORG_DN)
 
     LOGGER.debug("import_communities(): importing %s", csv_pathname)
 
@@ -562,7 +561,7 @@ class IdealsImporter
                                  uid:    email,
                                  email:  email,
                                  name:   username,
-                                 org_dn: UIUC_ORG_DN)
+                                 org_dn: ShibbolethUser::UIUC_ORG_DN)
         end
       elsif email == "robbins.sd@gmail.com"
         # Many items were bulk-imported into IDEALS-DSpace under this email.

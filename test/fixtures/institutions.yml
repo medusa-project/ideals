@@ -16,4 +16,4 @@ uiuc:
   key: uiuc
   fqdn: ideals.illinois.edu
   name: University of Illinois at Urbana-Champaign
-  org_dn: <%= Institution::UIUC_ORG_DN %>
+  org_dn: <%= ShibbolethUser::UIUC_ORG_DN %>

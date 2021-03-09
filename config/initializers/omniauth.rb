@@ -3,11 +3,18 @@ shib_opts = YAML.load_file(File.join(Rails.root, 'config', 'shibboleth.yml'))[Ra
 OmniAuth.config.logger = Rails.logger
 
 Rails.application.config.middleware.use OmniAuth::Builder do
+  # The identity provider is available in all environments.
   provider :identity,
            model: LocalIdentity,
            fields: [:email, :name],
            on_failed_registration: WelcomeController.action(:on_failed_registration)
-  provider :shibboleth, shib_opts.symbolize_keys
+  # Shibboleth is only available in production & demo. In all other
+  # environments, developer is used instead.
+  if Rails.env.production? || Rails.env.demo?
+    provider :shibboleth, shib_opts.symbolize_keys
+  else
+    provider :developer
+  end
 end
 
 OmniAuth.config.on_failure = Proc.new { |env|

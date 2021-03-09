@@ -3,7 +3,7 @@
 class ApplicationController < ActionController::Base
   include Pundit
 
-  protect_from_forgery with: :null_session
+  protect_from_forgery with: :exception
   helper_method :current_user, :logged_in?, :to_do_list
 
   rescue_from StandardError, with: :error_occurred

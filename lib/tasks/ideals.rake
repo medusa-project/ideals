@@ -37,7 +37,7 @@ namespace :ideals do
   end
 
   namespace :users do
-    desc "Create a local sysadmin user"
+    desc "Create a local-identity sysadmin user"
     task :create_local_sysadmin, [:email, :password] => :environment do |task, args|
       user = LocalUser.create_manually(email:    args[:email],
                                        password: args[:password])
@@ -45,10 +45,11 @@ namespace :ideals do
       user.save!
     end
 
-    desc "Create a Shibboleth user"
-    task :create_shibboleth, [:netid] => :environment do |task, args|
+    desc "Create a Shibboleth identity sysadmin user"
+    task :create_shib_sysadmin, [:netid] => :environment do |task, args|
       email = "#{args[:netid]}@illinois.edu"
       user = ShibbolethUser.no_omniauth(email)
+      user.ldap_groups << UserGroup.sysadmin.ldap_groups.first
       user.save!
     end
 

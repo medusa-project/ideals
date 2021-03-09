@@ -42,7 +42,6 @@ gem 'net-scp'
 gem "omniauth-identity"
 # Enables Shibboleth logins.
 gem "omniauth-shibboleth"
-gem "omniauth-rails_csrf_protection"
 # Use postgresql as the database for Active Record
 gem "pg"
 # Use pundit for authorization
@@ -86,7 +85,7 @@ group :development do
 end
 
 group :production do
-  # Use Passenger standalone
+  gem "omniauth-rails_csrf_protection"
   gem "passenger", require: "phusion_passenger/rack_handler"
 end
 

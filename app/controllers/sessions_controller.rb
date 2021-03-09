@@ -2,6 +2,8 @@
 
 class SessionsController < ApplicationController
 
+  skip_before_action :verify_authenticity_token, only: :create
+
   ##
   # Displays the login page. Responds to `GET /login`.
   #
@@ -13,7 +15,11 @@ class SessionsController < ApplicationController
   # `GET/POST /netid-login`.
   #
   def new_netid
-    redirect_to(shibboleth_login_path(Ideals::Application.shibboleth_host))
+    if Rails.env.production? || Rails.env.demo?
+      redirect_to shibboleth_login_path(Ideals::Application.shibboleth_host)
+    else
+      redirect_to "/auth/developer"
+    end
   end
 
   ##
@@ -24,7 +30,7 @@ class SessionsController < ApplicationController
     user = nil
 
     case auth[:provider]
-    when "shibboleth"
+    when "developer", "shibboleth"
       user = ShibbolethUser.from_omniauth(auth)
     when "identity"
       user = LocalUser.from_omniauth(auth)
