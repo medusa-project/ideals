@@ -134,7 +134,9 @@ class AbstractRelation
   # @return [self]
   #
   def institution(institution)
-    filter(ElasticsearchIndex::StandardFields::INSTITUTION_KEY, institution.key)
+    if institution
+      filter(ElasticsearchIndex::StandardFields::INSTITUTION_KEY, institution.key)
+    end
     @loaded = false
     self
   end
