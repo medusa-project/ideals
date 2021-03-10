@@ -8,3 +8,6 @@
       %tr
         %td= link_to(row['title'], item_path(row['id']))
         %td= number_with_delimiter(row['dl_count'])
+    %tr
+      %th Total
+      %th= number_with_delimiter(@items.map{ |row| row['dl_count'] }.sum)
