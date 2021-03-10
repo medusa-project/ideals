@@ -134,25 +134,6 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  # downloads()
-
-  test "downloads() redirects to login page for logged-out users" do
-    get collection_downloads_path(collections(:collection1)), xhr: true
-    assert_redirected_to login_path
-  end
-
-  test "downloads() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    get collection_downloads_path(collections(:collection1)), xhr: true
-    assert_response :forbidden
-  end
-
-  test "downloads() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
-    get collection_downloads_path(collections(:collection1)), xhr: true
-    assert_response :ok
-  end
-
   # edit_access()
 
   test "edit_access() redirects to login page for logged-out users" do
@@ -300,6 +281,25 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
     get collection_path(collections(:collection1), role: Role::LOGGED_OUT)
     assert_select("#access-tab", false)
+  end
+
+  # statistics()
+
+  test "statistics() redirects to login page for logged-out users" do
+    get collection_statistics_path(collections(:collection1)), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "statistics() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get collection_statistics_path(collections(:collection1)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "statistics() returns HTTP 200" do
+    log_in_as(users(:local_sysadmin))
+    get collection_statistics_path(collections(:collection1)), xhr: true
+    assert_response :ok
   end
 
   # update()

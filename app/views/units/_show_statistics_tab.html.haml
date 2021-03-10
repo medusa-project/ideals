@@ -1,0 +1,10 @@
+.card.mb-3
+  .card-body
+    = form_tag(unit_statistics_path(@unit), class: "form-inline") do
+      = date_range_picker
+
+.mt-3
+  = spinner
+
+#statistics-xhr-content
+  -# _show_statistics_tab_content inserted here via XHR

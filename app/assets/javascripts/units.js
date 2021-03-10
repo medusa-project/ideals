@@ -18,29 +18,29 @@ const UnitsView = function() {
 const UnitView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
-    // Downloads tab
-    const downloads_content = $("#downloads-xhr-content");
-    const refreshDownloads = function(id) {
-        const url = ROOT_URL + "/units/" + id + "/downloads?" +
-            $("#downloads-tab-content form").serialize();
+    // Statistics tab
+    const statistics_content = $("#statistics-xhr-content");
+    const refreshStatistics = function(id) {
+        const url = ROOT_URL + "/units/" + id + "/statistics?" +
+            $("#statistics-tab-content form").serialize();
         $.get(url, function(data) {
-            downloads_content.prev().hide(); // hide the spinner
-            downloads_content.html(data);
+            statistics_content.prev().hide(); // hide the spinner
+            statistics_content.html(data);
         });
     };
 
-    const downloads_tab = $('#downloads-tab');
-    downloads_tab.on('show.bs.tab', function() {
+    const statistics_tab = $('#statistics-tab');
+    statistics_tab.on('show.bs.tab', function() {
         const id = $(this).data("unit-id");
-        refreshDownloads(id);
+        refreshStatistics(id);
     });
-    $("#downloads-tab-content input[type=submit]").on("click", function() {
+    $("#statistics-tab-content input[type=submit]").on("click", function() {
         // Remove existing content and show the spinner
-        downloads_content.empty();
-        downloads_content.prev().show(); // show the spinner
+        statistics_content.empty();
+        statistics_content.prev().show(); // show the spinner
 
-        const id = downloads_tab.data("unit-id");
-        refreshDownloads(id);
+        const id = statistics_tab.data("unit-id");
+        refreshStatistics(id);
         return false;
     });
 

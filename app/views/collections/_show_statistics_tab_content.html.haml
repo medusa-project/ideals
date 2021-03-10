@@ -1,8 +1,18 @@
+%h2 Submissions
+
+%table.table
+  %tbody
+    %tr
+      %td Submitted Items
+      %td= @num_submitted_items
+
+%h2 Downloads
+
 %table.table
   %thead
     %tr
       %th Item
-      %th Download Count
+      %th Count
   %tbody
     - @items.each do |row|
       %tr

@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 class UnitsController < ApplicationController
+
   before_action :ensure_logged_in, except: [:children, :collections, :index,
                                             :show]
-  before_action :set_unit, only: [:children, :collections, :downloads,
-                                  :edit_access, :edit_membership,
-                                  :edit_properties, :show, :update, :destroy]
-  before_action :authorize_unit, only: [:children, :collections, :downloads,
-                                        :edit_access, :edit_membership,
-                                        :edit_properties, :show, :update,
-                                        :destroy]
+  before_action :set_unit, only: [:children, :collections, :edit_access,
+                                  :edit_membership, :edit_properties, :show,
+                                  :statistics, :update, :destroy]
+  before_action :authorize_unit, only: [:children, :collections, :edit_access,
+                                        :edit_membership, :edit_properties,
+                                        :show, :statistics, :update, :destroy]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the
@@ -93,21 +93,6 @@ class UnitsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /units/:id/downloads` (XHR only)
-  #
-  def downloads
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-    @items = @unit.item_download_counts(start_time: from_time,
-                                        end_time:   to_time)
-    render partial: "show_downloads_tab_content"
-  end
-
-  ##
   # Used for editing access control.
   #
   # Responds to `GET /units/:id/edit-membership` (XHR only)
@@ -186,6 +171,23 @@ class UnitsController < ApplicationController
     @count            = @items.count
     @current_page     = @items.page
     @permitted_params = results_params
+  end
+
+  ##
+  # Responds to `GET /units/:id/statistics` (XHR only)
+  #
+  def statistics
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    @items               = @unit.item_download_counts(start_time: from_time,
+                                                      end_time:   to_time)
+    @num_submitted_items = @unit.submitted_item_count(start_time: from_time,
+                                                      end_time:   to_time)
+    render partial: "show_statistics_tab_content"
   end
 
   ##

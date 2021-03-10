@@ -21,29 +21,29 @@ const CollectionView = function() {
         form.submit();
     });
 
-    // Downloads tab
-    const downloads_content = $("#downloads-xhr-content");
-    const refreshDownloads = function(id) {
-        const url = ROOT_URL + "/collections/" + id + "/downloads?" +
-            $("#downloads-tab-content form").serialize();
+    // Statistics tab
+    const statistics_content = $("#statistics-xhr-content");
+    const refreshStatistics = function(id) {
+        const url = ROOT_URL + "/collections/" + id + "/statistics?" +
+            $("#statistics-tab-content form").serialize();
         $.get(url, function(data) {
-            downloads_content.prev().hide(); // hide the spinner
-            downloads_content.html(data);
+            statistics_content.prev().hide(); // hide the spinner
+            statistics_content.html(data);
         });
     };
 
-    const downloads_tab = $('#downloads-tab');
-    downloads_tab.on('show.bs.tab', function() {
+    const statistics_tab = $('#statistics-tab');
+    statistics_tab.on('show.bs.tab', function() {
         const id = $(this).data("collection-id");
-        refreshDownloads(id);
+        refreshStatistics(id);
     });
-    $("#downloads-tab-content input[type=submit]").on("click", function() {
+    $("#statistics-tab-content input[type=submit]").on("click", function() {
         // Remove existing content and show the spinner
-        downloads_content.empty();
-        downloads_content.prev().show(); // show the spinner
+        statistics_content.empty();
+        statistics_content.prev().show(); // show the spinner
 
-        const id = downloads_tab.data("collection-id");
-        refreshDownloads(id);
+        const id = statistics_tab.data("collection-id");
+        refreshStatistics(id);
         return false;
     });
 

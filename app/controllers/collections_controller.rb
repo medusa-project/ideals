@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
 class CollectionsController < ApplicationController
+
   before_action :ensure_logged_in, except: [:children, :index, :show]
-  before_action :set_collection, only: [:children, :destroy, :downloads,
-                                        :edit_access,
+  before_action :set_collection, only: [:children, :destroy, :edit_access,
                                         :edit_collection_membership,
                                         :edit_properties, :edit_unit_membership,
-                                        :show, :update]
-  before_action :authorize_collection, only: [:destroy, :downloads,
-                                              :edit_access,
+                                        :show, :statistics, :update]
+  before_action :authorize_collection, only: [:destroy, :edit_access,
                                               :edit_collection_membership,
                                               :edit_properties,
                                               :edit_unit_membership,
-                                              :show, :update]
+                                              :show, :statistics, :update]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the
@@ -76,21 +75,6 @@ class CollectionsController < ApplicationController
     ensure
       redirect_to(parent || primary_unit)
     end
-  end
-
-  ##
-  # Responds to `GET /collections/:id/downloads` (XHR only)
-  #
-  def downloads
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-    @items = @collection.item_download_counts(start_time: from_time,
-                                              end_time:   to_time)
-    render partial: "show_downloads_tab_content"
   end
 
   ##
@@ -204,6 +188,23 @@ class CollectionsController < ApplicationController
     @review_count            = @review_items.count
     @review_current_page     = @review_items.page
     @review_permitted_params = results_params
+  end
+
+  ##
+  # Responds to `GET /collections/:id/statistics` (XHR only)
+  #
+  def statistics
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    @items               = @collection.item_download_counts(start_time: from_time,
+                                                            end_time:   to_time)
+    @num_submitted_items = @collection.submitted_item_count(start_time: from_time,
+                                                            end_time:   to_time)
+    render partial: "show_statistics_tab_content"
   end
 
   ##

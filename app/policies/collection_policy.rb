@@ -49,10 +49,6 @@ class CollectionPolicy < ApplicationPolicy
     create?
   end
 
-  def downloads?
-    show_properties?
-  end
-
   def edit_access?
     update?
   end
@@ -94,6 +90,10 @@ class CollectionPolicy < ApplicationPolicy
   def show_properties?
     role && role >= Role::COLLECTION_MANAGER &&
         user&.effective_manager?(collection)
+  end
+
+  def statistics?
+    show_properties?
   end
 
   ##

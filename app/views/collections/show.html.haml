@@ -53,15 +53,15 @@
           Review Submissions
           %small.badge-pill.badge-danger= @review_count
 
-      - if policy(@collection).downloads?
-        %a#downloads-tab.nav-link{href: "#downloads-tab-content",
+      - if policy(@collection).statistics?
+        %a#statistics-tab.nav-link{href: "#statistics-tab-content",
                                   "data-toggle": "tab",
                                   "data-collection-id": @collection.id,
                                   role: "tab",
-                                  "aria-controls": "downloads-tab-content",
+                                  "aria-controls": "statistics-tab-content",
                                   "aria-selected": "false"}
           %i.fa.fa-chart-bar
-          Downloads
+          Statistics
 
       - if policy(@collection).edit_access?
         %a#access-tab.nav-link{href: "#access-tab-content",
@@ -89,10 +89,10 @@
                                           "aria-labelledby": "items-tab"}
       = render partial: "show_items_tab"
 
-    - if policy(@collection).downloads?
-      #downloads-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                "aria-labelledby": "downloads-tab"}
-        = render partial: "show_downloads_tab"
+    - if policy(@collection).statistics?
+      #statistics-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                 "aria-labelledby": "statistics-tab"}
+        = render partial: "show_statistics_tab"
 
     - if policy(@collection).review_submissions?
       #review-submissions-tab-content.tab-pane.fade.show{role: "tabpanel",
