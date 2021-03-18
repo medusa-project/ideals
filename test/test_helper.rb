@@ -28,13 +28,21 @@ class ActiveSupport::TestCase
       #
       # N.B. 2: the keys in the params hash must be present in
       # config/shibboleth.xml.
-      post "/auth/shibboleth/callback", params: {
-        "Shib-Session-ID":  SecureRandom.hex,
-        eppn:               user.uid,
-        displayName:        user.name,
-        mail:               user.email,
-        "org-dn":           user.org_dn,
-        overwriteUserAttrs: "false"
+      post "/auth/shibboleth/callback", env: {
+        "omniauth.auth": {
+          provider:          "shibboleth",
+          "Shib-Session-ID": SecureRandom.hex,
+          uid:               user.uid,
+          info: {
+            email: user.email
+          },
+          extra: {
+            raw_info: {
+              "org-dn":           user.org_dn,
+              overwriteUserAttrs: "false"
+            }
+          }
+        }
       }
     else
       post "/auth/identity/callback", params: {

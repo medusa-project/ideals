@@ -51,5 +51,9 @@ Rails.application.configure do
 
   config.assets.check_precompiled_asset = false
 
-  config.hosts += %w(ideals-host1.local ideals-host2.local ideals-uiuc.local)
+  config.hosts += %w(
+      ideals-host1.local
+      ideals-host2.local
+      ideals-uiuc.local
+      www.example.com) # used in controller tests
 end

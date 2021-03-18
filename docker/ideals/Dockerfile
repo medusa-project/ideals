@@ -4,10 +4,6 @@ ENV RAILS_ENV=test
 ENV RAILS_LOG_TO_STDOUT=true
 ENV SECRET_KEY_BASE=whateverdoesntmatter
 
-RUN cat "\n127.0.0.1 ideals-host1.local" >> /etc/hosts
-    && cat "\n127.0.0.1 ideals-host2.local" >> /etc/hosts
-    && cat "\n127.0.0.1 ideals-uiuc.local" >> /etc/hosts
-
 RUN apt-get update && apt-get install -y \
   build-essential \
   libmagic-dev \

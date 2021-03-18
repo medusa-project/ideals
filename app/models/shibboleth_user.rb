@@ -14,6 +14,7 @@ class ShibbolethUser < User
   # @return [ShibbolethUser]
   #
   def self.from_omniauth(auth)
+    auth = auth.deep_stringify_keys
     user = ShibbolethUser.find_by(uid: auth["uid"])
     if user
       user.update_with_omniauth(auth)
@@ -50,6 +51,7 @@ class ShibbolethUser < User
   end
 
   def self.create_with_omniauth(auth)
+    auth = auth.deep_stringify_keys
     # By design, logging in wipes out certain existing user properties and
     # replaces them with current information from the Shib IdP. By supplying
     # this custom attribute, we can preserve the user properties that are set

@@ -53,7 +53,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "new_netid() redirects to netid login path" do
     get netid_login_path
-    assert_redirected_to "http://www.example.com/Shibboleth.sso/Login?target=https://localhost/auth/shibboleth/callback"
+    assert_redirected_to "http://www.example.com/auth/developer"
   end
 
 end
