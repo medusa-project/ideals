@@ -16,12 +16,15 @@
       %th Name
       %th Key
       %th FQDN
+      %th Default
   %tbody
     - @institutions.each do |institution|
       %tr
         %td= link_to(institution.name, institution)
         %td
           %code= institution.key
-        %td= link_to(institution.fqdn, institution.url)
+        %td
+          %code= link_to(institution.fqdn, institution.url)
+        %td= boolean(institution.default, style: :word)
 
 = render partial: "institutions/add_modal", locals: { institution: @new_institution }

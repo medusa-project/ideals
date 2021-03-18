@@ -13,9 +13,10 @@ class IdealsSeeder
   private
 
   def seed_institutions
-    Institution.create!(key: "default",
-                        name: "Default Organization",
-                        org_dn: Institution::DEFAULT_ORG_DN)
+    Institution.create!(key:     "default",
+                        name:    "Default Institution",
+                        org_dn:  "o=Default Organization,dc=example,dc=org",
+                        default: true)
 
     # Check first, as this might have got created in a database migration.
     unless Institution.find_by_key("uiuc")

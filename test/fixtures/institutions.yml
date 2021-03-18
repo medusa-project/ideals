@@ -5,15 +5,18 @@ empty:
   fqdn: empty.edu
   name: Institution With No Users Or Units
   org_dn: empty
+  default: false
 
 somewhere:
   key: somewhere
   fqdn: somewhere.edu
   name: University of Somewhere
   org_dn: o=University of Somewhere,dc=somewhere,dc=edu
+  default: false
 
 uiuc:
   key: uiuc
   fqdn: ideals.illinois.edu
   name: University of Illinois at Urbana-Champaign
   org_dn: <%= ShibbolethUser::UIUC_ORG_DN %>
+  default: true

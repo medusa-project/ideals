@@ -2,6 +2,11 @@
 # # Attributes
 #
 # `created_at` Managed by ActiveRecord.
+# `default`    Boolean flag indicating whether a particular institution is the
+#              system default, i.e. the one that should be used when there is
+#              no other information available (like an `X-Forwarded-Host`
+#              header) to determine which one to use. Only one institution has
+#              this set to true.
 # `key`        Short string that uniquely identifies the institution.
 #              Populated from the `org_dn` string upon save.
 # `name`       Institution name, populated from the `org_dn` string upon save.
@@ -11,9 +16,6 @@
 class Institution < ApplicationRecord
 
   include Breadcrumb
-
-  # Used by the default institution in seed data.
-  DEFAULT_ORG_DN = "o=Default Organization,dc=example,dc=org"
 
   has_many :metadata_profiles
   has_many :registered_elements
@@ -39,7 +41,7 @@ class Institution < ApplicationRecord
 
   validate :disallow_key_changes
 
-  before_save :set_properties
+  before_save :set_properties, :ensure_default_uniqueness
 
   def breadcrumb_label
     name
@@ -69,6 +71,17 @@ class Institution < ApplicationRecord
   def disallow_key_changes
     if !new_record? && key_changed?
       errors.add(:key, "cannot be changed")
+    end
+  end
+
+  ##
+  # Ensures that only one institution is set as default.
+  #
+  def ensure_default_uniqueness
+    if self.default && self.default_changed?
+      Institution.where(default: true).
+        where("id != ?", self.id).
+        update_all(default: false)
     end
   end
 

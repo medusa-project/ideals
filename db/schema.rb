@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_22_150741) do
+ActiveRecord::Schema.define(version: 2021_03_18_140153) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -104,6 +104,8 @@ ActiveRecord::Schema.define(version: 2021_02_22_150741) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "fqdn", null: false
+    t.boolean "default", default: false, null: false
+    t.index ["default"], name: "index_institutions_on_default"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true
     t.index ["name"], name: "index_institutions_on_name", unique: true

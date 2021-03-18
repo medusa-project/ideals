@@ -26,10 +26,13 @@
   %dd
     %code= @institution.key
   %dt Fully Qualified Domain Name (FQDN)
-  %dd= link_to(@institution.fqdn, @institution.url)
+  %dd
+    %code= link_to(@institution.fqdn, @institution.url)
   %dt Organization DN
   %dd
     %code= @institution.org_dn
+  %dt Default
+  %dd= boolean(@institution.default, style: :word)
 
 - if @institution.users.any?
   %h2 Users

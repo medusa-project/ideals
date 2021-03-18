@@ -37,8 +37,7 @@ module ApplicationHelper
   # @return [Institution]
   #
   def current_institution
-    Institution.find_by_fqdn(request.host) ||
-      Institution.find_by_org_dn(Institution::DEFAULT_ORG_DN)
+    Institution.find_by_fqdn(request.host) || Institution.find_by_default(true)
   end
 
   ##

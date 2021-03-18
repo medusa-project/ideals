@@ -56,6 +56,15 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal "New Name", @instance.name
   end
 
+  test "save() sets all other instances as not-default when the instance is set
+  as default" do
+    Institution.update_all(default: false)
+    @instance = Institution.all.first
+    @instance.default = true
+    @instance.save!
+    assert_equal @instance, Institution.find_by_default(true)
+  end
+
   # url()
 
   test "url() returns a correct URL" do
