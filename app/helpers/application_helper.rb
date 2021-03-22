@@ -267,15 +267,22 @@ module ApplicationHelper
   end
 
   ##
-  # @param count [Integer]
+  # @param count [Integer] Total number of results. Note that this will be
+  #              limited internally to {ElasticsearchClient::MAX_RESULT_WINDOW}
+  #              to avoid overwhelming the search server.
   # @param page [Integer]
   # @param per_page [Integer]
   # @param permitted_params [ActionController::Parameters]
   # @param max_links [Integer]
   # @param start_arg [Symbol] Name of the `start` query argument.
   #
-  def paginate(count:, page:, per_page:, permitted_params:,
-               max_links: MAX_PAGINATION_LINKS, start_arg: :start)
+  def paginate(count:,
+               page:,
+               per_page:,
+               permitted_params:,
+               max_links: MAX_PAGINATION_LINKS,
+               start_arg: :start)
+    count = [count, ElasticsearchClient::MAX_RESULT_WINDOW].min
     return '' if count <= per_page
     num_pages  = (count / per_page.to_f).ceil
     first_page = [1, page - (max_links / 2.0).floor].max
