@@ -22,7 +22,7 @@ class ElasticsearchClient
   # Default is 10,000. This should remain in sync with the same value in the
   # schema YAML.
   #
-  MAX_RESULT_WINDOW = 1000000000
+  MAX_RESULT_WINDOW = 10000
 
   ##
   # These characters should not be used in queries (or field names, which may
