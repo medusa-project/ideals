@@ -44,8 +44,9 @@ module ApplicationHelper
   # @return [String]
   #
   def date_range_picker
+    now = Time.now
     m_options = (1..12)
-    y_options = (2020..Time.now.year + 1)
+    y_options = (Event.first.created_at.year..now.year)
     html = StringIO.new
     html << "<div class='form-group mr-4'>From:"
     html <<   select_tag("from_month", options_for_select(m_options),
@@ -56,10 +57,10 @@ module ApplicationHelper
     html << "<div class='form-group mr-4'>To:"
     html <<   select_tag("to_month", options_for_select(m_options, selected: 12),
                          class: "custom-select ml-1 mr-1")
-    html <<   select_tag("to_year", options_for_select(y_options, selected: Time.now.year + 1),
+    html <<   select_tag("to_year", options_for_select(y_options, selected: now.year),
                          class: "custom-select")
     html << "</div>"
-    html << submit_tag("Go", class: "btn btn-primary")
+    html << submit_tag("Go", class: "btn btn-primary", data: { disable_with: false })
     raw(html.string)
   end
 

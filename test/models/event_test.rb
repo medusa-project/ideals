@@ -31,6 +31,12 @@ class EventTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # first()
+
+  test "first() returns the first event" do
+    assert_equal Event.all.order(:created_at).limit(1).first, Event.first
+  end
+
   # instance-level tests
 
   test "instance must be associated with an object" do

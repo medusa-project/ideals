@@ -61,6 +61,13 @@ class Event < ApplicationRecord
   validate :validate_changes
   validate :validate_associated_object
 
+  ##
+  # @return [Event] The first created event.
+  #
+  def self.first
+    Event.all.order(:created_at).limit(1).first
+  end
+
   def after_changes
     json = read_attribute(:after_changes)
     json ? JSON.parse(json) : nil
