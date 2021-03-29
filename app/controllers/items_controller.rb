@@ -3,12 +3,13 @@
 class ItemsController < ApplicationController
 
   before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_item, only: [:destroy, :edit_membership, :edit_metadata,
-                                  :edit_properties, :show, :update,
-                                  :upload_bitstreams]
-  before_action :authorize_item, only: [:destroy, :edit_membership,
-                                        :edit_metadata, :edit_properties,
-                                        :show, :update, :upload_bitstreams]
+  before_action :set_item, only: [:destroy, :download_counts, :edit_membership,
+                                  :edit_metadata, :edit_properties, :show,
+                                  :statistics, :update, :upload_bitstreams]
+  before_action :authorize_item, only: [:destroy, :download_counts,
+                                        :edit_membership, :edit_metadata,
+                                        :edit_properties, :show, :statistics,
+                                        :update, :upload_bitstreams]
 
   ##
   # Responds to `DELETE /items/:id`
@@ -28,6 +29,30 @@ class ItemsController < ApplicationController
     ensure
       redirect_to collection || root_url
     end
+  end
+
+  ##
+  # Renders a CSV of download counts by month.
+  #
+  # Responds to `GET /items/:id/download-counts`
+  #
+  def download_counts
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    csv = CSV.generate do |csv|
+      @item.download_count_by_month(start_time: from_time,
+                                    end_time:   to_time).each do |row|
+        csv << row.values
+      end
+    end
+    send_data csv,
+              type: "text/csv",
+              disposition: "attachment",
+              filename: "item_#{@item.id}_download_counts.csv"
   end
 
   ##
@@ -150,6 +175,13 @@ class ItemsController < ApplicationController
     @bitstreams  = @item.bitstreams.
         order(:original_filename).
         select{ |b| policy(b).show? }
+  end
+
+  ##
+  # Responds to `GET /items/:id/statistics' (XHR only)
+  #
+  def statistics
+    render partial: "statistics_form"
   end
 
   ##

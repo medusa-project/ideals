@@ -189,6 +189,40 @@ class UnitTest < ActiveSupport::TestCase
                                              end_time:   1.hour.ago)
   end
 
+  # download_count_by_month()
+
+  test "download_count_by_month() returns a correct count" do
+    @instance.collections.each do |collection|
+      collection.items.each do |item|
+        item.bitstreams.each do |bitstream|
+          bitstream.add_download
+        end
+      end
+    end
+    assert_equal 1, @instance.download_count_by_month.length
+  end
+
+  test "download_count_by_month() returns a correct count when supplying start
+  and end times" do
+    @instance.collections.each do |collection|
+      collection.items.each do |item|
+        item.bitstreams.each do |bitstream|
+          bitstream.add_download
+        end
+      end
+    end
+
+    Event.where(event_type: Event::Type::DOWNLOAD).
+      limit(1).
+      update_all(created_at: 90.minutes.ago)
+
+    actual = @instance.download_count_by_month(start_time: 2.hours.ago,
+                                               end_time:   1.hour.ago)
+    assert_equal 1, actual.length
+    assert_kind_of Time, actual[0]['month']
+    assert_equal 0, actual[0]['dl_count']
+  end
+
   # item_download_counts()
 
   test "item_download_counts() returns correct results with no arguments" do
@@ -393,6 +427,39 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal 1, @instance.submitted_item_count(start_time: 2.hours.ago,
                                                    end_time:   1.hour.ago)
   end
+
+  # submitted_item_count_by_month()
+
+  test "submitted_item_count_by_month() returns a correct count" do
+    Event.destroy_all
+    @instance.collections.each do |collection|
+      collection.items.each do |item|
+        item.events.build(event_type: Event::Type::CREATE).save!
+      end
+    end
+    assert_equal 1, @instance.submitted_item_count_by_month.length
+  end
+
+  test "submitted_item_count_by_month() returns a correct count when supplying
+  start and end times" do
+    Event.destroy_all
+    @instance.collections.each do |collection|
+      collection.items.each do |item|
+        item.events.build(event_type: Event::Type::CREATE).save!
+      end
+    end
+
+    Event.where(event_type: Event::Type::CREATE).
+      limit(1).
+      update_all(created_at: 90.minutes.ago)
+
+    actual = @instance.submitted_item_count_by_month(start_time: 2.hours.ago,
+                                                     end_time:   1.hour.ago)
+    assert_equal 1, actual.length
+    assert_kind_of Time, actual[0]['month']
+    assert_equal 0, actual[0]['count']
+  end
+
 
   # title
 

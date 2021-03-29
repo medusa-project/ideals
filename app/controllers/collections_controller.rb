@@ -6,12 +6,16 @@ class CollectionsController < ApplicationController
   before_action :set_collection, only: [:children, :destroy, :edit_access,
                                         :edit_collection_membership,
                                         :edit_properties, :edit_unit_membership,
-                                        :show, :statistics, :update]
+                                        :item_download_counts, :show,
+                                        :statistics, :statistics_by_range,
+                                        :update]
   before_action :authorize_collection, only: [:destroy, :edit_access,
                                               :edit_collection_membership,
                                               :edit_properties,
                                               :edit_unit_membership,
-                                              :show, :statistics, :update]
+                                              :item_download_counts, :show,
+                                              :statistics, :statistics_by_range,
+                                              :update]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the
@@ -141,6 +145,25 @@ class CollectionsController < ApplicationController
   end
 
   ##
+  # Provides item download counts within a date range as CSV.
+  #
+  # Responds to `GET /collections/:id/item-download-counts`
+  #
+  def item_download_counts
+    set_item_download_counts_ivars
+    csv = CSV.generate do |csv|
+      csv << ["Month", "Downloads"]
+      @items.each do |row|
+        csv << row.values
+      end
+    end
+    send_data csv,
+              type: "text/csv",
+              disposition: "attachment",
+              filename: "collection_#{@collection.id}_download_counts.csv"
+  end
+
+  ##
   # Responds to `GET /collections/:id`
   #
   def show
@@ -191,20 +214,33 @@ class CollectionsController < ApplicationController
   end
 
   ##
+  # Renders the HTML statistics-aggregation tab content.
+  #
   # Responds to `GET /collections/:id/statistics` (XHR only)
   #
   def statistics
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-    @items               = @collection.item_download_counts(start_time: from_time,
-                                                            end_time:   to_time)
-    @num_submitted_items = @collection.submitted_item_count(start_time: from_time,
-                                                            end_time:   to_time)
+    set_item_download_counts_ivars
+    set_statistics_by_range_ivars
     render partial: "show_statistics_tab_content"
+  end
+
+  ##
+  # Provides statistics within a date range as CSV.
+  #
+  # Responds to `GET /collections/:id/statistics-by-range`
+  #
+  def statistics_by_range
+    set_statistics_by_range_ivars
+    csv = CSV.generate do |csv|
+      csv << ["Month", "Submitted Items", "Downloads"]
+      @counts_by_month.each do |row|
+        csv << row.values
+      end
+    end
+    send_data csv,
+              type: "text/csv",
+              disposition: "attachment",
+              filename: "collection_#{@collection.id}_statistics.csv"
   end
 
   ##
@@ -308,4 +344,37 @@ class CollectionsController < ApplicationController
                                        :submissions_reviewed,
                                        unit_ids: [])
   end
+
+  def set_item_download_counts_ivars
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    @items = @collection.item_download_counts(start_time: from_time,
+                                              end_time:   to_time)
+  end
+
+  def set_statistics_by_range_ivars
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    # These two queries could probably be consolidated, but this will do for
+    # now.
+    @counts_by_month = @collection.submitted_item_count_by_month(start_time: from_time,
+                                                                 end_time:   to_time)
+    downloads_by_month = @collection.download_count_by_month(start_time: from_time,
+                                                             end_time:   to_time)
+
+    @counts_by_month.each_with_index do |m, i|
+      m['item_count'] = m['count']
+      m['dl_count']   = downloads_by_month[i]['dl_count']
+      m.delete('count')
+    end
+  end
+
 end

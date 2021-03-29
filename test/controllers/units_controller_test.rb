@@ -235,6 +235,25 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # item_download_counts()
+
+  test "item_download_counts() redirects to login page for logged-out users" do
+    get unit_item_download_counts_path(units(:unit1))
+    assert_redirected_to login_path
+  end
+
+  test "item_download_counts() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get unit_item_download_counts_path(units(:unit1))
+    assert_response :forbidden
+  end
+
+  test "item_download_counts() returns HTTP 200" do
+    log_in_as(users(:local_sysadmin))
+    get unit_item_download_counts_path(units(:unit1))
+    assert_response :ok
+  end
+
   # show()
 
   test "show() returns HTTP 200 for HTML" do
@@ -274,6 +293,25 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "statistics() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
     get unit_statistics_path(units(:unit1)), xhr: true
+    assert_response :ok
+  end
+
+  # statistics_by_range()
+
+  test "statistics_by_range() redirects to login page for logged-out users" do
+    get unit_statistics_by_range_path(units(:unit1))
+    assert_redirected_to login_path
+  end
+
+  test "statistics_by_range() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get unit_statistics_by_range_path(units(:unit1))
+    assert_response :forbidden
+  end
+
+  test "statistics_by_range() returns HTTP 200" do
+    log_in_as(users(:local_sysadmin))
+    get unit_statistics_by_range_path(units(:unit1))
     assert_response :ok
   end
 

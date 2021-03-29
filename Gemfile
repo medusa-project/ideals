@@ -17,6 +17,7 @@ gem "bcrypt", "~> 3.1.7"
 gem 'bunny'
 gem 'amq-protocol'
 gem 'amqp_helper', '~>0.2.0', git: 'https://github.com/medusa-project/amqp_helper.git'
+gem "csv"
 # Provides all of our icons.
 gem "font-awesome-sass", "~> 5.6"
 # All HTML templates are written in HAML

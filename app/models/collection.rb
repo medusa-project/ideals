@@ -221,6 +221,37 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # @param start_time [Time]   Optional beginning of a time range.
+  # @param end_time [Time]     Optional end of a time range.
+  # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`
+  #                            keys.
+  #
+  def download_count_by_month(start_time: nil, end_time: nil)
+    start_time = Event.all.order(:created_at).limit(1).pluck(:created_at).first unless start_time
+    end_time   = Time.now unless end_time
+
+    sql = "SELECT mon.month, coalesce(e.count, 0) AS dl_count
+        FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,
+                             '#{end_time.strftime("%Y-%m-%d")}'::timestamp, interval '1 month') AS mon(month)
+            LEFT JOIN (
+                SELECT date_trunc('Month', e.created_at) as month,
+                       COUNT(e.id) AS count
+                FROM events e
+                    LEFT JOIN bitstreams b on e.bitstream_id = b.id
+                    LEFT JOIN items i ON b.item_id = i.id
+                    LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
+                WHERE cim.collection_id = $1
+                    AND e.event_type = $2
+                    AND e.created_at >= $3
+                    AND e.created_at <= $4
+                GROUP BY month) e ON mon.month = e.month
+        ORDER BY mon.month;"
+    values = [[nil, self.id], [nil, Event::Type::DOWNLOAD],
+              [nil, start_time], [nil, end_time]]
+    self.class.connection.exec_query(sql, "SQL", values)
+  end
+
+  ##
   # N.B.: Only items with ascribed titles are included in results.
   #
   # @param offset [Integer]    SQL OFFSET clause.
@@ -352,6 +383,36 @@ class Collection < ApplicationRecord
     items = items.where("events.created_at >= ?", start_time) if start_time
     items = items.where("events.created_at <= ?", end_time) if end_time
     count + items.count
+  end
+
+  ##
+  # @param start_time [Time]   Optional beginning of a time range.
+  # @param end_time [Time]     Optional end of a time range.
+  # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `count`
+  #                            keys.
+  #
+  def submitted_item_count_by_month(start_time: nil, end_time: nil)
+    start_time = Event.all.order(:created_at).limit(1).pluck(:created_at).first unless start_time
+    end_time   = Time.now unless end_time
+
+    sql = "SELECT mon.month, coalesce(e.count, 0) AS count
+        FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,
+                             '#{end_time.strftime("%Y-%m-%d")}'::timestamp, interval '1 month') AS mon(month)
+            LEFT JOIN (
+                SELECT date_trunc('Month', e.created_at) as month,
+                       COUNT(e.id) AS count
+                FROM events e
+                    LEFT JOIN items i ON e.item_id = i.id
+                    LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
+                WHERE cim.collection_id = $1
+                    AND e.event_type = $2
+                    AND e.created_at >= $3
+                    AND e.created_at <= $4
+                GROUP BY month) e ON mon.month = e.month
+        ORDER BY mon.month;"
+    values = [[nil, self.id], [nil, Event::Type::CREATE],
+              [nil, start_time], [nil, end_time]]
+    self.class.connection.exec_query(sql, "SQL", values)
   end
 
   def unit_default?

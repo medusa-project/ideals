@@ -74,6 +74,10 @@ class UnitPolicy < ApplicationPolicy
     true
   end
 
+  def item_download_counts?
+    statistics?
+  end
+
   def new?
     create?
   end
@@ -84,6 +88,10 @@ class UnitPolicy < ApplicationPolicy
 
   def statistics?
     update?
+  end
+
+  def statistics_by_range?
+    statistics?
   end
 
   def update?

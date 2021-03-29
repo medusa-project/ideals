@@ -50,6 +50,13 @@ const ItemView = function() {
             $("#edit-item-properties-modal .modal-body").html(data);
         });
     });
+    $(".statistics").on("click", function() {
+        const id  = $(this).data("item-id");
+        const url = ROOT_URL + "/items/" + id + "/statistics";
+        $.get(url, function(data) {
+            $("#statistics-modal .modal-body").html(data);
+        });
+    });
     $(".upload-item-files").on("click", function() {
         const id  = $(this).data("item-id");
         const url = ROOT_URL + "/items/" + id + "/upload-bitstreams";

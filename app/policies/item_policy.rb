@@ -71,6 +71,10 @@ class ItemPolicy < ApplicationPolicy
     update?
   end
 
+  def download_counts?
+    statistics?
+  end
+
   def edit_membership?
     update?
   end
@@ -157,6 +161,10 @@ class ItemPolicy < ApplicationPolicy
   #
   def show_sysadmin_content?
     role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?
+  end
+
+  def statistics?
+    update?
   end
 
   def update?

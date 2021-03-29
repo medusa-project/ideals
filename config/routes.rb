@@ -22,8 +22,10 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-unit-membership", to: "collections#edit_unit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/item-download-counts", to: "collections#item_download_counts", via: :get
     match "/statistics", to: "collections#statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
   end
   match "/deposit", to: "submissions#agreement", via: :get
   resources :institutions, param: :key
@@ -53,11 +55,14 @@ Rails.application.routes.draw do
       match "/data", to: "bitstreams#data", via: :get
       match "/ingest", to: "bitstreams#ingest", via: :post
     end
+    match "/download-counts", to: "items#download_counts", via: :get
     match "/edit-membership", to: "items#edit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-metadata", to: "items#edit_metadata", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "items#edit_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/statistics", to: "items#statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/upload-bitstreams", to: "items#upload_bitstreams", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -87,8 +92,10 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "units#edit_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/item-download-counts", to: "units#item_download_counts", via: :get
     match "/statistics", to: "units#statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/statistics-by-range", to: "units#statistics_by_range", via: :get
   end
   resources :user_groups, path: "user-groups", except: :new
   resources :users, only: [:index, :show] do

@@ -299,6 +299,106 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
+  # download_counts?()
+
+  test "download_counts?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.download_counts?
+  end
+
+  test "download_counts?() does not authorize non-sysadmins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.download_counts?
+  end
+
+  test "download_counts?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.download_counts?
+  end
+
+  test "download_counts?() authorizes the submission owner if the item is submitting" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    @item.submitter = user
+    @item.stage     = Item::Stages::SUBMITTING
+    policy = ItemPolicy.new(context, @item)
+    assert policy.download_counts?
+  end
+
+  test "download_counts?() does not authorize the submission owner if the item is not submitting" do
+    user       = users(:norights)
+    context    = RequestContext.new(user:        user,
+                                    institution: user.institution,
+                                    role_limit:  Role::NO_LIMIT)
+    collection = @item.primary_collection
+    collection.submitting_users << user
+    collection.save!
+    @item.submitter = user
+    @item.stage     = Item::Stages::APPROVED
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.download_counts?
+  end
+
+  test "download_counts?() authorizes managers of the submission's collection" do
+    doing_user = users(:norights)
+    context    = RequestContext.new(user:        doing_user,
+                                    institution: doing_user.institution,
+                                    role_limit:  Role::NO_LIMIT)
+    collection = collections(:collection1)
+    collection.managing_users << doing_user
+    collection.save!
+    @item.submitter          = users(:norights) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(context, @item)
+    assert policy.download_counts?
+  end
+
+  test "download_counts?() authorizes admins of the submission's collection's unit" do
+    doing_user = users(:norights)
+    context    = RequestContext.new(user:        doing_user,
+                                    institution: doing_user.institution,
+                                    role_limit:  Role::NO_LIMIT)
+    collection               = collections(:collection1)
+    unit                     = collection.primary_unit
+    unit.administering_users << doing_user
+    unit.save!
+    @item.submitter          = users(:norights) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(context, @item)
+    assert policy.download_counts?
+  end
+
+  test "download_counts?() does not authorize anyone else" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.download_counts?
+  end
+
+  test "download_counts?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.download_counts?
+  end
+
   # edit_membership?()
 
   test "edit_membership?() returns false with a nil user" do
@@ -961,6 +1061,106 @@ class ItemPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.show_sysadmin_content?
+  end
+
+  # statistics?()
+
+  test "statistics?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.statistics?
+  end
+
+  test "statistics?() does not authorize non-sysadmins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.statistics?
+  end
+
+  test "statistics?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.statistics?
+  end
+
+  test "statistics?() authorizes the submission owner if the item is submitting" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    @item.submitter = user
+    @item.stage     = Item::Stages::SUBMITTING
+    policy = ItemPolicy.new(context, @item)
+    assert policy.statistics?
+  end
+
+  test "statistics?() does not authorize the submission owner if the item is not submitting" do
+    user       = users(:norights)
+    context    = RequestContext.new(user:        user,
+                                    institution: user.institution,
+                                    role_limit:  Role::NO_LIMIT)
+    collection = @item.primary_collection
+    collection.submitting_users << user
+    collection.save!
+    @item.submitter = user
+    @item.stage     = Item::Stages::APPROVED
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.statistics?
+  end
+
+  test "statistics?() authorizes managers of the submission's collection" do
+    doing_user = users(:norights)
+    context    = RequestContext.new(user:        doing_user,
+                                    institution: doing_user.institution,
+                                    role_limit:  Role::NO_LIMIT)
+    collection = collections(:collection1)
+    collection.managing_users << doing_user
+    collection.save!
+    @item.submitter          = users(:norights) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(context, @item)
+    assert policy.statistics?
+  end
+
+  test "statistics?() authorizes admins of the submission's collection's unit" do
+    doing_user = users(:norights)
+    context    = RequestContext.new(user:        doing_user,
+                                    institution: doing_user.institution,
+                                    role_limit:  Role::NO_LIMIT)
+    collection               = collections(:collection1)
+    unit                     = collection.primary_unit
+    unit.administering_users << doing_user
+    unit.save!
+    @item.submitter          = users(:norights) # somebody else
+    @item.primary_collection = collection
+
+    policy = ItemPolicy.new(context, @item)
+    assert policy.statistics?
+  end
+
+  test "statistics?() does not authorize anyone else" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.statistics?
+  end
+
+  test "statistics?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.statistics?
   end
 
   # update?()

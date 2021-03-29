@@ -281,6 +281,31 @@ class ItemTest < ActiveSupport::TestCase
                                              end_time:   1.hour.ago)
   end
 
+  # download_count_by_month()
+
+  test "download_count_by_month() returns correct counts" do
+    @instance.bitstreams.each do |bitstream|
+      bitstream.add_download
+    end
+    assert_equal 1, @instance.download_count_by_month.length
+  end
+
+  test "download_count_by_month() returns correct counts when supplying start
+  and end times" do
+    @instance.bitstreams.each do |bitstream|
+      bitstream.add_download
+    end
+
+    Event.where(event_type: Event::Type::DOWNLOAD).first.
+      update!(created_at: 90.minutes.ago)
+
+    actual = @instance.download_count_by_month(start_time: 2.hours.ago,
+                                               end_time:   1.hour.ago)
+    assert_equal 1, actual.length
+    assert_kind_of Time, actual[0]['month']
+    assert_equal 0, actual[0]['dl_count']
+  end
+
   # effective_metadata_profile()
 
   test "effective_metadata_profile() returns the metadata profile assigned to

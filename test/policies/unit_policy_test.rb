@@ -277,6 +277,41 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.index?
   end
 
+  # item_download_counts?()
+
+  test "item_download_counts?() returns false with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.item_download_counts?
+  end
+
+  test "item_download_counts?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.item_download_counts?
+  end
+
+  test "item_download_counts?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy = UnitPolicy.new(context, @unit)
+    assert policy.item_download_counts?
+  end
+
+  test "item_download_counts?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.item_download_counts?
+  end
+
   # new?()
 
   test "new?() returns false with a nil user" do
@@ -370,6 +405,41 @@ class UnitPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.statistics?
+  end
+
+  # statistics_by_range?()
+
+  test "statistics_by_range?() returns false with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.statistics_by_range?
+  end
+
+  test "statistics_by_range?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.statistics_by_range?
+  end
+
+  test "statistics_by_range?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy = UnitPolicy.new(context, @unit)
+    assert policy.statistics_by_range?
+  end
+
+  test "statistics_by_range?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.statistics_by_range?
   end
 
   # update?()

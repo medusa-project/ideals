@@ -3,13 +3,21 @@
 - if @bitstreams.any?
   %h2.mt-3
     Files
-    - if policy(@item).upload_bitstreams?
-      %button.btn.btn-light.upload-item-files{"data-item-id": @item.id,
-                                            "data-target": "#upload-item-files-modal",
-                                            "data-toggle": "modal",
-                                            role: "button"}
-        %i.fas.fa-upload
-        Upload
+    .btn-group
+      - if policy(@item).upload_bitstreams?
+        %button.btn.btn-light.upload-item-files{"data-item-id": @item.id,
+                                              "data-target": "#upload-item-files-modal",
+                                              "data-toggle": "modal",
+                                              role: "button"}
+          %i.fas.fa-upload
+          Upload
+      - if policy(@item).download_counts?
+        %button.btn.btn-light.statistics{"data-item-id": @item.id,
+                                         "data-target": "#statistics-modal",
+                                         "data-toggle": "modal",
+                                         role: "button"}
+          %i.fa.fa-chart-bar
+          Download Counts&hellip;
 
 - @bitstreams.each do |bitstream|
   .card.mb-3
@@ -60,6 +68,10 @@
           %dt Minimum Access Role
           %dd= Role.label(bitstream.role)
 
+= render partial: "shared/ajax_modal",
+         locals: { id: "statistics-modal",
+                   title: "Download Counts (CSV)",
+                   size: "lg" }
 = render partial: "shared/ajax_modal",
          locals: { id: "upload-item-files-modal",
                    title: "Upload Files",

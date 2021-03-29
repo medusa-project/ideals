@@ -69,6 +69,10 @@ class CollectionPolicy < ApplicationPolicy
     true
   end
 
+  def item_download_counts?
+    statistics?
+  end
+
   def new?
     create?
   end
@@ -94,6 +98,10 @@ class CollectionPolicy < ApplicationPolicy
 
   def statistics?
     show_properties?
+  end
+
+  def statistics_by_range?
+    statistics?
   end
 
   ##

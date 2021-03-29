@@ -45,6 +45,36 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # download_counts()
+
+  test "download_counts() redirects to login page for logged-out users" do
+    item = items(:item1)
+    get item_download_counts_path(item)
+    assert_redirected_to login_path
+  end
+
+  test "download_counts() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    item = items(:item1)
+    get item_download_counts_path(item)
+    assert_response :forbidden
+  end
+
+  test "download_counts() returns HTTP 200" do
+    log_in_as(users(:local_sysadmin))
+    get item_download_counts_path(items(:item1))
+    assert_response :ok
+  end
+
+  test "download_counts() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get item_path(items(:item1))
+    assert_select("dl.properties")
+
+    get item_path(items(:item1), role: Role::LOGGED_OUT)
+    assert_select("dl.properties", false)
+  end
+
   # edit_membership()
 
   test "edit_membership() redirects to login page for logged-out users" do
@@ -285,6 +315,42 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
     get item_path(items(:item1), role: Role::LOGGED_OUT)
     assert_select("dl.properties", false)
+  end
+
+  # statistics()
+
+  test "statistics() redirects to login page for logged-out users" do
+    item = items(:item1)
+    get item_statistics_path(item), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "statistics() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    item = items(:item1)
+    get item_statistics_path(item), xhr: true
+    assert_response :forbidden
+  end
+
+  test "statistics() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    get item_statistics_path(items(:item1))
+    assert_response :not_found
+  end
+
+  test "statistics() returns HTTP 200" do
+    log_in_as(users(:local_sysadmin))
+    get item_statistics_path(items(:item1)), xhr: true
+    assert_response :ok
+  end
+
+  test "statistics() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get item_statistics_path(items(:item1)), xhr: true
+    assert_select(".date-range-picker")
+
+    get item_statistics_path(items(:item1), role: Role::LOGGED_OUT), xhr: true
+    assert_select(".date-range-picker", false)
   end
 
   # update()

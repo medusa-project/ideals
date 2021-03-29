@@ -185,6 +185,47 @@ class CollectionTest < ActiveSupport::TestCase
                                              end_time:   1.hour.ago)
   end
 
+  # download_count_by_month()
+
+  test "download_count_by_month() returns a correct count" do
+    Event.destroy_all
+    all_children = @instance.all_children
+    assert all_children.length > 1
+    all_children.each do |child_collection|
+      child_collection.items.each do |item|
+        item.bitstreams.each do |bitstream|
+          bitstream.add_download
+        end
+      end
+    end
+    assert_equal 1, @instance.download_count_by_month.length
+  end
+
+  test "download_count_by_month() returns a correct count when supplying start
+  and end times" do
+    Event.destroy_all
+    all_children = @instance.all_children
+    assert all_children.length > 1
+    all_children.each do |child_collection|
+      child_collection.items.each do |item|
+        item.bitstreams.each do |bitstream|
+          bitstream.add_download
+        end
+      end
+    end
+
+    # Adjust the created_at property of one of the just-created bitstream
+    # download events to fit inside the time window.
+    Event.where(event_type: Event::Type::DOWNLOAD).all.first.
+      update!(created_at: 90.minutes.ago)
+
+    actual = @instance.download_count_by_month(start_time: 2.hours.ago,
+                                               end_time:   1.hour.ago)
+    assert_equal 1, actual.length
+    assert_kind_of Time, actual[0]['month']
+    assert_equal 0, actual[0]['dl_count']
+  end
+
   # effective_managers()
 
   test "effective_managers() includes sysadmins" do
@@ -439,10 +480,39 @@ class CollectionTest < ActiveSupport::TestCase
     end
     # Adjust the created_at property of one of the just-created bitstream
     # download events to fit inside the time window.
-    Event.where(event_type: Event::Type::CREATE).all.first.update!(created_at: 90.minutes.ago)
+    Event.where(event_type: Event::Type::CREATE).all.first.
+      update!(created_at: 90.minutes.ago)
 
     assert_equal 1, @instance.submitted_item_count(start_time: 2.hours.ago,
                                                    end_time:   1.hour.ago)
+  end
+
+  # submitted_item_count_by_month()
+
+  test "submitted_item_count_by_month() returns a correct count" do
+    Event.destroy_all
+    @instance.items.each do |item|
+      item.events.build(event_type: Event::Type::CREATE).save!
+    end
+    assert_equal 1, @instance.submitted_item_count_by_month.length
+  end
+
+  test "submitted_item_count_by_month() returns a correct count when supplying
+  start and end times" do
+    Event.destroy_all
+    @instance.items.each do |item|
+      item.events.build(event_type: Event::Type::CREATE).save!
+    end
+    # Adjust the created_at property of one of the just-created events to fit
+    # inside the time window.
+    Event.where(event_type: Event::Type::CREATE).all.first.
+      update!(created_at: 90.minutes.ago)
+
+    actual = @instance.submitted_item_count_by_month(start_time: 2.hours.ago,
+                                               end_time:   1.hour.ago)
+    assert_equal 1, actual.length
+    assert_kind_of Time, actual[0]['month']
+    assert_equal 0, actual[0]['count']
   end
 
   # title() (Describable concern)
