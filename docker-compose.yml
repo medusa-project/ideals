@@ -13,7 +13,7 @@ services:
       - handle
       - minio
       - rabbitmq
-    command: bash -c "sleep 20 && bin/rails db:prepare && bin/rails \"elasticsearch:indexes:create[ideals_test]\" && bin/rails test && bin/rails zeitwerk:check"
+    command: bash -c "sleep 30 && bin/rails db:prepare && bin/rails \"elasticsearch:indexes:create[ideals_test]\" && bin/rails test && bin/rails zeitwerk:check"
   postgres:
     image: postgres:12-alpine
     environment:
