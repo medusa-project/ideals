@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y \
   libmagic-dev \
   libpq-dev \
   curl \
-  git
+  git \
+  shared-mime-info
 
 RUN mkdir app
 WORKDIR app
