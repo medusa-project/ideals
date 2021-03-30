@@ -32,6 +32,10 @@ class InstitutionPolicy < ApplicationPolicy
     false
   end
 
+  def item_download_counts?
+    statistics?
+  end
+
   def new?
     create?
   end
@@ -42,6 +46,14 @@ class InstitutionPolicy < ApplicationPolicy
         user.effective_institution_admin?(institution)
     end
     false
+  end
+
+  def statistics?
+    show?
+  end
+
+  def statistics_by_range?
+    statistics?
   end
 
   def update?

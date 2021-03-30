@@ -154,6 +154,25 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # item_download_counts()
+
+  test "item_download_counts() redirects to login page for logged-out users" do
+    get institution_item_download_counts_path(institutions(:somewhere))
+    assert_redirected_to login_path
+  end
+
+  test "item_download_counts() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get institution_item_download_counts_path(institutions(:somewhere))
+    assert_response :forbidden
+  end
+
+  test "item_download_counts() returns HTTP 200" do
+    log_in_as(users(:local_sysadmin))
+    get institution_item_download_counts_path(institutions(:somewhere))
+    assert_response :ok
+  end
+
   # new()
 
   test "new() redirects to login page for logged-out users" do
@@ -189,6 +208,44 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   test "show() returns HTTP 200 for authorized users" do
     log_in_as(users(:uiuc_admin))
     get institution_path(institutions(:somewhere))
+    assert_response :ok
+  end
+
+  # statistics()
+
+  test "statistics() redirects to login page for logged-out users" do
+    get institution_statistics_path(institutions(:somewhere)), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "statistics() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get institution_statistics_path(institutions(:somewhere)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "statistics() returns HTTP 200" do
+    log_in_as(users(:local_sysadmin))
+    get institution_statistics_path(institutions(:somewhere)), xhr: true
+    assert_response :ok
+  end
+
+  # statistics_by_range()
+
+  test "statistics_by_range() redirects to login page for logged-out users" do
+    get institution_statistics_by_range_path(institutions(:somewhere))
+    assert_redirected_to login_path
+  end
+
+  test "statistics_by_range() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get institution_statistics_by_range_path(institutions(:somewhere))
+    assert_response :forbidden
+  end
+
+  test "statistics_by_range() returns HTTP 200" do
+    log_in_as(users(:local_sysadmin))
+    get institution_statistics_by_range_path(institutions(:somewhere))
     assert_response :ok
   end
 

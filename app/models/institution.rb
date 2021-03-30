@@ -47,6 +47,116 @@ class Institution < ApplicationRecord
     name
   end
 
+  ##
+  # @param start_time [Time]   Optional beginning of a time range.
+  # @param end_time [Time]     Optional end of a time range.
+  # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`
+  #                            keys.
+  #
+  def download_count_by_month(start_time: nil, end_time: nil)
+    start_time = Event.all.order(:created_at).limit(1).pluck(:created_at).first unless start_time
+    end_time   = Time.now unless end_time
+
+    sql = "SELECT mon.month, coalesce(e.count, 0) AS dl_count
+        FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,
+                             '#{end_time.strftime("%Y-%m-%d")}'::timestamp, interval '1 month') AS mon(month)
+            LEFT JOIN (
+                SELECT date_trunc('Month', e.created_at) as month,
+                       COUNT(e.id) AS count
+                FROM events e
+                    LEFT JOIN bitstreams b on e.bitstream_id = b.id
+                    LEFT JOIN items i ON b.item_id = i.id
+                    LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
+                    LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
+                    LEFT JOIN units u ON u.id = ucm.unit_id
+                WHERE u.institution_id = $1
+                    AND e.event_type = $2
+                    AND e.created_at >= $3
+                    AND e.created_at <= $4
+                GROUP BY month) e ON mon.month = e.month
+        ORDER BY mon.month;"
+    values = [[nil, self.id], [nil, Event::Type::DOWNLOAD],
+              [nil, start_time], [nil, end_time]]
+    self.class.connection.exec_query(sql, "SQL", values)
+  end
+
+  ##
+  # N.B.: Only items with ascribed titles are included in results.
+  #
+  # @param offset [Integer]    SQL OFFSET clause.
+  # @param limit [Integer]     SQL LIMIT clause.
+  # @param start_time [Time]   Optional beginning of a time range.
+  # @param end_time [Time]     Optional end of a time range.
+  # @return [Enumerable<Hash>] Enumerable of hashes representing items and
+  #                            their corresponding download counts.
+  #
+  def item_download_counts(offset: 0, limit: 0,
+                           start_time: nil, end_time: nil)
+    sql = StringIO.new
+    sql << "SELECT *
+        FROM (
+            SELECT DISTINCT ON (i.id) i.id AS id, ae.string AS title, COUNT(e.id) AS dl_count
+            FROM items i
+                LEFT JOIN ascribed_elements ae ON ae.item_id = i.id
+                LEFT JOIN registered_elements re ON re.id = ae.registered_element_id
+                LEFT JOIN bitstreams b ON b.item_id = i.id
+                LEFT JOIN events e ON e.bitstream_id = b.id
+                LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
+                LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
+                LEFT JOIN units u ON u.id = ucm.unit_id
+            WHERE re.name = $1
+                AND u.institution_id = $2
+                AND e.event_type = $3 "
+    sql <<      "AND e.created_at >= $4 " if start_time
+    sql <<      "AND e.created_at <= #{start_time ? "$5" : "$4"} " if end_time
+    sql <<  "GROUP BY i.id, ae.string"
+    sql << ") items_with_dl_count "
+    sql << "ORDER BY items_with_dl_count.dl_count DESC "
+    sql << "OFFSET #{offset} " if offset > 0
+    sql << "LIMIT #{limit} " if limit > 0
+
+    values = [
+      [nil, ::Configuration.instance.elements[:title]],
+      [nil, self.id],
+      [nil, Event::Type::DOWNLOAD]
+    ]
+    values << [nil, start_time] if start_time
+    values << [nil, end_time] if end_time
+    self.class.connection.exec_query(sql.string, 'SQL', values)
+  end
+
+  ##
+  # @param start_time [Time]   Optional beginning of a time range.
+  # @param end_time [Time]     Optional end of a time range.
+  # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`
+  #                            keys.
+  #
+  def submitted_item_count_by_month(start_time: nil, end_time: nil)
+    start_time = Event.all.order(:created_at).limit(1).pluck(:created_at).first unless start_time
+    end_time   = Time.now unless end_time
+
+    sql = "SELECT mon.month, coalesce(e.count, 0) AS count
+        FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,
+                             '#{end_time.strftime("%Y-%m-%d")}'::timestamp, interval '1 month') AS mon(month)
+            LEFT JOIN (
+                SELECT date_trunc('Month', e.created_at) as month,
+                       COUNT(e.id) AS count
+                FROM events e
+                    LEFT JOIN items i ON e.item_id = i.id
+                    LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
+                    LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
+                    LEFT JOIN units u ON u.id = ucm.unit_id
+                WHERE u.institution_id = $1
+                    AND e.event_type = $2
+                    AND e.created_at >= $3
+                    AND e.created_at <= $4
+                GROUP BY month) e ON mon.month = e.month
+        ORDER BY mon.month;"
+    values = [[nil, self.id], [nil, Event::Type::CREATE],
+              [nil, start_time], [nil, end_time]]
+    self.class.connection.exec_query(sql, "SQL", values)
+  end
+
   def to_param
     key
   end

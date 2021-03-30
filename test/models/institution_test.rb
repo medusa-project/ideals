@@ -7,6 +7,46 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # download_count_by_month()
+
+  test "download_count_by_month() returns a correct count" do
+    @instance = institutions(:uiuc)
+    @instance.units.each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          item.bitstreams.each do |bitstream|
+            bitstream.add_download
+          end
+        end
+      end
+    end
+    assert_equal 1, @instance.download_count_by_month.length
+  end
+
+  test "download_count_by_month() returns a correct count when supplying start
+  and end times" do
+    @instance = institutions(:uiuc)
+    @instance.units.each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          item.bitstreams.each do |bitstream|
+            bitstream.add_download
+          end
+        end
+      end
+    end
+
+    Event.where(event_type: Event::Type::DOWNLOAD).
+      limit(1).
+      update_all(created_at: 90.minutes.ago)
+
+    actual = @instance.download_count_by_month(start_time: 2.hours.ago,
+                                               end_time:   1.hour.ago)
+    assert_equal 1, actual.length
+    assert_kind_of Time, actual[0]['month']
+    assert_equal 0, actual[0]['dl_count']
+  end
+
   # fqdn
 
   test "fqdn must be present" do
@@ -21,6 +61,79 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.fqdn = "host-name.example.org"
     assert @instance.valid?
+  end
+
+  # item_download_counts()
+
+  test "item_download_counts() returns correct results with no arguments" do
+    @instance = institutions(:uiuc)
+    Event.destroy_all
+    item_count = 0
+    @instance.units.each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          item.bitstreams.each do |bitstream|
+            bitstream.add_download
+          end
+          # The query won't return items without a title.
+          item.elements.build(registered_element: registered_elements(:title),
+                              string: "This is the title").save!
+          item_count += 1 if item.bitstreams.any?
+        end
+      end
+    end
+    result = @instance.item_download_counts
+    assert_equal 6, result.length
+    assert_equal 24, result[0]['dl_count']
+  end
+
+  test "item_download_counts() returns correct results when supplying limit
+  and offset" do
+    @instance = institutions(:uiuc)
+    Event.destroy_all
+    @instance.units.each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          item.bitstreams.each do |bitstream|
+            bitstream.add_download
+          end
+          # The query won't return items without a title.
+          item.elements.build(registered_element: registered_elements(:title),
+                              string: "This is the title").save!
+        end
+      end
+    end
+    result = @instance.item_download_counts(offset: 1, limit: 2)
+    assert_equal 2, result.length
+    assert_equal 8, result[0]['dl_count']
+  end
+
+  test "item_download_counts() returns correct results when supplying start
+  and end times" do
+    @instance = institutions(:uiuc)
+    Event.destroy_all
+    @instance.units.each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          item.bitstreams.each do |bitstream|
+            bitstream.add_download
+          end
+          # The query won't return items without a title.
+          item.elements.build(registered_element: registered_elements(:title),
+                              string: "This is the title").save!
+        end
+      end
+    end
+
+    # Adjust the created_at property of one of the just-created bitstream
+    # download events to fit inside the time window.
+    Event.where(event_type: Event::Type::DOWNLOAD).all.first.
+      update!(created_at: 90.minutes.ago)
+
+    result = @instance.item_download_counts(start_time: 2.hours.ago,
+                                            end_time:   1.hour.ago)
+    assert_equal 1, result.length
+    assert_equal 4, result[0]['dl_count']
   end
 
   # key

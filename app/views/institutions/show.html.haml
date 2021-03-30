@@ -1,15 +1,7 @@
 - provide :body_id, "show_institution"
 - provide :title, @institution.name
 
-
-.btn-group.float-right{role: "group"}
-  - if policy(@institution).edit?
-    -# Edit button
-    %button.btn.btn-light.edit-institution{"data-target": "#edit-institution-modal",
-                                           "data-toggle": "modal", type: "button",
-                                           "data-institution-key": @institution.key }
-      %i.fa.fa-pencil-alt
-      Edit
+.float-right
   - if @institution.units.count == 0 && policy(@institution).destroy?
     -# Delete button
     = link_to(institution_path(@institution), class: "btn btn-danger",
@@ -21,24 +13,46 @@
 
 %h1= @institution.name
 
-%dl
-  %dt Key
-  %dd
-    %code= @institution.key
-  %dt Fully Qualified Domain Name (FQDN)
-  %dd
-    %code= link_to(@institution.fqdn, @institution.url)
-  %dt Organization DN
-  %dd
-    %code= @institution.org_dn
-  %dt Default
-  %dd= boolean(@institution.default, style: :word)
+.row
+  .col-sm-5.col-md-4.col-lg-3
+    .nav.flex-column.nav-pills{role: "tablist",
+                               "aria-orientation": "vertical"}
+      %a#properties-tab.nav-link.active{href: "#properties-tab-content",
+                                        "data-toggle": "pill",
+                                        role: "tab",
+                                        "aria-controls": "properties-tab-content",
+                                        "aria-selected": "true"}
+        = icon_for(:info)
+        Properties
+      %a#users-tab.nav-link{href: "#users-tab-content",
+                            "data-toggle": "pill",
+                            role: "tab",
+                            "aria-controls": "users-tab-content",
+                            "aria-selected": "true"}
+        = icon_for(User)
+        Users
+      %a#statistics-tab.nav-link{href: "#statistics-tab-content",
+                                 "data-toggle": "pill",
+                                 role: "tab",
+                                 "aria-controls": "statistics-tab-content",
+                                 "aria-selected": "true",
+                                 "data-institution-key": @institution.key}
+        %i.fa.fa-chart-bar
+        Statistics
 
-- if @institution.users.any?
-  %h2 Users
-  %ul
-    - @institution.users.each do |user|
-      %li= link_to(user.name, user.becomes(User))
+  .tab-content.col-sm-7.col-md-8.col-lg-9
+    #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                                      "aria-labelledby": "properties-tab"}
+      = render partial: "show_properties_tab"
+
+    #users-tab-content.tab-pane.fade{role: "tabpanel",
+                                     "aria-labelledby": "users-tab"}
+      = render partial: "show_users_tab"
+
+    #statistics-tab-content.tab-pane.fade{role: "tabpanel",
+                                          "aria-labelledby": "statistics-tab"}
+      = render partial: "show_statistics_tab"
+
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-institution-modal", title: "Edit Institution" }

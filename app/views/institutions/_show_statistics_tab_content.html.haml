@@ -1,0 +1,42 @@
+%h2
+  Statistics By Month
+  = link_to(institution_statistics_by_range_path(@institution), class: "btn btn-light") do
+    %i.fa.fa-download
+    CSV
+
+%table.table
+  %thead
+    %tr
+      %th Month
+      %th Submitted Items
+      %th Downloads
+  %tbody
+    - @counts_by_month.each do |row|
+      %tr
+        %td= row['month'].strftime("%B %Y")
+        %td= number_with_delimiter(row['item_count'])
+        %td= number_with_delimiter(row['dl_count'])
+    %tr
+      %th Total
+      %th= number_with_delimiter(@counts_by_month.map{ |row| row['item_count'] }.sum)
+      %th= number_with_delimiter(@counts_by_month.map{ |row| row['dl_count'] }.sum)
+
+%h2
+  Downloads By Item
+  = link_to(institution_item_download_counts_path(@institution), class: "btn btn-light") do
+    %i.fa.fa-download
+    CSV
+
+%table.table
+  %thead
+    %tr
+      %th Item
+      %th Downloads
+  %tbody
+    - @items.each do |row|
+      %tr
+        %td= link_to(row['title'], item_path(row['id']))
+        %td= number_with_delimiter(row['dl_count'])
+    %tr
+      %th Total
+      %th= number_with_delimiter(@items.map{ |row| row['dl_count'] }.sum)

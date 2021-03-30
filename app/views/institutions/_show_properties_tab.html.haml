@@ -1,0 +1,21 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@institution).edit?
+    -# Edit button
+    %button.btn.btn-light.edit-institution{"data-target": "#edit-institution-modal",
+                                           "data-toggle": "modal", type: "button",
+                                           "data-institution-key": @institution.key }
+      %i.fa.fa-pencil-alt
+      Edit
+
+%dl
+  %dt Key
+  %dd
+    %code= @institution.key
+  %dt Fully Qualified Domain Name (FQDN)
+  %dd
+    %code= link_to(@institution.fqdn, @institution.url)
+  %dt Organization DN
+  %dd
+    %code= @institution.org_dn
+  %dt Default
+  %dd= boolean(@institution.default, style: :word)

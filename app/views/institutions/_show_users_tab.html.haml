@@ -1,0 +1,4 @@
+- if @institution.users.any?
+  %ul
+    - @institution.users.each do |user|
+      %li= link_to(user.name, user.becomes(User))

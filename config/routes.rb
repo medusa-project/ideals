@@ -28,7 +28,12 @@ Rails.application.routes.draw do
     match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
   end
   match "/deposit", to: "submissions#agreement", via: :get
-  resources :institutions, param: :key
+  resources :institutions, param: :key do
+    match "/item-download-counts", to: "institutions#item_download_counts", via: :get
+    match "/statistics", to: "institutions#statistics", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/statistics-by-range", to: "institutions#statistics_by_range", via: :get
+  end
   resources :local_identities, only: [:update], path: "identities" do
     match "/activate", to: "local_identities#activate", via: :get
     match "/edit-password", to: "local_identities#edit_password", via: :get,
