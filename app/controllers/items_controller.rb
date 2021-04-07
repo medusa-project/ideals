@@ -32,7 +32,7 @@ class ItemsController < ApplicationController
   end
 
   ##
-  # Renders a CSV of download counts by month.
+  # Renders an HTML table or CSV of download counts by month.
   #
   # Responds to `GET /items/:id/download-counts`
   #
@@ -43,16 +43,25 @@ class ItemsController < ApplicationController
     to_time   = TimeUtils.ymd_to_time(params[:to_year],
                                       params[:to_month],
                                       params[:to_day])
-    csv = CSV.generate do |csv|
-      @item.download_count_by_month(start_time: from_time,
-                                    end_time:   to_time).each do |row|
-        csv << row.values
+    respond_to do |format|
+      format.html do
+        @counts_by_month = @item.download_count_by_month(start_time: from_time,
+                                                         end_time:   to_time)
+        render partial: "show_download_counts_panel_content"
+      end
+      format.csv do
+        csv = CSV.generate do |csv|
+          @item.download_count_by_month(start_time: from_time,
+                                        end_time:   to_time).each do |row|
+            csv << row.values
+          end
+        end
+        send_data csv,
+                  type: "text/csv",
+                  disposition: "attachment",
+                  filename: "item_#{@item.id}_download_counts.csv"
       end
     end
-    send_data csv,
-              type: "text/csv",
-              disposition: "attachment",
-              filename: "item_#{@item.id}_download_counts.csv"
   end
 
   ##

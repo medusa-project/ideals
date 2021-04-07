@@ -12,10 +12,10 @@
           %i.fas.fa-upload
           Upload
       - if policy(@item).download_counts?
-        %button.btn.btn-light.statistics{"data-item-id": @item.id,
-                                         "data-target": "#statistics-modal",
-                                         "data-toggle": "modal",
-                                         role: "button"}
+        %button.btn.btn-light.download-counts{"data-item-id": @item.id,
+                                              "data-target": "#download-counts-modal",
+                                              "data-toggle": "modal",
+                                              role: "button"}
           %i.fa.fa-chart-bar
           Download Counts&hellip;
 
@@ -69,8 +69,8 @@
           %dd= Role.label(bitstream.role)
 
 = render partial: "shared/ajax_modal",
-         locals: { id: "statistics-modal",
-                   title: "Download Counts (CSV)",
+         locals: { id: "download-counts-modal",
+                   title: "Download Counts",
                    size: "lg" }
 = render partial: "shared/ajax_modal",
          locals: { id: "upload-item-files-modal",

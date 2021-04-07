@@ -41,10 +41,9 @@ module ApplicationHelper
   end
 
   ##
-  # @param submit_value [String]
   # @return [String]
   #
-  def date_range_picker(submit_value: "Go")
+  def date_range_picker()
     now = Time.now
     m_options = (1..12)
     y_options = (Event.first.created_at.year..now.year)
@@ -61,7 +60,7 @@ module ApplicationHelper
     html <<   select_tag("to_year", options_for_select(y_options, selected: now.year),
                          class: "custom-select")
     html << "</div>"
-    html << submit_tag(submit_value,
+    html << submit_tag("Go",
                        class: "btn btn-primary",
                        data: { disable_with: false })
     raw(html.string)

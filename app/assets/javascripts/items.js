@@ -50,11 +50,35 @@ const ItemView = function() {
             $("#edit-item-properties-modal .modal-body").html(data);
         });
     });
-    $(".statistics").on("click", function() {
+    // Loads content into the Download Counts panel
+    $(".download-counts").on("click", function() {
         const id  = $(this).data("item-id");
         const url = ROOT_URL + "/items/" + id + "/statistics";
         $.get(url, function(data) {
-            $("#statistics-modal .modal-body").html(data);
+            const dl_counts_modal = $("#download-counts-modal");
+            dl_counts_modal.find(".modal-body").html(data);
+
+            const panel_content = $("#download-counts-xhr-content");
+            const form          = $("#download-counts-form");
+
+            const refreshTable = function() {
+                const url = ROOT_URL + "/items/" + id + "/download-counts?" +
+                    form.serialize();
+                $.get(url, function(data) {
+                    panel_content.prev().hide(); // hide the spinner
+                    panel_content.html(data);
+                });
+            };
+
+            refreshTable();
+
+            form.find("input[type=submit]").on("click", function() {
+                // Remove existing content and show the spinner
+                panel_content.empty();
+                panel_content.prev().show(); // show the spinner
+                refreshTable();
+                return false;
+            });
         });
     });
     $(".upload-item-files").on("click", function() {
@@ -80,7 +104,6 @@ const ItemView = function() {
 const ReviewItemsView = function() {
     new IDEALS.CheckAllButton($('.check-all'),
                               $('#items input[type=checkbox]'));
-
     const form = $('form#review-form');
     const verb = form.find("[name=verb]");
     $('.approve-checked').on('click', function() {

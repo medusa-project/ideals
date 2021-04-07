@@ -1,3 +1,8 @@
-= form_tag(item_download_counts_path(@item), method: :get) do
-  .form-inline.date-range-picker
-    = date_range_picker(submit_value: "Download")
+= form_tag(item_statistics_path(@item), id: "download-counts-form", class: "form-inline") do
+  = date_range_picker
+
+.mt-3
+  = spinner
+
+#download-counts-xhr-content
+  -# _show_download_counts_panel_content inserted here via XHR
