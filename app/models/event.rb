@@ -9,9 +9,13 @@
 # * `before_changes` JSON serialization of the associated {Item} after changes.
 # * `bitstream_id`   References the {Bitstream} to which the instance relates
 #                    (optional).
-# * `created_at`     Managed by ActiveRecord.
+# * `created_at`     The time the event was created--not necessarily when it
+#                    happened (see `happened_at`). Managed by ActiveRecord.
 # * `description`    English description of the event in past tense.
 # * `event_type`     One of the {Event::Type} constant values.
+# * `happened_at`    Time that the event happened. Often this will be equal to
+#                    `created_at` but not always (as in the case of e.g.
+#                    imported data).
 # * `item_id`        References the {Item} to which the instance relates
 #                    (optional).
 # * `updated_at`     Managed by ActiveRecord.
@@ -62,10 +66,10 @@ class Event < ApplicationRecord
   validate :validate_associated_object
 
   ##
-  # @return [Event] The first created event.
+  # @return [Event] The first event that happened.
   #
   def self.first
-    Event.all.order(:created_at).limit(1).first
+    Event.all.order(:happened_at).limit(1).first
   end
 
   def after_changes

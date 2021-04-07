@@ -46,7 +46,7 @@ module ApplicationHelper
   def date_range_picker()
     now = Time.now
     m_options = (1..12)
-    y_options = (Event.first.created_at.year..now.year)
+    y_options = (Event.order(:happened_at).limit(1).pluck(:happened_at).first.year..now.year)
     html = StringIO.new
     html << "<div class='form-group mr-4'>From:"
     html <<   select_tag("from_month", options_for_select(m_options),

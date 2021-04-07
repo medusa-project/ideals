@@ -34,7 +34,17 @@ class EventTest < ActiveSupport::TestCase
   # first()
 
   test "first() returns the first event" do
-    assert_equal Event.all.order(:created_at).limit(1).first, Event.first
+    Event.delete_all
+    e1 = Event.create!(happened_at: 1.hour.ago,
+                       item:        items(:item1),
+                       event_type:  Event::Type::CREATE)
+    e2 = Event.create!(happened_at: 2.hours.ago,
+                       item:        items(:item1),
+                       event_type:  Event::Type::CREATE)
+    e3 = Event.create!(happened_at: 3.hours.ago,
+                       item:        items(:item1),
+                       event_type:  Event::Type::CREATE)
+    assert_equal e3, Event.first
   end
 
   # instance-level tests

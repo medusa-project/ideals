@@ -85,7 +85,7 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_difference "Event.count" do
       @instance.add_download(user: user)
     end
-    event = Event.all.order(created_at: :desc).first
+    event = Event.all.order(happened_at: :desc).first
     assert_equal @instance, event.bitstream
     assert_equal "Download", event.description
     assert_equal user, event.user

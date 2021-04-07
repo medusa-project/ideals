@@ -7,3 +7,4 @@ item1_create:
   description:
   before_changes:
   after_changes:
+  happened_at: <%= Time.now %>

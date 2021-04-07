@@ -215,8 +215,8 @@ class Collection < ApplicationRecord
       joins("LEFT JOIN bitstreams ON bitstreams.item_id = items.id").
       joins("LEFT JOIN events ON bitstreams.id = events.bitstream_id").
       where("events.event_type": Event::Type::DOWNLOAD)
-    items = items.where("events.created_at >= ?", start_time) if start_time
-    items = items.where("events.created_at <= ?", end_time) if end_time
+    items = items.where("events.happened_at >= ?", start_time) if start_time
+    items = items.where("events.happened_at <= ?", end_time) if end_time
     count + items.count
   end
 
@@ -227,14 +227,14 @@ class Collection < ApplicationRecord
   #                            keys.
   #
   def download_count_by_month(start_time: nil, end_time: nil)
-    start_time = Event.all.order(:created_at).limit(1).pluck(:created_at).first unless start_time
+    start_time = Event.all.order(:happened_at).limit(1).pluck(:happened_at).first unless start_time
     end_time   = Time.now unless end_time
 
     sql = "SELECT mon.month, coalesce(e.count, 0) AS dl_count
         FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,
                              '#{end_time.strftime("%Y-%m-%d")}'::timestamp, interval '1 month') AS mon(month)
             LEFT JOIN (
-                SELECT date_trunc('Month', e.created_at) as month,
+                SELECT date_trunc('Month', e.happened_at) as month,
                        COUNT(e.id) AS count
                 FROM events e
                     LEFT JOIN bitstreams b on e.bitstream_id = b.id
@@ -242,8 +242,8 @@ class Collection < ApplicationRecord
                     LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
                 WHERE cim.collection_id = $1
                     AND e.event_type = $2
-                    AND e.created_at >= $3
-                    AND e.created_at <= $4
+                    AND e.happened_at >= $3
+                    AND e.happened_at <= $4
                 GROUP BY month) e ON mon.month = e.month
         ORDER BY mon.month;"
     values = [[nil, self.id], [nil, Event::Type::DOWNLOAD],
@@ -277,8 +277,8 @@ class Collection < ApplicationRecord
             WHERE re.name = $1
                 AND m.collection_id = $2
                 AND e.event_type = $3 "
-    sql <<      "AND e.created_at >= $4 " if start_time
-    sql <<      "AND e.created_at <= #{start_time ? "$5" : "$4"} " if end_time
+    sql <<      "AND e.happened_at >= $4 " if start_time
+    sql <<      "AND e.happened_at <= #{start_time ? "$5" : "$4"} " if end_time
     sql <<  "GROUP BY i.id, ae.string"
     sql << ") items_with_dl_count "
     sql << "ORDER BY items_with_dl_count.dl_count DESC "
@@ -380,8 +380,8 @@ class Collection < ApplicationRecord
     items = self.items.
         joins("LEFT JOIN events ON items.id = events.item_id").
         where("events.event_type": Event::Type::CREATE)
-    items = items.where("events.created_at >= ?", start_time) if start_time
-    items = items.where("events.created_at <= ?", end_time) if end_time
+    items = items.where("events.happened_at >= ?", start_time) if start_time
+    items = items.where("events.happened_at <= ?", end_time) if end_time
     count + items.count
   end
 
@@ -392,22 +392,22 @@ class Collection < ApplicationRecord
   #                            keys.
   #
   def submitted_item_count_by_month(start_time: nil, end_time: nil)
-    start_time = Event.all.order(:created_at).limit(1).pluck(:created_at).first unless start_time
+    start_time = Event.all.order(:happened_at).limit(1).pluck(:happened_at).first unless start_time
     end_time   = Time.now unless end_time
 
     sql = "SELECT mon.month, coalesce(e.count, 0) AS count
         FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,
                              '#{end_time.strftime("%Y-%m-%d")}'::timestamp, interval '1 month') AS mon(month)
             LEFT JOIN (
-                SELECT date_trunc('Month', e.created_at) as month,
+                SELECT date_trunc('Month', e.happened_at) as month,
                        COUNT(e.id) AS count
                 FROM events e
                     LEFT JOIN items i ON e.item_id = i.id
                     LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
                 WHERE cim.collection_id = $1
                     AND e.event_type = $2
-                    AND e.created_at >= $3
-                    AND e.created_at <= $4
+                    AND e.happened_at >= $3
+                    AND e.happened_at <= $4
                 GROUP BY month) e ON mon.month = e.month
         ORDER BY mon.month;"
     values = [[nil, self.id], [nil, Event::Type::CREATE],

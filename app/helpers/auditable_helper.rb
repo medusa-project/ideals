@@ -28,7 +28,7 @@ module AuditableHelper
       html <<         Event::Type.label(event.event_type).upcase
       html <<       '</span>'
       html <<       ' &bull; '
-      html <<       local_time(event.created_at)
+      html <<       local_time(event.happened_at)
       if event.user
         html <<       ' &bull; '
         html <<       link_to(event.user.becomes(User)) do
