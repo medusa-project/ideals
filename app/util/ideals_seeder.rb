@@ -4,7 +4,6 @@
 class IdealsSeeder
 
   def seed
-    seed_institutions
     update_registered_element_labels
     seed_metadata_profiles
     seed_submission_profiles
@@ -12,23 +11,11 @@ class IdealsSeeder
 
   private
 
-  def seed_institutions
-    Institution.create!(key:     "default",
-                        name:    "Default Institution",
-                        org_dn:  "o=Default Organization,dc=example,dc=org",
-                        default: true)
-
-    # Check first, as this might have got created in a database migration.
-    unless Institution.find_by_key("uiuc")
-      Institution.create!(key: "uiuc",
-                          name: "University of Illinois at Urbana-Champaign")
-    end
-  end
-
   def seed_metadata_profiles
     # For the list of elements to include, see:
     # https://bugs.library.illinois.edu/browse/IR-65
     profile = MetadataProfile.create!(name: "Default Metadata Profile",
+                                      institution: Institution.find_by_key("uiuc"),
                                       default: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
                            index: 0,
@@ -67,6 +54,7 @@ class IdealsSeeder
     # This list of elements is taken from:
     # https://uofi.app.box.com/notes/593479281190
     profile = SubmissionProfile.create!(name: "Default Submission Profile",
+                                        institution: Institution.find_by_key("uiuc"),
                                         default: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
                            index: 0,

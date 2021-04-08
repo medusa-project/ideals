@@ -1,3 +1,9 @@
+Institution.create!(key:     "uiuc",
+                    name:    "University of Illinois at Urbana-Champaign",
+                    fqdn:    "ideals.illinois.edu",
+                    org_dn:  "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
+                    default: true)
+
 ug = UserGroup.create!(key: "sysadmin",
                        name: "System Administrators")
 lg = LdapGroup.create!(urn: "urn:mace:uiuc.edu:urbana:library:units:ideals:library ideals admin")

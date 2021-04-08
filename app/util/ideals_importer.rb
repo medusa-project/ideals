@@ -25,7 +25,7 @@ class IdealsImporter
   #
   def import_bitstreams(csv_pathname)
     @running = true
-    LOGGER.debug("import_bitstreams(): importing %s (1/2)", csv_pathname)
+    LOGGER.debug("import_bitstreams(): importing %s", csv_pathname)
 
     line_count = count_lines(csv_pathname)
     progress   = Progress.new(line_count)
@@ -226,10 +226,9 @@ class IdealsImporter
       group_id      = row_arr[1].to_i
 
       progress.report(row_num, "Importing collection-community joins")
-      col = Collection.find(collection_id)
-      col.collection_item_memberships.build(unit_id: group_id,
-                                            collection: col,
-                                            primary: true).save!
+      UnitCollectionMembership.create!(unit_id: group_id,
+                                       collection_id: collection_id,
+                                       primary: true).save!
     end
     update_pkey_sequence("collections")
   ensure
@@ -411,7 +410,7 @@ class IdealsImporter
 
       # Skip submitterless items (items whose submitting user has not been
       # imported due to not being a UofI user).
-      if User.exists?(submitter_id)
+      if Collection.exists?(collection_id) && User.exists?(submitter_id)
         if withdrawn
           stage = Item::Stages::WITHDRAWN
         elsif submitting
@@ -444,9 +443,11 @@ class IdealsImporter
     LOGGER.debug("import_metadata(): importing %s", csv_pathname)
 
     line_count = count_lines(csv_pathname)
-    progress = Progress.new(line_count)
+    progress   = Progress.new(line_count)
 
     RegisteredElement.delete_all
+    uiuc_institution = Institution.find_by_key("uiuc")
+
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
@@ -455,11 +456,12 @@ class IdealsImporter
       name    += ":#{row_arr[3]}" if row_arr[3].present?
 
       progress.report(row_num, "Importing registered elements")
-      RegisteredElement.create!(id:         row_arr[0],
-                                name:       name,
-                                uri:        "http://example.org/#{name}",
-                                label:      "Label For #{name}",
-                                scope_note: row_arr[4])
+      RegisteredElement.create!(id:          row_arr[0],
+                                institution: uiuc_institution,
+                                name:        name,
+                                uri:         "http://example.org/#{name}",
+                                label:       "Label For #{name}",
+                                scope_note:  row_arr[4])
     end
     update_pkey_sequence("registered_elements")
   ensure
