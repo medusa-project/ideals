@@ -120,46 +120,54 @@ Refer to the instructions in the
 
 ## Migrate content from IDEALS-DSpace into the application
 
-Currently the migration process requires dropping the existing database and
-starting over with a new one.
+The migration process requires dropping the existing database and starting over
+with a new one. A prerequisite is a dump of the IDEALS-DSpace database loaded
+into a PostgreSQL instance and named `dbname`.
 
-A prerequisite is a dump of the IDEALS-DSpace database loaded into a PostgreSQL
-instance and named `dbname`.
+The migration process is divided into two steps. The first step migrates
+critical data--the core entities needed to make the application usable. It
+should be possible to deploy to production with only this data intact.
+
+The second step migrates non-critical data like statistics, which may take a
+lot longer than the first step. This step does not have to be done on a fresh
+database.
 
 ### In development
 
 ```sh
 rails elasticsearch:purge
 rails db:reset
-rails "ideals_dspace:migrate[dbname,dbhost,dbuser,dbpass]"
+rails "ideals_dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
 rails handles:put_all
+rails "ideals_dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]" # optional
 ```
 N.B.: (`dbhost` etc.) are only required if the database is on a different host
 and/or the database user is different from the default.
 
-### In demo
+### In production
 
 ```sh
 ~/bin/stop-rails
 rails medusa:delete_all_bitstreams
 rails elasticsearch:purge
 rails db:reset
-rails "ideals_dspace:migrate[dbname,dbhost,dbuser,dbpass]"
+rails "ideals_dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
 rails handles:put_all
 # This user must authorize your SSH key for passwordless login
 rails "ideals_dspace:bitstreams:copy_into_medusa[ideals_dspace_ssh_user]"
+rails "ideals_dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]"
 ```
 
 ## Create a user account
 
 There are two main categories of accounts: local identity, where account
 information is stored locally in the database, and Shibboleth, where account
-info is provided by a Shibboleth SP/IdP. There are rake tasks to create
-sysadmins of both types:
+info is provided by a Shibboleth SP. There are rake tasks to create sysadmins
+of both types:
 
 ```sh
 rails "ideals:users:create_local_sysadmin[email,password]"

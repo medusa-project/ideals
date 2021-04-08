@@ -68,6 +68,19 @@ namespace :ideals_dspace do
                  "export_bitstream_metadata.sql",
                  :import_bitstream_metadata)
     end
+
+    desc "Migrate bitstream statistics from IDEALS-DSpace into the application"
+    task :migrate_statistics, [:source_db_name,
+                               :source_db_host,
+                               :source_db_user,
+                               :source_db_password] => :environment do |task, args|
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 args[:source_db_password],
+                 "export_bitstream_statistics.sql",
+                 :import_bitstream_statistics)
+    end
   end
 
   namespace :collections do
@@ -210,11 +223,11 @@ namespace :ideals_dspace do
     end
   end
 
-  desc "Migrate all content from IDEALS-DSpace into the application"
-  task :migrate, [:source_db_name,
-                  :source_db_host,
-                  :source_db_user,
-                  :source_db_password] => :environment do |task, args|
+  desc "Migrate critical content from IDEALS-DSpace into the application"
+  task :migrate_critical, [:source_db_name,
+                           :source_db_host,
+                           :source_db_user,
+                           :source_db_password] => :environment do |task, args|
     dbname = args[:source_db_name]
     dbhost = args[:source_db_host]
     dbuser = args[:source_db_user]
@@ -230,6 +243,13 @@ namespace :ideals_dspace do
     puts "WARNING: This is the last step, but it takes a long time. "\
         "You can ctrl+c at any time if you don't need full item metadata."
     Rake::Task["ideals_dspace:metadata:migrate_item_values"].invoke(dbname, dbhost, dbuser, dbpass)
+  end
+
+  desc "Migrate non-critical content from IDEALS-DSpace into the application"
+  task :migrate_non_critical, [:source_db_name,
+                               :source_db_host,
+                               :source_db_user,
+                               :source_db_password] => :environment do |task, args|
   end
 
   def do_migrate(source_db_name, source_db_host, source_db_user,

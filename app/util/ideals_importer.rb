@@ -7,7 +7,8 @@
 # running.
 #
 # N.B.: methods must be invoked in a certain order. See the
-# `ideals_dspace:migrate` rake task.
+# `ideals_dspace:migrate_critical` and `ideals_dspace:migrate_non_critical`
+# rake tasks.
 #
 # N.B. 2: methods do not create or update objects within transactions, which
 # means that objects don't get reindexed. This is in order to save time by
