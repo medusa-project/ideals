@@ -363,6 +363,18 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.download?
   end
 
+  test "download?() restricts bitstreams that do not exist in stagina and do
+  not have a Medusa UUID" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    bs = bitstreams(:item1_in_staging)
+    bs.update!(medusa_uuid: nil, exists_in_staging: false)
+    policy  = BitstreamPolicy.new(context, bs)
+    assert !policy.download?
+  end
+
   test "download?() authorizes non-content bitstreams to collection managers" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,

@@ -43,7 +43,8 @@ class BitstreamPolicy < ApplicationPolicy
       if role
         if role >= bitstream.role &&
             (bitstream.bundle == Bitstream::Bundle::CONTENT ||
-                user&.effective_manager?(bitstream.item.primary_collection))
+                user&.effective_manager?(bitstream.item.primary_collection)) &&
+            (bitstream.exists_in_staging || bitstream.medusa_uuid.present?)
           return true
         end
         return false
@@ -63,8 +64,7 @@ class BitstreamPolicy < ApplicationPolicy
 
   def show?
     ((bitstream.item.approved? && bitstream.item.discoverable) ||
-        (role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?)) &&
-        (bitstream.exists_in_staging || bitstream.medusa_uuid.present?)
+        (role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?))
   end
 
   def update?
