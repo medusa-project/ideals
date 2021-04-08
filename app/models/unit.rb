@@ -75,11 +75,11 @@ class Unit < ApplicationRecord
   def all_children
     # This is much faster than walking down the tree via ActiveRecord.
     sql = "WITH RECURSIVE q AS (
-        SELECT h, 1 AS level, ARRAY[id] AS breadcrumb
+        SELECT h, ARRAY[id] AS breadcrumb
         FROM units h
         WHERE id = $1
         UNION ALL
-        SELECT hi, q.level + 1 AS level, breadcrumb || id
+        SELECT hi, breadcrumb || id
         FROM q
         JOIN units hi
           ON hi.parent_id = (q.h).id
@@ -212,23 +212,33 @@ class Unit < ApplicationRecord
     start_time = Event.all.order(:happened_at).limit(1).pluck(:happened_at).first unless start_time
     end_time   = Time.now unless end_time
 
-    sql = "SELECT mon.month, coalesce(e.count, 0) AS dl_count
-        FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,
-                             '#{end_time.strftime("%Y-%m-%d")}'::timestamp, interval '1 month') AS mon(month)
-            LEFT JOIN (
-                SELECT date_trunc('Month', e.happened_at) as month,
-                       COUNT(e.id) AS count
-                FROM events e
-                    LEFT JOIN bitstreams b on e.bitstream_id = b.id
-                    LEFT JOIN items i ON b.item_id = i.id
-                    LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
-                    LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
-                WHERE ucm.unit_id = $1
-                    AND e.event_type = $2
-                    AND e.happened_at >= $3
-                    AND e.happened_at <= $4
-                GROUP BY month) e ON mon.month = e.month
-        ORDER BY mon.month;"
+    sql = "WITH RECURSIVE q AS (
+        SELECT u
+        FROM units u
+        WHERE id = $1
+        UNION ALL
+        SELECT ui
+        FROM q
+        JOIN units ui ON ui.parent_id = (q.u).id
+    )
+    SELECT mon.month, coalesce(e.count, 0) AS dl_count
+    FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,
+                         '#{end_time.strftime("%Y-%m-%d")}'::timestamp, interval '1 month') AS mon(month)
+        LEFT JOIN (
+            SELECT date_trunc('Month', e.happened_at) as month,
+                   COUNT(e.id) AS count
+            FROM events e
+                LEFT JOIN bitstreams b on e.bitstream_id = b.id
+                LEFT JOIN items i ON b.item_id = i.id
+                LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
+                LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
+                LEFT JOIN q ON ucm.unit_id IN (SELECT (q.u).id FROM q)
+            WHERE (q.u).id = $1
+                AND e.event_type = $2
+                AND e.happened_at >= $3
+                AND e.happened_at <= $4
+            GROUP BY month) e ON mon.month = e.month
+    ORDER BY mon.month;"
     values = [[nil, self.id], [nil, Event::Type::DOWNLOAD],
               [nil, start_time], [nil, end_time]]
     self.class.connection.exec_query(sql, "SQL", values)
@@ -247,9 +257,20 @@ class Unit < ApplicationRecord
   def item_download_counts(offset: 0, limit: 0,
                            start_time: nil, end_time: nil)
     sql = StringIO.new
-    sql << "SELECT *
+    sql << "WITH RECURSIVE q AS (
+        SELECT u
+        FROM units u
+        WHERE id = $1
+        UNION ALL
+        SELECT ui
+        FROM q
+        JOIN units ui ON ui.parent_id = (q.u).id
+    )
+    SELECT *
         FROM (
-            SELECT DISTINCT ON (i.id) i.id AS id, ae.string AS title, COUNT(e.id) AS dl_count
+            SELECT DISTINCT ON (i.id) i.id AS id,
+                ae.string AS title,
+                COUNT(e.id) AS dl_count
             FROM items i
                 LEFT JOIN ascribed_elements ae ON ae.item_id = i.id
                 LEFT JOIN registered_elements re ON re.id = ae.registered_element_id
@@ -257,8 +278,9 @@ class Unit < ApplicationRecord
                 LEFT JOIN events e ON e.bitstream_id = b.id
                 LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
                 LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
-            WHERE re.name = $1
-                AND ucm.unit_id = $2
+             LEFT JOIN q ON ucm.unit_id IN (SELECT (q.u).id FROM q)
+             WHERE (q.u).id = $1
+                AND re.name = $2
                 AND e.event_type = $3 "
     sql <<      "AND e.happened_at >= $4 " if start_time
     sql <<      "AND e.happened_at <= #{start_time ? "$5" : "$4"} " if end_time
@@ -269,8 +291,8 @@ class Unit < ApplicationRecord
     sql << "LIMIT #{limit} " if limit > 0
 
     values = [
-      [nil, ::Configuration.instance.elements[:title]],
       [nil, self.id],
+      [nil, ::Configuration.instance.elements[:title]],
       [nil, Event::Type::DOWNLOAD]
     ]
     values << [nil, start_time] if start_time
@@ -338,22 +360,32 @@ class Unit < ApplicationRecord
     start_time = Event.all.order(:happened_at).limit(1).pluck(:happened_at).first unless start_time
     end_time   = Time.now unless end_time
 
-    sql = "SELECT mon.month, coalesce(e.count, 0) AS count
-        FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,
-                             '#{end_time.strftime("%Y-%m-%d")}'::timestamp, interval '1 month') AS mon(month)
-            LEFT JOIN (
-                SELECT date_trunc('Month', e.happened_at) as month,
-                       COUNT(e.id) AS count
-                FROM events e
-                    LEFT JOIN items i ON e.item_id = i.id
-                    LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
-                    LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
-                WHERE ucm.unit_id = $1
-                    AND e.event_type = $2
-                    AND e.happened_at >= $3
-                    AND e.happened_at <= $4
-                GROUP BY month) e ON mon.month = e.month
-        ORDER BY mon.month;"
+    sql = "WITH RECURSIVE q AS (
+        SELECT u
+        FROM units u
+        WHERE id = $1
+        UNION ALL
+        SELECT ui
+        FROM q
+        JOIN units ui ON ui.parent_id = (q.u).id
+    )
+    SELECT mon.month, coalesce(e.count, 0) AS count
+    FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,
+                         '#{end_time.strftime("%Y-%m-%d")}'::timestamp, interval '1 month') AS mon(month)
+        LEFT JOIN (
+            SELECT date_trunc('Month', e.happened_at) as month,
+                   COUNT(e.id) AS count
+            FROM events e
+                LEFT JOIN items i ON e.item_id = i.id
+                LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
+                LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
+                LEFT JOIN q ON ucm.unit_id IN (SELECT (q.u).id FROM q)
+            WHERE (q.u).id = $1
+                AND e.event_type = $2
+                AND e.happened_at >= $3
+                AND e.happened_at <= $4
+            GROUP BY month) e ON mon.month = e.month
+    ORDER BY mon.month;"
     values = [[nil, self.id], [nil, Event::Type::CREATE],
               [nil, start_time], [nil, end_time]]
     self.class.connection.exec_query(sql, "SQL", values)
