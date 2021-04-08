@@ -250,6 +250,11 @@ namespace :ideals_dspace do
                                :source_db_host,
                                :source_db_user,
                                :source_db_password] => :environment do |task, args|
+    dbname = args[:source_db_name]
+    dbhost = args[:source_db_host]
+    dbuser = args[:source_db_user]
+    dbpass = args[:source_db_password]
+    Rake::Task["ideals_dspace:bitstreams:migrate_statistics"].invoke(dbname, dbhost, dbuser, dbpass)
   end
 
   def do_migrate(source_db_name, source_db_host, source_db_user,

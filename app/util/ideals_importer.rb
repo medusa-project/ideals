@@ -145,6 +145,38 @@ class IdealsImporter
   ##
   # @param csv_pathname [String]
   #
+  def import_bitstream_statistics(csv_pathname)
+    @running = true
+    LOGGER.debug("import_bitstream_statistics(): importing %s", csv_pathname)
+
+    line_count = count_lines(csv_pathname)
+    progress   = Progress.new(line_count)
+
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
+
+      row_arr = line.split("|").map(&:strip)
+      bs_id   = row_arr[0].to_i
+      month   = Time.parse(row_arr[1])
+      count   = row_arr[2].to_i
+
+      progress.report(row_num, "Importing bitstream statistics")
+      if Bitstream.exists?(bs_id)
+        count.times do
+          Event.create!(bitstream_id: bs_id,
+                        happened_at:  month,
+                        event_type:   Event::Type::DOWNLOAD,
+                        description:  "Imported download from IDEALS-DSpace")
+        end
+      end
+    end
+  ensure
+    @running = false
+  end
+
+  ##
+  # @param csv_pathname [String]
+  #
   def import_collection_metadata(csv_pathname)
     @running = true
     LOGGER.debug("import_collection_metadata(): importing %s", csv_pathname)
