@@ -1,6 +1,8 @@
 - provide :body_id, "show_institution"
 - provide :title, @institution.name
 
+= hidden_field_tag :institution_key, @institution.key
+
 .float-right
   - if @institution.units.count == 0 && policy(@institution).destroy?
     -# Delete button
@@ -45,16 +47,15 @@
   .tab-content.col-sm-7.col-md-8.col-lg-9
     #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                       "aria-labelledby": "properties-tab"}
-      = render partial: "show_properties_tab"
+      = spinner
 
     #users-tab-content.tab-pane.fade{role: "tabpanel",
                                      "aria-labelledby": "users-tab"}
-      = render partial: "show_users_tab"
+      = spinner
 
     #statistics-tab-content.tab-pane.fade{role: "tabpanel",
                                           "aria-labelledby": "statistics-tab"}
-      = render partial: "show_statistics_tab"
-
+      = spinner
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-institution-modal", title: "Edit Institution" }

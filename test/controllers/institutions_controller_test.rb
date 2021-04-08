@@ -211,22 +211,60 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # statistics()
+  # show_properties()
 
-  test "statistics() redirects to login page for logged-out users" do
+  test "show_properties() redirects to login page for logged-out users" do
+    get institution_properties_path(institutions(:somewhere)), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "show_properties() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get institution_properties_path(institutions(:somewhere)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_properties() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get institution_properties_path(institutions(:somewhere)), xhr: true
+    assert_response :ok
+  end
+
+  # show_statistics()
+
+  test "show_statistics() redirects to login page for logged-out users" do
     get institution_statistics_path(institutions(:somewhere)), xhr: true
     assert_redirected_to login_path
   end
 
-  test "statistics() returns HTTP 403 for unauthorized users" do
+  test "show_statistics() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     get institution_statistics_path(institutions(:somewhere)), xhr: true
     assert_response :forbidden
   end
 
-  test "statistics() returns HTTP 200" do
+  test "show_statistics() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
     get institution_statistics_path(institutions(:somewhere)), xhr: true
+    assert_response :ok
+  end
+
+  # show_users()
+
+  test "show_users() redirects to login page for logged-out users" do
+    get institution_users_path(institutions(:somewhere)), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "show_users() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get institution_users_path(institutions(:somewhere)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_users() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get institution_users_path(institutions(:somewhere)), xhr: true
     assert_response :ok
   end
 

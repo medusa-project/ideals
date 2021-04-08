@@ -70,38 +70,48 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def item_download_counts?
-    statistics?
+    show_statistics?
   end
 
   def new?
     create?
   end
 
-  ##
-  # N.B.: this method doesn't correspond to a controller method.
-  #
-  def review_submissions?
-    show_properties?
-  end
-
   def show?
     true
   end
 
-  ##
-  # N.B.: this method doesn't correspond to a controller method.
-  #
-  def show_properties?
-    role && role >= Role::COLLECTION_MANAGER &&
-        user&.effective_manager?(collection)
+  def show_access?
+    edit_access?
   end
 
-  def statistics?
-    show_properties?
+  def show_collections?
+    show?
+  end
+
+  def show_items?
+    show?
+  end
+
+  def show_properties?
+    show?
+  end
+
+  def show_review_submissions?
+    role && role >= Role::COLLECTION_MANAGER &&
+      user&.effective_manager?(collection)
+  end
+
+  def show_statistics?
+    show?
+  end
+
+  def show_units?
+    show?
   end
 
   def statistics_by_range?
-    statistics?
+    show_statistics?
   end
 
   ##

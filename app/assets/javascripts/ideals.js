@@ -302,7 +302,7 @@ const IDEALS = {
                 }
                 html +=   "<a href=\"" + obj.uri + "\">";
                 html +=     (obj.class === "Unit") ?
-                    "<i class=\"fa fa-university\"></i> " :
+                    "<i class=\"fa fa-building\"></i> " :
                     "<i class=\"far fa-folder-open\"></i> ";
                 html +=     obj.title;
                 html +=   "</a>";
@@ -338,7 +338,7 @@ const IDEALS = {
                         // Query for collections that are immediate children of units.
                         $.ajax({
                             method: "GET",
-                            url: ROOT_URL + "/units/" + id + "/collections",
+                            url: ROOT_URL + "/units/" + id + "/collections-tree-fragment",
                             success: function (data, status, xhr) {
                                 insert(data, button.parent());
                             }

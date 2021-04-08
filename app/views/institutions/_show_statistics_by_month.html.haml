@@ -1,0 +1,31 @@
+-# Content for the Statistics -> Statistics By Month tab
+
+.float-right
+  = link_to(institution_statistics_by_range_path(@institution,
+                                                 format: :csv,
+                                                 params: params.permit(:from_year, :from_month, :to_year, :to_month)),
+                                                 class: "btn btn-light") do
+    %i.fa.fa-download
+    CSV
+
+%h2
+  = "#{params[:from_month]}/#{params[:from_year]}"
+  &mdash;
+  = "#{params[:to_month]}/#{params[:to_year]}"
+
+%table.table
+  %thead
+    %tr
+      %th Month
+      %th Submitted Items
+      %th Downloads
+  %tbody
+    - @counts_by_month.each do |row|
+      %tr
+        %td= row['month'].strftime("%B %Y")
+        %td= number_with_delimiter(row['item_count'])
+        %td= number_with_delimiter(row['dl_count'])
+    %tr
+      %th Total
+      %th= number_with_delimiter(@counts_by_month.map{ |row| row['item_count'] }.sum)
+      %th= number_with_delimiter(@counts_by_month.map{ |row| row['dl_count'] }.sum)

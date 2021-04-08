@@ -32,7 +32,7 @@ class UnitPolicy < ApplicationPolicy
     true
   end
 
-  def collections?
+  def collections_tree_fragment?
     true
   end
 
@@ -59,7 +59,7 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def edit_access?
-    update?
+    show_access?
   end
 
   def edit_membership?
@@ -75,7 +75,7 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def item_download_counts?
-    statistics?
+    show_statistics?
   end
 
   def new?
@@ -86,12 +86,32 @@ class UnitPolicy < ApplicationPolicy
     true
   end
 
-  def statistics?
+  def show_access?
     update?
   end
 
+  def show_collections?
+    show?
+  end
+
+  def show_items?
+    show?
+  end
+
+  def show_properties?
+    show?
+  end
+
+  def show_statistics?
+    show?
+  end
+
+  def show_unit_membership?
+    show?
+  end
+
   def statistics_by_range?
-    statistics?
+    show_statistics?
   end
 
   def update?

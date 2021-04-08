@@ -1,10 +1,27 @@
 .card.mb-3
   .card-body
-    = form_tag(collection_statistics_path(@collection), class: "form-inline") do
+    = form_tag("#", method: :get, class: "form-inline") do
       = date_range_picker
 
-.mt-3
-  = spinner
+%ul.nav.nav-tabs{role: "tablist"}
+  %li.nav-item{role: "presentation"}
+    %a#statistics-by-month-tab.nav-link.active{"data-toggle": "tab",
+                                               href: "#statistics-by-month-tab-content",
+                                               role: "tab",
+                                               "aria-controls": "statistics-by-month-tab-content",
+                                               "aria-selected": true} Statistics By Month
 
-#statistics-xhr-content
-  -# _show_statistics_tab_content inserted here via XHR
+  %li.nav-item{role: "presentation"}
+    %a#downloads-by-item-tab.nav-link{"data-toggle": "tab",
+                                      href: "#downloads-by-item-tab-content",
+                                      role: "tab",
+                                      "aria-controls": "downloads-by-item-tab-content",
+                                      "aria-selected": false} Downloads By Item
+
+.tab-content
+  #statistics-by-month-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                                             "aria-labelledby": "home-tab"}
+    = spinner
+  #downloads-by-item-tab-content.tab-pane.fade{role: "tabpanel",
+                                               "aria-labelledby": "home-tab"}
+    = spinner

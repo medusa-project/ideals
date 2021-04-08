@@ -2,17 +2,25 @@
 
 class UnitsController < ApplicationController
 
-  before_action :ensure_logged_in, except: [:children, :collections, :index,
-                                            :show]
-  before_action :set_unit, only: [:children, :collections, :edit_access,
-                                  :edit_membership, :edit_properties,
-                                  :item_download_counts, :show, :statistics,
-                                  :statistics_by_range, :update, :destroy]
-  before_action :authorize_unit, only: [:children, :collections, :edit_access,
+  before_action :ensure_logged_in, only: [:create, :destroy, :edit_access,
+                                          :edit_membership, :edit_properties,
+                                          :show_access, :update]
+  before_action :set_unit, only: [:children, :collections_tree_fragment,
+                                  :destroy, :edit_access, :edit_membership,
+                                  :edit_properties, :item_download_counts,
+                                  :show, :show_access, :show_collections,
+                                  :show_items, :show_properties,
+                                  :show_statistics, :show_unit_membership,
+                                  :statistics_by_range, :update]
+  before_action :authorize_unit, only: [:children, :collections_tree_fragment,
+                                        :destroy, :edit_access,
                                         :edit_membership, :edit_properties,
                                         :item_download_counts, :show,
-                                        :statistics, :statistics_by_range,
-                                        :update, :destroy]
+                                        :show_access, :show_collections,
+                                        :show_items, :show_properties,
+                                        :show_statistics,
+                                        :show_unit_membership,
+                                        :statistics_by_range, :update]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the
@@ -38,9 +46,9 @@ class UnitsController < ApplicationController
   #
   # The permissions are the same as those of {show}.
   #
-  # Responds to `GET /units/:unit_id/collections` (XHR only)
+  # Responds to `GET /units/:unit_id/collections-tree-fragment` (XHR only)
   #
-  def collections
+  def collections_tree_fragment
     raise ActionController::BadRequest if params[:unit_id].blank?
     @collections = Collection.search.
         institution(current_institution).
@@ -135,22 +143,36 @@ class UnitsController < ApplicationController
   end
 
   ##
-  # Renders a CSV of item download counts by month.
+  # Renders item download counts by month as HTML and CSV.
   #
   # Responds to `GET /units/:id/item-download-counts`
   #
   def item_download_counts
-    set_item_download_counts_ivars
-    csv = CSV.generate do |csv|
-      csv << ["Month", "Downloads"]
-      @items.each do |row|
-        csv << row.values
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    @items = @unit.item_download_counts(start_time: from_time,
+                                        end_time:   to_time)
+    respond_to do |format|
+      format.html do
+        render partial: "show_downloads_by_item"
+      end
+      format.csv do
+        csv = CSV.generate do |csv|
+          csv << ["Month", "Downloads"]
+          @items.each do |row|
+            csv << row.values
+          end
+        end
+        send_data csv,
+                  type: "text/csv",
+                  disposition: "attachment",
+                  filename: "unit_#{@unit.id}_download_counts.csv"
       end
     end
-    send_data csv,
-              type: "text/csv",
-              disposition: "attachment",
-              filename: "unit_#{@unit.id}_download_counts.csv"
   end
 
   ##
@@ -158,71 +180,128 @@ class UnitsController < ApplicationController
   #
   def show
     @new_unit = Unit.new
+  end
 
-    # Properties tab
-    @num_downloads        = @unit.download_count
-    @num_submitting_items = @unit.submitted_item_count
+  ##
+  # Renders HTML for the access tab in show-unit view.
+  #
+  # Responds to `GET /units/:id/access`
+  #
+  def show_access
+    render partial: "show_access_tab"
+  end
 
-    # Subunits tab
-    @subunits = Unit.search.
-        institution(current_institution).
-        parent_unit(@unit).
-        order("#{Unit::IndexFields::TITLE}.sort").
-        limit(999).
-        to_a
-
-    # Collections tab
+  ##
+  # Renders HTML for the collections tab in show-unit view.
+  #
+  # Responds to `GET /units/:id/collections`
+  #
+  def show_collections
     @collections = Collection.search.
-        institution(current_institution).
-        filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
-        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
-        limit(999).
-        to_a
+      institution(current_institution).
+      filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
+      order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+      limit(999)
+    render partial: "show_collections_tab"
+  end
 
-    # Items tab
+  ##
+  # Renders HTML for the items tab in show-unit view.
+  #
+  # Responds to `GET /units/:id/items`
+  #
+  def show_items
     @start = params[:start].to_i
     @window = window_size
     @items = Item.search.
-        institution(current_institution).
-        query_all(params[:q]).
-        filter(Item::IndexFields::UNITS, params[:id]).
-        order(params[:sort]).
-        start(@start).
-        limit(@window)
+      institution(current_institution).
+      query_all(params[:q]).
+      filter(Item::IndexFields::UNITS, params[:unit_id]).
+      order(params[:sort]).
+      start(@start).
+      limit(@window)
     @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
     @count            = @items.count
     @current_page     = @items.page
     @permitted_params = results_params
+    render partial: "show_items_tab"
   end
 
   ##
-  # Renders the HTML statistics-aggregation tab content.
+  # Renders HTML for the properties tab in show-unit view.
   #
-  # Responds to `GET /units/:id/statistics` (XHR only)
+  # Responds to `GET /units/:id/properties`
   #
-  def statistics
-    set_item_download_counts_ivars
-    set_statistics_by_range_ivars
-    render partial: "show_statistics_tab_content"
+  def show_properties
+    @num_downloads        = @unit.download_count
+    @num_submitting_items = @unit.submitted_item_count
+    render partial: "show_properties_tab"
   end
 
   ##
-  # Provides statistics within a date range as CSV.
+  # Renders HTML for the statistics tab in show-unit view.
+  #
+  # Responds to `GET /units/:id/statistics`
+  #
+  def show_statistics
+    render partial: "show_statistics_tab"
+  end
+
+  ##
+  # Renders HTML for the unit membership tab in show-unit view.
+  #
+  # Responds to `GET /units/:id/units`
+  #
+  def show_unit_membership
+    @subunits = Unit.search.
+      institution(current_institution).
+      parent_unit(@unit).
+      order("#{Unit::IndexFields::TITLE}.sort").
+      limit(999)
+    render partial: "show_unit_membership_tab"
+  end
+
+  ##
+  # Renders statistics within a date range as HTML and CSV.
   #
   # Responds to `GET /collections/:id/statistics-by-range`
   #
   def statistics_by_range
-    set_statistics_by_range_ivars
-    csv = CSV.generate do |csv|
-      csv << ["Month", "Submitted Items", "Downloads"]
-      @counts_by_month.each do |row|
-        csv << row.values
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    # These two queries could probably be consolidated, but this will do for
+    # now.
+    @counts_by_month = @unit.submitted_item_count_by_month(start_time: from_time,
+                                                           end_time:   to_time)
+    downloads_by_month = @unit.download_count_by_month(start_time: from_time,
+                                                       end_time:   to_time)
+    @counts_by_month.each_with_index do |m, i|
+      m['item_count'] = m['count']
+      m['dl_count']   = downloads_by_month[i]['dl_count']
+      m.delete('count')
+    end
+
+    respond_to do |format|
+      format.html do
+        render partial: "show_statistics_by_month"
+      end
+      format.csv do
+        csv = CSV.generate do |csv|
+          csv << ["Month", "Submitted Items", "Downloads"]
+          @counts_by_month.each do |row|
+            csv << row.values
+          end
+        end
+        send_data csv,
+                  type: "text/csv",
+                  disposition: "attachment",
+                  filename: "unit_#{@unit.id}_statistics.csv"
       end
     end
-    send_data csv,
-              type: "text/csv",
-              disposition: "attachment",
-              filename: "unit_#{@unit.id}_statistics.csv"
   end
 
   ##
@@ -283,38 +362,6 @@ class UnitsController < ApplicationController
 
   def unit_params
     params.require(:unit).permit(:institution_id, :parent_id, :title)
-  end
-
-  def set_item_download_counts_ivars
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-    @items = @unit.item_download_counts(start_time: from_time,
-                                        end_time:   to_time)
-  end
-
-  def set_statistics_by_range_ivars
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-    # These two queries could probably be consolidated, but this will do for
-    # now.
-    @counts_by_month = @unit.submitted_item_count_by_month(start_time: from_time,
-                                                           end_time:   to_time)
-    downloads_by_month = @unit.download_count_by_month(start_time: from_time,
-                                                       end_time:   to_time)
-
-    @counts_by_month.each_with_index do |m, i|
-      m['item_count'] = m['count']
-      m['dl_count']   = downloads_by_month[i]['dl_count']
-      m.delete('count')
-    end
   end
 
 end

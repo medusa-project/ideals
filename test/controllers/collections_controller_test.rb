@@ -264,23 +264,15 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # item_download_counts()
 
-  test "item_download_counts() redirects to login page for logged-out users" do
+  test "item_download_counts() returns HTTP 200 for HTML" do
     collection = collections(:collection1)
     get collection_item_download_counts_path(collection)
-    assert_redirected_to login_path
+    assert_response :ok
   end
 
-  test "item_download_counts() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+  test "item_download_counts() returns HTTP 200 for CSV" do
     collection = collections(:collection1)
-    get collection_item_download_counts_path(collection)
-    assert_response :forbidden
-  end
-
-  test "item_download_counts() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
-    get collection_item_download_counts_path(collection)
+    get collection_item_download_counts_path(collection, format: :csv)
     assert_response :ok
   end
 
@@ -305,41 +297,116 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_select("#access-tab", false)
   end
 
-  # statistics()
+  # show_access()
 
-  test "statistics() redirects to login page for logged-out users" do
-    get collection_statistics_path(collections(:collection1)), xhr: true
+  test "show_access() redirects to login page for logged-out users" do
+    collection = collections(:collection1)
+    get collection_access_path(collection), xhr: true
     assert_redirected_to login_path
   end
 
-  test "statistics() returns HTTP 403 for unauthorized users" do
+  test "show_access() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get collection_statistics_path(collections(:collection1)), xhr: true
+    collection = collections(:collection1)
+    get collection_access_path(collection), xhr: true
     assert_response :forbidden
   end
 
-  test "statistics() returns HTTP 200" do
+  test "show_access() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    get collection_access_path(collection)
+    assert_response :not_found
+  end
+
+  test "show_access() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    get collection_access_path(collection), xhr: true
+    assert_response :ok
+  end
+
+  test "show_access() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    get collection_access_path(collection), xhr: true
+    assert_select(".edit-collection-access")
+
+    get collection_access_path(collection, role: Role::LOGGED_OUT), xhr: true
+    assert_select(".edit-collection-access", false)
+  end
+
+  # show_collections()
+
+  test "show_collections() returns HTTP 200" do
+    get collection_collections_path(collections(:collection1)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_collections() returns HTTP 404 for non-XHR requests" do
+    get collection_collections_path(collections(:collection1))
+    assert_response :not_found
+  end
+
+  # show_items()
+
+  test "show_items() returns HTTP 200" do
+    get collection_items_path(collections(:collection1)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_items() returns HTTP 404 for non-XHR requests" do
+    get collection_items_path(collections(:collection1))
+    assert_response :not_found
+  end
+
+  # show_properties()
+
+  test "show_properties() returns HTTP 200" do
+    get collection_properties_path(collections(:collection1)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_properties() returns HTTP 404 for non-XHR requests" do
+    get collection_properties_path(collections(:collection1))
+    assert_response :not_found
+  end
+
+  # show_statistics()
+
+  test "show_statistics() returns HTTP 200" do
     get collection_statistics_path(collections(:collection1)), xhr: true
     assert_response :ok
   end
 
+  test "show_statistics() returns HTTP 404 for non-XHR requests" do
+    get collection_statistics_path(collections(:collection1))
+    assert_response :not_found
+  end
+
+  # show_units()
+
+  test "show_units() returns HTTP 200 for HTML" do
+    get collection_units_path(collections(:collection1)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_units() returns HTTP 404 for non-XHR requests" do
+    get collection_units_path(collections(:collection1))
+    assert_response :not_found
+  end
+
   # statistics_by_range()
 
-  test "statistics_by_range() redirects to login page for logged-out users" do
-    get collection_statistics_by_range_path(collections(:collection1))
-    assert_redirected_to login_path
+  test "statistics_by_range() returns HTTP 200 for HTML" do
+    collection = collections(:collection1)
+    get collection_statistics_by_range_path(collection)
+    assert_response :ok
   end
 
-  test "statistics_by_range() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    get collection_statistics_by_range_path(collections(:collection1))
-    assert_response :forbidden
-  end
-
-  test "statistics_by_range() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
-    get collection_statistics_by_range_path(collections(:collection1))
+  test "statistics_by_range() returns HTTP 200 for CSV" do
+    collection = collections(:collection1)
+    get collection_statistics_by_range_path(collection, format: :csv)
     assert_response :ok
   end
 

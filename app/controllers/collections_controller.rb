@@ -2,20 +2,14 @@
 
 class CollectionsController < ApplicationController
 
-  before_action :ensure_logged_in, except: [:children, :index, :show]
-  before_action :set_collection, only: [:children, :destroy, :edit_access,
-                                        :edit_collection_membership,
-                                        :edit_properties, :edit_unit_membership,
-                                        :item_download_counts, :show,
-                                        :statistics, :statistics_by_range,
-                                        :update]
-  before_action :authorize_collection, only: [:destroy, :edit_access,
-                                              :edit_collection_membership,
-                                              :edit_properties,
-                                              :edit_unit_membership,
-                                              :item_download_counts, :show,
-                                              :statistics, :statistics_by_range,
-                                              :update]
+  before_action :ensure_logged_in, only: [:create, :destroy, :edit_access,
+                                          :edit_collection_membership,
+                                          :edit_properties,
+                                          :edit_unit_membership,
+                                          :show_access,
+                                          :show_review_submissions, :update]
+  before_action :set_collection, except: [:create, :index]
+  before_action :authorize_collection, except: [:create, :index]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the
@@ -82,8 +76,6 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Used for editing access control.
-  #
   # Responds to `GET /collections/:id/edit-membership` (XHR only)
   #
   def edit_access
@@ -92,8 +84,6 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Used for editing collection membership.
-  #
   # Responds to `GET /collections/:id/edit-collection-membership` (XHR only)
   #
   def edit_collection_membership
@@ -102,8 +92,6 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Used for editing basic properties.
-  #
   # Responds to GET `/collections/:id/edit` (XHR only)
   #
   def edit_properties
@@ -112,8 +100,6 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Used for editing unit membership.
-  #
   # Responds to `GET /collections/:id/edit-unit-membership` (XHR only)
   #
   def edit_unit_membership
@@ -145,102 +131,180 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Provides item download counts within a date range as CSV.
+  # Renders item download counts by month as HTML and CSV.
   #
   # Responds to `GET /collections/:id/item-download-counts`
   #
   def item_download_counts
-    set_item_download_counts_ivars
-    csv = CSV.generate do |csv|
-      csv << ["Month", "Downloads"]
-      @items.each do |row|
-        csv << row.values
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    @items = @collection.item_download_counts(start_time: from_time,
+                                              end_time:   to_time)
+
+    respond_to do |format|
+      format.html do
+        render partial: "show_downloads_by_item"
+      end
+      format.csv do
+        csv = CSV.generate do |csv|
+          csv << ["Month", "Downloads"]
+          @items.each do |row|
+            csv << row.values
+          end
+        end
+        send_data csv,
+                  type: "text/csv",
+                  disposition: "attachment",
+                  filename: "collection_#{@collection.id}_download_counts.csv"
       end
     end
-    send_data csv,
-              type: "text/csv",
-              disposition: "attachment",
-              filename: "collection_#{@collection.id}_download_counts.csv"
   end
 
   ##
   # Responds to `GET /collections/:id`
   #
   def show
+    review_items  = review_items(0, 0)
+    @review_count = review_items.count
+  end
+
+  ##
+  # Renders HTML for the access tab in show-collection view.
+  #
+  # Responds to `GET /collections/:id/access` (XHR only)
+  #
+  def show_access
+    render partial: "show_access_tab"
+  end
+
+  ##
+  # Renders HTML for the collection membership tab in show-collection view.
+  #
+  # Responds to `GET /collections/:id/collections` (XHR only)
+  #
+  def show_collections
+    @subcollections = Collection.search.
+      institution(current_institution).
+      parent_collection(@collection).
+      include_children(true).
+      order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+      limit(999)
+    render partial: "show_collections_tab"
+  end
+
+  ##
+  # Renders HTML for the items tab in show-collection view.
+  #
+  # Responds to `GET /collections/:id/items`
+  #
+  def show_items
     @start  = params[:start].to_i
     @window = window_size
     @items  = Item.search.
-        institution(current_institution).
-        aggregations(false).
-        filter(Item::IndexFields::COLLECTIONS, params[:id]).
-        order(params[:sort]).
-        start(@start).
-        limit(@window)
+      institution(current_institution).
+      aggregations(false).
+      filter(Item::IndexFields::COLLECTIONS, params[:collection_id]).
+      order(params[:sort]).
+      start(@start).
+      limit(@window)
     @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
     @count            = @items.count
     @current_page     = @items.page
     @permitted_params = params.permit(:q, :start)
+    render partial: "show_items_tab"
+  end
 
-    # Properties tab
+  ##
+  # Renders HTML for the properties tab in show-collection view.
+  #
+  # Responds to `GET /collections/:id/properties`
+  #
+  def show_properties
+    @metadata_profile     = @collection.effective_metadata_profile
+    @submission_profile   = @collection.effective_submission_profile
     @num_downloads        = @collection.download_count
     @num_submitting_items = @collection.submitted_item_count
+    render partial: "show_properties_tab"
+  end
 
-    # Metadata tab
-    @metadata_profile   = @collection.effective_metadata_profile
-    @submission_profile = @collection.effective_submission_profile
-
-    # Subcollections tab
-    @subcollections = Collection.search.
-        institution(current_institution).
-        parent_collection(@collection).
-        include_children(true).
-        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
-        limit(999)
-
-    # Review Submissions tab
-    @review_start  = results_params[:start].to_i
-    @review_window = window_size
-    @review_items  = Item.search.
-        institution(current_institution).
-        aggregations(false).
-        filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
-        filter(Item::IndexFields::COLLECTIONS, params[:id]).
-        order(Item::IndexFields::CREATED).
-        start(@review_start).
-        limit(@review_window)
+  ##
+  # Renders HTML for the review submissions tab in show-collection view.
+  #
+  # Responds to `GET /collections/:id/review-submissions`
+  #
+  def show_review_submissions
+    @review_start            = results_params[:start].to_i
+    @review_window           = window_size
+    @review_items            = review_items(@review_start, @review_window)
     @review_count            = @review_items.count
     @review_current_page     = @review_items.page
     @review_permitted_params = results_params
+    render partial: "show_review_submissions_tab"
   end
 
   ##
-  # Renders the HTML statistics-aggregation tab content.
+  # Renders HTML for the statistics tab in show-collection view.
   #
   # Responds to `GET /collections/:id/statistics` (XHR only)
   #
-  def statistics
-    set_item_download_counts_ivars
-    set_statistics_by_range_ivars
-    render partial: "show_statistics_tab_content"
+  def show_statistics
+    render partial: "show_statistics_tab"
   end
 
   ##
-  # Provides statistics within a date range as CSV.
+  # Renders HTML for the unit membership tab in show-collection view.
+  #
+  # Responds to `GET /collections/:id/units` (XHR only)
+  #
+  def show_units
+    render partial: "show_units_tab"
+  end
+
+  ##
+  # Renders statistics within a date range as HTML and CSV.
   #
   # Responds to `GET /collections/:id/statistics-by-range`
   #
   def statistics_by_range
-    set_statistics_by_range_ivars
-    csv = CSV.generate do |csv|
-      csv << ["Month", "Submitted Items", "Downloads"]
-      @counts_by_month.each do |row|
-        csv << row.values
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    # These two queries could probably be consolidated, but this will do for
+    # now.
+    @counts_by_month = @collection.submitted_item_count_by_month(start_time: from_time,
+                                                                 end_time:   to_time)
+    downloads_by_month = @collection.download_count_by_month(start_time: from_time,
+                                                             end_time:   to_time)
+    @counts_by_month.each_with_index do |m, i|
+      m['item_count'] = m['count']
+      m['dl_count']   = downloads_by_month[i]['dl_count']
+      m.delete('count')
+    end
+
+    respond_to do |format|
+      format.html do
+        render partial: "show_statistics_by_month"
+      end
+      format.csv do
+        csv = CSV.generate do |csv|
+          csv << ["Month", "Submitted Items", "Downloads"]
+          @counts_by_month.each do |row|
+            csv << row.values
+          end
+        end
+        send_data csv,
+                  type: "text/csv",
+                  disposition: "attachment",
+                  filename: "collection_#{@collection.id}_statistics.csv"
       end
     end
-    send_data csv,
-              type: "text/csv",
-              disposition: "attachment",
-              filename: "collection_#{@collection.id}_statistics.csv"
   end
 
   ##
@@ -273,6 +337,7 @@ class CollectionsController < ApplicationController
       render 'shared/reload'
     end
   end
+
 
   private
 
@@ -328,6 +393,17 @@ class CollectionsController < ApplicationController
     end
   end
 
+  def review_items(start, limit)
+    Item.search.
+      institution(current_institution).
+      aggregations(false).
+      filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
+      filter(Item::IndexFields::COLLECTIONS, params[:id]).
+      order(Item::IndexFields::CREATED).
+      start(start).
+      limit(limit)
+  end
+
   def set_collection
     # N.B.: the `||` supports nested routes.
     @collection = Collection.find(params[:id] || params[:collection_id])
@@ -343,38 +419,6 @@ class CollectionsController < ApplicationController
                                        :submission_profile_id,
                                        :submissions_reviewed,
                                        unit_ids: [])
-  end
-
-  def set_item_download_counts_ivars
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-    @items = @collection.item_download_counts(start_time: from_time,
-                                              end_time:   to_time)
-  end
-
-  def set_statistics_by_range_ivars
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-    # These two queries could probably be consolidated, but this will do for
-    # now.
-    @counts_by_month = @collection.submitted_item_count_by_month(start_time: from_time,
-                                                                 end_time:   to_time)
-    downloads_by_month = @collection.download_count_by_month(start_time: from_time,
-                                                             end_time:   to_time)
-
-    @counts_by_month.each_with_index do |m, i|
-      m['item_count'] = m['count']
-      m['dl_count']   = downloads_by_month[i]['dl_count']
-      m.delete('count')
-    end
   end
 
 end

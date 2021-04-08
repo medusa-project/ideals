@@ -1,37 +1,39 @@
 - provide :body_id, "show_collection"
 - provide :title, @collection.title
 
+= hidden_field_tag :collection_id, @collection.id
+
 = render partial: "show_button_group"
 
 %h1.mb-3
-  =icon_for(@collection)
-  =@collection.title
+  = icon_for(@collection)
+  = @collection.title
 
 .row
   .col-sm-5.col-md-4.col-lg-3
     .nav.flex-column.nav-pills{role: "tablist",
                                "aria-orientation": "vertical"}
-      %a#metadata-tab.nav-link.active{href: "#properties-tab-content",
-                                      "data-toggle": "pill",
-                                      role: "tab",
-                                      "aria-controls": "properties-tab-content",
-                                      "aria-selected": "true"}
+      %a#properties-tab.nav-link.active{href: "#properties-tab-content",
+                                        "data-toggle": "pill",
+                                        role: "tab",
+                                        "aria-controls": "properties-tab-content",
+                                        "aria-selected": "true"}
         = icon_for(:info)
         Properties
 
-      %a#unit-membership-tab.nav-link{href: "#unit-membership-tab-content",
-                                      "data-toggle": "pill",
-                                      role: "tab",
-                                      "aria-controls": "unit-membership-tab-content",
-                                      "aria-selected": "false"}
+      %a#units-tab.nav-link{href: "#units-tab-content",
+                            "data-toggle": "pill",
+                            role: "tab",
+                            "aria-controls": "units-tab-content",
+                            "aria-selected": "false"}
         = icon_for(Unit)
         Unit Membership
 
-      %a#collection-membership-tab.nav-link{href: "#collection-membership-tab-content",
-                                            "data-toggle": "pill",
-                                            role: "tab",
-                                            "aria-controls": "collection-membership-tab-content",
-                                            "aria-selected": "false"}
+      %a#collections-tab.nav-link{href: "#collections-tab-content",
+                                  "data-toggle": "pill",
+                                  role: "tab",
+                                  "aria-controls": "collections-tab-content",
+                                  "aria-selected": "false"}
         = icon_for(Collection)
         Collection Membership
 
@@ -43,7 +45,7 @@
         = icon_for(Item)
         Items
 
-      - if policy(@collection).review_submissions?
+      - if policy(@collection).show_review_submissions?
         %a#review-submissions-tab.nav-link{href: "#review-submissions-tab-content",
                                            "data-toggle": "tab",
                                            role: "tab",
@@ -51,9 +53,10 @@
                                            "aria-selected": "false"}
           %i.fa.fa-tasks
           Review Submissions
-          %small.badge-pill.badge-danger= @review_count
+          - if @review_count > 0
+            %small.badge-pill.badge-danger= @review_count
 
-      - if policy(@collection).statistics?
+      - if policy(@collection).show_statistics?
         %a#statistics-tab.nav-link{href: "#statistics-tab-content",
                                   "data-toggle": "tab",
                                   "data-collection-id": @collection.id,
@@ -63,7 +66,7 @@
           %i.fa.fa-chart-bar
           Statistics
 
-      - if policy(@collection).edit_access?
+      - if policy(@collection).show_access?
         %a#access-tab.nav-link{href: "#access-tab-content",
                                "data-toggle": "tab",
                                role: "tab",
@@ -75,34 +78,34 @@
   .tab-content.col-sm-7.col-md-8.col-lg-9
     #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                       "aria-labelledby": "properties-tab"}
-      = render partial: "show_properties_tab"
+      = spinner
 
-    #unit-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                    "aria-labelledby": "unit-membership-tab"}
-      = render partial: "show_units_tab"
+    #units-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                          "aria-labelledby": "units-tab"}
+      = spinner
 
-    #collection-membership-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                          "aria-labelledby": "collection-membership-tab"}
-      = render partial: "show_collections_tab"
+    #collections-tab-content.tab-pane.fade.show{role: "tabpanel",
+                                                "aria-labelledby": "collections-tab"}
+      = spinner
 
     #items-tab-content.tab-pane.fade.show{role: "tabpanel",
                                           "aria-labelledby": "items-tab"}
-      = render partial: "show_items_tab"
+      = spinner
 
-    - if policy(@collection).statistics?
+    - if policy(@collection).show_statistics?
       #statistics-tab-content.tab-pane.fade.show{role: "tabpanel",
                                                  "aria-labelledby": "statistics-tab"}
-        = render partial: "show_statistics_tab"
+        = spinner
 
-    - if policy(@collection).review_submissions?
+    - if policy(@collection).show_review_submissions?
       #review-submissions-tab-content.tab-pane.fade.show{role: "tabpanel",
                                                          "aria-labelledby": "review-submissions-tab"}
-        = render partial: "show_review_submissions_tab"
+        = spinner
 
-    - if policy(@collection).edit_access?
+    - if policy(@collection).show_access?
       #access-tab-content.tab-pane.fade.show{role: "tabpanel",
                                              "aria-labelledby": "access-tab"}
-        = render partial: "show_access_tab"
+        = spinner
 
 = render partial: "collections/add_modal",
          locals: { primary_unit: @collection.primary_unit,

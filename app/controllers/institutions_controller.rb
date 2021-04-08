@@ -3,13 +3,8 @@
 class InstitutionsController < ApplicationController
 
   before_action :ensure_logged_in
-  before_action :set_institution, only: [:destroy, :edit, :item_download_counts,
-                                         :show, :statistics,
-                                         :statistics_by_range, :update]
-  before_action :authorize_institution, only: [:destroy, :edit,
-                                               :item_download_counts, :show,
-                                               :statistics,
-                                               :statistics_by_range, :update]
+  before_action :set_institution, except: [:create, :index, :new]
+  before_action :authorize_institution, except: [:create, :index, :new]
 
   ##
   # Responds to `POST /institutions`
@@ -68,17 +63,32 @@ class InstitutionsController < ApplicationController
   # Responds to `GET /institutions/:key/item-download-counts`
   #
   def item_download_counts
-    set_item_download_counts_ivars
-    csv = CSV.generate do |csv|
-      csv << ["Month", "Downloads"]
-      @items.each do |row|
-        csv << row.values
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    @items = @institution.item_download_counts(start_time: from_time,
+                                               end_time:   to_time)
+
+    respond_to do |format|
+      format.html do
+        render partial: "show_downloads_by_item"
+      end
+      format.csv do
+        csv = CSV.generate do |csv|
+          csv << ["Month", "Downloads"]
+          @items.each do |row|
+            csv << row.values
+          end
+        end
+        send_data csv,
+                  type: "text/csv",
+                  disposition: "attachment",
+                  filename: "#{@institution.key}_download_counts.csv"
       end
     end
-    send_data csv,
-              type: "text/csv",
-              disposition: "attachment",
-              filename: "#{@institution.key}_download_counts.csv"
   end
 
   ##
@@ -98,14 +108,30 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Renders the HTML statistics-aggregation tab content.
+  # Renders HTML for the properties tab in show-institution view.
   #
-  # Responds to `GET /institutions/:key/statistics` (XHR only)
+  # Responds to `GET /institutions/:id/properties` (XHR only)
   #
-  def statistics
-    set_item_download_counts_ivars
-    set_statistics_by_range_ivars
-    render partial: "show_statistics_tab_content"
+  def show_properties
+    render partial: "show_properties_tab"
+  end
+
+  ##
+  # Renders HTML for the statistics tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:id/statistics` (XHR only)
+  #
+  def show_statistics
+    render partial: "show_statistics_tab"
+  end
+
+  ##
+  # Renders HTML for the users tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:id/users` (XHR only)
+  #
+  def show_users
+    render partial: "show_users_tab"
   end
 
   ##
@@ -114,17 +140,42 @@ class InstitutionsController < ApplicationController
   # Responds to `GET /institutions/:id/statistics-by-range`
   #
   def statistics_by_range
-    set_statistics_by_range_ivars
-    csv = CSV.generate do |csv|
-      csv << ["Month", "Submitted Items", "Downloads"]
-      @counts_by_month.each do |row|
-        csv << row.values
+    from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                      params[:from_month],
+                                      params[:from_day])
+    to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                      params[:to_month],
+                                      params[:to_day])
+    # These two queries could probably be consolidated, but this will do for
+    # now.
+    @counts_by_month = @institution.submitted_item_count_by_month(start_time: from_time,
+                                                                  end_time:   to_time)
+    downloads_by_month = @institution.download_count_by_month(start_time: from_time,
+                                                              end_time:   to_time)
+
+    @counts_by_month.each_with_index do |m, i|
+      m['item_count'] = m['count']
+      m['dl_count']   = downloads_by_month[i]['dl_count']
+      m.delete('count')
+    end
+
+    respond_to do |format|
+      format.html do
+        render partial: "show_statistics_by_month"
+      end
+      format.csv do
+        csv = CSV.generate do |csv|
+          csv << ["Month", "Submitted Items", "Downloads"]
+          @counts_by_month.each do |row|
+            csv << row.values
+          end
+        end
+        send_data csv,
+                  type: "text/csv",
+                  disposition: "attachment",
+                  filename: "#{@institution.key}_statistics.csv"
       end
     end
-    send_data csv,
-              type: "text/csv",
-              disposition: "attachment",
-              filename: "#{@institution.key}_statistics.csv"
   end
 
   ##
@@ -160,38 +211,6 @@ class InstitutionsController < ApplicationController
     # Key and name are accepted during creation. For updates, they are
     # overwritten by the contents of org_dn.
     params.require(:institution).permit(:default, :fqdn, :key, :name, :org_dn)
-  end
-
-  def set_item_download_counts_ivars
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-    @items = @institution.item_download_counts(start_time: from_time,
-                                               end_time:   to_time)
-  end
-
-  def set_statistics_by_range_ivars
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-    # These two queries could probably be consolidated, but this will do for
-    # now.
-    @counts_by_month = @institution.submitted_item_count_by_month(start_time: from_time,
-                                                                  end_time:   to_time)
-    downloads_by_month = @institution.download_count_by_month(start_time: from_time,
-                                                              end_time:   to_time)
-
-    @counts_by_month.each_with_index do |m, i|
-      m['item_count'] = m['count']
-      m['dl_count']   = downloads_by_month[i]['dl_count']
-      m.delete('count')
-    end
   end
 
 end

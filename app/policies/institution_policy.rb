@@ -33,7 +33,7 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def item_download_counts?
-    statistics?
+    show_statistics?
   end
 
   def new?
@@ -48,12 +48,20 @@ class InstitutionPolicy < ApplicationPolicy
     false
   end
 
-  def statistics?
+  def show_statistics?
+    show?
+  end
+
+  def show_properties?
+    show?
+  end
+
+  def show_users?
     show?
   end
 
   def statistics_by_range?
-    statistics?
+    show_statistics?
   end
 
   def update?

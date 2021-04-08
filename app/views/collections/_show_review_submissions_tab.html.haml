@@ -1,38 +1,42 @@
-- pagination = paginate(count: @review_count,
-                        page: @review_current_page,
-                        per_page: @review_window,
-                        permitted_params: @review_permitted_params)
+- if @review_count > 0
+  - pagination = paginate(count: @review_count,
+                          page: @review_current_page,
+                          per_page: @review_window,
+                          permitted_params: @review_permitted_params)
 
-.btn-group.float-right{role: "group"}
-  %button#actions.btn.btn-light.dropdown-toggle{"aria-expanded": "false",
-                                                "aria-haspopup": "true",
-                                                "data-toggle": "dropdown",
-                                                type: "button"}
-    Actions
-  .dropdown-menu.dropdown-menu-right{"aria-labelledby": "actions"}
-    %a.approve-checked.dropdown-item{href: "#"}
-      %i.fa.fa-check
-      Approve Checked
-    %a.reject-checked.dropdown-item{href: "#"}
-      %i.fa.fa-times
-      Reject Checked
+  .btn-group.float-right{role: "group"}
+    %button#actions.btn.btn-light.dropdown-toggle{"aria-expanded": "false",
+                                                  "aria-haspopup": "true",
+                                                  "data-toggle": "dropdown",
+                                                  type: "button"}
+      Actions
+    .dropdown-menu.dropdown-menu-right{"aria-labelledby": "actions"}
+      %a.approve-checked.dropdown-item{href: "#"}
+        %i.fa.fa-check
+        Approve Checked
+      %a.reject-checked.dropdown-item{href: "#"}
+        %i.fa.fa-times
+        Reject Checked
 
-.clearfix
+  .clearfix
 
-.card.mt-3.mb-3
-  #search-status.card-body.pt-3.pb-3
-    = search_status(@review_count, @review_start, @review_window, "item")
-    .btn-group.ml-3{role: "group"}
-      %button.check-all.btn.btn-sm.btn-light{type: "button"}
-        %i.far.fa-check-square
-        Check All
+  .card.mt-3.mb-3
+    #search-status.card-body.pt-3.pb-3
+      = search_status(@review_count, @review_start, @review_window, "item")
+      .btn-group.ml-3{role: "group"}
+        %button.check-all.btn.btn-sm.btn-light{type: "button"}
+          %i.far.fa-check-square
+          Check All
 
-.row.justify-content-md-center
-  .col-md-auto
-    = pagination
+  .row.justify-content-md-center
+    .col-md-auto
+      = pagination
 
-= review_list(@review_items, show_tree_headings: false)
+  = review_list(@review_items, show_tree_headings: false)
 
-.row.justify-content-md-center
-  .col-md-auto
-    = pagination
+  .row.justify-content-md-center
+    .col-md-auto
+      = pagination
+
+- else
+  There are no submissions awaiting review.

@@ -4,6 +4,8 @@
       %i.fas.fa-plus
       Deposit Item Into This Unit
 
+.clearfix.mb-3
+
 - if @items.count.positive?
   = form_tag(unit_path(@unit), method: :get, class: "filter") do
     .row.justify-content-between

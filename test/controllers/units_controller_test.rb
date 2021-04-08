@@ -24,17 +24,17 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # collections()
+  # collections_tree_fragment()
 
-  test "collections() returns HTTP 404 for non-XHR requests" do
-    collections(:described).reindex # this is needed to fully initialize the schema
-    get unit_collections_path(units(:unit1))
+  test "collections_tree_fragment() returns HTTP 404 for non-XHR requests" do
+    collections_tree_fragment(:described).reindex # this is needed to fully initialize the schema
+    get unit_collections_tree_fragment_path(units(:unit1))
     assert_response :not_found
   end
 
-  test "collections() returns HTTP 200 for XHR requests" do
-    collections(:described).reindex # this is needed to fully initialize the schema
-    get unit_collections_path(units(:unit1)), xhr: true
+  test "collections_tree_fragment() returns HTTP 200 for XHR requests" do
+    collections_tree_fragment(:described).reindex # this is needed to fully initialize the schema
+    get unit_collections_tree_fragment_path(units(:unit1)), xhr: true
     assert_response :ok
   end
 
@@ -237,20 +237,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # item_download_counts()
 
-  test "item_download_counts() redirects to login page for logged-out users" do
+  test "item_download_counts() returns HTTP 200 for HTML" do
     get unit_item_download_counts_path(units(:unit1))
-    assert_redirected_to login_path
+    assert_response :ok
   end
 
-  test "item_download_counts() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    get unit_item_download_counts_path(units(:unit1))
-    assert_response :forbidden
-  end
-
-  test "item_download_counts() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
-    get unit_item_download_counts_path(units(:unit1))
+  test "item_download_counts() returns HTTP 200 for CSV" do
+    get unit_item_download_counts_path(units(:unit1), format: :csv)
     assert_response :ok
   end
 
@@ -277,41 +270,116 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_select("#access-tab", false)
   end
 
-  # statistics()
+  # show_access()
 
-  test "statistics() redirects to login page for logged-out users" do
-    get unit_statistics_path(units(:unit1)), xhr: true
+  test "show_access() redirects to login page for logged-out users" do
+    unit = units(:unit1)
+    get unit_access_path(unit), xhr: true
     assert_redirected_to login_path
   end
 
-  test "statistics() returns HTTP 403 for unauthorized users" do
+  test "show_access() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get unit_statistics_path(units(:unit1)), xhr: true
+    unit = units(:unit1)
+    get unit_access_path(unit), xhr: true
     assert_response :forbidden
   end
 
-  test "statistics() returns HTTP 200" do
+  test "show_access() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:unit1)
+    get unit_access_path(unit)
+    assert_response :not_found
+  end
+
+  test "show_access() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:unit1)
+    get unit_access_path(unit), xhr: true
+    assert_response :ok
+  end
+
+  test "show_access() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get unit_access_path(units(:unit1)), xhr: true
+    assert_select(".edit-unit-access")
+
+    get unit_access_path(units(:unit1), role: Role::LOGGED_OUT), xhr: true
+    assert_select(".edit-unit-access", false)
+  end
+
+  # show_collections()
+
+  test "show_collections() returns HTTP 200" do
+    get unit_collections_path(units(:unit1)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_collections() returns HTTP 404 for non-XHR requests" do
+    get unit_collections_path(units(:unit1))
+    assert_response :not_found
+  end
+
+  # show_items()
+
+  test "show_items() returns HTTP 200" do
+    get unit_items_path(units(:unit1)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_items() returns HTTP 404 for non-XHR requests" do
+    get unit_items_path(units(:unit1))
+    assert_response :not_found
+  end
+
+  # show_properties()
+
+  test "show_properties() returns HTTP 200" do
+    get unit_properties_path(units(:unit1)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_properties() returns HTTP 404 for non-XHR requests" do
+    get unit_properties_path(units(:unit1))
+    assert_response :not_found
+  end
+
+  # show_statistics()
+
+  test "show_statistics() returns HTTP 404 for non-XHR requests" do
+    get unit_statistics_path(units(:unit1))
+    assert_response :not_found
+  end
+
+  test "show_statistics() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
     get unit_statistics_path(units(:unit1)), xhr: true
     assert_response :ok
   end
 
+  # show_units()
+
+  test "show_units() returns HTTP 200" do
+    get unit_units_path(units(:unit1)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_units() returns HTTP 404 for non-XHR requests" do
+    get unit_units_path(units(:unit1))
+    assert_response :not_found
+  end
+
   # statistics_by_range()
 
-  test "statistics_by_range() redirects to login page for logged-out users" do
-    get unit_statistics_by_range_path(units(:unit1))
-    assert_redirected_to login_path
-  end
-
-  test "statistics_by_range() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    get unit_statistics_by_range_path(units(:unit1))
-    assert_response :forbidden
-  end
-
-  test "statistics_by_range() returns HTTP 200" do
+  test "statistics_by_range() returns HTTP 200 for HTML" do
     log_in_as(users(:local_sysadmin))
     get unit_statistics_by_range_path(units(:unit1))
+    assert_response :ok
+  end
+
+  test "statistics_by_range() returns HTTP 200 for CSV" do
+    log_in_as(users(:local_sysadmin))
+    get unit_statistics_by_range_path(units(:unit1), format: :csv)
     assert_response :ok
   end
 

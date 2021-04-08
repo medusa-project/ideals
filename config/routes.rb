@@ -10,6 +10,22 @@ Rails.application.routes.draw do
   match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: [:get, :post]
 
   resources :collections, except: [:edit, :new] do
+    # These all render content for the main tab panes in show-unit view via XHR.
+    match "/access", to: "collections#show_access", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/collections", to: "collections#show_collections", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/items", to: "collections#show_items", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/properties", to: "collections#show_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/review-submissions", to: "collections#show_review_submissions", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/statistics", to: "collections#show_statistics", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/units", to: "collections#show_units", via: :get,
+          constraints: lambda { |request| request.xhr? }
+
     match "/children", to: "collections#children", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/deposit", to: "submissions#agreement", via: :get
@@ -23,15 +39,19 @@ Rails.application.routes.draw do
     match "/edit-unit-membership", to: "collections#edit_unit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/item-download-counts", to: "collections#item_download_counts", via: :get
-    match "/statistics", to: "collections#statistics", via: :get,
-          constraints: lambda { |request| request.xhr? }
     match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
   end
   match "/deposit", to: "submissions#agreement", via: :get
   resources :institutions, param: :key do
-    match "/item-download-counts", to: "institutions#item_download_counts", via: :get
-    match "/statistics", to: "institutions#statistics", via: :get,
+    # These all render content for the main tab panes in show-unit view via XHR.
+    match "/properties", to: "institutions#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/statistics", to: "institutions#show_statistics", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/users", to: "institutions#show_users", via: :get,
+          constraints: lambda { |request| request.xhr? }
+
+    match "/item-download-counts", to: "institutions#item_download_counts", via: :get
     match "/statistics-by-range", to: "institutions#statistics_by_range", via: :get
   end
   resources :local_identities, only: [:update], path: "identities" do
@@ -87,9 +107,23 @@ Rails.application.routes.draw do
     match "/complete", to: "submissions#complete", via: :post
   end
   resources :units, except: [:edit, :new] do
+    # These all render content for the main tab panes in show-unit view via XHR.
+    match "/access", to: "units#show_access", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/collections", to: "units#show_collections", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/items", to: "units#show_items", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/properties", to: "units#show_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/statistics", to: "units#show_statistics", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/units", to: "units#show_unit_membership", via: :get,
+          constraints: lambda { |request| request.xhr? }
+
     match "/children", to: "units#children", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/collections", to: "units#collections", via: :get,
+    match "/collections-tree-fragment", to: "units#collections_tree_fragment", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-access", to: "units#edit_access", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -98,8 +132,6 @@ Rails.application.routes.draw do
     match "/edit-properties", to: "units#edit_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/item-download-counts", to: "units#item_download_counts", via: :get
-    match "/statistics", to: "units#statistics", via: :get,
-          constraints: lambda { |request| request.xhr? }
     match "/statistics-by-range", to: "units#statistics_by_range", via: :get
   end
   resources :user_groups, path: "user-groups", except: :new

@@ -5,39 +5,73 @@
  */
 const InstitutionView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
+    const institutionKey = $("[name=institution_key]").val();
 
-    $('button.edit-institution').on("click", function() {
-        const key = $(this).data("institution-key");
-        const url = ROOT_URL + "/institutions/" + key + "/edit";
-        $.get(url, function(data) {
-            $("#edit-institution-modal .modal-body").html(data);
+    $("#properties-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/properties";
+        $.get(url, function (data) {
+            $("#properties-tab-content").html(data);
+            $('button.edit-institution').on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit";
+                $.get(url, function(data) {
+                    $("#edit-institution-modal .modal-body").html(data);
+                });
+            });
         });
-    });
+    }).trigger("show.bs.tab");
 
-    // Statistics tab
-    const statistics_content = $("#statistics-xhr-content");
-    const refreshStatistics = function(key) {
-        const url = ROOT_URL + "/institutions/" + key + "/statistics?" +
-            $("#statistics-tab-content form").serialize();
-        $.get(url, function(data) {
-            statistics_content.prev().hide(); // hide the spinner
-            statistics_content.html(data);
+    $("#users-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/users";
+        $.get(url, function (data) {
+            $("#users-tab-content").html(data);
         });
-    };
+    }).trigger("show.bs.tab");
 
-    const statistics_tab = $('#statistics-tab');
-    statistics_tab.on('show.bs.tab', function() {
-        const key = $(this).data("institution-key");
-        refreshStatistics(key);
-    });
-    $("#statistics-tab-content input[type=submit]").on("click", function() {
-        // Remove existing content and show the spinner
-        statistics_content.empty();
-        statistics_content.prev().show(); // show the spinner
+    $("#statistics-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/statistics";
+        $.get(url, function(data) {
+            const statsTabContent = $("#statistics-tab-content");
+            statsTabContent.html(data);
 
-        const key = statistics_tab.data("institution-key");
-        refreshStatistics(key);
-        return false;
+            const refreshStatisticsByMonth = function() {
+                const innerTabContent = $("#statistics-by-month-tab-content");
+                innerTabContent.html(IDEALS.Spinner());
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/statistics-by-range?" +
+                    statsTabContent.find("form").serialize();
+                $.get(url, function (data) {
+                    innerTabContent.html(data);
+                });
+            };
+            const refreshDownloadsByItem = function() {
+                const innerTabContent = $("#downloads-by-item-tab-content");
+                innerTabContent.html(IDEALS.Spinner());
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/item-download-counts?" +
+                    statsTabContent.find("form").serialize();
+                $.get(url, function (data) {
+                    innerTabContent.html(data);
+                });
+            };
+
+            $("#statistics-by-month-tab").on("show.bs.tab", function() {
+                refreshStatisticsByMonth()
+            }).trigger("show.bs.tab");
+            $("#downloads-by-item-tab").on("show.bs.tab", function() {
+                refreshDownloadsByItem();
+            });
+
+            statsTabContent.find("input[type=submit]").on("click", function () {
+                const activeSubTabContent = statsTabContent.find(".tab-content .active");
+                switch (activeSubTabContent.prop("id")) {
+                    case "statistics-by-month-tab-content":
+                        refreshStatisticsByMonth();
+                        break;
+                    case "downloads-by-item-tab-content":
+                        refreshDownloadsByItem();
+                        break;
+                }
+                return false;
+            });
+        });
     });
 };
 

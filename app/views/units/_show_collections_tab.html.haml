@@ -5,6 +5,9 @@
                             "data-toggle": "modal", type: "button"}
       %i.fa.fa-plus
       Add Collection
+
+.clearfix.mb-3
+
 - if @collections.any?
   = resource_list(@collections, default_id: @unit.default_collection&.id)
 - else
