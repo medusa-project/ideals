@@ -274,7 +274,8 @@ class ItemTest < ActiveSupport::TestCase
       bitstream.add_download
     end
 
-    Event.where(event_type: Event::Type::DOWNLOAD).first.update!(created_at: 90.minutes.ago)
+    Event.where(event_type: Event::Type::DOWNLOAD).first.
+      update!(happened_at: 90.minutes.ago)
 
     assert bitstream_count > 0
     assert_equal 1, @instance.download_count(start_time: 2.hours.ago,

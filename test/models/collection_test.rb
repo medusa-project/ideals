@@ -177,9 +177,10 @@ class CollectionTest < ActiveSupport::TestCase
       end
     end
 
-    # Adjust the created_at property of one of the just-created bitstream
+    # Adjust the happened_at property of one of the just-created bitstream
     # download events to fit inside the time window.
-    Event.where(event_type: Event::Type::DOWNLOAD).all.first.update!(created_at: 90.minutes.ago)
+    Event.where(event_type: Event::Type::DOWNLOAD).all.first.
+      update!(happened_at: 90.minutes.ago)
 
     assert_equal 1, @instance.download_count(start_time: 2.hours.ago,
                                              end_time:   1.hour.ago)
@@ -214,10 +215,10 @@ class CollectionTest < ActiveSupport::TestCase
       end
     end
 
-    # Adjust the created_at property of one of the just-created bitstream
+    # Adjust the happened_at property of one of the just-created bitstream
     # download events to fit inside the time window.
     Event.where(event_type: Event::Type::DOWNLOAD).all.first.
-      update!(created_at: 90.minutes.ago)
+      update!(happened_at: 90.minutes.ago)
 
     actual = @instance.download_count_by_month(start_time: 2.hours.ago,
                                                end_time:   1.hour.ago)
@@ -371,9 +372,10 @@ class CollectionTest < ActiveSupport::TestCase
                           string: "This is the title").save!
     end
 
-    # Adjust the created_at property of one of the just-created bitstream
+    # Adjust the happened_at property of one of the just-created bitstream
     # download events to fit inside the time window.
-    Event.where(event_type: Event::Type::DOWNLOAD).all.first.update!(created_at: 90.minutes.ago)
+    Event.where(event_type: Event::Type::DOWNLOAD).all.first.
+      update!(happened_at: 90.minutes.ago)
 
     result = @instance.item_download_counts(start_time: 2.hours.ago,
                                             end_time:   1.hour.ago)
@@ -478,10 +480,10 @@ class CollectionTest < ActiveSupport::TestCase
     @instance.items.each do |item|
       item.events.build(event_type: Event::Type::CREATE).save!
     end
-    # Adjust the created_at property of one of the just-created bitstream
+    # Adjust the happened_at property of one of the just-created bitstream
     # download events to fit inside the time window.
     Event.where(event_type: Event::Type::CREATE).all.first.
-      update!(created_at: 90.minutes.ago)
+      update!(happened_at: 90.minutes.ago)
 
     assert_equal 1, @instance.submitted_item_count(start_time: 2.hours.ago,
                                                    end_time:   1.hour.ago)
@@ -503,10 +505,10 @@ class CollectionTest < ActiveSupport::TestCase
     @instance.items.each do |item|
       item.events.build(event_type: Event::Type::CREATE).save!
     end
-    # Adjust the created_at property of one of the just-created events to fit
+    # Adjust the happened_at property of one of the just-created events to fit
     # inside the time window.
     Event.where(event_type: Event::Type::CREATE).all.first.
-      update!(created_at: 90.minutes.ago)
+      update!(happened_at: 90.minutes.ago)
 
     actual = @instance.submitted_item_count_by_month(start_time: 2.hours.ago,
                                                end_time:   1.hour.ago)

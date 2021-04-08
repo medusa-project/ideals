@@ -128,7 +128,7 @@ class InstitutionTest < ActiveSupport::TestCase
     # Adjust the created_at property of one of the just-created bitstream
     # download events to fit inside the time window.
     Event.where(event_type: Event::Type::DOWNLOAD).all.first.
-      update!(created_at: 90.minutes.ago)
+      update!(happened_at: 90.minutes.ago)
 
     result = @instance.item_download_counts(start_time: 2.hours.ago,
                                             end_time:   1.hour.ago)

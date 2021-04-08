@@ -43,26 +43,28 @@ module ApplicationHelper
   ##
   # @return [String]
   #
-  def date_range_picker()
+  def date_range_picker
     now = Time.now
     m_options = (1..12)
     y_options = (Event.order(:happened_at).limit(1).pluck(:happened_at).first.year..now.year)
     html = StringIO.new
-    html << "<div class='form-group mr-4'>From:"
-    html <<   select_tag("from_month", options_for_select(m_options),
-                         class: "custom-select ml-1 mr-1")
-    html <<   select_tag("from_year", options_for_select(y_options),
-                         class: "custom-select")
+    html << "<div class='date-range-picker'>"
+    html <<   "<div class='form-group mr-4'>From:"
+    html <<     select_tag("from_month", options_for_select(m_options),
+                           class: "custom-select ml-1 mr-1")
+    html <<     select_tag("from_year", options_for_select(y_options),
+                           class: "custom-select")
+    html <<   "</div>"
+    html <<   "<div class='form-group mr-4'>To:"
+    html <<     select_tag("to_month", options_for_select(m_options, selected: 12),
+                           class: "custom-select ml-1 mr-1")
+    html <<     select_tag("to_year", options_for_select(y_options, selected: now.year),
+                           class: "custom-select")
+    html <<   "</div>"
+    html <<   submit_tag("Go",
+                         class: "btn btn-primary",
+                         data: { disable_with: false })
     html << "</div>"
-    html << "<div class='form-group mr-4'>To:"
-    html <<   select_tag("to_month", options_for_select(m_options, selected: 12),
-                         class: "custom-select ml-1 mr-1")
-    html <<   select_tag("to_year", options_for_select(y_options, selected: now.year),
-                         class: "custom-select")
-    html << "</div>"
-    html << submit_tag("Go",
-                       class: "btn btn-primary",
-                       data: { disable_with: false })
     raw(html.string)
   end
 
