@@ -12,10 +12,11 @@
       .col-6
         .input-group.mb-3.filter-field
           = hidden_field_tag("fq[]", "#{Item::IndexFields::UNIT_TITLES}:#{@unit.title}")
-          = filter_field(icon: "fa fa-filter", submit_text: "Filter")
+          = filter_field(icon: "fa fa-filter", placeholder: "Filter")
       .col-6
         .input-group
           = sort_menu(MetadataProfile.default)
-  = render partial: "items/listing"
+  #items-xhr-content
+    = render partial: "items/listing"
 - else
   This unit does not contain any items.

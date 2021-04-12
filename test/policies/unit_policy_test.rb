@@ -293,6 +293,22 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.item_download_counts?
   end
 
+  # item_results?()
+
+  test "item_results?() returns true with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert policy.item_results?
+  end
+
+  test "item_results?() authorizes everyone" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.item_results?
+  end
+
   # new?()
 
   test "new?() returns false with a nil user" do

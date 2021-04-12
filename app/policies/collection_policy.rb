@@ -73,6 +73,10 @@ class CollectionPolicy < ApplicationPolicy
     show_statistics?
   end
 
+  def item_results?
+    show_items?
+  end
+
   def new?
     create?
   end

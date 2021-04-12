@@ -38,6 +38,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-unit-membership", to: "collections#edit_unit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/item-results", to: "collections#item_results", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/item-download-counts", to: "collections#item_download_counts", via: :get
     match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
   end
@@ -130,6 +132,8 @@ Rails.application.routes.draw do
     match "/edit-membership", to: "units#edit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "units#edit_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/item-results", to: "units#item_results", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/item-download-counts", to: "units#item_download_counts", via: :get
     match "/statistics-by-range", to: "units#statistics_by_range", via: :get

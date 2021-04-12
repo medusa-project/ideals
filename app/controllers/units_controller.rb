@@ -5,22 +5,8 @@ class UnitsController < ApplicationController
   before_action :ensure_logged_in, only: [:create, :destroy, :edit_access,
                                           :edit_membership, :edit_properties,
                                           :show_access, :update]
-  before_action :set_unit, only: [:children, :collections_tree_fragment,
-                                  :destroy, :edit_access, :edit_membership,
-                                  :edit_properties, :item_download_counts,
-                                  :show, :show_access, :show_collections,
-                                  :show_items, :show_properties,
-                                  :show_statistics, :show_unit_membership,
-                                  :statistics_by_range, :update]
-  before_action :authorize_unit, only: [:children, :collections_tree_fragment,
-                                        :destroy, :edit_access,
-                                        :edit_membership, :edit_properties,
-                                        :item_download_counts, :show,
-                                        :show_access, :show_collections,
-                                        :show_items, :show_properties,
-                                        :show_statistics,
-                                        :show_unit_membership,
-                                        :statistics_by_range, :update]
+  before_action :set_unit, except: [:create, :index]
+  before_action :authorize_unit, except: [:create, :index]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the
@@ -176,6 +162,16 @@ class UnitsController < ApplicationController
   end
 
   ##
+  # Renders results within the items tab in show-unit view.
+  #
+  # Responds to `GET /units/:id/items`
+  #
+  def item_results
+    set_item_results_ivars
+    render partial: "items/listing"
+  end
+
+  ##
   # Responds to GET /units/:id
   #
   def show
@@ -211,19 +207,7 @@ class UnitsController < ApplicationController
   # Responds to `GET /units/:id/items`
   #
   def show_items
-    @start = params[:start].to_i
-    @window = window_size
-    @items = Item.search.
-      institution(current_institution).
-      query_all(params[:q]).
-      filter(Item::IndexFields::UNITS, params[:unit_id]).
-      order(params[:sort]).
-      start(@start).
-      limit(@window)
-    @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
-    @count            = @items.count
-    @current_page     = @items.page
-    @permitted_params = results_params
+    set_item_results_ivars
     render partial: "show_items_tab"
   end
 
@@ -358,6 +342,22 @@ class UnitsController < ApplicationController
       @unit.primary_administrator =
           User.from_autocomplete_string(params[:primary_administrator])
     end
+  end
+
+  def set_item_results_ivars
+    @start = params[:start].to_i
+    @window = window_size
+    @items = Item.search.
+      institution(current_institution).
+      query_all(params[:q]).
+      filter(Item::IndexFields::UNITS, params[:unit_id]).
+      order(params[:sort]).
+      start(@start).
+      limit(@window)
+    @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
+    @count            = @items.count
+    @current_page     = @items.page
+    @permitted_params = results_params
   end
 
   def unit_params

@@ -165,6 +165,16 @@ class CollectionsController < ApplicationController
   end
 
   ##
+  # Renders results within the items tab in show-collection view.
+  #
+  # Responds to `GET /collections/:id/item-results`
+  #
+  def item_results
+    set_item_results_ivars
+    render partial: "items/listing"
+  end
+
+  ##
   # Responds to `GET /collections/:id`
   #
   def show
@@ -202,19 +212,7 @@ class CollectionsController < ApplicationController
   # Responds to `GET /collections/:id/items`
   #
   def show_items
-    @start  = params[:start].to_i
-    @window = window_size
-    @items  = Item.search.
-      institution(current_institution).
-      aggregations(false).
-      filter(Item::IndexFields::COLLECTIONS, params[:collection_id]).
-      order(params[:sort]).
-      start(@start).
-      limit(@window)
-    @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
-    @count            = @items.count
-    @current_page     = @items.page
-    @permitted_params = params.permit(:q, :start)
+    set_item_results_ivars
     render partial: "show_items_tab"
   end
 
@@ -419,6 +417,23 @@ class CollectionsController < ApplicationController
                                        :submission_profile_id,
                                        :submissions_reviewed,
                                        unit_ids: [])
+  end
+
+  def set_item_results_ivars
+    @start  = params[:start].to_i
+    @window = window_size
+    @items  = Item.search.
+      institution(current_institution).
+      aggregations(false).
+      query_all(params[:q]).
+      filter(Item::IndexFields::COLLECTIONS, params[:collection_id]).
+      order(params[:sort]).
+      start(@start).
+      limit(@window)
+    @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
+    @count            = @items.count
+    @current_page     = @items.page
+    @permitted_params = params.permit(:q, :start)
   end
 
 end

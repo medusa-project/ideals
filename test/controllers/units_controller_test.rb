@@ -247,6 +247,18 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # item_results()
+
+  test "item_results() returns HTTP 200" do
+    get unit_item_results_path(units(:unit1)), xhr: true
+    assert_response :ok
+  end
+
+  test "item_results() returns HTTP 404 for non-XHR requests" do
+    get unit_item_results_path(units(:unit1))
+    assert_response :not_found
+  end
+
   # show()
 
   test "show() returns HTTP 200 for HTML" do

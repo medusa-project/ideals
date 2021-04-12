@@ -276,6 +276,18 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_item_results()
+
+  test "show_item_results() returns HTTP 200" do
+    get collection_item_results_path(collections(:collection1)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_item_results() returns HTTP 404 for non-XHR requests" do
+    get collection_item_results_path(collections(:collection1))
+    assert_response :not_found
+  end
+
   # show()
 
   test "show() returns HTTP 200 for HTML" do

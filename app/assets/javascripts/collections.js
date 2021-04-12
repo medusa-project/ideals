@@ -51,7 +51,37 @@ const CollectionView = function() {
     $("#items-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/collections/" + collectionID + "/items";
         $.get(url, function (data) {
-            $("#items-tab-content").html(data);
+            const tabContent = $("#items-tab-content");
+            tabContent.html(data);
+
+            const filterField = tabContent.find("input[name=q]");
+            const sortMenu    = tabContent.find("select[name=sort]");
+
+            const refreshResults = function () {
+                $("#items-xhr-content").html(IDEALS.Spinner());
+                $.ajax({
+                    method: "GET",
+                    url: ROOT_URL + "/collections/" + collectionID + "/item-results",
+                    data: filterField.parents("form").serialize(),
+                    success: function(data) {
+                        $("#items-xhr-content").html(data);
+                    },
+                    error: function(data, status, xhr) {
+                        console.log(data);
+                        console.log(status);
+                        console.log(xhr);
+                    }
+                });
+            };
+
+            let timeout = null;
+            filterField.on("keyup", function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(refreshResults, IDEALS.KEY_DELAY);
+            });
+            sortMenu.on("change", function() {
+                refreshResults();
+            });
         });
     });
 

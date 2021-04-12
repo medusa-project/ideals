@@ -9,6 +9,11 @@ const IDEALS = {
     FADE_TIME: 200,
 
     /**
+     * Amount of time to wait after the last keyup before firing an XHR.
+     */
+    KEY_DELAY: 1500,
+
+    /**
      * High-level client for interacting with IDEALS.
      *
      * @constructor
