@@ -1,4 +1,9 @@
-- if @institution.users.any?
-  %ul
-    - @institution.users.each do |user|
-      %li= link_to(user.name, user.becomes(User))
+- @institution.users.each do |user|
+  .media.resource-list.mb-3
+    .thumbnail
+      = link_to(user.becomes(User)) do
+        = icon_for(user)
+    .media-body
+      .mt-0.mb-0
+        %h5= link_to(user.name, user.becomes(User))
+        = user.netid
