@@ -27,13 +27,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   # collections_tree_fragment()
 
   test "collections_tree_fragment() returns HTTP 404 for non-XHR requests" do
-    collections_tree_fragment(:described).reindex # this is needed to fully initialize the schema
+    collections(:described).reindex # this is needed to fully initialize the schema
     get unit_collections_tree_fragment_path(units(:unit1))
     assert_response :not_found
   end
 
   test "collections_tree_fragment() returns HTTP 200 for XHR requests" do
-    collections_tree_fragment(:described).reindex # this is needed to fully initialize the schema
+    collections(:described).reindex # this is needed to fully initialize the schema
     get unit_collections_tree_fragment_path(units(:unit1)), xhr: true
     assert_response :ok
   end
