@@ -1,0 +1,64 @@
+-# frozen_string_literal: true
+-#
+-# Required arguments:
+-#
+-# item [Item]
+-#
+
+= form_for(item, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  %table.table
+    %thead
+      %tr
+        %th.text-center Restrict Downloads
+        %th.text-center Restrict All Access
+        %th.text-center Until
+        %th
+    %tbody
+      - embargoes = item.current_embargoes.order(:expires_at)
+      - if embargoes.any?
+        - embargoes.each_with_index do |embargo, index|
+          %tr
+            %td.text-center
+              = check_box_tag "embargoes[#{index}][download]", "true",
+                              embargo.download, class: 'form-check-input'
+            %td.text-center
+              = check_box_tag "embargoes[#{index}][full_access]", "true",
+                              embargo.full_access, class: 'form-check-input'
+            %td.text-center
+              .form-inline
+                = date_picker(month_select_name: "embargoes[#{index}][expires_at_month]",
+                              day_select_name:   "embargoes[#{index}][expires_at_day]",
+                              year_select_name:  "embargoes[#{index}][expires_at_year]",
+                              selected_month:    embargo.expires_at.month,
+                              selected_day:      embargo.expires_at.day,
+                              selected_year:     embargo.expires_at.year,
+                              latest_year:       Time.now.year + 10)
+            %td.text-right
+              %button.btn.btn-danger.remove.ml-3{type: "button"}
+                %i.fa.fa-minus
+      - else
+        %tr
+          %td.text-center
+            = check_box_tag "embargoes[0][download]", "true", class: 'form-check-input'
+          %td.text-center
+            = check_box_tag "embargoes[0][full_access]", "true", class: 'form-check-input'
+          %td.text-center
+            .form-inline
+              = date_picker(month_select_name: "embargoes[0][expires_at_month]",
+                            day_select_name:   "embargoes[0][expires_at_day]",
+                            year_select_name:  "embargoes[0][expires_at_year]",
+                            latest_year:       Time.now.year + 10)
+          %td.text-right
+            %button.btn.btn-danger.remove.ml-3{type: "button"}
+              %i.fa.fa-minus
+
+  %button.btn.btn-success.add{type: "button"}
+    %i.fa.fa-plus
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Edit", class: 'btn btn-primary')

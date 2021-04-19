@@ -159,6 +159,20 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.data?
   end
 
+  test "data?() restricts embargoed items" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    item    = items(:item1)
+    policy  = ItemPolicy.new(context, item)
+
+    assert policy.data?
+    item.embargoes.build(expires_at: Time.now + 1.hour,
+                         download: true).save!
+    assert !policy.data?
+  end
+
   test "data?() authorizes sysadmins to undiscoverable items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
@@ -397,6 +411,65 @@ class ItemPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.download_counts?
+  end
+
+  # edit_embargoes?()
+
+  test "edit_embargoes?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.edit_embargoes?
+  end
+
+  test "edit_embargoes?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.edit_embargoes?
+  end
+
+  test "edit_embargoes?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.edit_embargoes?
+  end
+
+  test "edit_embargoes?() authorizes unit admins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    unit    = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.edit_embargoes?
+  end
+
+  test "edit_embargoes?() authorizes collection managers" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.edit_embargoes?
+  end
+
+  test "edit_embargoes?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.edit_embargoes?
   end
 
   # edit_membership?()
@@ -755,6 +828,19 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
+  test "show?() restricts access to embargoed items" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    item    = items(:item1)
+    policy  = ItemPolicy.new(context, item)
+    assert policy.show?
+    item.embargoes.build(expires_at: Time.now + 1.hour,
+                         full_access: true).save!
+    assert !policy.show?
+  end
+
   test "show?() authorizes sysadmins to undiscoverable items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
@@ -908,6 +994,65 @@ class ItemPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.show_all_metadata?
+  end
+
+  # show_embargoes?()
+
+  test "show_embargoes?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.show_embargoes?
+  end
+
+  test "show_embargoes?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_embargoes?
+  end
+
+  test "show_embargoes?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.show_embargoes?
+  end
+
+  test "show_embargoes?() authorizes unit admins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    unit    = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.show_embargoes?
+  end
+
+  test "show_embargoes?() authorizes collection managers" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.show_embargoes?
+  end
+
+  test "show_embargoes?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_embargoes?
   end
 
   # show_events?()

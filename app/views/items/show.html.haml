@@ -23,6 +23,7 @@
 = render partial: "show_metadata_section"
 = render partial: "show_collections_section"
 = render partial: "show_properties_section"
+= render partial: "show_embargoes_section"
 = render partial: "show_access_section"
 = render partial: "show_events_section"
 
@@ -37,3 +38,7 @@
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-item-properties-modal",
                    title: "Edit Properties" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-item-embargoes-modal",
+                   title: "Embargoes",
+                   size: :lg }

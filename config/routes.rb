@@ -83,6 +83,8 @@ Rails.application.routes.draw do
       match "/ingest", to: "bitstreams#ingest", via: :post
     end
     match "/download-counts", to: "items#download_counts", via: :get
+    match "/edit-embargoes", to: "items#edit_embargoes", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-membership", to: "items#edit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-metadata", to: "items#edit_metadata", via: :get,

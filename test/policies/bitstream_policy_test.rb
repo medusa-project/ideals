@@ -173,6 +173,20 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.data?
   end
 
+  test "data?() restricts bitstreams whose owning items are embargoed" do
+    user      = users(:norights)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution,
+                                   role_limit:  Role::NO_LIMIT)
+    bitstream = bitstreams(:item2_in_medusa)
+    policy    = BitstreamPolicy.new(context, bitstream)
+
+    assert policy.data?
+    bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
+                                   download:   true).save!
+    assert !policy.data?
+  end
+
   test "data?() authorizes non-content bitstreams to collection managers" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
@@ -372,6 +386,20 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     bs = bitstreams(:item1_in_staging)
     bs.update!(medusa_uuid: nil, exists_in_staging: false)
     policy  = BitstreamPolicy.new(context, bs)
+    assert !policy.download?
+  end
+
+  test "download?() restricts bitstreams whose owning items are embargoed" do
+    user      = users(:norights)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution,
+                                   role_limit:  Role::NO_LIMIT)
+    bitstream = bitstreams(:item2_in_medusa)
+    policy    = BitstreamPolicy.new(context, bitstream)
+
+    assert policy.download?
+    bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
+                                   download:   true).save!
     assert !policy.download?
   end
 

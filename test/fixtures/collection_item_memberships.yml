@@ -15,6 +15,11 @@ collection1_described:
   item:       described
   primary:    true
 
+collection1_embargoed:
+  collection: collection1
+  item:       embargoed
+  primary:    true
+
 collection1_submitter:
   collection: collection1
   item:       submitter

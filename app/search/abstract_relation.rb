@@ -41,18 +41,19 @@ class AbstractRelation
   def initialize
     @client = ElasticsearchClient.instance
 
-    @aggregations = false
-    @bucket_limit = DEFAULT_BUCKET_LIMIT
-    @exact_match  = false
-    @filters      = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
-    @limit        = ElasticsearchClient::MAX_RESULT_WINDOW
-    @must_nots    = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
-    @orders       = [] # Array<Hash<Symbol,String>> with :field and :direction keys
+    @aggregations    = false
+    @bucket_limit    = DEFAULT_BUCKET_LIMIT
+    @exact_match     = false
+    @filters         = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
+    @limit           = ElasticsearchClient::MAX_RESULT_WINDOW
+    @must_nots       = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
+    @must_not_ranges = [] # Array<Hash<Symbol,String> with :field, :op, and :value keys
+    @orders          = [] # Array<Hash<Symbol,String>> with :field and :direction keys
     # Hash<Symbol,String> Hash with :field and :query keys
     # Note to subclass implementations: the raw value should not be passed to
     # Elasticsearch. Use {sanitized_query} instead.
-    @query        = nil
-    @start        = 0
+    @query           = nil
+    @start           = 0
 
     @loaded = false
 
@@ -161,6 +162,18 @@ class AbstractRelation
   #
   def must_not(field, value)
     @must_nots << [field, value]
+    @loaded = false
+    self
+  end
+
+  ##
+  # @param field [String]
+  # @param op [Symbol] `:gt`, `:gte`, `:lt`, or `:lte`
+  # @param value [String]
+  # @return [self]
+  #
+  def must_not_range(field, op, value)
+    @must_not_ranges << { field: field, op: op, value: value }
     @loaded = false
     self
   end
@@ -423,7 +436,7 @@ class AbstractRelation
                   end
                 end
               end
-              if @must_nots.any?
+              if @must_nots.any? || @must_not_ranges.any?
                 j.must_not do
                   @must_nots.each do |key_value|
                     unless key_value[1].nil?
@@ -437,6 +450,13 @@ class AbstractRelation
                             j.set! key_value[0], key_value[1]
                           end
                         end
+                      end
+                    end
+                  end
+                  @must_not_ranges.each do |range|
+                    j.range do
+                      j.set! range[:field] do
+                        j.set! range[:op], range[:value]
                       end
                     end
                   end

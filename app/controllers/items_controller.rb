@@ -3,13 +3,8 @@
 class ItemsController < ApplicationController
 
   before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_item, only: [:destroy, :download_counts, :edit_membership,
-                                  :edit_metadata, :edit_properties, :show,
-                                  :statistics, :update, :upload_bitstreams]
-  before_action :authorize_item, only: [:destroy, :download_counts,
-                                        :edit_membership, :edit_metadata,
-                                        :edit_properties, :show, :statistics,
-                                        :update, :upload_bitstreams]
+  before_action :set_item, except: [:index, :process_review, :review]
+  before_action :authorize_item, except: [:index, :process_review, :review]
 
   ##
   # Responds to `DELETE /items/:id`
@@ -62,6 +57,16 @@ class ItemsController < ApplicationController
                   filename: "item_#{@item.id}_download_counts.csv"
       end
     end
+  end
+
+  ##
+  # Used for editing item embargoes.
+  #
+  # Responds to GET `/items/:id/edit-embargoes` (XHR only)
+  #
+  def edit_embargoes
+    render partial: "items/embargoes_form",
+           locals: { item: @item }
   end
 
   ##
@@ -208,11 +213,20 @@ class ItemsController < ApplicationController
                                              item_id:       @item.id,
                                              primary:       (membership[:primary] == "true"))
           end
+        elsif params[:embargoes].respond_to?(:each) # input from the edit-embargoes form
+          @item.embargoes.destroy_all
+          params[:embargoes].each_value do |embargo|
+            @item.embargoes.build(download:    embargo[:download] == "true",
+                                  full_access: embargo[:full_access] == "true",
+                                  expires_at:  TimeUtils.ymd_to_time(embargo[:expires_at_year],
+                                                                     embargo[:expires_at_month],
+                                                                     embargo[:expires_at_day])).save!
+          end
         else
           @item.update!(item_params)
           build_metadata
-          @item.save!
         end
+        @item.save! # trigger a reindex
       end
     rescue => e
       render partial: "shared/validation_messages",

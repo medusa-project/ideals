@@ -22,8 +22,12 @@ class ItemPolicy < ApplicationPolicy
       if role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?
         relation
       else
-        relation.filter(Item::IndexFields::DISCOVERABLE, true).
-            filter(Item::IndexFields::STAGE, Item::Stages::APPROVED)
+        relation.
+          filter(Item::IndexFields::DISCOVERABLE, true).
+          filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
+          must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::EXPIRES_AT}",
+                         :gt,
+                         Time.now.strftime("%Y-%m-%d"))
       end
     end
   end
@@ -64,7 +68,9 @@ class ItemPolicy < ApplicationPolicy
   # N.B.: this is used by {BitstreamsController}.
   #
   def data?
-    show?
+    (role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?) ||
+      (@item.approved? && @item.discoverable &&
+        @item.current_embargoes.count == 0)
   end
 
   def destroy?
@@ -73,6 +79,10 @@ class ItemPolicy < ApplicationPolicy
 
   def download_counts?
     statistics?
+  end
+
+  def edit_embargoes?
+    update?
   end
 
   def edit_membership?
@@ -108,7 +118,8 @@ class ItemPolicy < ApplicationPolicy
 
   def show?
     (role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?) ||
-        (@item.approved? && @item.discoverable)
+        (@item.approved? && @item.discoverable &&
+          @item.current_embargoes.where(full_access: true).count == 0)
   end
 
   ##
@@ -139,26 +150,18 @@ class ItemPolicy < ApplicationPolicy
     show_access?
   end
 
-  ##
-  # N.B.: this is used only in views and doesn't correspond to a controller
-  # method.
-  #
+  def show_embargoes?
+    show_access?
+  end
+
   def show_events?
     show_access?
   end
 
-  ##
-  # N.B.: this is used only in views and doesn't correspond to a controller
-  # method.
-  #
   def show_properties?
     show_access?
   end
 
-  ##
-  # N.B.: this is used only in views and doesn't correspond to a controller
-  # method.
-  #
   def show_sysadmin_content?
     role && role >= Role::SYSTEM_ADMINISTRATOR && user&.sysadmin?
   end

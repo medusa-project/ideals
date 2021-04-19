@@ -75,6 +75,35 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_select("dl.properties", false)
   end
 
+  # edit_embargoes()
+
+  test "edit_embargoes() redirects to login page for logged-out users" do
+    item = items(:item1)
+    get item_edit_embargoes_path(item), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit_embargoes() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    item = items(:item1)
+    get item_edit_embargoes_path(item), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_embargoes() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:item1)
+    get item_edit_embargoes_path(item)
+    assert_response :not_found
+  end
+
+  test "edit_embargoes() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:item1)
+    get item_edit_embargoes_path(item), xhr: true
+    assert_response :ok
+  end
+
   # edit_membership()
 
   test "edit_membership() redirects to login page for logged-out users" do

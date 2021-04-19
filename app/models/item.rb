@@ -37,8 +37,11 @@
 #
 # * `bitstreams`         References all associated {Bitstream}s.
 # * `collections`        References all owning {Collections}.
+# * `current_embargoes`  References zero-to-many {Embargo}es.
 # * `elements`           References zero-to-many {AscribedElement}s used to
 #                        describe an instance.
+# * `embargoes`          References zero-to-many {Embargo}es. (Some may be
+#                        expired; see {current_embargoes}.)
 # * `primary_collection` References the primary {Collection} in which the
 #                        instance resides.
 #
@@ -58,6 +61,7 @@ class Item < ApplicationRecord
     COLLECTIONS        = "i_collection_ids"
     CREATED            = ElasticsearchIndex::StandardFields::CREATED
     DISCOVERABLE       = "b_discoverable"
+    EMBARGOES          = "o_embargoes"
     GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY = "k_unit_collection_sort_key"
     ID                 = ElasticsearchIndex::StandardFields::ID
     INSTITUTION_KEY    = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
@@ -126,6 +130,8 @@ class Item < ApplicationRecord
   has_many :collection_item_memberships
   has_many :collections, through: :collection_item_memberships
   has_many :elements, class_name: "AscribedElement"
+  has_many :embargoes
+  has_many :current_embargoes, -> { current }, class_name: "Embargo"
   has_many :events
   has_one :handle
   has_one :primary_collection_membership, -> { where(primary: true) },
@@ -251,6 +257,7 @@ class Item < ApplicationRecord
     doc[IndexFields::COLLECTIONS]        = collections.map(&:id)
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
     doc[IndexFields::DISCOVERABLE]       = self.discoverable
+    doc[IndexFields::EMBARGOES]          = self.current_embargoes.select(&:full_access).map(&:as_indexed_json)
     doc[IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY] =
         self.unit_and_collection_sort_key
     units                                = self.all_units

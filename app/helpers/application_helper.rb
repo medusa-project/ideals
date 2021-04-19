@@ -41,12 +41,51 @@ module ApplicationHelper
   end
 
   ##
+  # @param month_select_name [String]
+  # @param day_select_name [String]
+  # @param year_select_name [String]
+  # @param selected_month [Integer]
+  # @param selected_day [Integer]
+  # @param selected_year [Integer]
+  # @param earliest_year [Integer]
+  # @param latest_year [Integer]
+  # @return [String]
+  #
+  def date_picker(month_select_name: "month",
+                  day_select_name:   "day",
+                  year_select_name:  "year",
+                  selected_month:    Time.now.month,
+                  selected_day:      Time.now.day,
+                  selected_year:     Time.now.year,
+                  earliest_year:     Time.now.year,
+                  latest_year:       Time.now.year)
+    m_options = (1..12).map{ |m| [Date::MONTHNAMES[m], m] }
+    d_options = (1..31)
+    y_options = (earliest_year..latest_year)
+
+    html = StringIO.new
+    html << "<div class='form-group date-picker'>"
+    html <<   select_tag(month_select_name,
+                         options_for_select(m_options, selected_month),
+                         class: "custom-select mr-1")
+    html <<   select_tag(day_select_name,
+                         options_for_select(d_options, selected_day),
+                         class: "custom-select mr-1")
+    html <<   select_tag(year_select_name,
+                         options_for_select(y_options, selected_year),
+                         class: "custom-select")
+    html << "</div>"
+    raw(html.string)
+  end
+
+  ##
   # @return [String]
   #
   def date_range_picker
-    now = Time.now
+    now       = Time.now
     m_options = (1..12)
     y_options = (Event.order(:happened_at).limit(1).pluck(:happened_at).first.year..now.year)
+
     html = StringIO.new
     html << "<div class='form-group mr-4 date-range-picker'>From:"
     html <<   select_tag("from_month", options_for_select(m_options),

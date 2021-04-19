@@ -9,30 +9,10 @@ namespace :ideals do
     end
   end
 
-  namespace :collections do
-    desc "Delete all collections"
-    task delete: :environment do
-      ActiveRecord::Base.transaction do
-        Collection.all.destroy_all
-      end
-    end
-  end
-
   namespace :items do
-    desc "Delete all items"
-    task delete: :environment do
-      ActiveRecord::Base.transaction do
-        Item.all.destroy_all
-      end
-    end
-  end
-
-  namespace :units do
-    desc "Delete all units"
-    task delete: :environment do
-      ActiveRecord::Base.transaction do
-        Unit.all.destroy_all
-      end
+    desc "Delete expired embargoes"
+    task delete_expired_embargoes: :environment do
+      Embargo.where("expires_at < NOW()").delete_all
     end
   end
 

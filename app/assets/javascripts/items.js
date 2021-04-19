@@ -27,6 +27,44 @@ const ItemView = function() {
             $("#edit-bitstream-modal .modal-body").html(data);
         });
     });
+    $(".edit-item-embargoes").on("click", function() {
+        const id  = $(this).data("item-id");
+        const url = ROOT_URL + "/items/" + id + "/edit-embargoes";
+
+        $.get(url, function(data) {
+            const modalBody = $("#edit-item-embargoes-modal .modal-body");
+            modalBody.html(data);
+            const table = modalBody.find("table");
+
+            const updateRowIndices = function() {
+                table.find("tbody > tr").each(function(index, element) {
+                    $(element).find("input, select").each(function() {
+                        const input = $(this);
+                        const newId = input.attr("id")
+                            .replace(/_[0-9]_/, "_" + index + "_");
+                        const newName = input.attr("name")
+                            .replace(/\[[0-9]]/, "[" + index + "]");
+                        input.attr("id", newId);
+                        input.attr("name", newName);
+                    });
+                });
+            };
+            const onRemove = function() {
+                if (table.find("tbody > tr").length > 1) {
+                    $(this).parents("tr").remove();
+                    updateRowIndices();
+                }
+            };
+            modalBody.find(".remove").on("click", onRemove);
+            modalBody.find(".add").on("click", function() {
+                const lastEmbargo = table.find("tr:last");
+                const newEmbargo = lastEmbargo.clone();
+                lastEmbargo.after(newEmbargo);
+                updateRowIndices();
+                newEmbargo.find(".remove").on("click", onRemove);
+            });
+        });
+    });
     $(".edit-item-membership").on("click", function() {
         const id  = $(this).data("item-id");
         const url = ROOT_URL + "/items/" + id + "/edit-membership";

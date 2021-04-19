@@ -9,8 +9,8 @@ class BitstreamPolicy < ApplicationPolicy
   # @param bitstream [Bitstream]
   #
   def initialize(request_context, bitstream)
-    @user = request_context&.user
-    @role = request_context&.role_limit
+    @user      = request_context&.user
+    @role      = request_context&.role_limit
     @bitstream = bitstream
   end
 
@@ -44,7 +44,8 @@ class BitstreamPolicy < ApplicationPolicy
         if role >= bitstream.role &&
             (bitstream.bundle == Bitstream::Bundle::CONTENT ||
                 user&.effective_manager?(bitstream.item.primary_collection)) &&
-            (bitstream.exists_in_staging || bitstream.medusa_uuid.present?)
+            (bitstream.exists_in_staging || bitstream.medusa_uuid.present?) &&
+            bitstream.item.current_embargoes.count == 0
           return true
         end
         return false

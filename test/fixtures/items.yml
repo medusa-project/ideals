@@ -18,6 +18,11 @@ described:
   stage: <%= Item::Stages::APPROVED %>
   discoverable: true
 
+embargoed:
+  submitter: local_sysadmin
+  stage: <%= Item::Stages::APPROVED %>
+  discoverable: true
+
 undescribed:
   submitter: local_sysadmin
   stage: <%= Item::Stages::APPROVED %>
