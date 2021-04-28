@@ -1,5 +1,20 @@
+##
+# Aggregation of {LocalUser}s and {LdapGroups} for the purpose of assigning
+# group-based permissions.
+#
+# # Attributes
+#
+# * `created_at` Managed by ActiveRecord.
+# * `key`        Short unique identifying key.
+# * `name`       Arbitrary but unique group name.
+# * `updated_at` Managed by ActiveRecord.
+#
 class UserGroup < ApplicationRecord
   include Breadcrumb
+
+  has_many :administrator_groups
+  has_many :manager_groups
+  has_many :submitter_groups
 
   has_and_belongs_to_many :ldap_groups
   # LocalUsers only!
@@ -30,6 +45,18 @@ class UserGroup < ApplicationRecord
 
   def breadcrumb_label
     name
+  end
+
+  ##
+  # @param user [User]
+  # @return [Boolean] Whether the given user is either directly associated with
+  #         the instance of is in an LDAP group associated with the instance.
+  #
+  def includes?(user)
+    self.users.include?(user) ||
+      User.joins("INNER JOIN ldap_groups_users ON ldap_groups_users.user_id = users.id").
+        where("ldap_groups_users.ldap_group_id IN (?)", self.ldap_group_ids).
+        where(id: user.id).count > 0
   end
 
 

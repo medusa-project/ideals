@@ -136,32 +136,32 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  # edit_access()
+  # edit_administrators()
 
-  test "edit_access() redirects to login page for logged-out users" do
+  test "edit_administrators() redirects to login page for logged-out users" do
     unit = units(:unit1)
-    get unit_edit_access_path(unit), xhr: true
+    get unit_edit_administrators_path(unit), xhr: true
     assert_redirected_to login_path
   end
 
-  test "edit_access() returns HTTP 403 for unauthorized users" do
+  test "edit_administrators() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
-    get unit_edit_access_path(unit), xhr: true
+    get unit_edit_administrators_path(unit), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_access() returns HTTP 404 for non-XHR requests" do
+  test "edit_administrators() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
-    get unit_edit_access_path(unit)
+    get unit_edit_administrators_path(unit)
     assert_response :not_found
   end
 
-  test "edit_access() returns HTTP 200 for XHR requests" do
+  test "edit_administrators() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
-    get unit_edit_access_path(unit), xhr: true
+    get unit_edit_administrators_path(unit), xhr: true
     assert_response :ok
   end
 
@@ -314,10 +314,10 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "show_access() respects role limits" do
     log_in_as(users(:local_sysadmin))
     get unit_access_path(units(:unit1)), xhr: true
-    assert_select(".edit-unit-access")
+    assert_select(".edit-administrators")
 
     get unit_access_path(units(:unit1), role: Role::LOGGED_OUT), xhr: true
-    assert_select(".edit-unit-access", false)
+    assert_select(".edit-administrators", false)
   end
 
   # show_collections()

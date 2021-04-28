@@ -6,10 +6,25 @@
 -#
 = form_for(unit, remote: true) do |f|
   .error-messages
-    - # populated via ajax by shared/_validation_messages.js.erb
+    -# populated via ajax by shared/_validation_messages.js.erb
 
-  / Include a random property because `unit` is required in the params
+  -# Include a random property because `unit` is required in the params
   = f.hidden_field :parent_id, value: f.object.parent_id
+
+  %h5 Groups
+
+  = hidden_field_tag "user_group_ids[]"
+  - UserGroup.order(:name).each do |user_group|
+    .form-check
+      = check_box_tag "user_group_ids[]", user_group.id,
+                      f.object.administrator_groups.where(user_group: user_group).any?,
+                      { id: "user_group_ids_#{user_group.id}", class: "form-check-input" }
+      = label_tag "user_group_ids_#{user_group.id}",
+        user_group.name, class: "form-check-label"
+
+  %hr
+
+  %h5 Users
 
   - unless f.object.parent
     .form-group
@@ -19,13 +34,12 @@
                        autocomplete: "off",
                        class: "form-control"
       .dropdown-menu
-        - # populated by javascript
+        -# populated by javascript
 
   .form-group
     = label_tag "Administrators"
     = hidden_field_tag "administering_users[]"
     - user_strings = f.object.administering_users.each.map(&:to_autocomplete)
-    - user_strings << user_strings[-1]
     - user_strings.each do |user_str|
       .input-group.mb-3.user
         = text_field_tag "administering_users[]", user_str,
@@ -36,12 +50,12 @@
             %i.fa.fa-minus
             Remove
         .dropdown-menu
-          - # populated by javascript
+          -# populated by javascript
     %button.btn.btn-sm.btn-outline-success.add
       %i.fa.fa-plus
-      Add Administrator
+      Add User
 
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
-      = f.submit "Edit Unit", class: "btn btn-primary"
+      = f.submit "Edit", class: "btn btn-primary"

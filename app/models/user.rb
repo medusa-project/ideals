@@ -43,6 +43,7 @@ class User < ApplicationRecord
   has_many :submitters
   has_many :submitting_collections, through: :submitters, source: :collection
   has_and_belongs_to_many :ldap_groups
+  # This includes only directly assigned user groups. See `belongs_to?()`
   has_and_belongs_to_many :user_groups
 
   validates :email, presence: true, length: {maximum: 255},
@@ -67,6 +68,14 @@ class User < ApplicationRecord
       return User.find_by_email(email)
     end
     nil
+  end
+
+  ##
+  # @param user_group [UserGroup]
+  # @return [Boolean]
+  #
+  def belongs_to?(user_group)
+    user_group.includes?(self)
   end
 
   ##
@@ -182,7 +191,11 @@ class User < ApplicationRecord
   # @see #effective_manager?
   #
   def manager?(collection)
-    collection.managers.where(user_id: self.id).count > 0
+    return true if collection.managers.where(user_id: self.id).count > 0
+    collection.managing_groups.each do |group|
+      return true if self.belongs_to?(group)
+    end
+    false
   end
 
   ##
@@ -192,7 +205,11 @@ class User < ApplicationRecord
   # @see #effective_submitter?
   #
   def submitter?(collection)
-    collection.submitters.where(user_id: self.id).count > 0
+    return true if collection.submitters.where(user_id: self.id).count > 0
+    collection.submitting_groups.each do |group|
+      return true if self.belongs_to?(group)
+    end
+    false
   end
 
   ##
@@ -217,11 +234,15 @@ class User < ApplicationRecord
   ##
   # @param unit [Unit]
   # @return [Boolean] Whether the instance is a direct administrator of the
-  #                   given unit.
+  #                   given unit (not considering its parents).
   # @see effective_unit_admin?
   #
   def unit_admin?(unit)
-    unit.administrators.where(user_id: self.id).count > 0
+    return true if unit.administrators.where(user_id: self.id).count > 0
+    unit.administering_groups.each do |group|
+      return true if self.belongs_to?(group)
+    end
+    false
   end
 
 end

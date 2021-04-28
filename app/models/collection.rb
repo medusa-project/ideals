@@ -83,6 +83,9 @@ class Collection < ApplicationRecord
   has_many :collection_item_memberships
   has_many :items, through: :collection_item_memberships
   belongs_to :metadata_profile, inverse_of: :collections, optional: true
+  has_many :manager_groups
+  has_many :managing_groups, through: :manager_groups,
+           class_name: "UserGroup", source: :user_group
   has_many :managers
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user
@@ -93,6 +96,9 @@ class Collection < ApplicationRecord
   has_one :primary_unit, through: :primary_unit_membership,
           class_name: "Unit", source: :unit
   belongs_to :submission_profile, inverse_of: :collections, optional: true
+  has_many :submitter_groups
+  has_many :submitting_groups, through: :submitter_groups,
+           class_name: "UserGroup", source: :user_group
   has_many :submitters
   has_many :submitting_users, through: :submitters,
            class_name: "User", source: :user
@@ -135,6 +141,18 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<UserGroup>]
+  #
+  def all_managing_groups
+    groups  = Set.new
+    groups += self.managing_groups
+    all_parents.each do |parent|
+      groups += parent.managing_groups
+    end
+    groups
+  end
+
+  ##
   # @return [Enumerable<Collection>] All parents in order from closest to
   #                                  farthest.
   #
@@ -146,6 +164,18 @@ class Collection < ApplicationRecord
       p = p.parent
     end
     parents
+  end
+
+  ##
+  # @return [Enumerable<UserGroup>]
+  #
+  def all_submitting_groups
+    groups  = Set.new
+    groups += self.submitting_groups
+    all_parents.each do |parent|
+      groups += parent.submitting_groups
+    end
+    groups
   end
 
   ##

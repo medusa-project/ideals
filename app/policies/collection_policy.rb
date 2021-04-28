@@ -49,15 +49,19 @@ class CollectionPolicy < ApplicationPolicy
     create?
   end
 
-  def edit_access?
-    update?
-  end
-
   def edit_collection_membership?
     update?
   end
 
+  def edit_managers?
+    update?
+  end
+
   def edit_properties?
+    update?
+  end
+
+  def edit_submitters?
     update?
   end
 
@@ -86,7 +90,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def show_access?
-    edit_access?
+    update?
   end
 
   def show_collections?

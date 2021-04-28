@@ -712,9 +712,9 @@ const IDEALS = {
 
         function updateEventListeners() {
             $("button.remove").off("click").on("click", function () {
-                const numIGs = $(this).parents(".form-group").find(".input-group").length;
+                const numIGs   = $(this).parents(".form-group").find(".input-group").length;
+                const parentIG = $(this).parents(".input-group");
                 if (numIGs > minElements) {
-                    const parentIG = $(this).parents(".input-group");
                     // Don't remove the last one, as the add button needs to
                     // clone it.
                     if (numIGs > 1) {
@@ -723,6 +723,8 @@ const IDEALS = {
                         parentIG.addClass("d-none");
                         parentIG.find("select").attr("disabled", true);
                     }
+                } else {
+                    parentIG.find("input").val("");
                 }
             });
         }

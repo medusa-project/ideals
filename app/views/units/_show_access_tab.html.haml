@@ -1,30 +1,58 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@unit).edit_access?
-    %button.btn.btn-light.edit-unit-access{"data-unit-id": @unit.id,
-                                           "data-target": "#edit-unit-access-modal",
-                                           "data-toggle": "modal",
-                                           role: "button"}
+  - if policy(@unit).edit_administrators?
+    %button.btn.btn-light.edit-administrators{"data-unit-id": @unit.id,
+                                              "data-target": "#edit-administrators-modal",
+                                              "data-toggle": "modal",
+                                              role: "button"}
       %i.fas.fa-pencil-alt
-      Edit Access
+      Edit Administrators
 
 .clearfix.mb-3
 
-%dl
-  %dt Direct Administrators
-  %dd
-    - if @unit.administering_users.any?
-      %ul
-        - @unit.administering_users.each do |user|
-          %li= link_to(raw("#{user.name}#{user == @unit.primary_administrator ? " <span class=\"badge badge-primary\">PRIMARY</span>" : ""}"),
-              "mailto:#{user.email}")
-    - else
-      None
-  %dt Effective Administrators (including administrators of parent units)
-  %dd
-    - admins = @unit.all_administrators
-    - if admins.any?
-      %ul
-        - admins.each do |user|
-          %li= link_to(user.name, "mailto:#{user.email}")
-    - else
-      None
+.row
+  .col-md-6
+    .card.mb-3
+      .card-body
+        %h5.card-title Direct Group Administrators
+        - if @unit.administering_groups.any?
+          %ul
+            - @unit.administering_groups.each do |group|
+              %li= group.name
+        - else
+          None
+    .card
+      .card-body
+        %h5.card-title Effective Group Administrators
+        - admins = @unit.all_administrator_groups
+        - if admins.any?
+          %ul
+            - admins.each do |group|
+              %li= group.name
+        - else
+          None
+
+  .col-md-6
+    .card.mb-3
+      .card-body
+        %h5.card-title Direct User Administrators
+        - if @unit.administering_users.any?
+          %ul
+            - @unit.administering_users.each do |user|
+              %li= link_to(raw("#{user.name}#{user == @unit.primary_administrator ? " <span class=\"badge badge-primary\">PRIMARY</span>" : ""}"),
+                  "mailto:#{user.email}")
+        - else
+          None
+    .card
+      .card-body
+        %h5.card-title Effective User Administrators
+        - admins = @unit.all_administrators
+        - if admins.any?
+          %ul
+            - admins.each do |user|
+              %li= link_to(user.name, "mailto:#{user.email}")
+        - else
+          None
+
+= render partial: "shared/ajax_modal",
+       locals: { id: "edit-administrators-modal",
+                 title: "Edit Administrators" }

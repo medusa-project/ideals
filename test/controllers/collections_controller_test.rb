@@ -134,35 +134,6 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  # edit_access()
-
-  test "edit_access() redirects to login page for logged-out users" do
-    collection = collections(:collection1)
-    get collection_edit_access_path(collection), xhr: true
-    assert_redirected_to login_path
-  end
-
-  test "edit_access() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    collection = collections(:collection1)
-    get collection_edit_access_path(collection), xhr: true
-    assert_response :forbidden
-  end
-
-  test "edit_access() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
-    get collection_edit_access_path(collection)
-    assert_response :not_found
-  end
-
-  test "edit_access() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
-    get collection_edit_access_path(collection), xhr: true
-    assert_response :ok
-  end
-
   # edit_collection_membership()
 
   test "edit_collection_membership() redirects to login page for logged-out users" do
@@ -192,6 +163,35 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_managers()
+
+  test "edit_managers() redirects to login page for logged-out users" do
+    collection = collections(:collection1)
+    get collection_edit_managers_path(collection), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit_managers() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    collection = collections(:collection1)
+    get collection_edit_managers_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_managers() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    get collection_edit_managers_path(collection)
+    assert_response :not_found
+  end
+
+  test "edit_managers() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    get collection_edit_managers_path(collection), xhr: true
+    assert_response :ok
+  end
+
   # edit_properties()
 
   test "edit_properties() redirects to login page for logged-out users" do
@@ -218,6 +218,35 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     get collection_edit_properties_path(collection), xhr: true
+    assert_response :ok
+  end
+
+  # edit_submitters()
+
+  test "edit_submitters() redirects to login page for logged-out users" do
+    collection = collections(:collection1)
+    get collection_edit_submitters_path(collection), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit_submitters() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    collection = collections(:collection1)
+    get collection_edit_submitters_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_submitters() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    get collection_edit_submitters_path(collection)
+    assert_response :not_found
+  end
+
+  test "edit_submitters() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    get collection_edit_submitters_path(collection), xhr: true
     assert_response :ok
   end
 
@@ -342,10 +371,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     get collection_access_path(collection), xhr: true
-    assert_select(".edit-collection-access")
+    assert_select(".edit-collection-managers")
 
     get collection_access_path(collection, role: Role::LOGGED_OUT), xhr: true
-    assert_select(".edit-collection-access", false)
+    assert_select(".edit-collection-managers", false)
   end
 
   # show_collections()

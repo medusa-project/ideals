@@ -23,6 +23,26 @@ class UserGroupTest < ActiveSupport::TestCase
     assert @instance.all_users.include?(users(:uiuc_admin))
   end
 
+  # includes?()
+
+  test "includes?() returns false for a user not associated with the group" do
+    assert !@instance.includes?(users(:norights))
+  end
+
+  test "includes?() returns true for a user directly associated with the group" do
+    user = users(:norights)
+    @instance.users << user
+    assert @instance.includes?(user)
+  end
+
+  test "includes?() returns true for a user belonging to an LDAP group
+  associated with the group" do
+    user  = users(:norights)
+    group = @instance.ldap_groups.first
+    group.users << user
+    assert @instance.includes?(user)
+  end
+
   # key
 
   test "key must be present" do

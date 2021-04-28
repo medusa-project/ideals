@@ -65,6 +65,13 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal 2, admins.length
   end
 
+  # all_administrator_groups()
+
+  test "all_administrator_groups() returns the correct users" do
+    groups = units(:unit1_unit2_unit1).all_administrator_groups
+    assert_equal 0, groups.length
+  end
+
   # all_children()
 
   test "all_children() returns the correct units" do

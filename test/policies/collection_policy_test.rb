@@ -167,41 +167,6 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  # edit_access?()
-
-  test "edit_access?() returns false with a nil user" do
-    policy = CollectionPolicy.new(nil, @collection)
-    assert !policy.edit_access?
-  end
-
-  test "edit_access?() is restrictive by default" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
-    policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_access?
-  end
-
-  test "edit_access?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
-    policy  = CollectionPolicy.new(context, @collection)
-    assert policy.edit_access?
-  end
-
-  test "edit_access?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_access?
-  end
-
   # edit_collection_membership?()
 
   test "edit_collection_membership?() returns false with a nil user" do
@@ -237,6 +202,41 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_collection_membership?
   end
 
+  # edit_managers?()
+
+  test "edit_managers?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.edit_managers?
+  end
+
+  test "edit_managers?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_managers?
+  end
+
+  test "edit_managers?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy   = CollectionPolicy.new(context, @collection)
+    assert policy.edit_managers?
+  end
+
+  test "edit_managers?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_managers?
+  end
+
   # edit_properties?()
 
   test "edit_properties?() returns false with a nil user" do
@@ -270,6 +270,41 @@ class CollectionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.edit_properties?
+  end
+
+  # edit_submitters?()
+
+  test "edit_submitters?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.edit_submitters?
+  end
+
+  test "edit_submitters?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_submitters?
+  end
+
+  test "edit_submitters?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy   = CollectionPolicy.new(context, @collection)
+    assert policy.edit_submitters?
+  end
+
+  test "edit_submitters?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_submitters?
   end
 
   # edit_unit_membership?()

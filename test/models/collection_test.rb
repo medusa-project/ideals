@@ -46,6 +46,13 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal 2, collections(:collection1).all_children.count
   end
 
+  # all_managing_groups()
+
+  test "all_managing_groups() returns the correct groups" do
+    groups = collections(:collection1_collection1_collection1).all_managing_groups
+    assert_equal 0, groups.length
+  end
+
   # all_parents()
 
   test "all_parents() returns the parents" do
@@ -53,6 +60,13 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal 2, result.count
     assert_equal collections(:collection1_collection1), result[0]
     assert_equal collections(:collection1), result[1]
+  end
+
+  # all_submitting_groups()
+
+  test "all_submitting_groups() returns the correct groups" do
+    groups = collections(:collection1_collection1_collection1).all_submitting_groups
+    assert_equal 0, groups.length
   end
 
   # all_unit_administrators()

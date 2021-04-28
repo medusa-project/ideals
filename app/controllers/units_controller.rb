@@ -2,7 +2,8 @@
 
 class UnitsController < ApplicationController
 
-  before_action :ensure_logged_in, only: [:create, :destroy, :edit_access,
+  before_action :ensure_logged_in, only: [:create, :destroy,
+                                          :edit_administrators,
                                           :edit_membership, :edit_properties,
                                           :show_access, :update]
   before_action :set_unit, except: [:create, :index]
@@ -90,18 +91,18 @@ class UnitsController < ApplicationController
   end
 
   ##
-  # Used for editing access control.
+  # Used for editing administrators.
   #
-  # Responds to `GET /units/:id/edit-membership` (XHR only)
+  # Responds to `GET /units/:unit_id/edit-administrators` (XHR only)
   #
-  def edit_access
-    render partial: "units/access_form", locals: { unit: @unit }
+  def edit_administrators
+    render partial: "units/administrators_form", locals: { unit: @unit }
   end
 
   ##
   # Used for editing unit membership.
   #
-  # Responds to `GET /units/:id/edit-membership` (XHR only)
+  # Responds to `GET /units/:unit_id/edit-membership` (XHR only)
   #
   def edit_membership
     render partial: "units/membership_form", locals: { unit: @unit }
@@ -110,7 +111,7 @@ class UnitsController < ApplicationController
   ##
   # Used for editing basic properties.
   #
-  # Responds to GET `/units/:id/edit` (XHR only)
+  # Responds to GET `/units/:unit_id/edit` (XHR only)
   #
   def edit_properties
     render partial: "units/properties_form", locals: { unit: @unit }
@@ -299,9 +300,8 @@ class UnitsController < ApplicationController
     end
     begin
       ActiveRecord::Base.transaction do
-        @unit.update!(unit_params)
         assign_administrators
-        @unit.save!
+        @unit.update!(unit_params)
       end
     rescue => e
       render partial: "shared/validation_messages",
@@ -327,7 +327,14 @@ class UnitsController < ApplicationController
   end
 
   def assign_administrators
-    # Non-primary administrators
+    # Group administrators
+    if params[:user_group_ids]
+      @unit.administrator_groups.destroy_all
+      params[:user_group_ids].select(&:present?).each do |user_group_id|
+        @unit.administrator_groups.build(user_group_id: user_group_id).save!
+      end
+    end
+    # Non-primary user administrators
     if params[:administering_users]
       @unit.administrators.where(primary: false).destroy_all
       params[:administering_users].select(&:present?).each do |user_str|
@@ -337,7 +344,7 @@ class UnitsController < ApplicationController
         @unit.administering_users << user
       end
     end
-    # Primary administrator
+    # Primary user administrator
     if params[:primary_administrator]
       @unit.primary_administrator =
           User.from_autocomplete_string(params[:primary_administrator])

@@ -156,39 +156,39 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  # edit_access?()
+  # edit_administrators?()
 
-  test "edit_access?() returns false with a nil user" do
+  test "edit_administrators?() returns false with a nil user" do
     policy = UnitPolicy.new(nil, @unit)
-    assert !policy.edit_access?
+    assert !policy.edit_administrators?
   end
 
-  test "edit_access?() is restrictive by default" do
+  test "edit_administrators?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::NO_LIMIT)
     policy  = UnitPolicy.new(context, @unit)
-    assert !policy.edit_access?
+    assert !policy.edit_administrators?
   end
 
-  test "edit_access?() authorizes sysadmins" do
+  test "edit_administrators?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::NO_LIMIT)
     policy  = UnitPolicy.new(context, @unit)
-    assert policy.edit_access?
+    assert policy.edit_administrators?
   end
 
-  test "edit_access?() respects role limits" do
+  test "edit_administrators?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
-    assert !policy.edit_access?
+    assert !policy.edit_administrators?
   end
 
   # edit_membership?()

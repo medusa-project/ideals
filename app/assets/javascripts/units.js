@@ -140,11 +140,10 @@ const UnitView = function() {
         const url = ROOT_URL + "/units/" + unitID + "/access";
         $.get(url, function(data) {
             $("#access-tab-content").html(data);
-            $('.edit-unit-access').on("click", function () {
-                const id = $(this).data("unit-id");
-                const url = ROOT_URL + "/units/" + unitID + "/edit-access";
+            $('.edit-administrators').on("click", function () {
+                const url = ROOT_URL + "/units/" + unitID + "/edit-administrators";
                 $.get(url, function (data) {
-                    $("#edit-unit-access-modal .modal-body").html(data);
+                    $("#edit-administrators-modal .modal-body").html(data);
                     new IDEALS.UserAutocompleter(
                         $("input[name=primary_administrator], input[name='administering_users[]']"));
                     new IDEALS.MultiElementList();

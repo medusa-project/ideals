@@ -19,6 +19,27 @@ class UserTest < ActiveSupport::TestCase
     assert_nil User.from_autocomplete_string(string)
   end
 
+  # belongs_to?()
+
+  test "belongs_to?() returns false for a user not associated with the group" do
+    assert !@instance.belongs_to?(user_groups(:sysadmin))
+  end
+
+  test "belongs_to?() returns true for a user directly associated with the
+  group" do
+    group = user_groups(:sysadmin)
+    @instance.user_groups << group
+    assert @instance.belongs_to?(group)
+  end
+
+  test "belongs_to?() returns true for a user belonging to an LDAP group
+  associated with the group" do
+    user_group  = user_groups(:sysadmin)
+    ldap_group = user_group.ldap_groups.first
+    ldap_group.users << @instance
+    assert @instance.belongs_to?(user_group)
+  end
+
   # effective_institution_admin?()
 
   test "effective_institution_admin?() returns true if the user is a sysadmin" do
@@ -241,10 +262,20 @@ class UserTest < ActiveSupport::TestCase
 
   # manager?()
 
-  test "manager?() returns true when the user is a manager of the given collection" do
+  test "manager?() returns true when the user is a directly assigned manager of
+  the given collection" do
     collection = collections(:collection1)
     collection.managing_users << @instance
     collection.save!
+    assert @instance.manager?(collection)
+  end
+
+  test "manager?() returns true when the user belongs to a user group that
+  is allowed to manage the given unit" do
+    group = user_groups(:temp)
+    @instance.user_groups << group
+    collection = collections(:collection1)
+    collection.managing_users << @instance
     assert @instance.manager?(collection)
   end
 
@@ -263,10 +294,20 @@ class UserTest < ActiveSupport::TestCase
 
   # submitter?()
 
-  test "submitter?() returns true when the user is a submitter in the given collection" do
+  test "submitter?() returns true when the user is a directly assigned
+  submitter in the given collection" do
     collection = collections(:collection1)
     collection.submitting_users << @instance
     collection.save!
+    assert @instance.submitter?(collection)
+  end
+
+  test "submitter?() returns true when the user belongs to a user group that
+  is allowed to submit to the given unit" do
+    group = user_groups(:temp)
+    @instance.user_groups << group
+    collection = collections(:collection1)
+    collection.submitting_users << @instance
     assert @instance.submitter?(collection)
   end
 
@@ -311,11 +352,20 @@ class UserTest < ActiveSupport::TestCase
 
   # unit_admin?()
 
-  test "unit_admin?() returns true when the user is an administrator of the
-  given unit" do
+  test "unit_admin?() returns true when the user is a directly assigned
+  administrator of the given unit" do
     unit = units(:unit1)
     unit.administering_users << @instance
     unit.save!
+    assert @instance.unit_admin?(unit)
+  end
+
+  test "unit_admin?() returns true when the user belongs to a user group that
+  is allowed to administer the given unit" do
+    group = user_groups(:temp)
+    @instance.user_groups << group
+    unit = units(:unit1)
+    unit.administering_groups << group
     assert @instance.unit_admin?(unit)
   end
 

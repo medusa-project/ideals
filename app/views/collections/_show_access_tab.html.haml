@@ -1,37 +1,90 @@
-.btn-group.float-right{role: "group"}
-  - if policy(@collection).edit_access?
-    %button.btn.btn-light.edit-collection-access{"data-collection-id": @collection.id,
-                                                 "data-target": "#edit-collection-access-modal",
-                                                 "data-toggle": "modal",
-                                                 role: "button"}
-      %i.fas.fa-pencil-alt
-      Edit Access
+%ul.nav.nav-tabs{role: "tablist"}
+  %li.nav-item{role: "presentation"}
+    %a#managers-tab.nav-link.active{"data-toggle": "tab",
+                                    href: "#managers",
+                                    role: "tab",
+                                    "aria-controls": "managers",
+                                    "aria-selected": true} Managers
+  %li.nav-item{role: "presentation"}
+    %a#submitters-tab.nav-link{"data-toggle": "tab",
+                               href: "#submitters",
+                               role: "tab",
+                               "aria-controls": "submitters",
+                               "aria-selected": false} Submitters
 
-.clearfix.mb-3
 
-%dl
-  %dt Unit Administrators
-  %dd
-    - admins = @collection.all_unit_administrators
-    - if admins.any?
-      %ul
-        - admins.each do |user|
-          %li= link_to(user.name, "mailto:#{user.email}")
-    - else
-      None
-  %dt Managers
-  %dd
-    - if @collection.managing_users.any?
-      %ul
-        - @collection.managing_users.each do |user|
-          %li= link_to(user.name, "mailto:#{user.email}")
-    - else
-      None
-  %dt Submitters
-  %dd
-    - if @collection.submitters.any?
-      %ul
-        - @collection.submitting_users.each do |user|
-          %li= link_to(user.name, "mailto:#{user.email}")
-    - else
-      None
+.tab-content
+  #managers.tab-pane.fade.show.active{role: "tabpanel", "aria-labelledby": "managers-tab"}
+    .btn-group.float-right{role: "group"}
+      - if policy(@collection).edit_managers?
+        %button.btn.btn-light.edit-collection-managers{"data-collection-id": @collection.id,
+                                                       "data-target": "#edit-collection-managers-modal",
+                                                       "data-toggle": "modal",
+                                                       role: "button"}
+          %i.fas.fa-pencil-alt
+          Edit Managers
+
+    .clearfix.mb-3
+
+    .row
+      .col-md-6
+        .card
+          .card-body
+            %h5.card-title Groups
+            - if @collection.managing_groups.any?
+              %ul
+                - @collection.managing_groups.each do |group|
+                  %li= link_to(group.name, group)
+            - else
+              None
+      .col-md-6
+        .card
+          .card-body
+            %h5.card-title Users
+            - if @collection.managing_users.any?
+              %ul
+                - @collection.managing_users.each do |user|
+                  %li= link_to(user.name, "mailto:#{user.email}")
+            - else
+              None
+
+  #submitters.tab-pane.fade{role: "tabpanel", "aria-labelledby": "submitters-tab"}
+    .btn-group.float-right{role: "group"}
+      - if policy(@collection).edit_submitters?
+        %button.btn.btn-light.edit-collection-submitters{"data-collection-id": @collection.id,
+                                                         "data-target": "#edit-collection-submitters-modal",
+                                                         "data-toggle": "modal",
+                                                         role: "button"}
+          %i.fas.fa-pencil-alt
+          Edit Submitters
+
+    .clearfix.mb-3
+
+    .row
+      .col-md-6
+        .card
+          .card-body
+            %h5.card-title Groups
+            - if @collection.submitting_groups.any?
+              %ul
+                - @collection.submitting_groups.each do |group|
+                  %li= link_to(group.name, group)
+            - else
+              None
+      .col-md-6
+        .card
+          .card-body
+            %h5.card-title Users
+            - if @collection.submitting_users.any?
+              %ul
+                - @collection.submitting_users.each do |user|
+                  %li= link_to(user.name, "mailto:#{user.email}")
+            - else
+              None
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-collection-managers-modal",
+                   title: "Edit Managers" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-collection-submitters-modal",
+                   title: "Edit Submitters" }

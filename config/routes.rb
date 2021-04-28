@@ -29,12 +29,14 @@ Rails.application.routes.draw do
     match "/children", to: "collections#children", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/deposit", to: "submissions#agreement", via: :get
-    match "/edit-access", to: "collections#edit_access", via: :get,
+    match "/edit-managers", to: "collections#edit_managers", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-collection-membership",
           to: "collections#edit_collection_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "collections#edit_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-submitters", to: "collections#edit_submitters", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-unit-membership", to: "collections#edit_unit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -129,7 +131,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/collections-tree-fragment", to: "units#collections_tree_fragment", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/edit-access", to: "units#edit_access", via: :get,
+    match "/edit-administrators", to: "units#edit_administrators", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-membership", to: "units#edit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }

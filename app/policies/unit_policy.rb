@@ -58,7 +58,7 @@ class UnitPolicy < ApplicationPolicy
     end
   end
 
-  def edit_access?
+  def edit_administrators?
     show_access?
   end
 
@@ -123,7 +123,7 @@ class UnitPolicy < ApplicationPolicy
       return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
       return true if unit != Unit &&
         role >= Role::UNIT_ADMINISTRATOR &&
-        unit.administrators.where(user_id: user.id).count > 0
+        user.effective_unit_admin?(unit)
     end
     false
   end

@@ -35,6 +35,9 @@ class Unit < ApplicationRecord
   has_many :administrators
   has_many :administering_users, through: :administrators,
            class_name: "User", source: :user
+  has_many :administrator_groups
+  has_many :administering_groups, through: :administrator_groups,
+           class_name: "UserGroup", source: :user_group
   has_many :unit_collection_memberships
   has_many :collections, through: :unit_collection_memberships
   has_many :units, foreign_key: "parent_id", dependent: :restrict_with_exception
@@ -65,6 +68,18 @@ class Unit < ApplicationRecord
       users += parent.administering_users
     end
     users
+  end
+
+  ##
+  # @return [Enumerable<UserGroup>]
+  #
+  def all_administrator_groups
+    groups  = Set.new
+    groups += self.administering_groups
+    all_parents.each do |parent|
+      groups += parent.administering_groups
+    end
+    groups
   end
 
   ##

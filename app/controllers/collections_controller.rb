@@ -2,11 +2,12 @@
 
 class CollectionsController < ApplicationController
 
-  before_action :ensure_logged_in, only: [:create, :destroy, :edit_access,
+  before_action :ensure_logged_in, only: [:create, :destroy,
                                           :edit_collection_membership,
-                                          :edit_properties,
+                                          :edit_managers, :edit_properties,
+                                          :edit_submitters,
                                           :edit_unit_membership,
-                                          :show_access,
+                                          :edit_user_access, :show_access,
                                           :show_review_submissions, :update]
   before_action :set_collection, except: [:create, :index]
   before_action :authorize_collection, except: [:create, :index]
@@ -76,15 +77,8 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /collections/:id/edit-membership` (XHR only)
-  #
-  def edit_access
-    render partial: 'collections/access_form',
-           locals: { collection: @collection }
-  end
-
-  ##
-  # Responds to `GET /collections/:id/edit-collection-membership` (XHR only)
+  # Responds to `GET /collections/:collection_id/edit-collection-membership`
+  # (XHR only)
   #
   def edit_collection_membership
     render partial: 'collections/collection_membership_form',
@@ -92,10 +86,28 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Responds to GET `/collections/:id/edit` (XHR only)
+  # Responds to `GET /collections/:collection_id/edit-managers`
+  # (XHR only)
+  #
+  def edit_managers
+    render partial: 'collections/managers_form',
+           locals: { collection: @collection }
+  end
+
+  ##
+  # Responds to GET `/collections/:collection_id/edit-properties` (XHR only)
   #
   def edit_properties
     render partial: 'collections/properties_form',
+           locals: { collection: @collection }
+  end
+
+  ##
+  # Responds to `GET /collections/:collection_id/edit-submitters`
+  # (XHR only)
+  #
+  def edit_submitters
+    render partial: 'collections/submitters_form',
            locals: { collection: @collection }
   end
 
@@ -106,6 +118,14 @@ class CollectionsController < ApplicationController
     render partial: 'collections/unit_membership_form',
            locals: { collection: @collection,
                      primary_unit: @collection.primary_unit }
+  end
+
+  ##
+  # Responds to `GET /collections/:id/edit-user-access` (XHR only)
+  #
+  def edit_user_access
+    render partial: 'collections/user_access_form',
+           locals: { collection: @collection }
   end
 
   ##
@@ -317,12 +337,9 @@ class CollectionsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         assign_users
+        assign_user_groups
+        assign_primary_unit
         build_metadata
-        if params[:primary_unit_id]
-          @collection.unit_collection_memberships.destroy_all
-          @collection.unit_collection_memberships.build(unit_id: params[:primary_unit_id],
-                                                        primary: true)
-        end
         @collection.update!(collection_params)
       end
     rescue => e
@@ -339,9 +356,34 @@ class CollectionsController < ApplicationController
 
   private
 
+  def assign_primary_unit
+    if params[:primary_unit_id]
+      @collection.unit_collection_memberships.destroy_all
+      @collection.unit_collection_memberships.build(unit_id: params[:primary_unit_id],
+                                                    primary: true)
+    end
+  end
+
+  def assign_user_groups
+    # Managers
+    if params[:managing_user_group_ids]
+      @collection.manager_groups.destroy_all
+      params[:managing_user_group_ids].select(&:present?).each do |user_group_id|
+        @collection.manager_groups.build(user_group_id: user_group_id).save!
+      end
+    end
+    # Submitters
+    if params[:submitting_user_group_ids]
+      @collection.submitter_groups.destroy_all
+      params[:submitting_user_group_ids].select(&:present?).each do |user_group_id|
+        @collection.submitter_groups.build(user_group_id: user_group_id).save!
+      end
+    end
+  end
+
   def assign_users
     # Managers
-    if params[:managers].present?
+    if params[:managers]
       @collection.managers.destroy_all
       if params[:managers].respond_to?(:each)
         params[:managers].select(&:present?).each do |user_str|
@@ -353,7 +395,7 @@ class CollectionsController < ApplicationController
       end
     end
     # Submitters
-    if params[:submitters].present?
+    if params[:submitters]
       @collection.submitters.destroy_all
       if params[:submitters].respond_to?(:each)
         params[:submitters].select(&:present?).each do |user_str|

@@ -8,6 +8,12 @@ sysadmin:
   ldap_groups:
     - sysadmin
 
+temp:
+  key: temp
+  name: Temporary Group
+  users:
+  ldap_groups:
+
 unused:
   key: unused
   name: Unused Group

@@ -10,10 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_14_162041) do
+ActiveRecord::Schema.define(version: 2021_04_28_174113) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "administrator_groups", force: :cascade do |t|
+    t.bigint "unit_id", null: false
+    t.bigint "user_group_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "administrators", force: :cascade do |t|
     t.bigint "user_id"
@@ -177,6 +184,13 @@ ActiveRecord::Schema.define(version: 2021_04_14_162041) do
     t.index ["email"], name: "index_local_identities_on_email", unique: true
   end
 
+  create_table "manager_groups", force: :cascade do |t|
+    t.bigint "collection_id", null: false
+    t.bigint "user_group_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "managers", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "collection_id"
@@ -269,6 +283,13 @@ ActiveRecord::Schema.define(version: 2021_04_14_162041) do
     t.index ["name"], name: "index_submission_profiles_on_name", unique: true
   end
 
+  create_table "submitter_groups", force: :cascade do |t|
+    t.bigint "collection_id", null: false
+    t.bigint "user_group_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "submitters", force: :cascade do |t|
     t.bigint "collection_id"
     t.bigint "user_id"
@@ -324,6 +345,8 @@ ActiveRecord::Schema.define(version: 2021_04_14_162041) do
     t.index ["uid"], name: "index_users_on_uid", unique: true
   end
 
+  add_foreign_key "administrator_groups", "units", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "administrator_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrators", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "collections", on_update: :cascade, on_delete: :cascade
@@ -347,6 +370,8 @@ ActiveRecord::Schema.define(version: 2021_04_14_162041) do
   add_foreign_key "ldap_groups_user_groups", "ldap_groups"
   add_foreign_key "ldap_groups_user_groups", "user_groups"
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "manager_groups", "collections", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "manager_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "managers", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :nullify
@@ -354,6 +379,8 @@ ActiveRecord::Schema.define(version: 2021_04_14_162041) do
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "submitter_groups", "collections", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "submitter_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "unit_collection_memberships", "collections", on_update: :cascade, on_delete: :cascade

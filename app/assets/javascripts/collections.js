@@ -157,12 +157,19 @@ const CollectionView = function() {
         const url = ROOT_URL + "/collections/" + collectionID + "/access";
         $.get(url, function (data) {
             $("#access-tab-content").html(data);
-            $('.edit-collection-access').on("click", function() {
-                const url = ROOT_URL + "/collections/" + collectionID + "/edit-access";
+            $('.edit-collection-managers').on("click", function() {
+                const url = ROOT_URL + "/collections/" + collectionID + "/edit-managers";
                 $.get(url, function(data) {
-                    $("#edit-collection-access-modal .modal-body").html(data);
-                    new IDEALS.UserAutocompleter(
-                        $("input[name='managers[]'], input[name='submitters[]']"));
+                    $("#edit-collection-managers-modal .modal-body").html(data);
+                    new IDEALS.UserAutocompleter($("input[name='managers[]']"));
+                    new IDEALS.MultiElementList();
+                });
+            });
+            $('.edit-collection-submitters').on("click", function() {
+                const url = ROOT_URL + "/collections/" + collectionID + "/edit-submitters";
+                $.get(url, function(data) {
+                    $("#edit-collection-submitters-modal .modal-body").html(data);
+                    new IDEALS.UserAutocompleter($("input[name='submitters[]']"));
                     new IDEALS.MultiElementList();
                 });
             });
