@@ -127,17 +127,7 @@ class CollectionPolicy < ApplicationPolicy
   #
   def submit_item?
     return false unless user
-    if role >= Role::SYSTEM_ADMINISTRATOR
-      return true if user.sysadmin? ||
-          user.effective_manager?(collection) ||
-          user.effective_submitter?(collection)
-    elsif role >= Role::COLLECTION_MANAGER
-      return true if user.effective_manager?(collection) ||
-          user.effective_submitter?(collection)
-    elsif role >= Role::COLLECTION_SUBMITTER
-      return true if user.effective_submitter?(collection)
-    end
-    false
+    role >= Role::COLLECTION_SUBMITTER && user.effective_submitter?(collection)
   end
 
   def update?
