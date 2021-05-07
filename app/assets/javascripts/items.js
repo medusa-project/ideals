@@ -50,9 +50,12 @@ const ItemView = function() {
                 });
             };
             const onRemove = function() {
+                const parentRow = $(this).parents("tr");
                 if (table.find("tbody > tr").length > 1) {
-                    $(this).parents("tr").remove();
+                    parentRow.remove();
                     updateRowIndices();
+                } else {
+                    parentRow.find("input[type=checkbox]").prop("checked", false);
                 }
             };
             modalBody.find(".remove").on("click", onRemove);
