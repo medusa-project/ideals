@@ -55,6 +55,7 @@ const ItemView = function() {
                     parentRow.remove();
                     updateRowIndices();
                 } else {
+                    parentRow.hide();
                     parentRow.find("input[type=checkbox]").prop("checked", false);
                 }
             };
@@ -63,6 +64,7 @@ const ItemView = function() {
                 const lastEmbargo = table.find("tr:last");
                 const newEmbargo = lastEmbargo.clone();
                 lastEmbargo.after(newEmbargo);
+                newEmbargo.show();
                 updateRowIndices();
                 newEmbargo.find(".remove").on("click", onRemove);
             });

@@ -213,18 +213,10 @@ class ItemsController < ApplicationController
                                              item_id:       @item.id,
                                              primary:       (membership[:primary] == "true"))
           end
-        elsif params[:embargoes].respond_to?(:each) # input from the edit-embargoes form
-          @item.embargoes.destroy_all
-          params[:embargoes].each_value do |embargo|
-            @item.embargoes.build(download:    embargo[:download] == "true",
-                                  full_access: embargo[:full_access] == "true",
-                                  expires_at:  TimeUtils.ymd_to_time(embargo[:expires_at_year],
-                                                                     embargo[:expires_at_month],
-                                                                     embargo[:expires_at_day])).save!
-          end
         else
           @item.update!(item_params)
           build_metadata
+          build_embargoes
         end
         @item.save! # trigger a reindex
       end
@@ -265,6 +257,26 @@ class ItemsController < ApplicationController
   def set_item
     @item = Item.find(params[:id] || params[:item_id])
     @breadcrumbable = @item
+  end
+
+  ##
+  # Processes input from the edit-embargoes form.
+  #
+  def build_embargoes
+    if params[:embargoes].respond_to?(:each)
+      @item.embargoes.destroy_all
+      params[:embargoes].each_value do |embargo|
+        if params[:embargoes].values.length == 1 && !embargo[:download] &&
+          !embargo[:full_access]
+          return
+        end
+        @item.embargoes.build(download:    embargo[:download] == "true",
+                              full_access: embargo[:full_access] == "true",
+                              expires_at:  TimeUtils.ymd_to_time(embargo[:expires_at_year],
+                                                                 embargo[:expires_at_month],
+                                                                 embargo[:expires_at_day])).save!
+      end
+    end
   end
 
   ##
