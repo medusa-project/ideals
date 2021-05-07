@@ -111,6 +111,10 @@ class ItemTest < ActiveSupport::TestCase
     # add another title to test handling of multiple same-named elements
     @instance.elements.build(registered_element: registered_elements(:title),
                              string: "Alternate title")
+    # add an embargo
+    @instance.embargoes.build(download: true,
+                              full_access: true,
+                              expires_at: Time.now + 1.day)
     hash = @instance.as_change_hash
     # we will assume that if one property is correct, the rest are
     assert hash['discoverable']
@@ -118,6 +122,9 @@ class ItemTest < ActiveSupport::TestCase
     # test associated elements
     assert_equal "Some title", hash['element:dc:title:string']
     assert_equal "Alternate title", hash['element:dc:title-2:string']
+
+    # test embargoes
+    assert hash['embargo:0:download']
 
     # test bitstreams
     @instance = items(:item1)

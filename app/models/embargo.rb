@@ -12,6 +12,8 @@
 #
 class Embargo < ApplicationRecord
 
+  include Auditable
+
   scope :current, -> { where("expires_at > NOW()")}
   belongs_to :item
 

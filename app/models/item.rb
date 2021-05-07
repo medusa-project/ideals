@@ -243,6 +243,12 @@ class Item < ApplicationRecord
         hash["bitstream:#{bitstream.original_filename}:#{k}"] = v
       end
     end
+    # Add embaroges.
+    self.embargoes.each_with_index do |embargo, index|
+      embargo.as_change_hash.each do |k, v|
+        hash["embargo:#{index}:#{k}"] = v
+      end
+    end
     hash
   end
 
