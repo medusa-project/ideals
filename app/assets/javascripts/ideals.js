@@ -47,7 +47,8 @@ const IDEALS = {
         this.fetchUnitCollections = function(unitID, onSuccess) {
             $.ajax({
                 method: "GET",
-                url: ROOT_URL + "/units/" + unitID + "/collections?for-select=true",
+                url: ROOT_URL + "/units/" + unitID +
+                    "/collections-tree-fragment?for-select=true",
                 headers: { "X-CSRF-Token": CSRF_TOKEN },
                 success: onSuccess
             });
