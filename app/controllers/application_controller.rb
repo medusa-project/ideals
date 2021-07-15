@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
-  include Pundit
 
   protect_from_forgery with: :exception
   helper_method :current_user, :logged_in?, :to_do_list
@@ -10,10 +9,26 @@ class ApplicationController < ActionController::Base
   rescue_from ActionView::MissingTemplate do |_exception|
     render json: {}, status: :unprocessable_entity
   end
-  rescue_from Pundit::NotAuthorizedError, with: :unauthorized
+  rescue_from NotAuthorizedError, with: :unauthorized
 
   before_action :store_location
   after_action :copy_flash_to_response_headers
+
+  ##
+  # @param entity [Class] Model or any other object to which access can be
+  #               authorized.
+  # @param policy_class [ApplicationPolicy] Alternative policy class to use.
+  # @raises [NotAuthorizedError]
+  #
+  def authorize(entity, policy_class: nil)
+    policy_class ||= "#{controller_name.singularize.camelize}Policy".constantize
+    instance = policy_class.new(request_context, entity)
+    unless instance.send("#{action_name}?".to_sym)
+      e = NotAuthorizedError.new
+      e.reason = instance.reason
+      raise e
+    end
+  end
 
   ##
   # @return [Institution] The institution whose FQDN corresponds to the
@@ -43,6 +58,42 @@ class ApplicationController < ActionController::Base
     current_user.present?
   end
 
+  ##
+  # @return [ApplicationPolicy] Concrete subclass.
+  #
+  def policy(entity)
+    class_ = entity.is_a?(Class) ? entity : entity.class
+    "#{class_}Policy".constantize.new(request_context, entity)
+  end
+
+  def policy_scope(relation, options = {})
+    class_ = options[:policy_scope_class] ||
+        "#{controller_name.singularize.camelize}Policy::Scope".constantize
+    instance = class_.new(request_context, relation)
+    instance.resolve
+  end
+
+  ##
+  # @return [RequestContext]
+  #
+  def request_context
+    # Read the role from the URL query and write it to the session so that it
+    # will persist across pages without having to add it into link URLs.
+    # If a role was not provided in the query, read it from the session.
+    role_limit = params[:role]
+    if role_limit.present?
+      role_limit           = role_limit.to_i
+      session[:role_limit] = role_limit
+    else
+      role_limit           = session[:role_limit]
+      role_limit         ||= Role::NO_LIMIT
+      session[:role_limit] = role_limit
+    end
+    RequestContext.new(user:        current_user,
+                       institution: current_institution,
+                       role_limit:  role_limit)
+  end
+
   def store_location
     if request.get? && !request.xhr?
       ignored_paths = ["/auth/failure", "/auth/shibboleth/callback",
@@ -58,6 +109,7 @@ class ApplicationController < ActionController::Base
   def redirect_path
     session[:previous_url] || root_url
   end
+
 
   protected
 
@@ -113,33 +165,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  ##
-  # Overrides the "user" object supplied to Pundit policy methods. See
-  # {RequestContext} for more information.
-  #
-  def pundit_user
-    # Read the role from the URL query and write it to the session so that it
-    # will persist across pages without having to add it into links.
-    # If a role was not provided in the query, read it from the session.
-    role_limit = params[:role]
-    if role_limit.present?
-      role_limit           = role_limit.to_i
-      session[:role_limit] = role_limit
-    else
-      role_limit           = session[:role_limit]
-      role_limit         ||= Role::NO_LIMIT
-      session[:role_limit] = role_limit
-    end
-    RequestContext.new(user:        current_user,
-                       institution: current_institution,
-                       role_limit:  role_limit)
-  end
-
-  def unauthorized
+  def unauthorized(e)
     respond_to do |format|
       format.html { render "errors/error403", status: :forbidden }
       format.json { render nothing: true, status: :forbidden }
-      format.xml { render xml: {status: 403}.to_xml }
+      format.xml { render xml: {status: 403}.to_xml, status: :forbidden }
     end
   end
 

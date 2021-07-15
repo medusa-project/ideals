@@ -3,14 +3,12 @@
 ##
 # In IDEALS, it is sometimes necessary for a user to "role play" as someone
 # with different privileges, in order to "see" what a user with those
-# privileges would "see." [Pundit](https://github.com/varvet/pundit)'s
-# policy class methods accept only two arguments: a policy subject and a policy
-# target. In a more typical application, the subject would be a {User}, but in
-# this application, it is an instance of this class, which bundles a {User} and
-# a {Role} (indicating a "privilege limit") together into one object.
+# privileges would "see." This class bundles a {User} and a {Role} (indicating
+# a "privilege limit") together into one object.
 #
 # (See "Additional context" in the
-# [Pundit README](https://github.com/varvet/pundit/blob/master/README.md)).
+# [Pundit README](https://github.com/varvet/pundit/blob/master/README.md),
+# which is relevant even though we are no longer using Pundit).
 #
 class RequestContext
 

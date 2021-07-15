@@ -295,7 +295,7 @@ class UnitsController < ApplicationController
   def update
     if params[:unit][:parent_id] &&
         !policy(@unit).change_parent?(params[:unit][:parent_id])
-      raise Pundit::NotAuthorizedError,"Cannot move a unit into a unit of "\
+      raise NotAuthorizedError,"Cannot move a unit into a unit of "\
             "which you are not an effective administrator."
     end
     begin

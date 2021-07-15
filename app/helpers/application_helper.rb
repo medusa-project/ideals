@@ -396,6 +396,16 @@ module ApplicationHelper
   end
 
   ##
+  # Alias of {ApplicationController#policy}.
+  #
+  # @return [ApplicationPolicy] Policy class associated with the current
+  #         controller.
+  #
+  def policy(entity)
+    self.controller.policy(entity)
+  end
+
+  ##
   # Renders a resource/results list. The resources may be any {Describable}
   # such as {Item}s, {Collections}, etc.
   #

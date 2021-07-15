@@ -218,8 +218,6 @@ GEM
       delayed_job
     puma (5.0.2)
       nio4r (~> 2.0)
-    pundit (2.1.0)
-      activesupport (>= 3.0.0)
     racc (1.5.2)
     rack (2.2.2)
     rack-test (1.1.0)
@@ -337,7 +335,6 @@ DEPENDENCIES
   pg
   progress_job
   puma
-  pundit
   rails (~> 6.0.3)
   recaptcha
   rubocop

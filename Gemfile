@@ -45,8 +45,6 @@ gem "omniauth-identity"
 gem "omniauth-shibboleth"
 # Use postgresql as the database for Active Record
 gem "pg"
-# Use pundit for authorization
-gem "pundit"
 # Used during the new user sign-up process
 gem "recaptcha"
 # Use SCSS for stylesheets

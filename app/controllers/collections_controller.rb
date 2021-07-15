@@ -331,7 +331,7 @@ class CollectionsController < ApplicationController
   def update
     if params[:collection] && params[:collection][:parent_id] &&
         !policy(@collection).change_parent?(params[:collection][:parent_id])
-      raise Pundit::NotAuthorizedError,"Cannot move a collection into a "\
+      raise NotAuthorizedError,"Cannot move a collection into a "\
             "collection of which you are not an effective manager."
     end
     begin
