@@ -230,92 +230,76 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   # download_counts?()
 
-  test "download_counts?() returns false with a nil user" do
+  test "download_counts?() returns true with a nil user" do
     policy = ItemPolicy.new(nil, @item)
-    assert !policy.download_counts?
+    assert policy.download_counts?
   end
 
-  test "download_counts?() does not authorize non-sysadmins" do
+  test "download_counts?() restricts undiscoverable items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::NO_LIMIT)
-    policy  = ItemPolicy.new(context, @item)
+    policy  = ItemPolicy.new(context, items(:undiscoverable))
     assert !policy.download_counts?
   end
 
-  test "download_counts?() authorizes sysadmins" do
+  test "download_counts?() restricts submitting items by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, items(:submitting))
+    assert !policy.download_counts?
+  end
+
+  test "download_counts?() restricts withdrawn items by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, items(:withdrawn))
+    assert !policy.download_counts?
+  end
+
+  test "download_counts?() restricts access to embargoed items" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    item    = items(:item1)
+    policy  = ItemPolicy.new(context, item)
+    assert policy.download_counts?
+    item.embargoes.build(expires_at: Time.now + 1.hour,
+                         full_access: true).save!
+    assert !policy.download_counts?
+  end
+
+  test "download_counts?() authorizes sysadmins to undiscoverable items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::NO_LIMIT)
-    policy  = ItemPolicy.new(context, @item)
+    policy  = ItemPolicy.new(context, items(:undiscoverable))
     assert policy.download_counts?
   end
 
-  test "download_counts?() authorizes the submission owner if the item is submitting" do
-    user    = users(:norights)
+  test "download_counts?() authorizes sysadmins to submitting items" do
+    user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::NO_LIMIT)
-    @item.submitter = user
-    @item.stage     = Item::Stages::SUBMITTING
-    policy = ItemPolicy.new(context, @item)
+    policy  = ItemPolicy.new(context, items(:submitting))
     assert policy.download_counts?
   end
 
-  test "download_counts?() does not authorize the submission owner if the item is not submitting" do
-    user       = users(:norights)
-    context    = RequestContext.new(user:        user,
-                                    institution: user.institution,
-                                    role_limit:  Role::NO_LIMIT)
-    collection = @item.primary_collection
-    collection.submitting_users << user
-    collection.save!
-    @item.submitter = user
-    @item.stage     = Item::Stages::APPROVED
-    policy = ItemPolicy.new(context, @item)
-    assert !policy.download_counts?
-  end
-
-  test "download_counts?() authorizes managers of the submission's collection" do
-    doing_user = users(:norights)
-    context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
-    collection = collections(:collection1)
-    collection.managing_users << doing_user
-    collection.save!
-    @item.submitter          = users(:norights) # somebody else
-    @item.primary_collection = collection
-
-    policy = ItemPolicy.new(context, @item)
-    assert policy.download_counts?
-  end
-
-  test "download_counts?() authorizes admins of the submission's collection's unit" do
-    doing_user = users(:norights)
-    context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
-    collection               = collections(:collection1)
-    unit                     = collection.primary_unit
-    unit.administering_users << doing_user
-    unit.save!
-    @item.submitter          = users(:norights) # somebody else
-    @item.primary_collection = collection
-
-    policy = ItemPolicy.new(context, @item)
-    assert policy.download_counts?
-  end
-
-  test "download_counts?() does not authorize anyone else" do
-    user    = users(:norights)
+  test "download_counts?() authorizes sysadmins to withdrawn items" do
+    user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::NO_LIMIT)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.download_counts?
+    policy  = ItemPolicy.new(context, items(:withdrawn))
+    assert policy.download_counts?
   end
 
   test "download_counts?() respects role limits" do
@@ -324,7 +308,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ItemPolicy.new(context, @item)
+    policy  = ItemPolicy.new(context, items(:withdrawn))
     assert !policy.download_counts?
   end
 
@@ -1125,92 +1109,76 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   # statistics?()
 
-  test "statistics?() returns false with a nil user" do
+  test "statistics?() returns true with a nil user" do
     policy = ItemPolicy.new(nil, @item)
-    assert !policy.statistics?
+    assert policy.statistics?
   end
 
-  test "statistics?() does not authorize non-sysadmins" do
+  test "statistics?() restricts undiscoverable items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::NO_LIMIT)
-    policy  = ItemPolicy.new(context, @item)
+    policy  = ItemPolicy.new(context, items(:undiscoverable))
     assert !policy.statistics?
   end
 
-  test "statistics?() authorizes sysadmins" do
+  test "statistics?() restricts submitting items by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, items(:submitting))
+    assert !policy.statistics?
+  end
+
+  test "statistics?() restricts withdrawn items by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    policy  = ItemPolicy.new(context, items(:withdrawn))
+    assert !policy.statistics?
+  end
+
+  test "statistics?() restricts access to embargoed items" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::NO_LIMIT)
+    item    = items(:item1)
+    policy  = ItemPolicy.new(context, item)
+    assert policy.statistics?
+    item.embargoes.build(expires_at: Time.now + 1.hour,
+                         full_access: true).save!
+    assert !policy.statistics?
+  end
+
+  test "statistics?() authorizes sysadmins to undiscoverable items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::NO_LIMIT)
-    policy  = ItemPolicy.new(context, @item)
+    policy  = ItemPolicy.new(context, items(:undiscoverable))
     assert policy.statistics?
   end
 
-  test "statistics?() authorizes the submission owner if the item is submitting" do
-    user    = users(:norights)
+  test "statistics?() authorizes sysadmins to submitting items" do
+    user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::NO_LIMIT)
-    @item.submitter = user
-    @item.stage     = Item::Stages::SUBMITTING
-    policy = ItemPolicy.new(context, @item)
+    policy  = ItemPolicy.new(context, items(:submitting))
     assert policy.statistics?
   end
 
-  test "statistics?() does not authorize the submission owner if the item is not submitting" do
-    user       = users(:norights)
-    context    = RequestContext.new(user:        user,
-                                    institution: user.institution,
-                                    role_limit:  Role::NO_LIMIT)
-    collection = @item.primary_collection
-    collection.submitting_users << user
-    collection.save!
-    @item.submitter = user
-    @item.stage     = Item::Stages::APPROVED
-    policy = ItemPolicy.new(context, @item)
-    assert !policy.statistics?
-  end
-
-  test "statistics?() authorizes managers of the submission's collection" do
-    doing_user = users(:norights)
-    context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
-    collection = collections(:collection1)
-    collection.managing_users << doing_user
-    collection.save!
-    @item.submitter          = users(:norights) # somebody else
-    @item.primary_collection = collection
-
-    policy = ItemPolicy.new(context, @item)
-    assert policy.statistics?
-  end
-
-  test "statistics?() authorizes admins of the submission's collection's unit" do
-    doing_user = users(:norights)
-    context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
-    collection               = collections(:collection1)
-    unit                     = collection.primary_unit
-    unit.administering_users << doing_user
-    unit.save!
-    @item.submitter          = users(:norights) # somebody else
-    @item.primary_collection = collection
-
-    policy = ItemPolicy.new(context, @item)
-    assert policy.statistics?
-  end
-
-  test "statistics?() does not authorize anyone else" do
-    user    = users(:norights)
+  test "statistics?() authorizes sysadmins to withdrawn items" do
+    user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::NO_LIMIT)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.statistics?
+    policy  = ItemPolicy.new(context, items(:withdrawn))
+    assert policy.statistics?
   end
 
   test "statistics?() respects role limits" do
@@ -1219,7 +1187,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ItemPolicy.new(context, @item)
+    policy  = ItemPolicy.new(context, items(:withdrawn))
     assert !policy.statistics?
   end
 

@@ -162,7 +162,7 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def statistics
-    update
+    show
   end
 
   def update
