@@ -13,41 +13,43 @@ class LocalIdentityPolicy < ApplicationPolicy
     @identity = identity
   end
 
-  def activate?
-    true
+  def activate
+    AUTHORIZED_RESULT
   end
 
-  def edit_password?
-    self?
+  def edit_password
+    user_matches_identity
   end
 
-  def new_password?
-    true
+  def new_password
+    AUTHORIZED_RESULT
   end
 
-  def register?
-    true
+  def register
+    AUTHORIZED_RESULT
   end
 
-  def reset_password?
-    true
+  def reset_password
+    AUTHORIZED_RESULT
   end
 
-  def update?
-    true
+  def update
+    AUTHORIZED_RESULT
   end
 
-  def update_password?
-    self?
+  def update_password
+    user_matches_identity
   end
+
 
   private
 
-  def self?
-    if user
-      return (role >= Role::LOGGED_IN && user.id == identity.user&.id)
+  def user_matches_identity
+    if user && (role >= Role::LOGGED_IN && user.id == identity.user&.id)
+      return AUTHORIZED_RESULT
     end
-    false
+    { authorized: false,
+      reason: "Your user account is not associated with this identity." }
   end
 
 end

@@ -13,46 +13,49 @@ class InviteePolicy < ApplicationPolicy
     @invitee = invitee
   end
 
-  def approve?
-    sysadmin?
+  def approve
+    effective_sysadmin(user, role)
   end
 
-  def create?
-    sysadmin?
+  def create
+    effective_sysadmin(user, role)
   end
 
-  def create_unsolicited?
-    user.nil?
+  def create_unsolicited
+    logged_out
   end
 
-  def destroy?
-    sysadmin?
+  def destroy
+    effective_sysadmin(user, role)
   end
 
-  def index?
-    sysadmin?
+  def index
+    effective_sysadmin(user, role)
   end
 
-  def new?
-    user.nil?
+  def new
+    logged_out
   end
 
-  def reject?
-    sysadmin?
+  def reject
+    effective_sysadmin(user, role)
   end
 
-  def resend_email?
-    sysadmin?
+  def resend_email
+    effective_sysadmin(user, role)
   end
 
-  def show?
-    sysadmin?
+  def show
+    effective_sysadmin(user, role)
   end
+
 
   private
 
-  def sysadmin?
-    user&.sysadmin? && role >= Role::SYSTEM_ADMINISTRATOR
+  def logged_out
+    user.nil? ? AUTHORIZED_RESULT :
+      { authorized: false,
+        reason: "You cannot perform this action while logged in." }
   end
 
 end

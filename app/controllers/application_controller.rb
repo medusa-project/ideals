@@ -23,9 +23,10 @@ class ApplicationController < ActionController::Base
   def authorize(entity, policy_class: nil)
     policy_class ||= "#{controller_name.singularize.camelize}Policy".constantize
     instance = policy_class.new(request_context, entity)
-    unless instance.send("#{action_name}?".to_sym)
+    result = instance.send(action_name.to_sym)
+    unless result[:authorized]
       e = NotAuthorizedError.new
-      e.reason = instance.reason
+      e.reason = result[:reason]
       raise e
     end
   end
@@ -166,6 +167,7 @@ class ApplicationController < ActionController::Base
   end
 
   def unauthorized(e)
+    @reason = e.reason || e.message
     respond_to do |format|
       format.html { render "errors/error403", status: :forbidden }
       format.json { render nothing: true, status: :forbidden }

@@ -9,52 +9,34 @@ class SubmissionPolicy < ApplicationPolicy
   # @param item [Item]
   #
   def initialize(request_context, item)
-    @user = request_context&.user
-    @role = request_context&.role_limit
-    @item = item
+    @request_context = request_context
+    @user            = request_context&.user
+    @role            = request_context&.role_limit
+    @item            = item
   end
 
-  def agreement?
-    create?
+  def agreement
+    create
   end
 
-  def complete?
-    update?
+  def complete
+    update
   end
 
-  def create?
-    user && role >= Role::LOGGED_IN
+  def create
+    user && role >= Role::LOGGED_IN ? AUTHORIZED_RESULT : LOGGED_OUT_RESULT
   end
 
-  def destroy?
-    update?
+  def destroy
+    update
   end
 
-  def edit?
-    update?
+  def edit
+    update
   end
 
-  def update?
-    # user must be logged in
-    if user
-      # sysadmins can do anything
-      return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
-      # all users can update their own submissions
-      return true if role >= Role::COLLECTION_SUBMITTER &&
-          user == item.submitter && item.submitting?
-
-      item.collections.each do |collection|
-        # collection managers can update items within their collections
-        return true if role >= Role::COLLECTION_MANAGER &&
-            user.effective_manager?(collection)
-        # unit admins can update items within their units
-        collection.units.each do |unit|
-          return true if role >= Role::UNIT_ADMINISTRATOR &&
-              user.effective_unit_admin?(unit)
-        end
-      end
-    end
-    false
+  def update
+    ItemPolicy.new(@request_context, item).update
   end
 
 end

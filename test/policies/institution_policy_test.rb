@@ -8,7 +8,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   # create?()
 
-  test "create?() returns false with a nil user context" do
+  test "create?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
     assert !policy.create?
   end
@@ -43,7 +43,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   # destroy?()
 
-  test "destroy?() returns false with a nil user context" do
+  test "destroy?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
     assert !policy.destroy?
   end
@@ -78,7 +78,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   # edit?()
 
-  test "edit?() returns false with a nil user context" do
+  test "edit?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
     assert !policy.edit?
   end
@@ -132,7 +132,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   # index?()
 
-  test "index?() returns false with a nil user context" do
+  test "index?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
     assert !policy.index?
   end
@@ -167,7 +167,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   # item_download_counts?()
 
-  test "item_download_counts?() returns false with a nil user context" do
+  test "item_download_counts?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
     assert !policy.item_download_counts?
   end
@@ -221,7 +221,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   # new?()
 
-  test "new?() returns false with a nil user context" do
+  test "new?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
     assert !policy.new?
   end
@@ -256,7 +256,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   # show?()
 
-  test "show?() returns false with a nil user context" do
+  test "show?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
     assert !policy.show?
   end
@@ -310,7 +310,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   # show_properties?()
 
-  test "show_properties?() returns false with a nil user context" do
+  test "show_properties?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
     assert !policy.show_properties?
   end
@@ -364,7 +364,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   # show_statistics?()
 
-  test "show_statistics?() returns false with a nil user context" do
+  test "show_statistics?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
     assert !policy.show_statistics?
   end
@@ -418,7 +418,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   # show_users?()
 
-  test "show_users?() returns false with a nil user context" do
+  test "show_users?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
     assert !policy.show_users?
   end
@@ -507,7 +507,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   # update?()
 
-  test "update?() returns false with a nil user context" do
+  test "update?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
     assert !policy.update?
   end

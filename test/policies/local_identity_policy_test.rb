@@ -24,7 +24,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   # edit_password?()
 
-  test "edit_password?() returns false with a nil user context" do
+  test "edit_password?() returns false with a nil request context" do
     policy = LocalIdentityPolicy.new(nil, @identity)
     assert !policy.edit_password?
   end
@@ -134,7 +134,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   # update_password?()
 
-  test "update_password?() returns false with a nil user context" do
+  test "update_password?() returns false with a nil request context" do
     policy = LocalIdentityPolicy.new(nil, @identity)
     assert !policy.update_password?
   end

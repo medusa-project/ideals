@@ -1,7 +1,4 @@
-.dialog.text-center
-  %h2 You don't have permission to access this resource.
+.text-center
+  %h1 Access Denied
   %hr
-  %p
-    IDEALS @ Illinois administrators may be contacted at:
-    %a{href: "mailto:#{::Configuration.instance.mail[:from]}"}
-      = ::Configuration.instance.mail[:from]
+  %p= @reason || "You don't have permission to access this resource."

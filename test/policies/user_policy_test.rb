@@ -8,7 +8,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   # edit_privileges?()
 
-  test "edit_privileges?() returns false with a nil user context" do
+  test "edit_privileges?() returns false with a nil request context" do
     policy = UserPolicy.new(nil, @object_user)
     assert !policy.edit_privileges?
   end
@@ -43,7 +43,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   # edit_properties?()
 
-  test "edit_properties?() returns false with a nil user context" do
+  test "edit_properties?() returns false with a nil request context" do
     policy = UserPolicy.new(nil, @object_user)
     assert !policy.edit_properties?
   end
@@ -88,7 +88,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   # index?()
 
-  test "index?() returns false with a nil user context" do
+  test "index?() returns false with a nil request context" do
     policy = UserPolicy.new(nil, User)
     assert !policy.index?
   end
@@ -123,7 +123,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   # invite?()
 
-  test "invite?() returns false with a nil user context" do
+  test "invite?() returns false with a nil request context" do
     policy = UserPolicy.new(nil, @object_user)
     assert !policy.invite?
   end
@@ -158,7 +158,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   # show?()
 
-  test "show?() returns false with a nil user context" do
+  test "show?() returns false with a nil request context" do
     policy = UserPolicy.new(nil, @object_user)
     assert !policy.show?
   end
@@ -193,7 +193,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   # update_privileges?()
 
-  test "update_privileges?() returns false with a nil user context" do
+  test "update_privileges?() returns false with a nil request context" do
     policy = UserPolicy.new(nil, @object_user)
     assert !policy.update_privileges?
   end
@@ -228,7 +228,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   # update_properties?()
 
-  test "update_properties?() returns false with a nil user context" do
+  test "update_properties?() returns false with a nil request context" do
     policy = UserPolicy.new(nil, @object_user)
     assert !policy.update_properties?
   end

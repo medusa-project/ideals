@@ -13,38 +13,35 @@ class MetadataProfilePolicy < ApplicationPolicy
     @metadata_profile = metadata_profile
   end
 
-  def clone?
-    create?
+  def clone
+    create
   end
 
-  def create?
-    if user
-      return true if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
-    end
-    false
+  def create
+    effective_sysadmin(user, role)
   end
 
-  def destroy?
-    create?
+  def destroy
+    create
   end
 
-  def edit?
-    update?
+  def edit
+    update
   end
 
-  def index?
-    create?
+  def index
+    create
   end
 
-  def new?
-    create?
+  def new
+    create
   end
 
-  def show?
-    index?
+  def show
+    index
   end
 
-  def update?
-    create?
+  def update
+    create
   end
 end

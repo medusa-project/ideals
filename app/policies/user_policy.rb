@@ -22,52 +22,47 @@ class UserPolicy < ApplicationPolicy
     @object_user  = object_user
   end
 
-  def edit_privileges?
-    sysadmin?
+  def edit_privileges
+    effective_sysadmin(subject_user, role)
   end
 
-  def edit_properties?
-    self_or_sysadmin?
+  def edit_properties
+    sysadmin_or_same_user
   end
 
-  def index?
-    sysadmin?
+  def index
+    effective_sysadmin(subject_user, role)
   end
 
   ##
   # This does not correspond to a controller method.
   #
-  def invite?
-    sysadmin?
+  def invite
+    effective_sysadmin(subject_user, role)
   end
 
-  def show?
-    self_or_sysadmin?
+  def show
+    sysadmin_or_same_user
   end
 
-  def update_privileges?
-    sysadmin?
+  def update_privileges
+    effective_sysadmin(subject_user, role)
   end
 
-  def update_properties?
-    self_or_sysadmin?
+  def update_properties
+    sysadmin_or_same_user
   end
+
 
   private
 
-  def self_or_sysadmin?
+  def sysadmin_or_same_user
     if subject_user
-      return (role >= Role::LOGGED_IN && subject_user.id == object_user.id) ||
-          (role >= Role::SYSTEM_ADMINISTRATOR && subject_user.sysadmin?)
+      return AUTHORIZED_RESULT if (role >= Role::LOGGED_IN && subject_user.id == object_user.id) ||
+        effective_sysadmin?(subject_user, role)
     end
-    false
-  end
-
-  def sysadmin?
-    if subject_user
-      return role >= Role::SYSTEM_ADMINISTRATOR && subject_user.sysadmin?
-    end
-    false
+    { authorized: false,
+      reason:     "You don't have permission to edit this user account." }
   end
 
 end
