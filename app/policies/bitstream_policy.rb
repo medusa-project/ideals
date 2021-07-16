@@ -37,7 +37,8 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def destroy
-    update
+    bitstream.item.stage == Item::Stages::SUBMITTING ?
+        update : effective_sysadmin(user, role)
   end
 
   def download

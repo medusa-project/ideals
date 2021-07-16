@@ -203,15 +203,6 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  test "destroy?() does not authorize non-sysadmins" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
-    policy  = BitstreamPolicy.new(context, @bitstream)
-    assert !policy.destroy?
-  end
-
   test "destroy?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
@@ -221,7 +212,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.destroy?
   end
 
-  test "destroy?() does not authorize the submission owner if the item is not submitting" do
+  test "destroy?() does not authorize the bitstream owner if the item is not
+  submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
@@ -234,7 +226,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  test "destroy?() authorizes managers of the submission's collection" do
+  test "destroy?() authorizes managers of the bitstream's collection to
+  submitting items" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution,
@@ -245,13 +238,34 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     item = @bitstream.item
     item.update!(submitter:          users(:norights), # somebody else
+                 stage:              Item::Stages::SUBMITTING,
                  primary_collection: collection)
 
     policy = BitstreamPolicy.new(context, @bitstream)
     assert policy.destroy?
   end
 
-  test "destroy?() authorizes admins of the submission's collection's unit" do
+  test "destroy?() does not authorize managers of the bitstream's collection to
+  non-submitting items" do
+    doing_user = users(:norights)
+    context    = RequestContext.new(user:        doing_user,
+                                    institution: doing_user.institution,
+                                    role_limit:  Role::NO_LIMIT)
+    collection = collections(:collection1)
+    collection.managing_users << doing_user
+    collection.save!
+
+    item = @bitstream.item
+    item.update!(submitter:          users(:norights), # somebody else
+                 stage:              Item::Stages::APPROVED,
+                 primary_collection: collection)
+
+    policy = BitstreamPolicy.new(context, @bitstream)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() authorizes admins of the submission's collection's unit to
+  submitting items" do
     doing_user    = users(:norights)
     context       = RequestContext.new(user:        doing_user,
                                        institution: doing_user.institution,
@@ -262,11 +276,32 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     unit.save!
 
     item = @bitstream.item
-    item.update!(submitter: users(:norights), # somebody else
+    item.update!(submitter:          users(:norights), # somebody else
+                 stage:              Item::Stages::SUBMITTING,
                  primary_collection: collection)
 
     policy = BitstreamPolicy.new(context, @bitstream)
     assert policy.destroy?
+  end
+
+  test "destroy?() does not authorize admins of the submission's collection's
+  unit to non-submitting items" do
+    doing_user    = users(:norights)
+    context       = RequestContext.new(user:        doing_user,
+                                       institution: doing_user.institution,
+                                       role_limit:  Role::NO_LIMIT)
+    collection               = collections(:collection1)
+    unit                     = collection.primary_unit
+    unit.administering_users << doing_user
+    unit.save!
+
+    item = @bitstream.item
+    item.update!(submitter:          users(:norights), # somebody else
+                 stage:              Item::Stages::APPROVED,
+                 primary_collection: collection)
+
+    policy = BitstreamPolicy.new(context, @bitstream)
+    assert !policy.destroy?
   end
 
   test "destroy?() does not authorize anyone else" do
