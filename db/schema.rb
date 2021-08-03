@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_28_174113) do
+ActiveRecord::Schema.define(version: 2021_08_02_143052) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -114,6 +114,13 @@ ActiveRecord::Schema.define(version: 2021_04_28_174113) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["suffix"], name: "index_handles_on_suffix", unique: true
+  end
+
+  create_table "hosts", force: :cascade do |t|
+    t.string "pattern", null: false
+    t.bigint "user_group_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "institutions", force: :cascade do |t|
@@ -365,6 +372,7 @@ ActiveRecord::Schema.define(version: 2021_04_28_174113) do
   add_foreign_key "handles", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "handles", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "handles", "units", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "hosts", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "ldap_groups_user_groups", "ldap_groups"

@@ -90,9 +90,11 @@ class ApplicationController < ActionController::Base
       role_limit         ||= Role::NO_LIMIT
       session[:role_limit] = role_limit
     end
-    RequestContext.new(user:        current_user,
-                       institution: current_institution,
-                       role_limit:  role_limit)
+    RequestContext.new(client_ip:       request.remote_ip,
+                       client_hostname: request.hostname,
+                       user:            current_user,
+                       institution:     current_institution,
+                       role_limit:      role_limit)
   end
 
   def store_location

@@ -1,6 +1,6 @@
 ##
-# Aggregation of {LocalUser}s and {LdapGroups} for the purpose of assigning
-# group-based permissions.
+# Aggregation of {LocalUser}s, {LdapGroup}s, and {Host}s for the purpose of
+# performing group-based authorization.
 #
 # # Attributes
 #
@@ -13,6 +13,7 @@ class UserGroup < ApplicationRecord
   include Breadcrumb
 
   has_many :administrator_groups
+  has_many :hosts
   has_many :manager_groups
   has_many :submitter_groups
 

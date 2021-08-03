@@ -39,6 +39,8 @@ gem 'medusa-client', git: 'https://github.com/medusa-project/medusa-client.git'
 gem 'mini_racer', platforms: :ruby
 # Used to copy files (bitstreams) out of IDEALS-DSpace during a migration.
 gem 'net-scp'
+# Assists in parsing IP address CIDR ranges.
+gem 'netaddr'
 # Enables local identity logins.
 gem "omniauth-identity"
 # Enables Shibboleth logins.

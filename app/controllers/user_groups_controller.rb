@@ -60,6 +60,7 @@ class UserGroupsController < ApplicationController
   def show
     @users       = @user_group.users.order(:name)
     @ldap_groups = @user_group.ldap_groups.order(:urn)
+    @hosts       = @user_group.hosts.order(:pattern)
   end
 
   ##
@@ -67,7 +68,16 @@ class UserGroupsController < ApplicationController
   #
   def update
     begin
-      @user_group.update!(user_group_params)
+      UserGroup.transaction do
+        # Hosts require manual processing.
+        if params[:user_group][:hosts]&.respond_to?(:each)
+          @user_group.hosts.destroy_all
+          params[:user_group][:hosts].select(&:present?).each do |pattern|
+            @user_group.hosts.build(pattern: pattern)
+          end
+        end
+        @user_group.update!(user_group_params)
+      end
     rescue
       render partial: "shared/validation_messages",
              locals: { object: @user_group },

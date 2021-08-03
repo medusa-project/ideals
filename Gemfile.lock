@@ -192,6 +192,7 @@ GEM
     net-scp (2.0.0)
       net-ssh (>= 2.6.5, < 6.0.0)
     net-ssh (5.2.0)
+    netaddr (2.0.4)
     nio4r (2.5.4)
     nokogiri (1.11.2)
       mini_portile2 (~> 2.5.0)
@@ -328,6 +329,7 @@ DEPENDENCIES
   mini_racer
   modernizr-rails
   net-scp
+  netaddr
   omniauth-identity
   omniauth-rails_csrf_protection
   omniauth-shibboleth

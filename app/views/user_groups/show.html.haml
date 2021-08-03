@@ -22,26 +22,40 @@
 %h1= @user_group.name
 
 .row
-  .col-sm-8
-    %h2 LDAP Groups
-    - if @ldap_groups.any?
-      %ul
-        - @ldap_groups.each do |group|
-          %li
-            %strong= group.short_name
-            %br
-            %code.text-secondary= group.urn
-    - else
-      %p None
-
-  .col-sm-4
-    %h2 Local Users
-    - if @users.any?
-      %ul
-        - @users.each do |user|
-          %li= link_to(user.name, user.becomes(User))
-    - else
-      %p None
+  .col-md-4
+    .card
+      .card-body
+        %h4.card-title LDAP Groups
+        - if @ldap_groups.any?
+          %ul
+            - @ldap_groups.each do |group|
+              %li
+                %strong= group.short_name
+                %br
+                %code.text-secondary= group.urn
+        - else
+          %p None
+  .col-md-4
+    .card
+      .card-body
+        %h4.card-title Local Users
+        - if @users.any?
+          %ul
+            - @users.each do |user|
+              %li= link_to(user.name, user.becomes(User))
+        - else
+          %p None
+  .col-md-4
+    .card
+      .card-body
+        %h4.card-title Hosts
+        - if @hosts.any?
+          %ul
+            - @hosts.each do |group|
+              %li
+                %code= group.pattern
+        - else
+          %p None
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-user-group-modal", title: "Edit User Group", size: :lg }
