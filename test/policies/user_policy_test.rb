@@ -16,8 +16,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "edit_privileges?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.edit_privileges?
   end
@@ -25,8 +24,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "edit_privileges?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
     assert policy.edit_privileges?
   end
@@ -52,8 +50,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   being edited" do
     user    = users(:uiuc)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.edit_properties?
   end
@@ -61,8 +58,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "edit_properties?() authorizes the same user as the one being edited" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserPolicy.new(context, context.user)
     assert policy.edit_properties?
   end
@@ -70,8 +66,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "edit_properties?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UserPolicy.new(context, @object_user)
     assert policy.edit_properties?
   end
@@ -96,8 +91,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "index?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserPolicy.new(context, User)
     assert !policy.index?
   end
@@ -105,8 +99,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "index?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UserPolicy.new(context, User)
     assert policy.index?
   end
@@ -131,8 +124,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "invite?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.invite?
   end
@@ -140,8 +132,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "invite?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
     assert policy.invite?
   end
@@ -166,8 +157,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "show?() does not authorize non-sysadmins" do
     user    = users(:uiuc)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.show?
   end
@@ -175,8 +165,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
     assert policy.show?
   end
@@ -201,8 +190,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "update_privileges?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.update_privileges?
   end
@@ -210,8 +198,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "update_privileges?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UserPolicy.new(context, @object_user)
     assert policy.update_privileges?
   end
@@ -236,8 +223,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "update_properties?() does not authorize non-sysadmins" do
     user    = users(:uiuc)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
     assert !policy.update_properties?
   end
@@ -245,8 +231,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "update_properties?() authorizes the same user" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UserPolicy.new(context, context.user)
     assert policy.update_properties?
   end
@@ -254,8 +239,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   test "update_properties?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UserPolicy.new(context, @object_user)
     assert policy.update_properties?
   end

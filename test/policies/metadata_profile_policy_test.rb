@@ -17,8 +17,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "clone?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert !policy.clone?
   end
@@ -26,8 +25,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "clone?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.clone?
   end
@@ -52,8 +50,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "create?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert !policy.create?
   end
@@ -61,8 +58,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "create?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.create?
   end
@@ -87,8 +83,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "destroy?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert !policy.destroy?
   end
@@ -96,8 +91,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.destroy?
   end
@@ -122,8 +116,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "edit?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert !policy.edit?
   end
@@ -131,8 +124,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "edit?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.edit?
   end
@@ -157,8 +149,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "index?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, MetadataProfile)
     assert !policy.index?
   end
@@ -166,8 +157,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "index?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, MetadataProfile)
     assert policy.index?
   end
@@ -192,8 +182,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "new?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = MetadataProfilePolicy.new(context, @profile)
     assert !policy.new?
   end
@@ -201,8 +190,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "new?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = MetadataProfilePolicy.new(context, @profile)
     assert policy.new?
   end
@@ -227,8 +215,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "show?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = MetadataProfilePolicy.new(context, @profile)
     assert !policy.show?
   end
@@ -236,8 +223,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "show?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = MetadataProfilePolicy.new(context, @profile)
     assert policy.show?
   end
@@ -262,8 +248,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "update?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = MetadataProfilePolicy.new(context, @profile)
     assert !policy.update?
   end
@@ -271,8 +256,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   test "update?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = MetadataProfilePolicy.new(context, @profile)
     assert policy.update?
   end

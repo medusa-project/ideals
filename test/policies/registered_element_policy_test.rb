@@ -16,8 +16,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "create?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.create?
   end
@@ -25,8 +24,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "create?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.create?
   end
@@ -51,8 +49,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "destroy?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.destroy?
   end
@@ -60,8 +57,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.destroy?
   end
@@ -86,8 +82,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "edit?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = RegisteredElementPolicy.new(context, @element)
     assert !policy.edit?
   end
@@ -95,8 +90,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "edit?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = RegisteredElementPolicy.new(context, @element)
     assert policy.edit?
   end
@@ -121,8 +115,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "index?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, RegisteredElement)
     assert !policy.index?
   end
@@ -130,8 +123,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "index?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, RegisteredElement)
     assert policy.index?
   end
@@ -156,8 +148,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "new?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.new?
   end
@@ -165,8 +156,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "new?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = RegisteredElementPolicy.new(context, @element)
     assert policy.new?
   end
@@ -191,8 +181,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "show?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.show?
   end
@@ -200,8 +189,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.show?
   end
@@ -226,8 +214,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "update?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.update?
   end
@@ -235,8 +222,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = RegisteredElementPolicy.new(context, @element)
     assert policy.update?
   end

@@ -18,8 +18,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.create?
   end
@@ -30,8 +29,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.save!
     subject_user = users(:norights)
     context      = RequestContext.new(user:        subject_user,
-                                      institution: subject_user.institution,
-                                      role_limit:  Role::NO_LIMIT)
+                                      institution: subject_user.institution)
     policy       = UserGroupPolicy.new(context, @user_group)
     assert policy.create?
   end
@@ -39,8 +37,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "create?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.create?
   end
@@ -48,8 +45,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "create?() does not authorize anybody else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.create?
   end
@@ -76,8 +72,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.destroy?
   end
@@ -87,8 +82,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.destroy?
   end
@@ -96,8 +90,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.destroy?
   end
@@ -105,8 +98,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "destroy?() does not authorize anybody else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.destroy?
   end
@@ -133,8 +125,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.edit?
   end
@@ -144,8 +135,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.edit?
   end
@@ -153,8 +143,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "edit?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.edit?
   end
@@ -162,8 +151,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "edit?() does not authorize anybody else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.edit?
   end
@@ -190,8 +178,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, UserGroup)
     assert policy.index?
   end
@@ -201,8 +188,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, UserGroup)
     assert policy.index?
   end
@@ -210,8 +196,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "index?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UserGroupPolicy.new(context, UserGroup)
     assert policy.index?
   end
@@ -219,8 +204,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "index?() does not authorize anybody else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserGroupPolicy.new(context, UserGroup)
     assert !policy.index?
   end
@@ -247,8 +231,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.new?
   end
@@ -258,8 +241,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.new?
   end
@@ -267,8 +249,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "new?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.new?
   end
@@ -276,8 +257,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "new?() does not authorize anybody else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.new?
   end
@@ -304,8 +284,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.show?
   end
@@ -315,8 +294,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.show?
   end
@@ -324,8 +302,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.show?
   end
@@ -333,8 +310,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "show?() does not authorize anybody else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.show?
   end
@@ -361,8 +337,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.managers.build(collection: collections(:collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.update?
   end
@@ -372,8 +347,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     subject_user.administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: subject_user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.update?
   end
@@ -381,8 +355,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.update?
   end
@@ -390,8 +363,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "update?() does not authorize anybody else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert !policy.update?
   end

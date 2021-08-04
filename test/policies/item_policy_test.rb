@@ -7,8 +7,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     test "resolve() sets no filters for sysadmins" do
       user    = users(:local_sysadmin)
       context = RequestContext.new(user:        user,
-                                   institution: user.institution,
-                                   role_limit:  Role::NO_LIMIT)
+                                   institution: user.institution)
       relation = ItemRelation.new
       scope    = ItemPolicy::Scope.new(context, relation)
       assert_equal 0, scope.resolve.instance_variable_get("@filters").length
@@ -17,8 +16,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     test "resolve() sets filters for non-sysadmins" do
       user    = users(:norights)
       context = RequestContext.new(user:        user,
-                                   institution: user.institution,
-                                   role_limit:  Role::NO_LIMIT)
+                                   institution: user.institution)
       relation = ItemRelation.new
       scope    = ItemPolicy::Scope.new(context, relation)
       assert_equal [
@@ -58,8 +56,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "create?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.create?
   end
@@ -67,8 +64,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "create?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.create?
   end
@@ -76,8 +72,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "create?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
 
     unit = @item.primary_collection.units.first
     unit.administrators.build(user: user)
@@ -90,8 +85,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "create?() authorizes collection managers" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
 
     collection = @item.primary_collection
     collection.managing_users << user
@@ -104,8 +98,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "create?() authorizes collection submitters" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
 
     collection = @item.primary_collection
     collection.submitting_users << user
@@ -135,8 +128,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "destroy?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.destroy?
   end
@@ -144,8 +136,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.destroy?
   end
@@ -153,8 +144,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes the submission owner if the item is submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
 
     @item.submitter = user
     @item.stage     = Item::Stages::SUBMITTING
@@ -166,8 +156,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "destroy?() does not authorize the submission owner if the item is not submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
 
     @item.submitter = user
     @item.stage     = Item::Stages::APPROVED
@@ -179,8 +168,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes managers of the submission's collection" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection = collections(:collection1)
     collection.managing_users << doing_user
     collection.save!
@@ -195,8 +183,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes admins of the submission's collection's unit" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection               = collections(:collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
@@ -212,8 +199,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "destroy?() does not authorize anyone else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.destroy?
   end
@@ -238,8 +224,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "download_counts?() restricts undiscoverable items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:undiscoverable))
     assert !policy.download_counts?
   end
@@ -247,8 +232,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "download_counts?() restricts submitting items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:submitting))
     assert !policy.download_counts?
   end
@@ -256,8 +240,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "download_counts?() restricts withdrawn items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:withdrawn))
     assert !policy.download_counts?
   end
@@ -265,8 +248,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "download_counts?() restricts access to embargoed items" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     item    = items(:item1)
     policy  = ItemPolicy.new(context, item)
     assert policy.download_counts?
@@ -278,8 +260,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "download_counts?() authorizes sysadmins to undiscoverable items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:undiscoverable))
     assert policy.download_counts?
   end
@@ -287,8 +268,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "download_counts?() authorizes sysadmins to submitting items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:submitting))
     assert policy.download_counts?
   end
@@ -296,8 +276,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "download_counts?() authorizes sysadmins to withdrawn items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:withdrawn))
     assert policy.download_counts?
   end
@@ -322,8 +301,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_embargoes?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.edit_embargoes?
   end
@@ -331,8 +309,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_embargoes?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.edit_embargoes?
   end
@@ -340,8 +317,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_embargoes?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit    = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
@@ -352,8 +328,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_embargoes?() authorizes collection managers" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!
@@ -381,8 +356,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_membership?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.edit_membership?
   end
@@ -390,8 +364,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_membership?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.edit_membership?
   end
@@ -399,8 +372,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_membership?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit    = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
@@ -411,8 +383,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_membership?() authorizes collection managers" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!
@@ -440,8 +411,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_metadata?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = ItemPolicy.new(context, @item)
     assert !policy.edit_metadata?
   end
@@ -449,8 +419,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_metadata?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.edit_metadata?
   end
@@ -458,8 +427,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_metadata?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit    = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
@@ -470,8 +438,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_metadata?() authorizes collection managers" do
     user       = users(:norights)
     context    = RequestContext.new(user:        user,
-                                    institution: user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: user.institution)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!
@@ -499,8 +466,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_properties?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.edit_properties?
   end
@@ -508,8 +474,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_properties?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.edit_properties?
   end
@@ -517,8 +482,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_properties?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit    = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
@@ -529,8 +493,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "edit_properties?() authorizes collection managers" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!
@@ -558,8 +521,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "index?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, Item)
     assert policy.index?
   end
@@ -574,8 +536,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "ingest?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.ingest?
   end
@@ -583,8 +544,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "ingest?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.ingest?
   end
@@ -592,8 +552,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "ingest?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit    = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
@@ -604,8 +563,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "ingest?() authorizes collection managers" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!
@@ -633,8 +591,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "process_review?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.process_review?
   end
@@ -642,8 +599,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "process_review?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = ItemPolicy.new(context, @item)
     assert policy.process_review?
   end
@@ -668,8 +624,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "review?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.review?
   end
@@ -677,8 +632,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "review?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = ItemPolicy.new(context, @item)
     assert policy.review?
   end
@@ -703,8 +657,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show?() restricts undiscoverable items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:undiscoverable))
     assert !policy.show?
   end
@@ -712,8 +665,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show?() restricts submitting items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:submitting))
     assert !policy.show?
   end
@@ -721,8 +673,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show?() restricts withdrawn items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:withdrawn))
     assert !policy.show?
   end
@@ -730,8 +681,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show?() restricts access to embargoed items" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     item    = items(:item1)
     policy  = ItemPolicy.new(context, item)
     assert policy.show?
@@ -743,8 +693,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes sysadmins to undiscoverable items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:undiscoverable))
     assert policy.show?
   end
@@ -752,8 +701,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes sysadmins to submitting items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:submitting))
     assert policy.show?
   end
@@ -761,8 +709,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes sysadmins to withdrawn items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:withdrawn))
     assert policy.show?
   end
@@ -787,8 +734,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_access?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.show_access?
   end
@@ -796,8 +742,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_access?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.show_access?
   end
@@ -805,8 +750,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_access?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit    = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
@@ -817,8 +761,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_access?() authorizes collection managers" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!
@@ -846,8 +789,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_all_metadata?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.show_all_metadata?
   end
@@ -855,8 +797,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_all_metadata?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:undiscoverable))
     assert policy.show_all_metadata?
   end
@@ -864,8 +805,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_all_metadata?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit    = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
@@ -876,8 +816,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_all_metadata?() authorizes collection managers" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!
@@ -905,8 +844,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_embargoes?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.show_embargoes?
   end
@@ -914,8 +852,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_embargoes?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.show_embargoes?
   end
@@ -923,8 +860,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_embargoes?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit    = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
@@ -935,8 +871,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_embargoes?() authorizes collection managers" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!
@@ -964,8 +899,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_events?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.show_events?
   end
@@ -973,8 +907,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_events?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.show_events?
   end
@@ -982,8 +915,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_events?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit    = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
@@ -994,8 +926,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_events?() authorizes collection managers" do
     user       = users(:norights)
     context    = RequestContext.new(user:        user,
-                                    institution: user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: user.institution)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!
@@ -1023,8 +954,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_properties?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.show_properties?
   end
@@ -1032,8 +962,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_properties?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.show_properties?
   end
@@ -1041,8 +970,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_properties?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit    = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
@@ -1053,8 +981,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_properties?() authorizes collection managers" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!
@@ -1082,8 +1009,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_sysadmin_content?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.show_sysadmin_content?
   end
@@ -1091,8 +1017,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "show_sysadmin_content?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = ItemPolicy.new(context, @item)
     assert policy.show_sysadmin_content?
   end
@@ -1117,8 +1042,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "statistics?() restricts undiscoverable items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:undiscoverable))
     assert !policy.statistics?
   end
@@ -1126,8 +1050,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "statistics?() restricts submitting items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:submitting))
     assert !policy.statistics?
   end
@@ -1135,8 +1058,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "statistics?() restricts withdrawn items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:withdrawn))
     assert !policy.statistics?
   end
@@ -1144,8 +1066,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "statistics?() restricts access to embargoed items" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     item    = items(:item1)
     policy  = ItemPolicy.new(context, item)
     assert policy.statistics?
@@ -1157,8 +1078,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "statistics?() authorizes sysadmins to undiscoverable items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:undiscoverable))
     assert policy.statistics?
   end
@@ -1166,8 +1086,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "statistics?() authorizes sysadmins to submitting items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:submitting))
     assert policy.statistics?
   end
@@ -1175,8 +1094,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "statistics?() authorizes sysadmins to withdrawn items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, items(:withdrawn))
     assert policy.statistics?
   end
@@ -1201,8 +1119,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "update?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.update?
   end
@@ -1210,8 +1127,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.update?
   end
@@ -1219,8 +1135,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes the submission owner if the item is submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     @item.submitter = user
     @item.stage     = Item::Stages::SUBMITTING
     policy = ItemPolicy.new(context, @item)
@@ -1230,8 +1145,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "update?() does not authorize the submission owner if the item is not submitting" do
     user       = users(:norights)
     context    = RequestContext.new(user:        user,
-                                    institution: user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: user.institution)
     collection = @item.primary_collection
     collection.submitting_users << user
     collection.save!
@@ -1244,8 +1158,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes managers of the submission's collection" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection = collections(:collection1)
     collection.managing_users << doing_user
     collection.save!
@@ -1259,8 +1172,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes admins of the submission's collection's unit" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection               = collections(:collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
@@ -1275,8 +1187,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "update?() does not authorize anyone else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.update?
   end
@@ -1301,8 +1212,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "upload_bitstreams?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.upload_bitstreams?
   end
@@ -1310,8 +1220,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "upload_bitstreams?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.upload_bitstreams?
   end
@@ -1319,8 +1228,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "upload_bitstreams?() authorizes unit admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit    = @item.primary_collection.units.first
     unit.administrators.build(user: user)
     unit.save!
@@ -1331,8 +1239,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "upload_bitstreams?() authorizes collection managers" do
     user       = users(:norights)
     context    = RequestContext.new(user:        user,
-                                    institution: user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: user.institution)
     collection = @item.primary_collection
     collection.managers.build(user: user)
     collection.save!

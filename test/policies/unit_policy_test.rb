@@ -17,8 +17,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "change_parent?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit2   = units(:unit2)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.change_parent?(unit2.id)
@@ -27,8 +26,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "change_parent?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     unit2   = units(:unit2)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.change_parent?(unit2.id)
@@ -55,8 +53,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "children?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.children?
   end
@@ -71,8 +68,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "collections_tree_fragment?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.collections_tree_fragment?
   end
@@ -87,8 +83,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "create?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.create?
   end
@@ -96,8 +91,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "create?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.create?
   end
@@ -105,8 +99,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "create?() authorizes institution admins" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.create?
   end
@@ -131,8 +124,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "destroy?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.destroy?
   end
@@ -140,8 +132,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.destroy?
   end
@@ -166,8 +157,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "edit_administrators?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.edit_administrators?
   end
@@ -175,8 +165,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "edit_administrators?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.edit_administrators?
   end
@@ -201,8 +190,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "edit_membership?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.edit_membership?
   end
@@ -210,8 +198,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "edit_membership?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.edit_membership?
   end
@@ -236,8 +223,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "edit_properties?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.edit_properties?
   end
@@ -245,8 +231,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "edit_properties?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.edit_properties?
   end
@@ -271,8 +256,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "index?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, Unit)
     assert policy.index?
   end
@@ -287,8 +271,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "item_download_counts?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.item_download_counts?
   end
@@ -303,8 +286,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "item_results?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.item_results?
   end
@@ -319,8 +301,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "new?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.new?
   end
@@ -328,8 +309,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "new?() returns true when the target object is a Unit" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, Unit)
     assert policy.new?
   end
@@ -337,8 +317,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "new?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UnitPolicy.new(context, @unit)
     assert policy.new?
   end
@@ -363,8 +342,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.show?
   end
@@ -379,8 +357,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "show_access?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.show_access?
   end
@@ -388,8 +365,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "show_access?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UnitPolicy.new(context, @unit)
     assert policy.show_access?
   end
@@ -414,8 +390,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "show_collections?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.show_collections?
   end
@@ -430,8 +405,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "show_items?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.show_items?
   end
@@ -446,8 +420,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "show_properties?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.show_properties?
   end
@@ -462,8 +435,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "show_statistics?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.show_statistics?
   end
@@ -478,8 +450,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "show_unit_membership?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.show_unit_membership?
   end
@@ -494,8 +465,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "statistics_by_range?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.statistics_by_range?
   end
@@ -510,8 +480,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "update?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.update?
   end
@@ -519,8 +488,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = UnitPolicy.new(context, @unit)
     assert policy.update?
   end

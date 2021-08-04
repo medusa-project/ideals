@@ -16,8 +16,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "agreement?() authorizes logged-in users" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = SubmissionPolicy.new(context, @item)
     assert policy.agreement?
   end
@@ -42,8 +41,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "complete?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.complete?
   end
@@ -51,8 +49,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "complete?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = SubmissionPolicy.new(context, @item)
     assert policy.complete?
   end
@@ -60,8 +57,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "complete?() authorizes the submission owner if the item is submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     @item.submitter = user
     @item.stage     = Item::Stages::SUBMITTING
     policy = SubmissionPolicy.new(context, @item)
@@ -71,8 +67,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "complete?() does not authorize the submission owner if the item is not submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     @item.submitter = user
     @item.stage     = Item::Stages::APPROVED
     policy = SubmissionPolicy.new(context, @item)
@@ -82,8 +77,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "complete?() authorizes managers of the item's collection" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection = collections(:collection1)
     collection.managing_users << doing_user
     collection.save!
@@ -97,8 +91,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "complete?() authorizes admins of the item's collection's unit" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection               = collections(:collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
@@ -113,8 +106,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "complete?() does not authorize anyone else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.complete?
   end
@@ -139,8 +131,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "destroy?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = SubmissionPolicy.new(context, @item)
     assert !policy.destroy?
   end
@@ -148,8 +139,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = SubmissionPolicy.new(context, @item)
     assert policy.destroy?
   end
@@ -157,8 +147,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes the submission owner if the item is submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     @item.submitter = user
     @item.stage     = Item::Stages::SUBMITTING
     policy = SubmissionPolicy.new(context, @item)
@@ -168,8 +157,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "destroy?() does not authorize the submission owner if the item is not submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     @item.submitter = user
     @item.stage     = Item::Stages::APPROVED
     policy = SubmissionPolicy.new(context, @item)
@@ -179,8 +167,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes managers of the submission's collection" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection = collections(:collection1)
     collection.managing_users << doing_user
     collection.save!
@@ -194,8 +181,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes admins of the submission's collection's unit" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection               = collections(:collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
@@ -210,8 +196,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "destroy?() does not authorize anyone else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.destroy?
   end
@@ -236,8 +221,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "edit?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.edit?
   end
@@ -245,8 +229,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "edit?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = SubmissionPolicy.new(context, @item)
     assert policy.edit?
   end
@@ -254,8 +237,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "edit?() authorizes the submission owner if the item is submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     @item.submitter = user
     @item.stage     = Item::Stages::SUBMITTING
     policy = SubmissionPolicy.new(context, @item)
@@ -265,8 +247,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "edit?() does not authorize the submission owner if the item is not submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     @item.submitter = user
     @item.stage     = Item::Stages::APPROVED
     policy = SubmissionPolicy.new(context, @item)
@@ -276,8 +257,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "edit?() authorizes managers of the item's collection" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection = collections(:collection1)
     collection.managing_users << doing_user
     collection.save!
@@ -291,8 +271,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "edit?() authorizes admins of the item's collection's unit" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection               = collections(:collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
@@ -307,8 +286,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "edit?() does not authorize anyone else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.edit?
   end
@@ -333,8 +311,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "update?() does not authorize non-sysadmins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.update?
   end
@@ -342,8 +319,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = SubmissionPolicy.new(context, @item)
     assert policy.update?
   end
@@ -351,8 +327,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes the submission owner if the item is submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     @item.submitter = user
     @item.stage     = Item::Stages::SUBMITTING
     policy = SubmissionPolicy.new(context, @item)
@@ -362,8 +337,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "update?() does not authorize the submission owner if the item is not submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     @item.submitter = user
     @item.stage     = Item::Stages::APPROVED
     policy = SubmissionPolicy.new(context, @item)
@@ -373,8 +347,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes managers of the submission's collection" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection = collections(:collection1)
     collection.managing_users << doing_user
     collection.save!
@@ -388,8 +361,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes admins of the submission's collection's unit" do
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution,
-                                    role_limit:  Role::NO_LIMIT)
+                                    institution: doing_user.institution)
     collection               = collections(:collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
@@ -404,8 +376,7 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
   test "update?() does not authorize anyone else" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.update?
   end

@@ -16,8 +16,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "create?() is restrictive by default" do
     user    = users(:somewhere)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.create?
   end
@@ -25,8 +24,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "create?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.create?
   end
@@ -51,8 +49,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "destroy?() is restrictive by default" do
     user    = users(:somewhere)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.destroy?
   end
@@ -60,8 +57,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.destroy?
   end
@@ -70,8 +66,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     # sysadmin user limited to an insufficient role
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.destroy?
   end
@@ -87,8 +82,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     skip # TODO: enable this once User.institution_admin?() is implemented properly
     user    = users(:somewhere)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.edit?
   end
@@ -96,8 +90,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "edit?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.edit?
   end
@@ -105,8 +98,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "edit?() authorizes administrators of the same institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, user.institution)
     assert policy.edit?
   end
@@ -114,8 +106,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "edit?() does not authorize administrators of different institutions" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.edit?
   end
@@ -140,8 +131,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "index?() is restrictive by default" do
     user    = users(:somewhere)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.index?
   end
@@ -149,8 +139,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "index?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.index?
   end
@@ -176,8 +165,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     skip # TODO: enable this once User.institution_admin?() is properly implemented
     user    = users(:somewhere)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = InstitutionPolicy.new(context, @institution)
     assert !policy.item_download_counts?
   end
@@ -185,8 +173,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "item_download_counts?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.item_download_counts?
   end
@@ -194,8 +181,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "item_download_counts?() authorizes administrators of the same institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.item_download_counts?
   end
@@ -203,8 +189,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "item_download_counts?() does not authorize administrators of a different institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, institutions(:uiuc))
     assert !policy.item_download_counts?
   end
@@ -229,8 +214,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "new?() is restrictive by default" do
     user    = users(:somewhere)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.new?
   end
@@ -238,8 +222,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "new?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.new?
   end
@@ -265,8 +248,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     skip # TODO: enable this once User.institution_admin?() is properly implemented
     user    = users(:somewhere)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = InstitutionPolicy.new(context, @institution)
     assert !policy.show?
   end
@@ -274,8 +256,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.show?
   end
@@ -283,8 +264,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes administrators of the same institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.show?
   end
@@ -292,8 +272,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show?() does not authorize administrators of a different institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, institutions(:uiuc))
     assert !policy.show?
   end
@@ -319,8 +298,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     skip # TODO: enable this once User.institution_admin?() is properly implemented
     user    = users(:somewhere)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = InstitutionPolicy.new(context, @institution)
     assert !policy.show_properties?
   end
@@ -328,8 +306,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show_properties?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.show_properties?
   end
@@ -337,8 +314,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show_properties?() authorizes administrators of the same institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.show_properties?
   end
@@ -346,8 +322,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show_properties?() does not authorize administrators of a different institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, institutions(:uiuc))
     assert !policy.show_properties?
   end
@@ -373,8 +348,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     skip # TODO: enable this once User.institution_admin?() is properly implemented
     user    = users(:somewhere)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = InstitutionPolicy.new(context, @institution)
     assert !policy.show_statistics?
   end
@@ -382,8 +356,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show_statistics?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.show_statistics?
   end
@@ -391,8 +364,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show_statistics?() authorizes administrators of the same institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.show_statistics?
   end
@@ -400,8 +372,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show_statistics?() does not authorize administrators of a different institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, institutions(:uiuc))
     assert !policy.show_statistics?
   end
@@ -427,8 +398,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     skip # TODO: enable this once User.institution_admin?() is properly implemented
     user    = users(:somewhere)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = InstitutionPolicy.new(context, @institution)
     assert !policy.show_users?
   end
@@ -436,8 +406,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show_users?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.show_users?
   end
@@ -445,8 +414,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show_users?() authorizes administrators of the same institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.show_users?
   end
@@ -454,8 +422,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "show_users?() does not authorize administrators of a different institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, institutions(:uiuc))
     assert !policy.show_users?
   end
@@ -480,8 +447,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "statistics_by_range?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.statistics_by_range?
   end
@@ -489,8 +455,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "statistics_by_range?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy = InstitutionPolicy.new(context, @institution)
     assert policy.statistics_by_range?
   end
@@ -516,8 +481,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     skip # TODO: enable this once User.institution_admin?() is implemented properly
     user    = users(:somewhere)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.update?
   end
@@ -525,8 +489,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.update?
   end
@@ -534,8 +497,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "update?() authorizes administrators of the same institution" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, user.institution)
     assert policy.update?
   end
@@ -543,8 +505,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   test "update?() does not authorize administrators of different institutions" do
     user    = users(:somewhere_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::NO_LIMIT)
+                                 institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.update?
   end

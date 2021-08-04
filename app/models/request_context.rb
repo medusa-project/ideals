@@ -48,17 +48,21 @@ class RequestContext
   attr_accessor :role_limit
 
   ##
-  # @param client_ip [String]
-  # @param client_hostname [String]
-  # @param user [User]
+  # @param client_ip [String] The default value makes for more concise tests,
+  #                           but a correct value should be provided for normal
+  #                           use.
+  # @param client_hostname [String] The default value makes for more concise
+  #                                 tests, but a correct value should be
+  #                                 provided for normal use.
+  # @param user [User] The logged-in user, if one exists.
   # @param institution [Institution]
   # @param role_limit [Integer]
   #
-  def initialize(client_ip:,
-                 client_hostname:,
-                 user:,
-                 institution:,
-                 role_limit:)
+  def initialize(client_ip:       "10.0.0.1",
+                 client_hostname: "example.org",
+                 user:            nil,
+                 institution:     nil,
+                 role_limit:      Role::NO_LIMIT)
     self.client_ip       = client_ip
     self.client_hostname = client_hostname
     self.user            = user
