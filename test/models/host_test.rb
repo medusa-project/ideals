@@ -9,10 +9,10 @@ class HostTest < ActiveSupport::TestCase
                  pattern:    "*.cats.org\n202.202.*")
     Host.create!(user_group: user_groups(:unused),
                  pattern: "*.dogs.org\n12.12.*")
-    assert_empty Host.all_matching_hostname_or_ip('example.org', '123.123.123.123')
+    assert_empty Host.all_matching_hostname_or_ip('test.org', '123.123.123.123')
   end
 
-  test 'all_matching_host_or_ip() returns host groups with matching hostnames' do
+  test 'all_matching_host_or_ip() returns hosts with matching hostnames' do
     Host.create!(user_group: user_groups(:unused),
                  pattern: "*cats.org\n202.202.*")
     Host.create!(user_group: user_groups(:unused),
@@ -20,12 +20,12 @@ class HostTest < ActiveSupport::TestCase
     assert_equal 1, Host.all_matching_hostname_or_ip('cats.org', '123.123.123.123').length
   end
 
-  test 'all_matching_host_or_ip() returns host groups with matching IP addresses' do
+  test 'all_matching_host_or_ip() returns hosts with matching IP addresses' do
     Host.create!(user_group: user_groups(:unused),
                  pattern: "*.cats.org\n202.202.*")
     Host.create!(user_group: user_groups(:unused),
                  pattern: "*.dogs.org\n12.12.*")
-    assert_equal 1, Host.all_matching_hostname_or_ip('example.org', '12.12.12.12').length
+    assert_equal 1, Host.all_matching_hostname_or_ip('test.org', '12.12.12.12').length
   end
 
   # comment()
