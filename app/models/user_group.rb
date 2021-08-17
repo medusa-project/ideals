@@ -13,6 +13,7 @@ class UserGroup < ApplicationRecord
   include Breadcrumb
 
   has_many :administrator_groups
+  has_many :bitstream_authorizations
   has_many :hosts
   has_many :manager_groups
   has_many :submitter_groups
@@ -27,6 +28,16 @@ class UserGroup < ApplicationRecord
   validates :key, presence: true
 
   validate :contains_only_local_users
+
+  ##
+  # @param hostname [String]
+  # @param ip [String]
+  # @return [Enumerable<UserGroup>]
+  # @see Host#all_matching_hostname_or_ip
+  #
+  def self.all_matching_hostname_or_ip(hostname, ip)
+    Host.all_matching_hostname_or_ip(hostname, ip).map(&:user_group)
+  end
 
   ##
   # @return [UserGroup] The sysadmin group.

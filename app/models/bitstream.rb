@@ -168,6 +168,15 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # @param user_group [UserGroup]
+  # @return [Boolean] Whether the given user group authorizes access to the
+  #                   instance.
+  #
+  def authorized_by?(user_group)
+    self.item.bitstream_authorizations.where(user_group: user_group).count > 0
+  end
+
+  ##
   # Sends a message to Medusa to delete the corresponding object.
   #
   # This should only be done in the demo environment. The production Medusa

@@ -7,6 +7,19 @@ class UserGroupTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # all_matching_hostname_or_ip()
+
+  test "all_matching_hostname_or_ip() returns the correct groups" do
+    @instance.hosts << Host.new(pattern: "something.edu")
+    @instance.save!
+
+    groups = UserGroup.all_matching_hostname_or_ip("something.edu", "10.0.0.1")
+    assert_equal 1, groups.length
+
+    groups = UserGroup.all_matching_hostname_or_ip("somethingelse.edu", "10.0.0.1")
+    assert_equal 0, groups.length
+  end
+
   # sysadmin()
 
   test "sysadmin() returns the sysadmin group" do

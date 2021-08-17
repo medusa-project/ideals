@@ -16,10 +16,32 @@
                { selected: f.object.stage },
                class: 'custom-select')
 
+  %hr
+
   .form-group
     .form-check
       = f.check_box :discoverable, class: "form-check-input"
       = f.label :discoverable, class: "form-check-label"
+
+  %hr
+
+  %h5 User Groups Allowed to Access Files
+
+  .alert.alert-light
+    %i.fa.fa-info-circle
+    If no boxes are checked, files are unrestricted.
+
+  .form-group
+    = hidden_field_tag("item_bitstream_authorized_groups[]", nil)
+    - UserGroup.order(:name).each do |group|
+      .form-check
+        = check_box_tag("item_bitstream_authorized_groups[]", group.id,
+                        f.object.bitstream_authorizations.map(&:user_group_id).include?(group.id),
+                        id: "item_bitstream_authorized_groups_#{group.id}",
+                        class: "form-check-input")
+        = label_tag("item_bitstream_authorized_groups_#{group.id}",
+                    group.name,
+                    class: "form-check-label")
 
   .clearfix
     .float-right

@@ -416,6 +416,34 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.download?
   end
 
+  test "download?() authorizes clients whose hostname or IP matches a user group
+  assigned to the bitstream" do
+    group     = user_groups(:hostname)
+    bitstream = bitstreams(:item2_in_medusa)
+    item      = bitstream.item
+    item.bitstream_authorizations.build(user_group: group)
+    item.save!
+
+    context   = RequestContext.new(client_ip:       "10.0.0.1",
+                                   client_hostname: "example.org")
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.download?
+  end
+
+  test "download?() does not authorize clients whose hostname or IP does not
+  match a user group assigned to the bitstream" do
+    group     = user_groups(:hostname)
+    bitstream = bitstreams(:item2_in_medusa)
+    item      = bitstream.item
+    item.bitstream_authorizations.build(user_group: group)
+    item.save!
+
+    context   = RequestContext.new(client_ip:       "10.0.0.1",
+                                   client_hostname: "something-else.org")
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert !policy.download?
+  end
+
   # edit?()
 
   test "edit?() returns false with a nil user" do
@@ -579,6 +607,34 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
     assert policy.show?
+  end
+
+  test "show?() authorizes clients whose hostname or IP matches a user group
+  assigned to the bitstream" do
+    group     = user_groups(:hostname)
+    bitstream = bitstreams(:item2_in_medusa)
+    item      = bitstream.item
+    item.bitstream_authorizations.build(user_group: group)
+    item.save!
+
+    context   = RequestContext.new(client_ip:       "10.0.0.1",
+                                   client_hostname: "example.org")
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize clients whose hostname or IP does not match
+  a user group assigned to the bitstream" do
+    group     = user_groups(:hostname)
+    bitstream = bitstreams(:item2_in_medusa)
+    item      = bitstream.item
+    item.bitstream_authorizations.build(user_group: group)
+    item.save!
+
+    context   = RequestContext.new(client_ip:       "10.0.0.1",
+                                   client_hostname: "something-else.org")
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert !policy.show?
   end
 
   test "show?() respects role limits" do

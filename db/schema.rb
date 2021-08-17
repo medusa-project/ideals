@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_02_143052) do
+ActiveRecord::Schema.define(version: 2021_08_03_192153) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,6 +42,13 @@ ActiveRecord::Schema.define(version: 2021_08_02_143052) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "uri"
+  end
+
+  create_table "bitstream_authorizations", force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.bigint "user_group_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "bitstreams", force: :cascade do |t|
@@ -359,6 +366,8 @@ ActiveRecord::Schema.define(version: 2021_08_02_143052) do
   add_foreign_key "ascribed_elements", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "bitstream_authorizations", "items", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "bitstream_authorizations", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_item_memberships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_item_memberships", "items", on_update: :cascade, on_delete: :cascade

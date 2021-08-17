@@ -9,9 +9,11 @@ class BitstreamPolicy < ApplicationPolicy
   # @param bitstream [Bitstream]
   #
   def initialize(request_context, bitstream)
-    @user      = request_context&.user
-    @role      = request_context&.role_limit
-    @bitstream = bitstream
+    @client_ip       = request_context&.client_ip
+    @client_hostname = request_context&.client_hostname
+    @user            = request_context&.user
+    @role            = request_context&.role_limit
+    @bitstream       = bitstream
   end
 
   def create
@@ -86,6 +88,20 @@ class BitstreamPolicy < ApplicationPolicy
     elsif !bitstream.item.discoverable
       return { authorized: false,
                reason:     "This file's owning item is not discoverable." }
+    end
+
+    # If there are any user groups authorizing the bitstream by hostname or IP,
+    # then only clients with a matching hostname/IP are authorized.
+    # Otherwise, anyone is.
+    if bitstream.item.bitstream_authorizations.any?
+      groups = UserGroup.all_matching_hostname_or_ip(@client_hostname, @client_ip)
+      groups.each do |group|
+        if bitstream.authorized_by?(group)
+          return AUTHORIZED_RESULT
+        end
+      end
+      return { authorized: false,
+               reason:     "You are not authorized to access this file." }
     end
     AUTHORIZED_RESULT
   end

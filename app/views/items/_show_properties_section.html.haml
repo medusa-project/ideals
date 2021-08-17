@@ -34,6 +34,14 @@
     %dd= Item::Stages.constants.find{ |c| @item.stage == Item::Stages.const_get(c) }&.to_s&.downcase&.capitalize
     %dt Discoverable
     %dd= boolean(@item.discoverable, style: :word)
+    %dt User Groups Allowed to Access Files
+    %dd
+      - if @item.bitstream_authorizations.any?
+        %ul
+          - @item.bitstream_authorizations.each do |auth|
+            %li= link_to(auth.user_group.name, auth.user_group)
+      - else
+        Any
     %dt Created
     %dd= local_time @item.created_at
     %dt Last Updated

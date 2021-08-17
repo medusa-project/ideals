@@ -214,6 +214,12 @@ class ItemsController < ApplicationController
                                              primary:       (membership[:primary] == "true"))
           end
         else
+          if params[:item_bitstream_authorized_groups].respond_to?(:each)
+            @item.bitstream_authorizations.destroy_all
+            params[:item_bitstream_authorized_groups].select(&:present?).each do |group|
+              @item.bitstream_authorizations.build(user_group_id: group)
+            end
+          end
           @item.update!(item_params)
           build_metadata
           build_embargoes

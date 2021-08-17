@@ -41,14 +41,15 @@ class Host < ApplicationRecord
   # @param hostname [String]   Full hostname.
   # @param ip_address [String] Full IP address.
   # @return [Enumerable<Host>]
+  # @see UserGroup#all_matching_hostname_or_ip
   #
   def self.all_matching_hostname_or_ip(hostname, ip_address)
-    groups = Set.new
-    Host.all.each do |group|
-      groups << group if group.pattern_matches?(hostname) ||
-        group.pattern_matches?(ip_address)
+    hosts = Set.new
+    Host.all.each do |host|
+      hosts << host if host.pattern_matches?(hostname) ||
+        host.pattern_matches?(ip_address)
     end
-    groups
+    hosts
   end
 
   ##

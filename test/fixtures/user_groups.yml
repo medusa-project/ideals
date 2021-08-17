@@ -1,5 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+hostname:
+  key: hostname
+  name: Hostname-Based Group
+
 sysadmin:
   key: sysadmin
   name: System Administrators
