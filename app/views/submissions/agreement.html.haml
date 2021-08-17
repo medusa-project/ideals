@@ -1,7 +1,9 @@
-- provide :body_id, "agreement"
+- provide :body_id, "deposit-agreement-body"
 - provide :title, "Submit an Item"
 
 %h1 Submit an Item
+
+%p To start your deposit, please review the deposit agreement and answer the following questions.
 
 - if @submissions.any?
   .card.text-white.bg-info.submissions-in-progress.mb-3
@@ -18,77 +20,106 @@
                         edit_submission_path(item))
   %button.begin-submission.btn.btn-outline-primary Begin New Submission
 
-#deposit-agreement.card{style: "#{@submissions.any? ? "display: none" : ""}"}
-  %h5.card-header IDEALS Deposit Agreement
-  .card-body
-    .alert.alert-info
-      TODO: This is placeholder text copied from Illinois Data Bank. Provide finalized text (including link URLs) in
-      = link_to("IR-34", "https://bugs.library.illinois.edu/browse/IR-34")
-    %p
-      %b Non-Exclusive Distribution and Preservation License
-    %p To properly administer the Illinois Data Bank and preserve the contents for future use, the Board of Trustees of the University of Illinois on behalf of its Urbana-Champaign campus (the "University") requires certain permissions and warrants from you, the Creator(s) and/or copyright owner. If copyright law is applicable to your dataset submission (see Illinois Data Bank Help section: Research Data Copyright and Licensing)
-    %p By accepting (clicking through) this License, you grant to the University the non-exclusive right to reproduce, translate (as described below), and distribute the Dataset in any format or medium worldwide and royalty-free, including, but not limited to, publication over the Internet, unless otherwise provided for by an addendum to this Deposit Agreement. You must contact Research Data Service staff at databank@library.illinois.edu if you would like an addendum to this Deposit Agreement to be considered.
-    %p You agree that the University may convert the deposited Data Files and/or Metadata Files to any medium or format and make multiple copies of the deposited Dataset for the purposes of security, back-up, and preservation. In addition, you understand and agree that Research Data Service staff may make changes to Descriptive Metadata, including enhancements (such as addition of key words) and/or corrections (such as minor typos). Any Descriptive Metadata changes will be tracked via a public change log. Your Dataset will not otherwise be altered without your permission.
-    %p You understand that the name of the Depositor as well as the name and email address of the Long-Term Contact Person may be displayed with the published Dataset, as will the copyright license selected by the Depositor.
-    %p You understand that the University commits to preserving your published Dataset in accordance with the Illinois Data Bank Preservation Policy. at least five years from the date of publication via the Illinois Data Bank. The University will endeavor to retain the Dataset beyond the initial five-year commitment, but reserves the right to review the long-term viability of the Dataset beyond the initial five-year commitment and the right to Deaccession the Data Files and/or Metadata Files or otherwise alter the availability of the Data Files, Metadata Files, and/or Descriptive Metadata after the initial five years in the University's sole discretion. Generally, the University will endeavor to retain at least the Descriptive Metadata beyond the initial commitment. To learn how to increase the likelihood that published Data Files and Metadata Files will be preserved beyond the initial five year commitment, please see the Illinois Data Bank Preservation Review Guidelines.
-    %p If you cannot make all of the following representations, then you must contact Research Data Service staff at databank@library.illinois.edu before proceeding further.
-    %p In order to submit this Dataset, you represent that:
-    %ul
-      %li You have the right to grant the rights contained in this License.
-      %li Nothing in this Dataset, to the best of your knowledge, infringes on anyone's copyright or other intellectual property rights.
-      %li If this Dataset does contain material for which you do not hold copyright and that exceeds fair use, you have obtained the unrestricted permission of the copyright owner to grant the University the rights required by this License and that such third-party owned material is clearly identified and acknowledged within the content of the Dataset.
-      %li Nothing in this Dataset violates any contract terms (e.g., Nondisclosure Agreement, Material Transfer Agreement, Terms of Use, etc.)
-      %li Nothing in this Dataset contains any private information, confidential information, proprietary information of others, export controlled information, or otherwise protected data or information that should not be publicly shared.
-      %li You honor any publication delays required by other parties, such as a journal publisher, by selecting the appropriate release date for public distribution of all content in this Dataset.
-      %li To the best of your knowledge, all content provided within and about this Dataset is accurate.
-      %li Nothing in this Dataset contains any software viruses or computer codes, files, or programs capable of allowing unauthorized access or disrupting, damaging, limiting or interfering with the proper functioning of the Illinois Data Bank or other users' software, hardware, or telecommunications equipment.
-      %li This Dataset is in a final state and is not subject to revisions or updates.
-      %li You understand that if copyright terms for, or ownership of, this Dataset submission change, it is your responsibility to notify the University of these changes.
-      %li If this Dataset is based upon work that has been sponsored or supported by an agency or organization other than the University, you must fulfill any right of review or other obligations required by the contract or agreement with such an agency or organization before depositing into the Illinois Data Bank.
-      %li You agree that this submission of this Dataset and your related actions are subject to all applicable state and federal laws as well as University and campus policies.
-    %p By agreeing to this Deposit Agreement, you acknowledge that you have read and accept the terms of this License and all related Illinois Data Bank and University policies.
+#deposit-agreement.accordion.mb-3
+  .card{style: "#{@submissions.any? ? "display: none" : ""}"}
+    #deposit-agreement-header.card-header
+      %button.btn.btn-link{type:            "button",
+                           "data-toggle":   "collapse",
+                           "data-target":   "#deposit-agreement-collapse",
+                           "aria-expanded": false,
+                           "aria-controls": "deposit-agreement-collapse"}
+        %i.far.fa-plus-square
+        IDEALS Deposit Agreement
+        %span.text-info (expand)
+    #deposit-agreement-collapse.collapse{"aria-labelledby": "deposit-agreement-heading",
+                                         "data-parent":     "#deposit-agreement"}
+      .card-body
+        %p
+          %b Non-Exclusive Distribution and Preservation License
+        %p To properly administer IDEALS and preserve the contents for future use, the Board of Trustees of the University of Illinois on behalf of its Urbana-Champaign campus (the "University") requires certain permissions and warrants from you, the Creator(s) and/or copyright owner. If copyright law is applicable to your dataset submission (see Illinois Data Bank Help section: Research Data Copyright and Licensing)
+        %p
+          By accepting (clicking through) this License, you grant to the University the non-exclusive right to reproduce, translate (as described below), and distribute the Dataset in any format or medium worldwide and royalty-free, including, but not limited to, publication over the Internet, unless otherwise provided for by an addendum to this Deposit Agreement. You must contact IDEALS staff at
+          = Configuration.instance.mail[:from]
+          if you would like an addendum to this Deposit Agreement to be considered.
+        %p You agree that the University may convert the deposited Data Files and/or Metadata Files to any medium or format and make multiple copies of the deposited Dataset for the purposes of security, back-up, and preservation. In addition, you understand and agree that Research Data Service staff may make changes to Descriptive Metadata, including enhancements (such as addition of key words) and/or corrections (such as minor typos). Any Descriptive Metadata changes will be tracked via a public change log. Your Dataset will not otherwise be altered without your permission.
+        %p You understand that the name of the Depositor as well as the name and email address of the Long-Term Contact Person may be displayed with the published Dataset, as will the copyright license selected by the Depositor.
+        %p You understand that the University commits to preserving your published Dataset in accordance with the Illinois Data Bank Preservation Policy at least five years from the date of publication via IDEALS. The University will endeavor to retain the Dataset beyond the initial five-year commitment, but reserves the right to review the long-term viability of the Dataset beyond the initial five-year commitment and the right to Deaccession the Data Files and/or Metadata Files or otherwise alter the availability of the Data Files, Metadata Files, and/or Descriptive Metadata after the initial five years in the University's sole discretion. Generally, the University will endeavor to retain at least the Descriptive Metadata beyond the initial commitment. To learn how to increase the likelihood that published Data Files and Metadata Files will be preserved beyond the initial five year commitment, please see the Illinois Data Bank Preservation Review Guidelines.
+        %p
+          If you cannot make all of the following representations, then you must contact IDEALS staff at
+          = Configuration.instance.mail[:from]
+          before proceeding further.
+        %p In order to submit this Dataset, you represent that:
+        %ul
+          %li You have the right to grant the rights contained in this License.
+          %li Nothing in this Dataset, to the best of your knowledge, infringes on anyone's copyright or other intellectual property rights.
+          %li If this Dataset does contain material for which you do not hold copyright and that exceeds fair use, you have obtained the unrestricted permission of the copyright owner to grant the University the rights required by this License and that such third-party owned material is clearly identified and acknowledged within the content of the Dataset.
+          %li Nothing in this Dataset violates any contract terms (e.g., Nondisclosure Agreement, Material Transfer Agreement, Terms of Use, etc.)
+          %li Nothing in this Dataset contains any private information, confidential information, proprietary information of others, export controlled information, or otherwise protected data or information that should not be publicly shared.
+          %li You honor any publication delays required by other parties, such as a journal publisher, by selecting the appropriate release date for public distribution of all content in this Dataset.
+          %li To the best of your knowledge, all content provided within and about this Dataset is accurate.
+          %li Nothing in this Dataset contains any software viruses or computer codes, files, or programs capable of allowing unauthorized access or disrupting, damaging, limiting or interfering with the proper functioning of IDEALS or other users' software, hardware, or telecommunications equipment.
+          %li This Dataset is in a final state and is not subject to revisions or updates.
+          %li You understand that if copyright terms for, or ownership of, this Dataset submission change, it is your responsibility to notify the University of these changes.
+          %li If this Dataset is based upon work that has been sponsored or supported by an agency or organization other than the University, you must fulfill any right of review or other obligations required by the contract or agreement with such an agency or organization before depositing into IDEALS.
+          %li You agree that this submission of this Dataset and your related actions are subject to all applicable state and federal laws as well as University and campus policies.
+        %p By agreeing to this Deposit Agreement, you acknowledge that you have read and accept the terms of this License and all related IDEALS and University policies.
 
-    -# N.B.: these questions are outside of the form because they are read
-    -# only by JavaScript and don't need to be submitted
-    .question.mb-3
-      %p
-        %strong Are you a creator of this dataset or have you been granted permission by the creator to deposit this dataset?
-      .form-check
-        %input#q1-1.response.form-check-input{type: "radio", name: "q1", value: "Yes"}
-        %label.form-check-label{for: "q1-1"} Yes
-      .form-check
-        %input#q1-2.response.form-check-input{type: "radio", name: "q1", value: "No"}
-        %label.form-check-label{for: "q1-2"} No
+-# N.B.: these questions are outside of the form because they are only read
+-# by JavaScript and don't need to be submitted
+.question.mb-3
+  %p
+    %strong Are you a creator of this work or have you been granted permission by the creator to deposit it?
+  .form-check
+    %input#q1-1.response.form-check-input{type: "radio", name: "q1", value: "Yes"}
+    %label.form-check-label{for: "q1-1"} Yes
+  .form-check
+    %input#q1-2.response.form-check-input{type: "radio", name: "q1", value: "No"}
+    %label.form-check-label{for: "q1-2"} No
+  %p.mt-2.text-info
+    %i.fa.fa-info-circle
+    Deposit into IDEALS requires that the depositor be the creator of the dataset or have permission to deposit it.
 
-    .question.mb-3
-      %p
-        %strong Have you removed any private, confidential, or other legally protected information from the dataset?
-      .form-check
-        %input#q2-1.response.form-check-input{type: "radio", name: "q2", value: "Yes"}
-        %label.form-check-label{for: "q2-1"} Yes
-      .form-check
-        %input#q2-2.response.form-check-input{type: "radio", name: "q2", value: "No"}
-        %label.form-check-label{for: "q2-2"} No
-      .form-check
-        %input#q2-3.response.form-check-input{type: "radio", name: "q2", value: "Not applicable"}
-        %label.form-check-label{for: "q2-3"} Not applicable
+%hr
 
-    .question.mb-3
-      %p
-        %strong Do you agree to the Illinois Data Bank Deposit Agreement in its entirety?
-      .form-check
-        %input#q3-1.response.form-check-input{type: "radio", name: "q3", value: "Yes"}
-        %label.form-check-label{for: "q3-1"} Yes
-      .form-check
-        %input#q3-2.response.form-check-input{type: "radio", name: "q3", value: "No"}
-        %label.form-check-label{for: "q3-2"} No
+.question.mb-3
+  %p
+    %strong Have you removed any private, confidential, export controlled, or other legally protected information from the submission?
+  .form-check
+    %input#q2-1.response.form-check-input{type: "radio", name: "q2", value: "Yes"}
+    %label.form-check-label{for: "q2-1"} Yes
+  .form-check
+    %input#q2-2.response.form-check-input{type: "radio", name: "q2", value: "No"}
+    %label.form-check-label{for: "q2-2"} No
+  .form-check
+    %input#q2-3.response.form-check-input{type: "radio", name: "q2", value: "Not applicable"}
+    %label.form-check-label{for: "q2-3"} Not Applicable
+  %p.mt-2.text-info
+    %i.fa.fa-info-circle
+    Deposit into IDEALS requires removal of any private, confidential, export controlled, or other legally protected information from the work. A selection of ‘Not Applicable’ indicates that either the work never included any such information, which a selection of ‘Yes’ indicates that such information has been removed.
 
-    = form_tag submissions_path, method: :post do
-      = hidden_field_tag(:primary_collection_id, params[:collection_id])
-      .row
-        .col-sm-2
-          = submit_tag("Begin Submission", class: "btn btn-primary")
-        .col-sm-10
-          #feedback.text-danger.ml-2
-            = icon_for(:warning)
-            TODO: provide updated text in #{link_to("IR-34", "https://bugs.library.illinois.edu/browse/IR-34")}. The selections you have made indicate that you are not ready to deposit your dataset. Illinois Data bank curators are available to discuss your dataset with you. Please contact us!
+%hr
+
+.question.mb-3
+  %p
+    %strong Do you agree to the IDEALS Deposit Agreement in its entirety?
+  .form-check
+    %input#q3-1.response.form-check-input{type: "radio", name: "q3", value: "Yes"}
+    %label.form-check-label{for: "q3-1"} Yes
+  .form-check
+    %input#q3-2.response.form-check-input{type: "radio", name: "q3", value: "No"}
+    %label.form-check-label{for: "q3-2"} No
+  %p.mt-2.text-info
+    %i.fa.fa-info-circle
+    Deposit into IDEALS requires agreement to the Deposit Agreement. Click on the Deposit Agreement heading above to view the full agreement.
+
+%hr
+
+= form_tag submissions_path, method: :post do
+  = hidden_field_tag(:primary_collection_id, params[:collection_id])
+  .row
+    .col-sm-2
+      = submit_tag("Begin Submission", class: "btn btn-primary")
+    .col-sm-10
+      #feedback.text-danger.ml-2
+        = icon_for(:warning)
+        The selections you have made indicate that you are not ready to deposit your dataset. IDEALS curators are available to discuss your dataset with you. Please contact us!

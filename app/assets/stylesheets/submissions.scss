@@ -1,6 +1,15 @@
-body#agreement {
+body#deposit-agreement-body {
   #feedback {
     display: none;
+  }
+
+  .card-header {
+    .btn-link {
+      color: black;
+      font-size: 1.3em;
+      padding: 0;
+      text-decoration: none;
+    }
   }
 }
 

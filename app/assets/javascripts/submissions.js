@@ -4,6 +4,20 @@
  * @constructor
  */
 const AgreementView = function() {
+    // Switch the plus icon in the expand-deposit-agreement section to a minus
+    // icon upon click, and vice versa.
+    const depositAgreementSection = $('#deposit-agreement');
+    depositAgreementSection.on('show.bs.collapse', function () {
+        $(this).find(".card-header i")
+            .removeClass("fa-plus-square")
+            .addClass("fa-minus-square");
+    });
+    depositAgreementSection.on('hide.bs.collapse', function () {
+        $(this).find(".card-header i")
+            .removeClass("fa-minus-square")
+            .addClass("fa-plus-square");
+    });
+
     // Show the deposit agreement when the begin-submission button is clicked.
     $("button.begin-submission").on("click", function() {
         $(this).fadeOut(IDEALS.FADE_TIME);
@@ -366,7 +380,7 @@ const EditSubmissionView = function() {
 };
 
 $(document).ready(function() {
-    if ($("body#agreement").length) {
+    if ($("body#deposit-agreement-body").length) {
         new AgreementView();
     } else if ($("body#edit_submission").length) {
         new EditSubmissionView();
