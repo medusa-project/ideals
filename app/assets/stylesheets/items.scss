@@ -8,6 +8,10 @@ body#list_items, body#list_collections {
 }
 
 body#show_item {
+  #other-files-heading a {
+    color: black;
+    text-decoration: none;
+  }
   .creators {
     color: $gray-600;
     font-weight: normal;

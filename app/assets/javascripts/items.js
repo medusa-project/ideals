@@ -17,6 +17,18 @@ const ItemView = function() {
 
     new IDEALS.CopyButton($(".copy"), $(".permalink"));
 
+    const otherFilesHeading = $("#other-files");
+    otherFilesHeading.on("show.bs.collapse", function() {
+        $(this).prev().find("i")
+            .removeClass("fa-plus-square")
+            .addClass("fa-minus-square");
+    });
+    otherFilesHeading.on("hide.bs.collapse", function() {
+        $(this).prev().find("i")
+            .removeClass("fa-minus-square")
+            .addClass("fa-plus-square");
+    });
+
     // XHR modals
     $(".edit-bitstream").on("click", function() {
         const item_id      = $(this).data("item-id");
