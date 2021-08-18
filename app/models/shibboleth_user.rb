@@ -4,7 +4,7 @@
 # Concrete implementation of {User}. This type of user comes from the
 # Shibboleth authentication strategy. All Shibboleth users have NetIDs and
 # whether they are a {sysadmin? sysadmin} is determined by their membership in
-# an LDAP group ascribed to the {UserGroup#sysadmin sysadmin user group}.
+# an AD group ascribed to the {UserGroup#sysadmin sysadmin user group}.
 #
 class ShibbolethUser < User
 

@@ -26,7 +26,7 @@
 
   %hr
 
-  %h5 LDAP Groups
+  %h5 AD Groups
   = hidden_field_tag "user_group[ldap_group_ids][]"
   - LdapGroup.all.sort_by(&:short_name).each do |group|
     .form-check
