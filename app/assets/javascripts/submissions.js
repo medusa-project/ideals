@@ -270,6 +270,19 @@ const SubmissionForm = function() {
     /************************* Metadata section ****************************/
 
     /**
+     * Reads the family name & given name text fields of person-type submission
+     * profile elements, and sets the corresponding hidden input value
+     * appropriately (in "Familyname, Givenname" format).
+     */
+    metadataForm.find("[name=family_name], [name=given_name]").on("change", function() {
+        const hiddenInput = $("#" + $(this).data("for"));
+        const parent      = hiddenInput.parent();
+        const familyName  = parent.find("[name=family_name]").val();
+        const givenName   = parent.find("[name=given_name]").val();
+        hiddenInput.val(familyName + ", " + givenName);
+    });
+
+    /**
      * Reads the month, day, and year select menus of date-type submission
      * profile elements, and sets the corresponding hidden date input value
      * appropriately (in "Month DD, YYYY" format).

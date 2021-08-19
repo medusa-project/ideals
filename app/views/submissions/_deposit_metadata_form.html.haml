@@ -60,6 +60,27 @@
                                                       date&.year || Time.now.year),
                                    data: { for: hidden_input_id },
                                    class: "custom-select")
+                  - when SubmissionProfileElement::InputType::PERSON
+                    - hidden_input_id = SecureRandom.hex
+                    - person_name     = ascribed_element.person_name || {}
+                    -# This hidden input contains a person name in
+                    -# "Familyname Givenname" format.
+                    -# Changes to the inputs below cause its value to change (via JS).
+                    = hidden_field_tag("elements[][string]",
+                                       ascribed_element.string,
+                                       id: hidden_input_id,
+                                       data: { 'input-type': "person" })
+                    .form-inline
+                      -# N.B.: these are submitted incidentally as part of the
+                      -# form but not read server-side.
+                      = text_field_tag("family_name", person_name[:family_name],
+                                       placeholder: "Family Name",
+                                       data: { for: hidden_input_id },
+                                       class: "form-control mr-2")
+                      = text_field_tag("given_name", person_name[:given_name],
+                                       placeholder: "Given Name",
+                                       data: { for: hidden_input_id },
+                                       class: "form-control")
                   - when SubmissionProfileElement::InputType::TEXT_AREA
                     = text_area_tag("elements[][string]",
                                     ascribed_element.string,

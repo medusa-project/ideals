@@ -90,4 +90,21 @@ class AscribedElementTest < ActiveSupport::TestCase
     assert_nil @instance.name
   end
 
+  # person_name()
+
+  test "person_name() returns a correct name" do
+    @instance.string = "Flintstone, Fred"
+    assert_equal({ family_name: "Flintstone", given_name: "Fred" },
+                 @instance.person_name)
+
+    @instance.string = "Flintstone, Fred, Esq."
+    assert_equal({ family_name: "Flintstone", given_name: "Fred, Esq." },
+                 @instance.person_name)
+  end
+
+  test "person_name() returns nil when the instance does not appear to contain
+  a name" do
+    assert_nil @instance.person_name
+  end
+
 end

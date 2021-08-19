@@ -51,6 +51,23 @@ class AscribedElement < ApplicationRecord
     registered_element&.name
   end
 
+  ##
+  # @return [Hash<Symbol,String>,nil] Hash with `:family_name` and `:given_name`
+  #                                   keys, or `nil` if {string} does not
+  #                                   appear to contain a person name.
+  #
+  def person_name
+    parts = self.string&.split(",") || []
+    if parts.length >= 2
+      return {
+        family_name: parts[0].strip,
+        given_name:  parts[1..].join(",").strip
+      }
+    end
+    nil
+  end
+
+
   private
 
   ##
