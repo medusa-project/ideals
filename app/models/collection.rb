@@ -190,6 +190,18 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<Unit>] All owning units, including their parents.
+  #
+  def all_units
+    bucket = Set.new
+    self.units.each do |unit|
+      bucket << unit
+      bucket += unit.all_parents
+    end
+    bucket
+  end
+
+  ##
   # @return [Hash] Indexable JSON representation of the instance.
   #
   def as_indexed_json

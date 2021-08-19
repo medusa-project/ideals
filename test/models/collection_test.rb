@@ -75,6 +75,10 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal 2, @instance.all_unit_administrators.length
   end
 
+  test "all_units() returns the correct units" do
+    assert_equal 2, @instance.all_units.length
+  end
+
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
