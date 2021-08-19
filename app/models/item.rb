@@ -176,12 +176,12 @@ class Item < ApplicationRecord
   end
 
   ##
-  # @return [Enumerable<Unit>] All owning units.
+  # @return [Enumerable<Unit>] All owning units, including their parents.
   #
-  def all_units # TODO: replace with has_many :through
+  def all_units
     bucket = Set.new
     collections.each do |collection|
-      bucket += collection.units
+      bucket += collection.all_units
     end
     bucket
   end
