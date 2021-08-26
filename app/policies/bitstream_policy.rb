@@ -34,10 +34,6 @@ class BitstreamPolicy < ApplicationPolicy
                   "collections containing the file." }
   end
 
-  def data
-    download
-  end
-
   def destroy
     bitstream.item.stage == Item::Stages::SUBMITTING ?
         update : effective_sysadmin(user, role)
@@ -104,6 +100,10 @@ class BitstreamPolicy < ApplicationPolicy
                reason:     "You are not authorized to access this file." }
     end
     AUTHORIZED_RESULT
+  end
+
+  def stream
+    download
   end
 
   def update

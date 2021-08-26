@@ -81,8 +81,8 @@ Rails.application.routes.draw do
   match "/items/process_review", to: "items#process_review", via: :post
   resources :items, except: :new do
     resources :bitstreams do
-      match "/data", to: "bitstreams#data", via: :get
       match "/ingest", to: "bitstreams#ingest", via: :post
+      match "/stream", to: "bitstreams#stream", via: :get
     end
     match "/download-counts", to: "items#download_counts", via: :get
     match "/edit-embargoes", to: "items#edit_embargoes", via: :get,

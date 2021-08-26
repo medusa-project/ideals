@@ -4,7 +4,7 @@ class BitstreamsController < ApplicationController
 
   LOGGER = CustomLogger.new(BitstreamsController)
 
-  before_action :ensure_logged_in, except: [:data, :show]
+  before_action :ensure_logged_in, except: [:show, :stream]
 
   before_action :set_item, only: :create
   before_action :set_bitstream, except: :create
@@ -40,11 +40,56 @@ class BitstreamsController < ApplicationController
   end
 
   ##
-  # Returns a bitstream's data.
+  # Deletes {Bitstream}s via the file table in the submission form.
   #
-  # Responds to `GET /items/:item_id/bitstreams/:id/data`
+  # Responds to `DELETE /items/:item_id/bitstreams/:id`
   #
-  def data
+  def destroy
+    @bitstream.destroy!
+    head :no_content
+  end
+
+  ##
+  # Used for editing bitstream properties.
+  #
+  # Responds to GET `/items/:item_id/bitstreams/:id/edit` (XHR only)
+  #
+  def edit
+    raise ActiveRecord::RecordNotFound unless request.xhr?
+    render partial: "bitstreams/edit_form",
+           locals: { bitstream: @bitstream }
+  end
+
+  ##
+  # Ingests a bitstream into Medusa.
+  #
+  # Responds to `POST /items/:item_id/bitstreams/:id/ingest`
+  #
+  def ingest
+    @bitstream.ingest_into_medusa
+  rescue ArgumentError => e
+    render plain: "#{e}", status: :bad_request
+  rescue AlreadyExistsError => e
+    render plain: "#{e}", status: :conflict
+  else
+    head :no_content
+  end
+
+  ##
+  # Returns a bitstream's properties (in JSON format only).
+  #
+  # Responds to `GET /items/:item_id/bitstreams/:id`
+  #
+  def show
+    request.format = :json
+  end
+
+  ##
+  # Streams a bitstream's data.
+  #
+  # Responds to `GET /items/:item_id/bitstreams/:id/stream`
+  #
+  def stream
     config = ::Configuration.instance
     if @bitstream.medusa_key.present?
       s3_request = {
@@ -101,51 +146,6 @@ class BitstreamsController < ApplicationController
     @bitstream.add_download(user: current_user)
   ensure
     response.stream.close
-  end
-
-  ##
-  # Deletes {Bitstream}s via the file table in the submission form.
-  #
-  # Responds to `DELETE /items/:item_id/bitstreams/:id`
-  #
-  def destroy
-    @bitstream.destroy!
-    head :no_content
-  end
-
-  ##
-  # Used for editing bitstream properties.
-  #
-  # Responds to GET `/items/:item_id/bitstreams/:id/edit` (XHR only)
-  #
-  def edit
-    raise ActiveRecord::RecordNotFound unless request.xhr?
-    render partial: "bitstreams/edit_form",
-           locals: { bitstream: @bitstream }
-  end
-
-  ##
-  # Ingests a bitstream into Medusa.
-  #
-  # Responds to `POST /items/:item_id/bitstreams/:id/ingest`
-  #
-  def ingest
-    @bitstream.ingest_into_medusa
-  rescue ArgumentError => e
-    render plain: "#{e}", status: :bad_request
-  rescue AlreadyExistsError => e
-    render plain: "#{e}", status: :conflict
-  else
-    head :no_content
-  end
-
-  ##
-  # Returns a bitstream's properties (in JSON format only).
-  #
-  # Responds to `GET /items/:item_id/bitstreams/:id`
-  #
-  def show
-    request.format = :json
   end
 
   ##
