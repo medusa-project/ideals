@@ -30,6 +30,8 @@ class BitstreamTest < ActiveSupport::TestCase
 
   teardown do
     AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
+    S3Client.instance.delete_objects(bucket: ::Configuration.instance.aws[:bucket],
+                                     key_prefix: "/")
   end
 
   # medusa_key()
@@ -123,6 +125,35 @@ class BitstreamTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # delete_derivatives()
+
+  test "delete_derivatives() deletes all derivatives" do
+    client = S3Client.instance
+    bucket = ::Configuration.instance.aws[:bucket]
+
+    # upload the source image to the staging area of the application S3 bucket
+    File.open(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg"), "r") do |file|
+      @instance.upload_to_staging(file)
+    end
+
+    # generate a couple of derivatives
+    @instance.derivative_url(size: 45)
+    @instance.derivative_url(size: 50)
+
+    # check that they exist
+    key1 = @instance.send(:derivative_key, region: :full, size: 45, format: :jpg)
+    key2 = @instance.send(:derivative_key, region: :full, size: 50, format: :jpg)
+    assert client.object_exists?(bucket: bucket, key: key1)
+    assert client.object_exists?(bucket: bucket, key: key2)
+
+    # delete them
+    @instance.delete_derivatives
+
+    # assert that no derivatives exist
+    assert !client.object_exists?(bucket: bucket, key: key1)
+    assert !client.object_exists?(bucket: bucket, key: key2)
+  end
+
   # delete_from_medusa()
 
   test "delete_from_medusa() does nothing if medusa_uuid is not set" do
@@ -199,6 +230,29 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_nil @instance.staging_key
   end
 
+  # derivative_url()
+
+  test "derivative_url() with an unsupported format raises an error" do
+    @instance.original_filename = "cats.bogus"
+    assert_raises do
+      @instance.derivative_url(size: 45)
+    end
+  end
+
+  test "derivative_url() generates a correct URL" do
+    # upload the source image to the staging area of the application S3 bucket
+    File.open(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg"), "r") do |file|
+      @instance.upload_to_staging(file)
+    end
+
+    url = @instance.derivative_url(size: 45)
+
+    client   = HTTPClient.new
+    response = client.get(url)
+    assert_equal 200, response.code
+    assert response.headers['Content-Length'].to_i > 10000
+  end
+
   # download_count()
 
   test "download_count() returns a correct value" do
@@ -225,6 +279,26 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::RecordInvalid do
       @instance.update!(exists_in_staging: true)
     end
+  end
+
+  # has_representative_image?()
+
+  test "has_representative_image?() returns true for an instance that is in a
+   supported format" do
+    @instance.original_filename = "file.jpg"
+    assert @instance.has_representative_image?
+  end
+
+  test "has_representative_image?() returns false for an instance that is not
+  in a supported format" do
+    @instance.original_filename = "file.txt"
+    assert !@instance.has_representative_image?
+  end
+
+  test "has_representative_image?() returns false for an instance that is in an
+  unrecognized format" do
+    @instance.original_filename = "file.bogus"
+    assert !@instance.has_representative_image?
   end
 
   # ingest_into_medusa()

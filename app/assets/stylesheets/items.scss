@@ -8,6 +8,13 @@ body#list_items, body#list_collections {
 }
 
 body#show_item {
+  $thumb_size: 128px;
+  #main-files, #other-files {
+    img {
+      max-height: $thumb_size;
+      max-width: $thumb_size;
+    }
+  }
   #other-files-heading a {
     color: black;
     text-decoration: none;

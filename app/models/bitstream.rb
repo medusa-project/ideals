@@ -5,6 +5,14 @@
 # The term "bitstream" is not exposed in the user interface. Throughout the UI,
 # bitstreams are called files. (IR-109)
 #
+# # Derivative images
+#
+# The application supports image previews for some file types. If the return
+# value of {has_representative_image?} is `true`, {derivative_url} can be used
+# to obtain the URL of a derivative image with the given characteristics. The
+# URL points to an image in the application S3 bucket, which is generated
+# on-the-fly and cached.
+#
 # # Attributes
 #
 # * `bundle`                One of the {Bundle} constant values.
@@ -53,8 +61,11 @@ class Bitstream < ApplicationRecord
   validates_inclusion_of :role, in: -> (value) { Role.all }
   validate :validate_staging_properties
 
-  before_destroy :delete_from_staging
+  before_destroy :delete_derivatives, :delete_from_staging
   before_destroy :delete_from_medusa, if: -> { Rails.env.demo? }
+
+  # File formats recognized by the application.
+  FILE_FORMATS = YAML.load_file(File.join(Rails.root, "config", "formats.yml")).deep_symbolize_keys
 
   # This must be a location that Medusa is configured to monitor
   STAGING_KEY_PREFIX = "uploads"
@@ -176,6 +187,11 @@ class Bitstream < ApplicationRecord
     self.item.bitstream_authorizations.where(user_group: user_group).count > 0
   end
 
+  def delete_derivatives
+    S3Client.instance.delete_objects(bucket:     ::Configuration.instance.aws[:bucket],
+                                     key_prefix: derivative_key_prefix)
+  end
+
   ##
   # Sends a message to Medusa to delete the corresponding object.
   #
@@ -205,6 +221,44 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # @param region [Symbol]              `:full` or `:square`.
+  # @param size [Integer]               Power-of-2 size constraint (128, 256,
+  #                                     512, etc.)
+  # @param content_disposition [Symbol] `:inline` or `:attachment`.
+  # @param filename [String]            Used when `content_disposition` is
+  #                                     `:attachment`.
+  # @return [String] Pre-signed URL for a derivative image with the given
+  #                  characteristics. If no such image exists, it is generated
+  #                  automatically.
+  #
+  def derivative_url(region:              :full,
+                     size:                ,
+                     content_disposition: :inline,
+                     filename:            nil)
+    unless has_representative_image?
+      raise "Derivatives are not supported for this format."
+    end
+    if content_disposition == :attachment && filename.present?
+      content_disposition = "attachment; filename=#{filename}"
+    end
+
+    client = S3Client.instance
+    bucket = ::Configuration.instance.aws[:bucket]
+    key    = derivative_key(region: region, size: size, format: :jpg)
+    unless client.object_exists?(bucket: bucket, key: key)
+      generate_derivative(region: region, size: size, format: :jpg)
+    end
+
+    aws_client = client.send(:get_client)
+    signer = Aws::S3::Presigner.new(client: aws_client)
+    signer.presigned_url(:get_object,
+                         bucket:                       bucket,
+                         key:                          key,
+                         response_content_disposition: content_disposition.to_s,
+                         expires_in:                   1.hour.to_i)
+  end
+
+  ##
   # @return [Integer]
   #
   def download_count
@@ -224,6 +278,15 @@ class Bitstream < ApplicationRecord
                           dspace_id[2..3],
                           dspace_id[4..5],
                           dspace_id].join("/") : nil
+  end
+
+  ##
+  # @return [Boolean]
+  #
+  def has_representative_image?
+    ext = self.original_filename.split(".").last.downcase
+    format = FILE_FORMATS.find{ |k,v| v[:extensions].include?(ext) }
+    format ? (format[1][:readable_by_vips] == true) : false
   end
 
   ##
@@ -275,7 +338,68 @@ class Bitstream < ApplicationRecord
     self.update!(exists_in_staging: true)
   end
 
+
   private
+
+  ##
+  # @param region [Symbol] `:full` or `:square`.
+  # @param size [Integer]  Size of a square to fit within.
+  # @param format [Symbol] Format extension with no leading dot.
+  # @return [String]
+  #
+  def derivative_key(region:, size:, format:)
+    [derivative_key_prefix, region.to_s, size.to_s,
+     "default.#{format}"].join("/")
+  end
+
+  def derivative_key_prefix
+    "derivatives/#{self.id}"
+  end
+
+  ##
+  # @return [Tempfile]
+  #
+  def download_to_temp_file
+    config        = Configuration.instance
+    source_bucket = self.exists_in_staging ?
+                      config.aws[:bucket] : config.medusa[:bucket]
+    source_key    = self.exists_in_staging ? self.staging_key : self.medusa_key
+    tempfile      = Tempfile.new("#{self.class}-#{self.id}")
+
+    S3Client.instance.get_object(bucket:          source_bucket,
+                                 key:             source_key,
+                                 response_target: tempfile.path)
+    tempfile
+  end
+
+  ##
+  # Downloads the object into a temp file, writes a derivative image into an
+  # in-memory buffer, and saves it to the application S3 bucket.
+  #
+  # @param region [Symbol]
+  # @param size [Integer]
+  # @param format [Symbol]
+  #
+  def generate_derivative(region:, size:, format:)
+    config        = Configuration.instance
+    target_bucket = config.aws[:bucket]
+    target_key    = derivative_key(region: region, size: size, format: format)
+    tempfile      = download_to_temp_file
+    begin
+      # crop options: none, attention, centre, entropy
+      thumb_buf = Vips::Image.thumbnail(tempfile.path, size,
+                                        crop: (region == :square) ? "attention" : "none")
+      thumb_jpg = thumb_buf.write_to_buffer(".#{format}")
+      io = StringIO.new(thumb_jpg)
+      io.binmode
+
+      S3Client.instance.put_object(bucket: target_bucket,
+                                   key:    target_key,
+                                   body:   io)
+    ensure
+      tempfile.unlink
+    end
+  end
 
   def validate_staging_properties
     if exists_in_staging && staging_key.blank?

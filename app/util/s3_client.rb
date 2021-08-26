@@ -22,6 +22,11 @@ class S3Client
     end
   end
 
+  def delete_objects(bucket:, key_prefix:)
+    bucket = get_resource.bucket(bucket)
+    bucket.objects(prefix: key_prefix).each(&:delete)
+  end
+
   def method_missing(m, *args, &block)
     if get_client.respond_to?(m)
       get_client.send(m, *args, &block)
@@ -45,23 +50,31 @@ class S3Client
     end
   end
 
+
   private
 
-  def get_client
-    unless @client
-      config = ::Configuration.instance
-      opts   = { region: config.aws[:region] }
-      if Rails.env.development? || Rails.env.test?
-        # In development and test, we connect to a custom endpoint, and
-        # credentials are drawn from the application configuration.
-        opts[:endpoint]         = config.aws[:endpoint]
-        opts[:force_path_style] = true
-        opts[:credentials]      = Aws::Credentials.new(config.aws[:access_key_id],
-                                                       config.aws[:secret_access_key])
-      end
-      @client = Aws::S3::Client.new(opts)
+  def client_options
+    config = ::Configuration.instance
+    opts   = { region: config.aws[:region] }
+    if Rails.env.development? || Rails.env.test?
+      # In development and test, we connect to a custom endpoint, and
+      # credentials are drawn from the application configuration.
+      opts[:endpoint]         = config.aws[:endpoint]
+      opts[:force_path_style] = true
+      opts[:credentials]      = Aws::Credentials.new(config.aws[:access_key_id],
+                                                     config.aws[:secret_access_key])
     end
+    opts
+  end
+
+  def get_client
+    @client = Aws::S3::Client.new(client_options) unless @client
     @client
+  end
+
+  def get_resource
+    @resource = Aws::S3::Resource.new(client_options) unless @resource
+    @resource
   end
 
 end

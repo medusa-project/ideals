@@ -2,6 +2,11 @@ require 'test_helper'
 
 class S3ClientTest < ActiveSupport::TestCase
 
+  teardown do
+    bucket = ::Configuration.instance.aws[:bucket]
+    S3Client.instance.delete_objects(bucket: bucket, key_prefix: "/")
+  end
+
   # bucket_exists?()
 
   test "bucket_exists?() returns true when the bucket exists" do
@@ -11,6 +16,29 @@ class S3ClientTest < ActiveSupport::TestCase
 
   test "bucket_exists?() returns false when the bucket does not exist" do
     assert !S3Client.instance.bucket_exists?("bogus")
+  end
+
+  # delete_objects()
+
+  test "delete_objects() deletes all intended objects" do
+    bucket = ::Configuration.instance.aws[:bucket]
+    client = S3Client.instance
+    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")
+    client.put_object(bucket: bucket,
+                      key:   "cats/siamese",
+                      body:   file)
+    client.put_object(bucket: bucket,
+                      key:   "cats/mainecoon",
+                      body:   file)
+    client.put_object(bucket: bucket,
+                      key:   "dogs",
+                      body:   file)
+
+    client.delete_objects(bucket: bucket, key_prefix: "cats")
+
+    assert !client.object_exists?(bucket: bucket, key: "cats/siamese")
+    assert !client.object_exists?(bucket: bucket, key: "cats/mainecoon")
+    assert client.object_exists?(bucket: bucket, key: "dogs")
   end
 
   # object_exists?()

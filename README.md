@@ -21,6 +21,7 @@ This is a getting-started guide for developers.
   [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally)
   for setup instructions.)
 * RabbitMQ
+* VIPS
 
 (This stuff is all up and running in docker-compose; see the testing section.)
 

@@ -1,0 +1,816 @@
+# This is a custom IDEALS file that defines all file formats recognized by the
+# application. It is used to assign names, icons, and viewers to user-submitted
+# files in the user interface.
+#
+# This is not a comprehensive list of all formats in existence, but is a
+# pretty comprehensive list of all formats in the IDEALS database as of early
+# 2020. It should be updated from time to time to accommodate new user-
+# submitted formats
+#
+# Properties
+#
+# * short_name:       Short name.
+# * long_name:        Long name.
+# * extensions:       Extensions that files of this type may have.
+# * category:         archive, audio, binary, code, document, image, video
+# * icon:             One of the files (minus extension) in
+#                     `app/assets/images/fontawesome`
+# * readable_by_vips: Whether this type is supported by our image processing
+#                     library (VIPS) in order to generate representative
+#                     images.
+#
+
+aac:
+  short_name: AAC
+  long_name: Advanced Audio Coding
+  extensions:
+    - aac
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+ai:
+  short_name: AI
+  long_name: Adobe Illustrator
+  extensions:
+    - ai
+  category: image
+  icon: file-image-o
+  readable_by_vips: false
+aiff:
+  short_name: AIFF
+  long_name: Audio Interchange File Format
+  extensions:
+    - aif
+    - aifc
+    - aiff
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+asc:
+  short_name: ActionScript
+  long_name: ActionScript
+  extensions:
+    - asc
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+au:
+  short_name: AU
+  long_name: AU
+  extensions:
+    - au
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+avi:
+  short_name: AVI
+  long_name: AVI
+  extensions:
+    - avi
+  category: video
+  icon: file-video-o
+  readable_by_vips: false
+bmp:
+  short_name: BMP
+  long_name: Bitmap
+  extensions:
+    - bmp
+  category: image
+  icon: file-image-o
+  readable_by_vips: true
+css:
+  short_name: CSS
+  long_name: Cascading Style Sheets
+  extensions:
+    - css
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+csv:
+  short_name: CSV
+  long_name: Comma-Separated Values
+  extensions:
+    - csv
+  category: document
+  icon: file-text-o
+  readable_by_vips: false
+doc:
+  short_name: Word
+  long_name: Word Document
+  extensions:
+    - doc
+  category: document
+  icon: file-word-o
+  readable_by_vips: false
+docx:
+  short_name: Word
+  long_name: Word Document
+  extensions:
+    - doc
+  category: document
+  icon: file-word-o
+  readable_by_vips: false
+dvi:
+  short_name: DVI
+  long_name: Device Independent Format
+  extensions:
+    - dvi
+  category: binary
+  icon: file-o
+  readable_by_vips: false
+eps:
+  short_name: EPS
+  long_name: Encapsulated PostScript
+  extensions:
+    - eps
+  category: document
+  icon: file-text-o
+  readable_by_vips: false
+fla:
+  short_name: Flash
+  long_name: Flash Animation
+  extensions:
+    - fla
+  category: binary
+  icon: file-o
+  readable_by_vips: false
+flac:
+  short_name: FLAC
+  long_name: Free Lossless Audio Codec
+  extensions:
+    - flac
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+fm:
+  short_name: FM
+  long_name: FrameMaker
+  extensions:
+    - fm
+  category: document
+  icon: file-text-o
+  readable_by_vips: false
+gif:
+  short_name: GIF
+  long_name: GIF
+  extensions:
+    - gif
+  category: image
+  icon: file-image-o
+  readable_by_vips: true
+gzip:
+  short_name: GZip
+  long_name: GZip
+  extensions:
+    - gz
+    - gzip
+    - tgz
+  category: archive
+  icon: file-archive-o
+  readable_by_vips: false
+html:
+  short_name: HTML
+  long_name: Hypertext Markup Language
+  extensions:
+    - htm
+    - html
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+iso:
+  short_name: ISO
+  long_name: ISO
+  extensions:
+    - iso
+  category: binary
+  icon: file-o
+  readable_by_vips: false
+jpeg:
+  short_name: JPEG
+  long_name: JPEG JFIF
+  extensions:
+    - jpeg
+    - jpg
+  category: image
+  icon: file-image-o
+  readable_by_vips: true
+jpeg2000:
+  short_name: JP2
+  long_name: JPEG2000
+  extensions:
+    - jp2
+  category: image
+  icon: file-image-o
+  readable_by_vips: false
+js:
+  short_name: JavaScript
+  long_name: JavaScript
+  extensions:
+    - js
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+latex:
+  short_name: LaTeX
+  long_name: LaTeX
+  extensions:
+    - latex
+  category: document
+  icon: file-code-o
+  readable_by_vips: false
+ma:
+  short_name: Maya
+  long_name: Maya ASCII Scene
+  extensions:
+    - ma
+  category: document
+  icon: file-text-o
+  readable_by_vips: false
+mjpeg2000:
+  short_name: MJPEG2000
+  long_name: Motion JPEG2000
+  extensions:
+    - mj2
+    - mjp2
+  category: video
+  icon: file-video-o
+  readable_by_vips: false
+mp1_audio:
+  short_name: MP1
+  long_name: MPEG Audio
+  extensions:
+    - mpa
+    - mpega
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+mp2_audio:
+  short_name: MP2
+  long_name: MPEG-1 Layer 2
+  extensions:
+    - mp2
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+mp3_audio:
+  short_name: MP3
+  long_name: MPEG-1 Layer 3
+  extensions:
+    - mp3
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+mp4_audio:
+  short_name: MPEG-4
+  long_name: MPEG-4
+  extensions:
+    - m4a
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+mp4_video:
+  short_name: MPEG-4
+  long_name: MPEG-4
+  extensions:
+    - m4p
+    - m4v
+    - mp4
+  category: video
+  icon: file-video-o
+  readable_by_vips: false
+mpd:
+  short_name: MPD
+  long_name: Microsoft Project Database
+  extensions:
+    - mpd
+  category: document
+  icon: file-o
+  readable_by_vips: false
+mpeg:
+  short_name: MPEG-1
+  long_name: MPEG-1
+  extensions:
+    - mp1
+    - mpe
+    - mpeg
+    - mpg
+  category: video
+  icon: file-video-o
+  readable_by_vips: false
+mpeg2:
+  short_name: MPEG-2
+  long_name: MPEG-2
+  extensions:
+    - mp2
+  category: video
+  icon: file-video-o
+  readable_by_vips: false
+mpp:
+  short_name: MPP
+  long_name: Microsoft Project
+  extensions:
+    - mpp
+  category: document
+  icon: file-o
+  readable_by_vips: false
+mpx:
+  short_name: MPX
+  long_name: Microsoft Project Exchange
+  extensions:
+    - mpx
+  category: document
+  icon: file-o
+  readable_by_vips: false
+odb:
+  short_name: ODB
+  long_name: OpenDocument Database
+  extensions:
+    - odb
+  category: document
+  icon: file-o
+  readable_by_vips: false
+odc:
+  short_name: ODC
+  long_name: Office Data Connection
+  extensions:
+    - odc
+  category: document
+  icon: file-o
+  readable_by_vips: false
+odf:
+  short_name: ODF
+  long_name: OpenDocument Formula
+  extensions:
+    - odf
+  category: document
+  icon: file-o
+  readable_by_vips: false
+odg:
+  short_name: ODG
+  long_name: OpenDocument Graphic
+  extensions:
+    - odg
+  category: document
+  icon: file-image-o
+  readable_by_vips: false
+odi:
+  short_name: ODI
+  long_name: OpenDocument Image
+  extensions:
+    - odi
+  category: document
+  icon: file-image-o
+  readable_by_vips: false
+odm:
+  short_name: ODM
+  long_name: OpenDocument Master Document
+  extensions:
+    - odm
+  category: document
+  icon: file-o
+  readable_by_vips: false
+odp:
+  short_name: ODP
+  long_name: OpenDocument Presentation
+  extensions:
+    - odp
+  category: document
+  icon: file-o
+  readable_by_vips: false
+ods:
+  short_name: ODS
+  long_name: OpenDocument Spreadsheet
+  extensions:
+    - ods, ots
+  category: document
+  icon: file-o
+  readable_by_vips: false
+odt:
+  short_name: ODT
+  long_name: OpenDocument Text
+  extensions:
+    - odt
+    - ott
+  category: document
+  icon: file-text-o
+  readable_by_vips: false
+ogg:
+  short_name: Ogg
+  long_name: Ogg Vorbis
+  extensions:
+    - ogg
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+otg:
+  short_name: OTG
+  long_name: OpenDocument Graphic Template
+  extensions:
+    - otg
+  category: document
+  icon: file-o
+  readable_by_vips: false
+oth:
+  short_name: OTH
+  long_name: OpenDocument HTML Template
+  extensions:
+    - oth
+  category: document
+  icon: file-o
+  readable_by_vips: false
+otp:
+  short_name: OTP
+  long_name: OpenDocument Presentation
+  extensions:
+    - otp
+  category: document
+  icon: file-o
+  readable_by_vips: false
+oxt:
+  short_name: OXT
+  long_name: OpenOffice Extension
+  extensions:
+    - oxt
+  category: document
+  icon: file-o
+  readable_by_vips: false
+pcd:
+  short_name: PCD
+  long_name: Photo CD
+  extensions:
+    - pcd
+  category: image
+  icon: file-image-o
+  readable_by_vips: true
+pdd:
+  short_name: PDD
+  long_name: PhotoDeluxe
+  extensions:
+    - pdd
+  category: document
+  icon: file-image-o
+  readable_by_vips: false
+pdf:
+  short_name: PDF
+  long_name: Portable Document Format
+  extensions:
+    - pdf
+  category: document
+  icon: file-pdf-o
+  readable_by_vips: false
+png:
+  short_name: PNG
+  long_name: Portable Network Graphics
+  extensions:
+    - png
+  category: image
+  icon: file-image-o
+  readable_by_vips: true
+pps:
+  short_name: PPS
+  long_name: PowerPoint Slide Show
+  extensions:
+    - pps
+  category: document
+  icon: file-o
+  readable_by_vips: false
+ppt:
+  short_name: PowerPoint
+  long_name: PowerPoint
+  extensions:
+    - ppt
+  category: document
+  icon: file-powerpoint-o
+  readable_by_vips: false
+pptx:
+  short_name: PowerPoint
+  long_name: PowerPoint
+  extensions:
+    - pptx
+  category: document
+  icon: file-powerpoint-o
+  readable_by_vips: false
+ps:
+  short_name: PostScript
+  long_name: PostScript
+  extensions:
+    - ps
+  category: document
+  icon: file-p
+  readable_by_vips: false
+psd:
+  short_name: PSD
+  long_name: Photoshop
+  extensions:
+    - psd
+  category: image
+  icon: file-image-o
+  readable_by_vips: false
+quicktime:
+  short_name: QuickTime
+  long_name: QuickTime
+  extensions:
+    - mov
+    - qt
+  category: video
+  icon: file-video-o
+  readable_by_vips: false
+ra:
+  short_name: RA
+  long_name: RealAudio
+  extensions:
+    - ra
+    - ram
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+rar:
+  short_name: RAR
+  long_name: RAR
+  extensions:
+    - rar
+  category: archive
+  icon: file-archive-o
+  readable_by_vips: false
+rdf:
+  short_name: RDF
+  long_name: Resource Description Framework
+  extensions:
+    - rdf
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+rtf:
+  short_name: RTF
+  long_name: Rich Text
+  extensions:
+    - rtf
+  category: document
+  icon: file-text-o
+  readable_by_vips: false
+sdd:
+  short_name: SDD
+  long_name: StarImpress
+  extensions:
+    - sdd
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sdm:
+  short_name: SDM
+  long_name: StarOffice Mail Message
+  extensions:
+    - sdm
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sda:
+  short_name: SDA
+  long_name: StarOffice Draw
+  extensions:
+    - sda
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sdc:
+  short_name: SDC
+  long_name: StarOffice Calc
+  extensions:
+    - sdc
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sdp:
+  short_name: SDP
+  long_name: StarOffice Presentation
+  extensions:
+    - sdp
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sds:
+  short_name: SDS
+  long_name: OpenOffice Chart
+  extensions:
+    - sds
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sdw:
+  short_name: SDW
+  long_name: MrSID World File
+  extensions:
+    - sdw
+  category: binary
+  icon: file-o
+  readable_by_vips: false
+sgl:
+  short_name: SGL
+  long_name: StarOffice Master Document
+  extensions:
+    - sgl
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sgml:
+  short_name: SGML
+  long_name: SGML
+  extensions:
+    - sgm
+    - sgml
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+snd:
+  short_name: SND
+  long_name: Sound
+  extensions:
+    - snd
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+stc:
+  short_name: STC
+  long_name: StarOffice Calc
+  extensions:
+    - stc
+  category: document
+  icon: file-o
+  readable_by_vips: false
+std:
+  short_name: STD
+  long_name: OpenOffice Drawing Template
+  extensions:
+    - std
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sti:
+  short_name: STI
+  long_name: StarOffice Presentation Template
+  extensions:
+    - sti
+  category: document
+  icon: file-o
+  readable_by_vips: false
+stw:
+  short_name: STW
+  long_name: StarOffice Text Document Template
+  extensions:
+    - stw
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sxc:
+  short_name: SXC
+  long_name: Sun XML Calc
+  extensions:
+    - sxc
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sxd:
+  short_name: SXD
+  long_name: StarOffice Drawing
+  extensions:
+    - sxd
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sxg:
+  short_name: SXG
+  long_name: StarOffice Master Document
+  extensions:
+    - sxg
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sxi:
+  short_name: SXI
+  long_name: StarOffice Impress Presentation
+  extensions:
+    - sxi
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sxm:
+  short_name: SXM
+  long_name: StarOffice Math
+  extensions:
+    - sxm
+  category: document
+  icon: file-o
+  readable_by_vips: false
+sxw:
+  short_name: SXW
+  long_name: StarOffice Writer
+  extensions:
+    - sxw
+  category: document
+  icon: file-o
+  readable_by_vips: false
+tar:
+  short_name: TAR
+  long_name: TAR
+  extensions:
+    - tar
+  category: archive
+  icon: file-archive-o
+  readable_by_vips: false
+tex:
+  short_name: TeX
+  long_name: TeX
+  extensions:
+    - tex
+  category: document
+  icon: file-code-o
+  readable_by_vips: false
+tiff:
+  short_name: TIFF
+  long_name: Tagged Image File Format
+  extensions:
+    - tif
+    - tiff
+  category: image
+  icon: file-image-o
+  readable_by_vips: true
+txt:
+  short_name: Text
+  long_name: Plain Text
+  extensions:
+    - txt
+  category: document
+  icon: file-text-o
+  readable_by_vips: false
+vsd:
+  short_name: VSD
+  long_name: Visio Drawing
+  extensions:
+    - vsd
+  category: document
+  icon: file-o
+  readable_by_vips: false
+wav:
+  short_name: WAV
+  long_name: Wave Audio
+  extensions:
+    - wav
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+wma:
+  short_name: WMA
+  long_name: Windows Media Audio
+  extensions:
+    - wma
+  category: audio
+  icon: file-audio-o
+  readable_by_vips: false
+wmv:
+  short_name: WMV
+  long_name: Windows Media Video
+  extensions:
+    - wmv
+  category: video
+  icon: file-video-o
+  readable_by_vips: false
+wpd:
+  short_name: WPD
+  long_name: WordPerfect
+  extensions:
+    - wpd
+  category: document
+  icon: file-text-o
+  readable_by_vips: false
+xls:
+  short_name: Excel
+  long_name: Excel
+  extensions:
+    - xls
+  category: document
+  icon: file-excel-o
+  readable_by_vips: false
+xlsx:
+  short_name: Excel
+  long_name: Excel
+  extensions:
+    - xlsx
+  category: document
+  icon: file-excel-o
+  readable_by_vips: false
+xml:
+  short_name: XML
+  long_name: XML
+  extensions:
+    - xml
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+zip:
+  short_name: Zip
+  long_name: Zip
+  extensions:
+    - zip
+  category: archive
+  icon: file-archive-o
+  readable_by_vips: false
