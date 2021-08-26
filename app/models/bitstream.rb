@@ -64,9 +64,6 @@ class Bitstream < ApplicationRecord
   before_destroy :delete_derivatives, :delete_from_staging
   before_destroy :delete_from_medusa, if: -> { Rails.env.demo? }
 
-  # File formats recognized by the application.
-  FILE_FORMATS = YAML.load_file(File.join(Rails.root, "config", "formats.yml")).deep_symbolize_keys
-
   # This must be a location that Medusa is configured to monitor
   STAGING_KEY_PREFIX = "uploads"
 
@@ -152,10 +149,12 @@ class Bitstream < ApplicationRecord
   # @return [Bitstream] New instance.
   #
   def self.new_in_staging(item:, filename:, length:)
+    media_type = FileFormat.for_extension(filename.split(".").last)&.media_types&.first
     Bitstream.new(item:              item,
                   staging_key:       staging_key(item.id, filename),
                   original_filename: filename,
-                  length:            length)
+                  length:            length,
+                  media_type:        media_type)
   end
 
   ##
@@ -284,9 +283,9 @@ class Bitstream < ApplicationRecord
   # @return [Boolean]
   #
   def has_representative_image?
-    ext = self.original_filename.split(".").last.downcase
-    format = FILE_FORMATS.find{ |k,v| v[:extensions].include?(ext) }
-    format ? (format[1][:readable_by_vips] == true) : false
+    ext    = self.original_filename.split(".").last
+    format = FileFormat.for_extension(ext)
+    format ? (format.readable_by_vips == true) : false
   end
 
   ##

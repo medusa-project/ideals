@@ -65,7 +65,7 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_equal Bitstream.staging_key(item.id, filename), bs.staging_key
     assert_equal length, bs.length
     assert_equal filename, bs.original_filename
-    assert_nil bs.media_type
+    assert_equal "image/jpeg", bs.media_type
   end
 
   # staging_key()
