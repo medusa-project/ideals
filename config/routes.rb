@@ -82,6 +82,7 @@ Rails.application.routes.draw do
   resources :items, except: :new do
     resources :bitstreams do
       match "/ingest", to: "bitstreams#ingest", via: :post
+      match "/object", to: "bitstreams#object", via: :get
       match "/stream", to: "bitstreams#stream", via: :get
     end
     match "/download-counts", to: "items#download_counts", via: :get

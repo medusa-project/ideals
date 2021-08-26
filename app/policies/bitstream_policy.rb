@@ -75,6 +75,10 @@ class BitstreamPolicy < ApplicationPolicy
     update
   end
 
+  def object
+    download
+  end
+
   def show
     if effective_sysadmin?(user, role)
       return AUTHORIZED_RESULT

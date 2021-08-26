@@ -451,6 +451,109 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.ingest?
   end
 
+  # object?()
+
+  test "object?() returns true with a nil user" do
+    policy = BitstreamPolicy.new(nil, @bitstream)
+    assert policy.object?
+  end
+
+  test "object?() restricts undiscoverable items by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    assert !policy.object?
+  end
+
+  test "object?() restricts submitting items by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    assert !policy.object?
+  end
+
+  test "object?() restricts withdrawn items by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    assert !policy.object?
+  end
+
+  test "object?() authorizes sysadmins to undiscoverable items" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    assert policy.object?
+  end
+
+  test "object?() authorizes sysadmins to submitting items" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    assert policy.object?
+  end
+
+  test "object?() authorizes sysadmins to withdrawn items" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    assert policy.object?
+  end
+
+  test "object?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    assert !policy.object?
+  end
+
+  test "object?() respects bitstream role limits" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
+    assert !policy.object?
+  end
+
+  test "object?() restricts non-content bitstreams to non-collection managers" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    assert !policy.object?
+  end
+
+  test "object?() restricts bitstreams whose owning items are embargoed" do
+    user      = users(:norights)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    bitstream = bitstreams(:item2_in_medusa)
+    policy    = BitstreamPolicy.new(context, bitstream)
+
+    assert policy.object?
+    bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
+                                   download:   true).save!
+    assert !policy.object?
+  end
+
+  test "object?() authorizes non-content bitstreams to collection managers" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    assert policy.object?
+  end
+
   # show?()
 
   test "show?() returns true with a nil user" do

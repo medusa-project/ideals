@@ -176,6 +176,129 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # object()
+
+  test "object() returns HTTP 307" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:item1)
+    bitstream = Bitstream.new_in_staging(item,
+                                         File.basename(fixture),
+                                         File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      get item_bitstream_object_path(item, bitstream)
+      assert_response :temporary_redirect
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
+  test "object() increments the bitstream's download count" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:item1)
+    bitstream = Bitstream.new_in_staging(item,
+                                         File.basename(fixture),
+                                         File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      get item_bitstream_object_path(item, bitstream)
+      bitstream.reload
+      assert_equal 1, bitstream.download_count
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
+  test "object() returns HTTP 403 for submitting items" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:submitting)
+    bitstream = Bitstream.new_in_staging(item,
+                                         File.basename(fixture),
+                                         File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      get item_bitstream_object_path(item, bitstream)
+      assert_response :forbidden
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
+  test "object() returns HTTP 403 for undiscoverable items" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:undiscoverable)
+    bitstream = Bitstream.new_in_staging(item,
+                                         File.basename(fixture),
+                                         File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      get item_bitstream_object_path(item, bitstream)
+      assert_response :forbidden
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
+  test "object() returns HTTP 403 for withdrawn items" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:withdrawn)
+    bitstream = Bitstream.new_in_staging(item,
+                                         File.basename(fixture),
+                                         File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      get item_bitstream_object_path(item, bitstream)
+      assert_response :forbidden
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
+  test "object() returns HTTP 404 for missing bitstreams" do
+    get item_bitstream_object_path(items(:item1), 9999999)
+    assert_response :not_found
+  end
+
+  test "object() respects role limits" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:withdrawn) # (an item that only sysadmins have access to)
+    bitstream = Bitstream.new_in_staging(item,
+                                         File.basename(fixture),
+                                         File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+
+      # Assert that sysadmins can access it
+      log_in_as(users(:local_sysadmin))
+      get item_bitstream_object_path(item, bitstream)
+      assert_response :temporary_redirect
+
+      # Assert that role-limited sysadmins can't
+      get item_bitstream_object_path(item, bitstream, role: Role::LOGGED_OUT)
+      assert_response :forbidden
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
   # show()
 
   test "show() returns HTTP 200" do

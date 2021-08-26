@@ -15,7 +15,7 @@ module ItemsHelper
     html <<       "<div class=\"btn-group\" role=\"group\">"
 
     if policy(bitstream).download?
-      html << link_to(item_bitstream_stream_path(@item, bitstream), class: "btn btn-sm btn-success") do
+      html << link_to(item_bitstream_object_path(@item, bitstream), class: "btn btn-sm btn-success") do
         raw("<i class=\"fa fa-download\"></i>"\
         "Download (#{number_to_human_size(bitstream.length)})")
       end
