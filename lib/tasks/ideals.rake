@@ -2,6 +2,18 @@ require 'rake'
 
 namespace :ideals do
 
+  namespace :bitstreams do
+    desc "Assign a media type to bitstreams without one"
+    task assign_media_types: :environment do
+      Bitstream.uncached do
+        Bitstream.where(media_type: nil).find_each do |bitstream|
+          bitstream.infer_media_type
+          bitstream.save! if bitstream.media_type.present?
+        end
+      end
+    end
+  end
+
   namespace :cache do
     desc "Clear Rails cache (sessions, views, etc.)"
     task clear: :environment do

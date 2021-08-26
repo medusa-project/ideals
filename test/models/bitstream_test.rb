@@ -303,6 +303,14 @@ class BitstreamTest < ActiveSupport::TestCase
     assert !@instance.has_representative_image?
   end
 
+  # infer_media_type()
+
+  test "infer_media_type() infers a correct media type" do
+    @instance.media_type = nil
+    @instance.infer_media_type
+    assert_equal "image/jpeg", @instance.media_type
+  end
+
   # ingest_into_medusa()
 
   test "ingest_into_medusa() raises an error if the ID is blank" do

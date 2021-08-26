@@ -5,6 +5,25 @@
 # The term "bitstream" is not exposed in the user interface. Throughout the UI,
 # bitstreams are called files. (IR-109)
 #
+# # Media types
+#
+# The `Content-Type` header supplied by the client during the submission/upload
+# process cannot be relied on to contain a useful, specific media type.
+# Instead, {upload_to_staging} infers a media type from the {original_filename}
+# extension during the initial upload to the staging area. This value may or
+# may not be copied to the S3 object in staging, but it doesn't really matter
+# because {media_type} is the "source of truth."
+#
+# Later, the S3 object in staging is ingested into Medusa, and Medusa will
+# perform its own media type management, which is not very reliable. Again,
+# {media_type} is the source of truth.
+#
+# When a media type cannot be inferred, {media_type} is set to `nil.` When the
+# media type database is updated with more types, it is a good idea to update
+# media types by running the `ideals:bitstreams:assign_media_types` rake task,
+# which will infer media types for all bitstreams lacking one. See {FileFormat}
+# for more information about the format database where media types are stored.
+#
 # # Derivative images
 #
 # The application supports image previews for some file types. If the return
@@ -149,12 +168,13 @@ class Bitstream < ApplicationRecord
   # @return [Bitstream] New instance.
   #
   def self.new_in_staging(item:, filename:, length:)
-    media_type = FileFormat.for_extension(filename.split(".").last)&.media_types&.first
-    Bitstream.new(item:              item,
-                  staging_key:       staging_key(item.id, filename),
-                  original_filename: filename,
-                  length:            length,
-                  media_type:        media_type)
+    bs = Bitstream.new(item:              item,
+                       staging_key:       staging_key(item.id, filename),
+                       original_filename: filename,
+                       length:            length,
+                       media_type:        media_type)
+    bs.infer_media_type
+    bs
   end
 
   ##
@@ -286,6 +306,15 @@ class Bitstream < ApplicationRecord
     ext    = self.original_filename.split(".").last
     format = FileFormat.for_extension(ext)
     format ? (format.readable_by_vips == true) : false
+  end
+
+  ##
+  # Updates {media_type} with a value based on the extension of
+  # {original_filename}. The instance is not saved.
+  #
+  def infer_media_type
+    ext = self.original_filename.split(".").last
+    self.media_type = FileFormat.for_extension(ext)&.media_types&.first
   end
 
   ##
