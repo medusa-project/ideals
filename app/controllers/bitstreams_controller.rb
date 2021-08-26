@@ -26,7 +26,9 @@ class BitstreamsController < ApplicationController
         ActiveRecord::Base.transaction do
           filename = request.env['HTTP_X_FILENAME']
           length   = request.env['HTTP_X_CONTENT_LENGTH'].to_i
-          bs       = Bitstream.new_in_staging(@item, filename, length)
+          bs       = Bitstream.new_in_staging(item:     @item,
+                                              filename: filename,
+                                              length:   length)
           bs.upload_to_staging(io)
           bs.save!
         end

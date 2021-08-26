@@ -181,9 +181,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "object() returns HTTP 307" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:item1)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -199,9 +199,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "object() increments the bitstream's download count" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:item1)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -218,9 +218,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "object() returns HTTP 403 for submitting items" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:submitting)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -236,9 +236,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "object() returns HTTP 403 for undiscoverable items" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:undiscoverable)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -254,9 +254,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "object() returns HTTP 403 for withdrawn items" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:withdrawn)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -277,9 +277,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "object() respects role limits" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:withdrawn) # (an item that only sysadmins have access to)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -311,9 +311,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "show() returns HTTP 403 for submitting items" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:submitting)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -329,9 +329,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "show() returns HTTP 403 for undiscoverable items" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:undiscoverable)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -347,9 +347,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "show() returns HTTP 403 for withdrawn items" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:withdrawn)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -365,9 +365,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "show() respects role limits" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:withdrawn) # (an item that only sysadmins have access to)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -392,9 +392,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "stream() returns HTTP 200" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:item1)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -410,9 +410,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "stream() increments the bitstream's download count" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:item1)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -429,9 +429,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "stream() returns HTTP 403 for submitting items" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:submitting)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -447,9 +447,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "stream() returns HTTP 403 for undiscoverable items" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:undiscoverable)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -465,9 +465,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "stream() returns HTTP 403 for withdrawn items" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:withdrawn)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|
@@ -487,7 +487,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "stream() returns HTTP 500 when the underlying data is missing" do
     item      = items(:item1)
-    bitstream = Bitstream.new_in_staging(item, "cats.jpg", 234234)
+    bitstream = Bitstream.new_in_staging(item: item,
+                                         filename: "cats.jpg",
+                                         length: 234234)
     bitstream.exists_in_staging = true
     bitstream.save!
     get item_bitstream_stream_path(item, bitstream)
@@ -497,9 +499,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "stream() respects role limits" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:withdrawn) # (an item that only sysadmins have access to)
-    bitstream = Bitstream.new_in_staging(item,
-                                         File.basename(fixture),
-                                         File.size(fixture))
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
     bitstream.save!
     begin
       File.open(fixture, "r") do |file|

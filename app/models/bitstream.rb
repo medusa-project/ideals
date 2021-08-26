@@ -151,7 +151,7 @@ class Bitstream < ApplicationRecord
   # @param length [Integer]
   # @return [Bitstream] New instance.
   #
-  def self.new_in_staging(item, filename, length)
+  def self.new_in_staging(item:, filename:, length:)
     Bitstream.new(item:              item,
                   staging_key:       staging_key(item.id, filename),
                   original_filename: filename,

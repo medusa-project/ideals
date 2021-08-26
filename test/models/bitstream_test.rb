@@ -59,7 +59,9 @@ class BitstreamTest < ActiveSupport::TestCase
     item     = items(:item1)
     filename = "cats.jpg"
     length   = 3424
-    bs       = Bitstream.new_in_staging(item, filename, length)
+    bs       = Bitstream.new_in_staging(item:     item,
+                                        filename: filename,
+                                        length:   length)
     assert_equal Bitstream.staging_key(item.id, filename), bs.staging_key
     assert_equal length, bs.length
     assert_equal filename, bs.original_filename
@@ -187,9 +189,9 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(items(:item1),
-                                           File.basename(fixture),
-                                           File.size(fixture))
+      @instance = Bitstream.new_in_staging(item:     items(:item1),
+                                           filename: File.basename(fixture),
+                                           length:   File.size(fixture))
       @instance.upload_to_staging(file)
     end
 
@@ -211,9 +213,9 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(items(:item1),
-                                           File.basename(fixture),
-                                           File.size(fixture))
+      @instance = Bitstream.new_in_staging(item:     items(:item1),
+                                           filename: File.basename(fixture),
+                                           length:   File.size(fixture))
       @instance.upload_to_staging(file)
     end
 
@@ -436,9 +438,9 @@ class BitstreamTest < ActiveSupport::TestCase
       # Write a file to the bucket.
       fixture = file_fixture("escher_lego.jpg")
       File.open(fixture, "r") do |file|
-        @instance = Bitstream.new_in_staging(items(:item1),
-                                             File.basename(fixture),
-                                             File.size(fixture))
+        @instance = Bitstream.new_in_staging(item:     items(:item1),
+                                             filename: File.basename(fixture),
+                                             length:   File.size(fixture))
         @instance.upload_to_staging(file)
       end
 
