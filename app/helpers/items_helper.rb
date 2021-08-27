@@ -3,11 +3,9 @@ module ItemsHelper
   ##
   # @param bitstream [Bitstream]
   # @param show_sysadmin_content [Boolean]
-  # @param show_bundle [Boolean] Only relevant when `show_sysadmin_content` is
-  #                              `true`.
   # @return [String]
   #
-  def bitstream_info(bitstream, show_sysadmin_content: false, show_bundle: true)
+  def bitstream_info(bitstream, show_sysadmin_content: false)
     html = StringIO.new
     html << "<div class=\"card mb-3\">"
     html <<   "<div class=\"card-body\">"
@@ -43,12 +41,10 @@ module ItemsHelper
       html << "<dd>"
       html <<   bitstream.id
       html << "</dd>"
-      if show_bundle
-        html << "<dt>Bundle</dt>"
-        html << "<dd>"
-        html <<   Bitstream::Bundle.label(bitstream.bundle)
-        html << "</dd>"
-      end
+      html << "<dt>Bundle</dt>"
+      html << "<dd>"
+      html <<   Bitstream::Bundle.label(bitstream.bundle)
+      html << "</dd>"
       if bitstream.exists_in_staging && bitstream.staging_key
         html << "<dt>Staging Key</dt>"
         html << "<dd><code>"
