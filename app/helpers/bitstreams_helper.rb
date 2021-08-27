@@ -1,7 +1,19 @@
+# frozen_string_literal: true
+
 module BitstreamsHelper
 
   ##
-  # @return [String]
+  # Returns an `img` tag for the given bitstream. If the bitstream
+  # {Bitstream#has_representative_image? has a representative image}, that is
+  # used. Otherwise, an appropriate generic icon is chosen based on the
+  # {FileFormat} registry.
+  #
+  # @param bitstream [Bitstream]
+  # @param region [Symbol] See {Bitstream#derivative_url}.
+  # @param size [Integer] See {Bitstream#derivative_url}. This is the literal
+  #                       size of the image; the `img` tag has no `width`/
+  #                       `height` attribute and must be sized via CSS.
+  # @return [String] HTML `img` tag.
   #
   def representative_image_tag(bitstream,
                                region: :full,
