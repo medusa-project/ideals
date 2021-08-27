@@ -171,8 +171,10 @@ class ItemTest < ActiveSupport::TestCase
   # assign_handle()
 
   test "assign_handle() raises an error if the instance already has a handle" do
-    @instance.assign_handle
     assert_not_nil @instance.handle
+    assert_raises do
+      @instance.assign_handle
+    end
   end
 
   test "assign_handle() assigns a handle" do
