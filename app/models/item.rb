@@ -205,9 +205,11 @@ class Item < ApplicationRecord
   # @return [void]
   #
   def approve
-    self.stage = Stages::APPROVED
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
-                        string:             Time.now.iso8601)
+    if self.stage != Stages::APPROVED
+      self.stage = Stages::APPROVED
+      self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
+                          string:             Time.now.iso8601)
+    end
   end
 
   ##
