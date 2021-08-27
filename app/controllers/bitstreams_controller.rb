@@ -163,7 +163,7 @@ class BitstreamsController < ApplicationController
              locals: { object: @bitstream.errors.any? ? @bitstream : e },
              status: :bad_request
     else
-      flash['success'] = "Bitstream \"#{@bitstream.original_filename}\" updated."
+      flash['success'] = "File \"#{@bitstream.original_filename}\" updated."
       render "shared/reload"
     end
   end
