@@ -21,9 +21,7 @@ module ItemsHelper
           unit = item.effective_primary_unit
           if prev_unit != unit
             form << "<h2>"
-            form << link_to(unit) do
-              icon_for(unit) + ' ' + unit.title
-            end
+            form << icon_for(unit) + ' ' + unit.title
             form << "</h2>"
           end
           # Collection heading
@@ -31,9 +29,7 @@ module ItemsHelper
           if prev_collection != collection
             form << "<h3 class=\"ml-3\">"
             form <<   "&#8627; "
-            form << link_to(collection) do
-              icon_for(collection) + ' ' + collection.title
-            end
+            form << icon_for(collection) + ' ' + collection.title
             form << "</h3>"
           end
         end
