@@ -1,14 +1,15 @@
 - pagination = paginate(count: @count, page: @current_page, per_page: @window, permitted_params: @permitted_params)
 
-.card.mb-3
-  #search-status.card-body.pt-3.pb-3
-    = search_status(@count, @start, @window, "item")
-    .btn-group.ml-3{role: "group"}
-      %button.check-all.btn.btn-sm.btn-light{type: "button"}
-        %i.far.fa-check-square
-        Check All
+- if @items.count > 1
+  .card
+    #search-status.card-body.pt-3.pb-3
+      = search_status(@count, @start, @window, "item")
+      .btn-group.ml-3{role: "group"}
+        %button.check-all.btn.btn-sm.btn-light{type: "button"}
+          %i.far.fa-check-square
+          Check All
 
-.row.justify-content-md-center
+.row.justify-content-md-center.mt-3
   .col-md-auto
     = pagination
 
