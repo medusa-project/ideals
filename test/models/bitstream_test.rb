@@ -30,6 +30,8 @@ class BitstreamTest < ActiveSupport::TestCase
 
   teardown do
     AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
+    S3Client.instance.delete_objects(bucket: ::Configuration.instance.aws[:bucket],
+                                     key_prefix: "/")
   end
 
   # medusa_key()
@@ -57,11 +59,13 @@ class BitstreamTest < ActiveSupport::TestCase
     item     = items(:item1)
     filename = "cats.jpg"
     length   = 3424
-    bs       = Bitstream.new_in_staging(item, filename, length)
+    bs       = Bitstream.new_in_staging(item:     item,
+                                        filename: filename,
+                                        length:   length)
     assert_equal Bitstream.staging_key(item.id, filename), bs.staging_key
     assert_equal length, bs.length
     assert_equal filename, bs.original_filename
-    assert_nil bs.media_type
+    assert_equal "image/jpeg", bs.media_type
   end
 
   # staging_key()
@@ -123,6 +127,35 @@ class BitstreamTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # delete_derivatives()
+
+  test "delete_derivatives() deletes all derivatives" do
+    client = S3Client.instance
+    bucket = ::Configuration.instance.aws[:bucket]
+
+    # upload the source image to the staging area of the application S3 bucket
+    File.open(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg"), "r") do |file|
+      @instance.upload_to_staging(file)
+    end
+
+    # generate a couple of derivatives
+    @instance.derivative_url(size: 45)
+    @instance.derivative_url(size: 50)
+
+    # check that they exist
+    key1 = @instance.send(:derivative_key, region: :full, size: 45, format: :jpg)
+    key2 = @instance.send(:derivative_key, region: :full, size: 50, format: :jpg)
+    assert client.object_exists?(bucket: bucket, key: key1)
+    assert client.object_exists?(bucket: bucket, key: key2)
+
+    # delete them
+    @instance.delete_derivatives
+
+    # assert that no derivatives exist
+    assert !client.object_exists?(bucket: bucket, key: key1)
+    assert !client.object_exists?(bucket: bucket, key: key2)
+  end
+
   # delete_from_medusa()
 
   test "delete_from_medusa() does nothing if medusa_uuid is not set" do
@@ -156,9 +189,9 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(items(:item1),
-                                           File.basename(fixture),
-                                           File.size(fixture))
+      @instance = Bitstream.new_in_staging(item:     items(:item1),
+                                           filename: File.basename(fixture),
+                                           length:   File.size(fixture))
       @instance.upload_to_staging(file)
     end
 
@@ -180,9 +213,9 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(items(:item1),
-                                           File.basename(fixture),
-                                           File.size(fixture))
+      @instance = Bitstream.new_in_staging(item:     items(:item1),
+                                           filename: File.basename(fixture),
+                                           length:   File.size(fixture))
       @instance.upload_to_staging(file)
     end
 
@@ -197,6 +230,29 @@ class BitstreamTest < ActiveSupport::TestCase
     # Check that the properties have been updated.
     assert !@instance.exists_in_staging
     assert_nil @instance.staging_key
+  end
+
+  # derivative_url()
+
+  test "derivative_url() with an unsupported format raises an error" do
+    @instance.original_filename = "cats.bogus"
+    assert_raises do
+      @instance.derivative_url(size: 45)
+    end
+  end
+
+  test "derivative_url() generates a correct URL" do
+    # upload the source image to the staging area of the application S3 bucket
+    File.open(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg"), "r") do |file|
+      @instance.upload_to_staging(file)
+    end
+
+    url = @instance.derivative_url(size: 45)
+
+    client   = HTTPClient.new
+    response = client.get(url)
+    assert_equal 200, response.code
+    assert response.headers['Content-Length'].to_i > 10000
   end
 
   # download_count()
@@ -225,6 +281,34 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::RecordInvalid do
       @instance.update!(exists_in_staging: true)
     end
+  end
+
+  # has_representative_image?()
+
+  test "has_representative_image?() returns true for an instance that is in a
+   supported format" do
+    @instance.original_filename = "file.jpg"
+    assert @instance.has_representative_image?
+  end
+
+  test "has_representative_image?() returns false for an instance that is not
+  in a supported format" do
+    @instance.original_filename = "file.txt"
+    assert !@instance.has_representative_image?
+  end
+
+  test "has_representative_image?() returns false for an instance that is in an
+  unrecognized format" do
+    @instance.original_filename = "file.bogus"
+    assert !@instance.has_representative_image?
+  end
+
+  # infer_media_type()
+
+  test "infer_media_type() infers a correct media type" do
+    @instance.media_type = nil
+    @instance.infer_media_type
+    assert_equal "image/jpeg", @instance.media_type
   end
 
   # ingest_into_medusa()
@@ -362,9 +446,9 @@ class BitstreamTest < ActiveSupport::TestCase
       # Write a file to the bucket.
       fixture = file_fixture("escher_lego.jpg")
       File.open(fixture, "r") do |file|
-        @instance = Bitstream.new_in_staging(items(:item1),
-                                             File.basename(fixture),
-                                             File.size(fixture))
+        @instance = Bitstream.new_in_staging(item:     items(:item1),
+                                             filename: File.basename(fixture),
+                                             length:   File.size(fixture))
         @instance.upload_to_staging(file)
       end
 

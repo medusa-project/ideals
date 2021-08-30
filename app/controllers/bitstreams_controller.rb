@@ -4,7 +4,7 @@ class BitstreamsController < ApplicationController
 
   LOGGER = CustomLogger.new(BitstreamsController)
 
-  before_action :ensure_logged_in, except: [:data, :show]
+  before_action :ensure_logged_in, except: [:object, :show, :stream]
 
   before_action :set_item, only: :create
   before_action :set_bitstream, except: :create
@@ -26,7 +26,9 @@ class BitstreamsController < ApplicationController
         ActiveRecord::Base.transaction do
           filename = request.env['HTTP_X_FILENAME']
           length   = request.env['HTTP_X_CONTENT_LENGTH'].to_i
-          bs       = Bitstream.new_in_staging(@item, filename, length)
+          bs       = Bitstream.new_in_staging(item:     @item,
+                                              filename: filename,
+                                              length:   length)
           bs.upload_to_staging(io)
           bs.save!
         end
@@ -40,11 +42,92 @@ class BitstreamsController < ApplicationController
   end
 
   ##
-  # Returns a bitstream's data.
+  # Deletes {Bitstream}s via the file table in the submission form.
   #
-  # Responds to `GET /items/:item_id/bitstreams/:id/data`
+  # Responds to `DELETE /items/:item_id/bitstreams/:id`
   #
-  def data
+  def destroy
+    @bitstream.destroy!
+    head :no_content
+  end
+
+  ##
+  # Used for editing bitstream properties.
+  #
+  # Responds to GET `/items/:item_id/bitstreams/:id/edit` (XHR only)
+  #
+  def edit
+    raise ActiveRecord::RecordNotFound unless request.xhr?
+    render partial: "bitstreams/edit_form",
+           locals: { bitstream: @bitstream }
+  end
+
+  ##
+  # Ingests a bitstream into Medusa.
+  #
+  # Responds to `POST /items/:item_id/bitstreams/:id/ingest`
+  #
+  def ingest
+    @bitstream.ingest_into_medusa
+  rescue ArgumentError => e
+    render plain: "#{e}", status: :bad_request
+  rescue AlreadyExistsError => e
+    render plain: "#{e}", status: :conflict
+  else
+    head :no_content
+  end
+
+  ##
+  # Creates a presigned URL for downloading the given {Bitstream} and redirects
+  # to it via HTTP 307.
+  #
+  # Note that for XHR requests, this requires an appropriate CORS policy to be
+  # set on the bucket.
+  #
+  # Responds to `GET /items/:item_id/bitstreams/:id/object`.
+  #
+  # @see stream
+  #
+  def object
+    config = ::Configuration.instance
+    if @bitstream.medusa_key.present?
+      bucket = config.medusa[:bucket]
+      key    = @bitstream.medusa_key
+    elsif @bitstream.exists_in_staging
+      bucket = config.aws[:bucket]
+      key    = @bitstream.staging_key
+    else
+      raise IOError, "This bitstream has no corresponding storage object."
+    end
+
+    client = S3Client.instance.send(:get_client)
+    signer = Aws::S3::Presigner.new(client: client)
+    url    = signer.presigned_url(:get_object,
+                                  bucket:     bucket,
+                                  key:        key,
+                                  response_content_disposition: download_content_disposition,
+                                  expires_in: 900)
+    @bitstream.add_download(user: current_user)
+    redirect_to url, status: :temporary_redirect
+  end
+
+  ##
+  # Returns a bitstream's properties (in JSON format only).
+  #
+  # Responds to `GET /items/:item_id/bitstreams/:id`
+  #
+  def show
+    request.format = :json
+  end
+
+  ##
+  # Streams a bitstream's data.
+  #
+  # Responds to `GET /items/:item_id/bitstreams/:id/stream`.
+  #
+  # @see object
+  #
+  def stream
     config = ::Configuration.instance
     if @bitstream.medusa_key.present?
       s3_request = {
@@ -85,7 +168,7 @@ class BitstreamsController < ApplicationController
 
     response.status                         = status
     response.headers['Content-Type']        = @bitstream.media_type
-    response.headers['Content-Disposition'] = "attachment; filename=#{@bitstream.original_filename}"
+    response.headers['Content-Disposition'] = download_content_disposition
     response.headers['Content-Length']      = s3_response.content_length.to_s
     response.headers['Last-Modified']       = s3_response.last_modified.utc.strftime("%a, %d %b %Y %T GMT")
     response.headers['Cache-Control']       = "public, must-revalidate, max-age=0"
@@ -101,51 +184,6 @@ class BitstreamsController < ApplicationController
     @bitstream.add_download(user: current_user)
   ensure
     response.stream.close
-  end
-
-  ##
-  # Deletes {Bitstream}s via the file table in the submission form.
-  #
-  # Responds to `DELETE /items/:item_id/bitstreams/:id`
-  #
-  def destroy
-    @bitstream.destroy!
-    head :no_content
-  end
-
-  ##
-  # Used for editing bitstream properties.
-  #
-  # Responds to GET `/items/:item_id/bitstreams/:id/edit` (XHR only)
-  #
-  def edit
-    raise ActiveRecord::RecordNotFound unless request.xhr?
-    render partial: "bitstreams/edit_form",
-           locals: { bitstream: @bitstream }
-  end
-
-  ##
-  # Ingests a bitstream into Medusa.
-  #
-  # Responds to `POST /items/:item_id/bitstreams/:id/ingest`
-  #
-  def ingest
-    @bitstream.ingest_into_medusa
-  rescue ArgumentError => e
-    render plain: "#{e}", status: :bad_request
-  rescue AlreadyExistsError => e
-    render plain: "#{e}", status: :conflict
-  else
-    head :no_content
-  end
-
-  ##
-  # Returns a bitstream's properties (in JSON format only).
-  #
-  # Responds to `GET /items/:item_id/bitstreams/:id`
-  #
-  def show
-    request.format = :json
   end
 
   ##
@@ -177,6 +215,10 @@ class BitstreamsController < ApplicationController
 
   def bitstream_params
     params.require(:bitstream).permit(:bundle, :role)
+  end
+
+  def download_content_disposition
+    "attachment; filename=#{@bitstream.original_filename}"
   end
 
   def set_bitstream

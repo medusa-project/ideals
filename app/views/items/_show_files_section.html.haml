@@ -22,9 +22,10 @@
         Download Counts&hellip;
 
 %h4 Main Files
-- content_bitstreams.each do |bitstream|
-  = bitstream_info(bitstream, show_sysadmin_content: show_sysadmin_content)
-
+#main-files
+  - content_bitstreams.each do |bitstream|
+    = render partial: "file", locals: { bitstream: bitstream,
+                                        show_sysadmin_content: show_sysadmin_content }
 - if other_bitstreams.any?
   %h4#other-files-heading
     = link_to("#other-files",
@@ -36,7 +37,8 @@
       Other Files
   #other-files.collapse
     - other_bitstreams.each do |bitstream|
-      = bitstream_info(bitstream, show_sysadmin_content: show_sysadmin_content)
+      = render partial: "file", locals: { bitstream: bitstream,
+                                          show_sysadmin_content: show_sysadmin_content }
 
 = render partial: "shared/ajax_modal",
          locals: { id: "download-counts-modal",

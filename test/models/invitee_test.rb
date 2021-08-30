@@ -80,6 +80,12 @@ class InviteeTest < ActiveSupport::TestCase
     end
   end
 
+  test "UofI email addresses are invalid" do
+    assert_raises ActiveRecord::RecordInvalid do
+      Invitee.create!(email: "newuser@illinois.edu")
+    end
+  end
+
   # expired?()
 
   test "expired?() returns true for an expired instance" do

@@ -80,6 +80,16 @@ class ItemTest < ActiveSupport::TestCase
 
   # approve()
 
+  test "approve() does nothing if the stage is already approved" do
+    item = items(:described)
+    item.stage = Item::Stages::APPROVED
+    item.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
+                        string:             "whatever")
+
+    item.approve
+    assert_equal 1, item.elements.select{ |e| e.name == "dcterms:available" }.length
+  end
+
   test "approve() sets the stage to approved" do
     item = items(:described)
     item.approve
@@ -171,8 +181,10 @@ class ItemTest < ActiveSupport::TestCase
   # assign_handle()
 
   test "assign_handle() raises an error if the instance already has a handle" do
-    @instance.assign_handle
     assert_not_nil @instance.handle
+    assert_raises do
+      @instance.assign_handle
+    end
   end
 
   test "assign_handle() assigns a handle" do

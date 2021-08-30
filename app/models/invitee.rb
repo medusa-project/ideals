@@ -59,6 +59,7 @@ class Invitee < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates :note, presence: true
+  validate  :validate_email_domain
 
   ##
   # Approves a user-initiated self-invite.
@@ -157,6 +158,7 @@ class Invitee < ApplicationRecord
     @user
   end
 
+
   private
 
   def associate_or_create_identity
@@ -174,6 +176,14 @@ class Invitee < ApplicationRecord
                               password_confirmation: password,
                               invitee:               self)
       end
+    end
+  end
+
+  def validate_email_domain
+    domain = self.email.split("@").last
+    if ::Configuration.instance.uofi_email_domains.include?(domain)
+      errors.add(:email, "domain cannot be a University of Illinois domain. "\
+          "Please go back and log in with your NetID.")
     end
   end
 

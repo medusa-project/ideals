@@ -46,6 +46,7 @@ Rails.application.routes.draw do
     match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
   end
   match "/deposit", to: "submissions#agreement", via: :get
+  match "/handle/:prefix/:suffix", to: "handles#redirect", via: :get, as: "redirect_handle"
   resources :institutions, param: :key do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/properties", to: "institutions#show_properties", via: :get,
@@ -81,8 +82,9 @@ Rails.application.routes.draw do
   match "/items/process_review", to: "items#process_review", via: :post
   resources :items, except: :new do
     resources :bitstreams do
-      match "/data", to: "bitstreams#data", via: :get
       match "/ingest", to: "bitstreams#ingest", via: :post
+      match "/object", to: "bitstreams#object", via: :get
+      match "/stream", to: "bitstreams#stream", via: :get
     end
     match "/download-counts", to: "items#download_counts", via: :get
     match "/edit-embargoes", to: "items#edit_embargoes", via: :get,

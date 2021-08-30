@@ -205,9 +205,11 @@ class Item < ApplicationRecord
   # @return [void]
   #
   def approve
-    self.stage = Stages::APPROVED
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
-                        string:             Time.now.iso8601)
+    if self.stage != Stages::APPROVED
+      self.stage = Stages::APPROVED
+      self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
+                          string:             Time.now.iso8601)
+    end
   end
 
   ##
@@ -294,10 +296,13 @@ class Item < ApplicationRecord
   # handle URI.
   #
   # @return [void]
+  # @raises [StandardError] if the instance already has a handle.
   #
   def assign_handle
+    raise "Instance already has a handle." if self.handle
+
     self.handle = Handle.create!(item: self)
-    # Reload it in order to read the suffix, which is autoincrementing.
+    # Reload it in order to read the suffix, which is auto-incrementing.
     self.handle.reload
     # Assign a dcterms:identifier element with a URI value of the handle URI.
     self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:identifier"),
