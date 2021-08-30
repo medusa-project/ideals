@@ -34,18 +34,18 @@ namespace :medusa do
     task :log => :environment do
       Message.order(:updated_at).limit(1000).each do |message|
         lines = []
-        lines << "-------"
-        lines << "#{message.id.to_s.ljust(7, ' ')} CREATED:     #{message.created_at.localtime}"
-        lines << "        UPDATED:     #{message.updated_at.localtime}"
-        lines << "        OPERATION:   #{message.operation}"
-        lines << "        ITEM:        #{message.bitstream.item_id}"
-        lines << "        BITSTREAM:   #{message.bitstream_id}"
-        lines << "        STAGING KEY: #{message.staging_key}"
-        lines << "        TARGET KEY : #{message.target_key}"
-        lines << "        STATUS:      #{message.status}"
-        lines << "        RSPONS TIME: #{message.response_time}"
-        lines << "        MEDUSA UUID: #{message.medusa_uuid}"
-        lines << "        ERROR:       #{message.error_text}" if message.error_text
+        lines << "#{message.id}----------------------------------"
+        lines << "CREATED:      #{message.created_at.localtime}"
+        lines << "UPDATED:      #{message.updated_at.localtime}"
+        lines << "OPERATION:    #{message.operation}"
+        lines << "ITEM:         #{message.bitstream.item_id}"
+        lines << "BITSTREAM:    #{message.bitstream_id}"
+        lines << "STAGING KEY:  #{message.staging_key}"
+        lines << "TARGET KEY :  #{message.target_key}"
+        lines << "STATUS:       #{message.status}"
+        lines << "RSPONSE TIME: #{message.response_time}"
+        lines << "MEDUSA UUID:  #{message.medusa_uuid}"
+        lines << "ERROR:        #{message.error_text}" if message.error_text
         puts lines.join("\n") + "\n\n"
       end
     end
