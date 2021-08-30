@@ -3,6 +3,14 @@
 
 = render partial: "show_button_group"
 
+- if [Item::Stages::REJECTED, Item::Stages::WITHDRAWN].include?(@item.stage)
+  .alert.alert-danger
+    %i.fa.fa-exclamation-triangle
+    - if @item.stage == Item::Stages::REJECTED
+      This item has been rejected.
+    - else
+      This item has been withdrawn.
+
 %h1
   = icon_for(@item)
   = @item.title
