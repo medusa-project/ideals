@@ -18,9 +18,16 @@ module BitstreamsHelper
   def representative_image_tag(bitstream,
                                region: :full,
                                size:)
+    path = nil
     if bitstream.has_representative_image?
-      path = bitstream.derivative_url(region: region, size: size)
-    else
+      begin
+        path = bitstream.derivative_url(region: region, size: size)
+      rescue
+        # The object may not exist, or something else is wrong, but we can't
+        # do anything about it here.
+      end
+    end
+    unless path
       ext    = bitstream.original_filename.split(".").last.downcase
       format = FileFormat.for_extension(ext)
       icon   = format&.icon || "file-o"
