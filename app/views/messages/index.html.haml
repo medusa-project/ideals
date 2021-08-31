@@ -11,13 +11,15 @@
             %dd= local_time(message.updated_at)
             %dt Operation
             %dd= message.operation
-            %dt Bitstream ID
-            %dd= message.bitstream_id
-            %dt Item
-            %dd= link_to(message.bitstream.item.title, message.bitstream.item)
-            %dt Staging Key
-            %dd
-              %code= message.staging_key
+            - if message.bitstream_id
+              %dt Bitstream ID
+              %dd= message.bitstream_id
+              %dt Item
+              %dd= link_to(message.bitstream.item.title, message.bitstream.item)
+            - if message.staging_key
+              %dt Staging Key
+              %dd
+                %code= message.staging_key
             %dt Target Key
             %dd
               %code= message.target_key
