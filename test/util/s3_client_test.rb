@@ -4,7 +4,10 @@ class S3ClientTest < ActiveSupport::TestCase
 
   teardown do
     bucket = ::Configuration.instance.aws[:bucket]
+    begin
     S3Client.instance.delete_objects(bucket: bucket, key_prefix: "/")
+    rescue Aws::S3::Errors::NoSuchBucket
+    end
   end
 
   # bucket_exists?()
