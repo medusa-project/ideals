@@ -166,82 +166,12 @@ module ApplicationHelper
   def icon_for(entity)
     entity_class = entity.kind_of?(Class) ? entity : entity.class
     entity_class = entity_class.to_s
+    icon         = nil
     case entity_class
-    when "Bitstream" # TODO: use formats.yml
-      if entity.media_type.present?
-        if entity.media_type.start_with?("audio/")
-          icon = "far fa-file-audio"
-        elsif entity.media_type.start_with?("image/")
-          icon = "far fa-file-image"
-        elsif entity.media_type.start_with?("video/")
-          icon = "far fa-file-video"
-        else
-          case entity.media_type
-          when "application/msword"
-            icon = "far fa-file-word"
-          when "application/octet-stream"
-            icon = "far fa-file"
-          when "application/postscript"
-            icon = "far fa-file-image"
-          when "application/pdf"
-            icon = "far fa-file-pdf"
-          when "application/vnd.ms-excel"
-            icon = "far fa-file-excel"
-          when "application/vnd.ms-powerpoint"
-            icon = "far fa-file-powerpoint"
-          when "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-            icon = "far fa-file-powerpoint"
-          when "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            icon = "far fa-file-excel"
-          when "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            icon = "far fa-file-word"
-          when "application/x-rar-compressed"
-            icon = "far fa-file-archive"
-          when "application/x-tex"
-            icon = "far fa-file-code"
-          when "application/zip"
-            icon = "far fa-file-archive"
-          when "text/csv"
-            icon = "far fa-file-alt"
-          when "text/html"
-            icon = "far fa-file-code"
-          when "text/plain"
-            icon = "far fa-file-alt"
-          when "text/richtext"
-            icon = "far fa-file-alt"
-          when "text/xml"
-            icon = "far fa-file-code"
-          else
-            icon = "far fa-file"
-          end
-        end
-      else
-        ext = File.extname(entity.original_filename).downcase.reverse.chomp(".").reverse
-        case ext
-        when "bmp", "gif", "jp2", "jpg", "jpeg", "png", "tif", "tiff", "wbmp", "xpm"
-          icon = "far fa-file-image"
-        when "aif", "aiff", "mid", "mp3", "ra", "ram", "wav"
-          icon = "far fa-file-audio"
-        when "avi", "flv", "mov", "mp4", "mpg", "qt", "ts", "wmv"
-          icon = "far fa-file-video"
-        when "pdf", "ps"
-          icon = "far fa-file-pdf"
-        when "doc", "docx"
-          icon = "far fa-file-word"
-        when "xls", "xlsx"
-          icon = "far fa-file-excel"
-        when "ppt", "pptx"
-          icon = "far fa-file-powerpoint"
-        when "7z", "bz2", "gz", "hqx", "rar", "tar", "tgz", "zip"
-          icon = "far fa-file-archive"
-        when "c", "cpp", "css", "h", "htm", "html", "js", "php", "pl", "py", "rb", "tex", "xml", "xsl"
-          icon = "far fa-file-code"
-        when "csv", "rtf", "tsv", "txt"
-          icon = "far fa-file-alt"
-        else
-          icon = "far fa-file"
-        end
-      end
+    when "Bitstream"
+      ext    = entity.original_filename.split(".").last.downcase
+      format = FileFormat.for_extension(ext)
+      icon   = "far #{format.icon}" if format
     when "Collection"
       icon = "far fa-folder-open"
     when "Institution"
@@ -266,9 +196,8 @@ module ApplicationHelper
       icon = "fa fa-building"
     when "User", "LocalUser", "ShibbolethUser"
       icon = "fa fa-user"
-    else
-      icon = "fa fa-cube"
     end
+    icon = "fa fa-cube" if icon.nil?
     raw("<i class=\"#{icon}\"></i>")
   end
 
