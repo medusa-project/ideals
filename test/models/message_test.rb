@@ -10,15 +10,35 @@ class MessageTest < ActiveSupport::TestCase
     AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
   end
 
+  # incoming_queue()
+
   test "incoming_queue() returns the incoming queue" do
     assert_equal ::Configuration.instance.medusa[:incoming_queue],
                  Message.incoming_queue
   end
 
+  # outgoing_queue()
+
   test "outgoing_queue() returns the outgoing queue" do
     assert_equal ::Configuration.instance.medusa[:outgoing_queue],
                  Message.outgoing_queue
   end
+
+  # medusa_url()
+
+  test "medusa_url() returns a URL when medusa_uuid is set" do
+    message = Message.new
+    message.medusa_uuid = SecureRandom.uuid
+    assert_equal ::Configuration.instance.medusa[:base_url] + "/uuids/" + message.medusa_uuid,
+                 message.medusa_url
+  end
+
+  test "medusa_url() returns nil when medusa_uuid is not set" do
+    message = Message.new
+    assert_nil message.medusa_url
+  end
+
+  # send_message()
 
   test "send_message() sends a correct ingest message" do
     @instance = messages(:ingest_no_response)

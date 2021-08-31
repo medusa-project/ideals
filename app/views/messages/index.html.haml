@@ -1,0 +1,35 @@
+%h1 Messages
+
+- @messages.each do |message|
+  .row
+    .col-sm-6
+      %dl
+        %dt Message ID
+        %dd= message.id
+        %dt Created
+        %dd= local_time(message.created_at)
+        %dt Updated
+        %dd= local_time(message.updated_at)
+        %dt Operation
+        %dd= message.operation
+        %dt Bitstream ID
+        %dd= message.bitstream_id
+        %dt Item
+        %dd= link_to(message.bitstream.item.title, message.bitstream.item)
+    .col-sm-6
+      %dl
+        %dt Staging Key
+        %dd
+          %code= message.staging_key
+        %dt Target Key
+        %dd
+          %code= message.target_key
+        %dt Status
+        %dd= message.status
+        %dt Response Time
+        %dd= message.response_time
+        %dt Medusa UUID
+        %dd= link_to(message.medusa_uuid,  message.medusa_url)
+        %dt Error Text
+        %dd= message.error_text
+  %hr

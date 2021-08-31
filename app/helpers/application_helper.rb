@@ -167,7 +167,7 @@ module ApplicationHelper
     entity_class = entity.kind_of?(Class) ? entity : entity.class
     entity_class = entity_class.to_s
     case entity_class
-    when "Bitstream"
+    when "Bitstream" # TODO: use formats.yml
       if entity.media_type.present?
         if entity.media_type.start_with?("audio/")
           icon = "far fa-file-audio"
@@ -248,6 +248,8 @@ module ApplicationHelper
       icon = "fa fa-university"
     when "Item"
       icon = "fa fa-cube"
+    when "Message"
+      icon = "fa fa-envelope"
     when "MetadataProfile", "SubmissionProfile"
       icon = "fa fa-list"
     when "RegisteredElement", "AscribedElement", "MetadataProfileElement",

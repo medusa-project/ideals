@@ -100,6 +100,7 @@ Rails.application.routes.draw do
     match "/upload-bitstreams", to: "items#upload_bitstreams", via: :get,
           constraints: lambda { |request| request.xhr? }
   end
+  resources :messages, only: :index
   resources :metadata_profiles, path: "metadata-profiles" do
     match "/clone", to: "metadata_profiles#clone", via: :post
     resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]

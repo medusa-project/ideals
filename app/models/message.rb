@@ -55,6 +55,15 @@ class Message < ApplicationRecord
     ::Configuration.instance.medusa[:outgoing_queue]
   end
 
+  ##
+  # @return [String, nil]
+  #
+  def medusa_url
+    self.medusa_uuid.present? ?
+      "#{::Configuration.instance.medusa[:base_url]}/uuids/#{self.medusa_uuid}"
+      : nil
+  end
+
   def resend
     update!(status:         "resent",
             error_text:     nil,
