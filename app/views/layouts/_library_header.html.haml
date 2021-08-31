@@ -100,7 +100,7 @@
                       = icon_for(Message)
                       Medusa Messages
                     - config = ::Configuration.instance
-                    = link_to("#{config.medusa[:base_url]}/#{config.medusa[:file_group_id]}",
+                    = link_to("#{config.medusa[:base_url]}/file_groups/#{config.medusa[:file_group_id]}",
                               class: "dropdown-item", target: "_blank") do
                       %i.fa.fa-database
                       Medusa File Group
