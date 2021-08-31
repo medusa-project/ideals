@@ -2,12 +2,17 @@ require 'test_helper'
 
 class S3ClientTest < ActiveSupport::TestCase
 
+  setup do
+    bucket = ::Configuration.instance.aws[:bucket]
+    client = S3Client.instance
+    unless client.bucket_exists?(bucket)
+      client.create_bucket(bucket: bucket)
+    end
+  end
+
   teardown do
     bucket = ::Configuration.instance.aws[:bucket]
-    begin
     S3Client.instance.delete_objects(bucket: bucket, key_prefix: "/")
-    rescue Aws::S3::Errors::NoSuchBucket
-    end
   end
 
   # bucket_exists?()
