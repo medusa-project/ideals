@@ -59,7 +59,7 @@ class Invitee < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates :note, presence: true
-  validate  :validate_email_domain
+  validate  :validate_email_domain, if: -> { email.present? }
 
   ##
   # Approves a user-initiated self-invite.
