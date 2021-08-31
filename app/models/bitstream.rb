@@ -171,8 +171,7 @@ class Bitstream < ApplicationRecord
     bs = Bitstream.new(item:              item,
                        staging_key:       staging_key(item.id, filename),
                        original_filename: filename,
-                       length:            length,
-                       media_type:        media_type)
+                       length:            length)
     bs.infer_media_type
     bs
   end
@@ -249,6 +248,7 @@ class Bitstream < ApplicationRecord
   # @return [String] Pre-signed URL for a derivative image with the given
   #                  characteristics. If no such image exists, it is generated
   #                  automatically.
+  # @raises [Aws::S3::Errors::NotFound]
   #
   def derivative_url(region:              :full,
                      size:                ,
