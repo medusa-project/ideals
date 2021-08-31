@@ -206,8 +206,14 @@ class Bitstream < ApplicationRecord
   end
 
   def delete_derivatives
-    S3Client.instance.delete_objects(bucket:     ::Configuration.instance.aws[:bucket],
-                                     key_prefix: derivative_key_prefix)
+    begin
+      S3Client.instance.delete_objects(bucket:     ::Configuration.instance.aws[:bucket],
+                                       key_prefix: derivative_key_prefix)
+    rescue Aws::S3::Errors::NoSuchBucket
+      # This would hopefully only happen in a test environment misconfiguration.
+      # In any case, it's safe to assume that if the bucket doesn't exist,
+      # there is nothing to delete.
+    end
   end
 
   ##
