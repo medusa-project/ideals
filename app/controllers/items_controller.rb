@@ -136,7 +136,7 @@ class ItemsController < ApplicationController
                                 user: current_user,
                                 description: "Item was approved, assigned a "\
                                 "handle, and ingested into Medusa.").execute do
-            item.assign_handle
+            item.assign_handle unless item.handle
             item.ingest_into_medusa
             item.approve
             item.save!
