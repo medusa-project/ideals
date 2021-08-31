@@ -9,6 +9,9 @@ namespace :medusa do
     dir    = fg.directory
     dir.walk_tree do |node|
       next unless node.kind_of?(::Medusa::File)
+      Message.create!(operation:   Message::Operation::DELETE,
+                      medusa_uuid: node.uuid,
+                      target_key:  node.relative_key)
       message = {
           operation: Message::Operation::DELETE,
           uuid:      node.uuid
