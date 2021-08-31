@@ -97,7 +97,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "approve() creates an associated dcterms:available element" do
-    item = items(:described)
+    item = items(:submitting)
     item.approve
     assert_not_nil item.element("dcterms:available").string
   end
@@ -218,7 +218,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "complete_submission() creates an associated dcterms:available element
   if the collection is not reviewing submissions" do
-    item = items(:described)
+    item = items(:submitting)
     item.primary_collection.submissions_reviewed = false
     item.complete_submission
     assert_not_nil item.element("dcterms:available").string
