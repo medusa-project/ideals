@@ -34,7 +34,7 @@ class Message < ApplicationRecord
     ERROR = "error"
   end
 
-  belongs_to :bitstream
+  belongs_to :bitstream, optional: true
 
   validates :operation, inclusion: { in: Operation.constants.map{ |c| Operation.const_get(c) },
                                      message: "%{value} is not a valid operation" }
