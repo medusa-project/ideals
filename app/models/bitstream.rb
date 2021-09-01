@@ -361,6 +361,30 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # @param content_disposition [String]
+  # @return [String]
+  #
+  def presigned_url(content_disposition: "attachment")
+    config = ::Configuration.instance
+    if self.medusa_key.present?
+      bucket = config.medusa[:bucket]
+      key    = self.medusa_key
+    elsif self.exists_in_staging
+      bucket = config.aws[:bucket]
+      key    = self.staging_key
+    else
+      raise IOError, "This bitstream has no corresponding storage object."
+    end
+    client = S3Client.instance.send(:get_client)
+    signer = Aws::S3::Presigner.new(client: client)
+    signer.presigned_url(:get_object,
+                         bucket:                       bucket,
+                         key:                          key,
+                         response_content_disposition: content_disposition,
+                         expires_in:                   900)
+  end
+
+  ##
   # Writes the given IO to the staging "area" (key prefix) of the application
   # S3 bucket.
   #

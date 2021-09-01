@@ -414,6 +414,32 @@ class BitstreamTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # presigned_url()
+
+  test "presigned_url() returns a presigned URL for an object in staging" do
+    @instance.exists_in_staging = true
+    @instance.staging_key       = "key"
+    @instance.medusa_key        = nil
+    assert_not_nil @instance.presigned_url
+  end
+
+  test "presigned_url() returns a presigned URL for an object in production" do
+    @instance.exists_in_staging = false
+    @instance.staging_key       = nil
+    @instance.medusa_key        = "key"
+    assert_not_nil @instance.presigned_url
+  end
+
+  test "presigned_url() raises an IOError if the instance has no corresponding
+  object" do
+    @instance.exists_in_staging = false
+    @instance.staging_key       = nil
+    @instance.medusa_key        = nil
+    assert_raises IOError do
+      @instance.presigned_url
+    end
+  end
+
   # role
 
   test "role must be a valid role ID" do

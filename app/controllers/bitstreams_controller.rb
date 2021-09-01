@@ -89,24 +89,7 @@ class BitstreamsController < ApplicationController
   # @see stream
   #
   def object
-    config = ::Configuration.instance
-    if @bitstream.medusa_key.present?
-      bucket = config.medusa[:bucket]
-      key    = @bitstream.medusa_key
-    elsif @bitstream.exists_in_staging
-      bucket = config.aws[:bucket]
-      key    = @bitstream.staging_key
-    else
-      raise IOError, "This bitstream has no corresponding storage object."
-    end
-
-    client = S3Client.instance.send(:get_client)
-    signer = Aws::S3::Presigner.new(client: client)
-    url    = signer.presigned_url(:get_object,
-                                  bucket:     bucket,
-                                  key:        key,
-                                  response_content_disposition: download_content_disposition,
-                                  expires_in: 900)
+    url = @bitstream.presigned_url(content_disposition: download_content_disposition)
     @bitstream.add_download(user: current_user)
     redirect_to url, status: :temporary_redirect
   end
