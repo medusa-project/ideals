@@ -28,8 +28,7 @@ module BitstreamsHelper
       end
     end
     unless path
-      ext    = bitstream.original_filename.split(".").last.downcase
-      format = FileFormat.for_extension(ext)
+      format = bitstream.format
       icon   = format&.icon || "file-o"
       path   = image_path("fontawesome/#{icon}.svg")
     end

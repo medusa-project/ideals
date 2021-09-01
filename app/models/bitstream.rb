@@ -307,11 +307,21 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # @return [FileFormat, nil]
+  #
+  def format
+    unless @format
+      ext = self.original_filename.split(".").last
+      @format = FileFormat.for_extension(ext)
+    end
+    @format
+  end
+
+  ##
   # @return [Boolean]
   #
   def has_representative_image?
-    ext    = self.original_filename.split(".").last
-    format = FileFormat.for_extension(ext)
+    format = self.format
     format ? (format.readable_by_vips == true) : false
   end
 
@@ -320,8 +330,7 @@ class Bitstream < ApplicationRecord
   # {original_filename}. The instance is not saved.
   #
   def infer_media_type
-    ext = self.original_filename.split(".").last
-    self.media_type = FileFormat.for_extension(ext)&.media_types&.first
+    self.media_type = self.format&.media_types&.first
   end
 
   ##

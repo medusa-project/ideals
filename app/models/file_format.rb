@@ -25,6 +25,7 @@ class FileFormat
   ##
   # @param ext [String]
   # @return [FileFormat, nil]
+  # @see Bitstream@format
   #
   def self.for_extension(ext)
     ext      = ext.to_s.downcase

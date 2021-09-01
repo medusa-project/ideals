@@ -283,6 +283,17 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  # format()
+
+  test "format() returns the correct format" do
+    assert_equal "image/jpeg", @instance.format.media_types[0]
+  end
+
+  test "format() returns nil for an unknown format" do
+    @instance.original_filename = "bogus"
+    assert_nil @instance.format
+  end
+
   # has_representative_image?()
 
   test "has_representative_image?() returns true for an instance that is in a

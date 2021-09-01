@@ -169,8 +169,7 @@ module ApplicationHelper
     icon         = nil
     case entity_class
     when "Bitstream"
-      ext    = entity.original_filename.split(".").last.downcase
-      format = FileFormat.for_extension(ext)
+      format = entity.format
       icon   = "far #{format.icon}" if format
     when "Collection"
       icon = "far fa-folder-open"
