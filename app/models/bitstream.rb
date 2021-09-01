@@ -423,7 +423,7 @@ class Bitstream < ApplicationRecord
     begin
       # crop options: none, attention, centre, entropy
       thumb_buf = Vips::Image.thumbnail(tempfile.path, size,
-                                        crop: (region == :square) ? "attention" : "none")
+                                        crop: (region == :square) ? "centre" : "none")
       thumb_jpg = thumb_buf.write_to_buffer(".#{format}")
       io = StringIO.new(thumb_jpg)
       io.binmode
