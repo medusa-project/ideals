@@ -442,9 +442,9 @@ module ApplicationHelper
   def spinner
     # N.B.: this markup should be kept in sync with that of IDEALS.Spinner()
     # in JavaScript.
-    raw('<div class="d-flex justify-content-center m-5">
-      <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
+    raw('<div class="d-flex justify-content-center align-items-center" style="height: 100%">
+      <div class="spinner-border text-secondary" role="status">
+        <span class="sr-only">Loading&hellip;</span>
       </div>
     </div>')
   end
