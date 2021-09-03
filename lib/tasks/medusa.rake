@@ -25,12 +25,18 @@ namespace :medusa do
 
     desc "Fetch Medusa RabbitMQ messages"
     task :fetch => :environment do
-      while true
+      loop  = true
+      count = 0
+      while loop
         AmqpHelper::Connector[:ideals].with_message(Message.incoming_queue) do |payload|
-          exit if payload.nil?
-          MessageHandler.handle(payload)
+          loop = payload.present?
+          if loop
+            count += 1
+            MessageHandler.handle(payload)
+          end
         end
       end
+      puts "Fetched #{count} messages."
     end
 
     desc "List the last 1000 messages"
