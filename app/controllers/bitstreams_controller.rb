@@ -100,7 +100,7 @@ class BitstreamsController < ApplicationController
   # Responds to `GET /items/:item_id/bitstreams/:id`
   #
   def show
-    request.format = :json
+    render formats: :json
   end
 
   ##

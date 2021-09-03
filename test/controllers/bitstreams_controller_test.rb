@@ -304,7 +304,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "show() returns HTTP 200" do
     item = items(:item1)
     bs   = bitstreams(:item1_in_staging)
-    get item_bitstream_path(item, bs, format: :json)
+    get item_bitstream_path(item, bs)
     assert_response :ok
   end
 
@@ -376,7 +376,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
       # Assert that sysadmins can access it
       log_in_as(users(:local_sysadmin))
-      get item_bitstream_path(item, bitstream, format: :json)
+      get item_bitstream_path(item, bitstream)
       assert_response :ok
 
       # Assert that role-limited sysadmins can't
