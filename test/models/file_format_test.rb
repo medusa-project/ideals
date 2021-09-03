@@ -11,6 +11,7 @@ class FileFormatTest < ActiveSupport::TestCase
     assert_equal %w(image/jpeg), format.media_types
     assert_equal "JPEG", format.short_name
     assert format.readable_by_vips
+    assert_equal "image_tag_for", format.viewer_method
   end
 
   test "for_extension() returns nil for an unrecognized extension" do

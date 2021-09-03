@@ -8,6 +8,76 @@ const ItemsView = function() {
 };
 
 /**
+ * Controls the file navigator in item view.
+ *
+ * Events:
+ *
+ * * `IDEALS.FileNavigator.fileChanged`
+ *
+ * @constructor
+ */
+const FileNavigator = function() {
+    const HEADER_HEIGHT = 50;
+    const FOOTER_HEIGHT = 60;
+    const ROOT_URL      = $('input[name="root_url"]').val();
+    const navigator     = $("#file-navigator");
+    const thumbsColumn  = $("#file-navigator-thumbnail-column");
+    const viewerColumn  = $("#file-navigator-viewer-column");
+
+    var currentBitstreamID;
+
+    const attachEventListeners = function() {
+        $("button#more-info").on("click", function() {
+            const infoDiv = $("#file-navigator-viewer-info");
+            if (infoDiv.is(":visible")) {
+                $(this).html("<i class=\"fa fa-info-circle\"></i> More Info");
+                infoDiv.hide();
+            } else {
+                $(this).html("<i class=\"fa fa-times\"></i> Hide Info");
+                infoDiv.css("display", "flex");
+            }
+        });
+    };
+
+    const updateHeight = function() {
+        const navigatorHeight = window.innerHeight - 100;
+        navigator.css("height", navigatorHeight + "px");
+        thumbsColumn.find("#file-navigator-thumbnail-content").css("height", (navigatorHeight - FOOTER_HEIGHT) + "px");
+        thumbsColumn.find("#file-navigator-thumbnail-column-footer").css("height", FOOTER_HEIGHT + "px");
+        viewerColumn.find("#file-navigator-viewer-header").css("height", HEADER_HEIGHT + "px");
+        viewerColumn.find("#file-navigator-viewer-content").css("height", (navigatorHeight - HEADER_HEIGHT - FOOTER_HEIGHT) + "px");
+        viewerColumn.find("#file-navigator-viewer-content img").css("max-height", (navigatorHeight - HEADER_HEIGHT - FOOTER_HEIGHT) + "px");
+        viewerColumn.find("#file-navigator-viewer-footer").css("height", FOOTER_HEIGHT + "px");
+    };
+
+    $(window).on("resize", function() {
+        updateHeight();
+    });
+
+    navigator.find("#file-navigator-thumbnail-column .thumbnail").on("click", function() {
+        const thumb        = $(this);
+        const item_id      = thumb.data("item-id");
+        const bitstream_id = thumb.data("bitstream-id");
+        if (bitstream_id === currentBitstreamID) {
+            return;
+        }
+        currentBitstreamID = bitstream_id;
+        viewerColumn.html(IDEALS.Spinner());
+        thumb.siblings().removeClass("selected");
+        thumb.addClass("selected");
+
+        const url = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
+            bitstream_id + "/viewer";
+        $.get(url, function (data) {
+            viewerColumn.html(data);
+            updateHeight();
+            attachEventListeners();
+            navigator.trigger("IDEALS.FileNavigator.fileChanged");
+        });
+    }).filter(":first").trigger("click");
+};
+
+/**
  * Handles show-item view (/items/:id).
  *
  * @constructor
@@ -17,28 +87,20 @@ const ItemView = function() {
 
     new IDEALS.CopyButton($(".copy"), $(".permalink"));
 
-    const otherFilesHeading = $("#other-files");
-    otherFilesHeading.on("show.bs.collapse", function() {
-        $(this).prev().find("i")
-            .removeClass("fa-plus-square")
-            .addClass("fa-minus-square");
-    });
-    otherFilesHeading.on("hide.bs.collapse", function() {
-        $(this).prev().find("i")
-            .removeClass("fa-minus-square")
-            .addClass("fa-plus-square");
+    new FileNavigator();
+    $("#file-navigator").on("IDEALS.FileNavigator.fileChanged", function() {
+        $(this).find(".edit-bitstream").on("click", function() {
+            const item_id      = $(this).data("item-id");
+            const bitstream_id = $(this).data("bitstream-id");
+            const url          = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
+                bitstream_id + "/edit";
+            $.get(url, function(data) {
+                $("#edit-bitstream-modal .modal-body").html(data);
+            });
+        });
     });
 
     // XHR modals
-    $(".edit-bitstream").on("click", function() {
-        const item_id      = $(this).data("item-id");
-        const bitstream_id = $(this).data("bitstream-id");
-        const url          = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
-            bitstream_id + "/edit";
-        $.get(url, function(data) {
-            $("#edit-bitstream-modal .modal-body").html(data);
-        });
-    });
     $(".edit-item-embargoes").on("click", function() {
         const id  = $(this).data("item-id");
         const url = ROOT_URL + "/items/" + id + "/edit-embargoes";

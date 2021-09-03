@@ -14,11 +14,13 @@
 #                       library (VIPS) in order to generate representative
 #                       images.
 # * `short_name`:       Short name.
+# * `viewer_method`:    Name of a {BitstreamsHelper} method that will render
+#                       a viewer for the format.
 #
 class FileFormat
 
   attr_reader :category, :extensions, :icon, :long_name, :media_types,
-              :readable_by_vips, :short_name
+              :readable_by_vips, :short_name, :viewer_method
 
   KNOWN_FORMATS = YAML.load_file(File.join(Rails.root, "config", "formats.yml")).deep_symbolize_keys
 
@@ -33,7 +35,7 @@ class FileFormat
     format   = nil
     if format_h
       format = FileFormat.new
-      %w(category extensions icon long_name media_types readable_by_vips short_name).each do |attr|
+      %w(category extensions icon long_name media_types readable_by_vips short_name viewer_method).each do |attr|
         format.instance_variable_set("@#{attr}", format_h[1][attr.to_sym])
       end
     end

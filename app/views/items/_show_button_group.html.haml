@@ -1,5 +1,12 @@
 .btn-group.float-right{role: "group"}
-  // Delete button
+  - if policy(@item).upload_bitstreams?
+    %button.btn.btn-light.upload-item-files{"data-item-id": @item.id,
+                                          "data-target": "#upload-item-files-modal",
+                                          "data-toggle": "modal",
+                                          role: "button"}
+      %i.fas.fa-upload
+      Upload File&hellip;
+  -# Delete button
   -if !@item.exists_in_medusa? && policy(@item).destroy?
     = link_to(item_path(@item), class: 'btn btn-danger',
                                     method: :delete,

@@ -127,6 +127,22 @@ class BitstreamTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # data()
+
+  test "data() raises an error when an object does not exist in either the
+  staging or production bucket" do
+    assert_raises Aws::S3::Errors::NoSuchKey do
+      @instance.data
+    end
+  end
+
+  test "data() returns the data when an object exists in the staging bucket" do
+    File.open(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg"), "r") do |file|
+      @instance.upload_to_staging(file)
+    end
+    assert_not_nil @instance.data
+  end
+
   # delete_derivatives()
 
   test "delete_derivatives() deletes all derivatives" do

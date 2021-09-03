@@ -185,10 +185,15 @@ class ItemsController < ApplicationController
   # Responds to `GET /items/:id`
   #
   def show
-    @collections = @item.collections
-    @bitstreams  = @item.bitstreams.
-        order(:original_filename).
-        select{ |b| policy(b).show? }
+    @collections         = @item.collections
+    @content_bitstreams  = @item.bitstreams.
+      where(bundle: Bitstream::Bundle::CONTENT).
+      order("LOWER(original_filename)").
+      select{ |b| policy(b).show? }
+    @other_bitstreams    = @item.bitstreams.
+      where("bundle != ?", Bitstream::Bundle::CONTENT).
+      order("LOWER(original_filename)").
+      select{ |b| policy(b).show? }
   end
 
   ##

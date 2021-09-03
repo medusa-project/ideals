@@ -8,16 +8,154 @@ body#list_items, body#list_collections {
 }
 
 body#show_item {
-  $thumb_size: 128px;
-  #main-files, #other-files {
-    img {
-      max-height: $thumb_size;
-      max-width: $thumb_size;
+  /* N.B.: main pane heights are controlled in ItemViewer (items.js) */
+  #file-navigator {
+    background-color: black;
+    color: white;
+    display: grid;
+    grid-template-columns: 30% 70%;
+    margin: 0 auto;
+    width: 96%;
+    #file-navigator-thumbnail-column {
+      #file-navigator-thumbnail-content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        height: 100%;
+        padding: 4px;
+        overflow-y: scroll;
+        .section-heading {
+          background-color: $gray-800;
+          font-size: 0.9em;
+          letter-spacing: 1px;
+          margin: 4px 0 4px 0;
+          padding: 4px;
+          text-align: center;
+          text-transform: uppercase;
+          width: 100%;
+        }
+        .thumbnail {
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+          height: 24%;
+          width: 47%;
+          padding: 4px;
+          margin: 4px;
+          font-size: 0.75em;
+          overflow: hidden;
+          text-align: center;
+          text-overflow: ellipsis;
+          img {
+            margin-bottom: 2px;
+            max-height: 76%;
+            max-width: 100%;
+          }
+          img[data-svg=true] {
+            opacity: 0.75;
+          }
+        }
+        .selected {
+          outline: 2px solid white;
+        }
+      }
+      #file-navigator-thumbnail-column-footer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding-left: 0.8em;
+      }
     }
-  }
-  #other-files-heading a {
-    color: black;
-    text-decoration: none;
+    #file-navigator-viewer-column {
+      height: 100%;
+      #file-navigator-viewer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.4em;
+        width: 100%;
+        h4 {
+          font-size: 1.2em;
+          max-width: 70%;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+      #file-navigator-viewer-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        img {
+          max-width: 100%;
+        }
+        audio {
+          max-height: 50%;
+          max-width: 80%;
+        }
+        object, video {
+          height: 100%;
+          width: 100%;
+        }
+        .text-viewer {
+          background-color: white;
+          padding: 1em;
+          height: 100%;
+          width: 100%;
+          overflow: scroll;
+        }
+        .unsupported-format {
+          text-align: center;
+          .format-name {
+            color: $gray-600;
+            font-size: 2.5em;
+          }
+        }
+        #file-navigator-viewer-info {
+          display: none;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0,0,0,0.7);
+          backdrop-filter: blur(3px);
+          dl {
+            width: 75%;
+            display: grid;
+            grid-template-columns: 40% auto;
+            dt {
+              grid-column: 1;
+            }
+            dd {
+              grid-column: 2;
+              a {
+                color: white;
+              }
+            }
+          }
+          code {
+            color: white;
+          }
+        }
+      }
+      #file-navigator-viewer-footer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-end;
+        padding-right: 0.8em;
+      }
+    }
   }
   .creators {
     color: $gray-600;
@@ -68,7 +206,7 @@ body#show_item {
       }
     }
   }
-  dl.metadata, dl.properties, dl.files {
+  dl.metadata, dl.properties {
     display: grid;
     grid-template-columns: 26% auto;
     dt {

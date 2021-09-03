@@ -6,7 +6,7 @@
 # This is not a comprehensive list of all formats in existence, but is a
 # pretty comprehensive list of all formats in the IDEALS database as of early
 # 2020. It should be updated from time to time to accommodate new user-
-# submitted formats
+# submitted formats.
 #
 
 aac:
@@ -20,6 +20,7 @@ aac:
   category: audio
   icon: file-audio-o
   readable_by_vips: false
+  viewer_method: audio_tag_for
 ai:
   short_name: AI
   long_name: Adobe Illustrator
@@ -42,6 +43,7 @@ aiff:
   category: audio
   icon: file-audio-o
   readable_by_vips: false
+  viewer_method: audio_tag_for
 asc:
   short_name: ActionScript
   long_name: ActionScript
@@ -74,6 +76,7 @@ avi:
   category: video
   icon: file-video-o
   readable_by_vips: false
+  viewer_method: video_tag_for
 bmp:
   short_name: BMP
   long_name: Bitmap
@@ -84,6 +87,7 @@ bmp:
   category: image
   icon: file-image-o
   readable_by_vips: true
+  viewer_method: image_tag_for
 css:
   short_name: CSS
   long_name: Cascading Style Sheets
@@ -185,6 +189,7 @@ gif:
   category: image
   icon: file-image-o
   readable_by_vips: true
+  viewer_method: image_tag_for
 gzip:
   short_name: GZip
   long_name: GZip
@@ -210,7 +215,7 @@ html:
   readable_by_vips: false
 iso:
   short_name: ISO
-  long_name: ISO
+  long_name: ISO Image
   extensions:
     - iso
   media_types:
@@ -222,13 +227,14 @@ jpeg:
   short_name: JPEG
   long_name: JPEG JFIF
   extensions:
-    - jpeg
     - jpg
+    - jpeg
   media_types:
     - image/jpeg
   category: image
   icon: file-image-o
   readable_by_vips: true
+  viewer_method: image_tag_for
 jpeg2000:
   short_name: JP2
   long_name: JPEG2000
@@ -309,11 +315,12 @@ mp3_audio:
   extensions:
     - mp3
   media_types:
-    - audio/mpeg3
-    - audio/x-mpeg3
+    - audio/mpeg
+    - audio/mp3
   category: audio
   icon: file-audio-o
   readable_by_vips: false
+  viewer_method: audio_tag_for
 mp4_audio:
   short_name: MPEG-4
   long_name: MPEG-4
@@ -324,6 +331,7 @@ mp4_audio:
   category: audio
   icon: file-audio-o
   readable_by_vips: false
+  viewer_method: audio_tag_for
 mp4_video:
   short_name: MPEG-4
   long_name: MPEG-4
@@ -336,6 +344,7 @@ mp4_video:
   category: video
   icon: file-video-o
   readable_by_vips: false
+  viewer_method: video_tag_for
 mpd:
   short_name: MPD
   long_name: Microsoft Project Database
@@ -364,6 +373,7 @@ mpeg:
   category: video
   icon: file-video-o
   readable_by_vips: false
+  viewer_method: video_tag_for
 mpeg2:
   short_name: MPEG-2
   long_name: MPEG-2
@@ -374,6 +384,7 @@ mpeg2:
   category: video
   icon: file-video-o
   readable_by_vips: false
+  viewer_method: video_tag_for
 mpp:
   short_name: MPP
   long_name: Microsoft Project
@@ -505,6 +516,7 @@ ogg:
   category: audio
   icon: file-audio-o
   readable_by_vips: false
+  viewer_method: audio_tag_for
 otg:
   short_name: OTG
   long_name: OpenDocument Drawing Template
@@ -574,7 +586,8 @@ pdf:
     - application/pdf
   category: document
   icon: file-pdf-o
-  readable_by_vips: false
+  readable_by_vips: true
+  viewer_method: object_tag_for
 png:
   short_name: PNG
   long_name: Portable Network Graphics
@@ -585,6 +598,7 @@ png:
   category: image
   icon: file-image-o
   readable_by_vips: true
+  viewer_method: image_tag_for
 pps:
   short_name: PPS
   long_name: PowerPoint Slide Show
@@ -656,6 +670,7 @@ quicktime:
   category: video
   icon: file-video-o
   readable_by_vips: false
+  viewer_method: video_tag_for
 ra:
   short_name: RA
   long_name: RealAudio
@@ -921,6 +936,7 @@ tiff:
   category: image
   icon: file-image-o
   readable_by_vips: true
+  viewer_method: image_tag_for
 txt:
   short_name: Text
   long_name: Plain Text
@@ -931,6 +947,7 @@ txt:
   category: document
   icon: file-text-o
   readable_by_vips: false
+  viewer_method: text_viewer_for
 vsd:
   short_name: VSD
   long_name: Visio Drawing
@@ -955,6 +972,7 @@ wav:
   category: audio
   icon: file-audio-o
   readable_by_vips: false
+  viewer_method: audio_tag_for
 wma:
   short_name: WMA
   long_name: Windows Media Audio
@@ -965,6 +983,7 @@ wma:
   category: audio
   icon: file-audio-o
   readable_by_vips: false
+  viewer_method: audio_tag_for
 wmv:
   short_name: WMV
   long_name: Windows Media Video
@@ -975,6 +994,7 @@ wmv:
   category: video
   icon: file-video-o
   readable_by_vips: false
+  viewer_method: video_tag_for
 wordperfect:
   short_name: WPD
   long_name: WordPerfect

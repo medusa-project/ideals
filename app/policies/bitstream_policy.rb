@@ -133,4 +133,8 @@ class BitstreamPolicy < ApplicationPolicy
                   "with this file." }
   end
 
+  def viewer
+    download
+  end
+
 end

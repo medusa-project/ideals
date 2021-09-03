@@ -596,4 +596,99 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # viewer()
+
+  test "viewer() returns HTTP 200" do
+    item = items(:item1)
+    bs   = bitstreams(:item1_in_staging)
+    get item_bitstream_viewer_path(item, bs), xhr: true
+    assert_response :ok
+  end
+
+  test "viewer() returns HTTP 403 for submitting items" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:submitting)
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      get item_bitstream_viewer_path(item, bitstream), xhr: true
+      assert_response :forbidden
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
+  test "viewer() returns HTTP 403 for undiscoverable items" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:undiscoverable)
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      get item_bitstream_viewer_path(item, bitstream), xhr: true
+      assert_response :forbidden
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
+  test "viewer() returns HTTP 403 for withdrawn items" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:withdrawn)
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      get item_bitstream_viewer_path(item, bitstream), xhr: true
+      assert_response :forbidden
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
+  test "viewer() returns HTTP 404 for non-XHR requests" do
+    item = items(:item1)
+    bs   = bitstreams(:item1_in_staging)
+    get item_bitstream_viewer_path(item, bs)
+    assert_response :not_found
+  end
+
+  test "viewer() respects role limits" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:withdrawn) # (an item that only sysadmins have access to)
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+
+      # Assert that sysadmins can access it
+      log_in_as(users(:local_sysadmin))
+      get item_bitstream_viewer_path(item, bitstream), xhr: true
+      assert_response :ok
+
+      # Assert that role-limited sysadmins can't
+      get item_bitstream_viewer_path(item, bitstream, role: Role::LOGGED_OUT), xhr: true
+      assert_response :forbidden
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
 end

@@ -205,6 +205,21 @@ class Bitstream < ApplicationRecord
     self.item.bitstream_authorizations.where(user_group: user_group).count > 0
   end
 
+  ##
+  # @return [IO]
+  #
+  def data
+    config = ::Configuration.instance
+    if self.medusa_key
+      bucket = config.medusa[:bucket]
+      key    = self.medusa_key
+    else
+      bucket = config.aws[:bucket]
+      key    = self.staging_key
+    end
+    S3Client.instance.get_object(bucket: bucket, key: key).body.read
+  end
+
   def delete_derivatives
     begin
       S3Client.instance.delete_objects(bucket:     ::Configuration.instance.aws[:bucket],

@@ -840,4 +840,146 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
+  # viewer?()
+
+  test "viewer?() returns true with a nil user" do
+    policy = BitstreamPolicy.new(nil, @bitstream)
+    assert policy.viewer?
+  end
+
+  test "viewer?() restricts undiscoverable items by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    assert !policy.viewer?
+  end
+
+  test "viewer?() restricts submitting items by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    assert !policy.viewer?
+  end
+
+  test "viewer?() restricts withdrawn items by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    assert !policy.viewer?
+  end
+
+  test "viewer?() authorizes sysadmins to undiscoverable items" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    assert policy.viewer?
+  end
+
+  test "viewer?() authorizes sysadmins to submitting items" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    assert policy.viewer?
+  end
+
+  test "viewer?() authorizes sysadmins to withdrawn items" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    assert policy.viewer?
+  end
+
+  test "viewer?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    assert !policy.viewer?
+  end
+
+  test "viewer?() respects bitstream role limits" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
+    assert !policy.viewer?
+  end
+
+  test "viewer?() restricts non-content bitstreams to non-collection managers" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    assert !policy.viewer?
+  end
+
+  test "viewer?() restricts bitstreams that do not exist in stagina and do
+  not have a Medusa UUID" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    bs = bitstreams(:item1_in_staging)
+    bs.update!(medusa_uuid: nil, exists_in_staging: false)
+    policy  = BitstreamPolicy.new(context, bs)
+    assert !policy.viewer?
+  end
+
+  test "viewer?() restricts bitstreams whose owning items are embargoed" do
+    user      = users(:norights)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    bitstream = bitstreams(:item2_in_medusa)
+    policy    = BitstreamPolicy.new(context, bitstream)
+
+    assert policy.viewer?
+    bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
+                                   download:   true).save!
+    assert !policy.viewer?
+  end
+
+  test "viewer?() authorizes non-content bitstreams to collection managers" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    assert policy.viewer?
+  end
+
+  test "viewer?() authorizes clients whose hostname or IP matches a user group
+  assigned to the bitstream" do
+    group     = user_groups(:hostname)
+    bitstream = bitstreams(:item2_in_medusa)
+    item      = bitstream.item
+    item.bitstream_authorizations.build(user_group: group)
+    item.save!
+
+    context   = RequestContext.new(client_ip:       "10.0.0.1",
+                                   client_hostname: "example.org")
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.viewer?
+  end
+
+  test "viewer?() does not authorize clients whose hostname or IP does not
+  match a user group assigned to the bitstream" do
+    group     = user_groups(:hostname)
+    bitstream = bitstreams(:item2_in_medusa)
+    item      = bitstream.item
+    item.bitstream_authorizations.build(user_group: group)
+    item.save!
+
+    context   = RequestContext.new(client_ip:       "10.0.0.1",
+                                   client_hostname: "something-else.org")
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert !policy.viewer?
+  end
+
 end

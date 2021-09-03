@@ -17,7 +17,9 @@
 
 %h4.creators= @item.creators
 
-%hr
+.mb-3
+
+= render partial: "file_navigator"
 
 - if @item.handle
   %h2.mt-5 Permalink
@@ -27,7 +29,6 @@
       %i.fas.fa-paste
       Copy
 
-= render partial: "show_files_section"
 = render partial: "show_metadata_section"
 = render partial: "show_collections_section"
 = render partial: "show_properties_section"
@@ -35,6 +36,10 @@
 = render partial: "show_access_section"
 = render partial: "show_events_section"
 
+= render partial: "shared/ajax_modal",
+         locals: { id: "upload-item-files-modal",
+                   title: "Upload Files",
+                   size: "lg" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-item-membership-modal",
                    title: "Edit Membership",

@@ -4,7 +4,7 @@ class BitstreamsController < ApplicationController
 
   LOGGER = CustomLogger.new(BitstreamsController)
 
-  before_action :ensure_logged_in, except: [:object, :show, :stream]
+  before_action :ensure_logged_in, except: [:object, :show, :stream, :viewer]
 
   before_action :set_item, only: :create
   before_action :set_bitstream, except: :create
@@ -187,6 +187,16 @@ class BitstreamsController < ApplicationController
       flash['success'] = "File \"#{@bitstream.original_filename}\" updated."
       render "shared/reload"
     end
+  end
+
+  ##
+  # Returns HTML for the item bitstream viewer (the right pane of the item
+  # navigator) via XHR.
+  #
+  # Responds to `GET /items/:item_id/bitstreams/:id/viewer` (XHR only)
+  #
+  def viewer
+    render partial: "bitstreams/viewer"
   end
 
 
