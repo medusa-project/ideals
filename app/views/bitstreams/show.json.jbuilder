@@ -2,11 +2,12 @@
 
 json.set! "class", @bitstream.class.to_s
 json.uri item_bitstream_url(@bitstream.item, @bitstream, format: :json)
-json.data_uri item_bitstream_object_url(@bitstream.item, @bitstream)
+json.object_uri item_bitstream_object_url(@bitstream.item, @bitstream)
 
 json.extract! @bitstream, :id, :length, :media_type, :original_filename,
-              :exists_in_staging, :staging_key, :medusa_key, :medusa_uuid,
               :created_at, :updated_at
+
+json.bundle Bitstream::Bundle.label(@bitstream.bundle)
 
 json.item do
   json.id @bitstream.item.id
