@@ -20,8 +20,8 @@
                         edit_submission_path(item))
   %button.begin-submission.btn.btn-outline-primary Begin New Submission
 
-#deposit-agreement.accordion.mb-3
-  .card{style: "#{@submissions.any? ? "display: none" : ""}"}
+#deposit-agreement.accordion.mb-3{style: "#{@submissions.any? ? "display: none" : ""}"}
+  .card
     #deposit-agreement-header.card-header
       %button.btn.btn-link{type:            "button",
                            "data-toggle":   "collapse",
@@ -34,35 +34,24 @@
     #deposit-agreement-collapse.collapse{"aria-labelledby": "deposit-agreement-heading",
                                          "data-parent":     "#deposit-agreement"}
       .card-body
+        -# https://wiki.illinois.edu/wiki/display/IDEALS/Deposit+Agreement+-+Non-Exclusive+Distribution+and+Preservation+License
+        %p To properly administer the Illinois Digital Environment for Access to Learning and Scholarship (IDEALS) and preserve the contents for future use, the Board of Trustees of the University of Illinois on behalf of its Urbana-Champaign campus (the "University") requires certain permissions and warrants from you, the author(s) and/or copyright owner. If you are the copyright owner, by accepting this license, you still retain copyright to your work and do not give up the right to submit the work to publishers or other repositories. If you are not the copyright owner, you represent that the copyright owner has given you permission to deposit the work.
+        %p By accepting (clicking through) this license, you grant to the University the non-exclusive right to reproduce, translate (as described below), and distribute the submission, including the descriptive information (metadata) and abstract, in any format or medium worldwide and royalty-free, including, but not limited to, publication over the Internet, except as provided for by an addendum to this agreement.
+        %p When provided, the University will clearly identify your name(s) as the author(s) or copyright owner(s) of the submission as well as the name(s) of the copyright owner(s) if different from your name(s), include a statement of your copyright, and will not make any alteration, other than as allowed by this license, to your submission.
+        %p You agree that the University may translate the submission to any medium or format for the purposes of security, back-up, and preservation. You agree that the University may make multiple copies of the submission for the purposes of security, back-up, and preservation.
+        %p If you cannot make all of the following representations, then you shall contact the IDEALS Staff at ideals@library.illinois.edu before proceeding further. In order to make this submission, you represent that:
+        %p You have the right to grant the rights contained in the license.
+        %p This submission does not, to the best of your knowledge, infringe on anyone's copyright or other intellectual property rights.
+        %p If the submission does contain material for which you do not hold copyright and that exceeds fair use, you have obtained the unrestricted permission of the copyright owner to grant the University the rights required by this license and that such third-party owned material is clearly identified and acknowledged within the text or content of the submission.
+        %p The submission does not contain any confidential information, proprietary information of others or export controlled information.
+        %p There are not any restrictions or required publication delays on the distribution of the submission by the University.
+        %p The information you provide about the submission is accurate.
         %p
-          %b Non-Exclusive Distribution and Preservation License
-        %p To properly administer IDEALS and preserve the contents for future use, the Board of Trustees of the University of Illinois on behalf of its Urbana-Champaign campus (the "University") requires certain permissions and warrants from you, the Creator(s) and/or copyright owner. If copyright law is applicable to your dataset submission (see Illinois Data Bank Help section: Research Data Copyright and Licensing)
+          %strong You understand that if copyright terms for, or ownership of, the submission change, it is your responsibility to notify the University of these changes.
         %p
-          By accepting (clicking through) this License, you grant to the University the non-exclusive right to reproduce, translate (as described below), and distribute the Dataset in any format or medium worldwide and royalty-free, including, but not limited to, publication over the Internet, unless otherwise provided for by an addendum to this Deposit Agreement. You must contact IDEALS staff at
-          = Configuration.instance.mail[:reply_to]
-          if you would like an addendum to this Deposit Agreement to be considered.
-        %p You agree that the University may convert the deposited Data Files and/or Metadata Files to any medium or format and make multiple copies of the deposited Dataset for the purposes of security, back-up, and preservation. In addition, you understand and agree that Research Data Service staff may make changes to Descriptive Metadata, including enhancements (such as addition of key words) and/or corrections (such as minor typos). Any Descriptive Metadata changes will be tracked via a public change log. Your Dataset will not otherwise be altered without your permission.
-        %p You understand that the name of the Depositor as well as the name and email address of the Long-Term Contact Person may be displayed with the published Dataset, as will the copyright license selected by the Depositor.
-        %p You understand that the University commits to preserving your published Dataset in accordance with the Illinois Data Bank Preservation Policy at least five years from the date of publication via IDEALS. The University will endeavor to retain the Dataset beyond the initial five-year commitment, but reserves the right to review the long-term viability of the Dataset beyond the initial five-year commitment and the right to Deaccession the Data Files and/or Metadata Files or otherwise alter the availability of the Data Files, Metadata Files, and/or Descriptive Metadata after the initial five years in the University's sole discretion. Generally, the University will endeavor to retain at least the Descriptive Metadata beyond the initial commitment. To learn how to increase the likelihood that published Data Files and Metadata Files will be preserved beyond the initial five year commitment, please see the Illinois Data Bank Preservation Review Guidelines.
-        %p
-          If you cannot make all of the following representations, then you must contact IDEALS staff at
-          = Configuration.instance.mail[:reply_to]
-          before proceeding further.
-        %p In order to submit this Dataset, you represent that:
-        %ul
-          %li You have the right to grant the rights contained in this License.
-          %li Nothing in this Dataset, to the best of your knowledge, infringes on anyone's copyright or other intellectual property rights.
-          %li If this Dataset does contain material for which you do not hold copyright and that exceeds fair use, you have obtained the unrestricted permission of the copyright owner to grant the University the rights required by this License and that such third-party owned material is clearly identified and acknowledged within the content of the Dataset.
-          %li Nothing in this Dataset violates any contract terms (e.g., Nondisclosure Agreement, Material Transfer Agreement, Terms of Use, etc.)
-          %li Nothing in this Dataset contains any private information, confidential information, proprietary information of others, export controlled information, or otherwise protected data or information that should not be publicly shared.
-          %li You honor any publication delays required by other parties, such as a journal publisher, by selecting the appropriate release date for public distribution of all content in this Dataset.
-          %li To the best of your knowledge, all content provided within and about this Dataset is accurate.
-          %li Nothing in this Dataset contains any software viruses or computer codes, files, or programs capable of allowing unauthorized access or disrupting, damaging, limiting or interfering with the proper functioning of IDEALS or other users' software, hardware, or telecommunications equipment.
-          %li This Dataset is in a final state and is not subject to revisions or updates.
-          %li You understand that if copyright terms for, or ownership of, this Dataset submission change, it is your responsibility to notify the University of these changes.
-          %li If this Dataset is based upon work that has been sponsored or supported by an agency or organization other than the University, you must fulfill any right of review or other obligations required by the contract or agreement with such an agency or organization before depositing into IDEALS.
-          %li You agree that this submission of this Dataset and your related actions are subject to all applicable state and federal laws as well as University and campus policies.
-        %p By agreeing to this Deposit Agreement, you acknowledge that you have read and accept the terms of this License and all related IDEALS and University policies.
+          %strong You understand that you may request that the submission be withdrawn from IDEALS, and, in such an event, the descriptive information (metadata) will be retained and a copy of the submission will be retained in a 'dark archive' where it is no longer publicly accessible. The exception to this is requests to withdraw theses and dissertations electronically deposited with the Graduate College; in those cases, you understand that you must contact the Graduate College at thesis@illinois.edu to make such a request.
+        %p If the submission is based upon work that has been sponsored or supported by an agency or organization other than the University, you must fulfill any right of review or other obligations required by the contract or agreement with such an agency or organization before depositing into IDEALS.
+        %p By accepting this license, you acknowledge that you have read and agreed to the terms of this agreement and all related IDEALS and University policies.
 
 -# N.B.: these questions are outside of the form because they are only read
 -# by JavaScript and don't need to be submitted
