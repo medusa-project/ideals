@@ -19,9 +19,8 @@ body#show_item {
     #file-navigator-thumbnail-column {
       #file-navigator-thumbnail-content {
         display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-start;
+        flex-flow: row wrap;
+        align-content: flex-start;
         height: 100%;
         padding: 4px;
         overflow-y: scroll;
