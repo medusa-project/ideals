@@ -6,6 +6,7 @@ class ItemTest < ActiveSupport::TestCase
 
   setup do
     setup_elasticsearch
+    setup_s3
     @instance = items(:item1)
   end
 

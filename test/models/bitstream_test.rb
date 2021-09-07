@@ -23,9 +23,9 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   setup do
+    setup_s3
     @instance = bitstreams(:item1_in_staging)
     assert @instance.valid?
-    Bitstream.create_bucket
   end
 
   teardown do

@@ -20,6 +20,10 @@ class ActiveSupport::TestCase
     client.create_index(index)
   end
 
+  def setup_s3
+    Bitstream.create_bucket
+  end
+
   def log_in_as(user)
     if user.kind_of?(ShibbolethUser)
       # N.B. 1: See "request_type option" section for info about using
