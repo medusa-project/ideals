@@ -122,7 +122,7 @@ docx:
   short_name: Word
   long_name: Word Document
   extensions:
-    - doc
+    - docx
   media_types:
     - application/vnd.openxmlformats-officedocument.wordprocessingml.document
   category: document
@@ -687,6 +687,16 @@ quicktime:
   icon: file-video-o
   readable_by_vips: false
   viewer_method: video_tag_for
+r:
+  short_name: R
+  long_name: R Script
+  extensions:
+    - r
+  media_types:
+    - text/plain
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
 ra:
   short_name: RA
   long_name: RealAudio
@@ -726,6 +736,7 @@ rtf:
     - rtf
   media_types:
     - text/rtf
+    - text/richtext
   category: document
   icon: file-text-o
   readable_by_vips: false
@@ -953,6 +964,16 @@ tiff:
   icon: file-image-o
   readable_by_vips: true
   viewer_method: image_tag_for
+tsv:
+  short_name: TSV
+  long_name: Tab-Separated Values
+  extensions:
+    - tsv
+  media_types:
+    - text/tsv
+  category: document
+  icon: file-text-o
+  readable_by_vips: false
 txt:
   short_name: Text
   long_name: Plain Text
