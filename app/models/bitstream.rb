@@ -482,7 +482,7 @@ class Bitstream < ApplicationRecord
       end
     ensure
       source_tempfile.unlink
-      FileUtils.rm(deriv_path)
+      FileUtils.rm(deriv_path) rescue nil
     end
   end
 
