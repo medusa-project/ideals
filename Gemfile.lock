@@ -116,8 +116,6 @@ GEM
       sshkit (>= 1.9.0)
     capistrano-bundler (1.6.0)
       capistrano (~> 3.1)
-    capistrano-passenger (0.2.0)
-      capistrano (~> 3.0)
     capistrano-rails (1.4.0)
       capistrano (~> 3.1)
       capistrano-bundler (~> 1.1)
@@ -211,9 +209,6 @@ GEM
     parallel (1.19.1)
     parser (2.7.1.0)
       ast (~> 2.4.0)
-    passenger (6.0.4)
-      rack
-      rake (>= 0.8.1)
     pg (1.2.3)
     progress_job (0.0.4)
       delayed_job
@@ -313,7 +308,6 @@ DEPENDENCIES
   builder (~> 3.2, >= 3.2.2)
   bunny
   capistrano-bundler
-  capistrano-passenger
   capistrano-rails
   capistrano-rbenv
   csv
@@ -335,7 +329,6 @@ DEPENDENCIES
   omniauth-identity
   omniauth-rails_csrf_protection
   omniauth-shibboleth
-  passenger
   pg
   progress_job
   puma
