@@ -1,0 +1,63 @@
+- provide(:body_id, "file-formats")
+- provide(:title, "File Formats")
+
+%h1 File Formats
+
+- if @unaccounted_formats.any?
+
+  .card.text-white.bg-warning.mb-3
+    .card-body
+      %h2 Unaccounted Formats
+
+      %p
+        %i.fa.fa-exclamation-triangle
+        Until they are added to the formats.yml file, these formats will not be
+        previewable in the item view file browser, and some of their
+        characteristics may not appear correctly.
+
+      %table.table.text-white
+        %thead
+          %tr
+            %th Extension
+            %th Files
+        %tbody
+          - @unaccounted_formats.each do |format|
+            %tr
+              %td
+                %code.text-white= format['ext']
+              %td= number_with_delimiter(format['count'])
+
+%h2 Accounted Formats
+
+%table.table
+  %thead
+    %tr
+      %th Short Name
+      %th Full Name
+      %th Extensions
+      %th Media Types
+      %th Files
+      %th Previewer
+  %tbody
+    - @accounted_formats.each do |format|
+      %tr
+        %td= format[:format].short_name
+        %td= format[:format].long_name
+        %td
+          - if format[:format].extensions.length > 1
+            %ul
+              - format[:format].extensions.each do |ext|
+                %li
+                  %code= ext
+          - else
+            %code= format[:format].extensions.first
+        %td
+          - if format[:format].media_types.length > 1
+            %ul
+              - format[:format].media_types.each do |type|
+                %li
+                  %code= type
+          - else
+            %code= format[:format].media_types.first
+        %td= number_with_delimiter(format[:count])
+        %td= boolean(format[:format].viewer_method)

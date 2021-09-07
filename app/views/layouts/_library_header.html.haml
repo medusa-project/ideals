@@ -96,6 +96,9 @@
                       My Institution
                   - if msg
                     .dropdown-divider
+                    = link_to file_formats_path, class: "dropdown-item" do
+                      = icon_for(FileFormat)
+                      File Formats
                     = link_to messages_path, class: "dropdown-item" do
                       = icon_for(Message)
                       Medusa Messages

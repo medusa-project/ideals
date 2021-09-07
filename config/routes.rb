@@ -46,6 +46,7 @@ Rails.application.routes.draw do
     match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
   end
   match "/deposit", to: "submissions#agreement", via: :get
+  resources :file_formats, path: "file-formats", only: :index
   match "/handle/:prefix/:suffix", to: "handles#redirect", via: :get, as: "redirect_handle"
   resources :institutions, param: :key do
     # These all render content for the main tab panes in show-unit view via XHR.

@@ -173,6 +173,8 @@ module ApplicationHelper
       icon   = "far #{format.icon}" if format
     when "Collection"
       icon = "far fa-folder-open"
+    when "FileFormat"
+      icon = "fa fa-file"
     when "Institution"
       icon = "fa fa-university"
     when "Item"
