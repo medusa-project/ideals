@@ -464,23 +464,25 @@ class Bitstream < ApplicationRecord
   # @param format [Symbol]
   #
   def generate_derivative(region:, size:, format:)
-    config        = Configuration.instance
-    target_bucket = config.aws[:bucket]
-    target_key    = derivative_key(region: region, size: size, format: format)
-    tempfile      = download_to_temp_file
+    config          = Configuration.instance
+    target_bucket   = config.aws[:bucket]
+    target_key      = derivative_key(region: region, size: size, format: format)
+    source_tempfile = download_to_temp_file
     begin
-      # crop options: none, attention, centre, entropy
-      thumb_buf = Vips::Image.thumbnail(tempfile.path, size,
-                                        crop: (region == :square) ? "centre" : "none")
-      thumb_jpg = thumb_buf.write_to_buffer(".#{format}")
-      io = StringIO.new(thumb_jpg)
-      io.binmode
-
-      S3Client.instance.put_object(bucket: target_bucket,
-                                   key:    target_key,
-                                   body:   io)
+      crop = (region == :square) ? "centre" : "none"
+      # ruby-vips gem is also an option here, but I experienced an inexplicable
+      # hanging issue on some images, so vipsthumbnail will do just as well.
+      `vipsthumbnail #{source_tempfile.path} --crop #{crop} --size #{size}x#{size} -o %s-#{region}-#{size}.#{format}`
+      deriv_path = File.join(File.dirname(source_tempfile.path),
+                             "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
+      File.open(deriv_path, "rb") do |file|
+        S3Client.instance.put_object(bucket: target_bucket,
+                                     key:    target_key,
+                                     body:   file)
+      end
     ensure
-      tempfile.unlink
+      source_tempfile.unlink
+      FileUtils.rm(deriv_path)
     end
   end
 

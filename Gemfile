@@ -51,8 +51,6 @@ gem "pg"
 gem "puma"
 # Used during the new user sign-up process
 gem "recaptcha"
-# Used for creating derivative images
-gem "ruby-vips"
 # Use SCSS for stylesheets
 gem "sassc"
 # Provides a SCARS-themed Bootstrap.
