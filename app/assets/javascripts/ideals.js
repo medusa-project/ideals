@@ -21,7 +21,7 @@ const IDEALS = {
     Client: function() {
 
         const ROOT_URL   = $("input[name=root_url]").val();
-        const CSRF_TOKEN = $("input[name=authenticity_token]").val();
+        const CSRF_TOKEN = $("meta[name=csrf-token]").attr("content");
 
         /**
          * Sends an HTTP DELETE request to the given URI.
