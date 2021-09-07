@@ -47,6 +47,8 @@ gem "omniauth-identity"
 gem "omniauth-shibboleth"
 # Use postgresql as the database for Active Record
 gem "pg"
+# Our application server
+gem "puma"
 # Used during the new user sign-up process
 gem "recaptcha"
 # Used for creating derivative images
@@ -76,10 +78,8 @@ group :development do
   #gem "bootsnap", ">= 1.1.0", require: false
   # Use Capistrano for deployment
   gem "capistrano-bundler"
-  gem "capistrano-passenger"
   gem "capistrano-rails"
   gem "capistrano-rbenv"
-  gem "puma"
   # use rubocop linter to support consisitent style
   gem "rubocop", require: false
   gem "rubocop-performance"
@@ -89,7 +89,6 @@ end
 
 group :production do
   gem "omniauth-rails_csrf_protection"
-  gem "passenger", require: "phusion_passenger/rack_handler"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
