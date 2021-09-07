@@ -202,6 +202,22 @@ gzip:
   category: archive
   icon: file-archive-o
   readable_by_vips: false
+heif:
+  short_name: HEIF
+  long_name: High Efficiency Image Format
+  extensions:
+    - heic
+    - heif
+    - heics
+    - heifs
+  media_types:
+    - image/heif
+    - image/heif-sequence
+    - image/heic
+    - image/heic-sequence
+  category: image
+  icon: file-image-o
+  readable_by_vips: false
 html:
   short_name: HTML
   long_name: Hypertext Markup Language
