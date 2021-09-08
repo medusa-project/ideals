@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
   build-essential \
   libmagic-dev \
   libpq-dev \
-  libvips \
+  libvips-tools \
   curl \
   git \
   shared-mime-info
