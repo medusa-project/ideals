@@ -30,6 +30,7 @@
                   = select_tag("elements[][string]", options_for_select(profile_element.vocabulary.terms.map{ |t| [t.displayed_value, t.stored_value] },
                                                                         ascribed_element.string),
                                class: "custom-select",
+                               include_blank: true,
                                required: profile_element.required)
                 - else
                   - case profile_element.input_type
