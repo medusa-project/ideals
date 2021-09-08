@@ -53,8 +53,9 @@ class MessageHandler
   #
   def self.on_delete_succeeded_message(message_json, message_hash)
     message = Message.find_by_medusa_uuid(message_hash['uuid'])
-    message.update!(status:       Message::Status::OK,
-                    raw_response: message_json)
+    message.update!(status:        Message::Status::OK,
+                    raw_response:  message_json,
+                    response_time: Time.now)
     # This should already be deleted, but just in case, we delete it rather
     # than destroying it in order to avoid callbacks, which could cause an
     # infinite loop.
@@ -68,8 +69,9 @@ class MessageHandler
   #
   def self.on_delete_failed_message(message_json, message_hash)
     message = Message.find_by_medusa_uuid(message_hash['uuid'])
-    message.update!(status: message_hash['status'],
-                    raw_response: message_json)
+    message.update!(status:        message_hash['status'],
+                    raw_response:  message_json,
+                    response_time: Time.now)
     error_string = "Failed to delete from Medusa:\n\n#{message_hash.to_yaml}"
     IdealsMailer.error(error_string).deliver_now
   end
