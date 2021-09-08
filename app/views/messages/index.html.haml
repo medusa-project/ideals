@@ -1,7 +1,9 @@
+- provide(:body_id, "Messages")
+
 %h1 Messages
 
 - @messages.each do |message|
-  .card
+  .card.mb-3
     .card-body
       .row
         .col-sm-6
@@ -16,13 +18,16 @@
               %dd= message.bitstream_id
               %dt Item
               %dd= link_to(message.bitstream.item.title, message.bitstream.item)
-            - if message.staging_key
+            - if message.staging_key.present?
               %dt Staging Key
               %dd
                 %code= message.staging_key
-            %dt Target Key
-            %dd
-              %code= message.target_key
+            - if message.target_key.present?
+              %dt Target Key
+              %dd
+                %code= message.target_key
+            %dt Medusa UUID
+            %dd= link_to(message.medusa_uuid,  message.medusa_url)
         .col-sm-6
           %h4 Response
           - if message.response_time
