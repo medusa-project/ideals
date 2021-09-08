@@ -1,5 +1,17 @@
 namespace :medusa do
 
+  desc "Delete a file"
+  task :delete, [:uuid] => :environment do |task, args|
+    Message.create!(operation:   Message::Operation::DELETE,
+                    medusa_uuid: args[:uuid])
+    message = {
+      operation: Message::Operation::DELETE,
+      uuid:      args[:uuid]
+    }
+    AmqpHelper::Connector[:ideals].send_message(Message.outgoing_queue,
+                                                message)
+  end
+
   desc "Delete all bitstreams"
   task :delete_all_bitstreams => :environment do
     raise "This task is not available in production." if Rails.env.production?
