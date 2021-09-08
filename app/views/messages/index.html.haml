@@ -1,4 +1,5 @@
-- provide(:body_id, "Messages")
+- provide(:body_id, "messages")
+- provide(:title, "Messages")
 
 %h1 Messages
 
@@ -10,9 +11,15 @@
           %h4 Request
           %dl
             %dt Sent
-            %dd= local_time(message.updated_at)
+            %dd= message.updated_at
             %dt Operation
-            %dd= message.operation
+            %dd
+              - if message.operation == Message::Operation::DELETE
+                %span.badge.badge-danger
+                  = message.operation
+              - else
+                %span.badge.badge-primary
+                  = message.operation
             - if message.bitstream_id
               %dt Bitstream ID
               %dd= message.bitstream_id
@@ -35,10 +42,17 @@
               %dt Received
               %dd= message.response_time
               %dt Status
-              %dd= message.status
+              %dd
+                - if message.status == "ok"
+                  %span.badge.badge-success
+                    = message.status
+                - else
+                  %span.badge.badge-danger
+                    = message.status
               %dt Medusa UUID
               %dd= link_to(message.medusa_uuid,  message.medusa_url)
-              %dt Error Text
-              %dd= message.error_text
+              - if message.error_text.present?
+                %dt Error Text
+                %dd= message.error_text
           - else
             %p No response received.
