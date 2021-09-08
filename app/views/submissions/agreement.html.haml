@@ -3,10 +3,8 @@
 
 %h1 Submit an Item
 
-%p To start your deposit, please review the deposit agreement and answer the following questions.
-
 - if @submissions.any?
-  .card.text-white.bg-info.submissions-in-progress.mb-3
+  #submissions-in-progress.card.text-white.bg-info.mb-3
     .card-header= "#{pluralize(@submissions.length, "submission")} in progress"
     .card-body.pt-3.pr-2.pb-2.pl-2
       %ul
@@ -21,6 +19,8 @@
   %button.begin-submission.btn.btn-outline-primary Begin New Submission
 
 #deposit-agreement.accordion.mb-3{style: "#{@submissions.any? ? "display: none" : ""}"}
+  %p To start your deposit, please review the deposit agreement and answer the following questions.
+
   .card
     #deposit-agreement-header.card-header
       %button.btn.btn-link{type:            "button",
@@ -55,60 +55,61 @@
 
 -# N.B.: these questions are outside of the form because they are only read
 -# by JavaScript and don't need to be submitted
-.question.mb-3
-  %p
-    %strong Are you a creator of this work or have you been granted permission by the creator to deposit it?
-  .form-check
-    %input#q1-1.response.form-check-input{type: "radio", name: "q1", value: "Yes"}
-    %label.form-check-label{for: "q1-1"} Yes
-  .form-check
-    %input#q1-2.response.form-check-input{type: "radio", name: "q1", value: "No"}
-    %label.form-check-label{for: "q1-2"} No
-  %p.mt-2.text-info
-    %i.fa.fa-info-circle
-    Deposit into IDEALS requires that the depositor be the creator of the dataset or have permission to deposit it.
+#questions
+  .question.mb-3
+    %p
+      %strong Are you a creator of this work or have you been granted permission by the creator to deposit it?
+    .form-check
+      %input#q1-1.response.form-check-input{type: "radio", name: "q1", value: "Yes"}
+      %label.form-check-label{for: "q1-1"} Yes
+    .form-check
+      %input#q1-2.response.form-check-input{type: "radio", name: "q1", value: "No"}
+      %label.form-check-label{for: "q1-2"} No
+    %p.mt-2.text-info
+      %i.fa.fa-info-circle
+      Deposit into IDEALS requires that the depositor be the creator of the dataset or have permission to deposit it.
 
-%hr
+  %hr
 
-.question.mb-3
-  %p
-    %strong Have you removed any private, confidential, export controlled, or other legally protected information from the submission?
-  .form-check
-    %input#q2-1.response.form-check-input{type: "radio", name: "q2", value: "Yes"}
-    %label.form-check-label{for: "q2-1"} Yes
-  .form-check
-    %input#q2-2.response.form-check-input{type: "radio", name: "q2", value: "No"}
-    %label.form-check-label{for: "q2-2"} No
-  .form-check
-    %input#q2-3.response.form-check-input{type: "radio", name: "q2", value: "Not applicable"}
-    %label.form-check-label{for: "q2-3"} Not Applicable
-  %p.mt-2.text-info
-    %i.fa.fa-info-circle
-    Deposit into IDEALS requires removal of any private, confidential, export controlled, or other legally protected information from the work. A selection of ‘Not Applicable’ indicates that either the work never included any such information, which a selection of ‘Yes’ indicates that such information has been removed.
+  .question.mb-3
+    %p
+      %strong Have you removed any private, confidential, export controlled, or other legally protected information from the submission?
+    .form-check
+      %input#q2-1.response.form-check-input{type: "radio", name: "q2", value: "Yes"}
+      %label.form-check-label{for: "q2-1"} Yes
+    .form-check
+      %input#q2-2.response.form-check-input{type: "radio", name: "q2", value: "No"}
+      %label.form-check-label{for: "q2-2"} No
+    .form-check
+      %input#q2-3.response.form-check-input{type: "radio", name: "q2", value: "Not applicable"}
+      %label.form-check-label{for: "q2-3"} Not Applicable
+    %p.mt-2.text-info
+      %i.fa.fa-info-circle
+      Deposit into IDEALS requires removal of any private, confidential, export controlled, or other legally protected information from the work. A selection of ‘Not Applicable’ indicates that either the work never included any such information, which a selection of ‘Yes’ indicates that such information has been removed.
 
-%hr
+  %hr
 
-.question.mb-3
-  %p
-    %strong Do you agree to the IDEALS Deposit Agreement in its entirety?
-  .form-check
-    %input#q3-1.response.form-check-input{type: "radio", name: "q3", value: "Yes"}
-    %label.form-check-label{for: "q3-1"} Yes
-  .form-check
-    %input#q3-2.response.form-check-input{type: "radio", name: "q3", value: "No"}
-    %label.form-check-label{for: "q3-2"} No
-  %p.mt-2.text-info
-    %i.fa.fa-info-circle
-    Deposit into IDEALS requires agreement to the Deposit Agreement. Click on the Deposit Agreement heading above to view the full agreement.
+  .question.mb-3
+    %p
+      %strong Do you agree to the IDEALS Deposit Agreement in its entirety?
+    .form-check
+      %input#q3-1.response.form-check-input{type: "radio", name: "q3", value: "Yes"}
+      %label.form-check-label{for: "q3-1"} Yes
+    .form-check
+      %input#q3-2.response.form-check-input{type: "radio", name: "q3", value: "No"}
+      %label.form-check-label{for: "q3-2"} No
+    %p.mt-2.text-info
+      %i.fa.fa-info-circle
+      Deposit into IDEALS requires agreement to the Deposit Agreement. Click on the Deposit Agreement heading above to view the full agreement.
 
-%hr
+  %hr
 
-= form_tag submissions_path, method: :post do
-  = hidden_field_tag(:primary_collection_id, params[:collection_id])
-  .row
-    .col-sm-2
-      = submit_tag("Begin Submission", class: "btn btn-primary")
-    .col-sm-10
-      #feedback.text-danger.ml-2
-        = icon_for(:warning)
-        The selections you have made indicate that you are not ready to deposit your dataset. IDEALS curators are available to discuss your dataset with you. Please contact us!
+  = form_tag submissions_path, method: :post do
+    = hidden_field_tag(:primary_collection_id, params[:collection_id])
+    .row
+      .col-sm-2
+        = submit_tag("Begin Submission", class: "btn btn-primary")
+      .col-sm-10
+        #feedback.text-danger.ml-2
+          = icon_for(:warning)
+          The selections you have made indicate that you are not ready to deposit your dataset. IDEALS curators are available to discuss your dataset with you. Please contact us!
