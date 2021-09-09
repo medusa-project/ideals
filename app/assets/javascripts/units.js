@@ -102,6 +102,9 @@ const UnitView = function() {
                     statsTabContent.find("form").serialize();
                 $.get(url, function (data) {
                     innerTabContent.html(data);
+                    const canvas    = $("#chart");
+                    const chartData = $.parseJSON($("#chart-data").val());
+                    new IDEALS.Chart(canvas, chartData);
                 });
             };
             const refreshDownloadsByItem = function() {

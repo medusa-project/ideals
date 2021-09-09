@@ -202,6 +202,10 @@ module ApplicationHelper
     raw("<i class=\"#{icon}\"></i>")
   end
 
+  def include_chart_library
+    javascript_include_tag("https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js")
+  end
+
   ##
   # @param ascribed_elements [Enumerable<AscribedElement>]
   # @param profile [MetadataProfile] If provided, only

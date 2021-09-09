@@ -178,22 +178,25 @@ const ItemView = function() {
             const panel_content = $("#download-counts-xhr-content");
             const form          = $("#download-counts-form");
 
-            const refreshTable = function() {
+            const refreshContent = function() {
                 const url = ROOT_URL + "/items/" + id + "/download-counts?" +
                     form.serialize();
                 $.get(url, function(data) {
                     panel_content.prev().hide(); // hide the spinner
                     panel_content.html(data);
+                    const canvas    = $("#download-chart");
+                    const chartData = $.parseJSON($("#chart-data").val());
+                    new IDEALS.Chart(canvas, chartData);
                 });
             };
 
-            refreshTable();
+            refreshContent();
 
             form.find("input[type=submit]").on("click", function() {
                 // Remove existing content and show the spinner
                 panel_content.empty();
                 panel_content.prev().show(); // show the spinner
-                refreshTable();
+                refreshContent();
                 return false;
             });
         });

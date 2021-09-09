@@ -3,6 +3,8 @@
  */
 const IDEALS = {
 
+    CHART_COLOR: "rgba(19, 41, 75, 0.8)",
+
     /**
      * Application-wide fade time, for consistency.
      */
@@ -129,6 +131,61 @@ const IDEALS = {
                 }
             };
         };
+    },
+
+    /**
+     * Renders a chart into a canvas using chart.js (https://www.chartjs.org).
+     *
+     * @param canvas {jQuery} Canvas element.
+     * @param chart_data Array of objects with `month` and `dl_count` keys.
+     * @constructor
+     */
+    Chart: function(canvas, chart_data) {
+        // X axis labels
+        const labels = $.map(chart_data, function(n, i) {
+            const regex = /^(\d+)-(\d+)-(\d+)/;
+            const matches = regex.exec(n.month);
+            return matches[2] + "/" + matches[1];
+        });
+        // Values
+        const values = $.map(chart_data, function(n, i) {
+            return n.dl_count;
+        });
+        // Colors
+        const colors = [];
+        for (var i = 0; i < values.length; i++) {
+            colors.push(IDEALS.CHART_COLOR);
+        }
+
+        new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors,
+                    borderColor: colors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scale: {
+                    ticks: {
+                        precision: 0
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     },
 
     /**
