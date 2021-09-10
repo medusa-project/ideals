@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_03_192153) do
+ActiveRecord::Schema.define(version: 2021_09_09_211047) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,7 +37,6 @@ ActiveRecord::Schema.define(version: 2021_08_03_192153) do
   create_table "ascribed_elements", force: :cascade do |t|
     t.text "string", null: false
     t.bigint "registered_element_id", null: false
-    t.bigint "collection_id"
     t.bigint "item_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -87,6 +86,12 @@ ActiveRecord::Schema.define(version: 2021_08_03_192153) do
     t.bigint "parent_id"
     t.boolean "unit_default_deleteme", default: false, null: false
     t.boolean "submissions_reviewed", default: true, null: false
+    t.string "title"
+    t.text "description"
+    t.text "short_description"
+    t.text "introduction"
+    t.text "rights"
+    t.text "provenance"
   end
 
   create_table "embargoes", force: :cascade do |t|
@@ -328,6 +333,9 @@ ActiveRecord::Schema.define(version: 2021_08_03_192153) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "institution_id"
+    t.text "short_description"
+    t.text "introduction"
+    t.text "rights"
   end
 
   create_table "user_groups", force: :cascade do |t|
@@ -363,7 +371,6 @@ ActiveRecord::Schema.define(version: 2021_08_03_192153) do
   add_foreign_key "administrator_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrators", "users", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "ascribed_elements", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "bitstream_authorizations", "items", on_update: :cascade, on_delete: :cascade

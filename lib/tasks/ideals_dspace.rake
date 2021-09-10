@@ -169,19 +169,6 @@ namespace :ideals_dspace do
                  :import_metadata_registry)
     end
 
-    desc "Migrate collection metadata from IDEALS-DSpace into the application"
-    task :migrate_collection_values, [:source_db_name,
-                                      :source_db_host,
-                                      :source_db_user,
-                                      :source_db_password] => :environment do |task, args|
-      do_migrate(args[:source_db_name],
-                 args[:source_db_host],
-                 args[:source_db_user],
-                 args[:source_db_password],
-                 "export_collection_metadata.sql",
-                 :import_collection_metadata)
-    end
-
     desc "Migrate item metadata from IDEALS-DSpace into the application"
     task :migrate_item_values, [:source_db_name,
                                 :source_db_host,
@@ -239,7 +226,6 @@ namespace :ideals_dspace do
     Rake::Task["ideals_dspace:items:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:bitstreams:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:handles:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:metadata:migrate_collection_values"].invoke(dbname, dbhost, dbuser, dbpass)
     puts "WARNING: This is the last step, but it takes a long time. "\
         "You can ctrl+c at any time if you don't need full item metadata."
     Rake::Task["ideals_dspace:metadata:migrate_item_values"].invoke(dbname, dbhost, dbuser, dbpass)

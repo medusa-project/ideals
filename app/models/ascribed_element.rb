@@ -23,11 +23,9 @@ class AscribedElement < ApplicationRecord
   # `updated_at` column is updated and it is reindexed) when the instance is
   # updated. Normally, this is desired. However, it happens to make bulk-
   # importing metadata excruciatingly slow, so it is disabled during imports.
-  belongs_to :collection, optional: true, touch: !IdealsImporter.instance.running?
-  belongs_to :item, optional: true, touch: !IdealsImporter.instance.running?
+  belongs_to :item, touch: !IdealsImporter.instance.running?
 
   validates :string, presence: true
-  validate :validate_ascription
 
   ##
   # @return [Date] Instance corresponding to the string value if it is
@@ -67,18 +65,4 @@ class AscribedElement < ApplicationRecord
     nil
   end
 
-
-  private
-
-  ##
-  # Ensures that the instance is attached to either an {Item} or a {Collection}
-  # but not both.
-  #
-  def validate_ascription
-    if item_id.blank? and collection_id.blank?
-      errors.add(:base, "Element must be attached to a resource.")
-    elsif item_id.present? and collection_id.present?
-      errors.add(:base, "Element cannot be attached to multiple resources.")
-    end
-  end
 end

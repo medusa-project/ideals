@@ -177,40 +177,6 @@ class IdealsImporter
   ##
   # @param csv_pathname [String]
   #
-  def import_collection_metadata(csv_pathname)
-    @running = true
-    LOGGER.debug("import_collection_metadata(): importing %s", csv_pathname)
-
-    line_count = count_lines(csv_pathname)
-    progress   = Progress.new(line_count)
-
-    # destroy_all is excruciatingly slow and we don't need callbacks
-    AscribedElement.where("collection_id IS NOT NULL").delete_all
-    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
-      next if row_num == 0 # skip header row
-
-      row_arr       = line.split("|").map(&:strip)
-      collection_id = row_arr[4].to_i
-      next if collection_id == 0
-
-      elem_name = "#{row_arr[0]}:#{row_arr[1]}"
-      elem_name += ":#{row_arr[2]}" if row_arr[2].present?
-      reg_elem  = RegisteredElement.find_by_name(elem_name)
-      string    = row_arr[3].strip
-
-      progress.report(row_num, "Importing collection metadata")
-
-      AscribedElement.create!(registered_element: reg_elem,
-                              collection_id: collection_id,
-                              string: string)
-    end
-  ensure
-    @running = false
-  end
-
-  ##
-  # @param csv_pathname [String]
-  #
   def import_collections(csv_pathname)
     @running = true
     LOGGER.debug("import_collections(): importing %s", csv_pathname)
@@ -220,10 +186,33 @@ class IdealsImporter
 
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
-      row_arr = line.split("|").map(&:strip)
+      row_arr       = line.split("|").map(&:strip)
+      collection_id = row_arr[0].to_i
+
       progress.report(row_num, "Importing collections (1/2)")
       begin
-        Collection.create!(id: row_arr[0].to_i)
+        collection = Collection.find_by_id(collection_id) ||
+          Collection.new(id: collection_id)
+        elem_name  = row_arr[1]
+        elem_name += ":#{row_arr[2]}" if row_arr[2].present?
+        # Replace @@@@ with newline, strip leading and trailing quote,
+        # and double quotes.
+        string = row_arr[3]&.strip&.gsub("@@@@", "\n")&.gsub(/^"/, "")&.gsub(/"$/, "")&.gsub('""', '"')
+        if string.present?
+          case elem_name
+          when "description"
+            collection.introduction = string
+          when "description:abstract"
+            collection.short_description = string
+          when "provenance"
+            collection.provenance = string
+          when "rights"
+            collection.rights = string
+          when "title"
+            collection.title = string
+          end
+        end
+        collection.save!
       rescue ActiveRecord::RecordNotUnique
         # nothing we can do
       end
@@ -259,9 +248,13 @@ class IdealsImporter
       group_id      = row_arr[1].to_i
 
       progress.report(row_num, "Importing collection-community joins")
-      UnitCollectionMembership.create!(unit_id: group_id,
-                                       collection_id: collection_id,
-                                       primary: true).save!
+      begin
+        UnitCollectionMembership.create!(unit_id:       group_id,
+                                         collection_id: collection_id,
+                                         primary:       true).save!
+      rescue ActiveRecord::RecordNotUnique
+        # Probably a result of running this twice.
+      end
     end
     update_pkey_sequence("collections")
   ensure
@@ -290,12 +283,28 @@ class IdealsImporter
 
       row_arr      = line.split("|").map(&:strip)
       community_id = row_arr[0].to_i
-      title        = row_arr[1].strip
 
       progress.report(row_num, "Importing communities")
-      Unit.create!(id: community_id,
-                   title: title,
-                   institution: institution)
+      unit = Unit.find_by_id(community_id) || Unit.new(id:          community_id,
+                                                       institution: institution)
+      elem_name  = row_arr[1]
+      elem_name += ":#{row_arr[2]}" if row_arr[2].present?
+      # Replace @@@@ with newline, strip leading and trailing quote,
+      # and double quotes.
+      string = row_arr[3]&.strip&.gsub("@@@@", "\n")&.gsub(/^"/, "")&.gsub(/"$/, "")&.gsub('""', '"')
+      if string.present?
+        case elem_name
+        when "description"
+          unit.introduction = string
+        when "description:abstract"
+          unit.short_description = string
+        when "rights"
+          unit.rights = string
+        when "title"
+          unit.title = string
+        end
+      end
+      unit.save!
     end
     update_pkey_sequence("units")
   ensure

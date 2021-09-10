@@ -2,7 +2,7 @@
 
 json.set! "class", @unit.class.to_s
 json.uri unit_url(@unit, format: :json)
-json.extract! @unit, :id, :created_at, :updated_at, :title
+json.extract! @unit, :id, :title, :short_description, :introduction, :rights, :created_at, :updated_at
 
 if @unit.parent_id
   json.parent do

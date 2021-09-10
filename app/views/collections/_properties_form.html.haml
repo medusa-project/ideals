@@ -1,9 +1,9 @@
 -# frozen_string_literal: true
-//
-// Required arguments:
-//
-// collection [Collection]
-//
+-#
+-# Required arguments:
+-#
+-# collection [Collection]
+-#
 = form_for(collection, remote: true) do |f|
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
@@ -12,14 +12,31 @@
   = f.hidden_field :id, value: f.object.id
 
   .form-group
-    = label_tag "elements_#{::Configuration.instance.elements[:title]}", "Title"
-    = text_field_tag "elements[#{::Configuration.instance.elements[:title]}]",
-                     f.object.title, class: "form-control"
+    = f.label :title
+    = f.text_field :title, class: "form-control"
 
   .form-group
-    = label_tag "elements_#{::Configuration.instance.elements[:description]}", "Description"
-    = text_area_tag "elements[#{::Configuration.instance.elements[:description]}]",
-                    f.object.description, class: "form-control"
+    = f.label :description
+    = f.text_area :description, class: "form-control"
+
+  .form-group
+    = f.label :short_description
+    = f.text_area :short_description, class: "form-control"
+
+  .form-group
+    = f.label :introduction
+    = f.text_area :introduction, class: "form-control"
+    %p.text-info
+      %i.fa.fa-info-circle
+      HTML is allowed.
+
+  .form-group
+    = f.label :rights
+    = f.text_area :rights, class: "form-control"
+
+  .form-group
+    = f.label :provenance
+    = f.text_area :provenance, class: "form-control"
 
   .form-group
     = f.label :metadata_profile_id, "Metadata Profile"

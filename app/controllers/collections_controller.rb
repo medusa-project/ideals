@@ -41,7 +41,6 @@ class CollectionsController < ApplicationController
         # AscribedElements in the next step.
         @collection.save!
         assign_users
-        build_metadata
         @collection.save!
       end
     rescue => e
@@ -339,7 +338,6 @@ class CollectionsController < ApplicationController
         assign_users
         assign_user_groups
         assign_primary_unit
-        build_metadata
         @collection.update!(collection_params)
       end
     rescue => e
@@ -408,31 +406,6 @@ class CollectionsController < ApplicationController
     end
   end
 
-  ##
-  # Builds and ascribes {AscribedElement}s to the collection based on user
-  # input. This is done manually because to do it using Rails nested attributes
-  # would be a PITA.
-  #
-  def build_metadata
-    if params[:elements].present?
-      config                  = ::Configuration.instance
-      reg_title_element       = RegisteredElement.find_by_name(config.elements[:title])
-      reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
-
-      # Remove existing title & description
-      @collection.elements.where(registered_element_id: [reg_title_element.id,
-                                                         reg_description_element.id]).destroy_all
-      # Add title
-      title = params[:elements][config.elements[:title]]
-      @collection.elements.build(registered_element: reg_title_element,
-                                 string: title) if title.present?
-      # Add description
-      description = params[:elements][config.elements[:description]]
-      @collection.elements.build(registered_element: reg_description_element,
-                                 string: description) if description.present?
-    end
-  end
-
   def review_items(start, limit)
     Item.search.
       institution(current_institution).
@@ -455,10 +428,13 @@ class CollectionsController < ApplicationController
   end
 
   def collection_params
-    params.require(:collection).permit(:metadata_profile_id, :parent_id,
+    params.require(:collection).permit(:description, :introduction,
+                                       :metadata_profile_id, :parent_id,
+                                       :provenance, :rights,
+                                       :short_description,
                                        :submission_profile_id,
                                        :submissions_reviewed,
-                                       unit_ids: [])
+                                       :title, unit_ids: [])
   end
 
   def set_item_results_ivars

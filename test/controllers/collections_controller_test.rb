@@ -473,10 +473,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               collection: {
+                  description: "New description",
                   metadata_profile_id: metadata_profiles(:empty).id
-              },
-              elements: {
-                  "dc:description": "New description"
               }
           }
     collection.reload

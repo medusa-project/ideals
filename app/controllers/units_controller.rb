@@ -368,7 +368,8 @@ class UnitsController < ApplicationController
   end
 
   def unit_params
-    params.require(:unit).permit(:institution_id, :parent_id, :title)
+    params.require(:unit).permit(:institution_id, :introduction, :parent_id,
+                                 :rights, :short_description, :title)
   end
 
 end

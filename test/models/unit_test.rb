@@ -91,17 +91,20 @@ class UnitTest < ActiveSupport::TestCase
 
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
-    assert_equal 9, doc.length
+    assert_equal 12, doc.length
     assert_not_empty doc[Unit::IndexFields::ADMINISTRATORS]
     assert_equal "Unit", doc[Unit::IndexFields::CLASS]
     assert_not_empty doc[Unit::IndexFields::CREATED]
     assert_equal @instance.institution.key, doc[Unit::IndexFields::INSTITUTION_KEY]
+    assert_equal @instance.introduction, doc[Unit::IndexFields::INTRODUCTION]
     assert_not_empty doc[Unit::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Unit::IndexFields::LAST_MODIFIED]
     assert_nil doc[Unit::IndexFields::PARENT]
     assert_equal @instance.primary_administrator.id,
                  doc[Unit::IndexFields::PRIMARY_ADMINISTRATOR]
+    assert_equal @instance.rights, doc[Unit::IndexFields::RIGHTS]
+    assert_equal @instance.short_description, doc[Unit::IndexFields::SHORT_DESCRIPTION]
     assert_equal @instance.title, doc[Unit::IndexFields::TITLE]
   end
 
@@ -116,13 +119,6 @@ class UnitTest < ActiveSupport::TestCase
   end
 
   # create_default_collection()
-
-  test "create_default_collection() raises an error if the unit already has a
-  default collection" do
-    assert_raises do
-      @instance.create_default_collection
-    end
-  end
 
   test "create_default_collection() creates a correct default collection" do
     @instance.collections.destroy_all

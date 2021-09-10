@@ -2,7 +2,7 @@
 
 json.set! "class", @collection.class.to_s
 json.uri collection_url(@collection, format: :json)
-json.extract! @collection, :id, :created_at, :updated_at
+json.extract! @collection, :id, :title, :description, :short_description, :introduction, :rights, :created_at, :updated_at
 
 json.primary_unit do
   json.id @collection.primary_unit.id
@@ -28,20 +28,5 @@ if @collection.collections.any?
   json.children @collection.collections do |child|
     json.id child.id
     json.uri collection_url(child)
-  end
-end
-
-json.elements do
-  @collection.effective_metadata_profile.elements.each do |profile_element|
-    matching_elements = @collection.elements.select{ |e| e.name == profile_element.name }
-    matching_elements.each do |element|
-      json.child! do
-        json.name element.name
-        json.label element.label
-        json.uri element.registered_element.uri
-        json.string_value sanitize(element.string)
-        json.uri_value element.uri
-      end
-    end
   end
 end

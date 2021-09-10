@@ -10,6 +10,15 @@
 .clearfix.mb-3
 
 %dl
+  - if @unit.introduction.present?
+    %dt Introduction
+    %dd= raw(@unit.introduction)
+  - if @unit.short_description.present? && policy(@unit).show_access?
+    %dt Short Description
+    %dd= @unit.short_description
+  - if @unit.rights.present?
+    %dt Rights
+    %dd= @unit.rights
   %dt Handle URI
   %dd= @unit.handle&.url
   %dt File Downloads

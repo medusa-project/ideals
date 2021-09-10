@@ -9,40 +9,51 @@
 
 .clearfix.mb-3
 
-.row
-  .col-md-7
-    = metadata_as_dl(@collection.elements, @metadata_profile)
-  .col-md-5
-    %dl
-      %dt Handle URI
-      %dd= @collection.handle&.url
-      - if policy(@collection).show_properties?
-        %dt Metadata Profile
-        %dd
-          - if @collection.metadata_profile
-            - if policy(@metadata_profile).show?
-              = link_to(@metadata_profile.name, @metadata_profile)
-            - else
-              = @metadata_profile.name
-          - else
-            = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
-        %dt Submission Profile
-        %dd
-          - if @collection.submission_profile
-            - if policy(@submission_profile).show?
-              = link_to(@submission_profile.name, @submission_profile)
-            - else
-              = @submission_profile.name
-          - else
-            = raw("Not assigned (falling back to #{link_to(@submission_profile.name, @submission_profile)})")
-        %dt Submissions Reviewed
-        %dd= boolean(@collection.submissions_reviewed, style: :word, invert_color: true)
-      %dt File Downloads
-      %dd= number_with_delimiter(@num_downloads)
-      %dt Items Awaiting Review
-      %dd= number_with_delimiter(@num_submitting_items)
-    %dl
-      %dt Created
-      %dd= local_time @collection.created_at
-      %dt Last Updated
-      %dd= local_time @collection.updated_at
+%dl
+  - if @collection.introduction.present?
+    %dt Introduction
+    %dd= raw(@collection.introduction)
+  - if @collection.description.present?
+    %dt Description
+    %dd= @collection.description
+  - if @collection.short_description.present? && policy(@collection).show_access?
+    %dt Short Description
+    %dd= @collection.short_description
+  - if @collection.rights.present?
+    %dt Rights
+    %dd= @collection.rights
+  - if @collection.provenance.present? && policy(@collection).show_access?
+    %dt Provenance
+    %dd= @collection.provenance
+  %dt Handle URI
+  %dd= @collection.handle&.url
+  - if policy(@collection).show_properties?
+    %dt Metadata Profile
+    %dd
+      - if @collection.metadata_profile
+        - if policy(@metadata_profile).show?
+          = link_to(@metadata_profile.name, @metadata_profile)
+        - else
+          = @metadata_profile.name
+      - else
+        = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
+    %dt Submission Profile
+    %dd
+      - if @collection.submission_profile
+        - if policy(@submission_profile).show?
+          = link_to(@submission_profile.name, @submission_profile)
+        - else
+          = @submission_profile.name
+      - else
+        = raw("Not assigned (falling back to #{link_to(@submission_profile.name, @submission_profile)})")
+    %dt Submissions Reviewed
+    %dd= boolean(@collection.submissions_reviewed, style: :word, invert_color: true)
+  %dt File Downloads
+  %dd= number_with_delimiter(@num_downloads)
+  %dt Items Awaiting Review
+  %dd= number_with_delimiter(@num_submitting_items)
+%dl
+  %dt Created
+  %dd= local_time @collection.created_at
+  %dt Last Updated
+  %dd= local_time @collection.updated_at

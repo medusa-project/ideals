@@ -342,10 +342,9 @@ module ApplicationHelper
   end
 
   ##
-  # Renders a resource/results list. The resources may be any {Describable}
-  # such as {Item}s, {Collections}, etc.
+  # Renders a resource/results list.
   #
-  # @param resources [Enumerable<Describable>]
+  # @param resources [Enumerable<Describable,Unit,Collection>]
   # @param primary_id [Integer] ID of a resource in `resources` to indicate as
   #                             "primary."
   # @param default_id [Integer] ID of a resource in `resources` to indicate as
@@ -371,7 +370,7 @@ module ApplicationHelper
       end
       html <<     "</h5>"
 
-      if resources.first.kind_of?(Item)
+      if resource.kind_of?(Item)
         config  = ::Configuration.instance
         creator = resource.elements.
             select{ |e| e.name == config.elements[:creator] }.
@@ -386,8 +385,9 @@ module ApplicationHelper
         info_parts << creator if creator.present?
         info_parts << date if date.present?
         html       << info_parts.join(" &bull; ")
-      else
         html << "<br><br>"
+      elsif resource.kind_of?(Collection) || resource.kind_of?(Unit)
+        html << resource.short_description
       end
 
       html <<   "</div>"

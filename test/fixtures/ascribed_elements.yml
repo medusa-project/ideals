@@ -1,23 +1,5 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-collection_title:
-  string: Some title
-  uri:
-  registered_element: title
-  collection: described
-
-collection_description:
-  string: Some description
-  uri:
-  registered_element: description
-  collection: described
-
-collection_subject:
-  string: Some subject
-  uri:
-  registered_element: subject
-  collection: described
-
 described_title:
   string: Some title
   uri:

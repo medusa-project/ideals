@@ -19,3 +19,9 @@ body#list_units {
     }
   }
 }
+
+body#show_unit {
+  textarea {
+    height: 10em;
+  }
+}

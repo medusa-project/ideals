@@ -8,18 +8,6 @@ class CollectionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
-  # base-level tests
-
-  test "destroying an instance destroys its dependent AscribedElements" do
-    collection = collections(:described)
-    elements = collection.elements
-    assert elements.count > 0
-    collection.destroy!
-    elements.each do |element|
-      assert element.destroyed?
-    end
-  end
-
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
@@ -98,10 +86,15 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
+    assert_equal 18, doc.length
     assert_equal "Collection", doc[Collection::IndexFields::CLASS]
     assert_not_empty doc[Collection::IndexFields::CREATED]
+    assert_equal @instance.description,
+                 doc[Collection::IndexFields::DESCRIPTION]
     assert_equal @instance.institution.key,
                  doc[Collection::IndexFields::INSTITUTION_KEY]
+    assert_equal @instance.introduction,
+                 doc[Collection::IndexFields::INTRODUCTION]
     assert_not_empty doc[Collection::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Collection::IndexFields::LAST_MODIFIED]
@@ -110,32 +103,20 @@ class CollectionTest < ActiveSupport::TestCase
     assert_nil doc[Collection::IndexFields::PARENT]
     assert_equal @instance.primary_unit.id,
                doc[Collection::IndexFields::PRIMARY_UNIT]
+    assert_equal @instance.provenance,
+                 doc[Collection::IndexFields::PROVENANCE]
+    assert_equal @instance.rights,
+                 doc[Collection::IndexFields::RIGHTS]
+    assert_equal @instance.short_description,
+                 doc[Collection::IndexFields::SHORT_DESCRIPTION]
     assert_equal @instance.effective_submitters.map(&:id),
                  doc[Collection::IndexFields::SUBMITTERS]
+    assert_equal @instance.title, doc[Collection::IndexFields::TITLE]
     assert doc[Collection::IndexFields::UNIT_DEFAULT]
     assert_equal %w(Unit1 Unit2),
                  doc[Collection::IndexFields::UNIT_TITLES]
     assert_equal @instance.units.count,
         doc[Collection::IndexFields::UNITS].length
-
-    collection = collections(:described)
-    doc = collection.as_indexed_json
-    assert_equal 3, collection.elements.length
-    title = collection.elements.find{ |e| e.name == Configuration.instance.elements[:title] }
-    assert_equal [title.string],
-                 doc[title.registered_element.indexed_name]
-  end
-
-  # description() (Describable concern)
-
-  test "description() returns the description element value" do
-    collection = collections(:described)
-    assert_equal "Some description", collection.description
-  end
-
-  test "description() returns an empty string when there is no description element" do
-    collection = collections(:undescribed)
-    assert_equal "", collection.description
   end
 
   # destroy()
@@ -322,17 +303,6 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "effective_submitters() includes direct submitters" do
     @instance.effective_submitters.include?(@instance.submitting_users.first)
-  end
-
-  # element() (Describable concern)
-
-  test "element() returns a matching element" do
-    assert_equal "Some title", collections(:described).element("dc:title").string
-    assert_equal "Some title", collections(:described).element(:"dc:title").string
-  end
-
-  test "element() returns nil if no such element exists" do
-    assert_nil @instance.element("bogus")
   end
 
   # institution()
@@ -533,18 +503,6 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal 1, actual.length
     assert_kind_of Time, actual[0]['month']
     assert_equal 0, actual[0]['count']
-  end
-
-  # title() (Describable concern)
-
-  test "title() returns the title element value" do
-    collection = collections(:described)
-    assert_equal "Some title", collection.title
-  end
-
-  test "title() returns an empty string when there is no title element" do
-    collection = collections(:undescribed)
-    assert_equal "", collection.title
   end
 
   # unit_default?()

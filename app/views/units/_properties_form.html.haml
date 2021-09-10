@@ -12,6 +12,21 @@
     = f.label :title
     = f.text_field :title, class: "form-control"
 
+  .form-group
+    = f.label :short_description
+    = f.text_area :short_description, class: "form-control"
+
+  .form-group
+    = f.label :introduction
+    = f.text_area :introduction, class: "form-control"
+    %p.text-info
+      %i.fa.fa-info-circle
+      HTML is allowed.
+
+  .form-group
+    = f.label :rights
+    = f.text_area :rights, class: "form-control"
+
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel

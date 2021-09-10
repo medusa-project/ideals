@@ -12,11 +12,15 @@
 # # Attributes
 #
 # * `created_at`            Managed by ActiveRecord.
+# * `introduction`          Introduction string. May contain HTML.
 # * `metadata_profile_id`   Foreign key to {MetadataProfile}. Instances without
 #                           this set should use the {MetadataProfile#default
 #                           default profile}. In most cases,
 #                           {effective_metadata_profile} should be used instead
 #                           of accessing this directly.
+# * `provenance`            Provenance string.
+# * `rights`                Rights string.
+# * `short_description`     Short description string.
 # * `submission_profile_id` Foreign key to {SubmissionProfile}. Instances
 #                           without this set should use the
 #                           {SubmissionProfile#default default profile}. In
@@ -57,28 +61,32 @@
 #
 class Collection < ApplicationRecord
   include Breadcrumb
-  include Describable
   include Indexed
 
   class IndexFields
-    CLASS           = ElasticsearchIndex::StandardFields::CLASS
-    CREATED         = ElasticsearchIndex::StandardFields::CREATED
-    ID              = ElasticsearchIndex::StandardFields::ID
-    INSTITUTION_KEY = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
-    LAST_INDEXED    = ElasticsearchIndex::StandardFields::LAST_INDEXED
-    LAST_MODIFIED   = ElasticsearchIndex::StandardFields::LAST_MODIFIED
-    MANAGERS        = "i_manager_id"
-    PARENT          = "i_parent_id"
-    PRIMARY_UNIT    = "i_primary_unit_id"
-    SUBMITTERS      = "i_submitter_id"
-    UNIT_DEFAULT    = "b_unit_default"
-    UNIT_TITLES     = "s_unit_titles"
-    UNITS           = "i_units"
+    CLASS             = ElasticsearchIndex::StandardFields::CLASS
+    CREATED           = ElasticsearchIndex::StandardFields::CREATED
+    DESCRIPTION       = "t_description"
+    ID                = ElasticsearchIndex::StandardFields::ID
+    INSTITUTION_KEY   = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
+    INTRODUCTION      = "t_introduction"
+    LAST_INDEXED      = ElasticsearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED     = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    MANAGERS          = "i_manager_id"
+    PARENT            = "i_parent_id"
+    PRIMARY_UNIT      = "i_primary_unit_id"
+    PROVENANCE        = "t_provenance"
+    RIGHTS            = "t_rights"
+    SHORT_DESCRIPTION = "t_short_description"
+    SUBMITTERS        = "i_submitter_id"
+    TITLE             = "t_title"
+    UNIT_DEFAULT      = "b_unit_default"
+    UNIT_TITLES       = "t_unit_titles"
+    UNITS             = "i_units"
   end
 
   has_many :collections, foreign_key: "parent_id",
            dependent: :restrict_with_exception
-  has_many :elements, class_name: "AscribedElement"
   has_one :handle
   has_many :collection_item_memberships
   has_many :items, through: :collection_item_memberships
@@ -206,29 +214,25 @@ class Collection < ApplicationRecord
   #
   def as_indexed_json
     doc = {}
-    units                             = self.units
-    doc[IndexFields::CLASS]           = self.class.to_s
-    doc[IndexFields::CREATED]         = self.created_at.utc.iso8601
-    doc[IndexFields::INSTITUTION_KEY] = units.first&.institution&.key
-    doc[IndexFields::LAST_INDEXED]    = Time.now.utc.iso8601
-    doc[IndexFields::LAST_MODIFIED]   = self.updated_at.utc.iso8601
-    doc[IndexFields::MANAGERS]        = self.effective_managers.map(&:id)
-    doc[IndexFields::PARENT]          = self.parent_id
-    doc[IndexFields::PRIMARY_UNIT]    = self.primary_unit&.id
-    doc[IndexFields::SUBMITTERS]      = self.effective_submitters.map(&:id)
-    doc[IndexFields::UNIT_DEFAULT]    = self.unit_default?
-    doc[IndexFields::UNIT_TITLES]     = units.map(&:title)
-    doc[IndexFields::UNITS]           = self.unit_ids
-
-    # Index ascribed metadata elements into dynamic fields.
-    self.elements.each do |element|
-      field = element.registered_element.indexed_name
-      unless doc[field]&.respond_to?(:each)
-        doc[field] = []
-      end
-      doc[field] << element.string[0..ElasticsearchClient::MAX_KEYWORD_FIELD_LENGTH]
-    end
-
+    units                               = self.units
+    doc[IndexFields::CLASS]             = self.class.to_s
+    doc[IndexFields::CREATED]           = self.created_at.utc.iso8601
+    doc[IndexFields::DESCRIPTION]       = self.description
+    doc[IndexFields::INSTITUTION_KEY]   = units.first&.institution&.key
+    doc[IndexFields::INTRODUCTION]      = self.introduction
+    doc[IndexFields::LAST_INDEXED]      = Time.now.utc.iso8601
+    doc[IndexFields::LAST_MODIFIED]     = self.updated_at.utc.iso8601
+    doc[IndexFields::MANAGERS]          = self.effective_managers.map(&:id)
+    doc[IndexFields::PARENT]            = self.parent_id
+    doc[IndexFields::PRIMARY_UNIT]      = self.primary_unit&.id
+    doc[IndexFields::PROVENANCE]        = self.provenance
+    doc[IndexFields::RIGHTS]            = self.rights
+    doc[IndexFields::SHORT_DESCRIPTION] = self.short_description
+    doc[IndexFields::SUBMITTERS]        = self.effective_submitters.map(&:id)
+    doc[IndexFields::TITLE]             = self.title
+    doc[IndexFields::UNIT_DEFAULT]      = self.unit_default?
+    doc[IndexFields::UNIT_TITLES]       = units.map(&:title)
+    doc[IndexFields::UNITS]             = self.unit_ids
     doc
   end
 

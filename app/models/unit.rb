@@ -6,11 +6,14 @@
 #
 # # Attributes
 #
-# * `created_at`     Managed by ActiveRecord.
-# * `institution_id` Foreign key to {Institution}.
-# * `parent_id`      Foreign key to a parent {Unit}.
-# * `title`          Unit title.
-# * `updated_at`     Managed by ActiveRecord.
+# * `created_at`        Managed by ActiveRecord.
+# * `institution_id`    Foreign key to {Institution}.
+# * `introduction`      Introduction string. May contain HTML.
+# * `parent_id`         Foreign key to a parent {Unit}.
+# * `rights`            Rights string.
+# * `short_description` Short description string.
+# * `title`             Unit title.
+# * `updated_at`        Managed by ActiveRecord.
 #
 class Unit < ApplicationRecord
   include Breadcrumb
@@ -22,10 +25,13 @@ class Unit < ApplicationRecord
     CREATED               = ElasticsearchIndex::StandardFields::CREATED
     ID                    = ElasticsearchIndex::StandardFields::ID
     INSTITUTION_KEY       = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
+    INTRODUCTION          = "t_introduction"
     LAST_INDEXED          = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED         = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     PARENT                = "i_parent_id"
     PRIMARY_ADMINISTRATOR = "i_primary_administrator_id"
+    RIGHTS                = "t_rights"
+    SHORT_DESCRIPTION     = "t_short_description"
     TITLE                 = "t_title"
   end
 
@@ -132,10 +138,13 @@ class Unit < ApplicationRecord
     doc[IndexFields::CLASS]                 = self.class.to_s
     doc[IndexFields::CREATED]               = self.created_at.utc.iso8601
     doc[IndexFields::INSTITUTION_KEY]       = self.institution&.key
+    doc[IndexFields::INTRODUCTION]          = self.introduction
     doc[IndexFields::LAST_INDEXED]          = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]         = self.updated_at.utc.iso8601
     doc[IndexFields::PARENT]                = self.parent_id
     doc[IndexFields::PRIMARY_ADMINISTRATOR] = self.primary_administrator&.id
+    doc[IndexFields::RIGHTS]                = self.rights
+    doc[IndexFields::SHORT_DESCRIPTION]     = self.short_description
     doc[IndexFields::TITLE]                 = self.title
     doc
   end
@@ -164,26 +173,15 @@ class Unit < ApplicationRecord
   # @return [Collection]
   #
   def create_default_collection
-    if self.unit_collection_memberships.where(unit_default: true).count > 0
-      raise "This unit already has a default collection."
-    end
-    config = ::Configuration.instance
+    return if self.unit_collection_memberships.where(unit_default: true).count > 0
     transaction do
-      collection = Collection.create!
+      collection = Collection.create!(title:       "Default collection for #{self.title}",
+                                      description: "This collection was "\
+                                      "created automatically along with its parent unit.")
       self.unit_collection_memberships.build(unit:         self,
                                              collection:   collection,
                                              primary:      true,
                                              unit_default: true).save!
-
-      # Add title
-      reg_title_element = RegisteredElement.find_by_name(config.elements[:title])
-      collection.elements.build(registered_element: reg_title_element,
-                                string: "Default collection for #{self.title}").save!
-      # Add description
-      reg_description_element = RegisteredElement.find_by_name(config.elements[:description])
-      collection.elements.build(registered_element: reg_description_element,
-                                string: "This collection was created automatically "\
-                                    "along with its parent unit.").save!
       collection
     end
   end
