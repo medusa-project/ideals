@@ -464,4 +464,34 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # withdraw()
+
+  test "withdraw() redirects to login page for logged-out users" do
+    item = items(:submitted)
+    patch item_withdraw_path(item)
+    assert_redirected_to login_path
+  end
+
+  test "withdraw() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    item = items(:submitted)
+    patch item_withdraw_path(item)
+    assert_response :forbidden
+  end
+
+  test "withdraw() redirects to the item page for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:submitted)
+    patch item_withdraw_path(item)
+    assert_redirected_to item_path(item)
+  end
+
+  test "withdraw() withdraws an item" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:submitted)
+    patch item_withdraw_path(item)
+    item.reload
+    assert_equal Item::Stages::WITHDRAWN, item.stage
+  end
+
 end

@@ -202,4 +202,8 @@ class ItemPolicy < ApplicationPolicy
     update
   end
 
+  def withdraw
+    review
+  end
+
 end

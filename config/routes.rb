@@ -104,6 +104,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/upload-bitstreams", to: "items#upload_bitstreams", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/withdraw", to: "items#withdraw", via: :patch
   end
   resources :messages, only: :index
   resources :metadata_profiles, path: "metadata-profiles" do

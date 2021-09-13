@@ -262,6 +262,21 @@ class ItemsController < ApplicationController
            locals: { item: @item }
   end
 
+  ##
+  # Withdraws an approved item.
+  #
+  # Responds to `PATCH /items/:id/withdraw`
+  #
+  def withdraw
+    UpdateItemCommand.new(item:        @item,
+                          user:        current_user,
+                          description: "Item was withdrawn.").execute do
+      @item.update!(stage: Item::Stages::WITHDRAWN)
+    end
+    ElasticsearchClient.instance.refresh
+    redirect_back fallback_location: item_path(@item)
+  end
+
 
   private
 
@@ -282,7 +297,7 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:discoverable, :stage,
+    params.require(:item).permit(:discoverable,
                                  collection_item_memberships_attributes: [
                                    :collection_id, :id, :primary])
   end
