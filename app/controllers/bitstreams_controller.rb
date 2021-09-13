@@ -211,7 +211,12 @@ class BitstreamsController < ApplicationController
   end
 
   def download_content_disposition
-    "attachment; filename=#{@bitstream.original_filename}"
+    utf8_filename  = @bitstream.original_filename
+    ascii_filename = utf8_filename.gsub(/[^[:ascii:]]*/, '_')
+    # N.B.: CGI.escape() inserts "+" instead of "%20" which Chrome interprets
+    # literally.
+    "attachment; filename=\"#{ascii_filename.gsub('"', "'")}\"; "\
+      "filename*=UTF-8''#{ERB::Util.url_encode(utf8_filename)}"
   end
 
   def set_bitstream
