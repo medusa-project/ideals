@@ -261,28 +261,17 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # @param region [Symbol]              `:full` or `:square`.
-  # @param size [Integer]               Power-of-2 size constraint (128, 256,
-  #                                     512, etc.)
-  # @param content_disposition [Symbol] `:inline` or `:attachment`.
-  # @param filename [String]            Used when `content_disposition` is
-  #                                     `:attachment`.
+  # @param region [Symbol] `:full` or `:square`.
+  # @param size [Integer]  Power-of-2 size constraint (128, 256, 512, etc.)
   # @return [String] Pre-signed URL for a derivative image with the given
   #                  characteristics. If no such image exists, it is generated
   #                  automatically.
   # @raises [Aws::S3::Errors::NotFound]
   #
-  def derivative_url(region:              :full,
-                     size:                ,
-                     content_disposition: :inline,
-                     filename:            nil)
+  def derivative_url(region: :full, size:)
     unless has_representative_image?
       raise "Derivatives are not supported for this format."
     end
-    if content_disposition == :attachment && filename.present?
-      content_disposition = "attachment; filename=#{filename}"
-    end
-
     client = S3Client.instance
     bucket = ::Configuration.instance.aws[:bucket]
     key    = derivative_key(region: region, size: size, format: :jpg)
@@ -293,10 +282,9 @@ class Bitstream < ApplicationRecord
     aws_client = client.send(:get_client)
     signer = Aws::S3::Presigner.new(client: aws_client)
     signer.presigned_url(:get_object,
-                         bucket:                       bucket,
-                         key:                          key,
-                         response_content_disposition: content_disposition.to_s,
-                         expires_in:                   1.hour.to_i)
+                         bucket:     bucket,
+                         key:        key,
+                         expires_in: 1.hour.to_i)
   end
 
   ##
