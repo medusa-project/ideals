@@ -82,6 +82,7 @@ Rails.application.routes.draw do
   match "/items/review", to: "items#review", via: :get
   match "/items/process_review", to: "items#process_review", via: :post
   resources :items, except: :new do
+    match "/approve", to: "items#approve", via: :patch
     resources :bitstreams do
       match "/ingest", to: "bitstreams#ingest", via: :post
       match "/object", to: "bitstreams#object", via: :get
@@ -98,6 +99,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "items#edit_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/reject", to: "items#reject", via: :patch
     match "/statistics", to: "items#statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/upload-bitstreams", to: "items#upload_bitstreams", via: :get,

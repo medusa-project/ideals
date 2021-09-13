@@ -7,6 +7,17 @@ class ItemsController < ApplicationController
   before_action :authorize_item, except: [:index, :process_review, :review]
 
   ##
+  # Approves an item.
+  #
+  # Responds to `PATCH /items/:id/approve`
+  #
+  def approve
+    approve_item(@item)
+    ElasticsearchClient.instance.refresh
+    redirect_back fallback_location: item_path(@item)
+  end
+
+  ##
   # Responds to `DELETE /items/:id`
   #
   # @see cancel_submission
@@ -132,25 +143,13 @@ class ItemsController < ApplicationController
       when "approve"
         params[:items].each do |item_id|
           item = Item.find(item_id)
-          UpdateItemCommand.new(item: item,
-                                user: current_user,
-                                description: "Item was approved, assigned a "\
-                                "handle, and ingested into Medusa.").execute do
-            item.assign_handle unless item.handle
-            item.ingest_into_medusa
-            item.approve
-            item.save!
-          end
+          approve_item(item)
         end
         flash['success'] = "Approved #{params[:items].length} items."
       when "reject"
         params[:items].each do |item_id|
           item = Item.find(item_id)
-          UpdateItemCommand.new(item: item,
-                                user: current_user,
-                                description: "Item was rejected.").execute do
-            item.update!(stage: Item::Stages::REJECTED)
-          end
+          reject_item(item)
         end
         flash['success'] = "Rejected #{params[:items].length} items."
       else
@@ -160,6 +159,17 @@ class ItemsController < ApplicationController
       ElasticsearchClient.instance.refresh
     end
     redirect_back fallback_location: items_review_path
+  end
+
+  ##
+  # Rejects a submitted item.
+  #
+  # Responds to `PATCH /items/:id/reject`
+  #
+  def reject
+    reject_item(@item)
+    ElasticsearchClient.instance.refresh
+    redirect_back fallback_location: item_path(@item)
   end
 
   ##
@@ -255,6 +265,18 @@ class ItemsController < ApplicationController
 
   private
 
+  def approve_item(item)
+    UpdateItemCommand.new(item: item,
+                          user: current_user,
+                          description: "Item was approved, assigned a "\
+                          "handle, and ingested into Medusa.").execute do
+      item.assign_handle unless item.handle
+      item.ingest_into_medusa
+      item.approve
+      item.save!
+    end
+  end
+
   def authorize_item
     @item ? authorize(@item) : skip_authorization
   end
@@ -305,6 +327,14 @@ class ItemsController < ApplicationController
                                uri:                element[:uri])
         end
       end
+    end
+  end
+
+  def reject_item(item)
+    UpdateItemCommand.new(item:        item,
+                          user:        current_user,
+                          description: "Item was rejected.").execute do
+      item.update!(stage: Item::Stages::REJECTED)
     end
   end
 

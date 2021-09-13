@@ -46,6 +46,39 @@ class ItemPolicyTest < ActiveSupport::TestCase
     @item = items(:item1)
   end
 
+  # approve()
+
+  test "approve?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.approve?
+  end
+
+  test "approve?() does not authorize non-sysadmins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.approve?
+  end
+
+  test "approve?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = ItemPolicy.new(context, @item)
+    assert policy.approve?
+  end
+
+  test "approve?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.approve?
+  end
+
   # create?()
 
   test "create?() returns false with a nil user" do
@@ -612,6 +645,39 @@ class ItemPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.process_review?
+  end
+
+  # reject?()
+
+  test "reject?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.reject?
+  end
+
+  test "reject?() does not authorize non-sysadmins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.reject?
+  end
+
+  test "reject?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = ItemPolicy.new(context, @item)
+    assert policy.reject?
+  end
+
+  test "reject?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.reject?
   end
 
   # review?()

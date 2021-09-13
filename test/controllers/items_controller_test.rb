@@ -10,6 +10,57 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
+  # approve()
+
+  test "approve() redirects to login page for logged-out users" do
+    item = items(:submitted)
+    patch item_approve_path(item)
+    assert_redirected_to login_path
+  end
+
+  test "approve() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    item = items(:submitted)
+    patch item_approve_path(item)
+    assert_response :forbidden
+  end
+
+  test "approve() redirects to the item page for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:submitted)
+    patch item_approve_path(item)
+    assert_redirected_to item_path(item)
+  end
+
+  test "approve() approves an item" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:submitted)
+    patch item_approve_path(item)
+    item.reload
+    assert_equal Item::Stages::APPROVED, item.stage
+  end
+
+  test "approve() creates an associated handle" do
+    item = items(:submitted)
+    assert_nil item.handle
+    log_in_as(users(:local_sysadmin))
+    patch item_approve_path(item)
+    item.reload
+    assert_not_nil item.handle
+  end
+
+  test "approve() sends an ingest message to Medusa" do
+    item = items(:submitted)
+    log_in_as(users(:local_sysadmin))
+    patch item_approve_path(item)
+    item.reload
+    item.bitstreams.each do
+      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+        assert message.present?
+      end
+    end
+  end
+
   # destroy()
 
   test "destroy() redirects to login page for logged-out users" do
@@ -213,7 +264,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "process_review() redirects to the reivew page for authorized users" do
+  test "process_review() redirects to the review page for authorized users" do
     log_in_as(users(:local_sysadmin))
     post items_process_review_path
     assert_redirected_to items_review_path
@@ -270,6 +321,36 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
              verb: "reject"
          }
     assert_redirected_to items_review_path
+    item.reload
+    assert_equal Item::Stages::REJECTED, item.stage
+  end
+
+  # reject()
+
+  test "reject() redirects to login page for logged-out users" do
+    item = items(:submitted)
+    patch item_reject_path(item)
+    assert_redirected_to login_path
+  end
+
+  test "reject() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    item = items(:submitted)
+    patch item_reject_path(item)
+    assert_response :forbidden
+  end
+
+  test "reject() redirects to the item page for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:submitted)
+    patch item_reject_path(item)
+    assert_redirected_to item_path(item)
+  end
+
+  test "reject() rejects an item" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:submitted)
+    patch item_reject_path(item)
     item.reload
     assert_equal Item::Stages::REJECTED, item.stage
   end

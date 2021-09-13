@@ -45,6 +45,10 @@ class ItemPolicy < ApplicationPolicy
     @item = item
   end
 
+  def approve
+    review
+  end
+
   def cancel_submission
     update
   end
@@ -97,6 +101,10 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def process_review
+    review
+  end
+
+  def reject
     review
   end
 
