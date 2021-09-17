@@ -55,8 +55,9 @@ class CollectionRelation < AbstractRelation
               if !@exact_match
                 # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
                 j.simple_query_string do
-                  j.query sanitized_query
+                  j.query @query[:query]
                   j.default_operator 'AND'
+                  j.flags 'NONE'
                   j.lenient true
                   j.fields [@query[:field]]
                 end
