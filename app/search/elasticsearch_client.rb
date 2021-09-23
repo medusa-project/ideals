@@ -135,8 +135,7 @@ class ElasticsearchClient
                   Configuration.instance.elasticsearch[:endpoint],
                   index_name,
                   alias_name)
-    response = @http_client.delete(url, nil,
-                                   'Content-Type': CONTENT_TYPE)
+    response = @http_client.delete(url, nil, 'Content-Type': CONTENT_TYPE)
     if response.status == 200
       LOGGER.info("delete_index_alias(): deleted %s", alias_name)
     else
@@ -146,15 +145,49 @@ class ElasticsearchClient
   end
 
   ##
+  # @param id [String] Task ID.
+  # @return [void]
+  #
+  def delete_task(id)
+    url = sprintf('%s/_tasks/%s',
+                  Configuration.instance.elasticsearch[:endpoint],
+                  id)
+    response = @http_client.delete(url, nil, 'Content-Type': CONTENT_TYPE)
+    if response.status == 200
+      LOGGER.debug('delete_task(): %s', response.body)
+    else
+      raise IOError, "Got HTTP #{response.status} for DELETE #{url}\n#{response.body}"
+    end
+  end
+
+  ##
   # @param index_name [String]
   # @param id [String]
   # @return [Hash, nil]
   #
   def get_document(index_name, id)
-    LOGGER.debug("get_document(): %s/%s", index_name, id)
     url = sprintf("%s/%s/_doc/%s",
                   Configuration.instance.elasticsearch[:endpoint],
                   index_name, id)
+    response = @http_client.get(url, nil, 'Content-Type': CONTENT_TYPE)
+    case response.status
+    when 200
+      JSON.parse(response.body)
+    when 404
+      nil
+    else
+      raise IOError, response.body
+    end
+  end
+
+  ##
+  # @param id [String]
+  # @return [Hash, nil]
+  #
+  def get_task(id)
+    url = sprintf('%s/_tasks/%s?pretty',
+                  Configuration.instance.elasticsearch[:endpoint],
+                  id)
     response = @http_client.get(url, nil, 'Content-Type': CONTENT_TYPE)
     case response.status
     when 200

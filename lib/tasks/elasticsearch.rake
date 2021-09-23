@@ -4,7 +4,7 @@ namespace :elasticsearch do
 
     desc 'Copy the current index into the latest index'
     task :copy, [:from_index, :to_index] => :environment do |task, args|
-      ElasticsearchClient.instance.reindex(args[:from_index], args[:to_index])
+      puts ElasticsearchClient.instance.reindex(args[:from_index], args[:to_index])
     end
 
     desc 'Create an index'
@@ -40,6 +40,20 @@ namespace :elasticsearch do
     desc 'List indexes'
     task :list => :environment do
       puts ElasticsearchClient.instance.indexes
+    end
+
+  end
+
+  namespace :tasks do
+
+    desc 'Delete a task'
+    task :delete, [:id] => :environment do |task, args|
+      ElasticsearchClient.instance.delete_task(args[:id])
+    end
+
+    desc 'Show the status of a task'
+    task :show, [:id] => :environment do |task, args|
+      puts JSON.pretty_generate(ElasticsearchClient.instance.get_task(args[:id]))
     end
 
   end
