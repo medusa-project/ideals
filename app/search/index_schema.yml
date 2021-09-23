@@ -20,26 +20,31 @@
 # Requires Elasticsearch >= 7.0
 #
 settings:
-  index.query.default_field: search_all
-  index.max_result_window: 10000 # must match ElasticsearchClient::MAX_RESULT_WINDOW
+  index:
+    query:
+      default_field: search_all
+    max_result_window: 10000 # must match ElasticsearchClient::MAX_RESULT_WINDOW
   analysis:
     filter:
       custom_stopper:
         type: stop
         stopwords:
-        - _english_
-      custom_stemmer:
+          - _english_
+      english_stemmer:
         type: stemmer
-        name: english
+        language: english
+      possessive_stemmer:
+        type: stemmer
+        language: possessive_english
     analyzer:
-      search:
+      custom_analyzer:
         tokenizer: standard
         filter:
-        - lowercase
-        - custom_stopper
-        - custom_stemmer
-        - apostrophe
-        - decimal_digit
+          - possessive_stemmer
+          - lowercase
+          - custom_stopper
+          - english_stemmer
+          - decimal_digit
 mappings:
   date_detection: false
   dynamic_templates:
@@ -47,6 +52,7 @@ mappings:
         match: metadata*
         mapping:
           type: text
+          analyzer: custom_analyzer
           copy_to: search_all
           fields:
             keyword:
@@ -101,6 +107,7 @@ mappings:
         match: t_*
         mapping:
           type: text
+          analyzer: custom_analyzer
           copy_to: search_all
           store: false
           fields:
@@ -116,4 +123,5 @@ mappings:
   properties:
     search_all:
       type: text
+      analyzer: custom_analyzer
       store: false
