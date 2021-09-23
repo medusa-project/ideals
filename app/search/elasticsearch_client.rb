@@ -239,9 +239,10 @@ class ElasticsearchClient
   ##
   # @param from_index [String]
   # @param to_index [String]
+  # @param async [Boolean]
   #
-  def reindex(from_index, to_index)
-    url = sprintf("%s/_refresh",
+  def reindex(from_index, to_index, async: true)
+    url = sprintf("%s/_reindex?wait_for_completion=#{!async}&pretty",
                   Configuration.instance.elasticsearch[:endpoint])
     body = JSON.generate({
                              source: {
@@ -251,7 +252,7 @@ class ElasticsearchClient
                                  index: to_index
                              }
                          })
-    response = @http_client.post(url, nil, 'Content-Type': CONTENT_TYPE)
+    response = @http_client.post(url, body, 'Content-Type': CONTENT_TYPE)
 
     LOGGER.debug("reindex():\n    Request: %s\n    Response: %s",
                  body.force_encoding('UTF-8'),
