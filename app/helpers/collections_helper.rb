@@ -33,7 +33,7 @@ module CollectionsHelper
     collections.each do |collection|
       indent = "&nbsp;&nbsp;&nbsp;&nbsp;" * level
       arrow  = (level > 0) ? raw("&#8627; ") : ""
-      options << [raw(indent + arrow + collection.title), collection.id]
+      options << [raw("#{indent}#{arrow}#{collection.title}"), collection.id]
       collection_tree_options(unit: unit,
                               include_blank: false,
                               parent_collection: collection,
