@@ -27,11 +27,18 @@
                 = hidden_field_tag "elements[][name]",
                                    profile_element.registered_element.name
                 - if profile_element.vocabulary
-                  = select_tag("elements[][string]", options_for_select(profile_element.vocabulary.terms.map{ |t| [t.displayed_value, t.stored_value] },
-                                                                        ascribed_element.string),
+                  - show_text_field = profile_element.name == "dc:type" && ascribed_element.string.present? && (!profile_element.vocabulary.terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string == "other")
+                  = select_tag(show_text_field ? "disabled" : "elements[][string]",
+                               options_for_select(profile_element.vocabulary.terms.map{ |t| [t.displayed_value, t.stored_value] },
+                                                  (profile_element.vocabulary.terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string.blank?) ? ascribed_element.string : "other"),
                                class: "custom-select",
                                include_blank: true,
                                required: profile_element.required)
+                  - if show_text_field
+                    = text_field_tag("elements[][string]",
+                                     ascribed_element.string == "other" ? "" : ascribed_element.string,
+                                     class: "form-control",
+                                     required: profile_element.required)
                 - else
                   - case profile_element.input_type
                   - when SubmissionProfileElement::InputType::DATE
@@ -93,11 +100,11 @@
                                      class: "form-control",
                                      required: profile_element.required)
 
-                  - if !profile_element.required || profile_element.repeatable
-                    .input-group-append
-                      %button.btn.btn-outline-danger.remove{type: "button"}
-                        %i.fa.fa-minus
-                        Remove
+                - if !profile_element.required || profile_element.repeatable
+                  .input-group-append
+                    %button.btn.btn-outline-danger.remove{type: "button"}
+                      %i.fa.fa-minus
+                      Remove
             - if profile_element.repeatable
               %button.btn.btn-outline-success.btn-sm.mt-1.add{type: "button"}
                 %i.fa.fa-plus

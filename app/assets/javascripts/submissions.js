@@ -301,17 +301,39 @@ const SubmissionForm = function() {
         hiddenInput.val(month + " " + day + ", " + year);
     });
 
-    metadataForm.find("input, select, textarea").on("change", function() {
-        lastEditedInput = $(this);
+    // When a "Type of Resource" of "Other" is selected, add a text field next
+    // to it. This is a hack for one element only since submission profiles
+    // don't support this behavior generically.
+    const wireDependentSelects = function() {
+        metadataForm.find("select").on("change", function () {
+            if ($(this).prev().val() === "dc:type") {
+                const textField = $(this).next("input");
+                if ($(this).val() === "other") {
+                    $(this).attr("name", "disabled");
+                    if (textField.length < 1) {
+                        const textField = $("<input type='text' name='elements[][string]' class='form-control' required='required'>");
+                        $(this).after(textField);
+                        wireElementChangeListener(textField);
+                    }
+                } else {
+                    $(this).attr("name", "elements[][string]");
+                    textField.remove();
+                }
+            }
+        });
+    };
+
+    const onElementChanged = function(element) {
+        lastEditedInput = element;
         self.validateMetadata(false);
         self.save(lastEditedInput);
-    });
+    };
 
     /**
      * Shows all adjacent input groups' "remove" buttons if there are two or
      * more of them, and hides them (it) if not.
      */
-    const refreshRemoveButtons = function() {
+    const showOrHideRemoveButtons = function() {
         metadataForm.find("button.remove").each(function() {
             const button = $(this);
             const parentInputGroup = button.parents(".input-group");
@@ -323,19 +345,33 @@ const SubmissionForm = function() {
         });
     };
 
+    const wireElementChangeListener = function(element) {
+        element.on("change", function () {
+            onElementChanged($(this));
+        });
+    }
+
+    const wireElementChangeListeners = function() {
+        wireElementChangeListener(metadataForm.find("input, select, textarea"));
+    };
+
     const wireRemoveButtons = function() {
-        metadataForm.find("button.remove").off("click").on("click", function(e) {
-            const parentInputGroup = $(this).parents(".input-group");
-            if (parentInputGroup.siblings(".input-group").length > 0) {
+        metadataForm.find("button.remove").off("click").on("click", function() {
+            const parentInputGroup  = $(this).parents(".input-group");
+            // Don't remove the input group if it's the last one remaining
+            const siblings = parentInputGroup.siblings(".input-group");
+            if (siblings.length > 0) {
                 parentInputGroup.remove();
+                onElementChanged(siblings.filter(":first"));
+                showOrHideRemoveButtons();
             }
-            refreshRemoveButtons();
-            e.preventDefault();
         });
     };
 
-    refreshRemoveButtons();
+    showOrHideRemoveButtons();
+    wireElementChangeListeners();
     wireRemoveButtons();
+    wireDependentSelects();
 
     metadataForm.find("button.add").on("click", function(e) {
         // Show the "remove" button of all adjacent input groups
@@ -344,11 +380,16 @@ const SubmissionForm = function() {
         // Clone the last input group
         const prevInputGroup = inputGroups.last();
         const clone = prevInputGroup.clone();
-        clone.find("input[type=text], textarea").val("");
+        clone.find("input[type=text], select, textarea").val("");
+        if (clone.find("select").length > 0) {
+            clone.find("select").attr("name", "elements[][string]");
+            clone.find("input[type=text]").remove();
+        }
         // Insert the clone after the last input group
         prevInputGroup.after(clone);
         wireRemoveButtons();
-        e.preventDefault();
+        wireDependentSelects();
+        wireElementChangeListeners();
     });
 
     /*************************** Files section *****************************/
