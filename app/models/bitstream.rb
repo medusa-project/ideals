@@ -337,15 +337,19 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # @param force [Boolean] If true, the ingest occurs even if the instance has
+  #                        already been submitted or already exists in Medusa.
   # @raises [ArgumentError] if the bitstream does not have an ID or staging key.
   # @raises [AlreadyExistsError] if the bitstream already has a Medusa UUID.
   #
-  def ingest_into_medusa
+  def ingest_into_medusa(force: false)
     raise ArgumentError, "Bitstream has not been saved yet" if self.id.blank?
     raise ArgumentError, "Bitstream's staging key is nil" if self.staging_key.blank?
     raise ArgumentError, "Bitstream's item does not have a handle" unless self.item.handle&.suffix&.present?
-    raise AlreadyExistsError, "Bitstream has already been submitted for ingest" if self.submitted_for_ingest
-    raise AlreadyExistsError, "Bitstream already exists in Medusa" if self.medusa_uuid.present?
+    unless force
+      raise AlreadyExistsError, "Bitstream has already been submitted for ingest" if self.submitted_for_ingest
+      raise AlreadyExistsError, "Bitstream already exists in Medusa" if self.medusa_uuid.present?
+    end
 
     # The staging key is relative to STAGING_KEY_PREFIX because Medusa is
     # configured to look only within that prefix.

@@ -371,18 +371,31 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "ingest_into_medusa() raises an error if the instance has already been
-  submitted for ingest" do
+  submitted for ingest and the force argument is false" do
     @instance.submitted_for_ingest = true
     assert_raises AlreadyExistsError do
       @instance.ingest_into_medusa
     end
   end
 
-  test "ingest_into_medusa() raises an error if a Medusa UUID is already present" do
+  test "ingest_into_medusa() does not raise an error if the instance has
+  already been submitted for ingest but the force argument is true" do
+    @instance.submitted_for_ingest = true
+    @instance.ingest_into_medusa(force: true)
+  end
+
+  test "ingest_into_medusa() raises an error if a Medusa UUID is already present
+  and the force argument is false" do
     @instance.medusa_uuid = SecureRandom.uuid
     assert_raises AlreadyExistsError do
       @instance.ingest_into_medusa
     end
+  end
+
+  test "ingest_into_medusa() does not raise an error if a Medusa UUID is
+  already present but the force argument is true" do
+    @instance.medusa_uuid = SecureRandom.uuid
+    @instance.ingest_into_medusa(force: true)
   end
 
   test "ingest_into_medusa() sends a message to the queue" do
