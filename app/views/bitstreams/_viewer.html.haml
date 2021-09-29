@@ -3,19 +3,24 @@
 #file-navigator-viewer-header
   %h4= @bitstream.original_filename
   .btn-group{role: "group"}
+    - if policy(@bitstream).download?
+      -# Download button
+      = link_to(item_bitstream_object_path(@bitstream.item, @bitstream), class: "btn btn-sm btn-dark text-success") do
+        %i.fa.fa-download
+        Download
     - if show_sysadmin_content
       -# Edit button
-      %button.btn.btn-dark.edit-bitstream{"data-item-id":      @bitstream.item_id,
-                                          "data-bitstream-id": @bitstream.id,
-                                          "data-target":       "#edit-bitstream-modal",
-                                          "data-toggle":       "modal",
-                                          type:                "button"}
+      %button.btn.btn-sm.btn-dark.edit-bitstream{"data-item-id":      @bitstream.item_id,
+                                                 "data-bitstream-id": @bitstream.id,
+                                                 "data-target":       "#edit-bitstream-modal",
+                                                 "data-toggle":       "modal",
+                                                 type:                "button"}
         %i.fas.fa-pencil-alt
         Edit
-      -# More Info button
-      %button#more-info.btn.btn-dark{type: "button"}
-        %i.fa.fa-info-circle
-        More Info
+    -# More Info button
+    %button#more-info.btn.btn-sm.btn-dark{type: "button"}
+      %i.fa.fa-info-circle
+      More Info
 
 #file-navigator-viewer-content
   = viewer_for(@bitstream)
@@ -59,10 +64,3 @@
         %dd= Role.label(@bitstream.role)
       %dt Download Count
       %dd= number_with_delimiter(@bitstream.download_count)
-
-#file-navigator-viewer-footer
-  - if policy(@bitstream).download?
-    -# Download button
-    = link_to(item_bitstream_object_path(@bitstream.item, @bitstream), class: "btn btn-success") do
-      %i.fa.fa-download
-      Download

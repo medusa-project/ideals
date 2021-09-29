@@ -23,14 +23,26 @@
                                        size: 512,
                                        title: bitstream.original_filename)
             = bitstream.original_filename
-    #file-navigator-thumbnail-column-footer
-      - if policy(@item).download_counts?
-        %button.btn.btn-dark.download-counts{"data-item-id": @item.id,
-                                             "data-target": "#download-counts-modal",
-                                             "data-toggle": "modal",
-                                             role: "button"}
-          %i.fa.fa-chart-bar
-          Download Counts&hellip;
+    - if @item.approved?
+      #file-navigator-thumbnail-column-footer
+        .btn-group.dropup{role: "group"}
+          %button#download-options.text-success{type: "button",
+                                                class: "btn btn-dark btn-sm dropdown-toggle",
+                                                "data-toggle": "dropdown", "aria-haspopup": "true",
+                                                "aria-expanded": "false"}
+            %i.fa.fa-download
+            Download Options
+          .dropdown-menu{"aria-labelledby": "download-options"}
+            %a.dropdown-item{href: item_url(@item, format: :zip)}
+              %i.fa.fa-download
+              Download All Files
+            - if policy(@item).download_counts?
+              %button.dropdown-item.download-counts{"data-item-id": @item.id,
+                                                    "data-target": "#download-counts-modal",
+                                                    "data-toggle": "modal",
+                                                    role: "button"}
+                %i.fa.fa-chart-bar
+                Download Counts&hellip;
 
   #file-navigator-viewer-column
     -# bitstreams/_viewer.html is inserted here via XHR
@@ -38,7 +50,7 @@
 
 = render partial: "shared/ajax_modal",
          locals: { id: "download-counts-modal",
-                   title: "Download Counts (For All Files)",
+                   title: "Download Counts (All Files)",
                    size: "lg" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-bitstream-modal",

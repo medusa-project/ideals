@@ -204,6 +204,16 @@ class ItemsController < ApplicationController
       where("bundle != ?", Bitstream::Bundle::CONTENT).
       order("LOWER(original_filename)").
       select{ |b| policy(b).show? }
+
+    respond_to do |format|
+      format.html
+      format.json
+      format.zip do
+        client       = MedusaDownloaderClient.new(request_context: request_context)
+        download_url = client.download_url(item: @item)
+        redirect_to download_url, status: :see_other
+      end
+    end
   end
 
   ##

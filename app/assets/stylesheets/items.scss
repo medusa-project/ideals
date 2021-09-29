@@ -25,7 +25,6 @@ body#show_item {
         padding: 4px;
         overflow-y: scroll;
         .section-heading {
-          background-color: $gray-800;
           font-size: 0.9em;
           letter-spacing: 1px;
           margin: 4px 0 4px 0;
@@ -87,6 +86,9 @@ body#show_item {
           white-space: nowrap;
           text-overflow: ellipsis;
         }
+        .btn-group {
+          white-space: nowrap;
+        }
       }
       #file-navigator-viewer-content {
         display: flex;
@@ -147,13 +149,6 @@ body#show_item {
             color: white;
           }
         }
-      }
-      #file-navigator-viewer-footer {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-end;
-        padding-right: 0.8em;
       }
     }
   }

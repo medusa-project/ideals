@@ -18,7 +18,7 @@ const ItemsView = function() {
  */
 const FileNavigator = function() {
     const HEADER_HEIGHT = 50;
-    const FOOTER_HEIGHT = 60;
+    const FOOTER_HEIGHT = 50;
     const ROOT_URL      = $('input[name="root_url"]').val();
     const navigator     = $("#file-navigator");
     const thumbsColumn  = $("#file-navigator-thumbnail-column");
@@ -42,12 +42,13 @@ const FileNavigator = function() {
     const updateHeight = function() {
         const navigatorHeight = window.innerHeight - 100;
         navigator.css("height", navigatorHeight + "px");
-        thumbsColumn.find("#file-navigator-thumbnail-content").css("height", (navigatorHeight - FOOTER_HEIGHT) + "px");
-        thumbsColumn.find("#file-navigator-thumbnail-column-footer").css("height", FOOTER_HEIGHT + "px");
+        const isFooterExisting = thumbsColumn.find("#file-navigator-thumbnail-column-footer").length > 0;
+        const footerHeight     = FOOTER_HEIGHT - (isFooterExisting ? 0 : FOOTER_HEIGHT);
+        thumbsColumn.find("#file-navigator-thumbnail-content").css("height", (navigatorHeight - footerHeight) + "px");
+        thumbsColumn.find("#file-navigator-thumbnail-column-footer").css("height", footerHeight + "px");
         viewerColumn.find("#file-navigator-viewer-header").css("height", HEADER_HEIGHT + "px");
-        viewerColumn.find("#file-navigator-viewer-content").css("height", (navigatorHeight - HEADER_HEIGHT - FOOTER_HEIGHT) + "px");
-        viewerColumn.find("#file-navigator-viewer-content img").css("max-height", (navigatorHeight - HEADER_HEIGHT - FOOTER_HEIGHT) + "px");
-        viewerColumn.find("#file-navigator-viewer-footer").css("height", FOOTER_HEIGHT + "px");
+        viewerColumn.find("#file-navigator-viewer-content").css("height", (navigatorHeight - HEADER_HEIGHT) + "px");
+        viewerColumn.find("#file-navigator-viewer-content img").css("max-height", (navigatorHeight - HEADER_HEIGHT) + "px");
     };
 
     $(window).on("resize", function() {
