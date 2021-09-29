@@ -21,7 +21,6 @@
 # Ignore local files.
 .idea
 ideals.iml
-nginx.conf.erb
 out
 
 # Ignore master keys for decrypting credentials.
