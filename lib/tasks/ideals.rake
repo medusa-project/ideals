@@ -77,6 +77,13 @@ namespace :ideals do
     task delete_expired_embargoes: :environment do
       Embargo.where("expires_at < NOW()").delete_all
     end
+
+    desc "Get a URL to download an item's bitstreams in a zip file"
+    task :download, [:id] => :environment do |task, args|
+      item   = Item.find(args[:id])
+      client = MedusaDownloaderClient.new
+      puts client.download_url(item: item)
+    end
   end
 
   namespace :users do
