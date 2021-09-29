@@ -6,6 +6,12 @@ class HandleTest < ActiveSupport::TestCase
     @instance = handles(:handle1)
   end
 
+  # prefix()
+
+  test "prefix() returns the prefix from the configuration" do
+    assert_equal ::Configuration.instance.handles[:prefix], Handle.prefix
+  end
+
   # set_suffix_start()
 
   test "set_suffix_start() updates the suffix sequence" do

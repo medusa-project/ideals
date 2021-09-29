@@ -32,6 +32,13 @@ class Handle < ApplicationRecord
   attr_accessor :transient
 
   ##
+  # @return [String]
+  #
+  def self.prefix
+    ::Configuration.instance.handles[:prefix]
+  end
+
+  ##
   # @param value [Integer]
   #
   def self.set_suffix_start(value)
@@ -73,7 +80,7 @@ class Handle < ApplicationRecord
   # @return [String]
   #
   def prefix
-    ::Configuration.instance.handles[:prefix]
+    self.class.prefix
   end
 
   ##
