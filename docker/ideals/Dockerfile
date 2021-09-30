@@ -1,5 +1,6 @@
 FROM ruby:2.7.2-slim
 
+ENV CI=1
 ENV RAILS_ENV=test
 ENV RAILS_LOG_TO_STDOUT=true
 ENV SECRET_KEY_BASE=whateverdoesntmatter
