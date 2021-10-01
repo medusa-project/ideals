@@ -152,6 +152,12 @@ namespace :ideals_dspace do
                  args[:source_db_password],
                  "export_items.sql",
                  :import_items)
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 args[:source_db_password],
+                 "export_collections_2_items.sql",
+                 :import_collections_2_items)
     end
   end
 

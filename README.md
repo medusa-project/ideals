@@ -141,7 +141,6 @@ rails db:reset
 rails "ideals_dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
-rails handles:put_all
 rails "ideals_dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]" # optional
 ```
 N.B.: (`dbhost` etc.) are only required if the database is on a different host
@@ -157,7 +156,6 @@ rails db:reset
 rails "ideals_dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
-rails handles:put_all
 # This user must authorize your SSH key for passwordless login
 rails "ideals_dspace:bitstreams:copy_into_medusa[ideals_dspace_ssh_user]"
 rails "ideals_dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]"

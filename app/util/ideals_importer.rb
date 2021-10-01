@@ -251,12 +251,44 @@ class IdealsImporter
       begin
         UnitCollectionMembership.create!(unit_id:       group_id,
                                          collection_id: collection_id,
-                                         primary:       true).save!
+                                         primary:       true)
       rescue ActiveRecord::RecordNotUnique
         # Probably a result of running this twice.
       end
     end
-    update_pkey_sequence("collections")
+  ensure
+    @running = false
+  end
+
+  ##
+  # @param csv_pathname [String]
+  #
+  def import_collections_2_items(csv_pathname)
+    @running = true
+    LOGGER.debug("import_collections_2_items(): importing %s",
+                 csv_pathname)
+    line_count = count_lines(csv_pathname)
+    progress   = Progress.new(line_count)
+
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
+
+      row_arr               = line.split("|").map(&:strip)
+      item_id               = row_arr[0].to_i
+      collection_id         = row_arr[1].to_i
+      primary_collection_id = row_arr[2].to_i
+
+      progress.report(row_num, "Importing collection-item joins")
+      begin
+        CollectionItemMembership.create!(collection_id: collection_id,
+                                         item_id:       item_id,
+                                         primary:       (collection_id == primary_collection_id))
+      rescue ActiveRecord::RecordInvalid
+        # Either the item or the collection does not exist. Nothing we can do.
+      rescue ActiveRecord::RecordNotUnique
+        # Probably a result of running this twice.
+      end
+    end
   ensure
     @running = false
   end
@@ -287,6 +319,7 @@ class IdealsImporter
       progress.report(row_num, "Importing communities")
       unit = Unit.find_by_id(community_id) || Unit.new(id:          community_id,
                                                        institution: institution)
+      unit.title ||= "Temporary Title"
       elem_name  = row_arr[1]
       elem_name += ":#{row_arr[2]}" if row_arr[2].present?
       # Replace @@@@ with newline, strip leading and trailing quote,
@@ -447,12 +480,11 @@ class IdealsImporter
       submitter_id  = row[1]
       submitting    = row[2] != "t"
       withdrawn     = row[3] == "t"
-      collection_id = row[4].present? ? row[4].to_i : nil
-      discoverable  = row[5] == "t"
+      discoverable  = row[4] == "t"
 
       # Skip submitterless items (items whose submitting user has not been
       # imported due to not being a UofI user).
-      if Collection.exists?(collection_id) && User.exists?(submitter_id)
+      if User.exists?(submitter_id)
         if withdrawn
           stage = Item::Stages::WITHDRAWN
         elsif submitting
@@ -465,9 +497,6 @@ class IdealsImporter
                        submitter_id: submitter_id,
                        stage:        stage,
                        discoverable: discoverable)
-          CollectionItemMembership.create!(collection_id: collection_id,
-                                           item_id:       id,
-                                           primary:       true)
         end
       end
       progress.report(row_num, "Importing items")
