@@ -223,7 +223,7 @@ class UnitTest < ActiveSupport::TestCase
                                                end_time:   1.hour.ago)
     assert_equal 1, actual.length
     assert_kind_of Time, actual[0]['month']
-    assert_equal 0, actual[0]['dl_count']
+    assert_equal 1, actual[0]['dl_count']
   end
 
   # item_download_counts()
@@ -461,7 +461,7 @@ class UnitTest < ActiveSupport::TestCase
                                                      end_time:   1.hour.ago)
     assert_equal 1, actual.length
     assert_kind_of Time, actual[0]['month']
-    assert_equal 0, actual[0]['count']
+    assert_equal 1, actual[0]['count']
   end
 
 

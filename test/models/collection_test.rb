@@ -499,10 +499,10 @@ class CollectionTest < ActiveSupport::TestCase
       update!(happened_at: 90.minutes.ago)
 
     actual = @instance.submitted_item_count_by_month(start_time: 2.hours.ago,
-                                               end_time:   1.hour.ago)
+                                                     end_time:   1.hour.ago)
     assert_equal 1, actual.length
     assert_kind_of Time, actual[0]['month']
-    assert_equal 0, actual[0]['count']
+    assert_equal 1, actual[0]['count']
   end
 
   # unit_default?()
