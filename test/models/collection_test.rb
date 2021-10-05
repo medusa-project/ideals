@@ -414,6 +414,7 @@ class CollectionTest < ActiveSupport::TestCase
   # save()
 
   test "save() creates an associated handle" do
+    @instance = collections(:described)
     assert_nil @instance.handle
     @instance.save!
     assert_not_nil @instance.handle
@@ -502,7 +503,7 @@ class CollectionTest < ActiveSupport::TestCase
                                                      end_time:   1.hour.ago)
     assert_equal 1, actual.length
     assert_kind_of Time, actual[0]['month']
-    assert_equal 1, actual[0]['count']
+    assert_equal 0, actual[0]['count']
   end
 
   # unit_default?()

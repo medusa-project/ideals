@@ -26,6 +26,7 @@ unit1_described:
   unit: unit1
   collection: described
   unit_default: false
+  primary: true
 
 unit1_empty:
   unit: unit1
