@@ -150,7 +150,7 @@ class OaiPmhController < ApplicationController
   def do_list_sets
     @results_offset = get_start
     # This endpoint considers both collections and units to be sets.
-    result_sql = "SELECT h.suffix AS handle_suffix,
+    sql = "SELECT h.suffix AS handle_suffix,
             h.collection_id AS collection_id, h.unit_id AS unit_id,
             c.title AS collection_title, c.description AS collection_description,
             u.title AS unit_title, u.short_description AS unit_description
@@ -161,7 +161,7 @@ class OaiPmhController < ApplicationController
         ORDER BY h.suffix
         LIMIT #{MAX_RESULT_WINDOW}
         OFFSET #{@results_offset};"
-    @results             = ActiveRecord::Base.connection.exec_query(result_sql)
+    @results             = ActiveRecord::Base.connection.exec_query(sql)
     @total_num_results   = Handle.where("collection_id IS NOT NULL OR unit_id IS NOT NULL").count
     @next_page_available = (@results_offset + MAX_RESULT_WINDOW < @total_num_results)
     @expiration_date     = resumption_token_expiration_time
@@ -173,6 +173,8 @@ class OaiPmhController < ApplicationController
 
   def fetch_results_for_list_identifiers_or_records
     @results = Item.
+      distinct(:id).
+      joins("LEFT JOIN collection_item_memberships m ON m.item_id = items.id").
       where(discoverable: true,
             stage: [Item::Stages::APPROVED, Item::Stages::WITHDRAWN]).
       order(:updated_at)
