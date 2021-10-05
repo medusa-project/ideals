@@ -55,51 +55,52 @@
                 Administration
               .dropdown-menu{"aria-labelledby": "administration-dropdown"}
                 - if ir
-                  = link_to items_review_path, class: "dropdown-item" do
+                  = link_to(items_review_path, class: "dropdown-item") do
                     %i.fa.fa-tasks
                     Review Submissions
                 .dropdown-divider
                 - if re
-                  = link_to registered_elements_path, class: "dropdown-item" do
+                  = link_to(registered_elements_path, class: "dropdown-item") do
                     = icon_for(RegisteredElement)
                     Element Registry
                 - if mp
-                  = link_to metadata_profiles_path, class: "dropdown-item" do
+                  = link_to(metadata_profiles_path, class: "dropdown-item") do
                     = icon_for(MetadataProfile)
                     Metadata Profiles
                 - if sp
-                  = link_to submission_profiles_path, class: "dropdown-item" do
+                  = link_to(submission_profiles_path, class: "dropdown-item") do
                     = icon_for(SubmissionProfile)
                     Submission Profiles
                 .dropdown-divider
                 - if iv
-                  = link_to invitees_path, class: "dropdown-item" do
+                  = link_to(invitees_path, class: "dropdown-item") do
                     %i.fa.fa-user-plus
                     Invitees
                 - if u
-                  = link_to users_path, class: "dropdown-item" do
+                  = link_to(users_path, class: "dropdown-item") do
                     %i.fa.fa-user
                     Users
                 - if ug
-                  = link_to user_groups_path, class: "dropdown-item" do
+                  = link_to(user_groups_path, class: "dropdown-item") do
                     %i.fa.fa-users
                     User Groups
                 - if insts || inst || msg
                   .dropdown-divider
                   - if insts
-                    = link_to institutions_path, class: "dropdown-item" do
+                    = link_to(institutions_path, class: "dropdown-item") do
                       = icon_for(Institution)
                       Institutions
                   - if inst && current_user&.institution
-                    = link_to institution_path(current_user.institution), class: "dropdown-item" do
+                    = link_to(institution_path(current_user.institution),
+                              class: "dropdown-item") do
                       = icon_for(Institution)
                       My Institution
                   - if msg
                     .dropdown-divider
-                    = link_to file_formats_path, class: "dropdown-item" do
+                    = link_to(file_formats_path, class: "dropdown-item") do
                       = icon_for(FileFormat)
                       File Formats
-                    = link_to messages_path, class: "dropdown-item" do
+                    = link_to(messages_path, class: "dropdown-item") do
                       = icon_for(Message)
                       Medusa Messages
                     - config = ::Configuration.instance
@@ -107,6 +108,9 @@
                               class: "dropdown-item", target: "_blank") do
                       %i.fa.fa-database
                       Medusa File Group
+                  = link_to(oai_pmh_path(verb: "Identify"), class: "dropdown-item", target: "_blank") do
+                    %i.fa.fa-exchange-alt
+                    OAI-PMH Endpoint
 
         -# User menu
         .btn-group{role: "group"}
@@ -126,10 +130,10 @@
                     %i.fa.fa-exclamation-triangle.text-danger
                     = item[:message]
               %li.dropdown-divider
-            = link_to user_path(current_user), class: "dropdown-item" do
+            = link_to(user_path(current_user), class: "dropdown-item") do
               = icon_for(:info)
               Account Info
-            = link_to logout_path, method: :delete, class: "dropdown-item" do
+            = link_to(logout_path, method: :delete, class: "dropdown-item") do
               %i.fa.fa-sign-out-alt
               Log Out
       - elsif request.path != login_path

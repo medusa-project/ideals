@@ -67,6 +67,12 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 1, @instance.all_collection_submitters.length
   end
 
+  # all_collections()
+
+  test "all_collections() returns the expected collections" do
+    assert_equal 1, @instance.all_collections.length
+  end
+
   # all_unit_administrators()
 
   test "all_unit_administrators() returns the expected users" do

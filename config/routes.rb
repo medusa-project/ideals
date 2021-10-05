@@ -46,6 +46,8 @@ Rails.application.routes.draw do
     match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
   end
   match "/deposit", to: "submissions#agreement", via: :get
+  # This is an old IDEALS-DSpace route.
+  match "/dspace-oai/request", to: redirect('/oai-pmh', status: 301), via: :all
   resources :file_formats, path: "file-formats", only: :index
   match "/handle/:prefix/:suffix", to: "handles#redirect", via: :get, as: "redirect_handle"
   resources :institutions, param: :key do
@@ -111,6 +113,7 @@ Rails.application.routes.draw do
     match "/clone", to: "metadata_profiles#clone", via: :post
     resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]
   end
+  match '/oai-pmh', to: 'oai_pmh#handle', via: %w(get post), as: 'oai_pmh'
   match "/reset-password", to: "password_resets#get", via: :get
   match "/reset-password", to: "password_resets#post", via: :post
   resources :registered_elements, param: :name, path: "elements"

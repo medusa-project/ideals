@@ -176,6 +176,19 @@ class Item < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<Collections>] All owning collections, including their
+  #                                   parents.
+  #
+  def all_collections
+    bucket = Set.new
+    self.collections.each do |collection|
+      bucket << collection
+      bucket += collection.all_parents
+    end
+    bucket
+  end
+
+  ##
   # @return [Enumerable<Unit>] All owning units, including their parents.
   #
   def all_units

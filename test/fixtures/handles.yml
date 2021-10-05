@@ -1,3 +1,7 @@
 handle1:
   suffix: 5000
   item: item1
+
+collection1_handle:
+  suffix: 5001
+  collection: collection1
