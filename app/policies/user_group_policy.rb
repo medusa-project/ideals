@@ -37,6 +37,14 @@ class UserGroupPolicy < ApplicationPolicy
     edit
   end
 
+  def edit_affiliations
+    edit
+  end
+
+  def edit_departments
+    edit
+  end
+
   def edit_hosts
     edit
   end

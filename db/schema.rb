@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_09_211047) do
+ActiveRecord::Schema.define(version: 2021_10_06_165038) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,18 @@ ActiveRecord::Schema.define(version: 2021_09_09_211047) do
     t.index ["unit_id"], name: "index_administrators_on_unit_id"
     t.index ["user_id", "unit_id", "primary"], name: "index_administrators_on_user_id_and_unit_id_and_primary"
     t.index ["user_id"], name: "index_administrators_on_user_id"
+  end
+
+  create_table "affiliations", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_affiliations_on_name", unique: true
+  end
+
+  create_table "affiliations_user_groups", force: :cascade do |t|
+    t.bigint "affiliation_id", null: false
+    t.bigint "user_group_id", null: false
   end
 
   create_table "ascribed_elements", force: :cascade do |t|
@@ -92,6 +104,13 @@ ActiveRecord::Schema.define(version: 2021_09_09_211047) do
     t.text "introduction"
     t.text "rights"
     t.text "provenance"
+  end
+
+  create_table "departments", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "user_group_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "embargoes", force: :cascade do |t|
@@ -371,6 +390,8 @@ ActiveRecord::Schema.define(version: 2021_09_09_211047) do
   add_foreign_key "administrator_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrators", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "affiliations_user_groups", "affiliations", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "affiliations_user_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "bitstream_authorizations", "items", on_update: :cascade, on_delete: :cascade
@@ -381,6 +402,7 @@ ActiveRecord::Schema.define(version: 2021_09_09_211047) do
   add_foreign_key "collections", "collections", column: "parent_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "departments", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "embargoes", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "bitstreams", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "items", on_update: :cascade, on_delete: :cascade

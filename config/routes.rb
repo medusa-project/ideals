@@ -157,6 +157,10 @@ Rails.application.routes.draw do
   resources :user_groups, path: "user-groups", except: :new do
     match "/edit-ad-groups", to: "user_groups#edit_ad_groups", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/edit-affiliations", to: "user_groups#edit_affiliations", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-departments", to: "user_groups#edit_departments", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-hosts", to: "user_groups#edit_hosts", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-local-users", to: "user_groups#edit_local_users", via: :get,

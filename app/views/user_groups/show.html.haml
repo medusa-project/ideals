@@ -23,8 +23,12 @@
 
 %h1= @user_group.name
 
-.row
-  .col-md-4
+.alert.alert-light
+  %i.fa.fa-info-circle
+  All categories are related by Boolean "OR" except departments and affiliations, which are related by "AND."
+
+.row.mb-3
+  .col-sm-12
     .card
       .card-body
         - if can_edit
@@ -45,7 +49,9 @@
                 %code.text-secondary= group.urn
         - else
           %p None
-  .col-md-4
+
+.row.mb-3
+  .col-sm-6
     .card
       .card-body
         - if can_edit
@@ -63,7 +69,7 @@
               %li= link_to(user.name, user.becomes(User))
         - else
           %p None
-  .col-md-4
+  .col-sm-6
     .card
       .card-body
         - if can_edit
@@ -83,10 +89,55 @@
         - else
           %p None
 
+.row
+  .col-sm-6
+    .card
+      .card-body
+        - if can_edit
+          .float-right
+            %button.btn.btn-light.btn-sm.edit-departments{"data-target": "#edit-departments-modal",
+                                                          "data-toggle": "modal",
+                                                          "data-user-group-id": @user_group.id,
+                                                          type: "button"}
+              %i.fa.fa-pencil-alt
+              Edit
+        %h4.card-title Departments
+        - if @departments.any?
+          %ul
+            - @departments.each do |department|
+              %li= department.name
+        - else
+          %p None
+  .col-sm-6
+    .card
+      .card-body
+        - if can_edit
+          .float-right
+            %button.btn.btn-light.btn-sm.edit-affiliations{"data-target": "#edit-affiliations-modal",
+                                                           "data-toggle": "modal",
+                                                           "data-user-group-id": @user_group.id,
+                                                           type: "button"}
+              %i.fa.fa-pencil-alt
+              Edit
+        %h4.card-title Affiliations
+        .alert.alert-light
+          %i.fa.fa-info-circle
+          These are only considered when there are one or more departments associated with the group.
+        - if @affiliations.any?
+          %ul
+            - @affiliations.each do |affiliation|
+              %li= affiliation.name
+        - else
+          %p None
+
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-user-group-modal", title: "Edit User Group" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-ad-groups-modal", title: "Edit AD Groups", size: :lg }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-affiliations-modal", title: "Edit Affiliations" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-departments-modal", title: "Edit Departments" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-local-users-modal", title: "Edit Local Users" }
 = render partial: "shared/ajax_modal",

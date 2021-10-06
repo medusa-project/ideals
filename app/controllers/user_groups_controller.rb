@@ -54,6 +54,22 @@ class UserGroupsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /user-groups/:id/edit-affiliations` (XHR only)
+  #
+  def edit_affiliations
+    render partial: "user_groups/affiliations_form",
+           locals: { user_group: @user_group }
+  end
+
+  ##
+  # Responds to `GET /user-groups/:id/edit-departments` (XHR only)
+  #
+  def edit_departments
+    render partial: "user_groups/departments_form",
+           locals: { user_group: @user_group }
+  end
+
+  ##
   # Responds to `GET /user-groups/:id/edit-hosts` (XHR only)
   #
   def edit_hosts
@@ -82,9 +98,11 @@ class UserGroupsController < ApplicationController
   # Responds to `GET /user-groups/:id`
   #
   def show
-    @users       = @user_group.users.order(:name)
-    @ldap_groups = @user_group.ldap_groups.order(:urn)
-    @hosts       = @user_group.hosts.order(:pattern)
+    @users        = @user_group.users.order(:name)
+    @ldap_groups  = @user_group.ldap_groups.order(:urn)
+    @hosts        = @user_group.hosts.order(:pattern)
+    @departments  = @user_group.departments.order(:name)
+    @affiliations = @user_group.affiliations.order(:name)
   end
 
   ##
@@ -98,6 +116,13 @@ class UserGroupsController < ApplicationController
           @user_group.hosts.destroy_all
           params[:user_group][:hosts].select(&:present?).each do |pattern|
             @user_group.hosts.build(pattern: pattern)
+          end
+        end
+        # Departments require manual processing.
+        if params[:user_group][:departments]&.respond_to?(:each)
+          @user_group.departments.destroy_all
+          params[:user_group][:departments].select(&:present?).each do |name|
+            @user_group.departments.build(name: name)
           end
         end
         @user_group.update!(user_group_params)
@@ -115,7 +140,8 @@ class UserGroupsController < ApplicationController
   private
 
   def user_group_params
-    params.require(:user_group).permit(:key, :name, ldap_group_ids: [],
+    params.require(:user_group).permit(:key, :name, affiliation_ids: [],
+                                       department_ids: [], ldap_group_ids: [],
                                        user_ids: [])
   end
 

@@ -54,6 +54,21 @@ const UserGroupView = function() {
             $("#edit-ad-groups-modal .modal-body").html(data);
         });
     });
+    $("button.edit-affiliations").on("click", function() {
+        const id = $(this).data("user-group-id");
+        const url = ROOT_URL + "/user-groups/" + id + "/edit-affiliations";
+        $.get(url, function(data) {
+            $("#edit-affiliations-modal .modal-body").html(data);
+        });
+    });
+    $("button.edit-departments").on("click", function() {
+        const id = $(this).data("user-group-id");
+        const url = ROOT_URL + "/user-groups/" + id + "/edit-departments";
+        $.get(url, function(data) {
+            $("#edit-departments-modal .modal-body").html(data);
+            UserGroupForm.attachEventListeners();
+        });
+    });
     $("button.edit-local-users").on("click", function() {
         const id = $(this).data("user-group-id");
         const url = ROOT_URL + "/user-groups/" + id + "/edit-local-users";

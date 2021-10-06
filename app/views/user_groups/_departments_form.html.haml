@@ -1,0 +1,26 @@
+-# @param user_group [UserGroup]
+
+= form_for(user_group, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .alert.alert-light
+    %i.fa.fa-info-circle
+    = raw("Department names must match their names in the #{link_to("Campus Directory", "https://directory.illinois.edu/search")}.")
+
+  = hidden_field_tag "user_group[departments][]"
+  - departments = f.object.departments
+  - departments = [Department.new] if departments.empty?
+  - departments.each do |department|
+    .input-group.mb-3
+      = text_field_tag "user_group[departments][]", department.name,
+                       class: "form-control"
+      %button.btn.btn-danger.remove{type: "button"}
+        %i.fa.fa-minus
+  %button.btn.btn-success.add{type: "button"}
+    %i.fa.fa-plus
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Edit", class: "btn btn-primary")

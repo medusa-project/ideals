@@ -1,0 +1,19 @@
+-# @param user_group [UserGroup]
+
+= form_for(user_group, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  = hidden_field_tag "user_group[affiliation_ids][]"
+  - Affiliation.all.order(:name).each do |affiliation|
+    .form-check
+      = check_box_tag "user_group[affiliation_ids][]", affiliation.id,
+                        f.object.affiliations.include?(affiliation),
+                        { id: "user_group_affiliation_ids_#{affiliation.id}", class: "form-check-input" }
+      = label_tag "user_group_affiliation_ids_#{affiliation.id}",
+        affiliation.name, class: "form-check-label"
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Edit", class: "btn btn-primary")

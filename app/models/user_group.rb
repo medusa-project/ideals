@@ -14,10 +14,12 @@ class UserGroup < ApplicationRecord
 
   has_many :administrator_groups
   has_many :bitstream_authorizations
+  has_many :departments
   has_many :hosts
   has_many :manager_groups
   has_many :submitter_groups
 
+  has_and_belongs_to_many :affiliations
   has_and_belongs_to_many :ldap_groups
   # LocalUsers only!
   has_and_belongs_to_many :users

@@ -151,6 +151,64 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_affiliations()
+
+  test "edit_affiliations() redirects to login page for logged-out users" do
+    group = user_groups(:temp)
+    get user_group_edit_affiliations_path(group), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit_affiliations() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    group = user_groups(:temp)
+    get user_group_edit_affiliations_path(group), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_affiliations() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_affiliations_path(group)
+    assert_response :not_found
+  end
+
+  test "edit_affiliations() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_affiliations_path(group), xhr: true
+    assert_response :ok
+  end
+
+  # edit_departments()
+
+  test "edit_departments() redirects to login page for logged-out users" do
+    group = user_groups(:temp)
+    get user_group_edit_departments_path(group), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit_departments() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    group = user_groups(:temp)
+    get user_group_edit_departments_path(group), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_departments() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_departments_path(group)
+    assert_response :not_found
+  end
+
+  test "edit_departments() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_departments_path(group), xhr: true
+    assert_response :ok
+  end
+
   # edit_hosts()
 
   test "edit_hosts() redirects to login page for logged-out users" do
