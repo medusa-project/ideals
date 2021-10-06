@@ -47,6 +47,28 @@ const UserGroupView = function() {
             UserGroupForm.attachEventListeners();
         });
     });
+    $("button.edit-ad-groups").on("click", function() {
+        const id = $(this).data("user-group-id");
+        const url = ROOT_URL + "/user-groups/" + id + "/edit-ad-groups";
+        $.get(url, function(data) {
+            $("#edit-ad-groups-modal .modal-body").html(data);
+        });
+    });
+    $("button.edit-local-users").on("click", function() {
+        const id = $(this).data("user-group-id");
+        const url = ROOT_URL + "/user-groups/" + id + "/edit-local-users";
+        $.get(url, function(data) {
+            $("#edit-local-users-modal .modal-body").html(data);
+        });
+    });
+    $("button.edit-hosts").on("click", function() {
+        const id = $(this).data("user-group-id");
+        const url = ROOT_URL + "/user-groups/" + id + "/edit-hosts";
+        $.get(url, function(data) {
+            $("#edit-hosts-modal .modal-body").html(data);
+            UserGroupForm.attachEventListeners();
+        });
+    });
 };
 
 $(document).ready(function() {

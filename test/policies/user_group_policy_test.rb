@@ -166,6 +166,165 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.edit?
   end
 
+  # edit_ad_groups?()
+
+  test "edit_ad_groups?() returns false with a nil user" do
+    policy = UserGroupPolicy.new(nil, @user_group)
+    assert !policy.edit_ad_groups?
+  end
+
+  test "edit_ad_groups?() authorizes managers of any collection" do
+    subject_user = users(:norights)
+    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.save!
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_ad_groups?
+  end
+
+  test "edit_ad_groups?() authorizes administrators of any unit" do
+    subject_user = users(:norights)
+    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.save!
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_ad_groups?
+  end
+
+  test "edit_ad_groups?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_ad_groups?
+  end
+
+  test "edit_ad_groups?() does not authorize anybody else" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_ad_groups?
+  end
+
+  test "edit_ad_groups?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_ad_groups?
+  end
+
+  # edit_hosts?()
+
+  test "edit_hosts?() returns false with a nil user" do
+    policy = UserGroupPolicy.new(nil, @user_group)
+    assert !policy.edit_hosts?
+  end
+
+  test "edit_hosts?() authorizes managers of any collection" do
+    subject_user = users(:norights)
+    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.save!
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_hosts?
+  end
+
+  test "edit_hosts?() authorizes administrators of any unit" do
+    subject_user = users(:norights)
+    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.save!
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_hosts?
+  end
+
+  test "edit_hosts?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_hosts?
+  end
+
+  test "edit_hosts?() does not authorize anybody else" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_hosts?
+  end
+
+  test "edit_hosts?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_hosts?
+  end
+
+  # edit_local_users?()
+
+  test "edit_local_users?() returns false with a nil user" do
+    policy = UserGroupPolicy.new(nil, @user_group)
+    assert !policy.edit_local_users?
+  end
+
+  test "edit_local_users?() authorizes managers of any collection" do
+    subject_user = users(:norights)
+    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.save!
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_local_users?
+  end
+
+  test "edit_local_users?() authorizes administrators of any unit" do
+    subject_user = users(:norights)
+    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.save!
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_local_users?
+  end
+
+  test "edit_local_users?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_local_users?
+  end
+
+  test "edit_local_users?() does not authorize anybody else" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_local_users?
+  end
+
+  test "edit_local_users?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_local_users?
+  end
+
   # index?()
 
   test "index?() returns false with a nil user" do

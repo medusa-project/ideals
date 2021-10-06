@@ -154,7 +154,14 @@ Rails.application.routes.draw do
     match "/item-download-counts", to: "units#item_download_counts", via: :get
     match "/statistics-by-range", to: "units#statistics_by_range", via: :get
   end
-  resources :user_groups, path: "user-groups", except: :new
+  resources :user_groups, path: "user-groups", except: :new do
+    match "/edit-ad-groups", to: "user_groups#edit_ad_groups", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-hosts", to: "user_groups#edit_hosts", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-local-users", to: "user_groups#edit_local_users", via: :get,
+          constraints: lambda { |request| request.xhr? }
+  end
   resources :users, only: [:index, :show] do
     match "/edit-privileges", to: "users#edit_privileges", via: :get,
           constraints: lambda { |request| request.xhr? }

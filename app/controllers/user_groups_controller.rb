@@ -1,8 +1,8 @@
 class UserGroupsController < ApplicationController
 
   before_action :ensure_logged_in
-  before_action :set_user_group, only: [:edit, :show, :update, :destroy]
-  before_action :authorize_user_group, only: [:edit, :show, :update, :destroy]
+  before_action :set_user_group, except: [:create, :index]
+  before_action :authorize_user_group, except: [:create, :index]
 
   ##
   # Responds to `POST /user-groups` (XHR only)
@@ -38,10 +38,34 @@ class UserGroupsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /user-groups/:id` (XHR only)
+  # Responds to `GET /user-groups/:id/edit` (XHR only)
   #
   def edit
     render partial: "user_groups/form",
+           locals: { user_group: @user_group }
+  end
+
+  ##
+  # Responds to `GET /user-groups/:id/edit-ad-groups` (XHR only)
+  #
+  def edit_ad_groups
+    render partial: "user_groups/ad_groups_form",
+           locals: { user_group: @user_group }
+  end
+
+  ##
+  # Responds to `GET /user-groups/:id/edit-hosts` (XHR only)
+  #
+  def edit_hosts
+    render partial: "user_groups/hosts_form",
+           locals: { user_group: @user_group }
+  end
+
+  ##
+  # Responds to `GET /user-groups/:id/edit-local-users` (XHR only)
+  #
+  def edit_local_users
+    render partial: "user_groups/local_users_form",
            locals: { user_group: @user_group }
   end
 
@@ -96,7 +120,7 @@ class UserGroupsController < ApplicationController
   end
 
   def set_user_group
-    @user_group = UserGroup.find(params[:id])
+    @user_group = UserGroup.find(params[:id] || params[:user_group_id])
     @breadcrumbable = @user_group
   end
 

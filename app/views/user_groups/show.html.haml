@@ -1,8 +1,10 @@
 - provide :body_id, "show_user_group"
 - provide :title, @user_group.name
 
+- can_edit = policy(@user_group).edit?
+
 .btn-group.float-right{role: "group"}
-  - if policy(@user_group).edit?
+  - if can_edit
     -# Edit button
     %button.btn.btn-light.edit-user-group{"data-target": "#edit-user-group-modal",
                                           "data-toggle": "modal",
@@ -25,6 +27,14 @@
   .col-md-4
     .card
       .card-body
+        - if can_edit
+          .float-right
+            %button.btn.btn-light.btn-sm.edit-ad-groups{"data-target": "#edit-ad-groups-modal",
+                                                        "data-toggle": "modal",
+                                                        "data-user-group-id": @user_group.id,
+                                                        type: "button"}
+              %i.fa.fa-pencil-alt
+              Edit
         %h4.card-title AD Groups
         - if @ldap_groups.any?
           %ul
@@ -38,6 +48,14 @@
   .col-md-4
     .card
       .card-body
+        - if can_edit
+          .float-right
+            %button.btn.btn-light.btn-sm.edit-local-users{"data-target": "#edit-local-users-modal",
+                                                          "data-toggle": "modal",
+                                                          "data-user-group-id": @user_group.id,
+                                                          type: "button"}
+              %i.fa.fa-pencil-alt
+              Edit
         %h4.card-title Local Users
         - if @users.any?
           %ul
@@ -48,6 +66,14 @@
   .col-md-4
     .card
       .card-body
+        - if can_edit
+          .float-right
+            %button.btn.btn-light.btn-sm.edit-hosts{"data-target": "#edit-hosts-modal",
+                                                    "data-toggle": "modal",
+                                                    "data-user-group-id": @user_group.id,
+                                                    type: "button"}
+              %i.fa.fa-pencil-alt
+              Edit
         %h4.card-title Hosts
         - if @hosts.any?
           %ul
@@ -58,4 +84,10 @@
           %p None
 
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-user-group-modal", title: "Edit User Group", size: :lg }
+         locals: { id: "edit-user-group-modal", title: "Edit User Group" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-ad-groups-modal", title: "Edit AD Groups", size: :lg }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-local-users-modal", title: "Edit Local Users" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-hosts-modal", title: "Edit Hosts" }

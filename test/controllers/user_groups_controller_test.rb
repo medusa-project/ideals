@@ -100,6 +100,115 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # edit()
+
+  test "edit() redirects to login page for logged-out users" do
+    group = user_groups(:temp)
+    get edit_user_group_path(group), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    group = user_groups(:temp)
+    get edit_user_group_path(group), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get edit_user_group_path(group), xhr: true
+    assert_response :ok
+  end
+
+  # edit_ad_groups()
+
+  test "edit_ad_groups() redirects to login page for logged-out users" do
+    group = user_groups(:temp)
+    get user_group_edit_ad_groups_path(group), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit_ad_groups() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    group = user_groups(:temp)
+    get user_group_edit_ad_groups_path(group), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_ad_groups() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_ad_groups_path(group)
+    assert_response :not_found
+  end
+
+  test "edit_ad_groups() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_ad_groups_path(group), xhr: true
+    assert_response :ok
+  end
+
+  # edit_hosts()
+
+  test "edit_hosts() redirects to login page for logged-out users" do
+    group = user_groups(:temp)
+    get user_group_edit_hosts_path(group), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit_hosts() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    group = user_groups(:temp)
+    get user_group_edit_hosts_path(group), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_hosts() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_hosts_path(group)
+    assert_response :not_found
+  end
+
+  test "edit_hosts() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_hosts_path(group), xhr: true
+    assert_response :ok
+  end
+
+  # edit_local_users()
+
+  test "edit_local_users() redirects to login page for logged-out users" do
+    group = user_groups(:temp)
+    get user_group_edit_local_users_path(group), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit_local_users() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    group = user_groups(:temp)
+    get user_group_edit_local_users_path(group), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_local_users() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_local_users_path(group)
+    assert_response :not_found
+  end
+
+  test "edit_local_users() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_local_users_path(group), xhr: true
+    assert_response :ok
+  end
+
   # index()
 
   test "index() redirects to login page for logged-out users" do

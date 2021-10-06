@@ -33,6 +33,18 @@ class UserGroupPolicy < ApplicationPolicy
     update
   end
 
+  def edit_ad_groups
+    edit
+  end
+
+  def edit_hosts
+    edit
+  end
+
+  def edit_local_users
+    edit
+  end
+
   def index
     create
   end

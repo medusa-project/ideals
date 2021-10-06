@@ -1,0 +1,44 @@
+-# @param user_group [UserGroup]
+
+= form_for(user_group, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .alert.alert-light
+    %ul
+      %li Hostnames, IP addresses, and IP address ranges are supported.
+      %li
+        Wildcards (
+        %code> *
+        ) are allowed in hostnames and IP addresses.
+      %li
+        Comments (starting with
+        = succeed ")" do
+          %code #
+        are allowed at the end of lines.
+    %h6 Examples
+    %pre
+      %code
+        10.2.5.8       # single IP
+        10.2.*         # asterisk range
+        10.2.*-10.35.* # dash range
+        10.2.0.0/16    # CIDR range
+        example.org    # single hostname
+        *.example.org  # example.org and any subdomain
+
+  = hidden_field_tag "user_group[hosts][]"
+  - hosts = f.object.hosts
+  - hosts = [Host.new] if hosts.empty?
+  - hosts.each do |host|
+    .input-group.mb-3
+      = text_field_tag "user_group[hosts][]", host.pattern,
+                       class: "form-control"
+      %button.btn.btn-danger.remove{type: "button"}
+        %i.fa.fa-minus
+  %button.btn.btn-success.add{type: "button"}
+    %i.fa.fa-plus
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Edit", class: "btn btn-primary")
