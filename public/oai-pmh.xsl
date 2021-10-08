@@ -186,19 +186,6 @@
                 </tr>
             </xsl:for-each>
             <tr>
-                <td><b>Repository identifier</b></td>
-                <td>
-                    <xsl:value-of select="oai:description/oai_id:oai-identifier/oai_id:repositoryIdentifier/text()" />
-                </td>
-            </tr>
-            <tr>
-                <td><b>Sample identifier</b></td>
-                <td>
-                    <xsl:value-of
-                            select="oai:description/oai_id:oai-identifier/oai_id:sampleIdentifier/text()" />
-                </td>
-            </tr>
-            <tr>
                 <td><b>Protocol Version</b></td>
                 <td>
                     <xsl:value-of
