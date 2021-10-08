@@ -61,35 +61,11 @@ class ShibbolethUser < User
     groups
   end
 
-  def self.display_name(email)
-    netid = netid_from_email(email)
-    begin
-      response = URI.open("https://quest.library.illinois.edu/directory/ad/person/#{netid}").read
-      xml_doc = Nokogiri::XML(response)
-      xml_doc.remove_namespaces!
-      display_name = xml_doc.xpath("//attr[@name='displayname']").text
-      display_name.strip!
-      display_name
-    rescue OpenURI::HTTPError
-      netid
-    end
-  end
-
   def self.netid_from_email(email)
     return nil unless email.respond_to?(:split)
     netid = email.split("@").first
     return nil if netid.blank?
     netid
-  end
-
-  def self.org_dn(auth)
-    dn = auth.dig("extra", "raw_info", "org-dn")
-    unless dn
-      if auth["info"]["email"].split("@").last == "illinois.edu"
-        dn = UIUC_ORG_DN
-      end
-    end
-    dn
   end
 
   def netid
@@ -118,7 +94,7 @@ class ShibbolethUser < User
     self.email       = auth["info"]["email"]
     self.name        = "#{auth.dig("extra", "raw_info", "givenName")} "\
                        "#{auth.dig("extra", "raw_info", "sn")}"
-    self.org_dn      = self.class.org_dn(auth)
+    self.org_dn      = auth.dig("extra", "raw_info", "org-dn")
     self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
     self.ldap_groups = self.class.fetch_ldap_groups(auth)
     self.affiliation = Affiliation.from_shibboleth(auth)
