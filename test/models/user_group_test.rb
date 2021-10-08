@@ -38,22 +38,74 @@ class UserGroupTest < ActiveSupport::TestCase
 
   # includes?()
 
-  test "includes?() returns false for a user not associated with the group" do
+  test "includes?() returns false for a user not associated with the instance" do
     assert !@instance.includes?(users(:norights))
   end
 
-  test "includes?() returns true for a user directly associated with the group" do
-    user = users(:norights)
+  test "includes?() returns true for a LocalUser directly associated with the
+  instance" do
+    user             = users(:norights)
     @instance.users << user
     assert @instance.includes?(user)
   end
 
   test "includes?() returns true for a user belonging to an LDAP group
-  associated with the group" do
-    user  = users(:norights)
-    group = @instance.ldap_groups.first
+  associated with the instance" do
+    user         = users(:uiuc)
+    group        = @instance.ldap_groups.first
     group.users << user
     assert @instance.includes?(user)
+  end
+
+  test "includes?() returns true for a user belonging to a department associated
+  with the instance" do
+    user                   = users(:uiuc)
+    user.department        = departments(:basket_weaving)
+    @instance.departments << user.department
+
+    assert @instance.includes?(user)
+  end
+
+  test "includes?() returns false for a user belonging to a department associated
+  with the instance but not belonging to an affiliation associated with the
+  instance" do
+    user                    = users(:uiuc)
+    user.department         = departments(:basket_weaving)
+    @instance.departments  << user.department
+    @instance.affiliations << affiliations(:phd_student)
+
+    assert !@instance.includes?(user)
+  end
+
+  test "includes?() returns true for a user belonging to a department associated
+  with the instance and an affiliation associated with the instance" do
+    user                    = users(:uiuc)
+    user.department         = departments(:basket_weaving)
+    user.affiliation        = affiliations(:phd_student)
+    @instance.departments  << user.department
+    @instance.affiliations << user.affiliation
+
+    assert @instance.includes?(user)
+  end
+
+  test "includes?() returns false for a user belonging to an affiliation
+  associated with instance but not a department associated with the instance" do
+    user                    = users(:uiuc)
+    user.affiliation        = affiliations(:phd_student)
+    @instance.departments  << departments(:basket_weaving)
+    @instance.affiliations << user.affiliation
+
+    assert !@instance.includes?(user)
+  end
+
+  test "includes?() returns false for a user belonging to an affiliation
+  associated with instance when there is no department associated with the
+  instance" do
+    user                    = users(:uiuc)
+    user.affiliation        = affiliations(:phd_student)
+    @instance.affiliations << user.affiliation
+
+    assert !@instance.includes?(user)
   end
 
   # key

@@ -28,8 +28,12 @@ class User < ApplicationRecord
 
   include Breadcrumb
 
+  # ShibbolethUsers only!
+  belongs_to :affiliation, optional: true
   belongs_to :identity, class_name: "LocalIdentity",
              foreign_key: "local_identity_id", inverse_of: :user, optional: true
+  # ShibbolethUsers only!
+  has_one :department
   has_many :administrators
   has_many :administering_units, through: :administrators, source: :unit
   has_many :events

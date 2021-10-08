@@ -35,11 +35,8 @@ class ShibbolethUser < User
 
     raise ArgumentError, "valid email address required" unless email_string.match(URI::MailTo::EMAIL_REGEXP)
 
-    user = ShibbolethUser.find_by(email: email)
-    unless user
-      user = ShibbolethUser.create_no_omniauth(email: email_string)
-    end
-    user
+    ShibbolethUser.find_by(email: email) ||
+      ShibbolethUser.create_no_omniauth(email: email_string)
   end
 
   def self.create_no_omniauth(email:)
@@ -51,23 +48,9 @@ class ShibbolethUser < User
   end
 
   def self.create_with_omniauth(auth)
-    auth = auth.deep_stringify_keys
-    # By design, logging in wipes out certain existing user properties and
-    # replaces them with current information from the Shib IdP. By supplying
-    # this custom attribute, we can preserve the user properties that are set
-    # up in test fixture data.
-    #
-    # N.B.: we must access the auth hash carefully because not all properties
-    # will be present in all environments; for example, in development, we are
-    # using omniauth's developer strategy which doesn't supply much.
-    return if auth.dig("extra", "raw_info", "overwriteUserAttrs") == "false"
-    create! do |user|
-      user.uid         = auth["uid"]
-      user.email       = auth["info"]["email"]
-      user.name        = display_name((auth["info"]["email"]).split("@").first)
-      user.org_dn      = org_dn(auth)
-      user.ldap_groups = fetch_ldap_groups(auth)
-    end
+    user = ShibbolethUser.new
+    user.update_with_omniauth(auth)
+    user
   end
 
   def self.fetch_ldap_groups(auth)
@@ -76,17 +59,6 @@ class ShibbolethUser < User
       groups << LdapGroup.find_or_create_by(urn: group_urn)
     end
     groups
-  end
-
-  def update_with_omniauth(auth)
-    # see inline comment in create_with_omniauth()
-    return if auth.dig("extra", "raw_info", "overwriteUserAttrs") == "false"
-    self.uid         = auth["uid"]
-    self.email       = auth["info"]["email"]
-    self.name        = self.class.display_name(auth["info"]["email"].split("@").first)
-    self.org_dn      = self.class.org_dn(auth)
-    self.ldap_groups = self.class.fetch_ldap_groups(auth)
-    self.save!
   end
 
   def self.display_name(email)
@@ -105,15 +77,9 @@ class ShibbolethUser < User
 
   def self.netid_from_email(email)
     return nil unless email.respond_to?(:split)
-
     netid = email.split("@").first
-    return nil unless netid.respond_to?(:length) && !netid.empty?
-
+    return nil if netid.blank?
     netid
-  end
-
-  def netid
-    self.class.netid_from_email(self.email)
   end
 
   def self.org_dn(auth)
@@ -126,11 +92,38 @@ class ShibbolethUser < User
     dn
   end
 
+  def netid
+    self.class.netid_from_email(self.email)
+  end
+
   ##
   # @return [Boolean]
   #
   def sysadmin?
-    !(UserGroup.sysadmin.ldap_groups & self.ldap_groups).empty?
+    (UserGroup.sysadmin.ldap_groups & self.ldap_groups).any?
+  end
+
+  def update_with_omniauth(auth)
+    auth = auth.deep_stringify_keys
+    # By design, logging in wipes out certain existing user properties and
+    # replaces them with current information from the Shib IdP. By supplying
+    # this custom attribute, we can preserve the user properties that are set
+    # up in test fixture data.
+    return if auth.dig("extra", "raw_info", "overwriteUserAttrs") == "false"
+
+    # N.B.: we must access the auth hash carefully because not all properties
+    # will be present in all environments; in particular, in development, we
+    # are using omniauth's developer strategy which doesn't supply much.
+    self.uid         = auth["uid"]
+    self.email       = auth["info"]["email"]
+    self.name        = "#{auth.dig("extra", "raw_info", "givenName")} "\
+                       "#{auth.dig("extra", "raw_info", "sn")}"
+    self.org_dn      = self.class.org_dn(auth)
+    self.ldap_groups = self.class.fetch_ldap_groups(auth)
+    self.affiliation = Affiliation.from_shibboleth(auth)
+    dept             = auth.dig("extra", "raw_info", "departmentCode")
+    self.department  = Department.create!(name: dept) if dept
+    self.save!
   end
 
 end

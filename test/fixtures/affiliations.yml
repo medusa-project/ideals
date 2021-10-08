@@ -1,2 +1,21 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+faculty_staff:
+  key:  <%= Affiliation::FACULTY_STAFF_KEY %>
+  name: Faculty/Staff
+
+graduate_student:
+  key:  <%= Affiliation::GRADUATE_STUDENT_KEY %>
+  name: Graduate Student
+
+masters_student:
+  key:  <%= Affiliation::MASTERS_STUDENT_KEY %>
+  name: Masters Student
+
+phd_student:
+  key:  <%= Affiliation::PHD_STUDENT_KEY %>
+  name: Ph.D Student
+
+undergraduate_student:
+  key:  <%= Affiliation::UNDERGRADUATE_STUDENT_KEY %>
+  name: Undergraduate Student

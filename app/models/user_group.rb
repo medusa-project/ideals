@@ -24,10 +24,8 @@ class UserGroup < ApplicationRecord
   # LocalUsers only!
   has_and_belongs_to_many :users
 
-  # name uniqueness enforced by database constraints
-  validates :name, presence: true
-  # key uniqueness enforced by database constraints
-  validates :key, presence: true
+  validates :name, presence: true # uniqueness enforced by database constraints
+  validates :key, presence: true # uniqueness enforced by database constraints
 
   validate :contains_only_local_users
 
@@ -62,15 +60,38 @@ class UserGroup < ApplicationRecord
   end
 
   ##
+  # Returns whether the given user is considered to be a member of the
+  # instance. Membership is determined by the following logic:
+  #
+  # ```
+  # (belongs to an associated AD Group) OR (is a directly associated LocalUser) OR
+  #   ((belongs to an associated department) AND (is of an associated affiliation))
+  # ```
+  #
   # @param user [User]
-  # @return [Boolean] Whether the given user is either directly associated with
-  #         the instance of is in an LDAP group associated with the instance.
+  # @return [Boolean]
   #
   def includes?(user)
-    self.users.include?(user) ||
-      User.joins("INNER JOIN ldap_groups_users ON ldap_groups_users.user_id = users.id").
+    if user.is_a?(LocalUser)
+      return true if self.users.include?(user)
+    else
+      return true if User.
+        joins("INNER JOIN ldap_groups_users ON ldap_groups_users.user_id = users.id").
         where("ldap_groups_users.ldap_group_id IN (?)", self.ldap_group_ids).
-        where(id: user.id).count > 0
+        where(id: user.id).
+        count > 0
+      dept_names = self.departments.pluck(:name)
+      if dept_names.any?
+        if dept_names.include?(user.department&.name)
+          aff_ids = self.affiliations.pluck(:id)
+          if aff_ids.any?
+            return aff_ids.include?(user.affiliation_id)
+          end
+          return true
+        end
+      end
+    end
+    false
   end
 
 

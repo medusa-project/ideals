@@ -12,7 +12,7 @@ class ShibbolethUserTest < ActiveSupport::TestCase
         provider: "shibboleth",
         uid: "example@illinois.edu",
         info: {
-            name: nil,
+            name: "Shib Boleth, Esq.",
             email: "example@illinois.edu"
         },
         credentials: {},
@@ -21,11 +21,15 @@ class ShibbolethUserTest < ActiveSupport::TestCase
                 eppn: "example@illinois.edu",
                 "unscoped-affiliation": "member;staff;employee",
                 uid: "example",
-                sn: "Example",
+                sn: "Boleth",
                 "org-dn": ShibbolethUser::UIUC_ORG_DN,
                 nickname: "",
-                givenName: "Example",
-                member: "urn:mace:uiuc.edu:urbana:library:units:ideals:library ideals admin"
+                givenName: "Shib",
+                member: "urn:mace:uiuc.edu:urbana:library:units:ideals:library ideals admin",
+                iTrustAffiliation: "member;staff;employee",
+                departmentCode: "Example Department",
+                programCode: nil,
+                levelCode: nil
             }
         }
     }.deep_stringify_keys
@@ -35,16 +39,40 @@ class ShibbolethUserTest < ActiveSupport::TestCase
 
   test "from_omniauth() returns an existing instance if a corresponding
   ShibbolethUser already exists" do
-    # TODO: figure out how to test this
+    auth_hash = {
+      provider: "shibboleth",
+      uid: "shib@illinois.edu",
+      info: {
+        name: "Shib Boleth, Esq.",
+        email: "shib@illinois.edu"
+      },
+      credentials: {},
+      extra: {
+        raw_info: {
+          eppn: "shib@illinois.edu",
+          "unscoped-affiliation": "member;staff;employee",
+          uid: "shib@illinois.edu",
+          sn: "Example",
+          "org-dn": ShibbolethUser::UIUC_ORG_DN,
+          nickname: "",
+          givenName: "Example",
+          member: "urn:mace:uiuc.edu:urbana:library:units:ideals:library ideals admin",
+          iTrustAffiliation: "member;staff;employee",
+          departmentCode: nil,
+          programCode: nil,
+          levelCode: nil
+        }
+      }
+    }.deep_stringify_keys
+    shib_user = users(:uiuc)
+    user      = ShibbolethUser.from_omniauth(auth_hash)
+    assert_same shib_user.id, user.id
   end
 
   test "from_omniauth() returns a new instance if a corresponding
   ShibbolethUser does not already exist" do
     assert_nil ShibbolethUser.find_by_uid("example@illinois.edu")
-    user = ShibbolethUser.from_omniauth(self.class.auth_hash)
-    assert_equal "example@illinois.edu", user.uid
-    assert_equal "example@illinois.edu", user.email
-    assert_equal ShibbolethUser::UIUC_ORG_DN, user.org_dn
+    assert_not_nil ShibbolethUser.from_omniauth(self.class.auth_hash)
   end
 
   test "from_omniauth() creates corresponding LdapGroups for all of the user's
@@ -53,6 +81,21 @@ class ShibbolethUserTest < ActiveSupport::TestCase
     ShibbolethUser.from_omniauth(self.class.auth_hash)
     assert_equal 1, LdapGroup.count
   end
+
+  test "from_omniauth() sets correct properties" do
+    user = ShibbolethUser.from_omniauth(self.class.auth_hash)
+    assert_equal "example@illinois.edu", user.uid
+    assert_equal "Shib Boleth", user.name
+    assert_equal "example@illinois.edu", user.email
+    assert_equal ShibbolethUser::UIUC_ORG_DN, user.org_dn
+    assert_equal "Example Department", user.department.name
+    assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
+                 user.affiliation
+  end
+
+  # no_omniauth()
+
+  # TODO: test this
 
   # netid()
 

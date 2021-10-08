@@ -1,5 +1,8 @@
 ##
-# University department associated with a {UserGroup}.
+# University department associated with a {UserGroup} and a {ShibbolethUser}.
+#
+# This table is not normalized--multiple same-named departments may exist,
+# associated with different entities, with {name} being used for comparison.
 #
 # # Attributes
 #
@@ -10,6 +13,7 @@
 #
 class Department < ApplicationRecord
 
-  belongs_to :user_group
+  belongs_to :user, optional: true
+  belongs_to :user_group, optional: true
 
 end
