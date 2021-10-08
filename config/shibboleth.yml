@@ -10,6 +10,7 @@ development:
     - nickname
     - givenName
     - member
+    - telephoneNumber
     - iTrustAffiliation
     - departmentName
     - programCode
@@ -31,6 +32,7 @@ test:
     - nickname
     - givenName
     - member
+    - telephoneNumber
     - iTrustAffiliation
     - departmentName
     - programCode
@@ -53,6 +55,7 @@ demo:
     - nickname
     - givenName
     - member
+    - telephoneNumber
     - iTrustAffiliation
     - departmentName
     - programCode
@@ -74,6 +77,7 @@ production:
     - nickname
     - givenName
     - member
+    - telephoneNumber
     - iTrustAffiliation
     - departmentName
     - programCode

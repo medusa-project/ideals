@@ -119,6 +119,7 @@ class ShibbolethUser < User
     self.name        = "#{auth.dig("extra", "raw_info", "givenName")} "\
                        "#{auth.dig("extra", "raw_info", "sn")}"
     self.org_dn      = self.class.org_dn(auth)
+    self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
     self.ldap_groups = self.class.fetch_ldap_groups(auth)
     self.affiliation = Affiliation.from_shibboleth(auth)
     dept             = auth.dig("extra", "raw_info", "departmentCode")

@@ -25,6 +25,7 @@ class ShibbolethUserTest < ActiveSupport::TestCase
                 "org-dn": ShibbolethUser::UIUC_ORG_DN,
                 nickname: "",
                 givenName: "Shib",
+                telephoneNumber: "(888) 555-5555",
                 member: "urn:mace:uiuc.edu:urbana:library:units:ideals:library ideals admin",
                 iTrustAffiliation: "member;staff;employee",
                 departmentCode: "Example Department",
@@ -87,6 +88,7 @@ class ShibbolethUserTest < ActiveSupport::TestCase
     assert_equal "example@illinois.edu", user.uid
     assert_equal "Shib Boleth", user.name
     assert_equal "example@illinois.edu", user.email
+    assert_equal "(888) 555-5555", user.phone
     assert_equal ShibbolethUser::UIUC_ORG_DN, user.org_dn
     assert_equal "Example Department", user.department.name
     assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
