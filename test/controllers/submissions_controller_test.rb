@@ -14,13 +14,13 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   # agreement()
 
   test "agreement() redirects to login page for logged-out users" do
-    get deposit_path
+    get submit_path
     assert_redirected_to login_path
   end
 
   test "agreement() returns HTTP 200 for logged-in users" do
     log_in_as(users(:norights))
-    get deposit_path
+    get submit_path
     assert_response :ok
   end
 

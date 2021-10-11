@@ -28,7 +28,6 @@ Rails.application.routes.draw do
 
     match "/children", to: "collections#children", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/deposit", to: "submissions#agreement", via: :get
     match "/edit-managers", to: "collections#edit_managers", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-collection-membership",
@@ -44,8 +43,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/item-download-counts", to: "collections#item_download_counts", via: :get
     match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
+    match "/submit", to: "submissions#agreement", via: :get
   end
-  match "/deposit", to: "submissions#agreement", via: :get
   # This is an old IDEALS-DSpace route.
   match "/dspace-oai/request", to: redirect('/oai-pmh', status: 301), via: :all
   resources :file_formats, path: "file-formats", only: :index
@@ -124,6 +123,7 @@ Rails.application.routes.draw do
   resources :submissions, except: [:index, :show] do
     match "/complete", to: "submissions#complete", via: :post
   end
+  match "/submit", to: "submissions#agreement", via: :get
   resources :units, except: [:edit, :new] do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/access", to: "units#show_access", via: :get,

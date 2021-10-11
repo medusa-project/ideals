@@ -218,7 +218,7 @@ class ApplicationController < ActionController::Base
         if count > 0
           @list.items << {
               message: "Resume #{count} #{"submission".pluralize(count)}",
-              url: deposit_path
+              url: submit_path
           }
           @list.total_items += count
         end
