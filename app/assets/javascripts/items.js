@@ -51,6 +51,8 @@ const FileNavigator = function() {
         viewerColumn.find("#file-navigator-viewer-content img").css("max-height", (navigatorHeight - HEADER_HEIGHT) + "px");
     };
 
+    updateHeight();
+
     $(window).on("resize", function() {
         updateHeight();
     });
