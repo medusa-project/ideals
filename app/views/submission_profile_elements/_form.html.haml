@@ -19,9 +19,6 @@
   - else
     = f.hidden_field :index, value: 0
   .form-group
-    = f.label :label, "Label Override"
-    = f.text_field :label, class: "form-control"
-  .form-group
     = f.label :vocabulary_key, "Vocabulary"
     = f.select(:vocabulary_key, options_for_select(Vocabulary::all.map{ |v| [v.name, v.key] },
                                                    f.object.vocabulary_key),
