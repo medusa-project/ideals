@@ -424,12 +424,12 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row_arr   = line.split("|").map(&:strip)
-      item_id   = row_arr[4].to_i
-      elem_name = "#{row_arr[0]}:#{row_arr[1]}"
+      row_arr    = line.split("|").map(&:strip)
+      item_id    = row_arr[4].to_i
+      elem_name  = "#{row_arr[0]}:#{row_arr[1]}"
       elem_name += ":#{row_arr[2]}" if row_arr[2].present?
-      reg_elem  = RegisteredElement.find_by_name(elem_name)
-      string    = row_arr[3]&.strip
+      reg_elem   = RegisteredElement.find_by_name(elem_name)
+      string     = row_arr[3]&.strip&.gsub("@@@@", "\n")
       next unless string.present?
 
       progress.report(row_num, "Importing item metadata (1/2)")
