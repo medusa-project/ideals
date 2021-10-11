@@ -4,7 +4,7 @@
 class IdealsSeeder
 
   def seed
-    update_registered_element_labels
+    update_registered_elements
     seed_metadata_profiles
     seed_submission_profiles
   end
@@ -68,7 +68,6 @@ class IdealsSeeder
                            required: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
                            index: 2,
-                           vocabulary_key: Vocabulary::Key::COMMON_TYPES,
                            repeatable: true,
                            required: true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
@@ -98,12 +97,10 @@ class IdealsSeeder
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type:genre"),
                            index: 8,
-                           vocabulary_key: Vocabulary::Key::COMMON_GENRES,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:language"),
                            index: 9,
-                           vocabulary_key: Vocabulary::Key::COMMON_ISO_LANGUAGES,
                            repeatable: false,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:bibliographicCitation"),
@@ -133,7 +130,6 @@ class IdealsSeeder
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier"),
                            index: 15,
-                           vocabulary_key: Vocabulary::Key::DEGREE_NAMES,
                            repeatable: true,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:name"),
@@ -143,7 +139,6 @@ class IdealsSeeder
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:level"),
                            index: 17,
-                           vocabulary_key: Vocabulary::Key::DISSERTATION_THESIS,
                            repeatable: false,
                            required: false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeChair"),
@@ -179,7 +174,7 @@ class IdealsSeeder
     profile.save!
   end
 
-  def update_registered_element_labels
+  def update_registered_elements
     # See: https://uofi.app.box.com/notes/593479281190
     RegisteredElement.find_by_name("dc:contributor").update!(label: "Contributor")
     RegisteredElement.find_by_name("dc:contributor:advisor").update!(label: "Dissertation Director of Research or Thesis Advisor")
@@ -189,21 +184,26 @@ class IdealsSeeder
     RegisteredElement.find_by_name("dc:date:issued").update!(label: "Date of Publication")
     RegisteredElement.find_by_name("dc:description:abstract").update!(label: "Abstract")
     RegisteredElement.find_by_name("dc:description:sponsorship").update!(label: "Sponsor/Grant No.")
-    RegisteredElement.find_by_name("dc:identifier").update!(label: "Identifier")
+    RegisteredElement.find_by_name("dc:identifier").update!(label: "Identifier",
+                                                            vocabulary_key: Vocabulary::Key::DEGREE_NAMES)
     RegisteredElement.find_by_name("dc:identifier:bibliographicCitation").update!(label: "Complete Citation For This Item")
     RegisteredElement.find_by_name("dc:identifier:uri").update!(label: "Identifiers: URI or URL")
-    RegisteredElement.find_by_name("dc:language").update!(label: "Language")
+    RegisteredElement.find_by_name("dc:language").update!(label: "Language",
+                                                          vocabulary_key: Vocabulary::Key::COMMON_ISO_LANGUAGES)
     RegisteredElement.find_by_name("dc:publisher").update!(label: "Publisher")
     RegisteredElement.find_by_name("dc:relation:ispartof").update!(label: "Series Name/Report No.")
     RegisteredElement.find_by_name("dc:rights").update!(label: "Copyright Statement")
     RegisteredElement.find_by_name("dc:subject").update!(label: "Keyword")
     RegisteredElement.find_by_name("dc:title").update!(label: "Title")
-    RegisteredElement.find_by_name("dc:type").update!(label: "Type of Resource")
-    RegisteredElement.find_by_name("dc:type:genre").update!(label: "Genre of Resource")
+    RegisteredElement.find_by_name("dc:type").update!(label: "Type of Resource",
+                                                      vocabulary_key: Vocabulary::Key::COMMON_TYPES)
+    RegisteredElement.find_by_name("dc:type:genre").update!(label: "Genre of Resource",
+                                                            vocabulary_key: Vocabulary::Key::COMMON_GENRES)
     RegisteredElement.find_by_name("thesis:degree:department").update!(label: "Dissertation/Thesis Degree Department")
     RegisteredElement.find_by_name("thesis:degree:discipline").update!(label: "Dissertation/Thesis Degree Discipline")
     RegisteredElement.find_by_name("thesis:degree:grantor").update!(label: "Degree Granting Institution")
-    RegisteredElement.find_by_name("thesis:degree:level").update!(label: "Dissertation or Thesis")
+    RegisteredElement.find_by_name("thesis:degree:level").update!(label: "Dissertation or Thesis",
+                                                                  vocabulary_key: Vocabulary::Key::DISSERTATION_THESIS)
     RegisteredElement.find_by_name("thesis:degree:name").update!(label: "Degree")
     RegisteredElement.find_by_name("thesis:degree:program").update!(label: "Dissertation/Thesis Degree Program")
   end

@@ -75,7 +75,8 @@ class RegisteredElementsController < ApplicationController
 
   def registered_element_params
     params.require(:registered_element).permit(:institution_id, :label, :name,
-                                               :scope_note, :uri)
+                                               :scope_note, :uri,
+                                               :vocabulary_key)
   end
 
   def set_element

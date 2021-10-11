@@ -6,11 +6,12 @@
 #
 # # Attributes
 #
-# * `created_at` Managed by ActiveRecord.
-# * `label`      Element label. Often overrides {name} for end-user display.
-# * `name`       Element name.
-# * `updated_at` Managed by ActiveRecord.
-# * `uri`        Linked Data URI.
+# * `created_at`     Managed by ActiveRecord.
+# * `label`          Element label. Often overrides {name} for end-user display.
+# * `name`           Element name.
+# * `updated_at`     Managed by ActiveRecord.
+# * `uri`            Linked Data URI.
+# * `vocabulary_key` One of the vocabulary key constant values in {Vocabulary}.
 #
 class RegisteredElement < ApplicationRecord
   include Breadcrumb
@@ -71,6 +72,15 @@ class RegisteredElement < ApplicationRecord
 
   def to_param
     name
+  end
+
+  ##
+  # @return [Vocabulary] Instance corresponding to {vocabulary_key}, if set;
+  #                      otherwise `nil`.
+  #
+  def vocabulary
+    self.vocabulary_key.present? ?
+      Vocabulary.with_key(self.vocabulary_key) : nil
   end
 
 end

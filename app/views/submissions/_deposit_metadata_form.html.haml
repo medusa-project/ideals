@@ -13,24 +13,25 @@
   %table.table.metadata
     %tbody
       - @submission_profile.elements.each do |profile_element|
+        - registered_element = profile_element.registered_element
         %tr
           %td
-            = profile_element.registered_element.label
+            = registered_element.label
             - if profile_element.required
               %span.badge.badge-danger REQUIRED
             %p.form-text.text-muted.mb-0= profile_element.help_text
           %td
-            - if f.object.element(profile_element.registered_element.name.to_sym).nil?
-              - f.object.elements.build(registered_element: profile_element.registered_element)
-            - f.object.elements.select{ |e| e.registered_element == profile_element.registered_element }.each do |ascribed_element|
+            - if f.object.element(registered_element.name.to_sym).nil?
+              - f.object.elements.build(registered_element: registered_element)
+            - f.object.elements.select{ |e| e.registered_element == registered_element }.each do |ascribed_element|
               .input-group.mb-2
                 = hidden_field_tag "elements[][name]",
-                                   profile_element.registered_element.name
-                - if profile_element.vocabulary
-                  - show_text_field = profile_element.name == "dc:type" && ascribed_element.string.present? && (!profile_element.vocabulary.terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string == "other")
+                                   registered_element.name
+                - if registered_element.vocabulary
+                  - show_text_field = profile_element.name == "dc:type" && ascribed_element.string.present? && (!registered_element.vocabulary.terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string == "other")
                   = select_tag(show_text_field ? "disabled" : "elements[][string]",
-                               options_for_select(profile_element.vocabulary.terms.map{ |t| [t.displayed_value, t.stored_value] },
-                                                  (profile_element.vocabulary.terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string.blank?) ? ascribed_element.string : "other"),
+                               options_for_select(registered_element.vocabulary.terms.map{ |t| [t.displayed_value, t.stored_value] },
+                                                  (registered_element.vocabulary.terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string.blank?) ? ascribed_element.string : "other"),
                                class: "custom-select",
                                include_blank: true,
                                required: profile_element.required)

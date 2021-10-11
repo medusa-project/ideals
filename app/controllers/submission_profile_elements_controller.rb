@@ -73,8 +73,7 @@ class SubmissionProfileElementsController < ApplicationController
                                                        :placeholder_text,
                                                        :registered_element_id,
                                                        :repeatable, :required,
-                                                       :submission_profile_id,
-                                                       :vocabulary_key)
+                                                       :submission_profile_id)
   end
 
   def set_element

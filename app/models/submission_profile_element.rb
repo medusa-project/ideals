@@ -19,8 +19,6 @@
 # * `submission_profile_id` ID of the associated {SubmissionProfile}. Foreign
 #                           key.
 # * `updated_at`            Managed by ActiveRecord.
-# * `vocabulary_key`        One of the vocabulary key constant values in
-#                           {Vocabulary}.
 #
 class SubmissionProfileElement < ApplicationRecord
 
@@ -73,14 +71,6 @@ class SubmissionProfileElement < ApplicationRecord
     self.registered_element&.name
   end
 
-  ##
-  # @return [Vocabulary] Instance corresponding to {vocabulary_key}, if set;
-  #                      otherwise `nil`.
-  #
-  def vocabulary
-    self.vocabulary_key.present? ?
-        Vocabulary.with_key(self.vocabulary_key) : nil
-  end
 
   private
 

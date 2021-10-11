@@ -38,13 +38,6 @@ const SubmissionProfileView = function() {
         $.get(url, function(data) {
             const modalBody = $("#edit-element-modal .modal-body");
             modalBody.html(data);
-            // Conditionally enable/disable a couple of other inputs when the
-            // vocabulary select menu is changed.
-            modalBody.find("#submission_profile_element_vocabulary_key").on("change", function() {
-                const disabled = ($(this).val().length > 0);
-                modalBody.find("#submission_profile_element_input_type").prop("disabled", disabled);
-                modalBody.find("#submission_profile_element_placeholder_text").prop("disabled", disabled);
-            }).trigger("change");
         });
     });
 };

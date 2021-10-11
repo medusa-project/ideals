@@ -36,6 +36,10 @@
         .col-sm-10
           %code= element.uri
         .col-sm-2.text-right
+          %strong Vocabulary
+        .col-sm-10
+          = element.vocabulary ? element.vocabulary&.name : "None"
+        .col-sm-2.text-right
           %strong Scope Note
         .col-sm-10
           = simple_format(element.scope_note)

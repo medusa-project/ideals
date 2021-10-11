@@ -78,12 +78,9 @@
           %h5.card-title= element.registered_element.label
           .row
             .col-sm-3.text-right
-              %strong Vocabulary
-            .col-sm-9= element.vocabulary ? element.vocabulary&.name : "None"
-          .row
-            .col-sm-3.text-right
               %strong Input Type
-            .col-sm-9= element.vocabulary ? "Menu" : element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
+            -# .col-sm-9= element.vocabulary ? "Menu" : element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
+            .col-sm-9= element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
           .row
             .col-sm-3.text-right
               %strong Required
@@ -95,7 +92,7 @@
           .row
             .col-sm-3.text-right
               %strong Placeholder Text
-            .col-sm-9= element.vocabulary ? nil : element.placeholder_text
+            .col-sm-9= element.placeholder_text
           .row
             .col-sm-3.text-right
               %strong Help Text
