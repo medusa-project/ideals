@@ -41,8 +41,7 @@ class IdealsImporter
         Bitstream.create!(id:         row_arr[1].to_i,
                           item_id:    row_arr[0].to_i,
                           dspace_id:  row_arr[2],
-                          length:     row_arr[6].to_i,
-                          media_type: row_arr[7])
+                          length:     row_arr[6].to_i)
       rescue ActiveRecord::RecordNotFound
         # nothing we can do
       rescue ActiveRecord::RecordInvalid

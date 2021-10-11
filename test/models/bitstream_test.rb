@@ -65,7 +65,6 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_equal Bitstream.staging_key(item.id, filename), bs.staging_key
     assert_equal length, bs.length
     assert_equal filename, bs.original_filename
-    assert_equal "image/jpeg", bs.media_type
   end
 
   # staging_key()
@@ -328,14 +327,6 @@ class BitstreamTest < ActiveSupport::TestCase
   unrecognized format" do
     @instance.original_filename = "file.bogus"
     assert !@instance.has_representative_image?
-  end
-
-  # infer_media_type()
-
-  test "infer_media_type() infers a correct media type" do
-    @instance.media_type = nil
-    @instance.infer_media_type
-    assert_equal "image/jpeg", @instance.media_type
   end
 
   # ingest_into_medusa()

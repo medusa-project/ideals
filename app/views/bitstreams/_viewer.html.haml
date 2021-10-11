@@ -32,7 +32,7 @@
         %dd= @bitstream.format.long_name
       %dt Media Type
       %dd
-        %code= @bitstream.media_type
+        %code= @bitstream.media_type || "Unknown"
       %dt Size
       %dd= number_to_human_size(@bitstream.length)
       - if show_sysadmin_content

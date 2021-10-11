@@ -3,15 +3,6 @@ require 'rake'
 namespace :ideals do
 
   namespace :bitstreams do
-    desc "Assign a media type to bitstreams without one"
-    task assign_media_types: :environment do
-      Bitstream.uncached do
-        Bitstream.where(media_type: nil).find_each do |bitstream|
-          bitstream.infer_media_type
-          bitstream.save! if bitstream.media_type.present?
-        end
-      end
-    end
 
     desc "Handle bitstreams for which ingest messages have been sent but no
     response messages have been received"

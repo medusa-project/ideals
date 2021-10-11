@@ -5,24 +5,20 @@
 # The term "bitstream" is not exposed in the user interface. Throughout the UI,
 # bitstreams are called files. (IR-109)
 #
-# # Media types
+# # Formats/media types
 #
 # The `Content-Type` header supplied by the client during the submission/upload
 # process cannot be relied on to contain a useful, specific media type.
-# Instead, {upload_to_staging} infers a media type from the {original_filename}
-# extension during the initial upload to the staging area. This value may or
-# may not be copied to the S3 object in staging, but it doesn't really matter
-# because {media_type} is the "source of truth."
+# Instead, the {original_filename} extension is used by {format} to infer a
+# [FileFormat], which may have one or more associated media types.
 #
 # Later, the S3 object in staging is ingested into Medusa, and Medusa will
 # perform its own media type management, which is not very reliable. Again,
-# {media_type} is the source of truth.
+# {original_filename} is the "source of truth."
 #
-# When a media type cannot be inferred, {media_type} is set to `nil.` When the
-# media type database is updated with more types, it is a good idea to update
-# media types by running the `ideals:bitstreams:assign_media_types` rake task,
-# which will infer media types for all bitstreams lacking one. See {FileFormat}
-# for more information about the format database where media types are stored.
+# When a format cannot be inferred, {format} will return `nil.` In this case it
+# may be necessary to update the format database; see {FileFormat} for more
+# information.
 #
 # # Derivative images
 #
@@ -45,7 +41,6 @@
 #                           bucket.
 # * `item_id`:              Foreign key to {Item}.
 # * `length`:               Size in bytes.
-# * `media_type`:           Media/MIME type.
 # * `medusa_key`:           Full object key within the Medusa S3 bucket. Set
 #                           only once the bitstream has been ingested into
 #                           Medusa.
@@ -72,7 +67,6 @@ class Bitstream < ApplicationRecord
 
   validates_inclusion_of :bundle, in: -> (value) { Bundle.all }
   validates_numericality_of :length, greater_than_or_equal_to: 0, allow_blank: true
-  validates_format_of :media_type, with: /[\w+-]+\/[\w+-]+/, allow_blank: true
   validates_format_of :medusa_uuid,
                       with: /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/,
                       message: 'UUID is invalid',
@@ -168,12 +162,10 @@ class Bitstream < ApplicationRecord
   # @return [Bitstream] New instance.
   #
   def self.new_in_staging(item:, filename:, length:)
-    bs = Bitstream.new(item:              item,
-                       staging_key:       staging_key(item.id, filename),
-                       original_filename: filename,
-                       length:            length)
-    bs.infer_media_type
-    bs
+    Bitstream.new(item:              item,
+                  staging_key:       staging_key(item.id, filename),
+                  original_filename: filename,
+                  length:            length)
   end
 
   ##
@@ -329,14 +321,6 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # Updates {media_type} with a value based on the extension of
-  # {original_filename}. The instance is not saved.
-  #
-  def infer_media_type
-    self.media_type = self.format&.media_types&.first
-  end
-
-  ##
   # @param force [Boolean] If true, the ingest occurs even if the instance has
   #                        already been submitted or already exists in Medusa.
   # @raises [ArgumentError] if the bitstream does not have an ID or staging key.
@@ -362,6 +346,15 @@ class Bitstream < ApplicationRecord
     message.save!
     message.send_message
     self.update!(submitted_for_ingest: true)
+  end
+
+  ##
+  # Shortcut to accessing the first media type of the {format}.
+  #
+  # @return [String, nil]
+  #
+  def media_type
+    self.format&.media_types&.first
   end
 
   ##

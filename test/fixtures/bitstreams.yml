@@ -5,7 +5,6 @@ item1_in_staging:
   submitted_for_ingest: false
   staging_key: item1_in_staging
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  media_type: image/jpeg
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
@@ -18,7 +17,6 @@ item2_in_medusa:
   submitted_for_ingest: true
   staging_key: test/test/escher_lego2.jpg
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  media_type: image/jpeg
   original_filename: escher_lego2.jpg
   medusa_key: test/test/escher_lego2.jpg
   medusa_uuid: 3d2a99d5-2f5b-401e-80c1-864a95e3acf7
@@ -31,7 +29,6 @@ license_bundle:
   submitted_for_ingest: false
   staging_key: license_bundle
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  media_type: image/jpeg
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
@@ -44,7 +41,6 @@ role_limited:
   submitted_for_ingest: false
   staging_key: role_limited_in_staging
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  media_type: image/jpeg
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
@@ -57,7 +53,6 @@ submitting_in_staging:
   submitted_for_ingest: false
   staging_key: submitting_in_staging
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  media_type: image/jpeg
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
@@ -70,7 +65,6 @@ undiscoverable_in_staging:
   submitted_for_ingest: false
   staging_key: undiscoverable_in_staging
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  media_type: image/jpeg
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
@@ -83,7 +77,6 @@ withdrawn_in_staging:
   submitted_for_ingest: false
   staging_key: withdrawn_in_staging
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  media_type: image/jpeg
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
@@ -96,7 +89,6 @@ collection1_collection1_item1_in_staging:
   submitted_for_ingest: false
   staging_key: collection1_collection1_item1_in_staging
   length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  media_type: image/jpeg
   original_filename: escher_lego.jpg
   medusa_key:
   medusa_uuid:
