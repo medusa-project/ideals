@@ -59,12 +59,6 @@ gem 'scars-bootstrap-theme', github: 'medusa-project/scars-bootstrap-theme', bra
 # Use Uglifier as compressor for JavaScript assets
 gem "uglifier", ">= 2.7.2"
 
-# Use delayed_job during upload and ingest from box to avoid timeout failures
-gem "daemons"
-gem "delayed_job_active_record"
-gem "progress_job"
-# gem 'delayed_job_heartbeat_plugin'
-
 # Use builder to support sitemaps generator
 gem "builder", "~> 3.2", ">= 3.2.2"
 
