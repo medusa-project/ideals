@@ -22,10 +22,6 @@ class UserPolicy < ApplicationPolicy
     @object_user  = object_user
   end
 
-  def edit_privileges
-    effective_sysadmin(subject_user, role)
-  end
-
   def edit_properties
     sysadmin_or_same_user
   end

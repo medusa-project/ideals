@@ -10,35 +10,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
-  # edit_privileges()
-
-  test "edit_privileges() redirects to login page for logged-out users" do
-    get user_edit_privileges_path(users(:local_sysadmin)), xhr: true
-    assert_redirected_to login_path
-  end
-
-  test "edit_privileges() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    get user_edit_privileges_path(users(:local_sysadmin)), xhr: true
-    assert_response :forbidden
-  end
-
-  test "edit_privileges() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
-    get user_edit_privileges_path(users(:local_sysadmin)), xhr: true
-    assert_response :ok
-  end
-
-  test "edit_privileges() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    get user_edit_privileges_path(users(:local_sysadmin)), xhr: true
-    assert_response :ok
-
-    get user_edit_privileges_path(users(:local_sysadmin),
-                                  role: Role::LOGGED_IN), xhr: true
-    assert_response :forbidden
-  end
-
   # edit_properties()
 
   test "edit_properties() redirects to login page for logged-out users" do

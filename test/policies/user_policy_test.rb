@@ -6,39 +6,6 @@ class UserPolicyTest < ActiveSupport::TestCase
     @object_user = users(:norights)
   end
 
-  # edit_privileges?()
-
-  test "edit_privileges?() returns false with a nil request context" do
-    policy = UserPolicy.new(nil, @object_user)
-    assert !policy.edit_privileges?
-  end
-
-  test "edit_privileges?() does not authorize non-sysadmins" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = UserPolicy.new(context, @object_user)
-    assert !policy.edit_privileges?
-  end
-
-  test "edit_privileges?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = UserPolicy.new(context, @object_user)
-    assert policy.edit_privileges?
-  end
-
-  test "edit_privileges?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = UserPolicy.new(context, @object_user)
-    assert !policy.edit_privileges?
-  end
-
   # edit_properties?()
 
   test "edit_properties?() returns false with a nil request context" do
