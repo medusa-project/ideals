@@ -78,11 +78,6 @@
           %h5.card-title= element.registered_element.label
           .row
             .col-sm-3.text-right
-              %strong Input Type
-            -# .col-sm-9= element.vocabulary ? "Menu" : element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
-            .col-sm-9= element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
-          .row
-            .col-sm-3.text-right
               %strong Required
             .col-sm-9= boolean(element.required)
           .row

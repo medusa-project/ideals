@@ -6,7 +6,6 @@ default_title:
   index: 0
   repeatable: false
   required: true
-  input_type: <%= SubmissionProfileElement::InputType::TEXT_FIELD %>
   placeholder_text:
 
 default_description:
@@ -15,7 +14,6 @@ default_description:
   index: 1
   repeatable: false
   required: false
-  input_type: <%= SubmissionProfileElement::InputType::TEXT_AREA %>
   placeholder_text: This is some description placeholder text.
 
 default_subject:
@@ -24,5 +22,4 @@ default_subject:
   index: 2
   repeatable: true
   required: false
-  input_type: <%= SubmissionProfileElement::InputType::TEXT_FIELD %>
   placeholder_text: This is some subject placeholder text.

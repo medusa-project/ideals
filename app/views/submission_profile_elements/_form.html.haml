@@ -19,11 +19,6 @@
   - else
     = f.hidden_field :index, value: 0
   .form-group
-    = f.label :input_type, "Input Type"
-    = f.select(:input_type, options_for_select(SubmissionProfileElement::InputType.all.map{ |t| [t.split("_").map(&:capitalize).join(" "), t] }.sort.reverse,
-                                               f.object.input_type),
-               {}, class: "custom-select")
-  .form-group
     = f.label :placeholder_text, "Placeholder Text"
     = f.text_area :placeholder_text, class: "form-control"
   .form-group

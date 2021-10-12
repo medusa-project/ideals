@@ -13,7 +13,7 @@ const RegisteredElementsView = function() {
             modalBody.html(data);
             // Conditionally enable/disable a couple of other inputs when the
             // vocabulary select menu is changed.
-            modalBody.find("#submission_profile_element_vocabulary_key").on("change", function() {
+            modalBody.find("#registered_element_vocabulary_key").on("change", function() {
                 const disabled = ($(this).val().length > 0);
                 modalBody.find("#registered_element_input_type").prop("disabled", disabled);
             }).trigger("change");

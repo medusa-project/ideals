@@ -25,6 +25,11 @@
                                                    f.object.vocabulary_key),
                { include_blank: true }, class: "custom-select")
   .form-group
+    = f.label :input_type, "Input Type"
+    = f.select(:input_type, options_for_select(RegisteredElement::InputType.all.map{ |t| [t.split("_").map(&:capitalize).join(" "), t] }.sort.reverse,
+                                               f.object.input_type),
+               {}, class: "custom-select")
+  .form-group
     = f.label :scope_note
     = f.text_area :scope_note, class: "form-control"
   .clearfix

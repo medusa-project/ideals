@@ -26,6 +26,7 @@ description:
   name: dc:description
   uri: http://purl.org/dc/terms/description
   label: Description
+  input_type: <%= RegisteredElement::InputType::TEXT_AREA %>
   scope_note:
 
 identifier:
@@ -40,6 +41,7 @@ subject:
   name: dc:subject
   uri: http://purl.org/dc/terms/subject
   label: Subject
+  input_type: <%= RegisteredElement::InputType::TEXT_FIELD %>
   scope_note:
 
 title:
@@ -47,6 +49,7 @@ title:
   name: dc:title
   uri: http://purl.org/dc/terms/title
   label: Title
+  input_type: <%= RegisteredElement::InputType::TEXT_FIELD %>
   scope_note:
 
 unused:

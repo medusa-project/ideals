@@ -7,6 +7,7 @@
 # # Attributes
 #
 # * `created_at`     Managed by ActiveRecord.
+# * `input_type`     One of the {InputType} constant values.
 # * `label`          Element label. Often overrides {name} for end-user display.
 # * `name`           Element name.
 # * `updated_at`     Managed by ActiveRecord.
@@ -14,7 +15,22 @@
 # * `vocabulary_key` One of the vocabulary key constant values in {Vocabulary}.
 #
 class RegisteredElement < ApplicationRecord
+
   include Breadcrumb
+
+  class InputType
+    DATE       = "date"
+    PERSON     = "person"
+    TEXT_AREA  = "text_area"
+    TEXT_FIELD = "text_field"
+
+    ##
+    # @return [Enumerable<String>] All constant values.
+    #
+    def self.all
+      self.constants.map{ |c| self.const_get(c) }
+    end
+  end
 
   METADATA_FIELD_PREFIX = "metadata_"
   KEYWORD_FIELD_SUFFIX  = ".keyword"
@@ -25,10 +41,14 @@ class RegisteredElement < ApplicationRecord
   has_many :metadata_profile_elements, inverse_of: :registered_element
   has_many :submission_profile_elements, inverse_of: :registered_element
 
+  # input_type
+  validates :input_type, inclusion: { in: InputType.all }, allow_blank: true
+
   # label
   validates_presence_of :label
   validates_uniqueness_of :label
 
+  # name
   validates_format_of :name, with: /\A[A-Za-z0-9_\-:]+\z/, allow_blank: false
   validates_uniqueness_of :name
 

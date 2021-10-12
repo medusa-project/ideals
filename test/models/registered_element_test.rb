@@ -61,6 +61,18 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert_equal "metadata_dc_title.sort", @instance.indexed_sort_field
   end
 
+  # input_type
+
+  test "input_type must be one of the InputType constant values" do
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.update!(input_type: "bogus")
+    end
+  end
+
+  test "input_type is allowed to be blank" do
+    @instance.update!(input_type: nil)
+  end
+
   # label
 
   test "label must be present" do

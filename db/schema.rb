@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_11_205135) do
+ActiveRecord::Schema.define(version: 2021_10_12_141432) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -293,6 +293,7 @@ ActiveRecord::Schema.define(version: 2021_10_11_205135) do
     t.string "label", null: false
     t.bigint "institution_id", null: false
     t.string "vocabulary_key"
+    t.string "input_type"
     t.index ["name"], name: "index_registered_elements_on_name", unique: true
     t.index ["uri"], name: "index_registered_elements_on_uri", unique: true
   end
@@ -306,7 +307,6 @@ ActiveRecord::Schema.define(version: 2021_10_11_205135) do
     t.boolean "required", default: true, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "input_type"
     t.text "placeholder_text"
     t.index ["index"], name: "index_submission_profile_elements_on_index"
     t.index ["repeatable"], name: "index_submission_profile_elements_on_repeatable"

@@ -41,8 +41,8 @@
                                      class: "form-control",
                                      required: profile_element.required)
                 - else
-                  - case profile_element.input_type
-                  - when SubmissionProfileElement::InputType::DATE
+                  - case registered_element.input_type
+                  - when RegisteredElement::InputType::DATE
                     - hidden_input_id = SecureRandom.hex
                     - date            = ascribed_element.date
                     -# This hidden input contains a date in "Month DD, YYYY" format.
@@ -69,7 +69,7 @@
                                                       date&.year || Time.now.year),
                                    data: { for: hidden_input_id },
                                    class: "custom-select")
-                  - when SubmissionProfileElement::InputType::PERSON
+                  - when RegisteredElement::InputType::PERSON
                     - hidden_input_id = SecureRandom.hex
                     - person_name     = ascribed_element.person_name || {}
                     -# This hidden input contains a person name in
@@ -90,7 +90,7 @@
                                        placeholder: "Given Name",
                                        data: { for: hidden_input_id },
                                        class: "form-control")
-                  - when SubmissionProfileElement::InputType::TEXT_AREA
+                  - when RegisteredElement::InputType::TEXT_AREA
                     = text_area_tag("elements[][string]",
                                     ascribed_element.string,
                                     class: "form-control",
