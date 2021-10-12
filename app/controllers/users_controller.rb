@@ -2,19 +2,9 @@
 
 class UsersController < ApplicationController
   before_action :ensure_logged_in
-  before_action :set_user, only: [:show, :edit_privileges, :edit_properties,
-                                  :update_privileges, :update_properties]
-  before_action :authorize_user, only: [:show, :edit_privileges,
-                                        :edit_properties, :update_privileges,
+  before_action :set_user, only: [:show, :edit_properties, :update_properties]
+  before_action :authorize_user, only: [:show, :edit_properties,
                                         :update_properties]
-
-  ##
-  # Responds to `GET /users/:id/edit-privileges`
-  #
-  def edit_privileges
-    render partial: "users/privileges_form",
-           locals: { user: @user }
-  end
 
   ##
   # Responds to `GET /users/:id/edit-properties`
@@ -78,22 +68,6 @@ class UsersController < ApplicationController
         where(stage: Item::Stages::SUBMITTING).
         order(updated_at: :desc)
     @submissions_count = @submissions.count
-  end
-
-  ##
-  # Responds to `PATCH/PUT /users/:id/update-privileges`
-  #
-  def update_privileges
-    begin
-      @user.update!(privileges_params)
-    rescue
-      render partial: "shared/validation_messages",
-             locals: { object: @user },
-             status: :bad_request
-    else
-      flash['success'] = "Privileges of user #{@user.name} have been updated."
-      render "shared/reload"
-    end
   end
 
   ##

@@ -45,10 +45,6 @@ class UserPolicy < ApplicationPolicy
     sysadmin_or_same_user
   end
 
-  def update_privileges
-    effective_sysadmin(subject_user, role)
-  end
-
   def update_properties
     sysadmin_or_same_user
   end

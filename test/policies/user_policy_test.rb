@@ -180,39 +180,6 @@ class UserPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  # update_privileges?()
-
-  test "update_privileges?() returns false with a nil request context" do
-    policy = UserPolicy.new(nil, @object_user)
-    assert !policy.update_privileges?
-  end
-
-  test "update_privileges?() does not authorize non-sysadmins" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = UserPolicy.new(context, @object_user)
-    assert !policy.update_privileges?
-  end
-
-  test "update_privileges?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy = UserPolicy.new(context, @object_user)
-    assert policy.update_privileges?
-  end
-
-  test "update_privileges?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = UserPolicy.new(context, @object_user)
-    assert !policy.update_privileges?
-  end
-
   # update_properties?()
 
   test "update_properties?() returns false with a nil request context" do

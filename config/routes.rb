@@ -167,11 +167,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
   end
   resources :users, only: [:index, :show] do
-    match "/edit-privileges", to: "users#edit_privileges", via: :get,
-          constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "users#edit_properties", via: :get,
-          constraints: lambda { |request| request.xhr? }
-    match "/update-privileges", to: "users#update_privileges", via: [:patch, :post],
           constraints: lambda { |request| request.xhr? }
     match "/update-properties", to: "users#update_properties", via: [:patch, :post],
           constraints: lambda { |request| request.xhr? }

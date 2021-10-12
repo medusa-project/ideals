@@ -130,65 +130,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  # update_privileges()
-
-  test "update_privileges() redirects to login page for logged-out users" do
-    user = users(:local_sysadmin)
-    patch user_update_privileges_path(user), xhr: true
-    assert_redirected_to login_path
-  end
-
-  test "update_privileges() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    user = users(:local_sysadmin)
-    patch user_update_privileges_path(user), xhr: true
-    assert_response :forbidden
-  end
-
-  test "update_privileges() updates a user" do
-    log_in_as(users(:local_sysadmin))
-    user = users(:norights)
-    patch user_update_privileges_path(user),
-          xhr: true,
-          params: {
-              user: {
-                  user_group_ids: [user_groups(:unused).id]
-              }
-          }
-    user.reload
-    assert_equal [user_groups(:unused)], user.user_groups
-  end
-
-  test "update_privileges() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
-    user = users(:local_sysadmin)
-    patch user_update_privileges_path(user),
-          xhr: true,
-          params: {
-              user: {
-                  user_group_ids: [user_groups(:unused).id]
-              }
-          }
-    assert_response :ok
-  end
-
-  test "update_privileges() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
-    user = users(:local_sysadmin)
-    patch user_update_privileges_path(user),
-          xhr: true,
-          params: {
-              user_group_ids: [999999]
-          }
-    assert_response :bad_request
-  end
-
-  test "update_privileges() returns HTTP 404 for nonexistent users" do
-    log_in_as(users(:local_sysadmin))
-    patch "/users/99999999/update-privileges", xhr: true
-    assert_response :not_found
-  end
-
   # update_properties()
 
   test "update_properties() redirects to login page for logged-out users" do
