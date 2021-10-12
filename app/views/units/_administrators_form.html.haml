@@ -26,20 +26,10 @@
 
   %h5 Users
 
-  - unless f.object.parent
-    .form-group
-      = label_tag :primary_administrator, "Primary Administrator"
-      = text_field_tag :primary_administrator,
-                       f.object.primary_administrator&.to_autocomplete,
-                       autocomplete: "off",
-                       class: "form-control"
-      .dropdown-menu
-        -# populated by javascript
-
   .form-group
-    = label_tag "Administrators"
     = hidden_field_tag "administering_users[]"
     - user_strings = f.object.administering_users.each.map(&:to_autocomplete)
+    - user_strings << "" if user_strings.empty?
     - user_strings.each do |user_str|
       .input-group.mb-3.user
         = text_field_tag "administering_users[]", user_str,
