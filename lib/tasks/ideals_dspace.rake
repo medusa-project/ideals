@@ -14,7 +14,7 @@ namespace :ideals_dspace do
     ##
     # Do this AFTER database content has been migrated.
     #
-    desc "Copy IDEALS-DSpace bitstreams into Medusa"
+    desc "Copy all IDEALS-DSpace bitstreams into Medusa"
     task :copy_into_medusa, [:ideals_dspace_ssh_user] => :environment do |task, args|
       Net::SCP.start(IDEALS_DSPACE_HOSTNAME, args[:ideals_dspace_ssh_user]) do |scp|
         Dir.mktmpdir do |tmpdir|
@@ -39,6 +39,38 @@ namespace :ideals_dspace do
               bitstream.ingest_into_medusa
               progress.report(index, "Transferring files from IDEALS-DSpace into Medusa")
             end
+          end
+        end
+      end
+    end
+
+    ##
+    # Do this AFTER database content has been migrated.
+    #
+    desc "Copy one item's bitstreams into Medusa"
+    task :copy_item_into_medusa, [:item_id, :ideals_dspace_ssh_user] => :environment do |task, args|
+      Net::SCP.start(IDEALS_DSPACE_HOSTNAME, args[:ideals_dspace_ssh_user]) do |scp|
+        Dir.mktmpdir do |tmpdir|
+          puts "Temp directory: #{tmpdir}"
+          item            = Item.find(args[:item_id])
+          bitstreams      = item.bitstreams.where.not(dspace_id: [nil, ""])
+          bitstream_count = bitstreams.count
+          progress        = Progress.new(bitstream_count)
+          bitstreams.each_with_index do |bitstream, index|
+            # Download the file into the temp directory
+            remote_path = IDEALS_DSPACE_ASSET_STORE_PATH +
+              bitstream.dspace_relative_path
+            local_path  = File.join(tmpdir, "#{bitstream.id}")
+            scp.download!(remote_path, local_path)
+            # Upload it to the application S3 bucket under the staging area
+            bitstream.update!(staging_key: Bitstream.staging_key(bitstream.item.id,
+                                                                 bitstream.original_filename))
+            bitstream.upload_to_staging(File.read(local_path))
+            # Delete it from the temp directory
+            File.delete(local_path)
+            # Tell Medusa to ingest it
+            bitstream.ingest_into_medusa
+            progress.report(index, "Transferring files from IDEALS-DSpace into Medusa")
           end
         end
       end
