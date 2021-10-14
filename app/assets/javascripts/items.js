@@ -71,11 +71,19 @@ const FileNavigator = function() {
 
         const url = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
             bitstream_id + "/viewer";
-        $.get(url, function (data) {
-            viewerColumn.html(data);
-            updateHeight();
-            attachEventListeners();
-            navigator.trigger("IDEALS.FileNavigator.fileChanged");
+        $.ajax({
+            method: "GET",
+            url: url,
+            success: function(data) {
+                viewerColumn.html(data);
+                updateHeight();
+                attachEventListeners();
+                navigator.trigger("IDEALS.FileNavigator.fileChanged");
+            },
+            error: function(data, status, xhr) {
+                $("#file-navigator-viewer-column .spinner-border").hide();
+                viewerColumn.html("<div id='file-navigator-viewer-error'><p>There was an error retrieving this file.</p></div>");
+            }
         });
     }).filter(":first").trigger("click");
 };

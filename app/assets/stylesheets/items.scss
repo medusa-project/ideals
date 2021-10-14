@@ -90,6 +90,13 @@ body#show_item {
           white-space: nowrap;
         }
       }
+      #file-navigator-viewer-error {
+        width: 100%;
+        height:100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
       #file-navigator-viewer-content {
         display: flex;
         align-items: center;
