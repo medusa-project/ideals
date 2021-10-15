@@ -25,7 +25,8 @@ xml.tag!('OAI-PMH',
         xml.tag!('header') do
           xml.tag!('identifier', oai_pmh_identifier(item: item, host: @host))
           xml.tag!('datestamp', item.updated_at.strftime('%Y-%m-%d'))
-          xml.tag!('setSpec', item.primary_collection.id)
+          xml.tag!('setSpec', oai_pmh_identifier(collection: item.primary_collection,
+                                                 host:       @host))
         end
       end
       xml.tag!('resumptionToken',
