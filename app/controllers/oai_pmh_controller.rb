@@ -174,7 +174,8 @@ class OaiPmhController < ApplicationController
   def fetch_results_for_list_identifiers_or_records
     @results = Item.
       distinct(:id).
-      joins("LEFT JOIN collection_item_memberships m ON m.item_id = items.id").
+      joins("LEFT JOIN collection_item_memberships cim ON cim.item_id = items.id").
+      joins("LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id").
       where(discoverable: true,
             stage: [Item::Stages::APPROVED, Item::Stages::WITHDRAWN]).
       order(:updated_at)
@@ -191,13 +192,25 @@ class OaiPmhController < ApplicationController
       @results   = @results.where("items.updated_at <= ?", until_time)
     end
 
-    set      = get_set
-    @results = @results.where("m.collection_id": set) if set
+    set = get_set
+    if set.present?
+      # See "identifier syntaxes" in class doc
+      parts = set.split("_")
+      if parts.length == 3
+        handle = Handle.find_by_suffix(parts[2])
+        case parts[0]
+        when "com"
+          @results = @results.where("ucm.unit_id": handle.unit_id)
+        when "col"
+          @results = @results.where("cim.collection_id": handle.collection_id)
+        end
+      end
+    end
+    @total_num_results = @results.count
 
     @errors << { code: "noRecordsMatch",
-                 description: "No matching records." } unless @results.any?
+                 description: "No matching records." } if @total_num_results < 1
 
-    @total_num_results   = @results.count
     @results_offset      = get_start
     @results             = @results.offset(@results_offset)
     @next_page_available = (@results_offset + MAX_RESULT_WINDOW < @total_num_results)
