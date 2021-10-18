@@ -66,17 +66,6 @@ class UserGroupTest < ActiveSupport::TestCase
     assert @instance.includes?(user)
   end
 
-  test "includes?() returns false for a user belonging to a department associated
-  with the instance but not belonging to an affiliation associated with the
-  instance" do
-    user                    = users(:uiuc)
-    user.department         = departments(:basket_weaving)
-    @instance.departments  << user.department
-    @instance.affiliations << affiliations(:phd_student)
-
-    assert !@instance.includes?(user)
-  end
-
   test "includes?() returns true for a user belonging to a department associated
   with the instance and an affiliation associated with the instance" do
     user                    = users(:uiuc)
@@ -86,26 +75,6 @@ class UserGroupTest < ActiveSupport::TestCase
     @instance.affiliations << user.affiliation
 
     assert @instance.includes?(user)
-  end
-
-  test "includes?() returns false for a user belonging to an affiliation
-  associated with instance but not a department associated with the instance" do
-    user                    = users(:uiuc)
-    user.affiliation        = affiliations(:phd_student)
-    @instance.departments  << departments(:basket_weaving)
-    @instance.affiliations << user.affiliation
-
-    assert !@instance.includes?(user)
-  end
-
-  test "includes?() returns false for a user belonging to an affiliation
-  associated with instance when there is no department associated with the
-  instance" do
-    user                    = users(:uiuc)
-    user.affiliation        = affiliations(:phd_student)
-    @instance.affiliations << user.affiliation
-
-    assert !@instance.includes?(user)
   end
 
   # key

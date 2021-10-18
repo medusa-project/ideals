@@ -80,16 +80,8 @@ class UserGroup < ApplicationRecord
         where("ldap_groups_users.ldap_group_id IN (?)", self.ldap_group_ids).
         where(id: user.id).
         count > 0
-      dept_names = self.departments.pluck(:name)
-      if dept_names.any?
-        if dept_names.include?(user.department&.name)
-          aff_ids = self.affiliations.pluck(:id)
-          if aff_ids.any?
-            return aff_ids.include?(user.affiliation_id)
-          end
-          return true
-        end
-      end
+      return true if self.departments.pluck(:name).include?(user.department&.name)
+      return true if self.affiliations.pluck(:id).include?(user.affiliation_id)
     end
     false
   end
