@@ -126,22 +126,35 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     "or illegal in this repository."
   end
 
-  test "GetRecord supports dim, oai_dc, and qdc" do
+  test "GetRecord supports dim" do
     get "/oai-pmh", params: { verb: "GetRecord",
                               identifier: @valid_identifier,
                               metadataPrefix: "dim" }
     assert_select "GetRecord > record > header > identifier", @valid_identifier
+  end
 
+  test "GetRecord supports etdms" do
+    get "/oai-pmh", params: { verb: "GetRecord",
+                              identifier: @valid_identifier,
+                              metadataPrefix: "etdms" }
+    assert_select "GetRecord > record > header > identifier", @valid_identifier
+  end
+
+  test "GetRecord supports oai_dc" do
     get "/oai-pmh", params: { verb: "GetRecord",
                               identifier: @valid_identifier,
                               metadataPrefix: "oai_dc" }
     assert_select "GetRecord > record > header > identifier", @valid_identifier
+  end
 
+  test "GetRecord supports qdc" do
     get "/oai-pmh", params: { verb: "GetRecord",
                               identifier: @valid_identifier,
                               metadataPrefix: "qdc" }
     assert_select "GetRecord > record > header > identifier", @valid_identifier
+  end
 
+  test "GetRecord does not support an unknown format" do
     get "/oai-pmh", params: { verb: "GetRecord",
                               identifier: @valid_identifier,
                               metadataPrefix: "bogus" }

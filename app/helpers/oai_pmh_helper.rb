@@ -52,6 +52,8 @@ module OaiPmhHelper
     case format
     when "dim"
       oai_pmh_dim_metadata_for(item, xml)
+    when "etdms"
+      oai_pmh_etdms_metadata_for(item, xml)
     when "oai_dc"
       oai_pmh_dc_metadata_for(item, xml)
     when "qdc"
@@ -96,6 +98,25 @@ module OaiPmhHelper
         attrs             = { mdschema: parts[0], element: parts[1] }
         attrs[:qualifier] = parts[2] if parts[2]
         xml.tag!("dim:field", attrs, ae.string)
+      end
+    end
+  end
+
+  def oai_pmh_etdms_metadata_for(item, xml)
+    xml.tag!("thesis", {
+      "xmlns"          => "http://www.ndltd.org/standards/metadata/etdms/1.0/",
+      "xsi:schemaLocation" => "http://www.ndltd.org/standards/metadata/etdms/1.0/  "\
+                              "http://www.ndltd.org/standards/metadata/etdms/1-0/etdms.xsd" }) do
+      item.elements.each do |ae|
+        parts = ae.name.split(":")
+        if parts.length == 1
+          name = parts[0]
+        elsif parts.length > 1
+          name = parts[1]
+        else
+          next
+        end
+        xml.tag!(name, ae.string)
       end
     end
   end

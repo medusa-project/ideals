@@ -47,6 +47,11 @@ class OaiPmhController < ApplicationController
       schema: "http://www.dspace.org/schema/dim.xsd"
     },
     {
+      prefix: "etdms",
+      uri:    "http://www.ndltd.org/standards/metadata/etdms/1.0/",
+      schema: "http://www.ndltd.org/standards/metadata/etdms/1.0/etdms.xsd"
+    },
+    {
       prefix: "oai_dc",
       uri:    "http://www.openarchives.org/OAI/2.0/oai_dc/",
       schema: "http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
