@@ -5,7 +5,7 @@
  */
 const UnitsView = function() {
     new IDEALS.ExpandableResourceList();
-    new IDEALS.UserAutocompleter(
+    new IDEALS.LocalUserAutocompleter(
         $("input[name=primary_administrator], input[name='administering_users[]']"));
     new IDEALS.MultiElementList();
 };
@@ -147,7 +147,7 @@ const UnitView = function() {
                 const url = ROOT_URL + "/units/" + unitID + "/edit-administrators";
                 $.get(url, function (data) {
                     $("#edit-administrators-modal .modal-body").html(data);
-                    new IDEALS.UserAutocompleter(
+                    new IDEALS.LocalUserAutocompleter(
                         $("input[name=primary_administrator], input[name='administering_users[]']"));
                     new IDEALS.MultiElementList();
                 });

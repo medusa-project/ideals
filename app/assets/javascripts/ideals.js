@@ -762,7 +762,7 @@ const IDEALS = {
             $(this).before(clone);
             updateEventListeners();
             if (clone.hasClass("user")) {
-                new IDEALS.UserAutocompleter(clone.find("input"));
+                new IDEALS.LocalUserAutocompleter(clone.find("input"));
             }
             e.preventDefault();
         });
@@ -840,7 +840,7 @@ const IDEALS = {
      * @param textField {jQuery} Text field element.
      * @constructor
      */
-    UserAutocompleter: function(textField) {
+    LocalUserAutocompleter: function(textField) {
         textField.on("keyup", function() {
             const textField = $(this);
             const menu      = textField.parent().find(".dropdown-menu");

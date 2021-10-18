@@ -164,7 +164,7 @@ const CollectionView = function() {
                 const url = ROOT_URL + "/collections/" + collectionID + "/edit-managers";
                 $.get(url, function(data) {
                     $("#edit-collection-managers-modal .modal-body").html(data);
-                    new IDEALS.UserAutocompleter($("input[name='managers[]']"));
+                    new IDEALS.LocalUserAutocompleter($("input[name='managers[]']"));
                     new IDEALS.MultiElementList();
                 });
             });
@@ -172,7 +172,7 @@ const CollectionView = function() {
                 const url = ROOT_URL + "/collections/" + collectionID + "/edit-submitters";
                 $.get(url, function(data) {
                     $("#edit-collection-submitters-modal .modal-body").html(data);
-                    new IDEALS.UserAutocompleter($("input[name='submitters[]']"));
+                    new IDEALS.LocalUserAutocompleter($("input[name='submitters[]']"));
                     new IDEALS.MultiElementList();
                 });
             });
