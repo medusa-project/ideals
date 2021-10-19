@@ -54,6 +54,8 @@ module OaiPmhHelper
       oai_pmh_dim_metadata_for(item, xml)
     when "etdms"
       oai_pmh_etdms_metadata_for(item, xml)
+    when "native"
+      oai_pmh_native_metadata_for(item, xml)
     when "oai_dc"
       oai_pmh_dc_metadata_for(item, xml)
     when "qdc"
@@ -117,6 +119,20 @@ module OaiPmhHelper
           next
         end
         xml.tag!(name, ae.string)
+      end
+    end
+  end
+
+  def oai_pmh_native_metadata_for(item, xml)
+    xml.tag!("resource", {
+      "xmlns"          => "http://www.ideals.illinois.edu/oai-pmh/native/",
+      "xsi:schemaLocation" => "http://www.ideals.illinois.edu/oai-pmh/native/ "\
+                              "http://www.ideals.illinois.edu/native.xsd" }) do
+      item.elements.each do |ae|
+        parts             = ae.name.split(":")
+        attrs             = { schema: parts[0], element: parts[1] }
+        attrs[:qualifier] = parts[2] if parts[2]
+        xml.tag!("field", attrs, ae.string)
       end
     end
   end

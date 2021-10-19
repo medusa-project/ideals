@@ -13,10 +13,13 @@
 #
 # * `oai_dc`: Dublin Core; exposes `dc:` elements; required by OAI-PMH
 # * `qdc`:    Qualified Dublin Core; exposes `dc:` and `dcterms:` elements.
-# * `dim`:    DSpace format that exposes all elements. This was carried over
-#             from IDEALS-DSpace, as it is used by the
-#             [Search Gateway](https://digital.library.illinois.edu) as of late
-#             2021.
+# * `dim`:    DSpace format that exposes all elements. This is a legacy format
+#             carried over from IDEALS-DSpace, as it is used by the
+#             [Search Gateway](https://digital.library.illinois.edu). Once that
+#             application has been migrated to use the `native` format, it can
+#             be removed.
+# * `native`: Native format that exposes all elements. This is similar to `dim`
+#             and will eventually replace it.
 #
 # # Resumption tokens
 #
@@ -50,6 +53,11 @@ class OaiPmhController < ApplicationController
       prefix: "etdms",
       uri:    "http://www.ndltd.org/standards/metadata/etdms/1.0/",
       schema: "http://www.ndltd.org/standards/metadata/etdms/1.0/etdms.xsd"
+    },
+    {
+      prefix: "native",
+      uri:    "http://www.ideals.illinois.edu/oai-pmh/native/",
+      schema: "http://www.ideals.illinois.edu/native.xsd"
     },
     {
       prefix: "oai_dc",

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+IDEALS schema for OAI-PMH metadata
+This is a deliberately minimal schema that allows pretty much any structure.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="resource"/>
+</xs:schema>

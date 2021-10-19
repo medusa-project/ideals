@@ -140,6 +140,13 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     assert_select "GetRecord > record > header > identifier", @valid_identifier
   end
 
+  test "GetRecord supports native" do
+    get "/oai-pmh", params: { verb: "GetRecord",
+                              identifier: @valid_identifier,
+                              metadataPrefix: "native" }
+    assert_select "GetRecord > record > header > identifier", @valid_identifier
+  end
+
   test "GetRecord supports oai_dc" do
     get "/oai-pmh", params: { verb: "GetRecord",
                               identifier: @valid_identifier,
@@ -239,6 +246,8 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     assert_select "ListMetadataFormats > metadataFormat > metadataPrefix",
                   "dim"
     assert_select "ListMetadataFormats > metadataFormat > metadataPrefix",
+                  "native"
+    assert_select "ListMetadataFormats > metadataFormat > metadataPrefix",
                   "qdc"
   end
 
@@ -317,19 +326,31 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     assert_select "error", "resumptionToken is an exclusive argument."
   end
 
-  test "ListRecords supports dim, oai_dc, and qdc" do
+  test "ListRecords supports dim" do
     get "/oai-pmh", params: { verb: "ListRecords", metadataPrefix: "dim" }
     assert_select "ListRecords > record > header > identifier",
                   @valid_identifier
+  end
 
+  test "ListRecords supports native" do
+    get "/oai-pmh", params: { verb: "ListRecords", metadataPrefix: "native" }
+    assert_select "ListRecords > record > header > identifier",
+                  @valid_identifier
+  end
+
+  test "ListRecords supports oai_dc" do
     get "/oai-pmh", params: { verb: "ListRecords", metadataPrefix: "oai_dc" }
     assert_select "ListRecords > record > header > identifier",
                   @valid_identifier
+  end
 
+  test "ListRecords supports qdc" do
     get "/oai-pmh", params: { verb: "ListRecords", metadataPrefix: "qdc" }
     assert_select "ListRecords > record > header > identifier",
                   @valid_identifier
+  end
 
+  test "ListRecords does not support unknown formats" do
     get "/oai-pmh", params: { verb: "ListRecords", metadataPrefix: "bogus" }
     assert_select "error", "The metadata format identified by the "\
     "metadataPrefix argument is not supported by this repository."
