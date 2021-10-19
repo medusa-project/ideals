@@ -29,6 +29,36 @@ module ApplicationHelper
   end
 
   ##
+  # Invoked from the layout to render the breadcrumbs.
+  #
+  # @param object [ApplicationRecord] Model object.
+  # @return [String] HTML string.
+  #
+  def breadcrumbs(object)
+    breadcrumbs = object.breadcrumbs
+    if breadcrumbs.any?
+      html = StringIO.new
+      html << "<nav aria-label=\"breadcrumb\">"
+      html <<   "<ol class=\"breadcrumb\">"
+      breadcrumbs.each do |crumb|
+        html << "<li class=\"breadcrumb-item\">"
+        if crumb.kind_of?(Item)
+          html <<   "View Item"
+        elsif crumb == breadcrumbs.last
+          html <<   crumb.breadcrumb_label
+        else
+          html <<   link_to(crumb.breadcrumb_label, crumb)
+        end
+        html << "</li>"
+      end
+      html <<   "</ol>"
+      html << "</nav>"
+      return raw(html.string)
+    end
+    nil
+  end
+
+  ##
   # Returns the institution whose FQDN corresponds to the value of the
   # `X-Forwarded-Host` header. This header should always be present in demo and
   # production, but not in development or test, where a fallback is used
