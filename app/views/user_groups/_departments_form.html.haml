@@ -15,8 +15,9 @@
     .input-group.mb-3
       = text_field_tag "user_group[departments][]", department.name,
                        class: "form-control"
-      %button.btn.btn-danger.remove{type: "button"}
-        %i.fa.fa-minus
+      .input-group-append
+        %button.btn.btn-danger.remove{type: "button"}
+          %i.fa.fa-minus
   %button.btn.btn-success.add{type: "button"}
     %i.fa.fa-plus
 
