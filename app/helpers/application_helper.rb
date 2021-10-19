@@ -43,7 +43,7 @@ module ApplicationHelper
       breadcrumbs.each do |crumb|
         html << "<li class=\"breadcrumb-item\">"
         if crumb.kind_of?(Item)
-          html <<   "View Item"
+          html <<   "Item"
         elsif crumb == breadcrumbs.last
           html <<   crumb.breadcrumb_label
         else

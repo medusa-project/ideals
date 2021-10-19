@@ -324,13 +324,6 @@ class Item < ApplicationRecord
   end
 
   ##
-  # @return [String]
-  #
-  def breadcrumb_label
-    title
-  end
-
-  ##
   # Updates the {stage} property and creates an associated
   # `dcterms:dateSubmitted` element with a string value of the current ISO-8601
   # date/time.

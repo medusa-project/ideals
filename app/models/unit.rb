@@ -149,10 +149,6 @@ class Unit < ApplicationRecord
     doc
   end
 
-  def breadcrumb_label
-    title
-  end
-
   ##
   # @return [Boolean] Whether the instance if a child of another {Unit}.
   #

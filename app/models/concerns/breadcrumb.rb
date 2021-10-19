@@ -8,7 +8,7 @@ module Breadcrumb
   module ClassMethods
     def breadcrumbs(opts = {})
       @breadcrumb_parent_method = opts[:parent]
-      @breadcrumb_label_method  = opts[:breadcrumb_label]
+      @breadcrumb_label_method  = opts[:label]
     end
 
     def breadcrumb_parent_method

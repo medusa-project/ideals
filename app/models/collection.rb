@@ -118,7 +118,7 @@ class Collection < ApplicationRecord
 
   after_save :assign_handle, if: -> { handle.nil? && !IdealsImporter.instance.running? }
 
-  breadcrumbs parent: :primary_unit, label: :title
+  breadcrumbs parent: :breadcrumb_parent, label: :title
 
   ##
   # @return [Enumerable<Collection>] All collections that are children of the
@@ -236,8 +236,8 @@ class Collection < ApplicationRecord
     doc
   end
 
-  def breadcrumb_label
-    title
+  def breadcrumb_parent
+    self.parent || self.primary_unit
   end
 
   ##

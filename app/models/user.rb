@@ -26,8 +26,6 @@
 #
 class User < ApplicationRecord
 
-  include Breadcrumb
-
   # ShibbolethUsers only!
   belongs_to :affiliation, optional: true
   belongs_to :identity, class_name: "LocalIdentity",
@@ -80,13 +78,6 @@ class User < ApplicationRecord
   #
   def belongs_to?(user_group)
     user_group.includes?(self)
-  end
-
-  ##
-  # For compatibility with breadcrumbs.
-  #
-  def breadcrumb_label
-    name
   end
 
   ##
