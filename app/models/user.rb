@@ -46,7 +46,7 @@ class User < ApplicationRecord
            inverse_of: :submitter
   has_many :submitters
   has_many :submitting_collections, through: :submitters, source: :collection
-  has_and_belongs_to_many :ldap_groups
+  has_and_belongs_to_many :ad_groups
   # This includes only directly assigned user groups. See `belongs_to?()`
   has_and_belongs_to_many :user_groups
 

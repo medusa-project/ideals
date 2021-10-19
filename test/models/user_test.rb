@@ -34,10 +34,10 @@ class UserTest < ActiveSupport::TestCase
 
   test "belongs_to?() returns true for a user belonging to an LDAP group
   associated with the group" do
-    user              = users(:uiuc)
-    user_group        = user_groups(:sysadmin)
-    ldap_group        = user_group.ldap_groups.first
-    ldap_group.users << user
+    user            = users(:uiuc)
+    user_group      = user_groups(:sysadmin)
+    ad_group        = user_group.ad_groups.first
+    ad_group.users << user
     assert user.belongs_to?(user_group)
   end
 

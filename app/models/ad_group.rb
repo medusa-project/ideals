@@ -1,5 +1,5 @@
 ##
-# Encapsulates an LDAP/AD group provided by a Shibboleth IdP.
+# Encapsulates an AD group provided by a Shibboleth IdP.
 #
 # # Attributes
 #
@@ -7,7 +7,7 @@
 # * `updated_at` Managed by ActiveRecord.
 # * `urn`        Group URN.
 #
-class LdapGroup < ApplicationRecord
+class AdGroup < ApplicationRecord
   include Breadcrumb
 
   has_and_belongs_to_many :user_groups

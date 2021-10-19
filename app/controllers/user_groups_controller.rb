@@ -108,7 +108,7 @@ class UserGroupsController < ApplicationController
   def show
     @local_users  = @user_group.local_users.order(:name)
     @netid_users  = @user_group.netid_users.order(:name)
-    @ldap_groups  = @user_group.ldap_groups.order(:urn)
+    @ad_groups    = @user_group.ad_groups.order(:urn)
     @hosts        = @user_group.hosts.order(:pattern)
     @departments  = @user_group.departments.order(:name)
     @affiliations = @user_group.affiliations.order(:name)
@@ -162,8 +162,8 @@ class UserGroupsController < ApplicationController
   private
 
   def user_group_params
-    params.require(:user_group).permit(:key, :name, affiliation_ids: [],
-                                       department_ids: [], ldap_group_ids: [],
+    params.require(:user_group).permit(:key, :name, ad_group_ids: [],
+                                       affiliation_ids: [], department_ids: [],
                                        user_ids: [])
   end
 

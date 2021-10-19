@@ -2,18 +2,35 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_12_141432) do
+ActiveRecord::Schema.define(version: 2021_10_19_200641) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "ad_groups", force: :cascade do |t|
+    t.string "urn"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["urn"], name: "index_ad_groups_on_urn", unique: true
+  end
+
+  create_table "ad_groups_user_groups", id: false, force: :cascade do |t|
+    t.bigint "ad_group_id", null: false
+    t.bigint "user_group_id", null: false
+  end
+
+  create_table "ad_groups_users", id: false, force: :cascade do |t|
+    t.bigint "ad_group_id", null: false
+    t.bigint "user_id", null: false
+  end
 
   create_table "administrator_groups", force: :cascade do |t|
     t.bigint "unit_id", null: false
@@ -189,23 +206,6 @@ ActiveRecord::Schema.define(version: 2021_10_12_141432) do
     t.integer "stage", default: 0, null: false
     t.index ["discoverable"], name: "index_items_on_discoverable"
     t.index ["stage"], name: "index_items_on_stage"
-  end
-
-  create_table "ldap_groups", force: :cascade do |t|
-    t.string "urn"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["urn"], name: "index_ldap_groups_on_urn", unique: true
-  end
-
-  create_table "ldap_groups_user_groups", id: false, force: :cascade do |t|
-    t.bigint "ldap_group_id", null: false
-    t.bigint "user_group_id", null: false
-  end
-
-  create_table "ldap_groups_users", id: false, force: :cascade do |t|
-    t.bigint "ldap_group_id", null: false
-    t.bigint "user_id", null: false
   end
 
   create_table "local_identities", force: :cascade do |t|
@@ -389,6 +389,8 @@ ActiveRecord::Schema.define(version: 2021_10_12_141432) do
     t.index ["uid"], name: "index_users_on_uid", unique: true
   end
 
+  add_foreign_key "ad_groups_user_groups", "ad_groups"
+  add_foreign_key "ad_groups_user_groups", "user_groups"
   add_foreign_key "administrator_groups", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrator_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
@@ -417,8 +419,6 @@ ActiveRecord::Schema.define(version: 2021_10_12_141432) do
   add_foreign_key "hosts", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "ldap_groups_user_groups", "ldap_groups"
-  add_foreign_key "ldap_groups_user_groups", "user_groups"
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
   add_foreign_key "manager_groups", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "manager_groups", "user_groups", on_update: :cascade, on_delete: :cascade

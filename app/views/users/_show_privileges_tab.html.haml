@@ -14,9 +14,9 @@
   - if user.kind_of?(ShibbolethUser)
     %dt AD Groups
     %dd
-      - if user.ldap_groups.any?
+      - if user.ad_groups.any?
         %ul
-          - user.ldap_groups.each do |group|
+          - user.ad_groups.each do |group|
             %li
               %code= group.short_name
       - else

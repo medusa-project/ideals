@@ -53,10 +53,10 @@ class ShibbolethUser < User
     user
   end
 
-  def self.fetch_ldap_groups(auth)
+  def self.fetch_ad_groups(auth)
     groups = []
     auth.dig("extra", "raw_info", "member")&.split(";")&.each do |group_urn|
-      groups << LdapGroup.find_or_create_by(urn: group_urn)
+      groups << AdGroup.find_or_create_by(urn: group_urn)
     end
     groups
   end
@@ -76,7 +76,7 @@ class ShibbolethUser < User
   # @return [Boolean]
   #
   def sysadmin?
-    (UserGroup.sysadmin.ldap_groups & self.ldap_groups).any?
+    (UserGroup.sysadmin.ad_groups & self.ad_groups).any?
   end
 
   def update_with_omniauth(auth)
@@ -96,7 +96,7 @@ class ShibbolethUser < User
                        "#{auth.dig("extra", "raw_info", "sn")}"
     self.org_dn      = auth.dig("extra", "raw_info", "org-dn")
     self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
-    self.ldap_groups = self.class.fetch_ldap_groups(auth)
+    self.ad_groups = self.class.fetch_ad_groups(auth)
     self.affiliation = Affiliation.from_shibboleth(auth)
     dept             = auth.dig("extra", "raw_info", "departmentCode")
     self.department  = Department.create!(name: dept) if dept

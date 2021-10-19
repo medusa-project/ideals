@@ -36,9 +36,9 @@
               %i.fa.fa-pencil-alt
               Edit
         %h4.card-title AD Groups
-        - if @ldap_groups.any?
+        - if @ad_groups.any?
           %ul
-            - @ldap_groups.each do |group|
+            - @ad_groups.each do |group|
               %li
                 %strong= group.short_name
                 %br

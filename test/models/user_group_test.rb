@@ -52,7 +52,7 @@ class UserGroupTest < ActiveSupport::TestCase
   test "includes?() returns true for a user belonging to an LDAP group
   associated with the instance" do
     user         = users(:uiuc)
-    group        = @instance.ldap_groups.first
+    group        = @instance.ad_groups.first
     group.users << user
     assert @instance.includes?(user)
   end

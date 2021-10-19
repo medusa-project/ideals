@@ -1,9 +1,9 @@
 require 'test_helper'
 
-class LdapGroupTest < ActiveSupport::TestCase
+class AdGroupTest < ActiveSupport::TestCase
 
   setup do
-    @instance = ldap_groups(:sysadmin)
+    @instance = ad_groups(:sysadmin)
   end
 
   # short_name()
@@ -23,13 +23,13 @@ class LdapGroupTest < ActiveSupport::TestCase
 
   test "urn cannot be blank" do
     assert_raises ActiveRecord::RecordInvalid do
-      LdapGroup.create!(urn: "")
+      AdGroup.create!(urn: "")
     end
   end
 
   test "urn must be unique" do
     assert_raises ActiveRecord::RecordNotUnique do
-      LdapGroup.create!(urn: @instance.urn)
+      AdGroup.create!(urn: @instance.urn)
     end
   end
 

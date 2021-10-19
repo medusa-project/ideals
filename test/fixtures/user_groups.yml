@@ -9,14 +9,14 @@ sysadmin:
   name: System Administrators
   users:
     - local_sysadmin
-  ldap_groups:
+  ad_groups:
     - sysadmin
 
 temp:
   key: temp
   name: Temporary Group
   users:
-  ldap_groups:
+  ad_groups:
 
 unused:
   key: unused

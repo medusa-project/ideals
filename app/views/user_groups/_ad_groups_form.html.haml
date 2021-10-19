@@ -4,14 +4,14 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  = hidden_field_tag "user_group[ldap_group_ids][]"
-  - LdapGroup.all.sort_by(&:short_name).each do |group|
+  = hidden_field_tag "user_group[ad_group_ids][]"
+  - AdGroup.all.sort_by(&:short_name).each do |group|
     .form-check
       %strong
-        = check_box_tag "user_group[ldap_group_ids][]", group.id,
-                        f.object.ldap_groups.include?(group),
-                        { id: "user_group_ldap_group_ids_#{group.id}", class: "form-check-input" }
-        = label_tag "user_group_ldap_group_ids_#{group.id}",
+        = check_box_tag "user_group[ad_group_ids][]", group.id,
+                        f.object.ad_groups.include?(group),
+                        { id: "user_group_ad_group_ids_#{group.id}", class: "form-check-input" }
+        = label_tag "user_group_ad_group_ids_#{group.id}",
         group.short_name, class: "form-check-label"
       %br
       %code.text-secondary= group.urn

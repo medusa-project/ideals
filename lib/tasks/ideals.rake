@@ -90,7 +90,7 @@ namespace :ideals do
     task :create_shib_sysadmin, [:netid] => :environment do |task, args|
       email = "#{args[:netid]}@illinois.edu"
       user = ShibbolethUser.no_omniauth(email)
-      user.ldap_groups << UserGroup.sysadmin.ldap_groups.first
+      user.ad_groups << UserGroup.sysadmin.ad_groups.first
       user.save!
     end
 

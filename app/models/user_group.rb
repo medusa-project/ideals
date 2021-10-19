@@ -1,5 +1,5 @@
 ##
-# Aggregation of [LocalUser]s, [LdapGroup]s, and other dimensions, for the
+# Aggregation of [LocalUser]s, [AdGroup]s, and other dimensions, for the
 # purpose of performing group-based authorization.
 #
 # # Attributes
@@ -19,8 +19,8 @@ class UserGroup < ApplicationRecord
   has_many :manager_groups
   has_many :submitter_groups
 
+  has_and_belongs_to_many :ad_groups
   has_and_belongs_to_many :affiliations
-  has_and_belongs_to_many :ldap_groups
   has_and_belongs_to_many :users
 
   validates :name, presence: true # uniqueness enforced by database constraints
@@ -48,8 +48,9 @@ class UserGroup < ApplicationRecord
   #         instance or being in an LDAP group associated with the instance.
   #
   def all_users
-    self.users + User.joins("INNER JOIN ldap_groups_users ON ldap_groups_users.user_id = users.id").
-        where("ldap_groups_users.ldap_group_id IN (?)", self.ldap_group_ids)
+    self.users + User.
+        joins("INNER JOIN ad_groups_users ON ad_groups_users.user_id = users.id").
+        where("ad_groups_users.ad_group_id IN (?)", self.ad_group_ids)
   end
 
   def breadcrumb_label
@@ -72,8 +73,8 @@ class UserGroup < ApplicationRecord
     # is a directly associated User
     self.users.where(id: user.id).count.positive? ||
     # belongs to an associated AD group
-    User.joins("INNER JOIN ldap_groups_users ON ldap_groups_users.user_id = users.id").
-      where("ldap_groups_users.ldap_group_id IN (?)", self.ldap_group_ids).
+    User.joins("INNER JOIN ad_groups_users ON ad_groups_users.user_id = users.id").
+      where("ad_groups_users.ad_group_id IN (?)", self.ad_group_ids).
       where(id: user.id).
       count.positive? ||
     # belongs to an associated department
