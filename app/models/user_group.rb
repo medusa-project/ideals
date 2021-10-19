@@ -1,6 +1,6 @@
 ##
-# Aggregation of {LocalUser}s, {LdapGroup}s, and {Host}s for the purpose of
-# performing group-based authorization.
+# Aggregation of [LocalUser]s, [LdapGroup]s, and other dimensions, for the
+# purpose of performing group-based authorization.
 #
 # # Attributes
 #
@@ -21,13 +21,10 @@ class UserGroup < ApplicationRecord
 
   has_and_belongs_to_many :affiliations
   has_and_belongs_to_many :ldap_groups
-  # LocalUsers only!
   has_and_belongs_to_many :users
 
   validates :name, presence: true # uniqueness enforced by database constraints
   validates :key, presence: true # uniqueness enforced by database constraints
-
-  validate :contains_only_local_users
 
   ##
   # @param hostname [String]
@@ -64,35 +61,39 @@ class UserGroup < ApplicationRecord
   # instance. Membership is determined by the following logic:
   #
   # ```
-  # (belongs to an associated AD Group) OR (is a directly associated LocalUser) OR
-  #   ((belongs to an associated department) AND (is of an associated affiliation))
+  # (is a directly associated User) OR (belongs to an associated AD Group) OR
+  # (belongs to an associated department) OR (is of an associated affiliation)
   # ```
   #
   # @param user [User]
   # @return [Boolean]
   #
   def includes?(user)
-    if user.is_a?(LocalUser)
-      return true if self.users.include?(user)
-    else
-      return true if User.
-        joins("INNER JOIN ldap_groups_users ON ldap_groups_users.user_id = users.id").
-        where("ldap_groups_users.ldap_group_id IN (?)", self.ldap_group_ids).
-        where(id: user.id).
-        count > 0
-      return true if self.departments.pluck(:name).include?(user.department&.name)
-      return true if self.affiliations.pluck(:id).include?(user.affiliation_id)
-    end
-    false
+    # is a directly associated User
+    self.users.where(id: user.id).count.positive? ||
+    # belongs to an associated AD group
+    User.joins("INNER JOIN ldap_groups_users ON ldap_groups_users.user_id = users.id").
+      where("ldap_groups_users.ldap_group_id IN (?)", self.ldap_group_ids).
+      where(id: user.id).
+      count.positive? ||
+    # belongs to an associated department
+    self.departments.where(name: user.department&.name).count.positive? ||
+    # is of an associated affiliation
+    self.affiliations.where(id: user.affiliation_id).count.positive?
   end
 
+  ##
+  # @return [ActiveRecord::Relation<LocalUser>]
+  #
+  def local_users
+    self.users.where(type: LocalUser.to_s)
+  end
 
-  private
-
-  def contains_only_local_users
-    if self.users.where.not(type: LocalUser.to_s).count > 0
-      errors.add(:users, "can contain only local users")
-    end
+  ##
+  # @return [ActiveRecord::Relation<ShibbolethUser>]
+  #
+  def netid_users
+    self.users.where(type: ShibbolethUser.to_s)
   end
 
 end

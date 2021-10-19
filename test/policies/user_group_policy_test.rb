@@ -431,6 +431,59 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_local_users?
   end
 
+  # edit_netid_users?()
+
+  test "edit_netid_users?() returns false with a nil user" do
+    policy = UserGroupPolicy.new(nil, @user_group)
+    assert !policy.edit_netid_users?
+  end
+
+  test "edit_netid_users?() authorizes managers of any collection" do
+    subject_user = users(:norights)
+    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.save!
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_netid_users?
+  end
+
+  test "edit_netid_users?() authorizes administrators of any unit" do
+    subject_user = users(:norights)
+    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.save!
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_netid_users?
+  end
+
+  test "edit_netid_users?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_netid_users?
+  end
+
+  test "edit_netid_users?() does not authorize anybody else" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_netid_users?
+  end
+
+  test "edit_netid_users?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_netid_users?
+  end
+
   # index?()
 
   test "index?() returns false with a nil user" do

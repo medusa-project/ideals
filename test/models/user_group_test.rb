@@ -42,7 +42,7 @@ class UserGroupTest < ActiveSupport::TestCase
     assert !@instance.includes?(users(:norights))
   end
 
-  test "includes?() returns true for a LocalUser directly associated with the
+  test "includes?() returns true for a user directly associated with the
   instance" do
     user             = users(:norights)
     @instance.users << user
@@ -105,15 +105,6 @@ class UserGroupTest < ActiveSupport::TestCase
       UserGroup.create!(key: SecureRandom.hex,
                         name: @instance.name)
     end
-  end
-
-  # users
-
-  test "users can contain only LocalUsers" do
-    @instance.users << users(:local_sysadmin)
-    assert @instance.valid?
-    @instance.users << users(:uiuc)
-    assert !@instance.valid?
   end
 
 end

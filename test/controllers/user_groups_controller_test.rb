@@ -267,6 +267,35 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_netid_users()
+
+  test "edit_netid_users() redirects to login page for logged-out users" do
+    group = user_groups(:temp)
+    get user_group_edit_netid_users_path(group), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit_netid_users() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    group = user_groups(:temp)
+    get user_group_edit_netid_users_path(group), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_netid_users() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_netid_users_path(group)
+    assert_response :not_found
+  end
+
+  test "edit_netid_users() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    group = user_groups(:temp)
+    get user_group_edit_netid_users_path(group), xhr: true
+    assert_response :ok
+  end
+
   # index()
 
   test "index() redirects to login page for logged-out users" do

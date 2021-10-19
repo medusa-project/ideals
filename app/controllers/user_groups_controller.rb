@@ -86,6 +86,14 @@ class UserGroupsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /user-groups/:id/edit-netid-users` (XHR only)
+  #
+  def edit_netid_users
+    render partial: "user_groups/netid_users_form",
+           locals: { user_group: @user_group }
+  end
+
+  ##
   # Responds to `GET /user-groups`
   #
   def index
@@ -98,7 +106,8 @@ class UserGroupsController < ApplicationController
   # Responds to `GET /user-groups/:id`
   #
   def show
-    @users        = @user_group.users.order(:name)
+    @local_users  = @user_group.local_users.order(:name)
+    @netid_users  = @user_group.netid_users.order(:name)
     @ldap_groups  = @user_group.ldap_groups.order(:urn)
     @hosts        = @user_group.hosts.order(:pattern)
     @departments  = @user_group.departments.order(:name)
@@ -111,6 +120,19 @@ class UserGroupsController < ApplicationController
   def update
     begin
       UserGroup.transaction do
+        # NetID users require manual processing.
+        # Departments require manual processing.
+        if params[:user_group][:netid_users]&.respond_to?(:each)
+          @user_group.netid_users.destroy_all
+          params[:user_group][:netid_users].select(&:present?).each do |netid|
+            uid   = "#{netid}@illinois.edu"
+            email = uid
+            user  = ShibbolethUser.find_by_uid(uid) || ShibbolethUser.new(uid:   uid,
+                                                                          email: email,
+                                                                          name:  netid)
+            @user_group.users << user
+          end
+        end
         # Hosts require manual processing.
         if params[:user_group][:hosts]&.respond_to?(:each)
           @user_group.hosts.destroy_all

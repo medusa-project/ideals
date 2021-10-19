@@ -76,6 +76,14 @@ const UserGroupView = function() {
             $("#edit-local-users-modal .modal-body").html(data);
         });
     });
+    $("button.edit-netid-users").on("click", function() {
+        const id = $(this).data("user-group-id");
+        const url = ROOT_URL + "/user-groups/" + id + "/edit-netid-users";
+        $.get(url, function(data) {
+            $("#edit-netid-users-modal .modal-body").html(data);
+            UserGroupForm.attachEventListeners();
+        });
+    });
     $("button.edit-hosts").on("click", function() {
         const id = $(this).data("user-group-id");
         const url = ROOT_URL + "/user-groups/" + id + "/edit-hosts";

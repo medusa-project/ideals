@@ -23,12 +23,8 @@
 
 %h1= @user_group.name
 
-.alert.alert-light
-  %i.fa.fa-info-circle
-  All categories are related by Boolean "OR" except departments and affiliations, which are related by "AND."
-
 .row.mb-3
-  .col-sm-12
+  .col-sm-6
     .card
       .card-body
         - if can_edit
@@ -47,26 +43,6 @@
                 %strong= group.short_name
                 %br
                 %code.text-secondary= group.urn
-        - else
-          %p None
-
-.row.mb-3
-  .col-sm-6
-    .card
-      .card-body
-        - if can_edit
-          .float-right
-            %button.btn.btn-light.btn-sm.edit-local-users{"data-target": "#edit-local-users-modal",
-                                                          "data-toggle": "modal",
-                                                          "data-user-group-id": @user_group.id,
-                                                          type: "button"}
-              %i.fa.fa-pencil-alt
-              Edit
-        %h4.card-title Local Users
-        - if @users.any?
-          %ul
-            - @users.each do |user|
-              %li= link_to(user.name, user.becomes(User))
         - else
           %p None
   .col-sm-6
@@ -89,7 +65,45 @@
         - else
           %p None
 
-.row
+.row.mb-3
+  .col-sm-6
+    .card
+      .card-body
+        - if can_edit
+          .float-right
+            %button.btn.btn-light.btn-sm.edit-local-users{"data-target": "#edit-local-users-modal",
+                                                          "data-toggle": "modal",
+                                                          "data-user-group-id": @user_group.id,
+                                                          type: "button"}
+              %i.fa.fa-pencil-alt
+              Edit
+        %h4.card-title Local Users
+        - if @local_users.any?
+          %ul
+            - @local_users.each do |user|
+              %li= link_to(user.name, user.becomes(User))
+        - else
+          %p None
+  .col-sm-6
+    .card
+      .card-body
+        - if can_edit
+          .float-right
+            %button.btn.btn-light.btn-sm.edit-netid-users{"data-target": "#edit-netid-users-modal",
+                                                          "data-toggle": "modal",
+                                                          "data-user-group-id": @user_group.id,
+                                                          type: "button"}
+              %i.fa.fa-pencil-alt
+              Edit
+        %h4.card-title NetID Users
+        - if @netid_users.any?
+          %ul
+            - @netid_users.each do |user|
+              %li= link_to(user.name, user.becomes(User))
+        - else
+          %p None
+
+.row.mb-3
   .col-sm-6
     .card
       .card-body
@@ -120,9 +134,6 @@
               %i.fa.fa-pencil-alt
               Edit
         %h4.card-title Affiliations
-        .alert.alert-light
-          %i.fa.fa-info-circle
-          These are only considered when there are one or more departments associated with the group.
         - if @affiliations.any?
           %ul
             - @affiliations.each do |affiliation|
@@ -142,3 +153,5 @@
          locals: { id: "edit-local-users-modal", title: "Edit Local Users" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-hosts-modal", title: "Edit Hosts" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-netid-users-modal", title: "Edit NetID Users" }

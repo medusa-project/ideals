@@ -53,6 +53,10 @@ class UserGroupPolicy < ApplicationPolicy
     edit
   end
 
+  def edit_netid_users
+    edit
+  end
+
   def index
     create
   end
