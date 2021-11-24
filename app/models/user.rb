@@ -26,6 +26,8 @@
 #
 class User < ApplicationRecord
 
+  include Breadcrumb
+
   # ShibbolethUsers only!
   belongs_to :affiliation, optional: true
   belongs_to :identity, class_name: "LocalIdentity",
@@ -56,6 +58,8 @@ class User < ApplicationRecord
   validates_uniqueness_of :uid, case_sensitive: true
 
   before_save -> { email.downcase! }
+
+  breadcrumbs label: :name
 
   ##
   # @param string [String] Autocomplete text field string.
