@@ -53,13 +53,6 @@ class BitstreamPolicy < ApplicationPolicy
         reason:     "You must be a manager of the primary collection in "\
                     "which the file's item resides."
       }
-    elsif !bitstream.exists_in_staging && !bitstream.medusa_uuid.present?
-      return {
-        authorized: false,
-        reason: "The file `#{bitstream.original_filename}` associated with "\
-          "item ID #{bitstream.item_id} does not exist in storage. "\
-          "Please contact us for assistance using the link below."
-      }
     elsif bitstream.item.current_embargoes.count > 0
       return { authorized: false,
                reason: "This file's owning item is embargoed." }

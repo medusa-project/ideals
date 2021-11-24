@@ -281,17 +281,6 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.download?
   end
 
-  test "download?() restricts bitstreams that do not exist in stagina and do
-  not have a Medusa UUID" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    bs = bitstreams(:item1_in_staging)
-    bs.update!(medusa_uuid: nil, exists_in_staging: false)
-    policy  = BitstreamPolicy.new(context, bs)
-    assert !policy.download?
-  end
-
   test "download?() restricts bitstreams whose owning items are embargoed" do
     user      = users(:norights)
     context   = RequestContext.new(user:        user,
@@ -919,17 +908,6 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
-    assert !policy.viewer?
-  end
-
-  test "viewer?() restricts bitstreams that do not exist in stagina and do
-  not have a Medusa UUID" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    bs = bitstreams(:item1_in_staging)
-    bs.update!(medusa_uuid: nil, exists_in_staging: false)
-    policy  = BitstreamPolicy.new(context, bs)
     assert !policy.viewer?
   end
 
