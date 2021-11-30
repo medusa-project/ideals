@@ -1,14 +1,29 @@
-#complete-modal.modal.fade{tabindex: "-1", role: "dialog",
-                           "data-backdrop": "static",
+#complete-modal.modal.fade{tabindex:          "-1",
+                           role:              "dialog",
+                           "data-backdrop":   "static",
                            "aria-labelledby": "complete-modal-label",
-                           "aria-hidden": "true"}
+                           "aria-hidden":     "true"}
   .modal-dialog{role: "document"}
     .modal-content
       .modal-header
-        %h5#complete-modal-label.modal-title Submission Complete
+        %h5#complete-modal-label.modal-title Submission Complete!
       .modal-body
-        .alert.alert-info
-          TODO: This is placeholder text. Provide finalized text (including link URLs) in a new JIRA ticket.
-        Sint enim enim sequi quo perferendis accusantium ut. Pariatur amet facere natus voluptate explicabo est. Praesentium illo dicta provident aut ipsum omnis ratione. Voluptatem nemo qui soluta eius aut atque voluptatum. Nostrum ratione culpa veritatis et. Culpa itaque aut qui vero rerum blanditiis.
+        - if @item.primary_collection.submissions_reviewed
+          %p
+            Your submission will now go through the review process for this
+            collection. You will receive an e-mail notification as soon as your
+            submission has joined the collection, or if there is a problem with
+            your submission. You may also check on the status of your submission
+            by visiting your submissions page.
+          %p
+            The persistent link for this item will be:
+            = @item.handle.handle_net_url
+        - else
+          %p Your submission is now available in IDEALS.
+          %p
+            The persistent link for this item is:
+            = @item.handle.handle_net_url
+
+        %p Please contact us if you have any questions.
       .modal-footer
         = link_to "Done", root_path, class: "btn btn-primary"
