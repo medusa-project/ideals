@@ -3,7 +3,7 @@ require 'test_helper'
 class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    Bitstream.create_bucket
+    setup_s3
   end
 
   teardown do
@@ -123,7 +123,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "ingest() returns HTTP 400 if the bitstream's staging key is nil" do
     log_in_as(users(:local_sysadmin))
     bitstream = bitstreams(:item1_in_staging)
-    bitstream.update!(exists_in_staging: false, staging_key: nil)
+    bitstream.update!(staging_key: nil)
     post item_bitstream_ingest_path(items(:item1), bitstream)
     assert_response :bad_request
   end
@@ -140,15 +140,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "ingest() returns HTTP 409 if the bitstream has already been submitted for ingest" do
     log_in_as(users(:local_sysadmin))
-    bitstream = bitstreams(:item1_in_staging)
-    bitstream.update!(submitted_for_ingest: true)
+    bitstream = bitstreams(:approved_in_permanent)
     post item_bitstream_ingest_path(items(:item1), bitstream)
     assert_response :conflict
   end
 
   test "ingest() returns HTTP 409 if the bitstream already exists in Medusa" do
     log_in_as(users(:local_sysadmin))
-    bitstream = bitstreams(:item1_in_staging)
+    bitstream = bitstreams(:approved_in_permanent)
     bitstream.update!(medusa_uuid: SecureRandom.uuid)
     post item_bitstream_ingest_path(items(:item1), bitstream)
     assert_response :conflict
@@ -156,7 +155,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "ingest() ingests the bitstream" do
     log_in_as(users(:local_sysadmin))
-    bitstream = bitstreams(:item1_in_staging)
+    bitstream = bitstreams(:awaiting_ingest_into_medusa)
     assert !bitstream.submitted_for_ingest
 
     post item_bitstream_ingest_path(items(:item1), bitstream)
@@ -166,7 +165,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "ingest() returns HTTP 204 for a successful ingest" do
     log_in_as(users(:local_sysadmin))
-    post item_bitstream_ingest_path(items(:item1), bitstreams(:item1_in_staging))
+    post item_bitstream_ingest_path(items(:awaiting_ingest_into_medusa),
+                                    bitstreams(:awaiting_ingest_into_medusa))
     assert_response :no_content
   end
 
@@ -389,7 +389,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   # stream()
 
-  test "stream() returns HTTP 200" do
+  test "stream() returns HTTP 200 for bitstreams in staging" do
     fixture   = file_fixture("escher_lego.jpg")
     item      = items(:item1)
     bitstream = Bitstream.new_in_staging(item:     item,
@@ -402,8 +402,29 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       end
       get item_bitstream_stream_path(item, bitstream)
       assert_response :ok
+      assert_equal File.size(fixture), response.body.length
     ensure
       bitstream.delete_from_staging
+    end
+  end
+
+  test "stream() returns HTTP 200 for bitstreams in permanent storage" do
+    fixture   = file_fixture("escher_lego.jpg")
+    item      = items(:item1)
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      bitstream.move_into_permanent_storage
+      get item_bitstream_stream_path(item, bitstream)
+      assert_response :ok
+      assert_equal File.size(fixture), response.body.length
+    ensure
+      bitstream.delete_from_permanent_storage
     end
   end
 
@@ -487,11 +508,10 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "stream() returns HTTP 500 when the underlying data is missing" do
     item      = items(:item1)
-    bitstream = Bitstream.new_in_staging(item: item,
+    bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: "cats.jpg",
-                                         length: 234234)
-    bitstream.exists_in_staging = true
-    bitstream.save!
+                                         length:   234234)
+    bitstream.update!(staging_key: nil)
     get item_bitstream_stream_path(item, bitstream)
     assert_response :internal_server_error
   end

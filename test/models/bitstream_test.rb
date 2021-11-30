@@ -67,6 +67,13 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_equal filename, bs.original_filename
   end
 
+  # permanent_key()
+
+  test "permanent_key() returns a correct key" do
+    assert_equal "#{Bitstream::PERMANENT_KEY_PREFIX}/30/cats.jpg",
+                 Bitstream.permanent_key(30, "cats.jpg")
+  end
+
   # staging_key()
 
   test "staging_key() returns a correct key" do
@@ -129,15 +136,25 @@ class BitstreamTest < ActiveSupport::TestCase
   # data()
 
   test "data() raises an error when an object does not exist in either the
-  staging or production bucket" do
+  staging or permanent area" do
+    S3Client.instance.delete_object(bucket: ::Configuration.instance.aws[:bucket],
+                                    key:    @instance.staging_key)
     assert_raises Aws::S3::Errors::NoSuchKey do
       @instance.data
     end
   end
 
-  test "data() returns the data when an object exists in the staging bucket" do
-    File.open(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg"), "r") do |file|
+  test "data() returns the data when an object exists in the staging area" do
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
       @instance.upload_to_staging(file)
+    end
+    assert_not_nil @instance.data
+  end
+
+  test "data() returns the data when an object exists in the permanent area" do
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_to_staging(file)
+      @instance.move_into_permanent_storage
     end
     assert_not_nil @instance.data
   end
@@ -149,7 +166,7 @@ class BitstreamTest < ActiveSupport::TestCase
     bucket = ::Configuration.instance.aws[:bucket]
 
     # upload the source image to the staging area of the application S3 bucket
-    File.open(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
       @instance.upload_to_staging(file)
     end
 
@@ -192,9 +209,67 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  # delete_from_permanent_storage()
+
+  test "delete_from_permanent_storage() does nothing if the instance has no
+  corresponding object" do
+    @instance.delete_from_permanent_storage # assert no errors
+  end
+
+  test "delete_from_permanent_storage() deletes the corresponding object" do
+    config = ::Configuration.instance
+
+    # Write a file to the bucket.
+    fixture = file_fixture("escher_lego.jpg")
+    File.open(fixture, "r") do |file|
+      @instance = Bitstream.new_in_staging(item:     items(:item1),
+                                           filename: File.basename(fixture),
+                                           length:   File.size(fixture))
+      @instance.upload_to_staging(file)
+      @instance.move_into_permanent_storage
+    end
+
+    permanent_key = @instance.permanent_key
+
+    # Check that the file exists in the bucket.
+    assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+                                            key:    permanent_key)
+
+    # Delete it.
+    @instance.delete_from_permanent_storage
+
+    # Check that it has been deleted.
+    assert !S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+                                             key:    permanent_key)
+  end
+
+  test "delete_from_permanent_storage() updates the instance properties" do
+    # Write a file to the bucket.
+    fixture = file_fixture("escher_lego.jpg")
+    File.open(fixture, "r") do |file|
+      @instance = Bitstream.new_in_staging(item:     items(:item1),
+                                           filename: File.basename(fixture),
+                                           length:   File.size(fixture))
+      @instance.upload_to_staging(file)
+      @instance.move_into_permanent_storage
+    end
+
+    # Check that the file exists in the bucket.
+    config = ::Configuration.instance
+    assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+                                            key:    @instance.permanent_key)
+
+    # Delete it.
+    @instance.delete_from_permanent_storage
+
+    # Check that the properties have been updated.
+    assert_nil @instance.permanent_key
+  end
+
   # delete_from_staging()
 
-  test "delete_from_staging() does nothing if the instance has no corresponding object" do
+  test "delete_from_staging() does nothing if the instance has no corresponding
+  object" do
     @instance.delete_from_staging # assert no errors
   end
 
@@ -243,7 +318,6 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance.delete_from_staging
 
     # Check that the properties have been updated.
-    assert !@instance.exists_in_staging
     assert_nil @instance.staging_key
   end
 
@@ -258,7 +332,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "derivative_url() generates a correct URL" do
     # upload the source image to the staging area of the application S3 bucket
-    File.open(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
       @instance.upload_to_staging(file)
     end
 
@@ -287,15 +361,6 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance.dspace_id = "125415979481218159291827549801925969929"
     assert_equal "/12/54/15/125415979481218159291827549801925969929",
                  @instance.dspace_relative_path
-  end
-
-  # exists_in_staging
-
-  test "exists_in_staging cannot be set to true when staging_key is blank" do
-    @instance.staging_key = nil
-    assert_raises ActiveRecord::RecordInvalid do
-      @instance.update!(exists_in_staging: true)
-    end
   end
 
   # format()
@@ -346,14 +411,17 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
-  test "ingest_into_medusa() raises an error if the owning item's handle does not have a suffix" do
+  test "ingest_into_medusa() raises an error if the owning item's handle does
+  not have a suffix" do
+    @instance = bitstreams(:approved_in_permanent)
     @instance.item.handle.suffix = nil
-    assert_raises ArgumentError do
+    assert_raises AlreadyExistsError do
       @instance.ingest_into_medusa
     end
   end
 
-  test "ingest_into_medusa() raises an error if the owning item does not have a handle" do
+  test "ingest_into_medusa() raises an error if the owning item does not have a
+  handle" do
     @instance.item.handle.destroy!
     @instance.item.handle = nil
     assert_raises ArgumentError do
@@ -363,7 +431,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "ingest_into_medusa() raises an error if the instance has already been
   submitted for ingest and the force argument is false" do
-    @instance.submitted_for_ingest = true
+    @instance = bitstreams(:approved_in_permanent)
     assert_raises AlreadyExistsError do
       @instance.ingest_into_medusa
     end
@@ -371,13 +439,15 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "ingest_into_medusa() does not raise an error if the instance has
   already been submitted for ingest but the force argument is true" do
+    @instance.permanent_key = "cats"
     @instance.submitted_for_ingest = true
     @instance.ingest_into_medusa(force: true)
   end
 
   test "ingest_into_medusa() raises an error if a Medusa UUID is already present
   and the force argument is false" do
-    @instance.medusa_uuid = SecureRandom.uuid
+    @instance.permanent_key = "cats"
+    @instance.medusa_uuid   = SecureRandom.uuid
     assert_raises AlreadyExistsError do
       @instance.ingest_into_medusa
     end
@@ -385,17 +455,19 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "ingest_into_medusa() does not raise an error if a Medusa UUID is
   already present but the force argument is true" do
-    @instance.medusa_uuid = SecureRandom.uuid
+    @instance.permanent_key = "cats"
+    @instance.medusa_uuid   = SecureRandom.uuid
     @instance.ingest_into_medusa(force: true)
   end
 
   test "ingest_into_medusa() sends a message to the queue" do
+    @instance = bitstreams(:awaiting_ingest_into_medusa)
     @instance.ingest_into_medusa
     AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
       config = ::Configuration.instance
       assert_equal "ingest", message['operation']
-      assert_equal "969722354/escher_lego.jpg", message['staging_key']
-      assert_equal "#{config.handles[:prefix]}/5000/escher_lego.jpg",
+      assert_equal "#{@instance.id}/escher_lego2.jpg", message['staging_key']
+      assert_equal "#{config.handles[:prefix]}/#{@instance.item.handle.suffix}/escher_lego2.jpg",
                    message['target_key']
       assert_equal @instance.class.to_s, message['pass_through']['class']
       assert_equal @instance.id, message['pass_through']['identifier']
@@ -445,27 +517,79 @@ class BitstreamTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # move_into_permanent_storage()
+
+  test "move_into_permanent_storage() raises an error if no object exists in
+  staging" do
+    @instance = Bitstream.new_in_staging(item:     items(:item1),
+                                         filename: "file.jpg",
+                                         length:   1234)
+    assert_raises do
+      @instance.move_into_permanent_storage
+    end
+  end
+
+  test "move_into_permanent_storage() updates instance properties" do
+    begin
+      fixture = file_fixture("escher_lego.jpg")
+      File.open(fixture, "r") do |file|
+        @instance = Bitstream.new_in_staging(item:     items(:item1),
+                                             filename: File.basename(fixture),
+                                             length:   File.size(fixture))
+        @instance.upload_to_staging(file)
+        @instance.move_into_permanent_storage
+      end
+
+      assert_nil @instance.staging_key
+      assert_equal Bitstream.permanent_key(@instance.item_id, @instance.original_filename),
+                   @instance.permanent_key
+    ensure
+      @instance.delete_from_staging
+      @instance.delete_from_permanent_storage
+    end
+  end
+
+  test "move_into_permanent_storage() moves a staging object into permanent
+  storage" do
+    begin
+      fixture = file_fixture("escher_lego.jpg")
+      File.open(fixture, "r") do |file|
+        @instance = Bitstream.new_in_staging(item:     items(:item1),
+                                             filename: File.basename(fixture),
+                                             length:   File.size(fixture))
+        @instance.upload_to_staging(file)
+        @instance.move_into_permanent_storage
+      end
+
+      # Check that the file exists in the bucket.
+      config = ::Configuration.instance
+      assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+                                              key:    @instance.permanent_key)
+    ensure
+      @instance.delete_from_staging
+      @instance.delete_from_permanent_storage
+    end
+  end
+
   # presigned_url()
 
   test "presigned_url() returns a presigned URL for an object in staging" do
-    @instance.exists_in_staging = true
-    @instance.staging_key       = "key"
-    @instance.medusa_key        = nil
+    @instance.staging_key   = "key"
+    @instance.permanent_key = nil
     assert_not_nil @instance.presigned_url
   end
 
-  test "presigned_url() returns a presigned URL for an object in production" do
-    @instance.exists_in_staging = false
-    @instance.staging_key       = nil
-    @instance.medusa_key        = "key"
+  test "presigned_url() returns a presigned URL for an object in permanent
+  storage" do
+    @instance.staging_key   = nil
+    @instance.permanent_key = "key"
     assert_not_nil @instance.presigned_url
   end
 
   test "presigned_url() raises an IOError if the instance has no corresponding
   object" do
-    @instance.exists_in_staging = false
-    @instance.staging_key       = nil
-    @instance.medusa_key        = nil
+    @instance.staging_key   = nil
+    @instance.permanent_key = nil
     assert_raises IOError do
       @instance.presigned_url
     end
@@ -482,17 +606,31 @@ class BitstreamTest < ActiveSupport::TestCase
 
   # staging_key
 
-  test "staging_key may be nil when exists_in_staging is false" do
-    @instance.exists_in_staging = false
-    @instance.staging_key = nil
-    assert @instance.valid?
-  end
-
   test "staging_key must be unique" do
     @instance.update!(staging_key:"cats")
     assert_raises ActiveRecord::RecordNotUnique do
       Bitstream.create!(staging_key: "cats",
-                        item: items(:item1))
+                        item:        items(:item1))
+    end
+  end
+
+  # upload_to_permanent()
+
+  test "upload_to_permanent() uploads a file to the application bucket" do
+    begin
+      fixture = file_fixture("escher_lego.jpg")
+      File.open(fixture, "r") do |file|
+        key = Bitstream::PERMANENT_KEY_PREFIX + "file"
+        @instance.update!(permanent_key: key)
+        @instance.upload_to_permanent(file)
+      end
+
+      # Check that the file exists in the bucket.
+      config = ::Configuration.instance
+      assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+                                              key:    @instance.permanent_key)
+    ensure
+      @instance.delete_from_permanent_storage
     end
   end
 

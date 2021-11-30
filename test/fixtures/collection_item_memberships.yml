@@ -5,6 +5,26 @@ collection1_item1:
   item:       item1
   primary:    true
 
+collection1_submitting:
+  collection: collection1
+  item:       submitting
+  primary:    true
+
+collection1_submitted:
+  collection: collection1
+  item:       submitted
+  primary:    true
+
+collection1_approved:
+  collection: collection1
+  item:       approved
+  primary:    true
+
+collection1_awaiting_ingest_into_medusa:
+  collection: collection1
+  item:       awaiting_ingest_into_medusa
+  primary:    true
+
 collection1_in_medusa:
   collection: collection1
   item:       in_medusa
@@ -20,24 +40,9 @@ collection1_embargoed:
   item:       embargoed
   primary:    true
 
-collection1_submitter:
-  collection: collection1
-  item:       submitter
-  primary:    true
-
 collection1_undescribed:
   collection: collection1
   item:       undescribed
-  primary:    true
-
-collection1_submitting:
-  collection: collection1
-  item:       submitting
-  primary:    true
-
-collection1_submitted:
-  collection: collection1
-  item:       submitted
   primary:    true
 
 collection1_undiscoverable:

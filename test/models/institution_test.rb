@@ -83,7 +83,7 @@ class InstitutionTest < ActiveSupport::TestCase
       end
     end
     result = @instance.item_download_counts
-    assert_equal 6, result.length
+    assert_equal 9, result.length
     assert_equal 24, result[0]['dl_count']
   end
 

@@ -78,7 +78,7 @@ class BitstreamsController < ApplicationController
   end
 
   ##
-  # Creates a presigned URL for downloading the given {Bitstream} and redirects
+  # Creates a presigned URL for downloading the given [Bitstream] and redirects
   # to it via HTTP 307.
   #
   # Note that for XHR requests, this requires an appropriate CORS policy to be
@@ -106,25 +106,25 @@ class BitstreamsController < ApplicationController
   ##
   # Streams a bitstream's data.
   #
+  # N.B.: {object} is preferred as it won't tie up a request connection.
+  #
   # Responds to `GET /items/:item_id/bitstreams/:id/stream`.
   #
   # @see object
   #
   def stream
-    config = ::Configuration.instance
-    if @bitstream.medusa_key.present?
-      s3_request = {
-        bucket: config.medusa[:bucket],
-        key:    @bitstream.medusa_key
-      }
-    elsif @bitstream.exists_in_staging
-      s3_request = {
-        bucket: config.aws[:bucket],
-        key:    @bitstream.staging_key
-      }
+    if @bitstream.permanent_key.present?
+      key = @bitstream.permanent_key
+    elsif @bitstream.staging_key.present?
+      key = @bitstream.staging_key
     else
       raise IOError, "This bitstream has no corresponding storage object."
     end
+
+    s3_request = {
+      bucket: ::Configuration.instance.aws[:bucket],
+      key:    key
+    }
 
     if !request.headers['Range']
       status = "200 OK"

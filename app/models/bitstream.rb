@@ -1,9 +1,19 @@
 ##
-# Binary file/object associated with an {Item}. The "bitstream" terminology
+# Binary file/object associated with an [Item]. The "bitstream" terminology
 # comes from DSpace, which is what IDEALS used to be built on.
 #
 # The term "bitstream" is not exposed in the user interface. Throughout the UI,
 # bitstreams are called files. (IR-109)
+#
+# # Storage locations
+#
+# When a file is first uploaded, it is stored in the application S3 bucket
+# under {STAGING_KEY_PREFIX}, and {staging_key} is set on its corresponding
+# instance. When it is approved, it is moved to a location under
+# {PERMANENT_KEY_PREFIX}, and {permanent_key} is set on its corresponding
+# instance. Also, a message is sent to Medusa to ingest it into the IDEALS file
+# group. Upon receipt of a success message, {medusa_key} is set on its
+# corresponding instance.
 #
 # # Formats/media types
 #
@@ -30,16 +40,13 @@
 #
 # # Attributes
 #
-# * `bundle`                One of the {Bundle} constant values.
+# * `bundle`                One of the [Bundle] constant values.
 # * `created_at`:           Managed by ActiveRecord.
 # * `dspace_id`:            `bitstream.internal_id` column value from
 #                           IDEALS-DSpace. This is only relevant during
 #                           migration out of that system and can be removed
 #                           once migration is complete.
-# * `exists_in_staging`:    Whether a corresponding object exists in the
-#                           staging "area" (key prefix) of the application S3
-#                           bucket.
-# * `item_id`:              Foreign key to {Item}.
+# * `item_id`:              Foreign key to [Item].
 # * `length`:               Size in bytes.
 # * `medusa_key`:           Full object key within the Medusa S3 bucket. Set
 #                           only once the bitstream has been ingested into
@@ -48,12 +55,14 @@
 #                           Collection Registry. Set only after the bitstream
 #                           has been ingested.
 # * `original_filename`:    Filename of the bitstream as submitted by the user.
-# * `role`:                 One of the {Role} constant values indicating the
+# * `permanent_key`:        Object key in the application S3 bucket, which is
+#                           set after the owning [Item] has been approved.
+# * `role`:                 One of the [Role] constant values indicating the
 #                           minimum-privileged role required to access the
 #                           instance.
-# * `staging_key`:          Full object key in the application S3 bucket. May
-#                           be set even though the bitstream does not exist in
-#                           staging--check `exists_in_staging` to be sure.
+# * `staging_key`:          Object key in the application S3 bucket, which is
+#                           set after the instance has been uploaded but before
+#                           it has been approved.
 # * `submitted_for_ingest`: Set to `true` after an ingest message has been sent
 #                           to Medusa.
 # * `updated_at`:           Managed by ActiveRecord.
@@ -72,13 +81,20 @@ class Bitstream < ApplicationRecord
                       message: 'UUID is invalid',
                       allow_blank: true
   validates_inclusion_of :role, in: -> (value) { Role.all }
-  validate :validate_staging_properties
 
   before_destroy :delete_derivatives, :delete_from_staging
   before_destroy :delete_from_medusa, if: -> { Rails.env.demo? }
 
-  # This must be a location that Medusa is configured to monitor
+  ##
+  # Bitstreams are initially uploaded to a location under this key prefix.
+  #
   STAGING_KEY_PREFIX = "uploads"
+
+  ##
+  # Bitstreams are moved under this key prefix when they are approved.
+  # Medusa must be configured to monitor this location.
+  #
+  PERMANENT_KEY_PREFIX = "storage"
 
   ##
   # Contains constants corresponding to the allowed values of {bundle}.
@@ -122,19 +138,6 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # For use in testing only.
-  #
-  def self.create_bucket
-    raise "Not going to create a bucket in this environment" unless
-        %w(development test).include?(Rails.env)
-    client = S3Client.instance
-    bucket = ::Configuration.instance.aws[:bucket]
-    unless S3Client.instance.bucket_exists?(bucket)
-      client.create_bucket(bucket: bucket)
-    end
-  end
-
-  ##
   # Computes a destination Medusa key based on the given arguments. The key is
   # relative to the file group key prefix, which is known only by Medusa, so
   # the return value will be different than the value of {medusa_key}, which
@@ -173,12 +176,21 @@ class Bitstream < ApplicationRecord
   # @param filename [String]
   # @return [String]
   #
+  def self.permanent_key(item_id, filename)
+    [PERMANENT_KEY_PREFIX, item_id, filename].join("/")
+  end
+
+  ##
+  # @param item_id [Integer]
+  # @param filename [String]
+  # @return [String]
+  #
   def self.staging_key(item_id, filename)
     [STAGING_KEY_PREFIX, item_id, filename].join("/")
   end
 
   ##
-  # Creates an associated {Event} representing a download.
+  # Creates an associated [Event] representing a download.
   #
   # @param user [User] Optional.
   #
@@ -198,17 +210,12 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # @return [IO]
+  # @return [IO] New instance for reading.
   #
   def data
     config = ::Configuration.instance
-    if self.medusa_key
-      bucket = config.medusa[:bucket]
-      key    = self.medusa_key
-    else
-      bucket = config.aws[:bucket]
-      key    = self.staging_key
-    end
+    bucket = config.aws[:bucket]
+    key    = self.permanent_key.present? ? self.permanent_key : self.staging_key
     S3Client.instance.get_object(bucket: bucket, key: key).body.read
   end
 
@@ -217,17 +224,17 @@ class Bitstream < ApplicationRecord
       S3Client.instance.delete_objects(bucket:     ::Configuration.instance.aws[:bucket],
                                        key_prefix: derivative_key_prefix)
     rescue Aws::S3::Errors::NoSuchBucket
-      # This would hopefully only happen in a test environment misconfiguration.
-      # In any case, it's safe to assume that if the bucket doesn't exist,
-      # there is nothing to delete.
+      # This would hopefully only happen because of a test environment
+      # misconfiguration. In any case, it's safe to assume that if the bucket
+      # doesn't exist, there is nothing to delete.
     end
   end
 
   ##
   # Sends a message to Medusa to delete the corresponding object.
   #
-  # This should only be done in the demo environment. The production Medusa
-  # instance shouldn't even honor delete messages.
+  # This should only be done in the demo environment, if at all. The production
+  # Medusa instance shouldn't even honor delete messages.
   #
   def delete_from_medusa
     raise "This is not supported in production" if Rails.env.production?
@@ -240,16 +247,31 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # Deletes the corresponding object from the application S3 bucket.
+  # Deletes the corresponding object from the permanent storage area of the
+  # application S3 bucket.
+  #
+  # There would probably never be a reason to do this, except for testing.
+  #
+  def delete_from_permanent_storage
+    return if self.permanent_key.blank?
+    S3Client.instance.delete_object(bucket: ::Configuration.instance.aws[:bucket],
+                                    key:    self.permanent_key)
+    self.update!(permanent_key: nil)
+  rescue Aws::S3::Errors::NotFound
+    self.update!(permanent_key: nil)
+  end
+
+  ##
+  # Deletes the corresponding object from the staging area of the application
+  # S3 bucket.
   #
   def delete_from_staging
-    return unless self.exists_in_staging
+    return if self.staging_key.blank?
     S3Client.instance.delete_object(bucket: ::Configuration.instance.aws[:bucket],
                                     key:    self.staging_key)
+    self.update!(staging_key: nil)
   rescue Aws::S3::Errors::NotFound
-    # That's OK
-  ensure
-    self.update!(exists_in_staging: false, staging_key: nil)
+    self.update!(staging_key: nil)
   end
 
   ##
@@ -323,26 +345,28 @@ class Bitstream < ApplicationRecord
   ##
   # @param force [Boolean] If true, the ingest occurs even if the instance has
   #                        already been submitted or already exists in Medusa.
-  # @raises [ArgumentError] if the bitstream does not have an ID or staging key.
+  # @raises [ArgumentError] if the bitstream does not have an ID, permanent key,
+  #                         or handle.
   # @raises [AlreadyExistsError] if the bitstream already has a Medusa UUID.
   #
   def ingest_into_medusa(force: false)
-    raise ArgumentError, "Bitstream has not been saved yet" if self.id.blank?
-    raise ArgumentError, "Bitstream's staging key is nil" if self.staging_key.blank?
-    raise ArgumentError, "Bitstream's item does not have a handle" unless self.item.handle&.suffix&.present?
+    raise ArgumentError, "Instance has not been saved yet" if self.id.blank?
+    raise ArgumentError, "Permanent key is not set" if self.permanent_key.blank?
+    raise ArgumentError, "Owning item does not have a handle" if !self.item.handle || self.item.handle&.suffix&.blank?
     unless force
-      raise AlreadyExistsError, "Bitstream has already been submitted for ingest" if self.submitted_for_ingest
-      raise AlreadyExistsError, "Bitstream already exists in Medusa" if self.medusa_uuid.present?
+      raise AlreadyExistsError, "Already been submitted for ingest" if self.submitted_for_ingest
+      raise AlreadyExistsError, "Already exists in Medusa" if self.medusa_uuid.present?
     end
 
-    # The staging key is relative to STAGING_KEY_PREFIX because Medusa is
-    # configured to look only within that prefix.
-    staging_key_ = [self.item.id, self.original_filename].join("/")
-    target_key   = self.class.medusa_key(self.item.handle.handle,
-                                         self.original_filename)
-    message = self.messages.build(operation:   Message::Operation::INGEST,
-                                  staging_key: staging_key_,
-                                  target_key:  target_key)
+    # The staging key (this is Medusa AMQP interface terminology, not
+    # Bitstream terminology) is relative to PERMANENT_KEY_PREFIX because Medusa
+    # is configured to look only within that prefix.
+    staging_key = [self.item_id, self.original_filename].join("/")
+    target_key  = self.class.medusa_key(self.item.handle.handle,
+                                        self.original_filename)
+    message     = self.messages.build(operation:   Message::Operation::INGEST,
+                                      staging_key: staging_key,
+                                      target_key:  target_key)
     message.save!
     message.send_message
     self.update!(submitted_for_ingest: true)
@@ -369,18 +393,32 @@ class Bitstream < ApplicationRecord
     end
   end
 
+  def move_into_permanent_storage
+    client        = S3Client.instance
+    bucket        = ::Configuration.instance.aws[:bucket]
+    permanent_key = self.class.permanent_key(self.item_id,
+                                             self.original_filename)
+    transaction do
+      client.copy_object(copy_source: "/#{bucket}/#{self.staging_key}", # source bucket+key
+                         bucket:      bucket,                           # destination bucket
+                         key:         permanent_key)                    # destination key
+      self.update!(permanent_key: permanent_key,
+                   staging_key:   nil)
+      self.delete_from_staging
+    end
+  end
+
   ##
   # @param content_disposition [String]
   # @return [String]
   #
   def presigned_url(content_disposition: "attachment")
     config = ::Configuration.instance
-    if self.medusa_key.present?
-      bucket = config.medusa[:bucket]
-      key    = self.medusa_key
-    elsif self.exists_in_staging
-      bucket = config.aws[:bucket]
-      key    = self.staging_key
+    bucket = config.aws[:bucket]
+    if self.permanent_key.present?
+      key = self.permanent_key
+    elsif self.staging_key.present?
+      key = self.staging_key
     else
       raise IOError, "This bitstream has no corresponding storage object."
     end
@@ -394,6 +432,18 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # For use only by the `ideals_dspace:copy_into_medusa` rake task. After
+  # migration, this method can be removed.
+  #
+  # @param io [IO]
+  #
+  def upload_to_permanent(io) # TODO: remove this after migration out of IDEALS-DSpace
+    S3Client.instance.put_object(bucket: ::Configuration.instance.aws[:bucket],
+                                 key:    self.permanent_key,
+                                 body:   io)
+  end
+
+  ##
   # Writes the given IO to the staging "area" (key prefix) of the application
   # S3 bucket.
   #
@@ -403,7 +453,6 @@ class Bitstream < ApplicationRecord
     S3Client.instance.put_object(bucket: ::Configuration.instance.aws[:bucket],
                                  key:    self.staging_key,
                                  body:   io)
-    self.update!(exists_in_staging: true)
   end
 
 
@@ -429,11 +478,10 @@ class Bitstream < ApplicationRecord
   #
   def download_to_temp_file
     config        = Configuration.instance
-    source_bucket = self.exists_in_staging ?
-                      config.aws[:bucket] : config.medusa[:bucket]
-    source_key    = self.exists_in_staging ? self.staging_key : self.medusa_key
+    source_bucket = config.aws[:bucket]
+    source_key    = self.permanent_key.present? ?
+                      self.permanent_key : self.staging_key
     tempfile      = Tempfile.new("#{self.class}-#{self.id}")
-
     S3Client.instance.get_object(bucket:          source_bucket,
                                  key:             source_key,
                                  response_target: tempfile.path)
@@ -468,13 +516,6 @@ class Bitstream < ApplicationRecord
     ensure
       source_tempfile.unlink
       FileUtils.rm(deriv_path) rescue nil
-    end
-  end
-
-  def validate_staging_properties
-    if exists_in_staging && staging_key.blank?
-      errors.add(:base, "Instance is marked as existing in staging, but its "\
-          "staging key is blank.")
     end
   end
 

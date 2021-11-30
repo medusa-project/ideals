@@ -29,15 +29,15 @@ namespace :ideals_dspace do
                   bitstream.dspace_relative_path
               local_path  = File.join(tmpdir, "#{bitstream.id}")
               scp.download!(remote_path, local_path)
-              # Upload it to the application S3 bucket under the staging area
-              bitstream.update!(staging_key: Bitstream.staging_key(bitstream.item.id,
-                                                                   bitstream.original_filename))
-              bitstream.upload_to_staging(File.read(local_path))
+              # Upload it to the application S3 bucket
+              bitstream.update!(permanent_key: Bitstream.permanent_key(bitstream.item.id,
+                                                                       bitstream.original_filename))
+              bitstream.upload_to_permanent(File.read(local_path))
               # Delete it from the temp directory
               File.delete(local_path)
               # Tell Medusa to ingest it
               bitstream.ingest_into_medusa
-              progress.report(index, "Transferring files from IDEALS-DSpace into Medusa")
+              progress.report(index, "Copying files from IDEALS-DSpace into Medusa")
             end
           end
         end
@@ -62,15 +62,15 @@ namespace :ideals_dspace do
               bitstream.dspace_relative_path
             local_path  = File.join(tmpdir, "#{bitstream.id}")
             scp.download!(remote_path, local_path)
-            # Upload it to the application S3 bucket under the staging area
-            bitstream.update!(staging_key: Bitstream.staging_key(bitstream.item.id,
-                                                                 bitstream.original_filename))
-            bitstream.upload_to_staging(File.read(local_path))
+            # Upload it to the application S3 bucket
+            bitstream.update!(permanent_key: Bitstream.permanent_key(bitstream.item.id,
+                                                                     bitstream.original_filename))
+            bitstream.upload_to_permanent(File.read(local_path))
             # Delete it from the temp directory
             File.delete(local_path)
             # Tell Medusa to ingest it
             bitstream.ingest_into_medusa
-            progress.report(index, "Transferring files from IDEALS-DSpace into Medusa")
+            progress.report(index, "Copying files from IDEALS-DSpace into Medusa")
           end
         end
       end
@@ -284,7 +284,7 @@ namespace :ideals_dspace do
   def do_migrate(source_db_name, source_db_host, source_db_user,
                  source_db_password, in_sql_file, import_method)
     out_csv_file = in_sql_file.gsub(/.sql$/i, ".csv")
-    in_sql_file = File.join(Rails.root, "scripts", in_sql_file)
+    in_sql_file  = File.join(Rails.root, "scripts", in_sql_file)
     Dir.mktmpdir do |dir|
       out_csv_file = File.join(dir, out_csv_file)
       if source_db_host.present?

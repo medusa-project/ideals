@@ -43,16 +43,17 @@
                    item_bitstream_path(@bitstream.item, @bitstream)) |
       %dt Bundle
       %dd= Bitstream::Bundle.label(@bitstream.bundle)
-      - if @bitstream.exists_in_staging && @bitstream.staging_key
+      - if @bitstream.staging_key.present?
         %dt Staging Key
         %dd
           %code= @bitstream.staging_key
-      - else
-        %dt Exists in Staging
-        %dd= boolean(false, style: :word)
+      - elsif @bitstream.permanent_key.present?
+        %dt Permanent Key
+        %dd
+          %code= @bitstream.permanent_key
       %dt Submitted For Ingest
       %dd= boolean(@bitstream.submitted_for_ingest, style: :word)
-      - if @bitstream.medusa_uuid
+      - if @bitstream.medusa_uuid.present?
         %dt Medusa UUID
         %dd= link_to(@bitstream.medusa_uuid, @bitstream.medusa_url)
         %dt Medusa Key

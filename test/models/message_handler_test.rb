@@ -3,7 +3,7 @@ require 'test_helper'
 class MessageHandlerTest < ActiveSupport::TestCase
 
   setup do
-    Bitstream.create_bucket
+    setup_s3
   end
 
   # handle()

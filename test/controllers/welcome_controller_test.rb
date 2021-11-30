@@ -22,16 +22,19 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", "Welcome to IDEALS"
   end
 
-  test "index() omits undiscoverable, withdrawn, and submitting items from the item count" do
+  test "index() includes only approved items in the count" do
+    setup_elasticsearch
     Item.reindex_all
-    ElasticsearchClient.instance.refresh
+    refresh_elasticsearch
 
-    expected_count = Item.where(discoverable: true).
-        where.not(stage: [Item::Stages::SUBMITTING, Item::Stages::WITHDRAWN]).
-        count
+    expected_count = Item.
+      where(discoverable: true,
+            stage:        Item::Stages::APPROVED).
+      count
 
     get root_path
-    assert response.body.include?("Search across #{expected_count} items")
+    assert_equal "Search across #{expected_count} items",
+                 response.body.match(/Search across \d+ items/)[0]
   end
 
 end

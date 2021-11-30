@@ -327,7 +327,7 @@ class CollectionTest < ActiveSupport::TestCase
     end
 
     result = @instance.item_download_counts
-    assert_equal 5, result.length
+    assert_equal 8, result.length
     assert_equal 3, result[0]['dl_count']
   end
 

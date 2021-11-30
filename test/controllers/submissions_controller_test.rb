@@ -4,7 +4,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     setup_elasticsearch
-    Bitstream.create_bucket
+    setup_s3
   end
 
   teardown do

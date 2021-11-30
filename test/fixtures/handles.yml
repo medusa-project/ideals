@@ -1,7 +1,19 @@
-handle1:
-  suffix: 5000
-  item: item1
+# collection handles
 
 collection1_handle:
-  suffix: 5001
   collection: collection1
+  suffix:     5000
+
+# item handles
+
+handle1:
+  item:   item1
+  suffix: 5001
+
+awaiting_ingest_into_medusa:
+  item:   awaiting_ingest_into_medusa
+  suffix: 5002
+
+approved:
+  item:   approved
+  suffix: 5003

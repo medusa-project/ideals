@@ -103,6 +103,12 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal Item::Stages::APPROVED, item.stage
   end
 
+  test "approve() sets the discoverable property to true" do
+    item = items(:described)
+    item.approve
+    assert item.discoverable
+  end
+
   test "approve() creates an associated dcterms:available element" do
     item = items(:submitting)
     item.approve
@@ -187,11 +193,9 @@ class ItemTest < ActiveSupport::TestCase
 
   # assign_handle()
 
-  test "assign_handle() raises an error if the instance already has a handle" do
+  test "assign_handle() does nothing if the instance already has a handle" do
     assert_not_nil @instance.handle
-    assert_raises do
-      @instance.assign_handle
-    end
+    @instance.assign_handle
   end
 
   test "assign_handle() assigns a handle" do
@@ -413,6 +417,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "ingest_into_medusa() ingests all associated not-yet-submitted-for-ingest
   bitstreams into Medusa" do
+    @instance = items(:awaiting_ingest_into_medusa)
     @instance.ingest_into_medusa
     @instance.bitstreams.each do
       AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
@@ -443,6 +448,23 @@ class ItemTest < ActiveSupport::TestCase
 
   test "metadata_profile() returns the primary collection's effective metadata profile" do
     assert_equal metadata_profiles(:default), @instance.metadata_profile
+  end
+
+  # move_into_permanent_storage()
+
+  test "move_into_permanent_storage() moves all associated Bitstreams into
+  permanent storage" do
+    fixture = file_fixture("escher_lego.jpg")
+    @instance.bitstreams.each do |bs|
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+    end
+
+    @instance.move_into_permanent_storage
+
+    assert_equal @instance.bitstreams.count,
+                 @instance.bitstreams.where.not(permanent_key: nil).count
   end
 
   # primary_unit()

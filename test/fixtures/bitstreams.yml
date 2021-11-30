@@ -1,97 +1,133 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 item1_in_staging:
-  exists_in_staging: true
+  item:                 item1
   submitted_for_ingest: false
-  staging_key: item1_in_staging
-  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename: escher_lego.jpg
+  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/item1_in_staging
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego.jpg
   medusa_key:
   medusa_uuid:
-  item: item1
-  role: 0
-  bundle: <%= Bitstream::Bundle::CONTENT %>
-
-item2_in_medusa:
-  exists_in_staging: false
-  submitted_for_ingest: true
-  staging_key: test/test/escher_lego2.jpg
-  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename: escher_lego2.jpg
-  medusa_key: test/test/escher_lego2.jpg
-  medusa_uuid: 3d2a99d5-2f5b-401e-80c1-864a95e3acf7
-  item: in_medusa
-  role: 0
-  bundle: <%= Bitstream::Bundle::CONTENT %>
-
-license_bundle:
-  exists_in_staging: true
-  submitted_for_ingest: false
-  staging_key: license_bundle
-  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename: escher_lego.jpg
-  medusa_key:
-  medusa_uuid:
-  item: item1
-  role: 0
-  bundle: <%= Bitstream::Bundle::LICENSE %>
-
-role_limited:
-  exists_in_staging: true
-  submitted_for_ingest: false
-  staging_key: role_limited_in_staging
-  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename: escher_lego.jpg
-  medusa_key:
-  medusa_uuid:
-  item: item1
-  role: <%= Role::SYSTEM_ADMINISTRATOR %>
-  bundle: <%= Bitstream::Bundle::CONTENT %>
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
 
 submitting_in_staging:
-  exists_in_staging: true
+  item:                 submitting
   submitted_for_ingest: false
-  staging_key: submitting_in_staging
-  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename: escher_lego.jpg
+  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/submitting_in_staging
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego.jpg
   medusa_key:
   medusa_uuid:
-  item: submitting
-  role: 0
-  bundle: <%= Bitstream::Bundle::CONTENT %>
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+
+submitted_in_staging:
+  item:                 submitted
+  submitted_for_ingest: false
+  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/submitted_in_staging
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego.jpg
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+
+awaiting_ingest_into_medusa:
+  item:                 awaiting_ingest_into_medusa
+  submitted_for_ingest: false
+  staging_key:
+  permanent_key:        <%= Bitstream::PERMANENT_KEY_PREFIX %>/approved_in_permanent
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego2.jpg
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+
+approved_in_permanent:
+  item:                 approved
+  submitted_for_ingest: true
+  staging_key:
+  permanent_key:        <%= Bitstream::PERMANENT_KEY_PREFIX %>/approved_in_permanent
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego2.jpg
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+
+item2_in_medusa:
+  item:                 in_medusa
+  submitted_for_ingest: true
+  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/item2_in_medusa
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego2.jpg
+  medusa_key:           test/test/escher_lego2.jpg
+  medusa_uuid:          3d2a99d5-2f5b-401e-80c1-864a95e3acf7
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+
+license_bundle:
+  item:                 item1
+  submitted_for_ingest: false
+  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/license_bundle
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego.jpg
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::LICENSE %>
+
+role_limited:
+  item:                 item1
+  submitted_for_ingest: false
+  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/role_limited
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego.jpg
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::SYSTEM_ADMINISTRATOR %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
 
 undiscoverable_in_staging:
-  exists_in_staging: true
+  item:                 undiscoverable
   submitted_for_ingest: false
-  staging_key: undiscoverable_in_staging
-  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename: escher_lego.jpg
+  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/undiscoverable_in_staging
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego.jpg
   medusa_key:
   medusa_uuid:
-  item: undiscoverable
-  role: 0
-  bundle: <%= Bitstream::Bundle::CONTENT %>
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
 
 withdrawn_in_staging:
-  exists_in_staging: true
+  item:                 withdrawn
   submitted_for_ingest: false
-  staging_key: withdrawn_in_staging
-  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename: escher_lego.jpg
+  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/withdrawn_in_staging
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego.jpg
   medusa_key:
   medusa_uuid:
-  item: withdrawn
-  role: 0
-  bundle: <%= Bitstream::Bundle::CONTENT %>
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
 
 collection1_collection1_item1_in_staging:
-  exists_in_staging: true
+  item:                 collection1_collection1_item1
   submitted_for_ingest: false
-  staging_key: collection1_collection1_item1_in_staging
-  length: <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename: escher_lego.jpg
+  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/collection1_collection1_item1_in_staging
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego.jpg
   medusa_key:
   medusa_uuid:
-  item: collection1_collection1_item1
-  role: 0
-  bundle: <%= Bitstream::Bundle::CONTENT %>
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>

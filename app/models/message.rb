@@ -14,7 +14,8 @@
 # * `medusa_uuid`   UUID of the corresponding Medusa file.
 # * `operation`     One of the {Message::Operation} constant values.
 # * `response_time` Arrival time of the response message from Medusa.
-# * `staging_key`   Key of the staging object in the application S3 bucket.
+# * `staging_key`   Key of the **permanent** (not staging) object in the
+#                   application S3 bucket.
 # * `status`        Set by a response message from Medusa to one of the
 #                   {Message::Status} constant values.
 # * `target_key`    Key of the target object in the Medusa S3 bucket.

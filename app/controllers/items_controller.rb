@@ -291,11 +291,13 @@ class ItemsController < ApplicationController
   private
 
   def approve_item(item)
-    UpdateItemCommand.new(item: item,
-                          user: current_user,
+    UpdateItemCommand.new(item:        item,
+                          user:        current_user,
                           description: "Item was approved, assigned a "\
-                          "handle, and ingested into Medusa.").execute do
-      item.assign_handle unless item.handle
+                          "handle, moved into permanent storage, and "\
+                          "ingested into Medusa.").execute do
+      item.move_into_permanent_storage
+      item.assign_handle
       item.ingest_into_medusa
       item.approve
       item.save!
@@ -338,7 +340,7 @@ class ItemsController < ApplicationController
   end
 
   ##
-  # Builds and ascribes {AscribedElement}s to the item based on user input.
+  # Builds and ascribes [AscribedElement]s to the item based on user input.
   # This is done manually because to do it using Rails nested attributes would
   # be harder.
   #

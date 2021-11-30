@@ -219,7 +219,8 @@ class Item < ApplicationRecord
   #
   def approve
     if self.stage != Stages::APPROVED
-      self.stage = Stages::APPROVED
+      self.stage        = Stages::APPROVED
+      self.discoverable = true
       self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
                           string:             Time.now.iso8601)
     end
@@ -304,16 +305,15 @@ class Item < ApplicationRecord
   end
 
   ##
-  # Creates a new {Handle}, assigns it to the instance, and creates an
-  # associated `dcterms:identifier` {AscribedElement} with a URI value of the
+  # Creates a new [Handle], assigns it to the instance, and creates an
+  # associated `dcterms:identifier` [AscribedElement] with a URI value of the
   # handle URI.
   #
   # @return [void]
   # @raises [StandardError] if the instance already has a handle.
   #
   def assign_handle
-    raise "Instance already has a handle." if self.handle
-
+    return if self.handle
     self.handle = Handle.create!(item: self)
     # Reload it in order to read the suffix, which is auto-incrementing.
     self.handle.reload
@@ -442,7 +442,9 @@ class Item < ApplicationRecord
   end
 
   ##
-  # Uploads all of the instance's associated {Bitstream}s into Medusa.
+  # Uploads all of the instance's associated {Bitstream}s into Medusa. The
+  # instance must already have a {handle} and the bitstreams must have
+  # {permanent_key permanent keys}.
   #
   # @return [void]
   #
@@ -470,6 +472,13 @@ class Item < ApplicationRecord
   #
   def metadata_profile
     primary_collection&.effective_metadata_profile
+  end
+
+  ##
+  # @return [void]
+  #
+  def move_into_permanent_storage
+    self.bitstreams.each(&:move_into_permanent_storage)
   end
 
   ##

@@ -243,7 +243,7 @@ class UnitTest < ActiveSupport::TestCase
       end
     end
     result = @instance.item_download_counts
-    assert_equal 6, result.length
+    assert_equal 9, result.length
     assert_equal 3, result[0]['dl_count']
   end
 
@@ -257,7 +257,7 @@ class UnitTest < ActiveSupport::TestCase
         end
         # The query won't return items without a title.
         item.elements.build(registered_element: registered_elements(:title),
-                            string: "This is the title").save!
+                            string:             "This is the title").save!
       end
     end
     result = @instance.item_download_counts(offset: 1, limit: 2)

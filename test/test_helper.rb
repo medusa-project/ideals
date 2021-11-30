@@ -8,22 +8,6 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-  def refresh_elasticsearch
-    client = ElasticsearchClient.instance
-    client.refresh(Configuration.instance.elasticsearch[:index])
-  end
-
-  def setup_elasticsearch
-    index = Configuration.instance.elasticsearch[:index]
-    client = ElasticsearchClient.instance
-    client.delete_index(index, false)
-    client.create_index(index)
-  end
-
-  def setup_s3
-    Bitstream.create_bucket
-  end
-
   def log_in_as(user)
     if user.kind_of?(ShibbolethUser)
       # N.B. 1: See "request_type option" section for info about using
@@ -58,6 +42,35 @@ class ActiveSupport::TestCase
 
   def log_out
     delete logout_path
+  end
+
+  def refresh_elasticsearch
+    client = ElasticsearchClient.instance
+    client.refresh(Configuration.instance.elasticsearch[:index])
+  end
+
+  def setup_elasticsearch
+    index = Configuration.instance.elasticsearch[:index]
+    client = ElasticsearchClient.instance
+    client.delete_index(index, false)
+    client.create_index(index)
+  end
+
+  ##
+  # Creates the application S3 bucket (if it does not already exist) and
+  # uploads objects to it corresponding to every [Bitstream].
+  #
+  def setup_s3
+    client = S3Client.instance
+    bucket = ::Configuration.instance.aws[:bucket]
+    client.create_bucket(bucket: bucket) unless client.bucket_exists?(bucket)
+
+    Bitstream.all.each do |bs|
+      key = bs.permanent_key.present? ? bs.permanent_key : bs.staging_key
+      client.put_object(bucket: bucket,
+                        key:    key,
+                        body:   file_fixture("escher_lego.jpg").to_s)
+    end
   end
 
 end

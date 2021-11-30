@@ -3,55 +3,65 @@
 
 # collection1 items
 
-item1:
-  submitter: local_sysadmin
-  stage: <%= Item::Stages::APPROVED %>
-  discoverable: true
-
-in_medusa:
-  submitter: local_sysadmin
-  stage: <%= Item::Stages::APPROVED %>
-  discoverable: true
-
-described:
-  submitter: local_sysadmin
-  stage: <%= Item::Stages::APPROVED %>
-  discoverable: true
-
-embargoed:
-  submitter: local_sysadmin
-  stage: <%= Item::Stages::APPROVED %>
-  discoverable: true
-
-undescribed:
-  submitter: local_sysadmin
-  stage: <%= Item::Stages::APPROVED %>
+item1: # TODO: remove this
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::APPROVED %>
   discoverable: true
 
 submitting:
-  submitter: local_sysadmin
-  stage: <%= Item::Stages::SUBMITTING %>
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::SUBMITTING %>
   discoverable: false
 
 submitted:
-  submitter: local_sysadmin
-  stage: <%= Item::Stages::SUBMITTED %>
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::SUBMITTED %>
   discoverable: false
 
+approved:
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::APPROVED %>
+  discoverable: true
+
+awaiting_ingest_into_medusa:
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::APPROVED %>
+  discoverable: true
+
+in_medusa:
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::APPROVED %>
+  discoverable: true
+
+described:
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::APPROVED %>
+  discoverable: true
+
+embargoed:
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::APPROVED %>
+  discoverable: true
+
+undescribed:
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::APPROVED %>
+  discoverable: true
+
 undiscoverable:
-  submitter: local_sysadmin
-  stage: <%= Item::Stages::APPROVED %>
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::APPROVED %>
   discoverable: false
 
 withdrawn:
-  submitter: local_sysadmin
-  stage: <%= Item::Stages::WITHDRAWN %>
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::WITHDRAWN %>
   discoverable: false
 
 # collection1_collection1 items
 
 collection1_collection1_item1:
-  submitter: local_sysadmin
-  stage: <%= Item::Stages::APPROVED %>
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::APPROVED %>
   discoverable: true
 
