@@ -17,14 +17,18 @@
     = f.select(:bundle,
                options_for_select(bundle_options, f.object.bundle),
                {},
-               class: 'custom-select')
+               class: "custom-select")
 
   .form-group
     = f.label :role, "Minimum Access Role"
     = f.select(:role,
                options_for_select(role_options, f.object.role),
                {},
-               class: 'custom-select')
+               class: "custom-select")
+
+  .form-group
+    = f.label :description
+    = f.text_area(:description, class: "form-control")
 
   .clearfix
     .float-right

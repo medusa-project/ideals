@@ -138,6 +138,7 @@ body#show_item {
           justify-content: center;
           background: rgba(0,0,0,0.7);
           backdrop-filter: blur(3px);
+          overflow-y: scroll;
           dl {
             width: 75%;
             display: grid;

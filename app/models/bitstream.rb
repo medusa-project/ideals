@@ -42,6 +42,7 @@
 #
 # * `bundle`                One of the [Bundle] constant values.
 # * `created_at`:           Managed by ActiveRecord.
+# * `description`:          Description.
 # * `dspace_id`:            `bitstream.internal_id` column value from
 #                           IDEALS-DSpace. This is only relevant during
 #                           migration out of that system and can be removed

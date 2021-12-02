@@ -65,3 +65,6 @@
         %dd= Role.label(@bitstream.role)
       %dt Download Count
       %dd= number_with_delimiter(@bitstream.download_count)
+      - if @bitstream.description.present?
+        %dt Description
+        %dd= @bitstream.description

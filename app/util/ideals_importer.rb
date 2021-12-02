@@ -125,14 +125,19 @@ class IdealsImporter
       bs_id     = row_arr[4].to_i
       elem_name = "#{row_arr[0]}:#{row_arr[1]}"
       elem_name += ":#{row_arr[2]}" if row_arr[2].present?
+      next unless %w(dc:title dc:description).include?(elem_name)
       string    = row_arr[3]&.strip
-      next unless elem_name == "dc:title"
       next unless string.present?
 
       progress.report(row_num, "Importing bitstream metadata")
       begin
         b = Bitstream.find(bs_id)
-        b.update!(original_filename: string)
+        case elem_name
+        when "dc:description"
+          b.update!(description: string)
+        when "dc:title"
+          b.update!(original_filename: string)
+        end
       rescue ActiveRecord::RecordNotFound
         # This may be caused by a nonexistent Bitstream. Not much we can do.
       end

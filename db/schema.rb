@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_22_202114) do
+ActiveRecord::Schema.define(version: 2021_12_02_155259) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -95,6 +95,7 @@ ActiveRecord::Schema.define(version: 2021_11_22_202114) do
     t.integer "role", default: 0, null: false
     t.integer "bundle", default: 0, null: false
     t.string "permanent_key"
+    t.text "description"
     t.index ["medusa_key"], name: "index_bitstreams_on_medusa_key", unique: true
     t.index ["staging_key"], name: "index_bitstreams_on_staging_key", unique: true
   end
