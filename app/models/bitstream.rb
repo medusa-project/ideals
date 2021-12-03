@@ -124,6 +124,14 @@ class Bitstream < ApplicationRecord
     end
 
     ##
+    # @param string [String] Constant name.
+    # @return [Integer] One of the constant values.
+    #
+    def self.for_string(string)
+      Bundle.const_get(string.to_sym)
+    end
+
+    ##
     # @param value [Integer] One of the constant values.
     # @return [String] English label for the value.
     #

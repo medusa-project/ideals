@@ -236,10 +236,10 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_nil item.element("dcterms:available").string
   end
 
-  test "complete_submission() creates an associated dcterms:dateSubmitted element" do
+  test "complete_submission() creates an associated dc:date:submitted element" do
     item = items(:described)
     item.complete_submission
-    assert_not_nil item.element("dcterms:dateSubmitted").string
+    assert_not_nil item.element("dc:date:submitted").string
   end
 
   # creators()
@@ -250,6 +250,25 @@ class ItemTest < ActiveSupport::TestCase
     @instance.elements.build(registered_element: registered_elements(:creator),
                              string: "Creator 2")
     assert_equal "Creator 1, Creator 2", @instance.creators
+  end
+
+  # delete_from_permanent_storage()
+
+  test "delete_from_permanent_storage() deletes all associated Bitstreams from
+  permanent storage" do
+    filename = "escher_lego.jpg"
+    fixture  = file_fixture(filename)
+    @instance.bitstreams.each do |bs|
+      bs.update!(permanent_key: Bitstream.permanent_key(@instance.id, filename))
+      File.open(fixture, "r") do |file|
+        bs.upload_to_permanent(file)
+      end
+    end
+
+    @instance.delete_from_permanent_storage
+
+    assert_equal @instance.bitstreams.count,
+                 @instance.bitstreams.where(permanent_key: nil).count
   end
 
   # description() (Describable concern)

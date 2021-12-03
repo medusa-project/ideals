@@ -16,7 +16,7 @@ creator:
 
 dateSubmitted:
   institution: uiuc
-  name: dcterms:dateSubmitted
+  name: dc:date:submitted
   uri: http://purl.org/dc/terms/dateSubmitted
   label: Date Submitted
   scope_note:
@@ -58,3 +58,24 @@ unused:
   uri: http://example.org/unused
   label: Unused
   scope_note: This element is not attached to any resources.
+
+degree_department:
+  institution: uiuc
+  name: etd:degree:department
+  uri: http://example.org/degree/department
+  label: Degree Department
+  scope_note: Used by SafImporterTest.
+
+degree_level:
+  institution: uiuc
+  name: etd:degree:level
+  uri: http://example.org/degree/level
+  label: Degree Level
+  scope_note: Used by SafImporterTest.
+
+degree_grantor:
+  institution: uiuc
+  name: etd:degree:grantor
+  uri: http://example.org/degree/grantor
+  label: Degree Grantor
+  scope_note: Used by SafImporterTest.

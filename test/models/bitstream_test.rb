@@ -9,6 +9,17 @@ class BitstreamTest < ActiveSupport::TestCase
                    Bitstream::Bundle.all.sort
     end
 
+    test "for_string() returns a correct value" do
+      assert_equal Bitstream::Bundle::LICENSE,
+                   Bitstream::Bundle.for_string("LICENSE")
+    end
+
+    test "for_string() raises an error for an illegal argument" do
+      assert_raises NameError do
+        Bitstream::Bundle.for_string("bogus")
+      end
+    end
+
     test "label() returns a correct label" do
       assert_equal "Branded Preview",
                    Bitstream::Bundle.label(Bitstream::Bundle::BRANDED_PREVIEW)

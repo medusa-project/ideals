@@ -70,7 +70,9 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     post submission_complete_path(item)
 
     item.reload
-    assert_equal Item::Stages::SUBMITTED, item.stage
+    assert_equal item.primary_collection&.submissions_reviewed ?
+                   Item::Stages::SUBMITTED : Item::Stages::APPROVED,
+                 item.stage
   end
 
   # create()

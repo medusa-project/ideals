@@ -326,8 +326,8 @@ class Item < ApplicationRecord
 
   ##
   # Updates the {stage} property and creates an associated
-  # `dcterms:dateSubmitted` element with a string value of the current ISO-8601
-  # date/time.
+  # `dcterms:date:submitted` element with a string value of the current
+  # ISO-8601 date/time.
   #
   # @return [void]
   #
@@ -337,9 +337,9 @@ class Item < ApplicationRecord
     else
       self.approve
     end
-    # Assign a dcterms:dateSubmitted element with a string value of the current
-    # ISO-8601 date/time.
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:dateSubmitted"),
+    # Assign a dcterms:date:submitted element with a string value of the
+    # current ISO-8601 date/time.
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:submitted"),
                         string:             Time.now.iso8601)
   end
 
@@ -349,6 +349,13 @@ class Item < ApplicationRecord
   #
   def creators
     self.elements.select{ |e| e.name == "dc:creator" }.map(&:string).join(", ")
+  end
+
+  ##
+  # For use in testing only.
+  #
+  def delete_from_permanent_storage
+    self.bitstreams.each(&:delete_from_permanent_storage)
   end
 
   ##
