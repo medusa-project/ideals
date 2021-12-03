@@ -213,15 +213,15 @@ class Item < ApplicationRecord
 
   ##
   # Sets {stage} to {Stages::APPROVED} and creates an associated
-  # `dcterms:available` {AscribedElement} with a string value of the current
+  # `dcterms:available` [AscribedElement] with a string value of the current
   # ISO-8601 date/time.
   #
   # @return [void]
   #
   def approve
-    if self.stage != Stages::APPROVED
-      self.stage        = Stages::APPROVED
-      self.discoverable = true
+    self.stage        = Stages::APPROVED
+    self.discoverable = true
+    unless self.elements.find{ |e| e.name == "dcterms:available" }
       self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
                           string:             Time.now.iso8601)
     end

@@ -87,16 +87,6 @@ class ItemTest < ActiveSupport::TestCase
 
   # approve()
 
-  test "approve() does nothing if the stage is already approved" do
-    item = items(:described)
-    item.stage = Item::Stages::APPROVED
-    item.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
-                        string:             "whatever")
-
-    item.approve
-    assert_equal 1, item.elements.select{ |e| e.name == "dcterms:available" }.length
-  end
-
   test "approve() sets the stage to approved" do
     item = items(:described)
     item.approve
@@ -109,10 +99,21 @@ class ItemTest < ActiveSupport::TestCase
     assert item.discoverable
   end
 
-  test "approve() creates an associated dcterms:available element" do
+  test "approve() creates an associated dcterms:available element if one does
+  not already exist" do
     item = items(:submitting)
     item.approve
     assert_not_nil item.element("dcterms:available").string
+  end
+
+  test "approve() does not create an associated dcterms:available element if
+  one already exists" do
+    item = items(:described)
+    item.stage = Item::Stages::APPROVED
+    item.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
+                        string:             "whatever")
+    item.approve
+    assert_equal 1, item.elements.select{ |e| e.name == "dcterms:available" }.length
   end
 
   # approved?()
