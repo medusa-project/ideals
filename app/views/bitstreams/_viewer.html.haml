@@ -51,6 +51,8 @@
         %dt Permanent Key
         %dd
           %code= @bitstream.permanent_key
+      %dt Primary
+      %dd= boolean(@bitstream.primary, style: :word)
       %dt Submitted For Ingest
       %dd= boolean(@bitstream.submitted_for_ingest, style: :word)
       - if @bitstream.medusa_uuid.present?

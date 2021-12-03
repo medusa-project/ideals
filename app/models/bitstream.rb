@@ -58,6 +58,9 @@
 # * `original_filename`:    Filename of the bitstream as submitted by the user.
 # * `permanent_key`:        Object key in the application S3 bucket, which is
 #                           set after the owning [Item] has been approved.
+# * `primary`               Whether the instance is the primary bitstream of
+#                           the owning [Item]. An item may have zero or one
+#                           primary bitstreams.
 # * `role`:                 One of the [Role] constant values indicating the
 #                           minimum-privileged role required to access the
 #                           instance.
@@ -83,6 +86,7 @@ class Bitstream < ApplicationRecord
                       allow_blank: true
   validates_inclusion_of :role, in: -> (value) { Role.all }
 
+  before_save :ensure_primary_uniqueness
   before_destroy :delete_derivatives, :delete_from_staging
   before_destroy :delete_from_medusa, if: -> { Rails.env.demo? }
 
@@ -487,6 +491,12 @@ class Bitstream < ApplicationRecord
                                  key:             source_key,
                                  response_target: tempfile.path)
     tempfile
+  end
+
+  def ensure_primary_uniqueness
+    if self.primary
+      self.item.bitstreams.where.not(id: self.id).update_all(primary: false)
+    end
   end
 
   ##

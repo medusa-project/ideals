@@ -27,6 +27,14 @@
                class: "custom-select")
 
   .form-group
+    .form-check
+      = f.check_box :primary, class: "form-check-input"
+      = f.label :primary, class: "form-check-label"
+    %p.text-secondary
+      If checked, all other files attached to the same item
+      will automatically be made non-primary.
+
+  .form-group
     = f.label :description
     = f.text_area(:description, class: "form-control")
 

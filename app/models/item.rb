@@ -5,19 +5,19 @@
 #
 # # Creating, updating, and deleting
 #
-# Most creates and updates should be done through {CreateItemCommand}. This
-# will ensure that an appropriate {Event} is created and associated with the
+# Most creates and updates should be done through [CreateItemCommand]. This
+# will ensure that an appropriate [Event] is created and associated with the
 # instance. Deleting can still be done directly on the instance without use of
-# a {Command}.
+# a [Command].
 #
 # # Lifecycle
 #
 # An item proceeds through several "life stages", indicated by the {stage}
-# attribute and documented in the {Stages} class.
+# attribute and documented in the [Stages] class.
 #
 # # Indexing
 #
-# See the documentation of {Indexed} for a detailed explanation of how indexing
+# See the documentation of [Indexed] for a detailed explanation of how indexing
 # works.
 #
 # # Attributes
@@ -28,21 +28,21 @@
 #                           means it should not be included in search results,
 #                           and its metadata should not be available except to
 #                           administrators.
-# * `stage`                 Lifecycle stage, whose value is one of the {Stages}
+# * `stage`                 Lifecycle stage, whose value is one of the [Stages]
 #                           constant values.
 # * `submitter_id`          Foreign key to {User}.
 # * `updated_at`            Managed by ActiveRecord.
 #
 # # Relationships
 #
-# * `bitstreams`         References all associated {Bitstream}s.
-# * `collections`        References all owning {Collections}.
-# * `current_embargoes`  References zero-to-many {Embargo}es.
-# * `elements`           References zero-to-many {AscribedElement}s used to
+# * `bitstreams`         References all associated [Bitstream]s.
+# * `collections`        References all owning [Collections].
+# * `current_embargoes`  References zero-to-many [Embargo]es.
+# * `elements`           References zero-to-many [AscribedElement]s used to
 #                        describe an instance.
-# * `embargoes`          References zero-to-many {Embargo}es. (Some may be
+# * `embargoes`          References zero-to-many [Embargo]es. (Some may be
 #                        expired; see {current_embargoes}.)
-# * `primary_collection` References the primary {Collection} in which the
+# * `primary_collection` References the primary [Collection] in which the
 #                        instance resides.
 #
 class Item < ApplicationRecord
@@ -146,8 +146,9 @@ class Item < ApplicationRecord
   before_destroy :restrict_in_archive_deletion
 
   validates :stage, inclusion: { in: Stages.all }
-  validate :submission_includes_bitstreams,
-           :submission_includes_required_elements
+  validate :validate_submission_includes_bitstreams,
+           :validate_submission_includes_required_elements
+  validate :validate_primary_bitstream
 
   breadcrumbs parent: :primary_collection, label: :title
 
@@ -539,20 +540,6 @@ class Item < ApplicationRecord
     raise "Archived items cannot be deleted" if self.exists_in_medusa?
   end
 
-  def submission_includes_bitstreams
-    if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED &&
-        bitstreams.length < 1
-      errors.add(:bitstreams, "is empty")
-    end
-  end
-
-  def submission_includes_required_elements
-    if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED &&
-        !required_elements_present?
-      errors.add(:elements, "is missing required elements")
-    end
-  end
-
   ##
   # @return [String]
   #
@@ -562,6 +549,27 @@ class Item < ApplicationRecord
     item_title = self.title
     item_title = item_title.present? ? item_title : self.id
     [unit&.title, collection&.title, item_title].join(" ").strip
+  end
+
+  def validate_primary_bitstream
+    primary_count = self.bitstreams.count(&:primary)
+    if primary_count > 1
+      errors.add(:bitstreams, "has more than one primary bitstream")
+    end
+  end
+
+  def validate_submission_includes_bitstreams
+    if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED &&
+        bitstreams.length < 1
+      errors.add(:bitstreams, "is empty")
+    end
+  end
+
+  def validate_submission_includes_required_elements
+    if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED &&
+        !required_elements_present?
+      errors.add(:elements, "is missing required elements")
+    end
   end
 
 end

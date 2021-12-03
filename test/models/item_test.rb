@@ -555,6 +555,13 @@ class ItemTest < ActiveSupport::TestCase
     assert !@instance.validate
   end
 
+  test "validate() ensures that no more than one bitstream is set as primary" do
+    assert @instance.validate
+    @instance.bitstreams.build(primary: true)
+    @instance.bitstreams.build(primary: true)
+    assert !@instance.validate
+  end
+
   test "validate() ensures that a submission includes at least one bitstream" do
     item = items(:submitting)
     assert item.validate

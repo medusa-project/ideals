@@ -38,10 +38,11 @@ class IdealsImporter
       row_arr = line.split("|").map(&:strip)
       progress.report(row_num, "Importing bitstreams")
       begin
-        Bitstream.create!(id:         row_arr[1].to_i,
-                          item_id:    row_arr[0].to_i,
-                          dspace_id:  row_arr[2],
-                          length:     row_arr[6].to_i)
+        Bitstream.create!(id:        row_arr[1].to_i,
+                          item_id:   row_arr[0].to_i,
+                          dspace_id: row_arr[2],
+                          length:    row_arr[3].to_i,
+                          primary:   row_arr[4].present?)
       rescue ActiveRecord::RecordNotFound
         # nothing we can do
       rescue ActiveRecord::RecordInvalid

@@ -604,6 +604,19 @@ class BitstreamTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # save()
+
+  test "save() sets all other bitstreams attached to the same item to not
+  primary" do
+    item = items(:approved)
+    b1 = item.bitstreams.build(primary: true)
+    b2 = item.bitstreams.build(primary: false)
+    item.save!
+    b2.update!(primary: true)
+    b1.reload
+    assert !b1.primary
+  end
+
   # staging_key
 
   test "staging_key must be unique" do

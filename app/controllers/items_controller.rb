@@ -198,11 +198,11 @@ class ItemsController < ApplicationController
     @collections         = @item.collections
     @content_bitstreams  = @item.bitstreams.
       where(bundle: Bitstream::Bundle::CONTENT).
-      order("LOWER(original_filename)").
+      order("bitstreams.primary DESC", "LOWER(original_filename)").
       select{ |b| policy(b).show? }
     @other_bitstreams    = @item.bitstreams.
       where("bundle != ?", Bitstream::Bundle::CONTENT).
-      order("LOWER(original_filename)").
+      order("bitstreams.primary DESC", "LOWER(original_filename)").
       select{ |b| policy(b).show? }
 
     respond_to do |format|
