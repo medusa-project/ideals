@@ -75,6 +75,20 @@ namespace :ideals do
       client = MedusaDownloaderClient.new
       puts client.download_url(item: item)
     end
+
+    desc "Import items from a SAF package"
+    task :import, [:package_path, :mapfile_path, :collection_id] => :environment do |task, args|
+      # Argument validation and setup.
+      collection   = Collection.find(args[:collection_id])
+      package_path = File.expand_path(args[:package_path])
+      mapfile_path = File.expand_path(args[:mapfile_path])
+      # Do the import.
+      SafImporter.new.import(pathname:           package_path,
+                             primary_collection: collection,
+                             mapfile_path:       mapfile_path,
+                             print_progress:     true)
+      puts "Import succeeded."
+    end
   end
 
   namespace :users do
@@ -89,7 +103,7 @@ namespace :ideals do
     desc "Create a Shibboleth identity sysadmin user"
     task :create_shib_sysadmin, [:netid] => :environment do |task, args|
       email = "#{args[:netid]}@illinois.edu"
-      user = ShibbolethUser.no_omniauth(email)
+      user  = ShibbolethUser.no_omniauth(email)
       user.ad_groups << UserGroup.sysadmin.ad_groups.first
       user.save!
     end
