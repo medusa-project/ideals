@@ -3,7 +3,7 @@
                            "data-backdrop":   "static",
                            "aria-labelledby": "complete-modal-label",
                            "aria-hidden":     "true"}
-  .modal-dialog{role: "document"}
+  .modal-dialog.modal-dialog-centered{role: "document"}
     .modal-content
       .modal-header
         %h5#complete-modal-label.modal-title Submission Complete!
@@ -15,9 +15,6 @@
             submission has joined the collection, or if there is a problem with
             your submission. You may also check on the status of your submission
             by visiting your submissions page.
-          %p
-            The persistent link for this item will be:
-            = @item.handle&.handle_net_url
         - else
           %p Your submission is now available in IDEALS.
           %p
