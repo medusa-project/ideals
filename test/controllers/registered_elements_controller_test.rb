@@ -106,6 +106,28 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # edit()
+
+  test "edit() redirects to login page for logged-out users" do
+    element = registered_elements(:title)
+    get edit_registered_element_path(element)
+    assert_redirected_to login_path
+  end
+
+  test "edit() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    element = registered_elements(:title)
+    get edit_registered_element_path(element)
+    assert_response :forbidden
+  end
+
+  test "edit() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    element = registered_elements(:title)
+    get edit_registered_element_path(element)
+    assert_response :ok
+  end
+
   # index()
 
   test "index() redirects to login page for logged-out users" do
