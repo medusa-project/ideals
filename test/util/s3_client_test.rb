@@ -49,6 +49,21 @@ class S3ClientTest < ActiveSupport::TestCase
     assert client.object_exists?(bucket: bucket, key: "dogs")
   end
 
+  # num_objects()
+
+  test "num_objects() returns a correct count" do
+    bucket = ::Configuration.instance.aws[:bucket]
+    client = S3Client.instance
+    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")
+    client.put_object(bucket: bucket,
+                      key:   "cats/siamese",
+                      body:   file)
+    client.put_object(bucket: bucket,
+                      key:   "cats/mainecoon",
+                      body:   file)
+    assert_equal 2, client.num_objects(bucket: bucket, key_prefix: "cats")
+  end
+
   # object_exists?()
 
   test "object_exists?() returns true when the object exists" do
@@ -73,6 +88,21 @@ class S3ClientTest < ActiveSupport::TestCase
   test "object_exists?() returns false when the object does not exist" do
     bucket = ::Configuration.instance.aws[:bucket]
     assert !S3Client.instance.object_exists?(bucket: bucket, key: "bogus")
+  end
+
+  # objects()
+
+  test "objects() returns a correct value" do
+    bucket = ::Configuration.instance.aws[:bucket]
+    client = S3Client.instance
+    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")
+    client.put_object(bucket: bucket,
+                      key:   "cats/siamese",
+                      body:   file)
+    client.put_object(bucket: bucket,
+                      key:   "cats/mainecoon",
+                      body:   file)
+    assert_equal 2, client.objects(bucket: bucket, key_prefix: "cats").count
   end
 
 end

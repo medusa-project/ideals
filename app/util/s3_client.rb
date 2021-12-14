@@ -35,6 +35,10 @@ class S3Client
     end
   end
 
+  def num_objects(bucket:, key_prefix:)
+    objects(bucket: bucket, key_prefix: key_prefix).count
+  end
+
   ##
   # @param bucket [String]
   # @param key [String]
@@ -48,6 +52,11 @@ class S3Client
     else
       return true
     end
+  end
+
+  def objects(bucket:, key_prefix:)
+    bucket = get_resource.bucket(bucket)
+    bucket.objects(prefix: key_prefix)
   end
 
 
