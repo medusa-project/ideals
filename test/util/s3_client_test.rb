@@ -105,4 +105,20 @@ class S3ClientTest < ActiveSupport::TestCase
     assert_equal 2, client.objects(bucket: bucket, key_prefix: "cats").count
   end
 
+  # upload_path()
+
+  test "upload_path() uploads correct objects with correct keys" do
+    root_path = File.join(Rails.root, "test", "fixtures", "saf_packages", "valid_item")
+    client    = S3Client.instance
+    bucket    = ::Configuration.instance.aws[:bucket]
+    client.upload_path(root_path:  root_path,
+                       bucket:     bucket,
+                       key_prefix: "/prefix/")
+
+    assert_equal 5, client.num_objects(bucket: bucket, key_prefix: "prefix/")
+    assert client.object_exists?(bucket: bucket, key: "prefix/item_1/content")
+    assert client.object_exists?(bucket: bucket, key: "prefix/item_1/dublin_core.xml")
+    assert client.get_object(bucket: bucket, key: "prefix/item_1/dublin_core.xml").length > 0
+  end
+
 end

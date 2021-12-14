@@ -59,6 +59,23 @@ class S3Client
     bucket.objects(prefix: key_prefix)
   end
 
+  ##
+  # Uploads every file in a directory tree to a bucket under the given key
+  # prefix.
+  #
+  # @param root_path [String] Root path on the file system.
+  # @param bucket [String] Bucket to upload to.
+  # @param key_prefix [String] Key prefix of uploaded objects.
+  #
+  def upload_path(root_path:, bucket:, key_prefix:)
+    key_prefix = key_prefix[0..-2] if key_prefix.end_with?("/")
+    Dir.glob(root_path + "/**/*").select{ |p| File.file?(p) }.each do |path|
+      rel_path = path.gsub(root_path, "")
+      S3Client.instance.put_object(bucket: bucket,
+                                   key:    key_prefix + rel_path,
+                                   body:   File.read(path))
+    end
+  end
 
   private
 
