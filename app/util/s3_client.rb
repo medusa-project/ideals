@@ -22,7 +22,7 @@ class S3Client
     end
   end
 
-  def delete_objects(bucket:, key_prefix:)
+  def delete_objects(bucket:, key_prefix: "")
     bucket = get_resource.bucket(bucket)
     bucket.objects(prefix: key_prefix).each(&:delete)
   end
