@@ -1,0 +1,35 @@
+%table.table
+  %thead
+    %tr
+      %th User
+      %th Collection
+      %th Status
+      %th Progress
+      %th Created
+      %th
+  %tbody
+    - @imports.each do |import|
+      %tr
+        %td
+          = link_to(import.user.becomes(User)) do
+            = icon_for(import.user)
+            = import.user.name
+        %td= link_to(import.collection.title, import.collection)
+        %td= import_status(import)
+        %td= "#{(import.percent_complete * 100).round(1)}%"
+        %td= local_time(import.created_at)
+        %td
+          .btn-group{role: "group"}
+            %button.btn.btn-sm.btn-light.show-import{"data-import-id": import.id,
+                                                     "data-target":    "#show-import-modal",
+                                                     "data-toggle":    "modal",
+                                                     role:             "button"}
+              %i.fa.fa-search
+              Details&hellip;
+            - if [Import::Status::NEW, Import::Status::FAILED].include?(import.status) && policy(import).edit?
+              %button.btn.btn-sm.btn-light.edit-import{"data-import-id": import.id,
+                                                       "data-target":    "#edit-import-modal",
+                                                       "data-toggle":    "modal",
+                                                       role:             "button"}
+                %i.fa.fa-upload
+                Upload Package&hellip;

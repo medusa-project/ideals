@@ -36,6 +36,7 @@
 
           -# Administration menu
           .btn-group{role: "group"}
+            - im    = policy(Import).index?
             - insts = policy(Institution).index?
             - inst  = policy(Institution).show?
             - ir    = policy(Item).review?
@@ -71,6 +72,11 @@
                   = link_to(submission_profiles_path, class: "dropdown-item") do
                     = icon_for(SubmissionProfile)
                     Submission Profiles
+                - if im
+                  .dropdown-divider
+                  = link_to(imports_path, class: "dropdown-item") do
+                    = icon_for(Import)
+                    Imports
                 .dropdown-divider
                 - if iv
                   = link_to(invitees_path, class: "dropdown-item") do

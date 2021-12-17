@@ -1,0 +1,22 @@
+%dl
+  %dt Database ID
+  %dd= @import.id
+  %dt User
+  %dd
+    = link_to(@import.user.becomes(User)) do
+      = icon_for(@import.user)
+      = @import.user.name
+  %dt Collection
+  %dd= link_to(@import.collection.title, @import.collection)
+  %dt Status
+  %dd= import_status(@import)
+  %dt Progress
+  %dd= "#{(@import.percent_complete * 100).round(1)}%"
+  %dt Created
+  %dd= local_time(@import.created_at)
+  - if @import.last_error_message.present?
+    %dt Last Error Message
+    %dd.text-danger= @import.last_error_message
+  %dt Files to Import
+  %dd
+    %pre= @import.files&.join("\n")

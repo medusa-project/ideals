@@ -73,4 +73,10 @@ class ActiveSupport::TestCase
     end
   end
 
+  def teardown_s3
+    client = S3Client.instance
+    bucket = ::Configuration.instance.aws[:bucket]
+    client.delete_objects(bucket: bucket)
+  end
+
 end

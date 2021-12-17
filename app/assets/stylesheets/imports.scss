@@ -1,0 +1,10 @@
+body#imports {
+  #import-list {
+    td:first-child, td:last-child {
+      white-space: nowrap;
+    }
+  }
+  .badge {
+    text-transform: uppercase;
+  }
+}

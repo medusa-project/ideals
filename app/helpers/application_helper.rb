@@ -205,6 +205,8 @@ module ApplicationHelper
       icon = "far fa-folder-open"
     when "FileFormat"
       icon = "fa fa-file"
+    when "Import"
+      icon = "fa fa-upload"
     when "Institution"
       icon = "fa fa-university"
     when "Item"

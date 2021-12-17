@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_02_191517) do
+ActiveRecord::Schema.define(version: 2021_12_07_144032) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -174,6 +174,19 @@ ActiveRecord::Schema.define(version: 2021_12_02_191517) do
     t.bigint "user_group_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "imports", force: :cascade do |t|
+    t.bigint "collection_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "status", default: 0, null: false
+    t.float "percent_complete", default: 0.0, null: false
+    t.text "files"
+    t.text "imported_items"
+    t.string "last_error_message"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["status"], name: "index_imports_on_status"
   end
 
   create_table "institutions", force: :cascade do |t|
@@ -420,6 +433,8 @@ ActiveRecord::Schema.define(version: 2021_12_02_191517) do
   add_foreign_key "handles", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "handles", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "hosts", "user_groups", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "imports", "collections", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "imports", "users", on_update: :cascade, on_delete: :nullify
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade

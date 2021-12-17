@@ -1,0 +1,22 @@
+-# frozen_string_literal: true
+
+= form_for(@import, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  -# Ensure that `import` is present in the params
+  = hidden_field_tag "import[bogus]", nil
+
+  .form-group
+    = f.label :unit_id, "Unit"
+    = select_tag(:unit_id,
+                 options_for_select(unit_tree_options(include_blank: true), f.object&.collection&.primary_unit&.id),
+                 class: "custom-select")
+  .form-group
+    = f.label :collection_id, "Collection"
+    = f.select(:collection_id, [], {}, class: "custom-select")
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light.cancel{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Create", class: "btn btn-primary")

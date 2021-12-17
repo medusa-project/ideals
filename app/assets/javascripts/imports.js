@@ -1,0 +1,206 @@
+/**
+ * Handles list-imports view (/imports).
+ *
+ * @constructor
+ */
+const ImportsView = function() {
+
+    const CSRF_TOKEN = $("meta[name=csrf-token]").attr("content");
+    const ROOT_URL   = $("input[name=root_url]").val();
+
+    const UploadPackagePanel = function() {
+        const dropZone = $("#file-drop-zone");
+
+        /**
+         * @param entry {FileSystemFileEntry}
+         */
+        function deleteAllFiles() {
+            $.ajax({
+                method:  "POST",
+                url:     $("input[name=import_uri]").val() + "/delete-all-files",
+                headers: { "X-CSRF-Token": CSRF_TOKEN },
+                success: function() {},
+                error:   function(data, status, xhr) {
+                    console.error(data);
+                    dropZone.before(
+                        '<div class="alert alert-danger">' +
+                        'Failed to prepare the import for uploading.</div>');
+                }
+            });
+        }
+
+        /**
+         * @param entry {FileSystemFileEntry}
+         */
+        function addFile(entry) {
+            const uri = $("input[name=import_uri]").val() + "/upload-file";
+            const xhr = new XMLHttpRequest();
+            xhr.upload.addEventListener("progress", function (e) {
+                console.log("onUploadProgressChanged(): " +
+                    Math.round(e.loaded / e.total * 100));
+            });
+            xhr.open("POST", uri, true);
+            // This header value is relative to the package root, so we have to
+            // trim off the package dir itself.
+            xhr.setRequestHeader("X-Relative-Path",
+                entry.fullPath.split("/").slice(2).join("/"));
+            xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
+
+            entry.file(function(file) {
+                const reader   = new FileReader();
+                reader.onload  = function(e) { xhr.send(reader.result); };
+                reader.onerror = function(e) { console.error(e); };
+                reader.readAsBinaryString(file);
+            });
+        }
+
+        function completeUpload() {
+            $.ajax({
+                method:  "PUT",
+                url:     $("input[name=import_uri]").val(),
+                headers: { "X-CSRF-Token": CSRF_TOKEN },
+                success: function() {
+                    // the page is going to reload
+                },
+                error: function(data, status, xhr) {
+                    console.error(data);
+                    dropZone.before(
+                        '<div class="alert alert-danger">Upload failed.</div>');
+                }
+            });
+        }
+
+        // The file chooser is a file input, hidden via CSS, that is virtually
+        // clicked when the drop zone is clicked in order to open a file
+        // selection dialog.
+        const fileChooser = $("#file-chooser");
+        fileChooser.on("change", function() {
+            deleteAllFiles();
+            const files = this.files;
+            for (let i = 0; i < files.length; i++) {
+                addFile(files[i]);
+            }
+        });
+
+        dropZone.on("dragover", function(e) {
+            e.preventDefault();
+            e.originalEvent.dataTransfer.dropEffect = "copy";
+        });
+        dropZone.on("click", function(e) {
+            e.preventDefault();
+            fileChooser.click();
+        });
+        dropZone.on("drop", function(e) {
+            e.preventDefault();
+            e = e.originalEvent;
+            deleteAllFiles();
+            getAllFileEntries(e.dataTransfer.items).then(
+                function(entries) {
+                    entries.forEach(function(entry) {
+                        addFile(entry);
+                    });
+                    completeUpload();
+                },
+                function(error) {
+                    console.error(error);
+                });
+        });
+
+        async function getAllFileEntries(dataTransferItemList) {
+            let fileEntries = [];
+            // Use BFS to traverse entire directory/file structure
+            let queue = [];
+            for (let i = 0; i < dataTransferItemList.length; i++) {
+                queue.push(dataTransferItemList[i].webkitGetAsEntry());
+            }
+            while (queue.length > 0) {
+                let entry = queue.shift();
+                if (entry.isFile) {
+                    fileEntries.push(entry);
+                } else if (entry.isDirectory) {
+                    queue.push(...await readAllDirectoryEntries(entry.createReader()));
+                }
+            }
+            return fileEntries;
+        }
+
+        // Get all the entries (files or sub-directories) in a directory
+        // by calling readEntries until it returns an empty array
+        async function readAllDirectoryEntries(directoryReader) {
+            let entries = [];
+            let readEntries = await readEntriesPromise(directoryReader);
+            while (readEntries.length > 0) {
+                entries.push(...readEntries);
+                readEntries = await readEntriesPromise(directoryReader);
+            }
+            return entries;
+        }
+
+        async function readEntriesPromise(directoryReader) {
+            return await new Promise((resolve, reject) => {
+                // N.B.: readEntries will return at most 100 items.
+                directoryReader.readEntries(resolve, reject);
+            });
+        }
+    };
+
+    $("button.new-import").on("click", function() {
+        const url = ROOT_URL + "/imports/new";
+        $.get(url, function (data) {
+            const body = $("#new-import-modal .modal-body");
+            body.html(data);
+            body.find("[name=unit_id]").on("change", function() {
+                const unitID = $(this).val();
+                new IDEALS.Client().fetchUnitCollections(unitID, function(data) {
+                    const collectionMenu = body.find("[name='import[collection_id]']");
+                    collectionMenu.children().remove();
+                    if (data.length > 0) {
+                        $.each(data, function (index, value) {
+                            collectionMenu.append(
+                                "<option value='" + value[1] + "'>" + value[0] + "</option>");
+                        });
+                    }
+                });
+            });
+        });
+    });
+
+    function attachEventListeners() {
+        $("button.edit-import").on("click", function() {
+            const importID = $(this).data("import-id");
+            const url      = ROOT_URL + "/imports/" + importID + "/edit";
+            $.get(url, function (data) {
+                $("#edit-import-modal .modal-body").html(data);
+                new UploadPackagePanel();
+            });
+        });
+        $("button.show-import").on("click", function() {
+            const importID = $(this).data("import-id");
+            const url      = ROOT_URL + "/imports/" + importID;
+            $.get(url, function (data) {
+                $("#show-import-modal .modal-body").html(data);
+            });
+        });
+    }
+    attachEventListeners();
+
+    // Reload the imports table every 5 seconds
+    setInterval(function() {
+        $.ajax({
+            url: ROOT_URL + "/imports",
+            success: function(data) {
+                // index.js.erb will take it from here
+                attachEventListeners();
+            },
+            error: function(data, status, xhr) {
+                console.error(data);
+            }
+        });
+    }, 5000);
+};
+
+$(document).ready(function() {
+    if ($("body#imports").length) {
+        new ImportsView();
+    }
+});

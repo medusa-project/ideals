@@ -49,6 +49,10 @@ Rails.application.routes.draw do
   match "/dspace-oai/request", to: redirect('/oai-pmh', status: 301), via: :all
   resources :file_formats, path: "file-formats", only: :index
   match "/handle/:prefix/:suffix", to: "handles#redirect", via: :get, as: "redirect_handle"
+  resources :imports do
+    match "/delete-all-files", to: "imports#delete_all_files", via: :post
+    match "/upload-file", to: "imports#upload_file", via: :post
+  end
   resources :institutions, param: :key do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/properties", to: "institutions#show_properties", via: :get,
