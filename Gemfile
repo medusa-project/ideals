@@ -5,8 +5,6 @@ git_source(:github) {|repo| "https://github.com/#{repo}.git" }
 
 ruby "2.7.2"
 
-gem "rails", "~> 6.1.4"
-
 gem "autoprefixer-rails"
 gem 'aws-sdk-s3', '~> 1'
 # Use ActiveModel has_secure_password for local identity users
@@ -37,6 +35,8 @@ gem "local_time"
 gem 'medusa-client', git: 'https://github.com/medusa-project/medusa-client.git'
 # JavaScript runtime
 gem 'mini_racer', platforms: :ruby
+# Use modernizr-rails to handle different browsers differently
+gem "modernizr-rails"
 # Used to copy files (bitstreams) out of IDEALS-DSpace during a migration.
 gem 'net-scp'
 # Assists in parsing IP address CIDR ranges.
@@ -49,6 +49,7 @@ gem "omniauth-shibboleth"
 gem "pg"
 # Our application server
 gem "puma"
+gem "rails", "~> 6.1"
 # Used during the new user sign-up process
 gem "recaptcha"
 # Use SCSS for stylesheets
@@ -58,12 +59,6 @@ gem 'scars-bootstrap-theme', github: 'medusa-project/scars-bootstrap-theme', bra
 #gem 'scars-bootstrap-theme', path: '../scars-bootstrap-theme'
 # Use Uglifier as compressor for JavaScript assets
 gem "uglifier", ">= 2.7.2"
-
-# Use builder to support sitemaps generator
-gem "builder", "~> 3.2", ">= 3.2.2"
-
-# Use modernizr-rails to handle different browsers differently
-gem "modernizr-rails"
 
 group :development do
   # Reduces boot times through caching; required in config/boot.rb
