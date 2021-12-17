@@ -113,7 +113,7 @@ class S3ClientTest < ActiveSupport::TestCase
     bucket    = ::Configuration.instance.aws[:bucket]
     client.upload_path(root_path:  root_path,
                        bucket:     bucket,
-                       key_prefix: "/prefix/")
+                       key_prefix: "prefix/")
 
     assert_equal 5, client.num_objects(bucket: bucket, key_prefix: "prefix/")
     assert client.object_exists?(bucket: bucket, key: "prefix/item_1/content")
