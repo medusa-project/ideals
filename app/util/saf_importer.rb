@@ -90,11 +90,11 @@ class SafImporter
   #                         that can go wrong. If this occurs, refer to the
   #                         mapfile for an inventory of items that were
   #                         imported successfully prior to the error occurring.
-  # TODO: rename to import_from_directory
-  def import(pathname:,
-             primary_collection:,
-             mapfile_path:,
-             print_progress: false)
+  #
+  def import_from_path(pathname:,
+                       primary_collection:,
+                       mapfile_path:,
+                       print_progress: false)
     item_dirs = Dir.entries(pathname).reject{ |d| %w(. ..).include?(d) }.sort
 
     # Read the list of items in the mapfile, if one exists. These will be

@@ -83,10 +83,10 @@ namespace :ideals do
       package_path = File.expand_path(args[:package_path])
       mapfile_path = File.expand_path(args[:mapfile_path])
       # Do the import.
-      SafImporter.new.import(pathname:           package_path,
-                             primary_collection: collection,
-                             mapfile_path:       mapfile_path,
-                             print_progress:     true)
+      SafImporter.new.import_from_path(pathname:           package_path,
+                                       primary_collection: collection,
+                                       mapfile_path:       mapfile_path,
+                                       print_progress:     true)
       puts "Import succeeded."
     end
   end

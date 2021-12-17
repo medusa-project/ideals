@@ -14,70 +14,70 @@ class SafImporterTest < ActiveSupport::TestCase
     teardown_s3
   end
 
-  # import()
+  # import_from_path()
 
-  test "import() raises an error for a missing content file" do
+  test "import_from_path() raises an error for a missing content file" do
     package = File.join(PACKAGES_PATH, "missing_content_file")
     assert_raises IOError do
-      @instance.import(pathname:           package,
-                       primary_collection: collections(:collection1),
-                       mapfile_path:       Tempfile.new("test"))
+      @instance.import_from_path(pathname:           package,
+                                 primary_collection: collections(:collection1),
+                                 mapfile_path:       Tempfile.new("test"))
     end
   end
 
-  test "import() raises an error for a missing file component on a line of the
+  test "import_from_path() raises an error for a missing file component on a line of the
   content file" do
     package = File.join(PACKAGES_PATH, "missing_file_on_content_file_line")
     assert_raises IOError do
-      @instance.import(pathname:           package,
-                       primary_collection: collections(:collection1),
-                       mapfile_path:       Tempfile.new("test"))
+      @instance.import_from_path(pathname:           package,
+                                 primary_collection: collections(:collection1),
+                                 mapfile_path:       Tempfile.new("test"))
     end
   end
 
-  test "import() raises an error for an illegal flag in a content file" do
+  test "import_from_path() raises an error for an illegal flag in a content file" do
     package = File.join(PACKAGES_PATH, "illegal_content_file_flag")
     assert_raises IOError do
-      @instance.import(pathname:           package,
-                       primary_collection: collections(:collection1),
-                       mapfile_path:       Tempfile.new("test"))
+      @instance.import_from_path(pathname:           package,
+                                 primary_collection: collections(:collection1),
+                                 mapfile_path:       Tempfile.new("test"))
     end
   end
 
-  test "import() raises an error for a missing file that is present in the
+  test "import_from_path() raises an error for a missing file that is present in the
   content file" do
     package = File.join(PACKAGES_PATH, "missing_file")
     assert_raises IOError do
-      @instance.import(pathname:           package,
-                       primary_collection: collections(:collection1),
-                       mapfile_path:       Tempfile.new("test"))
+      @instance.import_from_path(pathname:           package,
+                                 primary_collection: collections(:collection1),
+                                 mapfile_path:       Tempfile.new("test"))
     end
   end
 
-  test "import() raises an error for a missing dublin_core.xml file" do
+  test "import_from_path() raises an error for a missing dublin_core.xml file" do
     package = File.join(PACKAGES_PATH, "missing_dublin_core")
     assert_raises IOError do
-      @instance.import(pathname:           package,
-                       primary_collection: collections(:collection1),
-                       mapfile_path:       Tempfile.new("test"))
+      @instance.import_from_path(pathname:           package,
+                                 primary_collection: collections(:collection1),
+                                 mapfile_path:       Tempfile.new("test"))
     end
   end
 
-  test "import() raises an error when encountering a registered element not
+  test "import_from_path() raises an error when encountering a registered element not
   present in the registry" do
     package = File.join(PACKAGES_PATH, "illegal_metadata_element")
     assert_raises IOError do
-      @instance.import(pathname:           package,
-                       primary_collection: collections(:collection1),
-                       mapfile_path:       Tempfile.new("test"))
+      @instance.import_from_path(pathname:           package,
+                                 primary_collection: collections(:collection1),
+                                 mapfile_path:       Tempfile.new("test"))
     end
   end
 
-  test "import() creates correct items" do
+  test "import_from_path() creates correct items" do
     package = File.join(PACKAGES_PATH, "valid_item")
-    @instance.import(pathname:           package,
-                     primary_collection: collections(:collection1),
-                     mapfile_path:       Tempfile.new("test"))
+    @instance.import_from_path(pathname:           package,
+                               primary_collection: collections(:collection1),
+                               mapfile_path:       Tempfile.new("test"))
 
     # Test the created item's immediate properties
     item = Item.order(created_at: :desc).limit(1).first
@@ -117,32 +117,32 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_equal "Michigan Institute of Technology", item.element("etd:degree:grantor").string
   end
 
-  test "import() adds correct mapfile lines upon failure" do
+  test "import_from_path() adds correct mapfile lines upon failure" do
     package = File.join(PACKAGES_PATH, "one_invalid_item")
     Tempfile.open("test") do |mapfile|
       assert_raises IOError do
-        @instance.import(pathname:           package,
-                         primary_collection: collections(:collection1),
-                         mapfile_path:       mapfile.path)
+        @instance.import_from_path(pathname:           package,
+                                   primary_collection: collections(:collection1),
+                                   mapfile_path:       mapfile.path)
       end
       contents = mapfile.read
       assert_match /^item_1\t\d+\/\d+\b/, contents
     end
   end
 
-  test "import() adds correct mapfile lines upon success" do
+  test "import_from_path() adds correct mapfile lines upon success" do
     package       = File.join(PACKAGES_PATH, "valid_item")
     Tempfile.open("test") do |mapfile|
-      @instance.import(pathname:           package,
-                       primary_collection: collections(:collection1),
-                       mapfile_path:       mapfile)
+      @instance.import_from_path(pathname:           package,
+                                 primary_collection: collections(:collection1),
+                                 mapfile_path:       mapfile)
       # Get the created item
       item = Item.order(created_at: :desc).limit(1).first
       assert_equal "item_1\t#{item.handle.handle}\n", mapfile.read
     end
   end
 
-  test "import() skips items present in the mapfile" do
+  test "import_from_path() skips items present in the mapfile" do
     package = File.join(PACKAGES_PATH, "valid_item")
     assert_no_changes "Item.count" do
       mapfile = Tempfile.new("test")
@@ -150,9 +150,9 @@ class SafImporterTest < ActiveSupport::TestCase
         File.open(mapfile.path, "w") do |file|
           file.write("item_1\t100/100\n")
         end
-        @instance.import(pathname:           package,
-                         primary_collection: collections(:collection1),
-                         mapfile_path:       mapfile)
+        @instance.import_from_path(pathname:           package,
+                                   primary_collection: collections(:collection1),
+                                   mapfile_path:       mapfile)
       ensure
         mapfile.close
         mapfile.unlink
