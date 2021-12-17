@@ -259,10 +259,10 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   test "upload_file() returns HTTP 204 for authorized users" do
     log_in_as(users(:uiuc_admin))
     @import = imports(:new)
-    post import_upload_file_path(@import), {
-      headers: { "X-Relative-Path": "/item1/image.jpg" },
-      params:  { bulkfile: @bulkfile }
-    }
+    post import_upload_file_path(@import),
+         headers: { "X-Relative-Path": "/item1/image.jpg" },
+         params:  { bulkfile: @bulkfile }
+
     assert_response :no_content
   end
 
@@ -284,10 +284,10 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, @import.object_keys.length
 
     @import = imports(:new)
-    post import_upload_file_path(@import), {
-      headers: { "X-Relative-Path": "/item1/image.jpg" },
-      params:  { bulkfile: @bulkfile }
-    }
+    post import_upload_file_path(@import),
+         headers: { "X-Relative-Path": "/item1/image.jpg" },
+         params:  { bulkfile: @bulkfile }
+
     assert_equal 1, @import.object_keys.length
   end
 
