@@ -4,6 +4,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     setup_elasticsearch
+    setup_s3
   end
 
   teardown do
@@ -19,7 +20,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "approve() returns HTTP 403 for unauthorized users" do
-    setup_s3
     log_in_as(users(:norights))
     item = items(:submitted)
     patch item_approve_path(item)
@@ -27,7 +27,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "approve() redirects to the item page for authorized users" do
-    setup_s3
     log_in_as(users(:local_sysadmin))
     item = items(:submitted)
     patch item_approve_path(item)
@@ -35,7 +34,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "approve() approves an item" do
-    setup_s3
     log_in_as(users(:local_sysadmin))
     item = items(:submitted)
     patch item_approve_path(item)
@@ -44,7 +42,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "approve() moves an item's bitstreams into permanent storage" do
-    setup_s3
     log_in_as(users(:local_sysadmin))
     item = items(:submitted)
     patch item_approve_path(item)
@@ -55,26 +52,12 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "approve() creates an associated handle" do
-    setup_s3
     item = items(:submitted)
     assert_nil item.handle
     log_in_as(users(:local_sysadmin))
     patch item_approve_path(item)
     item.reload
     assert_not_nil item.handle
-  end
-
-  test "approve() sends an ingest message to Medusa" do
-    setup_s3
-    log_in_as(users(:local_sysadmin))
-    item = items(:submitted)
-    patch item_approve_path(item)
-    item.reload
-    item.bitstreams.each do
-      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
-        assert message.present?
-      end
-    end
   end
 
   # destroy()
@@ -287,7 +270,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "process_review() approves items" do
-    setup_s3
     log_in_as(users(:local_sysadmin))
     item = items(:submitted)
     post items_process_review_path,
@@ -301,7 +283,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "process_review() creates an associated handle for approved items" do
-    setup_s3
     item = items(:submitted)
     assert_nil item.handle
     log_in_as(users(:local_sysadmin))
@@ -315,7 +296,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "process_review() sends an ingest message to Medusa for approved items" do
-    setup_s3
     item = items(:submitted)
     log_in_as(users(:local_sysadmin))
     post items_process_review_path,
@@ -331,7 +311,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "process_review() rejects items" do
-    setup_s3
     log_in_as(users(:local_sysadmin))
     item = items(:submitted)
     post items_process_review_path,

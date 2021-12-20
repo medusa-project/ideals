@@ -35,8 +35,6 @@ namespace :ideals_dspace do
               bitstream.upload_to_permanent(File.read(local_path))
               # Delete it from the temp directory
               File.delete(local_path)
-              # Tell Medusa to ingest it
-              bitstream.ingest_into_medusa
               progress.report(index, "Copying files from IDEALS-DSpace into Medusa")
             end
           end
@@ -68,8 +66,6 @@ namespace :ideals_dspace do
             bitstream.upload_to_permanent(File.read(local_path))
             # Delete it from the temp directory
             File.delete(local_path)
-            # Tell Medusa to ingest it
-            bitstream.ingest_into_medusa
             progress.report(index, "Copying files from IDEALS-DSpace into Medusa")
           end
         end

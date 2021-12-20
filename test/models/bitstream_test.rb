@@ -40,9 +40,8 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   teardown do
-    AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
-    S3Client.instance.delete_objects(bucket: ::Configuration.instance.aws[:bucket],
-                                     key_prefix: "/")
+    clear_message_queue
+    teardown_s3
   end
 
   # medusa_key()
@@ -212,7 +211,6 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance = bitstreams(:item2_in_medusa)
     @instance.delete_from_medusa
     AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
-      puts message
       assert_equal "delete", message['operation']
       assert_equal @instance.medusa_uuid, message['uuid']
       assert_equal @instance.class.to_s, message['pass_through']['class']
@@ -353,6 +351,25 @@ class BitstreamTest < ActiveSupport::TestCase
     response = client.get(url)
     assert_equal 200, response.code
     assert response.headers['Content-Length'].to_i > 10000
+  end
+
+  # destroy()
+
+  test "destroy() does not send a message to Medusa if medusa_uuid is not set" do
+    @instance = bitstreams(:submitted_in_staging)
+    @instance.destroy!
+    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+      assert_nil message
+    end
+  end
+
+  test "destroy() sends a message to Medusa if medusa_uuid is set" do
+    Message.destroy_all
+    @instance = bitstreams(:item2_in_medusa)
+    @instance.destroy!
+    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+      assert_not_nil message
+    end
   end
 
   # download_count()
@@ -626,6 +643,34 @@ class BitstreamTest < ActiveSupport::TestCase
     b2.update!(primary: true)
     b1.reload
     assert !b1.primary
+  end
+
+  test "save() does not send an ingest message to Medusa if the permanent key
+  is not set" do
+    @instance = bitstreams(:submitted_in_staging)
+    @instance.save!
+    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+      assert_nil message
+    end
+  end
+
+  test "save() does not send an ingest message to Medusa if the permanent key
+  has not changed" do
+    @instance = bitstreams(:awaiting_ingest_into_medusa)
+    @instance.save!
+    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+      assert_nil message
+    end
+  end
+
+  test "save() sends an ingest message to Medusa if the permanent key has
+  changed" do
+    @instance = bitstreams(:submitted_in_staging)
+    @instance.item.assign_handle
+    @instance.update!(permanent_key: Bitstream::PERMANENT_KEY_PREFIX + "/new_key")
+    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+      assert_not_nil message
+    end
   end
 
   # staging_key

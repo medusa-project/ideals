@@ -425,38 +425,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_nil @instance.element("bogus")
   end
 
-  # ingest_into_medusa()
-
-  test "ingest_into_medusa() raises an error if the handle is not set" do
-    @instance.handle.destroy!
-    @instance.handle = nil
-    assert_raises do
-      @instance.ingest_into_medusa
-    end
-  end
-
-  test "ingest_into_medusa() ingests all associated not-yet-submitted-for-ingest
-  bitstreams into Medusa" do
-    @instance = items(:awaiting_ingest_into_medusa)
-    @instance.ingest_into_medusa
-    @instance.bitstreams.each do
-      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
-        assert message.present?
-      end
-    end
-  end
-
-  test "ingest_into_medusa() does not try to ingest associated bitstreams that
-  have already been submitted for ingest" do
-    @instance.bitstreams.update_all(submitted_for_ingest: true)
-    @instance.ingest_into_medusa
-    @instance.bitstreams.each do
-      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
-        assert message.blank?
-      end
-    end
-  end
-
   # institution()
 
   test "institution() returns the primary collection's primary unit's institution" do

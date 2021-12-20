@@ -87,8 +87,9 @@ class Bitstream < ApplicationRecord
   validates_inclusion_of :role, in: -> (value) { Role.all }
 
   before_save :ensure_primary_uniqueness
+  after_save :ingest_into_medusa, if: -> { permanent_key.present? && saved_change_to_permanent_key? }
   before_destroy :delete_derivatives, :delete_from_staging
-  before_destroy :delete_from_medusa, if: -> { Rails.env.demo? }
+  before_destroy :delete_from_medusa, if: -> { medusa_uuid.present? }
 
   ##
   # Bitstreams are initially uploaded to a location under this key prefix.
@@ -367,7 +368,7 @@ class Bitstream < ApplicationRecord
     raise ArgumentError, "Permanent key is not set" if self.permanent_key.blank?
     raise ArgumentError, "Owning item does not have a handle" if !self.item.handle || self.item.handle&.suffix&.blank?
     unless force
-      raise AlreadyExistsError, "Already been submitted for ingest" if self.submitted_for_ingest
+      raise AlreadyExistsError, "Already submitted for ingest" if self.submitted_for_ingest
       raise AlreadyExistsError, "Already exists in Medusa" if self.medusa_uuid.present?
     end
 
@@ -382,7 +383,7 @@ class Bitstream < ApplicationRecord
                                       target_key:  target_key)
     message.save!
     message.send_message
-    self.update!(submitted_for_ingest: true)
+    self.update_column(:submitted_for_ingest, true) # skip callbacks
   end
 
   ##

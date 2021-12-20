@@ -143,7 +143,6 @@ class SafImporter
           item.approve
           item.save!
           mapfile.write("#{item_dir}\t#{item.handle.handle}\n")
-          item.ingest_into_medusa
         end
       end
     end
@@ -216,7 +215,6 @@ class SafImporter
         }
         import.update!(percent_complete: index / item_key_prefixes.length.to_f,
                        imported_items:   imported_items)
-        item.ingest_into_medusa
       end
     end
   rescue => e

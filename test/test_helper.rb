@@ -44,6 +44,10 @@ class ActiveSupport::TestCase
     delete logout_path
   end
 
+  def clear_message_queue
+    AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
+  end
+
   def refresh_elasticsearch
     client = ElasticsearchClient.instance
     client.refresh(Configuration.instance.elasticsearch[:index])

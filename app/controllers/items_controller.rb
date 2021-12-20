@@ -296,9 +296,8 @@ class ItemsController < ApplicationController
                           description: "Item was approved, assigned a "\
                           "handle, moved into permanent storage, and "\
                           "ingested into Medusa.").execute do
-      item.move_into_permanent_storage
       item.assign_handle
-      item.ingest_into_medusa
+      item.move_into_permanent_storage
       item.approve
       item.save!
     end

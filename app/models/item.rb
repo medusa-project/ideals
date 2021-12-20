@@ -443,28 +443,10 @@ class Item < ApplicationRecord
   #                   been ingested into Medusa. Note that there is a delay
   #                   between the time a bitstream is submitted for ingest and
   #                   the time the ingest is complete, during which this method
-  #                   will continue to return `false`.
+  #                   will return `false`.
   #
   def exists_in_medusa?
     self.bitstreams.where.not(medusa_uuid: nil).count > 0
-  end
-
-  ##
-  # Uploads all of the instance's associated {Bitstream}s into Medusa. The
-  # instance must already have a {handle} and the bitstreams must have
-  # {permanent_key permanent keys}.
-  #
-  # @return [void]
-  #
-  def ingest_into_medusa
-    raise "Handle is not set" if self.handle.blank?
-    self.bitstreams.where(submitted_for_ingest: false).each do |bitstream|
-      begin
-        bitstream.ingest_into_medusa
-      rescue AlreadyExistsError
-        # fine
-      end
-    end
   end
 
   ##
