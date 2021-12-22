@@ -28,6 +28,9 @@ class RegisteredElementsController < ApplicationController
   def destroy
     begin
       @element.destroy!
+    rescue ActiveRecord::InvalidForeignKey
+      flash['error'] = "The #{@element.name} element cannot be deleted, as "\
+                       "it is in use by one or more items."
     rescue => e
       flash['error'] = "#{e}"
     else
