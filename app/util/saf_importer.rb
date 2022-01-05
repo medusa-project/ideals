@@ -99,7 +99,7 @@ class SafImporter
 
     # Read the list of items in the mapfile, if one exists. These will be
     # skipped during the import.
-    if File.exists?(mapfile_path)
+    if File.exist?(mapfile_path)
       imported_item_dirs = mapfile_items(File.read(mapfile_path))
       item_dirs         -= imported_item_dirs
     end
@@ -118,7 +118,7 @@ class SafImporter
           # Add bitstreams corresponding to each line in the content file.
           item_dir_path     = File.join(pathname, item_dir)
           content_file_path = File.join(item_dir_path, "content")
-          unless File.exists?(content_file_path)
+          unless File.exist?(content_file_path)
             raise IOError, "Missing content file for item #{item_dir}"
           end
           add_bitstreams_from_file(item:              item,
@@ -126,7 +126,7 @@ class SafImporter
 
           # Add metadata corresponding to the Dublin Core metadata file.
           dc_path = File.join(item_dir_path, "dublin_core.xml")
-          unless File.exists?(dc_path)
+          unless File.exist?(dc_path)
             raise IOError, "Missing dublin_core.xml file for item #{item_dir}"
           end
           add_metadata(item:                   item,
@@ -260,7 +260,7 @@ class SafImporter
       unless file_path
         raise IOError, "No file on line #{line_index + 1} of #{content_file_path}"
       end
-      unless File.exists?(file_path)
+      unless File.exist?(file_path)
         raise IOError, "File on line #{line_index + 1} of "\
                        "#{content_file_path} does not exist: #{file_path}"
       end
