@@ -49,7 +49,7 @@ gem "omniauth-shibboleth"
 gem "pg"
 # Our application server
 gem "puma"
-gem "rails", "~> 6.1"
+gem "rails", "~> 7.0"
 # Used during the new user sign-up process
 gem "recaptcha"
 # Use SCSS for stylesheets
@@ -57,6 +57,7 @@ gem "sassc"
 # Provides a SCARS-themed Bootstrap.
 gem "scars-bootstrap-theme", github: "medusa-project/scars-bootstrap-theme", branch: "release/bootstrap-4.4"
 #gem "scars-bootstrap-theme", path: "../scars-bootstrap-theme"
+gem "sprockets-rails"
 # Use Uglifier as compressor for JavaScript assets
 gem "uglifier", ">= 2.7.2"
 

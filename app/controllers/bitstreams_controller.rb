@@ -91,7 +91,9 @@ class BitstreamsController < ApplicationController
   def object
     url = @bitstream.presigned_url(content_disposition: download_content_disposition)
     @bitstream.add_download(user: current_user)
-    redirect_to url, status: :temporary_redirect
+    redirect_to url,
+                status:           :temporary_redirect,
+                allow_other_host: true
   end
 
   ##

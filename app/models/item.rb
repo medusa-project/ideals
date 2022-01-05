@@ -397,8 +397,7 @@ class Item < ApplicationRecord
                     AND e.happened_at <= $4
                 GROUP BY month) e ON mon.month = e.month
         ORDER BY mon.month;"
-    values = [[nil, self.id], [nil, Event::Type::DOWNLOAD],
-              [nil, start_time], [nil, end_time]]
+    values = [self.id, Event::Type::DOWNLOAD, start_time, end_time]
     self.class.connection.exec_query(sql, "SQL", values)
   end
 

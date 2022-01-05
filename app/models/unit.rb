@@ -108,8 +108,7 @@ class Unit < ApplicationRecord
       SELECT (q.h).id
       FROM q
       ORDER BY breadcrumb"
-    values = [[ nil, self.id ]]
-
+    values  = [self.id]
     results = ActiveRecord::Base.connection.exec_query(sql, "SQL", values)
     Unit.where("id IN (?)", results.
         select{ |row| row['id'] != self.id }.
@@ -248,8 +247,7 @@ class Unit < ApplicationRecord
                 AND e.happened_at <= $4
             GROUP BY month) e ON mon.month = e.month
     ORDER BY mon.month;"
-    values = [[nil, self.id], [nil, Event::Type::DOWNLOAD],
-              [nil, start_time], [nil, end_time]]
+    values = [self.id, Event::Type::DOWNLOAD, start_time, end_time]
     self.class.connection.exec_query(sql, "SQL", values)
   end
 
@@ -300,12 +298,12 @@ class Unit < ApplicationRecord
     sql << "LIMIT #{limit} " if limit > 0
 
     values = [
-      [nil, self.id],
-      [nil, ::Configuration.instance.elements[:title]],
-      [nil, Event::Type::DOWNLOAD]
+      self.id,
+      ::Configuration.instance.elements[:title],
+      Event::Type::DOWNLOAD
     ]
-    values << [nil, start_time] if start_time
-    values << [nil, end_time] if end_time
+    values << start_time if start_time
+    values << end_time if end_time
     self.class.connection.exec_query(sql.string, 'SQL', values)
   end
 
@@ -395,8 +393,7 @@ class Unit < ApplicationRecord
                 AND e.happened_at <= $4
             GROUP BY month) e ON mon.month = e.month
     ORDER BY mon.month;"
-    values = [[nil, self.id], [nil, Event::Type::CREATE],
-              [nil, start_time], [nil, end_time]]
+    values = [self.id, Event::Type::CREATE, start_time, end_time]
     self.class.connection.exec_query(sql, "SQL", values)
   end
 
