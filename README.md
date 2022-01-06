@@ -137,6 +137,7 @@ database.
 
 ```sh
 rails elasticsearch:purge
+rails storage:purge
 rails db:reset
 rails "ideals_dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails ideals:seed
