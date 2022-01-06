@@ -4,8 +4,8 @@ Institution.create!(key:     "uiuc",
                     org_dn:  "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
                     default: true)
 
-ug = AdGroup.create!(key: "sysadmin",
-                     name: "System Administrators")
+ug = UserGroup.create!(key: "sysadmin",
+                       name: "System Administrators")
 lg = AdGroup.create!(urn: "urn:mace:uiuc.edu:urbana:library:units:ideals:library ideals admin")
 ug.ad_groups << lg
 ug.save!
