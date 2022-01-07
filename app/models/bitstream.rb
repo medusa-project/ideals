@@ -116,6 +116,7 @@ class Bitstream < ApplicationRecord
     SOURCE          = 7
     BRANDED_PREVIEW = 8
     NOTES           = 9
+    SWORD           = 10
 
     ##
     # @return [Enumerable<Integer>]
