@@ -222,7 +222,8 @@ class SafImporter
                    last_error_message: e.message)
     raise e
   else
-    import.update!(status: Import::Status::SUCCEEDED)
+    import.update!(status:             Import::Status::SUCCEEDED,
+                   last_error_message: nil)
   end
 
 
