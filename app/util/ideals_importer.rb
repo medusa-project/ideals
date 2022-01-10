@@ -2,17 +2,20 @@
 # Imports content from "Old IDEALS" (IDEALS-DSpace) into the application.
 # Methods work in conjunction with the SQL scripts in the `scripts` directory.
 #
-# This class is intended to be used with a fresh, empty database. It is a
-# Singleton because other application components may need to know when it is
-# running.
+# An import can be run into a fresh destination database, or into a destination
+# database already populated with content, in order to pick up content added to
+# the source database since the last import.
+#
+# This is a Singleton class because other application components may need to
+# know when it is running.
 #
 # N.B.: methods must be invoked in a certain order. See the
 # `ideals_dspace:migrate_critical` and `ideals_dspace:migrate_non_critical`
 # rake tasks.
 #
 # N.B. 2: methods do not create or update objects within transactions, which
-# means that objects don't get reindexed. This is in order to save time by
-# avoiding multiple indexings of the same object. Resources should be reindexed
+# means that objects don't get indexed. This is in order to save time by
+# avoiding multiple indexings of the same object. Resources should be indexed
 # manually after import, perhaps using the `elasticsearch:reindex` rake task.
 #
 class IdealsImporter
@@ -46,6 +49,8 @@ class IdealsImporter
       rescue ActiveRecord::RecordNotFound
         # nothing we can do
       rescue ActiveRecord::RecordInvalid
+        # nothing we can do
+      rescue ActiveRecord::RecordNotUnique
         # nothing we can do
       end
     end
@@ -96,6 +101,8 @@ class IdealsImporter
           bundle = Bitstream::Bundle::BRANDED_PREVIEW
         when "NOTES"
           bundle = Bitstream::Bundle::NOTES
+        when "SWORD"
+          bundle = Bitstream::Bundle::SWORD
         else
           raise ArgumentError, "Unrecognized bundle: #{string}"
         end
@@ -395,20 +402,26 @@ class IdealsImporter
 
       progress.report(row_num, "Importing handles")
 
-      case row[2].to_i
-      when ResourceType::UNIT
-        unit   = Unit.find_by(id: row[3].to_i)
-        handle = unit&.build_handle(suffix: suffix)
-      when ResourceType::COLLECTION
-        collection = Collection.find_by(id: row[3].to_i)
-        handle     = collection&.build_handle(suffix: suffix)
-      when ResourceType::ITEM
-        item   = Item.find_by(id: row[3].to_i)
-        handle = item&.build_handle(suffix: suffix)
-      else
-        # Getting here would be unexpected, but also unrecoverable
+      begin
+        case row[2].to_i
+        when ResourceType::UNIT
+          unit       = Unit.find_by(id: row[3].to_i)
+          handle     = unit&.build_handle(suffix: suffix)
+        when ResourceType::COLLECTION
+          collection = Collection.find_by(id: row[3].to_i)
+          handle     = collection&.build_handle(suffix: suffix)
+        when ResourceType::ITEM
+          item       = Item.find_by(id: row[3].to_i)
+          handle     = item&.build_handle(suffix: suffix)
+        else
+          # Getting here would be unexpected, but also unrecoverable
+        end
+        handle&.save!
+      rescue ActiveRecord::RecordNotUnique
+        # nothing we can do
+      rescue ActiveRecord::RecordNotSaved => e
+        raise e unless e.message.include?("Failed to remove the existing associated handle")
       end
-      handle&.save!
     end
     Handle.set_suffix_start(Handle.order(suffix: :desc).limit(1).first.suffix + 1)
   ensure
@@ -480,16 +493,14 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row           = line.split("|").map(&:strip)
-      id            = row[0].to_i
-      submitter_id  = row[1]
-      submitting    = row[2] != "t"
-      withdrawn     = row[3] == "t"
-      discoverable  = row[4] == "t"
+      row = line.split("|").map(&:strip)
+      id  = row[0].to_i
 
-      # Skip submitterless items (items whose submitting user has not been
-      # imported due to not being a UofI user).
-      if User.exists?(submitter_id)
+      unless Item.exists?(id)
+        submitter_id = row[1]
+        submitting   = row[2] != "t"
+        withdrawn    = row[3] == "t"
+        discoverable = row[4] == "t"
         if withdrawn
           stage = Item::Stages::WITHDRAWN
         elsif submitting
@@ -497,9 +508,14 @@ class IdealsImporter
         else
           stage = Item::Stages::APPROVED
         end
-        unless Item.exists?(id)
+        begin
           Item.create!(id:           id,
                        submitter_id: submitter_id,
+                       stage:        stage,
+                       discoverable: discoverable)
+        rescue ActiveRecord::InvalidForeignKey
+          Item.create!(id:           id,
+                       submitter_id: nil,
                        stage:        stage,
                        discoverable: discoverable)
         end
@@ -620,34 +636,36 @@ class IdealsImporter
 
       row = line.split("|").map(&:strip)
       id  = row[0].to_i
-      # The eperson table contains all kinds of junk. Some of the email
-      # addresses are invalid and some are in "spam avoidance format," like
-      # "user at uiuc dot edu". For now, we're going to import only UofI users,
-      # because many of the rest are users who signed up once thinking it
-      # would enable them to access something and then never returned.
+      # Some of the email addresses in the eperson table are invalid and some
+      # are in "spam avoidance format," like "user at uiuc dot edu". We will
+      # try to fix them.
       email = row[1].strip.
-          gsub('"', "").
-          gsub(/(\w+) at (\w+) dot (\w+)/, "\\1@\\2.\\3")
+        gsub('"', "").
+        gsub(/(\w+) at (\w+) dot (\w+)/, "\\1@\\2.\\3").
+        downcase
       next if email.blank?
+      email      += "@example.org" unless email.include?("@")
       email_parts = email.split("@")
       username    = email_parts[0]
       tld         = email.scan(/(\w+).(\w+)$/).last.join(".")
-
-      if ::Configuration.instance.uofi_email_domains.include?(tld)
-        unless User.find_by_email(email)
+      begin
+        if ::Configuration.instance.uofi_email_domains.include?(tld)
           ShibbolethUser.create!(id:     id,
                                  uid:    email,
                                  email:  email,
                                  name:   username,
                                  org_dn: ShibbolethUser::UIUC_ORG_DN)
-        end
-      elsif email == "robbins.sd@gmail.com"
-        # Many items were bulk-imported into IDEALS-DSpace under this email.
-        unless User.find_by_email(email)
-          user = LocalUser.create_manually(email: email,
+        else
+          user = LocalUser.create_manually(email:    email,
                                            password: SecureRandom.hex)
-          user.update!(name: "Seth Robbins")
+          # Many items were bulk-imported into IDEALS-DSpace under this email.
+          user.update!(name: "Seth Robbins") if email == "robbins.sd@gmail.com"
         end
+      rescue ActiveRecord::RecordInvalid => e
+        raise "Email is invalid: #{email}" if e.message.include?("Email is invalid")
+        raise e unless e.message.include?("Email has already been taken")
+      rescue ActiveRecord::RecordNotUnique
+        # nothing we can do
       end
       progress.report(row_num, "Importing users")
     end

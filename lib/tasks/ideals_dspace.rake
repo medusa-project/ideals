@@ -227,13 +227,7 @@ namespace :ideals_dspace do
                  args[:source_db_host],
                  args[:source_db_user],
                  args[:source_db_password],
-                 "export_users_1.sql",
-                 :import_users)
-      do_migrate(args[:source_db_name],
-                 args[:source_db_host],
-                 args[:source_db_user],
-                 args[:source_db_password],
-                 "export_users_2.sql",
+                 "export_users.sql",
                  :import_users)
       do_migrate(args[:source_db_name],
                  args[:source_db_host],
@@ -261,7 +255,7 @@ namespace :ideals_dspace do
     Rake::Task["ideals_dspace:bitstreams:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:handles:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     puts "WARNING: This is the last step, but it takes a long time. "\
-        "You can ctrl+c at any time if you don't need full item metadata."
+        "You can ctrl+c if you don't need full item metadata."
     Rake::Task["ideals_dspace:metadata:migrate_item_values"].invoke(dbname, dbhost, dbuser, dbpass)
   end
 
