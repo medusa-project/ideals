@@ -31,26 +31,25 @@ const ImportsView = function() {
 
         /**
          * @param entry {FileSystemFileEntry}
+         * @parma onUploadedCallback {Function}
          */
-        function addFile(entry) {
-            const uri = $("input[name=import_uri]").val() + "/upload-file";
-            const xhr = new XMLHttpRequest();
-            xhr.upload.addEventListener("progress", function (e) {
-                console.log("onUploadProgressChanged(): " +
-                    Math.round(e.loaded / e.total * 100));
-            });
-            xhr.open("POST", uri, true);
-            // This header value is relative to the package root, so we have to
-            // trim off the package dir itself.
-            xhr.setRequestHeader("X-Relative-Path",
-                entry.fullPath.split("/").slice(2).join("/"));
-            xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
-
+        function addFile(entry, onUploadedCallback) {
             entry.file(function(file) {
-                const reader   = new FileReader();
-                reader.onload  = function(e) { xhr.send(reader.result); };
-                reader.onerror = function(e) { console.error(e); };
-                reader.readAsBinaryString(file);
+                const uri = $("input[name=import_uri]").val() + "/upload-file";
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", uri, true);
+                //xhr.upload.addEventListener("progress", function (e) {
+                //    console.log("onUploadProgressChanged(): " +
+                //        Math.round(e.loaded / e.total * 100));
+                //});
+                // This header value is relative to the package root, so we have to
+                // trim off the package dir itself.
+                xhr.setRequestHeader("X-Relative-Path",
+                    entry.fullPath.split("/").slice(2).join("/"));
+                xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
+                xhr.onload = onUploadedCallback;
+                xhr.error = function(e) { console.error(e); };
+                xhr.send(file);
             });
         }
 
