@@ -42,13 +42,13 @@ const ImportsView = function() {
                 //    console.log("onUploadProgressChanged(): " +
                 //        Math.round(e.loaded / e.total * 100));
                 //});
-                // This header value is relative to the package root, so we have to
-                // trim off the package dir itself.
+                // This header value is relative to the package root, so we
+                // have to trim off the package dir itself.
                 xhr.setRequestHeader("X-Relative-Path",
                     entry.fullPath.split("/").slice(2).join("/"));
                 xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
-                xhr.onload = onUploadedCallback;
-                xhr.error = function(e) { console.error(e); };
+                xhr.onloadend = onUploadedCallback;
+                xhr.onerror   = function(e) { console.error(e); };
                 xhr.send(file);
             });
         }
@@ -95,10 +95,15 @@ const ImportsView = function() {
             deleteAllFiles();
             getAllFileEntries(e.dataTransfer.items).then(
                 function(entries) {
+                    var numAdded = 0;
                     entries.forEach(function(entry) {
-                        addFile(entry);
+                        addFile(entry, function() {
+                            numAdded++;
+                            if (numAdded >= entries.length) {
+                                completeUpload();
+                            }
+                        });
                     });
-                    completeUpload();
                 },
                 function(error) {
                     console.error(error);
@@ -107,7 +112,6 @@ const ImportsView = function() {
 
         async function getAllFileEntries(dataTransferItemList) {
             let fileEntries = [];
-            // Use BFS to traverse entire directory/file structure
             let queue = [];
             for (let i = 0; i < dataTransferItemList.length; i++) {
                 queue.push(dataTransferItemList[i].webkitGetAsEntry());
@@ -124,7 +128,7 @@ const ImportsView = function() {
         }
 
         // Get all the entries (files or sub-directories) in a directory
-        // by calling readEntries until it returns an empty array
+        // by calling readEntries until it returns an empty array.
         async function readAllDirectoryEntries(directoryReader) {
             let entries = [];
             let readEntries = await readEntriesPromise(directoryReader);
