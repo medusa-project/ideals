@@ -90,9 +90,25 @@ class Import < ApplicationRecord
   # @param io [IO]
   #
   def upload_file(relative_path:, io:)
-    S3Client.instance.put_object(bucket: ::Configuration.instance.aws[:bucket],
-                                 key:    object_key(relative_path),
-                                 body:   io)
+    Tempfile.open("import") do |tempfile|
+      IO.copy_stream(io, tempfile)
+      tempfile.close
+      client = S3Client.instance
+      bucket = ::Configuration.instance.aws[:bucket]
+      key    = object_key(relative_path)
+      # When used to simply upload the IO argument, put_object() fails randomly
+      # and silently as of AWS SDK 1.111.0/Rails 7. Here is a workaround
+      # whereby we retry the upload as many times as necessary, pausing in
+      # between attempts. Don't ask me why the pausing works. (Is this only a
+      # problem with Minio?)
+      20.times do
+        client.put_object(bucket: bucket,
+                          key:    key,
+                          body:   tempfile)
+        sleep 1
+        break if client.object_exists?(bucket: bucket, key: key)
+      end
+    end
   end
 
 
