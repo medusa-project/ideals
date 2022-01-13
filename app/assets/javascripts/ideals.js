@@ -938,6 +938,36 @@ const ideals_ready = function () {
         return false;
     });
 
+    // Reimplement the form element data-confirm functionality that used to be
+    // in rails-ujs, which is no longer available in Rails 7.
+    $("a[data-confirm]").on("click", function(e) {
+        e.preventDefault();
+        const elem   = $(this);
+        const result = confirm(elem.data("confirm"));
+        if (result) {
+            const form = $("<form method='post'></form>");
+            form.attr("action", elem.attr("href"));
+            var input = $("<input type='hidden'>");
+            input.attr("name", "_method");
+            input.attr("value", elem.data("method"));
+            form.append(input);
+            var input = $("<input type='hidden'>");
+            input.attr("name", "authenticity_token");
+            input.attr("value", $("meta[name=csrf-token]").attr("content"));
+            form.append(input);
+            $.each(this.attributes, function() {
+                if (this.name.startsWith("data-")) {
+                    const input = $("<input type='hidden'>");
+                    input.attr("name", this.name.substr(5));
+                    input.attr("value", this.value);
+                    form.append(input);
+                }
+            });
+            $("body").append(form);
+            form.trigger("submit");
+        }
+    });
+
     // Copy the URL "q" argument into the filter field, as the browser won't do
     // this automatically.
     const queryArgs = new URLSearchParams(location.search);
