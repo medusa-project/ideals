@@ -195,6 +195,14 @@ class ItemsController < ApplicationController
   # Responds to `GET /items/:id`
   #
   def show
+    if @item.withdrawn?
+      render "show_withdrawn", status: :gone
+    else
+      show_approved
+    end
+  end
+
+  def show_approved
     @collections         = @item.collections
     @content_bitstreams  = @item.bitstreams.
       where(bundle: Bitstream::Bundle::CONTENT).
@@ -206,8 +214,12 @@ class ItemsController < ApplicationController
       select{ |b| policy(b).show? }
 
     respond_to do |format|
-      format.html
-      format.json
+      format.html do
+        render "show"
+      end
+      format.json do
+        render "show"
+      end
       format.zip do
         client       = MedusaDownloaderClient.new(request_context: request_context)
         download_url = client.download_url(item: @item)
@@ -293,11 +305,11 @@ class ItemsController < ApplicationController
   def approve_item(item)
     UpdateItemCommand.new(item:        item,
                           user:        current_user,
-                          description: "Item was approved, assigned a "\
-                          "handle, moved into permanent storage, and "\
-                          "ingested into Medusa.").execute do
-      item.assign_handle
-      item.move_into_permanent_storage
+                          description: "Item was approved.").execute do
+      unless item.withdrawn?
+        item.assign_handle
+        item.move_into_permanent_storage
+      end
       item.approve
       item.save!
     end

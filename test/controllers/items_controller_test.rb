@@ -394,10 +394,9 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "show() returns HTTP 403 for withdrawn items" do
-    # TODO: this should arguably return 410 Gone instead.
+  test "show() returns HTTP 410 for withdrawn items" do
     get item_path(items(:withdrawn))
-    assert_response :forbidden
+    assert_response :gone
   end
 
   test "show() respects role limits" do

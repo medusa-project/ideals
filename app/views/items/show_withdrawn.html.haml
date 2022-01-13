@@ -1,0 +1,33 @@
+- provide :body_id, "show_item"
+- provide :title, @item.title
+
+.alert.alert-danger
+  %i.fa.fa-exclamation-triangle
+    This item has been withdrawn.
+
+= render partial: "show_button_group"
+
+%h1
+  = icon_for(@item)
+  = @item.title
+
+%h4.creators= @item.creators
+
+.mb-3
+
+= render partial: "show_properties_section"
+= render partial: "show_events_section"
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "upload-item-files-modal",
+                   title: "Upload Files",
+                   size: "lg" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-item-membership-modal",
+                   title: "Edit Membership",
+                   size: :xl }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-item-properties-modal",
+                   title: "Edit Properties" }
+
+= include_chart_library

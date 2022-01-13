@@ -113,7 +113,8 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def show
-    if effective_sysadmin?(user, role)
+    # Withdrawn items are authorized but are shown in a special, limited view.
+    if effective_sysadmin?(user, role) || @item.withdrawn?
       return AUTHORIZED_RESULT
     elsif !@item.approved?
       return { authorized: false, reason: "This item is not approved." }

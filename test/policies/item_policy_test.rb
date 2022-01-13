@@ -270,14 +270,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.download_counts?
   end
 
-  test "download_counts?() restricts withdrawn items by default" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:withdrawn))
-    assert !policy.download_counts?
-  end
-
   test "download_counts?() restricts access to embargoed items" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
@@ -320,7 +312,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ItemPolicy.new(context, items(:withdrawn))
+    policy  = ItemPolicy.new(context, items(:embargoed))
     assert !policy.download_counts?
   end
 
@@ -736,14 +728,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() restricts withdrawn items by default" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:withdrawn))
-    assert !policy.show?
-  end
-
   test "show?() restricts access to embargoed items" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
@@ -786,7 +770,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ItemPolicy.new(context, items(:withdrawn))
+    policy  = ItemPolicy.new(context, items(:embargoed))
     assert !policy.show?
   end
 
@@ -1121,14 +1105,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.statistics?
   end
 
-  test "statistics?() restricts withdrawn items by default" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:withdrawn))
-    assert !policy.statistics?
-  end
-
   test "statistics?() restricts access to embargoed items" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
@@ -1171,7 +1147,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ItemPolicy.new(context, items(:withdrawn))
+    policy  = ItemPolicy.new(context, items(:embargoed))
     assert !policy.statistics?
   end
 
