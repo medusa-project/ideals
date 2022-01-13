@@ -35,7 +35,6 @@ class IdealsImporter
     progress   = Progress.new(line_count)
 
     # destroy_all is excruciatingly slow and we don't need callbacks
-    Bitstream.delete_all
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
       row_arr = line.split("|").map(&:strip)
@@ -48,10 +47,10 @@ class IdealsImporter
                           primary:   row_arr[4].present?)
       rescue ActiveRecord::RecordNotFound
         # nothing we can do
-      rescue ActiveRecord::RecordInvalid
-        # nothing we can do
       rescue ActiveRecord::RecordNotUnique
         # nothing we can do
+      rescue ActiveRecord::RecordInvalid
+        $stderr.puts "import_bitstreams(): invalid: #{row_arr}"
       end
     end
     update_pkey_sequence("bitstreams")
@@ -203,8 +202,7 @@ class IdealsImporter
 
       progress.report(row_num, "Importing collections (1/2)")
       begin
-        collection = Collection.find_by_id(collection_id) ||
-          Collection.new(id: collection_id)
+        collection = Collection.where(id: collection_id).first_or_initialize
         elem_name  = row_arr[1]
         elem_name += ":#{row_arr[2]}" if row_arr[2].present?
         # Replace @@@@ with newline, strip leading and trailing quote,
@@ -313,9 +311,9 @@ class IdealsImporter
 
     # Create an institution in which to put them, if it does not already exist.
     institution = Institution.find_by_key("uiuc") ||
-      Institution.create!(name:   "Will get overwritten",
-                          key:    "Will get overwritten",
-                          org_dn: ShibbolethUser::UIUC_ORG_DN)
+      Institution.where(name:   "Will get overwritten",
+                        key:    "Will get overwritten",
+                        org_dn: ShibbolethUser::UIUC_ORG_DN).first_or_create!
 
     LOGGER.debug("import_communities(): importing %s", csv_pathname)
 
@@ -438,8 +436,6 @@ class IdealsImporter
     line_count = count_lines(csv_pathname)
     progress   = Progress.new(line_count)
 
-    # N.B.: destroy_all is excruciatingly slow and we don't need callbacks
-    AscribedElement.where("item_id IS NOT NULL").delete_all
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
@@ -453,9 +449,9 @@ class IdealsImporter
 
       progress.report(row_num, "Importing item metadata (1/2)")
       begin
-        AscribedElement.create!(registered_element: reg_elem,
-                                item_id: item_id,
-                                string: string)
+        AscribedElement.where(registered_element: reg_elem,
+                              item_id:            item_id,
+                              string:             string).first_or_create!
       rescue ActiveRecord::RecordInvalid
         # This may be caused by either a nonexistent RegisteredElement, or a
         # nonexistent Item. Not much we can do in either case.
@@ -469,10 +465,10 @@ class IdealsImporter
     progress = Progress.new(Item.count)
     Item.uncached do
       Item.order(:id).find_each.with_index do |item, index|
-        Event.create!(event_type:    Event::Type::CREATE,
-                      item:          item,
-                      after_changes: item,
-                      description:   "Item imported from IDEALS-DSpace.")
+        Event.where(event_type:    Event::Type::CREATE,
+                    item:          item,
+                    after_changes: item,
+                    description:   "Item imported from IDEALS-DSpace.").first_or_create!
         progress.report(index, "Assigning create events to items (2/2)")
       end
     end
@@ -534,10 +530,8 @@ class IdealsImporter
     @running = true
     LOGGER.debug("import_metadata(): importing %s", csv_pathname)
 
-    line_count = count_lines(csv_pathname)
-    progress   = Progress.new(line_count)
-
-    RegisteredElement.delete_all
+    line_count       = count_lines(csv_pathname)
+    progress         = Progress.new(line_count)
     uiuc_institution = Institution.find_by_key("uiuc")
 
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
@@ -548,12 +542,16 @@ class IdealsImporter
       name    += ":#{row_arr[3]}" if row_arr[3].present?
 
       progress.report(row_num, "Importing registered elements")
-      RegisteredElement.create!(id:          row_arr[0],
-                                institution: uiuc_institution,
-                                name:        name,
-                                uri:         "http://example.org/#{name}",
-                                label:       "Label For #{name}",
-                                scope_note:  row_arr[4])
+      begin
+        RegisteredElement.create!(id:          row_arr[0],
+                                  institution: uiuc_institution,
+                                  name:        name,
+                                  uri:         "http://example.org/#{name}",
+                                  label:       "Label For #{name}",
+                                  scope_note:  row_arr[4])
+      rescue ActiveRecord::RecordInvalid
+        # probably alrady imported
+      end
     end
     update_pkey_sequence("registered_elements")
   ensure
@@ -677,6 +675,7 @@ class IdealsImporter
   def running?
     @running
   end
+
 
   private
 
