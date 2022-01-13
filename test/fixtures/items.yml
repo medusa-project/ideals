@@ -58,6 +58,11 @@ withdrawn:
   stage:        <%= Item::Stages::WITHDRAWN %>
   discoverable: false
 
+buried:
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::BURIED %>
+  discoverable: true
+
 # collection1_collection1 items
 
 collection1_collection1_item1:

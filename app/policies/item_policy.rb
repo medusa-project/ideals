@@ -73,6 +73,8 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def download_counts
+    return { authorized: false,
+             reason:     "This item has been deleted." } if item.buried?
     statistics
   end
 
@@ -113,8 +115,9 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def show
-    # Withdrawn items are authorized but are shown in a special, limited view.
-    if effective_sysadmin?(user, role) || @item.withdrawn?
+    # Withdrawn & buried items are authorized but are shown in a special,
+    # limited view.
+    if effective_sysadmin?(user, role) || @item.withdrawn? || @item.buried?
       return AUTHORIZED_RESULT
     elsif !@item.approved?
       return { authorized: false, reason: "This item is not approved." }
@@ -171,6 +174,8 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def statistics
+    return { authorized: false,
+             reason:     "This item has been deleted." } if item.buried?
     show
   end
 

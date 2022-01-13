@@ -73,12 +73,12 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "destroy() destroys the item" do
+  test "destroy() buries the item" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitting) # a destroyable item
-    assert_difference "Item.count", -1 do
-      delete item_path(item)
-    end
+    item = items(:submitting)
+    delete item_path(item)
+    item.reload
+    assert item.buried?
   end
 
   test "destroy() returns HTTP 302 for an existing item" do
@@ -396,6 +396,11 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "show() returns HTTP 410 for withdrawn items" do
     get item_path(items(:withdrawn))
+    assert_response :gone
+  end
+
+  test "show() returns HTTP 410 for buried items" do
+    get item_path(items(:buried))
     assert_response :gone
   end
 

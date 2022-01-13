@@ -117,6 +117,13 @@ class Item < ApplicationRecord
     # an administrator.
     WITHDRAWN  = 400
 
+    ##
+    # An item that has been "almost deleted" at any point in its life cycle,
+    # leaving behind only a row in the items table that facilitates display of
+    # a tombstone record. Some dependent entities (bitstreams, metadata
+    # elements, etc.) may be deleted. The burial is not reversible.
+    BURIED = 500
+
     def self.all
       self.constants.map{ |c| self.const_get(c) }.sort
     end
@@ -322,6 +329,26 @@ class Item < ApplicationRecord
     self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:identifier"),
                         string:             self.handle.url,
                         uri:                self.handle.url)
+  end
+
+  ##
+  # @return [Boolean] Whether {stage} is set to {Stages#BURIED}.
+  #
+  def buried?
+    self.stage == Stages::BURIED
+  end
+
+  ##
+  # Renders an instance almost totally deleted, leaving behind a tombstone
+  # record. The stage is set to {Item::Stages::BURIED} and dependent
+  # bitstreams are deleted from permanent storage and Medusa.
+  #
+  # Ascribed elements are **not** deleted.
+  #
+  def bury!
+    update!(stage: Item::Stages::BURIED)
+    bitstreams.each(&:delete_from_medusa)
+    bitstreams.each(&:delete_from_permanent_storage)
   end
 
   ##

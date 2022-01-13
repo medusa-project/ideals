@@ -18,6 +18,11 @@ class ItemsController < ApplicationController
   end
 
   ##
+  # "Buries" (does **not** delete) an [Item].
+  #
+  # Burial is like an incomplete form of deletion that leaves behind a
+  # tombstone record.
+  #
   # Responds to `DELETE /items/:id`
   #
   # @see cancel_submission
@@ -25,13 +30,12 @@ class ItemsController < ApplicationController
   def destroy
     collection = @item.primary_collection
     begin
-      @item.destroy!
+      @item.bury!
     rescue => e
       flash['error'] = "#{e}"
     else
       ElasticsearchClient.instance.refresh
-      flash['success'] = @item.title.present? ?
-                             "Item \"#{@item.title}\" deleted." : "Item deleted."
+      flash['success'] = "Item deleted."
     ensure
       redirect_to collection || root_url
     end
@@ -195,7 +199,10 @@ class ItemsController < ApplicationController
   # Responds to `GET /items/:id`
   #
   def show
-    if @item.withdrawn?
+    case @item.stage
+    when Item::Stages::BURIED
+      render "errors/error410", status: :gone
+    when Item::Stages::WITHDRAWN
       render "show_withdrawn", status: :gone
     else
       show_approved

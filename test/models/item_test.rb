@@ -211,6 +211,59 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal item.handle.url, item.element("dcterms:identifier").uri
   end
 
+  # buried?()
+
+  test "buried?() returns true when the stage is set to BURIED" do
+    @instance.stage = Item::Stages::BURIED
+    assert @instance.buried?
+  end
+
+  test "buried?() returns false when the stage is not set to BURIED" do
+    assert !@instance.buried?
+  end
+
+  # bury!()
+
+  test "bury!() sets the stage to BURIED" do
+    @instance.bury!
+    assert_equal Item::Stages::BURIED, @instance.stage
+  end
+
+  test "bury!() deletes all associated Bitstreams from permanent storage" do
+    filename = "escher_lego.jpg"
+    fixture  = file_fixture(filename)
+    @instance.bitstreams.each do |bs|
+      bs.update!(permanent_key: Bitstream.permanent_key(@instance.id, filename))
+      File.open(fixture, "r") do |file|
+        bs.upload_to_permanent(file)
+      end
+    end
+
+    @instance.bury!
+
+    assert_equal @instance.bitstreams.count,
+                 @instance.bitstreams.where(permanent_key: nil).count
+  end
+
+  test "bury!() deletes all associated Bitstreams from Medusa" do
+    filename = "escher_lego.jpg"
+    fixture  = file_fixture(filename)
+    @instance.bitstreams.each do |bs|
+      bs.update!(permanent_key: Bitstream.permanent_key(@instance.id, filename))
+      File.open(fixture, "r") do |file|
+        bs.upload_to_permanent(file)
+      end
+    end
+
+    clear_message_queue
+    @instance.bitstreams.first.medusa_uuid = SecureRandom.uuid # help the next step along
+    @instance.bury!
+
+    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+      assert_equal "delete", message['operation']
+    end
+  end
+
   # complete_submission()
 
   test "complete_submission() sets the stage to submitted if the collection is

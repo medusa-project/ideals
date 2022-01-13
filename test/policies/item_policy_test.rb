@@ -282,6 +282,15 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.download_counts?
   end
 
+  test "download_counts?() restricts access to buried items" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    item    = items(:buried)
+    policy  = ItemPolicy.new(context, item)
+    assert !policy.download_counts?
+  end
+
   test "download_counts?() authorizes sysadmins to undiscoverable items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
@@ -764,6 +773,14 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  test "show?() authorizes sysadmins to buried items" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, items(:buried))
+    assert policy.show?
+  end
+
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
@@ -1114,6 +1131,15 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.statistics?
     item.embargoes.build(expires_at: Time.now + 1.hour,
                          full_access: true).save!
+    assert !policy.statistics?
+  end
+
+  test "statistics?() restricts access to buried items" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    item    = items(:buried)
+    policy  = ItemPolicy.new(context, item)
     assert !policy.statistics?
   end
 
