@@ -23,14 +23,25 @@ xml.tag!('OAI-PMH',
     xml.tag!('ListRecords') do
       @results.each do |item|
         xml.tag!('record') do
-          xml.tag!('header') do
+          deleted = [Item::Stages::WITHDRAWN, Item::Stages::BURIED].include?(item.stage)
+          status  = {}
+          if deleted
+            status['status'] = "deleted"
+            event     = item.events.find{ |e| e.event_type == Event::Type::DELETE }
+            datestamp = event.happened_at if event
+          end
+          datestamp ||= item.updated_at
+
+          xml.tag!('header', status) do
             xml.tag!('identifier', oai_pmh_identifier(item: item, host: @host))
-            xml.tag!('datestamp', item.updated_at.strftime('%Y-%m-%d'))
+            xml.tag!('datestamp', datestamp.strftime('%Y-%m-%d'))
             xml.tag!('setSpec', oai_pmh_identifier(collection: item.primary_collection,
                                                    host:       @host))
           end
-          xml.tag!('metadata') do
-            oai_pmh_metadata_for(item, @metadata_format, xml)
+          unless deleted
+            xml.tag!('metadata') do
+              oai_pmh_metadata_for(item, @metadata_format, xml)
+            end
           end
         end
       end

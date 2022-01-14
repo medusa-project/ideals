@@ -237,12 +237,15 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "index() omits submitting, undiscoverable, and withdrawn items by default" do
+  test "index() omits submitting, undiscoverable, withdrawn, and buried items
+  by default" do
     Item.reindex_all
     ElasticsearchClient.instance.refresh
 
     expected_count = Item.where(discoverable: true).
-        where.not(stage: [Item::Stages::SUBMITTING, Item::Stages::WITHDRAWN]).
+        where.not(stage: [Item::Stages::SUBMITTING,
+                          Item::Stages::WITHDRAWN,
+                          Item::Stages::BURIED]).
         count
 
     get items_path(format: :json)

@@ -7,6 +7,7 @@ class UnitsController < ApplicationController
                                           :edit_membership, :edit_properties,
                                           :show_access, :update]
   before_action :set_unit, except: [:create, :index]
+  before_action :check_buried, except: [:create, :index]
   before_action :authorize_unit, except: [:create, :index]
 
   ##
@@ -73,20 +74,22 @@ class UnitsController < ApplicationController
   end
 
   ##
+  # Buries--does **not** delete--a unit.
+  #
   # Responds to `DELETE /units/:id`
   #
   def destroy
     begin
       ActiveRecord::Base.transaction do
-        @unit.destroy!
+        @unit.bury!
       end
     rescue => e
       flash['error'] = "#{e}"
+      redirect_to @unit
     else
       ElasticsearchClient.instance.refresh
       flash['success'] = "Unit \"#{@unit.title}\" deleted."
-    ensure
-      redirect_to units_path
+      redirect_to(@unit.parent || units_path)
     end
   end
 
@@ -349,6 +352,10 @@ class UnitsController < ApplicationController
       @unit.primary_administrator =
           User.from_autocomplete_string(params[:primary_administrator])
     end
+  end
+
+  def check_buried
+    raise GoneError if @unit&.buried
   end
 
   def set_item_results_ivars

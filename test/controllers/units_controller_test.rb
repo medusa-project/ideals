@@ -18,6 +18,11 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "children() returns HTTP 410 for a buried unit" do
+    get unit_children_path(units(:buried)), xhr: true
+    assert_response :gone
+  end
+
   test "children() returns HTTP 200 for XHR requests" do
     collections(:described).reindex # this is needed to fully initialize the schema
     get unit_children_path(units(:unit1)), xhr: true
@@ -30,6 +35,11 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     collections(:described).reindex # this is needed to fully initialize the schema
     get unit_collections_tree_fragment_path(units(:unit1))
     assert_response :not_found
+  end
+
+  test "collections_tree_fragment() returns HTTP 410 for a buried unit" do
+    get unit_collections_tree_fragment_path(units(:buried)), xhr: true
+    assert_response :gone
   end
 
   test "collections_tree_fragment() returns HTTP 200 for XHR requests" do
@@ -113,19 +123,41 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "destroy() destroys the unit" do
+  test "destroy() returns HTTP 410 for a buried unit" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:buried)
+    delete unit_path(unit)
+    assert_response :gone
+  end
+
+  test "destroy() buries the unit" do
     log_in_as(users(:local_sysadmin))
     # choose a unit with no dependent collections or units to make setup easier
     unit = units(:empty)
     delete unit_path(unit)
-    assert_raises ActiveRecord::RecordNotFound do
-      Unit.find(unit.id)
-    end
+    unit.reload
+    assert unit.buried
   end
 
-  test "destroy() returns HTTP 302 for an existing unit" do
+  test "destroy() redirects to the unit when the delete fails" do
     log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
+    delete unit_path(unit)
+    assert_redirected_to unit_path(unit)
+  end
+
+  test "destroy() redirects to the parent unit, if available, if the delete
+  succeeds" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:unit1_unit1)
+    delete unit_path(unit)
+    assert_redirected_to unit_path(unit.parent)
+  end
+
+  test "destroy() redirects to the units path if there is no parent unit and
+  the delete succeeds" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:empty)
     delete unit_path(unit)
     assert_redirected_to units_path
   end
@@ -158,6 +190,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "edit_administrators() returns HTTP 410 for a buried unit" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:buried)
+    get unit_edit_administrators_path(unit), xhr: true
+    assert_response :gone
+  end
+
   test "edit_administrators() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
@@ -187,6 +226,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "edit_membership() returns HTTP 404 for a buried unit" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:buried)
+    get unit_edit_membership_path(unit), xhr: true
+    assert_response :gone
+  end
+
   test "edit_membership() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
@@ -214,6 +260,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     unit = units(:unit1)
     get unit_edit_properties_path(unit)
     assert_response :not_found
+  end
+
+  test "edit_properties() returns HTTP 404 for a buried unit" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:buried)
+    get unit_edit_properties_path(unit), xhr: true
+    assert_response :gone
   end
 
   test "edit_properties() returns HTTP 200 for XHR requests" do
@@ -247,6 +300,11 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "item_download_counts() returns HTTP 410 for a buried unit" do
+    get unit_item_download_counts_path(units(:buried))
+    assert_response :gone
+  end
+
   # item_results()
 
   test "item_results() returns HTTP 200" do
@@ -257,6 +315,11 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "item_results() returns HTTP 404 for non-XHR requests" do
     get unit_item_results_path(units(:unit1))
     assert_response :not_found
+  end
+
+  test "item_results() returns HTTP 410 for a buried unit" do
+    get unit_item_results_path(units(:buried)), xhr: true
+    assert_response :gone
   end
 
   # show()
@@ -271,6 +334,11 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     collections(:described).reindex # this is needed to fully initialize the schema
     get unit_path(units(:unit1), format: :json)
     assert_response :ok
+  end
+
+  test "show() returns HTTP 410 for a buried unit" do
+    get unit_path(units(:buried))
+    assert_response :gone
   end
 
   test "show() respects role limits" do
@@ -304,6 +372,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "show_access() returns HTTP 410 for a buried unit" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:buried)
+    get unit_access_path(unit), xhr: true
+    assert_response :gone
+  end
+
   test "show_access() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
@@ -332,6 +407,11 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "show_collections() returns HTTP 410 for a buried unit" do
+    get unit_collections_path(units(:buried)), xhr: true
+    assert_response :gone
+  end
+
   # show_items()
 
   test "show_items() returns HTTP 200" do
@@ -342,6 +422,11 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "show_items() returns HTTP 404 for non-XHR requests" do
     get unit_items_path(units(:unit1))
     assert_response :not_found
+  end
+
+  test "show_items() returns HTTP 410 for a buried unit" do
+    get unit_items_path(units(:buried)), xhr: true
+    assert_response :gone
   end
 
   # show_properties()
@@ -356,11 +441,21 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "show_properties() returns HTTP 410 for a buried unit" do
+    get unit_properties_path(units(:buried)), xhr: true
+    assert_response :gone
+  end
+
   # show_statistics()
 
   test "show_statistics() returns HTTP 404 for non-XHR requests" do
     get unit_statistics_path(units(:unit1))
     assert_response :not_found
+  end
+
+  test "show_statistics() returns HTTP 410 for a buried unit" do
+    get unit_statistics_path(units(:buried)), xhr: true
+    assert_response :gone
   end
 
   test "show_statistics() returns HTTP 200" do
@@ -374,6 +469,11 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "show_units() returns HTTP 200" do
     get unit_units_path(units(:unit1)), xhr: true
     assert_response :ok
+  end
+
+  test "show_units() returns HTTP 410" do
+    get unit_units_path(units(:buried)), xhr: true
+    assert_response :gone
   end
 
   test "show_units() returns HTTP 404 for non-XHR requests" do
@@ -393,6 +493,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     get unit_statistics_by_range_path(units(:unit1), format: :csv)
     assert_response :ok
+  end
+
+  test "statistics_by_range() returns HTTP 410 for a buried unit" do
+    log_in_as(users(:local_sysadmin))
+    get unit_statistics_by_range_path(units(:buried)), xhr: true
+    assert_response :gone
   end
 
   # update()
@@ -423,6 +529,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
             }
           }
     assert_response :forbidden
+  end
+
+  test "update() returns HTTP 410 for a buried unit" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:buried)
+    patch unit_path(unit)
+    assert_response :gone
   end
 
   test "update() updates a unit" do

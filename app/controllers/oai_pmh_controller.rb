@@ -190,7 +190,9 @@ class OaiPmhController < ApplicationController
       joins("LEFT JOIN collection_item_memberships cim ON cim.item_id = items.id").
       joins("LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id").
       where(discoverable: true,
-            stage: [Item::Stages::APPROVED, Item::Stages::WITHDRAWN]).
+            stage: [Item::Stages::APPROVED,
+                    Item::Stages::WITHDRAWN,
+                    Item::Stages::BURIED]).
       order(:updated_at)
 
     from = get_from

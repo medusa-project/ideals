@@ -1,5 +1,10 @@
 class ItemRelation < AbstractRelation
 
+  def initialize
+    super
+    @must_nots << [Item::IndexFields::STAGE, Item::Stages::BURIED]
+  end
+
   protected
 
   def facet_elements

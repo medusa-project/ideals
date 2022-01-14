@@ -1,16 +1,26 @@
 # frozen_string_literal: true
 
 ##
-# A collection is a container for {Item}s. It resides within a {Unit}. It
+# A collection is a container for [Item]s. It resides within a [Unit]. It
 # supports a one-to-many parent-children relationship with itself.
+#
+# # Deletion
+#
+# Collections are not normally deleted. Instead they are "buried" via {bury!},
+# which leaves behind a row in the `collections` table that can facilitate
+# display of a tombstone record.
 #
 # # Indexing
 #
-# See the documentation of {Indexed} for a detailed explanation of how indexing
+# See the documentation of [Indexed] for a detailed explanation of how indexing
 # works.
 #
 # # Attributes
 #
+# * `buried`                Indicates a "near-deletion" which leaves behind
+#                           only a row in the units table that facilitates
+#                           display of a tombstone record. The burial is not
+#                           reversible.
 # * `created_at`            Managed by ActiveRecord.
 # * `introduction`          Introduction string. May contain HTML.
 # * `metadata_profile_id`   Foreign key to {MetadataProfile}. Instances without
@@ -64,6 +74,7 @@ class Collection < ApplicationRecord
   include Indexed
 
   class IndexFields
+    BURIED            = "b_buried"
     CLASS             = ElasticsearchIndex::StandardFields::CLASS
     CREATED           = ElasticsearchIndex::StandardFields::CREATED
     DESCRIPTION       = "t_description"
@@ -115,6 +126,7 @@ class Collection < ApplicationRecord
 
   validate :validate_parent
   validate :validate_primary_unit
+  validate :validate_buried, if: -> { buried }
 
   after_save :assign_handle, if: -> { handle.nil? && !IdealsImporter.instance.running? }
 
@@ -214,6 +226,7 @@ class Collection < ApplicationRecord
   def as_indexed_json
     doc = {}
     units                               = self.units
+    doc[IndexFields::BURIED]            = self.buried
     doc[IndexFields::CLASS]             = self.class.to_s
     doc[IndexFields::CREATED]           = self.created_at.utc.iso8601
     doc[IndexFields::DESCRIPTION]       = self.description
@@ -237,6 +250,17 @@ class Collection < ApplicationRecord
 
   def breadcrumb_parent
     self.parent || self.primary_unit
+  end
+
+  ##
+  # Renders an instance almost totally deleted, leaving behind a tombstone
+  # record.
+  #
+  # @raises [RuntimeError] if the instance contains any dependent items or
+  #         collections.
+  #
+  def bury!
+    update!(buried: true)
   end
 
   ##
@@ -471,6 +495,22 @@ class Collection < ApplicationRecord
   def assign_handle
     if self.handle.nil? && !IdealsImporter.instance.running?
       self.handle = Handle.create!(collection: self)
+    end
+  end
+
+  ##
+  # Ensures that a buried collection does not contain any sub-collections or
+  # items.
+  #
+  def validate_buried
+    if buried
+      if items.where.not(stage: Item::Stages::BURIED).count > 0
+        errors.add(:base, "This collection cannot be deleted, as it contains "\
+                          "at least one item.")
+      elsif collections.where.not(buried: true).count > 0
+        errors.add(:base, "This collection cannot be deleted, as it contains "\
+                          "at least one child collection.")
+      end
     end
   end
 

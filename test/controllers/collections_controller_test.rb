@@ -12,14 +12,19 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # chlldren()
 
+  test "children() returns HTTP 200 for XHR requests" do
+    get collection_children_path(collections(:collection1)), xhr: true
+    assert_response :ok
+  end
+
   test "children() returns HTTP 404 for non-XHR requests" do
     get collection_children_path(collections(:collection1))
     assert_response :not_found
   end
 
-  test "children() returns HTTP 200 for XHR requests" do
-    get collection_children_path(collections(:collection1)), xhr: true
-    assert_response :ok
+  test "children() returns HTTP 410 for a buried collection" do
+    get collection_children_path(collections(:buried)), xhr: true
+    assert_response :gone
   end
 
   # create()
@@ -102,19 +107,31 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "destroy() destroys the collection" do
+  test "destroy() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:local_sysadmin))
+    delete "/collections/#{collections(:buried).id}"
+    assert_response :gone
+  end
+
+  test "destroy() buries the collection" do
     log_in_as(users(:local_sysadmin))
     collection = collections(:empty)
     delete "/collections/#{collection.id}"
-    assert_raises ActiveRecord::RecordNotFound do
-      Collection.find(collection.id)
-    end
+    collection.reload
+    assert collection.buried
+  end
+
+  test "destroy() redirects to the collection when the delete fails" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    delete collection_path(collection) # fails because collection is not empty
+    assert_redirected_to collection
   end
 
   test "destroy() redirects to the parent collection, if available, for an
   existing collection" do
     log_in_as(users(:local_sysadmin))
-    collection   = collections(:collection1_collection1)
+    collection = collections(:collection1_collection1_collection1)
     delete collection_path(collection)
     assert_redirected_to collection.parent
   end
@@ -122,7 +139,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "destroy() redirects to the primary unit, if there is no parent
   collection, for an existing collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection   = collections(:empty)
     primary_unit = collection.primary_unit
     delete collection_path(collection)
     assert_redirected_to primary_unit
@@ -156,6 +173,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "edit_collection_membership() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:buried)
+    get collection_edit_collection_membership_path(collection), xhr: true
+    assert_response :gone
+  end
+
   test "edit_collection_membership() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
@@ -183,6 +207,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     collection = collections(:collection1)
     get collection_edit_managers_path(collection)
     assert_response :not_found
+  end
+
+  test "edit_managers() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:buried)
+    get collection_edit_managers_path(collection), xhr: true
+    assert_response :gone
   end
 
   test "edit_managers() returns HTTP 200 for XHR requests" do
@@ -214,6 +245,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "edit_properties() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:buried)
+    get collection_edit_properties_path(collection), xhr: true
+    assert_response :gone
+  end
+
   test "edit_properties() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
@@ -243,6 +281,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "edit_submitters() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:buried)
+    get collection_edit_submitters_path(collection), xhr: true
+    assert_response :gone
+  end
+
   test "edit_submitters() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
@@ -258,6 +303,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
+  test "edit_unit_membership() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    get collection_edit_unit_membership_path(collection), xhr: true
+    assert_response :ok
+  end
+
   test "edit_unit_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     collection = collections(:collection1)
@@ -265,18 +317,18 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "edit_unit_membership() returns HTTP 200 for non-XHR requests" do
+  test "edit_unit_membership() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
     get collection_edit_unit_membership_path(collection)
     assert_response :not_found
   end
 
-  test "edit_unit_membership() returns HTTP 200 for XHR requests" do
+  test "edit_unit_membership() returns HTTP 410 for a buried collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:buried)
     get collection_edit_unit_membership_path(collection), xhr: true
-    assert_response :ok
+    assert_response :gone
   end
 
   # index()
@@ -305,6 +357,12 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "item_download_counts() returns HTTP 410 for a buried collection" do
+    collection = collections(:buried)
+    get collection_item_download_counts_path(collection)
+    assert_response :gone
+  end
+
   # show_item_results()
 
   test "show_item_results() returns HTTP 200" do
@@ -317,6 +375,11 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "show_item_results() returns HTTP 410 for a buried collection" do
+    get collection_item_results_path(collections(:buried)), xhr: true
+    assert_response :gone
+  end
+
   # show()
 
   test "show() returns HTTP 200 for HTML" do
@@ -327,6 +390,11 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "show() returns HTTP 200 for JSON" do
     get collection_path(collections(:collection1), format: :json)
     assert_response :ok
+  end
+
+  test "show() returns HTTP 410 for a buried collection" do
+    get collection_path(collections(:buried))
+    assert_response :gone
   end
 
   test "show() respects role limits" do
@@ -360,6 +428,12 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "show_access() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:local_sysadmin))
+    get collection_access_path(collections(:buried)), xhr: true
+    assert_response :gone
+  end
+
   test "show_access() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
@@ -389,6 +463,11 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "show_collection() returns HTTP 410 for a buried collection" do
+    get collection_collections_path(collections(:buried)), xhr: true
+    assert_response :gone
+  end
+
   # show_items()
 
   test "show_items() returns HTTP 200" do
@@ -399,6 +478,11 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "show_items() returns HTTP 404 for non-XHR requests" do
     get collection_items_path(collections(:collection1))
     assert_response :not_found
+  end
+
+  test "show_items() returns HTTP 410 for a buried collection" do
+    get collection_items_path(collections(:buried)), xhr: true
+    assert_response :gone
   end
 
   # show_properties()
@@ -413,6 +497,11 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "show_properties() returns HTTP 410 for a buried collection" do
+    get collection_properties_path(collections(:buried)), xhr: true
+    assert_response :gone
+  end
+
   # show_statistics()
 
   test "show_statistics() returns HTTP 200" do
@@ -423,6 +512,11 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "show_statistics() returns HTTP 404 for non-XHR requests" do
     get collection_statistics_path(collections(:collection1))
     assert_response :not_found
+  end
+
+  test "show_statistics() returns HTTP 410 for a buried collection" do
+    get collection_statistics_path(collections(:buried)), xhr: true
+    assert_response :gone
   end
 
   # show_units()
@@ -437,6 +531,11 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "show_units() returns HTTP 410 for a buried collection" do
+    get collection_units_path(collections(:buried)), xhr: true
+    assert_response :gone
+  end
+
   # statistics_by_range()
 
   test "statistics_by_range() returns HTTP 200 for HTML" do
@@ -449,6 +548,11 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     collection = collections(:collection1)
     get collection_statistics_by_range_path(collection, format: :csv)
     assert_response :ok
+  end
+
+  test "statistics_by_range() returns HTTP 410 for a buried collection" do
+    get collection_path(collections(:buried)), xhr: true
+    assert_response :gone
   end
 
   # update()
@@ -521,11 +625,16 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-
   test "update() returns HTTP 404 for nonexistent collections" do
     log_in_as(users(:local_sysadmin))
     patch "/collections/bogus"
     assert_response :not_found
+  end
+
+  test "update() returns HTTP 410 for a buried collections" do
+    log_in_as(users(:local_sysadmin))
+    patch collection_path(collections(:buried)), xhr: true
+    assert_response :gone
   end
 
 end

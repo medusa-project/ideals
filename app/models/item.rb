@@ -346,9 +346,16 @@ class Item < ApplicationRecord
   # Ascribed elements are **not** deleted.
   #
   def bury!
-    update!(stage: Item::Stages::BURIED)
-    bitstreams.each(&:delete_from_medusa)
-    bitstreams.each(&:delete_from_permanent_storage)
+    transaction do
+      update!(stage: Item::Stages::BURIED)
+      bitstreams.each(&:delete_from_medusa)
+      bitstreams.each(&:delete_from_permanent_storage)
+      Event.create!(event_type:     Event::Type::DELETE,
+                    item:           self,
+                    before_changes: self,
+                    after_changes:  nil,
+                    description:    "Item deleted.")
+    end
   end
 
   ##

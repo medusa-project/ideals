@@ -1,0 +1,3 @@
+class GoneError < StandardError
+
+end

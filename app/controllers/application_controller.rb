@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActionView::MissingTemplate do |_exception|
     render json: {}, status: :unprocessable_entity
   end
+  rescue_from GoneError, with: :gone
   rescue_from NotAuthorizedError, with: :unauthorized
 
   before_action :store_location
@@ -165,6 +166,14 @@ class ApplicationController < ActionController::Base
                  content_type: "text/plain"
         end
       end
+    end
+  end
+
+  def gone(e)
+    respond_to do |format|
+      format.html { render "errors/error410", status: :gone }
+      format.json { render nothing: true, status: :gone }
+      format.xml { render xml: {status: 410}.to_xml, status: :gone }
     end
   end
 

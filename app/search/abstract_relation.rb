@@ -455,9 +455,11 @@ class AbstractRelation
                     end
                   end
                   @must_not_ranges.each do |range|
-                    j.range do
-                      j.set! range[:field] do
-                        j.set! range[:op], range[:value]
+                    j.child! do
+                      j.range do
+                        j.set! range[:field] do
+                          j.set! range[:op], range[:value]
+                        end
                       end
                     end
                   end

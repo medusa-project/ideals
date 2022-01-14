@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_07_144032) do
+ActiveRecord::Schema.define(version: 2022_01_13_222135) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,8 +42,8 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
   create_table "administrators", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "unit_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.boolean "primary", default: false, null: false
     t.index ["unit_id", "user_id"], name: "index_administrators_on_unit_id_and_user_id", unique: true
     t.index ["unit_id"], name: "index_administrators_on_unit_id"
@@ -112,8 +112,8 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
   end
 
   create_table "collections", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.bigint "metadata_profile_id"
     t.bigint "submission_profile_id"
     t.bigint "parent_id"
@@ -125,6 +125,7 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
     t.text "introduction"
     t.text "rights"
     t.text "provenance"
+    t.boolean "buried", default: false, null: false
   end
 
   create_table "departments", force: :cascade do |t|
@@ -136,7 +137,7 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
   end
 
   create_table "embargoes", force: :cascade do |t|
-    t.datetime "expires_at", null: false
+    t.datetime "expires_at", precision: 6, null: false
     t.boolean "full_access", default: true, null: false
     t.boolean "download", default: true, null: false
     t.bigint "item_id"
@@ -155,7 +156,7 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "bitstream_id"
-    t.datetime "happened_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "happened_at", precision: 6, default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["happened_at"], name: "index_events_on_happened_at"
   end
 
@@ -205,9 +206,9 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
 
   create_table "invitees", force: :cascade do |t|
     t.string "email", null: false
-    t.datetime "expires_at", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "expires_at", precision: 6, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.text "note", null: false
     t.string "approval_state", default: "pending", null: false
     t.bigint "inviting_user_id"
@@ -215,8 +216,8 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
   end
 
   create_table "items", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.bigint "submitter_id"
     t.boolean "discoverable", default: false, null: false
     t.integer "stage", default: 0, null: false
@@ -231,10 +232,10 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
     t.boolean "activated", default: false
     t.string "reset_digest"
     t.bigint "invitee_id"
-    t.datetime "reset_sent_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "activated_at"
+    t.datetime "reset_sent_at", precision: 6
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "activated_at", precision: 6
     t.string "registration_digest"
     t.string "name", null: false
     t.index ["email"], name: "index_local_identities_on_email", unique: true
@@ -250,8 +251,8 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
   create_table "managers", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "collection_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["collection_id", "user_id"], name: "index_managers_on_collection_id_and_user_id", unique: true
     t.index ["collection_id"], name: "index_managers_on_collection_id"
     t.index ["user_id"], name: "index_managers_on_user_id"
@@ -263,7 +264,7 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
     t.string "status"
     t.string "medusa_key"
     t.string "medusa_uuid"
-    t.datetime "response_time"
+    t.datetime "response_time", precision: 6
     t.string "error_text"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -367,12 +368,13 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
   create_table "units", force: :cascade do |t|
     t.string "title"
     t.bigint "parent_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.bigint "institution_id"
     t.text "short_description"
     t.text "introduction"
     t.text "rights"
+    t.boolean "buried", default: false, null: false
   end
 
   create_table "user_groups", force: :cascade do |t|
@@ -393,8 +395,8 @@ ActiveRecord::Schema.define(version: 2021_12_07_144032) do
     t.string "uid", null: false
     t.string "name", null: false
     t.string "email", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.string "type", null: false
     t.string "phone"
     t.bigint "local_identity_id"

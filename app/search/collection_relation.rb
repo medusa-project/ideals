@@ -39,6 +39,7 @@ class CollectionRelation < AbstractRelation
     self
   end
 
+
   protected
 
   ##
@@ -111,8 +112,13 @@ class CollectionRelation < AbstractRelation
               end
             end
           end
-          if !@include_children && !@parent_collection
-            j.must_not do
+          j.must_not do
+            j.child! do
+              j.term do
+                j.set! Collection::IndexFields::BURIED, true
+              end
+            end
+            if !@include_children && !@parent_collection
               j.child! do
                 j.exists do
                   j.field Collection::IndexFields::PARENT
@@ -127,7 +133,7 @@ class CollectionRelation < AbstractRelation
       # Order by explicit orders, if provided; otherwise sort by the metadata
       # profile's default order, if @orders is set to true; otherwise don't
       # sort.
-      if @orders.respond_to?(:any?) and @orders.any?
+      if @orders.respond_to?(:any?) && @orders.any?
         j.sort do
           @orders.each do |order|
             j.set! order[:field] do

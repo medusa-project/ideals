@@ -14,7 +14,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   # 2.5.1
   test "repository supports deleted records" do
     get "/oai-pmh", params: { verb: "Identify" }
-    assert_select "Identify > deletedRecord", "transient"
+    assert_select "Identify > deletedRecord", "persistent"
   end
 
   # 3.1.1
@@ -40,7 +40,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   test "POST requests with the correct content type work" do
     post "/oai-pmh", params: { verb: "Identify" },
          headers: { "Content-Type": "application/x-www-form-urlencoded" }
-    assert_select "Identify > deletedRecord", "transient"
+    assert_select "Identify > deletedRecord", "persistent"
   end
 
   # 3.1.2.1
@@ -177,7 +177,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     assert_select "Identify > protocolVersion", "2.0"
     items = Item.where(discoverable: true).order(created_at: :desc).limit(1)
     assert_select "Identify > earliestDatestamp", items.first.created_at.utc.iso8601
-    assert_select "Identify > deletedRecord", "transient"
+    assert_select "Identify > deletedRecord", "persistent"
     assert_select "Identify > granularity", "YYYY-MM-DDThh:mm:ssZ"
     assert_select "Identify > adminEmail", Configuration.instance.mail[:reply_to]
   end

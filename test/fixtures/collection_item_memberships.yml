@@ -55,6 +55,11 @@ collection1_withdrawn:
   item:       withdrawn
   primary:    true
 
+collection1_buried:
+  collection: collection1
+  item:       buried
+  primary:    true
+
 # collection1_collection1 items
 
 collection1_collection1_item1:

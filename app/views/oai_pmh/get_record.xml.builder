@@ -21,12 +21,18 @@ xml.tag!('OAI-PMH',
   else
     xml.tag!('GetRecord') do
       xml.tag!('record') do
-        deleted = (@item.stage == Item::Stages::WITHDRAWN)
-        status = {}
-        status['status'] = "deleted" if deleted
+        deleted = [Item::Stages::WITHDRAWN, Item::Stages::BURIED].include?(@item.stage)
+        status  = {}
+        if deleted
+          status['status'] = "deleted"
+          event     = @item.events.find{ |e| e.event_type == Event::Type::DELETE }
+          datestamp = event.happened_at if event
+        end
+        datestamp ||= @item.updated_at
+
         xml.tag!('header', status) do
           xml.tag!('identifier', @identifier)
-          xml.tag!('datestamp', @item.updated_at.strftime('%Y-%m-%d'))
+          xml.tag!('datestamp', datestamp.strftime('%Y-%m-%d'))
           @item.all_collections.each do |collection|
             args = { host: @host }
             # All collections should have a handle, but for safety's sake, we

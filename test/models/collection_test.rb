@@ -79,14 +79,15 @@ class CollectionTest < ActiveSupport::TestCase
 
     actual = Collection.search.institution(institution).count
     assert actual > 0
-    assert_equal Collection.count, actual
+    assert_equal Collection.where.not(buried: true).count, actual
   end
 
   # as_indexed_json()
 
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
-    assert_equal 18, doc.length
+    assert_equal 19, doc.length
+    assert !doc[Collection::IndexFields::BURIED]
     assert_equal "Collection", doc[Collection::IndexFields::CLASS]
     assert_not_empty doc[Collection::IndexFields::CREATED]
     assert_equal @instance.description,
@@ -117,6 +118,79 @@ class CollectionTest < ActiveSupport::TestCase
                  doc[Collection::IndexFields::UNIT_TITLES]
     assert_equal @instance.units.count,
         doc[Collection::IndexFields::UNITS].length
+  end
+
+  # buried
+
+  test "buried cannot be set to true when the collection contains any
+  non-buried subcollections" do
+    assert @instance.valid?
+    assert @instance.collections.count > 0
+    @instance.items.delete_all
+    @instance.buried = true
+    assert !@instance.valid?
+  end
+
+  test "buried cannot be set to true when the collection contains any
+  non-buried items" do
+    assert @instance.valid?
+    assert @instance.items.count > 0
+    @instance.collections.delete_all
+    @instance.buried = true
+    assert !@instance.valid?
+  end
+
+  test "buried can be set to true when there are only buried subcollections
+  and items" do
+    assert @instance.valid?
+    @instance.collections.update_all(buried: true)
+    @instance.items.update_all(stage: Item::Stages::BURIED)
+    @instance.buried = true
+    assert @instance.valid?
+  end
+
+  test "buried can be set to true when the collection is empty" do
+    assert @instance.valid?
+    @instance.collections.delete_all
+    @instance.items.delete_all
+    @instance.buried = true
+    assert @instance.valid?
+  end
+
+  # bury!()
+
+  test "bury!() raises an error when the collection contains any non-buried
+  subcollections" do
+    assert @instance.collections.count > 0
+    @instance.items.delete_all
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.bury!
+    end
+  end
+
+  test "bury!() raises an error when the collection contains any non-buried
+  items" do
+    assert @instance.items.count > 0
+    @instance.collections.delete_all
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.bury!
+    end
+  end
+
+  test "bury!() works when the collection contains only buried subcollections
+  and items" do
+    assert @instance.items.count > 0
+    @instance.collections.update_all(buried: true)
+    @instance.items.update_all(stage: Item::Stages::BURIED)
+    @instance.bury!
+    assert @instance.buried
+  end
+
+  test "bury!() buries an empty collection" do
+    @instance.collections.delete_all
+    @instance.items.delete_all
+    @instance.bury!
+    assert @instance.buried
   end
 
   # destroy()
@@ -388,7 +462,7 @@ class CollectionTest < ActiveSupport::TestCase
   end
 
   test "parent_id cannot be set to an ID of a collection in a different unit" do
-    other = collections(:empty)
+    other = collections(:collection2)
     assert_not_equal @instance.primary_unit, other.primary_unit
     @instance.parent_id = other.id
     assert_raises ActiveRecord::RecordInvalid do

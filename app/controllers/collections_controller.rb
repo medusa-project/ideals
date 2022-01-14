@@ -10,6 +10,7 @@ class CollectionsController < ApplicationController
                                           :edit_user_access, :show_access,
                                           :show_review_submissions, :update]
   before_action :set_collection, except: [:create, :index]
+  before_action :check_buried, except: [:create, :index]
   before_action :authorize_collection, except: [:create, :index]
 
   ##
@@ -55,6 +56,8 @@ class CollectionsController < ApplicationController
   end
 
   ##
+  # Buries--does **not** delete--a collection.
+  #
   # Responds to `DELETE /collections/:id`
   #
   def destroy
@@ -63,14 +66,14 @@ class CollectionsController < ApplicationController
     title        = @collection.title
     begin
       ActiveRecord::Base.transaction do
-        @collection.destroy!
+        @collection.bury!
       end
     rescue => e
       flash['error'] = "#{e}"
+      redirect_to @collection
     else
       ElasticsearchClient.instance.refresh
       flash['success'] = "Collection \"#{title}\" deleted."
-    ensure
       redirect_to(parent || primary_unit)
     end
   end
@@ -406,6 +409,14 @@ class CollectionsController < ApplicationController
     end
   end
 
+  def authorize_collection
+    @collection ? authorize(@collection) : skip_authorization
+  end
+
+  def check_buried
+    raise GoneError if @collection&.buried
+  end
+
   def review_items(start, limit)
     Item.search.
       institution(current_institution).
@@ -421,10 +432,6 @@ class CollectionsController < ApplicationController
     # N.B.: the `||` supports nested routes.
     @collection = Collection.find(params[:id] || params[:collection_id])
     @breadcrumbable = @collection
-  end
-
-  def authorize_collection
-    @collection ? authorize(@collection) : skip_authorization
   end
 
   def collection_params

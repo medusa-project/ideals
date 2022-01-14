@@ -4,8 +4,17 @@
 # See the documentation of {Indexed} for a detailed explanation of how indexing
 # works.
 #
+# # Deletion
+#
+# Units are not normally deleted. Instead they are "buried" via {bury!}, which
+# leaves behind a row in the `units` table that can facilitate display of a
+# tombstone record.
+#
 # # Attributes
 #
+# * `buried`            Indicates a "near-deletion" which leaves behind only a
+#                       row in the units table that facilitates display of a
+#                       tombstone record. The burial is not reversible.
 # * `created_at`        Managed by ActiveRecord.
 # * `institution_id`    Foreign key to {Institution}.
 # * `introduction`      Introduction string. May contain HTML.
@@ -21,6 +30,7 @@ class Unit < ApplicationRecord
 
   class IndexFields
     ADMINISTRATORS        = "i_administrator_id"
+    BURIED                = "b_buried"
     CLASS                 = ElasticsearchIndex::StandardFields::CLASS
     CREATED               = ElasticsearchIndex::StandardFields::CREATED
     ID                    = ElasticsearchIndex::StandardFields::ID
@@ -56,6 +66,7 @@ class Unit < ApplicationRecord
   scope :bottom, -> { where(children.count == 0) }
 
   validates :title, presence: true
+  validate :validate_buried, if: -> { buried }
   validate :validate_parent, :validate_primary_administrator
 
   after_save :assign_handle, if: -> { handle.nil? && !IdealsImporter.instance.running? }
@@ -134,6 +145,7 @@ class Unit < ApplicationRecord
   def as_indexed_json
     doc = {}
     doc[IndexFields::ADMINISTRATORS]        = self.administrators.map(&:user_id)
+    doc[IndexFields::BURIED]                = self.buried
     doc[IndexFields::CLASS]                 = self.class.to_s
     doc[IndexFields::CREATED]               = self.created_at.utc.iso8601
     doc[IndexFields::INSTITUTION_KEY]       = self.institution&.key
@@ -146,6 +158,16 @@ class Unit < ApplicationRecord
     doc[IndexFields::SHORT_DESCRIPTION]     = self.short_description
     doc[IndexFields::TITLE]                 = self.title
     doc
+  end
+
+  ##
+  # Renders an instance almost totally deleted, leaving behind a tombstone
+  # record.
+  #
+  # @raises [RuntimeError] if the instance contains any dependent collections.
+  #
+  def bury!
+    update!(buried: true)
   end
 
   ##
@@ -406,6 +428,21 @@ class Unit < ApplicationRecord
   def assign_handle
     if self.handle.nil? && !IdealsImporter.instance.running?
       self.handle = Handle.create!(unit: self)
+    end
+  end
+
+  ##
+  # Ensures that a buried unit does not contain any collections.
+  #
+  def validate_buried
+    if buried
+      if units.where.not(buried: true).count > 0
+        errors.add(:base, "This unit cannot be deleted, as it contains at "\
+                          "least one child unit.")
+      elsif collections.where.not(buried: true).count > 0
+        errors.add(:base, "This unit cannot be deleted, as it contains at "\
+                          "least one collection.")
+      end
     end
   end
 

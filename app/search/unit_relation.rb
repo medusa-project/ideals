@@ -30,6 +30,7 @@ class UnitRelation < AbstractRelation
     self
   end
 
+
   protected
 
   ##
@@ -47,8 +48,8 @@ class UnitRelation < AbstractRelation
                 # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
                 j.simple_query_string do
                   j.query @query[:query]
-                  j.default_operator 'AND'
-                  j.flags 'NONE'
+                  j.default_operator "AND"
+                  j.flags "NONE"
                   j.lenient true
                   j.fields [@query[:field]]
                 end
@@ -95,8 +96,13 @@ class UnitRelation < AbstractRelation
               end
             end
           end
-          if !@include_children && !@parent_unit
-            j.must_not do
+          j.must_not do
+            j.child! do
+              j.term do
+                j.set! Unit::IndexFields::BURIED, true
+              end
+            end
+            if !@include_children && !@parent_unit
               j.child! do
                 j.exists do
                   j.field Unit::IndexFields::PARENT
@@ -111,12 +117,12 @@ class UnitRelation < AbstractRelation
       # Order by explicit orders, if provided; otherwise sort by the metadata
       # profile's default order, if @orders is set to true; otherwise don't
       # sort.
-      if @orders.respond_to?(:any?) and @orders.any?
+      if @orders.respond_to?(:any?) && @orders.any?
         j.sort do
           @orders.each do |order|
             j.set! order[:field] do
               j.order order[:direction]
-              j.unmapped_type 'keyword'
+              j.unmapped_type "keyword"
             end
           end
         end

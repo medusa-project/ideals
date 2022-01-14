@@ -43,8 +43,8 @@ class ItemTest < ActiveSupport::TestCase
     Item.reindex_all
     refresh_elasticsearch
 
-    expected = Item.count
-    actual = Item.search.institution(institutions(:uiuc)).count
+    expected = Item.where.not(stage: Item::Stages::BURIED).count
+    actual   = Item.search.institution(institutions(:uiuc)).count
     assert actual > 0
     assert_equal expected, actual
   end
@@ -227,6 +227,11 @@ class ItemTest < ActiveSupport::TestCase
   test "bury!() sets the stage to BURIED" do
     @instance.bury!
     assert_equal Item::Stages::BURIED, @instance.stage
+  end
+
+  test "bury!() creates an associated Event" do
+    @instance.bury!
+    assert_equal 1, @instance.events.where(event_type: Event::Type::DELETE).count
   end
 
   test "bury!() deletes all associated Bitstreams from permanent storage" do

@@ -26,7 +26,7 @@ xml.tag!("OAI-PMH",
       xml.tag!("protocolVersion", "2.0")
       xml.tag!("adminEmail", Configuration.instance.mail[:reply_to])
       xml.tag!("earliestDatestamp", @earliest_datestamp)
-      xml.tag!("deletedRecord", "transient")
+      xml.tag!("deletedRecord", "persistent")
       xml.tag!("granularity", "YYYY-MM-DDThh:mm:ssZ")
     end
   end

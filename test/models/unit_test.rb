@@ -55,7 +55,7 @@ class UnitTest < ActiveSupport::TestCase
       include_children(true).
       count
     assert actual > 0
-    assert_equal Unit.count, actual
+    assert_equal Unit.where.not(buried: true).count, actual
   end
 
   # all_administrators()
@@ -91,8 +91,9 @@ class UnitTest < ActiveSupport::TestCase
 
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
-    assert_equal 12, doc.length
+    assert_equal 13, doc.length
     assert_not_empty doc[Unit::IndexFields::ADMINISTRATORS]
+    assert !doc[Unit::IndexFields::BURIED]
     assert_equal "Unit", doc[Unit::IndexFields::CLASS]
     assert_not_empty doc[Unit::IndexFields::CREATED]
     assert_equal @instance.institution.key, doc[Unit::IndexFields::INSTITUTION_KEY]
@@ -106,6 +107,74 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal @instance.rights, doc[Unit::IndexFields::RIGHTS]
     assert_equal @instance.short_description, doc[Unit::IndexFields::SHORT_DESCRIPTION]
     assert_equal @instance.title, doc[Unit::IndexFields::TITLE]
+  end
+
+  # buried
+
+  test "buried cannot be set to true when the unit contains any non-buried
+  subunits" do
+    @instance.valid?
+    @instance.collections.delete_all
+    assert @instance.units.count > 0
+    @instance.buried = true
+    assert !@instance.valid?
+  end
+
+  test "buried cannot be set to true when the unit contains any non-buried
+  collections" do
+    @instance.valid?
+    assert @instance.collections.count > 0
+    @instance.buried = true
+    assert !@instance.valid?
+  end
+
+  test "buried can be set to true when there are only buried subunits and
+  collections" do
+    @instance.valid?
+    @instance.units.update_all(buried: true)
+    @instance.collections.update_all(buried: true)
+    @instance.buried = true
+    assert @instance.valid?
+  end
+
+  test "buried can be set to true when the unit is empty" do
+    @instance.valid?
+    @instance.units.delete_all
+    @instance.collections.delete_all
+    @instance.buried = true
+    assert @instance.valid?
+  end
+
+  # bury!()
+
+  test "bury!() raises an error when the unit contains any non-buried subunits" do
+    assert @instance.units.count > 0
+    @instance.collections.delete_all
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.bury!
+    end
+  end
+
+  test "bury!() raises an error when the unit contains any non-buried
+  collections" do
+    assert @instance.collections.count > 0
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.bury!
+    end
+  end
+
+  test "bury!() works when there are only buried subunits and collections" do
+    @instance.units.update_all(buried: true)
+    @instance.collections.update_all(buried: true)
+    @instance.bury!
+    assert @instance.buried
+  end
+
+  test "bury!() buries an empty unit" do
+    @instance.units.delete_all
+    @instance.collections.delete_all
+    @instance.bury!
+    assert @instance.buried
   end
 
   # child?()
