@@ -580,6 +580,18 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal 0, actual[0]['count']
   end
 
+  # submitting_item_count()
+
+  test "submitting_item_count() returns a correct count when not including
+  children" do
+    assert_equal 1, @instance.submitting_item_count(include_children: false)
+  end
+
+  test "submitting_item_count() returns a correct count when including
+  children" do
+    assert_equal 1, @instance.submitting_item_count(include_children: true)
+  end
+
   # unit_default?()
 
   test "unit_default?() returns false for a non-unit-default collection" do

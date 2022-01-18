@@ -247,7 +247,7 @@ class CollectionsController < ApplicationController
     @metadata_profile     = @collection.effective_metadata_profile
     @submission_profile   = @collection.effective_submission_profile
     @num_downloads        = @collection.download_count
-    @num_submitting_items = @collection.submitted_item_count
+    @num_submitting_items = @collection.submitting_item_count
     render partial: "show_properties_tab"
   end
 

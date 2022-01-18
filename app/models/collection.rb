@@ -482,6 +482,22 @@ class Collection < ApplicationRecord
     self.class.connection.exec_query(sql, "SQL", values)
   end
 
+  ##
+  # @param include_children [Boolean] Whether to include child collections in
+  #                                   the count.
+  # @return [Integer] Count of all items currently being submitted into the collection.
+  #
+  def submitting_item_count(include_children: true)
+    count = 0
+    if include_children
+      self.all_children.each do |child_collection|
+        count += child_collection.submitting_item_count(include_children: false)
+      end
+    end
+    items = self.items.where(stage: Item::Stages::SUBMITTING)
+    count + items.count
+  end
+
   def unit_default?
     self.unit_collection_memberships.pluck(:unit_default).find{ |m| m == true }.present?
   end
