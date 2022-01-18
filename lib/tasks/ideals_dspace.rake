@@ -19,7 +19,8 @@ namespace :ideals_dspace do
       Net::SCP.start(IDEALS_DSPACE_HOSTNAME, args[:ideals_dspace_ssh_user]) do |scp|
         Dir.mktmpdir do |tmpdir|
           puts "Temp directory: #{tmpdir}"
-          Bitstream.uncached do
+          Bitstream.where(permanent_key: [nil, ""]).
+            where.not(dspace_id: [nil, ""]).uncached do
             bitstreams      = Bitstream.where.not(dspace_id: [nil, ""]).order(:id)
             bitstream_count = bitstreams.count
             progress        = Progress.new(bitstream_count)
@@ -50,6 +51,7 @@ namespace :ideals_dspace do
           puts "Temp directory: #{tmpdir}"
           bitstreams      = Bitstream.joins("LEFT JOIN collection_item_memberships m ON m.item_id = bitstreams.item_id").
             where("m.collection_id": args[:collection_id]).
+            where(permanent_key: [nil, ""]).
             where.not(dspace_id: [nil, ""])
           bitstream_count = bitstreams.count
           progress        = Progress.new(bitstream_count)
