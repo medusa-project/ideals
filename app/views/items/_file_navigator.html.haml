@@ -5,23 +5,25 @@
         .section-heading
           Content Files
         - @content_bitstreams.each do |bitstream|
-          .thumbnail{"data-item-id": bitstream.item_id,
+          .thumbnail{title:               bitstream.original_filename,
+                     "data-item-id":      bitstream.item_id,
                      "data-bitstream-id": bitstream.id}
             = representative_image_tag(bitstream,
                                        region: :square,
-                                       size: 512,
-                                       title: bitstream.original_filename)
+                                       size:   512,
+                                       title:  bitstream.original_filename)
             = bitstream.original_filename
       - if @other_bitstreams.any?
         .section-heading
           Other Files
         - @other_bitstreams.each do |bitstream|
-          .thumbnail{"data-item-id": bitstream.item_id,
+          .thumbnail{title:               bitstream.original_filename,
+                     "data-item-id":      bitstream.item_id,
                      "data-bitstream-id": bitstream.id}
             = representative_image_tag(bitstream,
                                        region: :square,
-                                       size: 512,
-                                       title: bitstream.original_filename)
+                                       size:   512,
+                                       title:  bitstream.original_filename)
             = bitstream.original_filename
     - if @item.approved?
       #file-navigator-thumbnail-column-footer
