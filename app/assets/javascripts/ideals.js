@@ -966,6 +966,7 @@ const ideals_ready = function () {
             $("body").append(form);
             form.trigger("submit");
         }
+        return false;
     });
 
     // Copy the URL "q" argument into the filter field, as the browser won't do
