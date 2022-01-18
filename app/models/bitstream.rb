@@ -87,7 +87,7 @@ class Bitstream < ApplicationRecord
   validates_inclusion_of :role, in: -> (value) { Role.all }
 
   before_save :ensure_primary_uniqueness
-  after_save :ingest_into_medusa, if: -> { permanent_key.present? && saved_change_to_permanent_key? }
+  after_save :ingest_into_medusa, if: -> { permanent_key.present? && saved_change_to_permanent_key? && !submitted_for_ingest }
   before_destroy :delete_derivatives, :delete_from_staging
   before_destroy :delete_from_medusa, if: -> { medusa_uuid.present? }
 
