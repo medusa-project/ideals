@@ -598,6 +598,36 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  test "show?() respects bitstream role limits" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
+    assert !policy.show?
+  end
+
+  test "show?() restricts non-content bitstreams to non-collection managers" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    assert !policy.show?
+  end
+
+  test "show?() restricts bitstreams whose owning items are embargoed" do
+    user      = users(:norights)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    bitstream = bitstreams(:item2_in_medusa)
+    policy    = BitstreamPolicy.new(context, bitstream)
+
+    assert policy.show?
+    bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
+                                   download:   true).save!
+    assert !policy.show?
+  end
+
   test "show?() authorizes clients whose hostname or IP matches a user group
   assigned to the bitstream" do
     group     = user_groups(:hostname)

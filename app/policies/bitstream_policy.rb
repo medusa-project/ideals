@@ -40,24 +40,7 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def download
-    can_show = show
-    if !can_show[:authorized]
-      return can_show
-    elsif role && role < bitstream.role
-      return { authorized: false,
-               reason:     "Your role is not allowed to access this file." }
-    elsif bitstream.bundle != Bitstream::Bundle::CONTENT &&
-      !user&.effective_manager?(bitstream.item.primary_collection)
-      return {
-        authorized: false,
-        reason:     "You must be a manager of the primary collection in "\
-                    "which the file's item resides."
-      }
-    elsif bitstream.item.current_embargoes.count > 0
-      return { authorized: false,
-               reason: "This file's owning item is embargoed." }
-    end
-    AUTHORIZED_RESULT
+    show
   end
 
   def edit
@@ -81,6 +64,19 @@ class BitstreamPolicy < ApplicationPolicy
     elsif !bitstream.item.discoverable
       return { authorized: false,
                reason:     "This file's owning item is not discoverable." }
+    elsif bitstream.bundle != Bitstream::Bundle::CONTENT &&
+      !user&.effective_manager?(bitstream.item.primary_collection)
+      return {
+        authorized: false,
+        reason:     "You must be a manager of the primary collection in "\
+                    "which the file's item resides."
+      }
+    elsif bitstream.item.current_embargoes.count > 0
+      return { authorized: false,
+               reason: "This file's owning item is embargoed." }
+    elsif role && role < bitstream.role
+      return { authorized: false,
+               reason:     "Your role is not allowed to access this file." }
     end
 
     # If there are any user groups authorizing the bitstream by hostname or IP,
