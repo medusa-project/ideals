@@ -14,8 +14,8 @@ namespace :ideals_dspace do
     ##
     # Do this AFTER database content has been migrated.
     #
-    desc "Copy all IDEALS-DSpace bitstreams into Medusa"
-    task :copy_into_medusa, [:ideals_dspace_ssh_user] => :environment do |task, args|
+    desc "Copy all IDEALS-DSpace bitstreams into IDEALS"
+    task :copy, [:ideals_dspace_ssh_user] => :environment do |task, args|
       Net::SCP.start(IDEALS_DSPACE_HOSTNAME, args[:ideals_dspace_ssh_user]) do |scp|
         Dir.mktmpdir do |tmpdir|
           puts "Temp directory: #{tmpdir}"
@@ -30,9 +30,10 @@ namespace :ideals_dspace do
               local_path  = File.join(tmpdir, "#{bitstream.id}")
               scp.download!(remote_path, local_path)
               # Upload it to the application S3 bucket
-              bitstream.update!(permanent_key: Bitstream.permanent_key(bitstream.item.id,
-                                                                       bitstream.original_filename))
+              bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
+                                                                bitstream.original_filename)
               bitstream.upload_to_permanent(File.read(local_path))
+              bitstream.save!
               # Delete it from the temp directory
               File.delete(local_path)
               progress.report(index, "Copying files from IDEALS-DSpace into Medusa")
@@ -42,11 +43,37 @@ namespace :ideals_dspace do
       end
     end
 
-    ##
-    # Do this AFTER database content has been migrated.
-    #
-    desc "Copy one item's bitstreams into Medusa"
-    task :copy_item_into_medusa, [:item_id, :ideals_dspace_ssh_user] => :environment do |task, args|
+    desc "Copy one collection's bitstreams from IDEALS-DSpace into IDEALS"
+    task :copy_collection, [:collection_id, :ideals_dspace_ssh_user] => :environment do |task, args|
+      Net::SCP.start(IDEALS_DSPACE_HOSTNAME, args[:ideals_dspace_ssh_user]) do |scp|
+        Dir.mktmpdir do |tmpdir|
+          puts "Temp directory: #{tmpdir}"
+          bitstreams      = Bitstream.joins("LEFT JOIN collection_item_memberships m ON m.item_id = bitstreams.item_id").
+            where("m.collection_id": args[:collection_id]).
+            where.not(dspace_id: [nil, ""])
+          bitstream_count = bitstreams.count
+          progress        = Progress.new(bitstream_count)
+          bitstreams.each_with_index do |bitstream, index|
+            # Download the file into the temp directory
+            remote_path = IDEALS_DSPACE_ASSET_STORE_PATH +
+              bitstream.dspace_relative_path
+            local_path  = File.join(tmpdir, "#{bitstream.id}")
+            scp.download!(remote_path, local_path)
+            # Upload it to the application S3 bucket
+            bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
+                                                              bitstream.original_filename)
+            bitstream.upload_to_permanent(File.read(local_path))
+            bitstream.save!
+            # Delete it from the temp directory
+            File.delete(local_path)
+            progress.report(index, "Copying files from IDEALS-DSpace into Medusa")
+          end
+        end
+      end
+    end
+
+    desc "Copy one item's bitstreams from IDEALS-DSpace into IDEALS"
+    task :copy_item, [:item_id, :ideals_dspace_ssh_user] => :environment do |task, args|
       Net::SCP.start(IDEALS_DSPACE_HOSTNAME, args[:ideals_dspace_ssh_user]) do |scp|
         Dir.mktmpdir do |tmpdir|
           puts "Temp directory: #{tmpdir}"
@@ -61,9 +88,10 @@ namespace :ideals_dspace do
             local_path  = File.join(tmpdir, "#{bitstream.id}")
             scp.download!(remote_path, local_path)
             # Upload it to the application S3 bucket
-            bitstream.update!(permanent_key: Bitstream.permanent_key(bitstream.item.id,
-                                                                     bitstream.original_filename))
+            bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
+                                                              bitstream.original_filename)
             bitstream.upload_to_permanent(File.read(local_path))
+            bitstream.save!
             # Delete it from the temp directory
             File.delete(local_path)
             progress.report(index, "Copying files from IDEALS-DSpace into Medusa")

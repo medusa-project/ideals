@@ -447,8 +447,8 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # For use only by the `ideals_dspace:copy_into_medusa` rake task. After
-  # migration, this method can be removed.
+  # For use only by the `ideals_dspace:copy` rake task. After migration, this
+  # method can be removed.
   #
   # @param io [IO]
   #
