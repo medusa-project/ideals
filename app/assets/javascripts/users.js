@@ -10,6 +10,12 @@ const UsersView = function() {
     if (queryArgs.has("class")) {
         $("select[name=class]").val(queryArgs.get("class"));
     }
+    // Submit the form after the "clear" button is clicked.
+    $("button[type=reset]").on("click", function() {
+        const form = $(this).parents("form");
+        form.trigger("reset");
+        form.submit();
+    });
 };
 
 /**
