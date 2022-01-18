@@ -22,7 +22,7 @@ class UsersController < ApplicationController
     @start  = params[:start].to_i
     @window = window_size
     q = "%#{params[:q]}%"
-    @users  = User.where("name LIKE ? OR uid LIKE ?", q, q).
+    @users  = User.where("LOWER(name) LIKE ? OR LOWER(uid) LIKE ?", q, q).
         where(org_dn: current_institution.org_dn).
         where("type LIKE ?", "%#{params[:class]}").
         order(:name)
