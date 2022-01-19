@@ -157,11 +157,12 @@ rails db:reset
 rails "ideals_dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
+# This user must authorize your SSH key for passwordless login
+rails "ideals_dspace:bitstreams:copy[ideals_dspace_ssh_user]"
 # Stop here until IDEALS-DSpace is decommissioned or read-only, then:
 rails "ideals_dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails elasticsearch:reindex[2] # thread count
-# This user must authorize your SSH key for passwordless login
-rails "ideals_dspace:bitstreams:copy_into_medusa[ideals_dspace_ssh_user]"
+rails "ideals_dspace:bitstreams:copy[ideals_dspace_ssh_user]"
 rails "ideals_dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]"
 ```
 
