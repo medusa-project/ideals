@@ -14,14 +14,19 @@ namespace :ideals_dspace do
     ##
     # Do this AFTER database content has been migrated.
     #
+    # This is resumable--if stopped and run again, it will pick up where it
+    # left off.
+    #
     desc "Copy all IDEALS-DSpace bitstreams into IDEALS"
     task :copy, [:ideals_dspace_ssh_user] => :environment do |task, args|
       Net::SCP.start(IDEALS_DSPACE_HOSTNAME, args[:ideals_dspace_ssh_user]) do |scp|
         Dir.mktmpdir do |tmpdir|
           puts "Temp directory: #{tmpdir}"
-          Bitstream.where(permanent_key: [nil, ""]).
-            where.not(dspace_id: [nil, ""]).uncached do
-            bitstreams      = Bitstream.where.not(dspace_id: [nil, ""]).order(:id)
+          Bitstream.uncached do
+            bitstreams      = Bitstream.
+              where(permanent_key: [nil, ""]).
+              where.not(dspace_id: [nil, ""]).
+              order(:id)
             bitstream_count = bitstreams.count
             progress        = Progress.new(bitstream_count)
             bitstreams.each_with_index do |bitstream, index|
