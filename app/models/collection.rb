@@ -22,15 +22,17 @@
 #                           display of a tombstone record. The burial is not
 #                           reversible.
 # * `created_at`            Managed by ActiveRecord.
+# * `description`           Full description string. See {short_description}.
 # * `introduction`          Introduction string. May contain HTML.
 # * `metadata_profile_id`   Foreign key to {MetadataProfile}. Instances without
 #                           this set should use the {MetadataProfile#default
 #                           default profile}. In most cases,
 #                           {effective_metadata_profile} should be used instead
 #                           of accessing this directly.
+# * `parent_id`             Foreign key to the parent [Collection].
 # * `provenance`            Provenance string.
 # * `rights`                Rights string.
-# * `short_description`     Short description string.
+# * `short_description`     Short description string. See {description}.
 # * `submission_profile_id` Foreign key to {SubmissionProfile}. Instances
 #                           without this set should use the
 #                           {SubmissionProfile#default default profile}. In
@@ -39,6 +41,7 @@
 # * `submissions_reviewed`  If true, items submitted to the collection are
 #                           subject to administrator review. Otherwise, they
 #                           are immediately approved.
+# * `title`                 Title.
 # * `updated_at`            Managed by ActiveRecord.
 #
 # # Relationships
