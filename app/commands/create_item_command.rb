@@ -27,7 +27,7 @@ class CreateItemCommand < Command
       Event.create!(event_type:    Event::Type::CREATE,
                     item:          item,
                     user:          @submitter,
-                    after_changes: item,
+                    after_changes: item.as_change_hash,
                     description:   "Item created upon initiation of the submission process.")
       item
     end

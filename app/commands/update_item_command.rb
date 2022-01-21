@@ -23,7 +23,7 @@ class UpdateItemCommand < Command
                     item:           @item,
                     user:           @user,
                     before_changes: before_changes,
-                    after_changes:  @item,
+                    after_changes:  @item.as_change_hash,
                     description:    @description)
     end
   end

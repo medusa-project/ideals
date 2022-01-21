@@ -15,7 +15,7 @@ class ImportItemCommand < Command
 
       Event.create!(event_type:    Event::Type::CREATE,
                     item:          item,
-                    after_changes: item,
+                    after_changes: item.as_change_hash,
                     description:   "Item imported from a SAF package.")
       item
     end

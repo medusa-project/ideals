@@ -473,7 +473,7 @@ class IdealsImporter
       Item.order(:id).find_each.with_index do |item, index|
         Event.where(event_type:    Event::Type::CREATE,
                     item:          item,
-                    after_changes: item,
+                    after_changes: item.as_change_hash,
                     description:   "Item imported from IDEALS-DSpace.").first_or_create!
         progress.report(index, "Assigning create events to items (2/2)")
       end
