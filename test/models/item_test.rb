@@ -234,41 +234,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 1, @instance.events.where(event_type: Event::Type::DELETE).count
   end
 
-  test "bury!() deletes all associated Bitstreams from permanent storage" do
-    filename = "escher_lego.jpg"
-    fixture  = file_fixture(filename)
-    @instance.bitstreams.each do |bs|
-      bs.update!(permanent_key: Bitstream.permanent_key(@instance.id, filename))
-      File.open(fixture, "r") do |file|
-        bs.upload_to_permanent(file)
-      end
-    end
-
-    @instance.bury!
-
-    assert_equal @instance.bitstreams.count,
-                 @instance.bitstreams.where(permanent_key: nil).count
-  end
-
-  test "bury!() deletes all associated Bitstreams from Medusa" do
-    filename = "escher_lego.jpg"
-    fixture  = file_fixture(filename)
-    @instance.bitstreams.each do |bs|
-      bs.update!(permanent_key: Bitstream.permanent_key(@instance.id, filename))
-      File.open(fixture, "r") do |file|
-        bs.upload_to_permanent(file)
-      end
-    end
-
-    clear_message_queue
-    @instance.bitstreams.first.medusa_uuid = SecureRandom.uuid # help the next step along
-    @instance.bury!
-
-    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
-      assert_equal "delete", message['operation']
-    end
-  end
-
   # complete_submission()
 
   test "complete_submission() sets the stage to submitted if the collection is

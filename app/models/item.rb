@@ -338,18 +338,9 @@ class Item < ApplicationRecord
     self.stage == Stages::BURIED
   end
 
-  ##
-  # Renders an instance almost totally deleted, leaving behind a tombstone
-  # record. The stage is set to {Item::Stages::BURIED} and dependent
-  # bitstreams are deleted from permanent storage and Medusa.
-  #
-  # Ascribed elements are **not** deleted.
-  #
   def bury!
     transaction do
       update!(stage: Item::Stages::BURIED)
-      bitstreams.each(&:delete_from_medusa)
-      bitstreams.each(&:delete_from_permanent_storage)
       Event.create!(event_type:     Event::Type::DELETE,
                     item:           self,
                     before_changes: self,
