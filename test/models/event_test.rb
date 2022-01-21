@@ -64,10 +64,12 @@ class EventTest < ActiveSupport::TestCase
 
   # after_changes
 
-  test "after_changes must contain valid JSON" do
-    @instance.write_attribute(:after_changes, '{ "this": "is json" }')
+  test "after_changes must contain a JSON object" do
+    @instance.write_attribute(:after_changes, '{ "this": "is valid" }')
     assert @instance.valid?
-    @instance.write_attribute(:after_changes, "this is not json")
+    @instance.write_attribute(:after_changes, "this is not valid")
+    assert !@instance.valid?
+    @instance.write_attribute(:after_changes, 123)
     assert !@instance.valid?
   end
 
@@ -95,10 +97,12 @@ class EventTest < ActiveSupport::TestCase
 
   # before_changes
 
-  test "before_changes must contain valid JSON" do
-    @instance.write_attribute(:before_changes, '{ "this": "is json" }')
+  test "before_changes must contain a JSON object" do
+    @instance.write_attribute(:before_changes, '{ "this": "is valid" }')
     assert @instance.valid?
-    @instance.write_attribute(:before_changes, "this is not json")
+    @instance.write_attribute(:before_changes, "this is not valid")
+    assert !@instance.valid?
+    @instance.write_attribute(:before_changes, 123)
     assert !@instance.valid?
   end
 

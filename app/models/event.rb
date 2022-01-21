@@ -110,14 +110,15 @@ class Event < ApplicationRecord
   end
 
   ##
-  # Ensures that {before_changes} and {after_changes} contain valid JSON.
+  # Ensures that {before_changes} and {after_changes} are JSON objects.
   #
   def validate_changes
     [:before_changes, :after_changes].each do |attr_name|
       attr = read_attribute(attr_name)
       if attr.present?
         begin
-          JSON.parse(attr)
+          h = JSON.parse(attr)
+          errors.add(attr_name, "is not a hash") unless h.respond_to?(:keys)
         rescue JSON::ParserError => e
           errors.add(attr_name, "#{e}")
         end
