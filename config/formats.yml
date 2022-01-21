@@ -1075,6 +1075,7 @@ xml:
   category: code
   icon: file-code-o
   readable_by_vips: false
+  viewer_method: xml_viewer_for
 zip:
   short_name: Zip
   long_name: Zip

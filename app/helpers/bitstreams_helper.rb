@@ -87,14 +87,17 @@ module BitstreamsHelper
       "type=\"#{bitstream.media_type}\"></object>")
   end
 
+  ##
+  # @param bitstream [Bitstream,String]
+  #
   def text_viewer_for(bitstream)
     # Downloading the text and putting it in a <pre> makes it easier to style
     # than putting it in an <object>.
-    data = bitstream.data
+    text = bitstream.kind_of?(Bitstream) ? bitstream.data : bitstream
     html = StringIO.new
     html << "<div class=\"text-viewer\">"
     html <<   "<pre>"
-    html <<     html_escape(data)
+    html <<     html_escape(text)
     html <<   "</pre>"
     html << "</div>"
     raw(html.string)
@@ -107,6 +110,12 @@ module BitstreamsHelper
     html <<   no_viewer_for(bitstream)
     html << "</video>"
     raw(html.string)
+  end
+
+  def xml_viewer_for(bitstream)
+    doc = Nokogiri::XML(bitstream.data, &:noblanks)
+    xml = doc.to_xml(indent: 4, indent_text: " ")
+    text_viewer_for(xml)
   end
 
 end
