@@ -29,7 +29,7 @@ namespace :ideals_dspace do
               order(:id)
             bitstream_count = bitstreams.count
             progress        = Progress.new(bitstream_count)
-            bitstreams.each_with_index do |bitstream, index|
+            bitstreams.find_each.with_index do |bitstream, index|
               # Download the file into the temp directory
               remote_path = IDEALS_DSPACE_ASSET_STORE_PATH +
                   bitstream.dspace_relative_path
@@ -38,7 +38,7 @@ namespace :ideals_dspace do
               # Upload it to the application S3 bucket
               bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
                                                                 bitstream.original_filename)
-              bitstream.upload_to_permanent(File.read(local_path))
+              bitstream.upload_to_permanent(File.new(local_path))
               bitstream.save!
               # Delete it from the temp directory
               File.delete(local_path)
@@ -60,7 +60,7 @@ namespace :ideals_dspace do
             where.not(dspace_id: [nil, ""])
           bitstream_count = bitstreams.count
           progress        = Progress.new(bitstream_count)
-          bitstreams.each_with_index do |bitstream, index|
+          bitstreams.find_each.with_index do |bitstream, index|
             # Download the file into the temp directory
             remote_path = IDEALS_DSPACE_ASSET_STORE_PATH +
               bitstream.dspace_relative_path
@@ -69,7 +69,7 @@ namespace :ideals_dspace do
             # Upload it to the application S3 bucket
             bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
                                                               bitstream.original_filename)
-            bitstream.upload_to_permanent(File.read(local_path))
+            bitstream.upload_to_permanent(File.new(local_path))
             bitstream.save!
             # Delete it from the temp directory
             File.delete(local_path)
@@ -97,7 +97,7 @@ namespace :ideals_dspace do
             # Upload it to the application S3 bucket
             bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
                                                               bitstream.original_filename)
-            bitstream.upload_to_permanent(File.read(local_path))
+            bitstream.upload_to_permanent(File.new(local_path))
             bitstream.save!
             # Delete it from the temp directory
             File.delete(local_path)
