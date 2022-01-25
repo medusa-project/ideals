@@ -225,6 +225,35 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_withdrawal()
+
+  test "edit_withdrawal() redirects to login page for logged-out users" do
+    item = items(:item1)
+    get item_edit_withdrawal_path(item), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "edit_withdrawal() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    item = items(:item1)
+    get item_edit_withdrawal_path(item), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_withdrawal() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:item1)
+    get item_edit_withdrawal_path(item)
+    assert_response :not_found
+  end
+
+  test "edit_withdrawal() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:item1)
+    get item_edit_withdrawal_path(item), xhr: true
+    assert_response :ok
+  end
+
   # index()
 
   test "index() returns HTTP 200 for HTML" do

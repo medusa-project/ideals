@@ -115,6 +115,16 @@ class ItemsController < ApplicationController
   end
 
   ##
+  # Used for providing a reason for withdrawing an item.
+  #
+  # Responds to GET `/items/:id/edit-withdrawal` (XHR only)
+  #
+  def edit_withdrawal
+    render partial: "items/withdrawal_form",
+           locals: { item: @item }
+  end
+
+  ##
   # Responds to `GET /items`
   #
   def index
@@ -327,7 +337,7 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:discoverable,
+    params.require(:item).permit(:discoverable, :stage, :stage_reason,
                                  collection_item_memberships_attributes: [
                                    :collection_id, :id, :primary])
   end

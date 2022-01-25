@@ -94,6 +94,10 @@ class ItemPolicy < ApplicationPolicy
     update
   end
 
+  def edit_withdrawal
+    withdraw
+  end
+
   def index
     AUTHORIZED_RESULT
   end

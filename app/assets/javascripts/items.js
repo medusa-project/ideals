@@ -112,6 +112,15 @@ const ItemView = function() {
     });
 
     // XHR modals
+    $(".withdraw").on("click", function() {
+        const id  = $(this).data("item-id");
+        const url = ROOT_URL + "/items/" + id + "/edit-withdrawal";
+        $.get(url, function(data) {
+            const modal = $("#withdraw-modal");
+            modal.find(".modal-body").html(data);
+            modal.modal("show");
+        });
+    });
     $(".edit-item-embargoes").on("click", function() {
         const id  = $(this).data("item-id");
         const url = ROOT_URL + "/items/" + id + "/edit-embargoes";

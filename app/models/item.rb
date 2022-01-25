@@ -30,6 +30,8 @@
 #                           administrators.
 # * `stage`                 Lifecycle stage, whose value is one of the [Stages]
 #                           constant values.
+# * `stage_reason`          Reason for setting the `stage` attribute to its
+#                           current value.
 # * `submitter_id`          Foreign key to {User}.
 # * `updated_at`            Managed by ActiveRecord.
 #
@@ -150,6 +152,7 @@ class Item < ApplicationRecord
              optional: true
 
   before_save :email_after_submission
+  before_update :set_stage_reason
   before_destroy :restrict_in_archive_deletion
 
   validates :stage, inclusion: { in: Stages.all }
@@ -551,6 +554,14 @@ class Item < ApplicationRecord
 
   def restrict_in_archive_deletion
     raise "Archived items cannot be deleted" if self.exists_in_medusa?
+  end
+
+  ##
+  # Nils out {stage_reason} if the stage changed but the reason didn't. This
+  # ensures that {stage_reason} reflects the last stage change only
+  #
+  def set_stage_reason
+    self.stage_reason = nil if self.stage_changed? && !self.stage_reason_changed?
   end
 
   ##

@@ -558,6 +558,19 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal "", item.title
   end
 
+  # update()
+
+  test "update() nillifies stage_reason if it didn't change but the stage did" do
+    @instance.update!(stage:        Item::Stages::APPROVED,
+                      stage_reason: "Reason 1")
+    assert_equal Item::Stages::APPROVED, @instance.stage
+    assert_equal "Reason 1", @instance.stage_reason
+
+    @instance.update!(stage: Item::Stages::WITHDRAWN)
+    assert_equal Item::Stages::WITHDRAWN, @instance.stage
+    assert_nil @instance.stage_reason
+  end
+
   # validate()
 
   test "validate() ensures that the stage is set correctly" do

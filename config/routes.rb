@@ -104,6 +104,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "items#edit_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/edit-withdrawal", to: "items#edit_withdrawal", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/reject", to: "items#reject", via: :patch
     match "/statistics", to: "items#statistics", via: :get,
           constraints: lambda { |request| request.xhr? }

@@ -1,0 +1,21 @@
+-# frozen_string_literal: true
+-#
+-# Required arguments:
+-#
+-# item [Item]
+-#
+
+= form_for(item, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  = f.hidden_field :stage, value: Item::Stages::WITHDRAWN
+
+  .form-group
+    = f.label :stage_reason, "Reason"
+    = f.text_area :stage_reason, class: "form-control"
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Withdraw", class: 'btn btn-primary')

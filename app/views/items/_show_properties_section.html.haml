@@ -31,7 +31,11 @@
         - else
           = submitter.name
     %dt Lifecycle Stage
-    %dd= Item::Stages.constants.find{ |c| @item.stage == Item::Stages.const_get(c) }&.to_s&.downcase&.capitalize
+    %dd
+      = Item::Stages.constants.find{ |c| @item.stage == Item::Stages.const_get(c) }&.to_s&.downcase&.capitalize
+      - if @item.stage_reason.present?
+        %br
+        = @item.stage_reason
     %dt Discoverable
     %dd= boolean(@item.discoverable, style: :word)
     %dt User Groups Allowed to Access Files
