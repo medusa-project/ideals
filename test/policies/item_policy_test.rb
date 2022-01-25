@@ -901,6 +901,75 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.show_all_metadata?
   end
 
+  # show_collections?()
+
+  test "show_collections?() returns true with a nil user to an item that is
+  neither withdrawn nor buried" do
+    policy = ItemPolicy.new(nil, @item)
+    assert policy.show_collections?
+  end
+
+  test "show_collections?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.show_collections?
+  end
+
+  test "show_collections?() authorizes unit admins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    unit    = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.show_collections?
+  end
+
+  test "show_collections?() authorizes collection managers" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.show_collections?
+  end
+
+  test "show_collections?() does not authorize access to withdrawn items by
+  roles beneath collection manager" do
+    @item   = items(:withdrawn)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.show_collections?
+  end
+
+  test "show_collections?() does not authorize access to buried items by
+  roles beneath collection manager" do
+    @item   = items(:buried)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.show_collections?
+  end
+
+  test "show_collections?() respects role limits" do
+    @item   = items(:withdrawn)
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_collections?
+  end
+
   # show_embargoes?()
 
   test "show_embargoes?() returns false with a nil user" do
@@ -1009,6 +1078,75 @@ class ItemPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.show_events?
+  end
+
+  # show_metadata?()
+
+  test "show_metadata?() returns true with a nil user to an item that is
+  neither withdrawn nor buried" do
+    policy = ItemPolicy.new(nil, @item)
+    assert policy.show_metadata?
+  end
+
+  test "show_metadata?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.show_metadata?
+  end
+
+  test "show_metadata?() authorizes unit admins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    unit    = @item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.show_metadata?
+  end
+
+  test "show_metadata?() authorizes collection managers" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    collection = @item.primary_collection
+    collection.managers.build(user: user)
+    collection.save!
+    policy = ItemPolicy.new(context, @item)
+    assert policy.show_metadata?
+  end
+
+  test "show_metadata?() does not authorize access to withdrawn items by
+  roles beneath collection manager" do
+    @item   = items(:withdrawn)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.show_metadata?
+  end
+
+  test "show_metadata?() does not authorize access to buried items by
+  roles beneath collection manager" do
+    @item   = items(:buried)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.show_metadata?
+  end
+
+  test "show_metadata?() respects role limits" do
+    @item   = items(:withdrawn)
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_metadata?
   end
 
   # show_properties?()

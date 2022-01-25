@@ -153,8 +153,17 @@ class ItemPolicy < ApplicationPolicy
                   "resides." }
   end
 
+  ##
+  # Authorization to show **all** metadata including non-public metadata.
+  #
+  # @see show_metadata
+  #
   def show_all_metadata
     show_access
+  end
+
+  def show_collections
+    show_metadata
   end
 
   def show_embargoes
@@ -163,6 +172,26 @@ class ItemPolicy < ApplicationPolicy
 
   def show_events
     show_access
+  end
+
+  ##
+  # Authorization to show public metadata only.
+  #
+  # @see show_all_metadata
+  #
+  def show_metadata
+    result = show_access
+    return result if result[:authorized]
+    # At this point we know that the user's role is beneath that of collection
+    # manager, so they are authorized except to withdrawn/buried items.
+    case item.stage
+    when Item::Stages::WITHDRAWN
+      { authorized: false, reason: "This item has been withdrawn." }
+    when Item::Stages::BURIED
+      { authorized: false, reason: "This item has been deleted." }
+    else
+      AUTHORIZED_RESULT
+    end
   end
 
   def show_properties

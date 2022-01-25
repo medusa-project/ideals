@@ -1,20 +1,15 @@
 - provide :body_id, "show_item"
-- provide :title, @item.title
-
-.alert.alert-danger
-  %i.fa.fa-exclamation-triangle
-    This item has been withdrawn.
+- provide :title, "Withdrawn Item"
+  
+.text-center
+  %h1 410 Gone
+  %hr
+  %p This item has been withdrawn.
 
 = render partial: "show_button_group"
 
-%h1
-  = icon_for(@item)
-  = @item.title
-
-%h4.creators= @item.creators
-
-.mb-3
-
+= render partial: "show_metadata_section"
+= render partial: "show_collections_section"
 = render partial: "show_properties_section"
 = render partial: "show_events_section"
 
@@ -25,6 +20,10 @@
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-item-membership-modal",
                    title: "Edit Membership",
+                   size: :xl }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-item-metadata-modal",
+                   title: "Edit Metadata",
                    size: :xl }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-item-properties-modal",

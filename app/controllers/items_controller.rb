@@ -199,6 +199,7 @@ class ItemsController < ApplicationController
   # Responds to `GET /items/:id`
   #
   def show
+    @collections = @item.collections
     case @item.stage
     when Item::Stages::BURIED
       render "errors/error410", status: :gone
@@ -210,7 +211,6 @@ class ItemsController < ApplicationController
   end
 
   def show_approved
-    @collections         = @item.collections
     @content_bitstreams  = @item.bitstreams.
       where(bundle: Bitstream::Bundle::CONTENT).
       order("bitstreams.primary DESC", "LOWER(original_filename)").

@@ -1,26 +1,27 @@
-%h2.mt-5
-  Description
-  - if policy(@item).edit_metadata?
-    %button.btn.btn-light.edit-item-metadata{"data-item-id": @item.id,
-                                             "data-target": "#edit-item-metadata-modal",
-                                             "data-toggle": "modal",
-                                             role: "button"}
-      %i.fas.fa-pencil-alt
-      Edit
+- if policy(@item).show_metadata?
+  %h2.mt-5
+    Description
+    - if policy(@item).edit_metadata?
+      %button.btn.btn-light.edit-item-metadata{"data-item-id": @item.id,
+                                               "data-target": "#edit-item-metadata-modal",
+                                               "data-toggle": "modal",
+                                               role: "button"}
+        %i.fas.fa-pencil-alt
+        Edit
 
-- if policy(@item).show_all_metadata?
-  .row
-    .col-md-6
-      %h4 Visible Public Elements
-      .alert.alert-light
-        Metadata Profile:
-        = link_to(@item.effective_metadata_profile.name,
-                    @item.effective_metadata_profile)
-      = metadata_as_dl(@item.elements,
-                         @item.effective_metadata_profile)
-    .col-md-6
-      %h4 All Ascribed Elements
-      = metadata_as_dl(@item.elements)
-- else
-  = metadata_as_dl(@item.elements,
-                   @item.effective_metadata_profile)
+  - if policy(@item).show_all_metadata?
+    .row
+      .col-md-6
+        %h4 Visible Public Elements
+        .alert.alert-light
+          Metadata Profile:
+          = link_to(@item.effective_metadata_profile.name,
+                      @item.effective_metadata_profile)
+        = metadata_as_dl(@item.elements,
+                           @item.effective_metadata_profile)
+      .col-md-6
+        %h4 All Ascribed Elements
+        = metadata_as_dl(@item.elements)
+  - else
+    = metadata_as_dl(@item.elements,
+                     @item.effective_metadata_profile)
