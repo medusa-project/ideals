@@ -43,6 +43,8 @@ class OaiPmhController < ApplicationController
 
   before_action :validate_request
 
+  rescue_from ActionView::Template::Error, with: :rescue_template_error
+
   METADATA_FORMATS = [
     {
       prefix: "dim",
@@ -284,6 +286,20 @@ class OaiPmhController < ApplicationController
       end
     end
     nil
+  end
+
+  def rescue_template_error(error)
+    message = IdealsMailer.error_body(error,
+                                      url:  request.url,
+                                      user: current_user)
+    Rails.logger.error(message)
+    IdealsMailer.error(message).deliver_now unless Rails.env.development?
+
+    @error = error
+    render "server_error",
+           formats:  :xml,
+           handlers: :builder,
+           status:   :internal_server_error
   end
 
   def resumption_token(set, from, until_, current_start, metadata_prefix)
