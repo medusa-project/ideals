@@ -115,7 +115,7 @@ class Event < ApplicationRecord
   def validate_changes
     [:before_changes, :after_changes].each do |attr_name|
       attr = read_attribute(attr_name)
-      if attr.present?
+      if attr.present? && attr != "null"
         begin
           h = JSON.parse(attr)
           errors.add(attr_name, "is not a hash") unless h.respond_to?(:keys)
