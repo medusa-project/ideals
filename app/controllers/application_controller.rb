@@ -5,12 +5,14 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   helper_method :current_user, :logged_in?, :to_do_list
 
-  rescue_from StandardError, with: :error_occurred
-  rescue_from ActionView::MissingTemplate do |_exception|
-    render json: {}, status: :unprocessable_entity
-  end
-  rescue_from GoneError, with: :gone
-  rescue_from NotAuthorizedError, with: :unauthorized
+  rescue_from StandardError, with: :rescue_server_error
+  rescue_from ActionController::InvalidAuthenticityToken, with: :rescue_invalid_auth_token
+  rescue_from ActionController::InvalidCrossOriginRequest, with: :rescue_invalid_cross_origin_request
+  rescue_from ActionController::UnknownFormat, with: :rescue_unknown_format
+  rescue_from ActionDispatch::RemoteIp::IpSpoofAttackError, with: :rescue_ip_spoof
+  rescue_from ActiveRecord::RecordNotFound, with: :rescue_not_found
+  rescue_from GoneError, with: :rescue_gone
+  rescue_from NotAuthorizedError, with: :rescue_unauthorized
 
   before_action :store_location
   after_action :copy_flash_to_response_headers
@@ -125,7 +127,55 @@ class ApplicationController < ActionController::Base
     redirect_to root_path if logged_in?
   end
 
-  def error_occurred(exception)
+  def rescue_gone(e)
+    respond_to do |format|
+      format.html { render "errors/error410", status: :gone }
+      format.json { render nothing: true, status: :gone }
+      format.xml { render xml: {status: 410}.to_xml, status: :gone }
+    end
+  end
+
+  def rescue_ip_spoof
+    render plain: 'Client IP mismatch.', status: :bad_request
+  end
+
+  ##
+  # By default, Rails logs {ActionController::InvalidAuthenticityToken}s at
+  # error level. This only bloats the logs, so we handle it differently.
+  #
+  def rescue_invalid_auth_token
+    render plain: "Invalid authenticity token.", status: :bad_request
+  end
+
+  ##
+  # By default, Rails logs {ActionController::InvalidCrossOriginRequest}s at
+  # error level. This only bloats the logs, so we handle it differently.
+  #
+  def rescue_invalid_cross_origin_request
+    render plain: "Invalid cross-origin request.", status: :bad_request
+  end
+
+  def rescue_not_found
+    message = "This resource does not exist."
+    respond_to do |format|
+      format.html do
+        render "errors/error404", status: :not_found, locals: {
+          status_code: 404,
+          status_message: "Not Found",
+          message: message
+        }
+      end
+      format.json do
+        render "errors/error404", status: :not_found, locals: { message: message }
+      end
+      format.all do
+        render plain: "404 Not Found", status: :not_found,
+               content_type: "text/plain"
+      end
+    end
+  end
+
+  def rescue_server_error(exception)
     if exception.class == ActiveRecord::RecordNotFound
       respond_to do |format|
         format.html { render "errors/error404", status: :not_found }
@@ -134,25 +184,11 @@ class ApplicationController < ActionController::Base
       end
 
     else
-      io = StringIO.new
-      io << "Error on #{request.url}\n"
-      io << "Class:   #{exception.class}\n"
-      io << "Message: #{exception.message}\n"
-      io << "Time:    #{Time.now.iso8601}\n"
-      io << "User:    #{current_user.name}\n" if current_user
-      io << "\nStack Trace:\n"
-      exception.backtrace.each do |line|
-        io << line
-        io << "\n"
-      end
-
-      @message = io.string
-      Rails.logger.warn(@message)
-
-      unless Rails.env.development?
-        notification = IdealsMailer.error(@message)
-        notification.deliver_now
-      end
+      @message = IdealsMailer.error_body(exception,
+                                         url:  request.url,
+                                         user: current_user)
+      Rails.logger.error(@message)
+      IdealsMailer.error(@message).deliver_now unless Rails.env.development?
 
       respond_to do |format|
         format.html do
@@ -169,21 +205,18 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def gone(e)
-    respond_to do |format|
-      format.html { render "errors/error410", status: :gone }
-      format.json { render nothing: true, status: :gone }
-      format.xml { render xml: {status: 410}.to_xml, status: :gone }
-    end
-  end
-
-  def unauthorized(e)
+  def rescue_unauthorized(e)
     @reason = e.reason || e.message
     respond_to do |format|
       format.html { render "errors/error403", status: :forbidden }
       format.json { render nothing: true, status: :forbidden }
       format.xml { render xml: {status: 403}.to_xml, status: :forbidden }
     end
+  end
+
+  def rescue_unknown_format
+    render plain: "Sorry, we aren't able to provide the requested format.",
+           status: :unsupported_media_type
   end
 
   def results_params

@@ -8,6 +8,28 @@ class IdealsMailer < ApplicationMailer
   default from: "IDEALS @ Illinois <#{::Configuration.instance.mail[:from]}>"
 
   ##
+  # @param exception [Exception]
+  # @param url [String] Request URL.
+  # @param user [User] Current user.
+  # @return [String]
+  #
+  def self.error_body(exception, url: nil, user: nil)
+    io = StringIO.new
+    io << "Error"
+    io << " on #{url}" if url
+    io << ":\nClass: #{exception.class}\n"
+    io << "Message: #{exception.message}\n"
+    io << "Time: #{Time.now.iso8601}\n"
+    io << "User: #{user.name}\n" if user
+    io << "Stack Trace:\n"
+    exception.backtrace.each do |line|
+      io << line
+      io << "\n"
+    end
+    io.string
+  end
+
+  ##
   # Notifies the given local-identity user that their request to register has
   # been approved, and contains a link to the registration form.
   #
