@@ -57,16 +57,28 @@ const CollectionView = function() {
             const filterField = tabContent.find("input[name=q]");
             const sortMenu    = tabContent.find("select[name=sort]");
 
-            const refreshResults = function () {
-                $("#items-xhr-content").html(IDEALS.Spinner());
+            const attachResultsEventListeners = function() {
+                $(".page-link").on("click", function(e) {
+                    e.preventDefault();
+                    refreshResults($(this).attr("href"));
+                });
+            };
+
+            const refreshResults = function (url) {
+                const container = $("#items-xhr-content");
+                container.html(IDEALS.Spinner());
+                if (!url) {
+                    url = ROOT_URL + "/collections/" + collectionID + "/item-results";
+                }
                 $.ajax({
-                    method: "GET",
-                    url: ROOT_URL + "/collections/" + collectionID + "/item-results",
-                    data: filterField.parents("form").serialize(),
+                    method:  "GET",
+                    url:     url,
+                    data:    filterField.parents("form").serialize(),
                     success: function(data) {
-                        $("#items-xhr-content").html(data);
+                        container.html(data);
+                        attachResultsEventListeners();
                     },
-                    error: function(data, status, xhr) {
+                    error:   function(data, status, xhr) {
                         console.log(data);
                         console.log(status);
                         console.log(xhr);
@@ -82,6 +94,8 @@ const CollectionView = function() {
             sortMenu.on("change", function() {
                 refreshResults();
             });
+            attachResultsEventListeners();
+            refreshResults();
         });
     });
 
