@@ -293,12 +293,16 @@ class AbstractRelation
   # @return [ActiveRecord::Relation<Object>]
   #
   def to_a
-    sql_arr = to_id_a.map{ |id| get_class.to_model_id(id) }.join(',')
-    # This is basically like a "WHERE IN" query that preserves the order of the
-    # results corresponding to the IDs in the "IN" clause.
+    ids = to_id_a.map{ |id| get_class.to_model_id(id) }
     @result_instances = get_class.
-      joins("JOIN unnest('{#{sql_arr}}'::int[]) WITH ORDINALITY t(id, ord) USING (id)").
-      order('t.ord')
+      where(id: ids).
+      in_order_of(:id, ids)
+    # This should improve performance for Items, as their elements relationship
+    # is almost always accessed.
+    if get_class == Item
+      @result_instances = @result_instances.includes(:elements)
+    end
+    @result_instances
   end
 
   ##
