@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_25_164646) do
+ActiveRecord::Schema.define(version: 2022_01_26_153625) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -156,6 +156,7 @@ ActiveRecord::Schema.define(version: 2022_01_25_164646) do
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "bitstream_id"
     t.datetime "happened_at", precision: 6, default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["event_type"], name: "index_events_on_event_type"
     t.index ["happened_at"], name: "index_events_on_happened_at"
   end
 
