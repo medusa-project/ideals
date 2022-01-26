@@ -222,7 +222,7 @@ class UnitsController < ApplicationController
   #
   def show_properties
     @num_downloads        = @unit.download_count
-    @num_submitting_items = @unit.submitted_item_count
+    @num_submitting_items = @unit.submitting_item_count
     render partial: "show_properties_tab"
   end
 
