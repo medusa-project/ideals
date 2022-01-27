@@ -20,14 +20,14 @@ class ItemsController < ApplicationController
   ##
   # "Buries" (does **not** delete) an [Item].
   #
-  # Burial is like an incomplete form of deletion that leaves behind a
-  # tombstone record.
+  # Burial is an incomplete form of deletion that leaves behind a tombstone
+  # record. Buried items can be exhumed via {undelete}.
   #
-  # Responds to `DELETE /items/:id`
+  # Responds to `POST /items/:id/delete`
   #
-  # @see cancel_submission
+  # @see undelete
   #
-  def destroy
+  def delete
     collection = @item.primary_collection
     begin
       @item.bury!
@@ -212,7 +212,7 @@ class ItemsController < ApplicationController
     @collections = @item.collections
     case @item.stage
     when Item::Stages::BURIED
-      render "errors/error410", status: :gone
+      render "show_buried", status: :gone
     when Item::Stages::WITHDRAWN
       render "show_withdrawn", status: :gone
     else
@@ -250,6 +250,25 @@ class ItemsController < ApplicationController
   #
   def statistics
     render partial: "statistics_form"
+  end
+
+  ##
+  # Un-buries/exhumes a buried item, restoring it to the
+  # {Item::Stages::APPROVED approved stage}.
+  #
+  # Responds to `POST /items/:id/undelete`
+  #
+  # @see delete
+  #
+  def undelete
+    @item.exhume!
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    ElasticsearchClient.instance.refresh
+    flash['success'] = "This item has been undeleted."
+  ensure
+    redirect_to @item
   end
 
   ##

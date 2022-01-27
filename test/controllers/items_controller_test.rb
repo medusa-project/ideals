@@ -60,38 +60,38 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil item.handle
   end
 
-  # destroy()
+  # delete()
 
-  test "destroy() redirects to login page for logged-out users" do
-    delete item_path(items(:item1))
+  test "delete() redirects to login page for logged-out users" do
+    post item_delete_path(items(:item1))
     assert_redirected_to login_path
   end
 
-  test "destroy() returns HTTP 403 for unauthorized users" do
+  test "delete() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete item_path(items(:item1))
+    post item_delete_path(items(:item1))
     assert_response :forbidden
   end
 
-  test "destroy() buries the item" do
+  test "delete() buries the item" do
     log_in_as(users(:local_sysadmin))
     item = items(:submitting)
-    delete item_path(item)
+    post item_delete_path(item)
     item.reload
     assert item.buried?
   end
 
-  test "destroy() returns HTTP 302 for an existing item" do
+  test "delete() returns HTTP 302 for an existing item" do
     log_in_as(users(:local_sysadmin))
     submission = items(:item1)
     expected   = submission.primary_collection
-    delete item_path(submission)
+    post item_delete_path(submission)
     assert_redirected_to expected
   end
 
-  test "destroy() returns HTTP 404 for a missing item" do
+  test "delete() returns HTTP 404 for a missing item" do
     log_in_as(users(:local_sysadmin))
-    delete "/items/99999"
+    post item_delete_path "/items/99999"
     assert_response :not_found
   end
 
@@ -463,6 +463,40 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     get item_statistics_path(items(:item1)), xhr: true
     assert_response :ok
+  end
+
+  # undelete()
+
+  test "undelete() redirects to login page for logged-out users" do
+    post item_undelete_path(items(:buried))
+    assert_redirected_to login_path
+  end
+
+  test "undelete() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    post item_undelete_path(items(:buried))
+    assert_response :forbidden
+  end
+
+  test "undelete() buries the item" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:buried)
+    post item_undelete_path(item)
+    item.reload
+    assert !item.buried?
+  end
+
+  test "undelete() returns HTTP 302 for an existing item" do
+    log_in_as(users(:local_sysadmin))
+    item = items(:buried)
+    post item_undelete_path(item)
+    assert_redirected_to item
+  end
+
+  test "undelete() returns HTTP 404 for a missing item" do
+    log_in_as(users(:local_sysadmin))
+    post "/items/99999/undelete"
+    assert_response :not_found
   end
 
   # update()

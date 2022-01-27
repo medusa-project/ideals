@@ -15,7 +15,7 @@ module AuditableHelper
                     "data-target=\"#event-#{event.id}\" aria-expanded=\"true\" "\
                     "aria-controls=\"event-#{event.id}\">"
       case event.event_type
-      when Event::Type::CREATE
+      when Event::Type::CREATE, Event::Type::UNDELETE
         badge_class = "badge-success"
       when Event::Type::UPDATE
         badge_class = "badge-warning"

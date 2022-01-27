@@ -120,10 +120,9 @@ class Item < ApplicationRecord
     WITHDRAWN  = 400
 
     ##
-    # An item that has been "almost deleted" at any point in its life cycle,
-    # leaving behind only a row in the items table that facilitates display of
-    # a tombstone record. Some dependent entities (bitstreams, metadata
-    # elements, etc.) may be deleted. The burial is not reversible.
+    # An item that has been "functionally deleted" at any point in its life
+    # cycle, leaving behind only a row in the items table that facilitates display of
+    # a tombstone record. The burial is reversible via {Item#exhume!}.
     BURIED = 500
 
     def self.all
@@ -342,13 +341,15 @@ class Item < ApplicationRecord
   end
 
   def bury!
-    transaction do
-      update!(stage: Item::Stages::BURIED)
-      Event.create!(event_type:     Event::Type::DELETE,
-                    item:           self,
-                    before_changes: self,
-                    after_changes:  nil,
-                    description:    "Item deleted.")
+    if stage != Item::Stages::BURIED
+      transaction do
+        update!(stage: Item::Stages::BURIED)
+        Event.create!(event_type:     Event::Type::DELETE,
+                      item:           self,
+                      before_changes: self,
+                      after_changes:  nil,
+                      description:    "Item deleted.")
+      end
     end
   end
 
@@ -463,6 +464,22 @@ class Item < ApplicationRecord
   #
   def effective_submission_profile
     self.primary_collection&.effective_submission_profile || SubmissionProfile.default
+  end
+
+  ##
+  # @see bury!
+  #
+  def exhume!
+    if stage == Item::Stages::BURIED
+      transaction do
+        update!(stage: Item::Stages::APPROVED)
+        Event.create!(event_type:     Event::Type::UNDELETE,
+                      item:           self,
+                      before_changes: nil,
+                      after_changes:  self,
+                      description:    "Item undeleted.")
+      end
+    end
   end
 
   ##

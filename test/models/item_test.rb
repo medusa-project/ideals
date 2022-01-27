@@ -234,6 +234,11 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 1, @instance.events.where(event_type: Event::Type::DELETE).count
   end
 
+  test "bury!() does nothing to a buried item" do
+    @instance = items(:buried)
+    @instance.bury!
+  end
+
   # complete_submission()
 
   test "complete_submission() sets the stage to submitted if the collection is
@@ -446,6 +451,24 @@ class ItemTest < ActiveSupport::TestCase
 
   test "element() returns nil if no such element exists" do
     assert_nil @instance.element("bogus")
+  end
+
+  # exhume!()
+
+  test "exhume!() sets the stage to APPROVED" do
+    @instance = items(:buried)
+    @instance.exhume!
+    assert_equal Item::Stages::APPROVED, @instance.stage
+  end
+
+  test "exhume!() creates an associated Event" do
+    @instance = items(:buried)
+    @instance.exhume!
+    assert_equal 1, @instance.events.where(event_type: Event::Type::UNDELETE).count
+  end
+
+  test "exhume!() does nothing to a non-buried item" do
+    @instance.exhume!
   end
 
   # institution()

@@ -86,7 +86,7 @@ Rails.application.routes.draw do
   end
   match "/items/review", to: "items#review", via: :get
   match "/items/process_review", to: "items#process_review", via: :post
-  resources :items, except: :new do
+  resources :items, except: [:destroy, :new] do
     match "/approve", to: "items#approve", via: :patch
     resources :bitstreams do
       match "/ingest", to: "bitstreams#ingest", via: :post
@@ -95,6 +95,7 @@ Rails.application.routes.draw do
       match "/viewer", to: "bitstreams#viewer", via: :get,
             constraints: lambda { |request| request.xhr? }
     end
+    match "/delete", to: "items#delete", via: :post # different from destroy--see method doc
     match "/download-counts", to: "items#download_counts", via: :get
     match "/edit-embargoes", to: "items#edit_embargoes", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -109,6 +110,7 @@ Rails.application.routes.draw do
     match "/reject", to: "items#reject", via: :patch
     match "/statistics", to: "items#statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/undelete", to: "items#undelete", via: :post
     match "/upload-bitstreams", to: "items#upload_bitstreams", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/withdraw", to: "items#withdraw", via: :patch

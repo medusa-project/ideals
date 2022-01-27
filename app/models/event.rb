@@ -33,6 +33,7 @@ class Event < ApplicationRecord
     DELETE   = 1
     UPDATE   = 2
     DOWNLOAD = 3
+    UNDELETE = 4
 
     def self.all
       Event::Type.constants.map{ |c| Event::Type::const_get(c) }
