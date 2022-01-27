@@ -1,0 +1,16 @@
+- provide :body_id, "show_collection"
+- provide :title, @collection.title
+
+.btn-group.float-right{role: "group"}
+  - if policy(@collection).undelete?
+    = link_to(collection_undelete_path(@collection), class:          "btn btn-danger",
+                                                     method:         :post,
+                                                     "data-confirm": "Are you sure you want to undelete this collection?") do
+      %i.fa.fa-trash-restore
+      Undelete
+
+.clearfix
+.text-center
+  %h1 410 Gone
+  %hr
+  %p This collection has been deleted.

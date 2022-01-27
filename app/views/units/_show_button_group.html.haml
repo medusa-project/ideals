@@ -1,8 +1,13 @@
 .btn-group.float-right{role: "group"}
-  // Delete button
-  -if policy(@unit).destroy?
-    = link_to(unit_path(@unit), class: 'btn btn-danger',
-                                    method: :delete,
-                                    "data-confirm": "Are you sure you want to delete this unit?") do
+  - if !@unit.buried && policy(@unit).delete?
+    = link_to(unit_delete_path(@unit), class: 'btn btn-danger',
+                                       method: :post,
+                                       "data-confirm": "Are you sure you want to delete this unit?") do
       %i.fa.fa-trash
       Delete
+  - elsif @unit.buried && policy(@unit).undelete?
+    = link_to(unit_undelete_path(@unit), class: 'btn btn-danger',
+                                         method: :post,
+                                         "data-confirm": "Are you sure you want to undelete this unit?") do
+      %i.fa.fa-trash-restore
+      Undelete

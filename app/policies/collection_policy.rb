@@ -42,7 +42,7 @@ class CollectionPolicy < ApplicationPolicy
     effective_manager
   end
 
-  def destroy
+  def delete
     create
   end
 
@@ -123,6 +123,10 @@ class CollectionPolicy < ApplicationPolicy
   #
   def submit_item
     effective_submitter
+  end
+
+  def undelete
+    delete
   end
 
   def update

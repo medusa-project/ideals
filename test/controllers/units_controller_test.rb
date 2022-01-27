@@ -108,63 +108,63 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  # destroy()
+  # delete()
 
-  test "destroy() redirects to login page for logged-out users" do
+  test "delete() redirects to login page for logged-out users" do
     unit = units(:unit1)
-    delete unit_path(unit)
+    post unit_delete_path(unit)
     assert_redirected_to login_path
   end
 
-  test "destroy() returns HTTP 403 for unauthorized users" do
+  test "delete() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     unit = units(:unit1)
-    delete unit_path(unit)
+    post unit_delete_path(unit)
     assert_response :forbidden
   end
 
-  test "destroy() returns HTTP 410 for a buried unit" do
+  test "delete() returns HTTP 410 for a buried unit" do
     log_in_as(users(:local_sysadmin))
     unit = units(:buried)
-    delete unit_path(unit)
+    post unit_delete_path(unit)
     assert_response :gone
   end
 
-  test "destroy() buries the unit" do
+  test "delete() buries the unit" do
     log_in_as(users(:local_sysadmin))
     # choose a unit with no dependent collections or units to make setup easier
     unit = units(:empty)
-    delete unit_path(unit)
+    post unit_delete_path(unit)
     unit.reload
     assert unit.buried
   end
 
-  test "destroy() redirects to the unit when the delete fails" do
+  test "delete() redirects to the unit when the delete fails" do
     log_in_as(users(:local_sysadmin))
     unit = units(:unit1)
-    delete unit_path(unit)
+    post unit_delete_path(unit)
     assert_redirected_to unit_path(unit)
   end
 
-  test "destroy() redirects to the parent unit, if available, if the delete
+  test "delete() redirects to the parent unit, if available, if the delete
   succeeds" do
     log_in_as(users(:local_sysadmin))
     unit = units(:unit1_unit1)
-    delete unit_path(unit)
+    post unit_delete_path(unit)
     assert_redirected_to unit_path(unit.parent)
   end
 
-  test "destroy() redirects to the units path if there is no parent unit and
+  test "delete() redirects to the units path if there is no parent unit and
   the delete succeeds" do
     log_in_as(users(:local_sysadmin))
     unit = units(:empty)
-    delete unit_path(unit)
+    post unit_delete_path(unit)
     assert_redirected_to units_path
   end
 
-  test "destroy() returns HTTP 404 for a missing unit" do
+  test "delete() returns HTTP 404 for a missing unit" do
     log_in_as(users(:local_sysadmin))
-    delete "/units/bogus"
+    post "/units/bogus/delete"
     assert_response :not_found
   end
 
@@ -499,6 +499,43 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     get unit_statistics_by_range_path(units(:buried)), xhr: true
     assert_response :gone
+  end
+
+  # undelete()
+
+  test "undelete() redirects to login page for logged-out users" do
+    unit = units(:unit1)
+    post unit_undelete_path(unit)
+    assert_redirected_to login_path
+  end
+
+  test "undelete() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    unit = units(:unit1)
+    post unit_undelete_path(unit)
+    assert_response :forbidden
+  end
+
+  test "undelete() exhumes the unit" do
+    log_in_as(users(:local_sysadmin))
+    # choose a unit with no dependent collections or units to make setup easier
+    unit = units(:buried)
+    post unit_undelete_path(unit)
+    unit.reload
+    assert !unit.buried
+  end
+
+  test "undelete() redirects to the unit" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:unit1_unit1)
+    post unit_undelete_path(unit)
+    assert_redirected_to unit
+  end
+
+  test "undelete() returns HTTP 404 for a missing unit" do
+    log_in_as(users(:local_sysadmin))
+    post "/units/bogus/undelete"
+    assert_response :not_found
   end
 
   # update()

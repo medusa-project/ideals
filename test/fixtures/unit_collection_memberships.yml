@@ -44,3 +44,9 @@ unit2_collection2:
   collection:   collection2
   primary:      true
   unit_default: false
+
+buried_buried:
+  unit:         buried
+  collection:   buried
+  primary:      true
+  unit_default: true

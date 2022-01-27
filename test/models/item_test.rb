@@ -547,6 +547,24 @@ class ItemTest < ActiveSupport::TestCase
     end
   end
 
+  # stage
+
+  test "stage must be set to an available Stages constant value" do
+    assert ActiveRecord::RecordInvalid do
+      @instance.update!(stage: 999)
+    end
+  end
+
+  test "stage cannot be changed from buried when the item's owning collections
+  are all buried" do
+    @instance = items(:buried)
+    @instance.collection_item_memberships.destroy_all
+    @instance.collections << collections(:buried)
+    assert ActiveRecord::RecordInvalid do
+      @instance.update!(stage: Item::Stages::APPROVED)
+    end
+  end
+
   # submitted?()
 
   test "submitted?() returns true when the stage is set to SUBMITTED" do
@@ -595,12 +613,6 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   # validate()
-
-  test "validate() ensures that the stage is set correctly" do
-    assert @instance.validate
-    @instance.stage = 999
-    assert !@instance.validate
-  end
 
   test "validate() ensures that no more than one bitstream is set as primary" do
     assert @instance.validate

@@ -9,12 +9,13 @@ Rails.application.routes.draw do
   match "/logout", to: "sessions#destroy", as: :logout, via: :all
   match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: [:get, :post]
 
-  resources :collections, except: [:edit, :new] do
+  resources :collections, except: [:destroy, :edit, :new] do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/access", to: "collections#show_access", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/collections", to: "collections#show_collections", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/delete", to: "collections#delete", via: :post # different from destroy--see method doc
     match "/items", to: "collections#show_items", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/properties", to: "collections#show_properties", via: :get,
@@ -44,6 +45,7 @@ Rails.application.routes.draw do
     match "/item-download-counts", to: "collections#item_download_counts", via: :get
     match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
     match "/submit", to: "submissions#agreement", via: :get
+    match "/undelete", to: "collections#undelete", via: :post
   end
   # This is an old IDEALS-DSpace route.
   match "/dspace-oai/request", to: redirect('/oai-pmh', status: 301), via: :all
@@ -132,12 +134,13 @@ Rails.application.routes.draw do
     match "/complete", to: "submissions#complete", via: :post
   end
   match "/submit", to: "submissions#agreement", via: :get
-  resources :units, except: [:edit, :new] do
+  resources :units, except: [:destroy, :edit, :new] do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/access", to: "units#show_access", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/collections", to: "units#show_collections", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/delete", to: "units#delete", via: :post # different from destroy--see method doc
     match "/items", to: "units#show_items", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/properties", to: "units#show_properties", via: :get,
@@ -161,6 +164,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/item-download-counts", to: "units#item_download_counts", via: :get
     match "/statistics-by-range", to: "units#statistics_by_range", via: :get
+    match "/undelete", to: "units#undelete", via: :post
   end
   resources :user_groups, path: "user-groups", except: :new do
     match "/edit-ad-groups", to: "user_groups#edit_ad_groups", via: :get,

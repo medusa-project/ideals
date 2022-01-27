@@ -1,0 +1,16 @@
+- provide :body_id, "show_unit"
+- provide :title, @unit.title
+
+.btn-group.float-right{role: "group"}
+  - if policy(@unit).undelete?
+    = link_to(unit_undelete_path(@unit), class:          "btn btn-danger",
+                                         method:         :post,
+                                         "data-confirm": "Are you sure you want to undelete this unit?") do
+      %i.fa.fa-trash-restore
+      Undelete
+
+.clearfix
+.text-center
+  %h1 410 Gone
+  %hr
+  %p This unit has been deleted.

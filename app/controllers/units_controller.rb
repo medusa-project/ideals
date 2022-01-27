@@ -2,12 +2,12 @@
 
 class UnitsController < ApplicationController
 
-  before_action :ensure_logged_in, only: [:create, :destroy,
+  before_action :ensure_logged_in, only: [:create, :delete,
                                           :edit_administrators,
                                           :edit_membership, :edit_properties,
-                                          :show_access, :update]
+                                          :show_access, :undelete, :update]
   before_action :set_unit, except: [:create, :index]
-  before_action :check_buried, except: [:create, :index]
+  before_action :check_buried, except: [:create, :index, :show, :undelete]
   before_action :authorize_unit, except: [:create, :index]
 
   ##
@@ -76,21 +76,21 @@ class UnitsController < ApplicationController
   ##
   # Buries--does **not** delete--a unit.
   #
-  # Responds to `DELETE /units/:id`
+  # Responds to `POST /units/:id/delete`
   #
-  def destroy
-    begin
-      ActiveRecord::Base.transaction do
-        @unit.bury!
-      end
-    rescue => e
-      flash['error'] = "#{e}"
-      redirect_to @unit
-    else
-      ElasticsearchClient.instance.refresh
-      flash['success'] = "Unit \"#{@unit.title}\" deleted."
-      redirect_to(@unit.parent || units_path)
+  # @see undelete
+  #
+  def delete
+    ActiveRecord::Base.transaction do
+      @unit.bury!
     end
+  rescue => e
+    flash['error'] = "#{e}"
+    redirect_to @unit
+  else
+    ElasticsearchClient.instance.refresh
+    flash['success'] = "Unit \"#{@unit.title}\" deleted."
+    redirect_to(@unit.parent || units_path)
   end
 
   ##
@@ -179,6 +179,9 @@ class UnitsController < ApplicationController
   # Responds to GET /units/:id
   #
   def show
+    if @unit.buried
+      render "show_buried", status: :gone and return
+    end
     @new_unit = Unit.new
   end
 
@@ -290,6 +293,26 @@ class UnitsController < ApplicationController
                   filename: "unit_#{@unit.id}_statistics.csv"
       end
     end
+  end
+
+  ##
+  # Exhumes a buried unit.
+  #
+  # Responds to `POST /units/:id/undelete`
+  #
+  # @see delete
+  #
+  def undelete
+    ActiveRecord::Base.transaction do
+      @unit.exhume!
+    end
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    ElasticsearchClient.instance.refresh
+    flash['success'] = "Unit \"#{@unit.title}\" undeleted."
+  ensure
+    redirect_to @unit
   end
 
   ##

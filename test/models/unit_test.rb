@@ -295,6 +295,18 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal 0, actual[0]['dl_count']
   end
 
+  # exhume!()
+
+  test "exhume!() exhumes a buried unit" do
+    @instance = units(:buried)
+    @instance.exhume!
+    assert !@instance.buried
+  end
+
+  test "exhume!() does nothing to a non-buried unit" do
+    @instance.exhume!
+  end
+
   # item_download_counts()
 
   test "item_download_counts() returns correct results with no arguments" do

@@ -94,60 +94,60 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  # destroy()
+  # delete()
 
-  test "destroy() redirects to login page for logged-out users" do
-    delete "/collections/#{collections(:collection1).id}"
+  test "delete() redirects to login page for logged-out users" do
+    post collection_delete_path(collections(:collection1))
     assert_redirected_to login_path
   end
 
-  test "destroy() returns HTTP 403 for unauthorized users" do
+  test "delete() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete "/collections/#{collections(:collection1).id}"
+    post collection_delete_path(collections(:collection1))
     assert_response :forbidden
   end
 
-  test "destroy() returns HTTP 410 for a buried collection" do
+  test "delete() returns HTTP 410 for a buried collection" do
     log_in_as(users(:local_sysadmin))
-    delete "/collections/#{collections(:buried).id}"
+    post collection_delete_path(collections(:buried))
     assert_response :gone
   end
 
-  test "destroy() buries the collection" do
+  test "delete() buries the collection" do
     log_in_as(users(:local_sysadmin))
     collection = collections(:empty)
-    delete "/collections/#{collection.id}"
+    post collection_delete_path(collection)
     collection.reload
     assert collection.buried
   end
 
-  test "destroy() redirects to the collection when the delete fails" do
+  test "delete() redirects to the collection when the delete fails" do
     log_in_as(users(:local_sysadmin))
     collection = collections(:collection1)
-    delete collection_path(collection) # fails because collection is not empty
+    post collection_delete_path(collection) # fails because collection is not empty
     assert_redirected_to collection
   end
 
-  test "destroy() redirects to the parent collection, if available, for an
+  test "delete() redirects to the parent collection, if available, for an
   existing collection" do
     log_in_as(users(:local_sysadmin))
     collection = collections(:collection1_collection1_collection1)
-    delete collection_path(collection)
+    post collection_delete_path(collection)
     assert_redirected_to collection.parent
   end
 
-  test "destroy() redirects to the primary unit, if there is no parent
+  test "delete() redirects to the primary unit, if there is no parent
   collection, for an existing collection" do
     log_in_as(users(:local_sysadmin))
     collection   = collections(:empty)
     primary_unit = collection.primary_unit
-    delete collection_path(collection)
+    post collection_delete_path(collection)
     assert_redirected_to primary_unit
   end
 
-  test "destroy() returns HTTP 404 for a missing collections" do
+  test "delete() returns HTTP 404 for a missing collections" do
     log_in_as(users(:local_sysadmin))
-    delete "/collections/bogus"
+    post "/collections/bogus/delete"
     assert_response :not_found
   end
 
@@ -553,6 +553,48 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "statistics_by_range() returns HTTP 410 for a buried collection" do
     get collection_path(collections(:buried)), xhr: true
     assert_response :gone
+  end
+
+  # undelete()
+
+  test "undelete() redirects to login page for logged-out users" do
+    post collection_undelete_path(collections(:buried))
+    assert_redirected_to login_path
+  end
+
+  test "undelete() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    post collection_undelete_path(collections(:buried))
+    assert_response :forbidden
+  end
+
+  test "undelete() exhumes the collection" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:buried)
+    collection.units.first.exhume!
+    post collection_undelete_path(collection)
+    collection.reload
+    assert !collection.buried
+  end
+
+  test "undelete() redirects to the collection when the undelete fails" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    post collection_undelete_path(collection) # fails because collection is not empty
+    assert_redirected_to collection
+  end
+
+  test "undelete() redirects to the collection" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:buried)
+    post collection_undelete_path(collection)
+    assert_redirected_to collection
+  end
+
+  test "undelete() returns HTTP 404 for a missing collections" do
+    log_in_as(users(:local_sysadmin))
+    post "/collections/bogus/undelete"
+    assert_response :not_found
   end
 
   # update()

@@ -2,15 +2,16 @@
 
 class CollectionsController < ApplicationController
 
-  before_action :ensure_logged_in, only: [:create, :destroy,
+  before_action :ensure_logged_in, only: [:create, :delete,
                                           :edit_collection_membership,
                                           :edit_managers, :edit_properties,
                                           :edit_submitters,
                                           :edit_unit_membership,
                                           :edit_user_access, :show_access,
-                                          :show_review_submissions, :update]
+                                          :show_review_submissions, :undelete,
+                                          :update]
   before_action :set_collection, except: [:create, :index]
-  before_action :check_buried, except: [:create, :index]
+  before_action :check_buried, except: [:create, :index, :show, :undelete]
   before_action :authorize_collection, except: [:create, :index]
 
   ##
@@ -58,9 +59,11 @@ class CollectionsController < ApplicationController
   ##
   # Buries--does **not** delete--a collection.
   #
-  # Responds to `DELETE /collections/:id`
+  # Responds to `POST /collections/:id/delete`
   #
-  def destroy
+  # @see undelete
+  #
+  def delete
     primary_unit = @collection.primary_unit
     parent       = @collection.parent
     title        = @collection.title
@@ -200,6 +203,9 @@ class CollectionsController < ApplicationController
   # Responds to `GET /collections/:id`
   #
   def show
+    if @collection.buried
+      render "show_buried", status: :gone and return
+    end
     review_items  = review_items(0, 0)
     @review_count = review_items.count
   end
@@ -325,6 +331,26 @@ class CollectionsController < ApplicationController
                   filename: "collection_#{@collection.id}_statistics.csv"
       end
     end
+  end
+
+  ##
+  # Exhumes a buried collection.
+  #
+  # Responds to `POST /collections/:id/undelete`
+  #
+  # @see delete
+  #
+  def undelete
+    ActiveRecord::Base.transaction do
+      @collection.exhume!
+    end
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    ElasticsearchClient.instance.refresh
+    flash['success'] = "Collection \"#{@collection.title}\" undeleted."
+  ensure
+    redirect_to @collection
   end
 
   ##

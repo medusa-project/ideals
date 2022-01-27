@@ -12,7 +12,7 @@ class EventTest < ActiveSupport::TestCase
   class TypeTest < ActiveSupport::TestCase
 
     test "all() returns all types" do
-      assert_equal [0, 1, 2, 3], Event::Type::all.sort
+      assert_equal [0, 1, 2, 3, 4], Event::Type::all.sort
     end
 
     test "label() raises an error for an invalid type" do

@@ -196,8 +196,23 @@ class CollectionTest < ActiveSupport::TestCase
   # destroy()
 
   test "destroy() raises an error when there are dependent collections" do
+    @instance = collections(:collection1_collection1)
+    @instance.items.destroy_all
+    @instance.all_children.each do |child|
+      child.items.destroy_all
+    end
+    assert @instance.collections.count > 0
     assert_raises ActiveRecord::DeleteRestrictionError do
-      collections(:collection1_collection1).destroy!
+      @instance.destroy!
+    end
+  end
+
+  test "destroy() raises an error when there are dependent items" do
+    Import.destroy_all
+    @instance.collections.delete_all
+    assert @instance.items.count > 0
+    assert_raises ActiveRecord::RecordNotDestroyed do
+      @instance.destroy!
     end
   end
 
@@ -377,6 +392,19 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "effective_submitters() includes direct submitters" do
     @instance.effective_submitters.include?(@instance.submitting_users.first)
+  end
+
+  # exhume!()
+
+  test "exhume!() exhumes a buried collection" do
+    @instance = collections(:buried)
+    @instance.units.first.exhume!
+    @instance.exhume!
+    assert !@instance.buried
+  end
+
+  test "exhume!() does nothing to a non-buried collection" do
+    @instance.exhume!
   end
 
   # institution()

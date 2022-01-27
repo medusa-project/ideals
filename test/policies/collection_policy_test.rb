@@ -125,37 +125,37 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
-  # destroy?()
+  # delete?()
 
-  test "destroy?() returns false with a nil user" do
+  test "delete?() returns false with a nil user" do
     policy = CollectionPolicy.new(nil, @collection)
-    assert !policy.destroy?
+    assert !policy.delete?
   end
 
-  test "destroy?() is restrictive by default" do
+  test "delete?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.destroy?
+    assert !policy.delete?
   end
 
-  test "destroy?() authorizes sysadmins" do
+  test "delete?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = CollectionPolicy.new(context, @collection)
-    assert policy.destroy?
+    assert policy.delete?
   end
 
-  test "destroy?() respects role limits" do
+  test "delete?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.destroy?
+    assert !policy.delete?
   end
 
   # edit_collection_membership?()
@@ -659,6 +659,39 @@ class CollectionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = CollectionPolicy.new(context, @collection)
     assert !policy.submit_item?
+  end
+
+  # undelete?()
+
+  test "undelete?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.undelete?
+  end
+
+  test "undelete?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.undelete?
+  end
+
+  test "undelete?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.undelete?
+  end
+
+  test "undelete?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.undelete?
   end
 
   # update?()

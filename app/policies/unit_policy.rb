@@ -48,7 +48,7 @@ class UnitPolicy < ApplicationPolicy
                   "the unit is to reside." }
   end
 
-  def destroy
+  def delete
     if !user
       return LOGGED_OUT_RESULT
     elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?) ||
@@ -121,6 +121,10 @@ class UnitPolicy < ApplicationPolicy
 
   def statistics_by_range
     show_statistics
+  end
+
+  def undelete
+    delete
   end
 
   def update
