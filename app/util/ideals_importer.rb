@@ -34,21 +34,16 @@ class IdealsImporter
     line_count = count_lines(csv_pathname)
     progress   = Progress.new(line_count)
 
-    # destroy_all is excruciatingly slow and we don't need callbacks
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
       row_arr = line.split("|").map(&:strip)
       progress.report(row_num, "Importing bitstreams")
       begin
-        Bitstream.create!(id:        row_arr[1].to_i,
-                          item_id:   row_arr[0].to_i,
-                          dspace_id: row_arr[2],
-                          length:    row_arr[3].to_i,
-                          primary:   row_arr[4].present?)
-      rescue ActiveRecord::RecordNotFound
-        # nothing we can do
-      rescue ActiveRecord::RecordNotUnique
-        # nothing we can do
+        Bitstream.where(id:        row_arr[1].to_i,
+                        item_id:   row_arr[0].to_i,
+                        dspace_id: row_arr[2],
+                        length:    row_arr[3].to_i,
+                        primary:   row_arr[4].present?).first_or_create!
       rescue ActiveRecord::RecordInvalid
         $stderr.puts "import_bitstreams(): invalid: #{row_arr}"
       end
@@ -111,7 +106,7 @@ class IdealsImporter
             raise ArgumentError, "Unrecognized bundle: #{string}"
           end
         end
-        b.update!(bundle: bundle)
+        b.update!(bundle: bundle) if b.bundle != bundle
       rescue ActiveRecord::RecordNotFound
         # The Bitstream does not exist. This implies an inconsistent source
         # database; there is not much we can do.
@@ -254,7 +249,7 @@ class IdealsImporter
     LOGGER.debug("import_collections_2_communities(): importing %s",
                  csv_pathname)
     line_count = count_lines(csv_pathname)
-    progress = Progress.new(line_count)
+    progress   = Progress.new(line_count)
 
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
@@ -264,13 +259,10 @@ class IdealsImporter
       group_id      = row_arr[1].to_i
 
       progress.report(row_num, "Importing collection-community joins")
-      begin
-        UnitCollectionMembership.create!(unit_id:       group_id,
-                                         collection_id: collection_id,
-                                         primary:       true)
-      rescue ActiveRecord::RecordNotUnique
-        # Probably a result of running this twice.
-      end
+
+      UnitCollectionMembership.where(unit_id:       group_id,
+                                     collection_id: collection_id,
+                                     primary:       true).first_or_create!
     end
   ensure
     @running = false
@@ -296,13 +288,11 @@ class IdealsImporter
 
       progress.report(row_num, "Importing collection-item joins")
       begin
-        CollectionItemMembership.create!(collection_id: collection_id,
-                                         item_id:       item_id,
-                                         primary:       (collection_id == primary_collection_id))
+        CollectionItemMembership.where(collection_id: collection_id,
+                                       item_id:       item_id,
+                                       primary:       (collection_id == primary_collection_id)).first_or_create!
       rescue ActiveRecord::RecordInvalid
         # Either the item or the collection does not exist. Nothing we can do.
-      rescue ActiveRecord::RecordNotUnique
-        # Probably a result of running this twice.
       end
     end
   ensure
@@ -333,9 +323,9 @@ class IdealsImporter
       community_id = row_arr[0].to_i
 
       progress.report(row_num, "Importing communities")
-      unit = Unit.find_by_id(community_id) || Unit.new(id:          community_id,
-                                                       institution: institution)
-      unit.title ||= "Temporary Title"
+      unit             = Unit.where(id: community_id).first_or_initialize
+      unit.institution = institution
+      unit.title     ||= "Temporary Title"
       elem_name  = row_arr[1]
       elem_name += ":#{row_arr[2]}" if row_arr[2].present?
       # Replace @@@@ with newline, strip leading and trailing quote,
@@ -410,13 +400,19 @@ class IdealsImporter
         case row[2].to_i
         when ResourceType::UNIT
           unit       = Unit.find_by(id: row[3].to_i)
-          handle     = unit&.build_handle(suffix: suffix)
+          if unit && !unit.handle
+            handle = unit.build_handle(suffix: suffix)
+          end
         when ResourceType::COLLECTION
           collection = Collection.find_by(id: row[3].to_i)
-          handle     = collection&.build_handle(suffix: suffix)
+          if collection && !collection.handle
+            handle = collection&.build_handle(suffix: suffix)
+          end
         when ResourceType::ITEM
           item       = Item.find_by(id: row[3].to_i)
-          handle     = item&.build_handle(suffix: suffix)
+          if item && !item.handle
+            handle = item&.build_handle(suffix: suffix)
+          end
         else
           # Getting here would be unexpected, but also unrecoverable
         end
@@ -455,9 +451,9 @@ class IdealsImporter
 
       progress.report(row_num, "Importing item metadata (1/2)")
       begin
-        AscribedElement.where(registered_element: reg_elem,
-                              item_id:            item_id,
-                              string:             string).first_or_create!
+        AscribedElement.create!(registered_element: reg_elem,
+                                item_id:            item_id,
+                                string:             string)
       rescue ActiveRecord::RecordInvalid
         # This may be caused by either a nonexistent RegisteredElement, or a
         # nonexistent Item. Not much we can do in either case.
@@ -465,17 +461,6 @@ class IdealsImporter
         # IDEALS-DSpace does not have a hard elements-items foreign key and
         # there is some inconsistency, which we have not much choice but to
         # ignore.
-      end
-    end
-
-    progress = Progress.new(Item.count)
-    Item.uncached do
-      Item.order(:id).find_each.with_index do |item, index|
-        Event.where(event_type:    Event::Type::CREATE,
-                    item:          item,
-                    after_changes: item.as_change_hash,
-                    description:   "Item imported from IDEALS-DSpace.").first_or_create!
-        progress.report(index, "Assigning create events to items (2/2)")
       end
     end
   ensure
@@ -495,33 +480,32 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row = line.split("|").map(&:strip)
-      id  = row[0].to_i
-
-      unless Item.exists?(id)
-        submitter_id = row[1]
-        submitting   = row[2] != "t"
-        withdrawn    = row[3] == "t"
-        discoverable = row[4] == "t"
-        if withdrawn
-          stage = Item::Stages::WITHDRAWN
-        elsif submitting
-          stage = Item::Stages::SUBMITTING
-        else
-          stage = Item::Stages::APPROVED
-        end
-        begin
-          Item.create!(id:           id,
-                       submitter_id: submitter_id,
-                       stage:        stage,
-                       discoverable: discoverable)
-        rescue ActiveRecord::InvalidForeignKey
-          Item.create!(id:           id,
-                       submitter_id: nil,
-                       stage:        stage,
-                       discoverable: discoverable)
-        end
+      row          = line.split("|").map(&:strip)
+      id           = row[0].to_i
+      submitter_id = row[1]
+      submitting   = row[2] != "t"
+      withdrawn    = row[3] == "t"
+      discoverable = row[4] == "t"
+      if withdrawn
+        stage = Item::Stages::WITHDRAWN
+      elsif submitting
+        stage = Item::Stages::SUBMITTING
+      else
+        stage = Item::Stages::APPROVED
       end
+      begin
+        item = Item.where(id: id).first_or_create!(submitter_id: submitter_id,
+                                                   stage:        stage,
+                                                   discoverable: discoverable)
+      rescue ActiveRecord::InvalidForeignKey
+        item = Item.create!(id:           id,
+                            submitter_id: nil,
+                            stage:        stage,
+                            discoverable: discoverable)
+      end
+      item.events.where(event_type:  Event::Type::CREATE).
+        first_or_create!(after_changes: JSON.generate(item.as_change_hash),
+                         description: "Item imported from IDEALS-DSpace.")
       progress.report(row_num, "Importing items")
     end
     update_pkey_sequence("items")
@@ -543,18 +527,18 @@ class IdealsImporter
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
-      row_arr = line.split("|").map(&:strip)
-      name    = "#{row_arr[1]}:#{row_arr[2]}"
+      row_arr  = line.split("|").map(&:strip)
+      name     = "#{row_arr[1]}:#{row_arr[2]}"
       name    += ":#{row_arr[3]}" if row_arr[3].present?
 
       progress.report(row_num, "Importing registered elements")
       begin
-        RegisteredElement.create!(id:          row_arr[0],
-                                  institution: uiuc_institution,
-                                  name:        name,
-                                  uri:         "http://example.org/#{name}",
-                                  label:       "Label For #{name}",
-                                  scope_note:  row_arr[4])
+        RegisteredElement.where(id: row_arr[0]).first_or_create!(
+          institution: uiuc_institution,
+          name:        name,
+          uri:         "http://example.org/#{name}",
+          label:       "Label For #{name}",
+          scope_note:  row_arr[4])
       rescue ActiveRecord::RecordInvalid
         # probably alrady imported
       end
@@ -572,10 +556,13 @@ class IdealsImporter
     LOGGER.debug("import_user_metadata(): importing %s", csv_pathname)
 
     line_count = count_lines(csv_pathname)
-    progress = Progress.new(line_count)
+    progress   = Progress.new(line_count)
 
     # This technique is quite inefficient, but Postgres does not make pivot
     # queries easy...
+    #
+    # For step 1, we gather a set of hashes containing exported user
+    # attributes--one hash per user.
     users = Set.new
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
@@ -602,21 +589,20 @@ class IdealsImporter
       when "language"
         user[:language] = value.strip
       end
-
       progress.report(row_num, "Importing user metadata (1/2)")
     end
 
+    # In step 2, we create User objects corresponding to the hashes in the set.
     progress = Progress.new(users.length)
     users.each_with_index do |user_info, index|
       new_name = "#{user_info[:first_name]} #{user_info[:last_name]}"
       if new_name.present?
         begin
           user = User.find(user_info[:id])
-          user.update!(name: new_name,
-                       phone: user_info[:phone]) # TODO: language?
+          user.update!(name:  new_name,
+                       phone: user_info[:phone])
         rescue ActiveRecord::RecordNotFound
-          # This is expected to be quite common as we are currently importing
-          # only UofI users.
+          # nothing we can do
         end
       end
       progress.report(index + 1, "Importing user metadata (2/2)")
@@ -654,12 +640,12 @@ class IdealsImporter
       tld         = email.scan(/(\w+).(\w+)$/).last.join(".")
       begin
         if ::Configuration.instance.uofi_email_domains.include?(tld)
-          ShibbolethUser.create!(id:     id,
-                                 uid:    email,
-                                 email:  email,
-                                 name:   username,
-                                 org_dn: ShibbolethUser::UIUC_ORG_DN)
-        else
+          ShibbolethUser.where(id: id).first_or_create!(
+            uid:    email,
+            email:  email,
+            name:   username,
+            org_dn: ShibbolethUser::UIUC_ORG_DN)
+        elsif !LocalUser.find_by_email(email)
           user = LocalUser.create_manually(email:    email,
                                            password: SecureRandom.hex)
           # Many items were bulk-imported into IDEALS-DSpace under this email.
