@@ -230,7 +230,7 @@ class Bitstream < ApplicationRecord
   def data
     config = ::Configuration.instance
     bucket = config.aws[:bucket]
-    key    = self.permanent_key.present? ? self.permanent_key : self.staging_key
+    key    = self.effective_key
     S3Client.instance.get_object(bucket: bucket, key: key).body.read
   end
 
@@ -339,6 +339,16 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # @return [String, nil] The permanent key, if present; otherwise the staging
+  #                       key, if present; otherwise nil.
+  #
+  def effective_key
+    return self.permanent_key if self.permanent_key.present?
+    return self.staging_key if self.staging_key.present?
+    nil
+  end
+
+  ##
   # @return [FileFormat, nil]
   #
   def format
@@ -430,11 +440,8 @@ class Bitstream < ApplicationRecord
   def presigned_url(content_disposition: "attachment")
     config = ::Configuration.instance
     bucket = config.aws[:bucket]
-    if self.permanent_key.present?
-      key = self.permanent_key
-    elsif self.staging_key.present?
-      key = self.staging_key
-    else
+    key    = self.effective_key
+    unless key
       raise IOError, "This bitstream has no corresponding storage object."
     end
     client = S3Client.instance.send(:get_client)
@@ -494,8 +501,7 @@ class Bitstream < ApplicationRecord
   def download_to_temp_file
     config        = Configuration.instance
     source_bucket = config.aws[:bucket]
-    source_key    = self.permanent_key.present? ?
-                      self.permanent_key : self.staging_key
+    source_key    = self.effective_key
     tempfile      = Tempfile.new("#{self.class}-#{self.id}")
     S3Client.instance.get_object(bucket:          source_bucket,
                                  key:             source_key,

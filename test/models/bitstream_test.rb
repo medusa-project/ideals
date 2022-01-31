@@ -391,6 +391,36 @@ class BitstreamTest < ActiveSupport::TestCase
                  @instance.dspace_relative_path
   end
 
+  # effective_key()
+
+  test "effective_key() returns the permanent key if both it and the staging
+  key are set" do
+    @instance.permanent_key = "cats"
+    @instance.staging_key   = "dogs"
+    assert_equal "cats", @instance.effective_key
+  end
+
+  test "effective_key() returns the permanent key if the staging key is not
+  set" do
+    @instance.permanent_key = "cats"
+    @instance.staging_key   = nil
+    assert_equal "cats", @instance.effective_key
+  end
+
+  test "effective_key() returns the staging key if the permanent key is not
+  set" do
+    @instance.permanent_key = nil
+    @instance.staging_key   = "cats"
+    assert_equal "cats", @instance.effective_key
+  end
+
+  test "effective_key() returns nil if neither the permanent key nor staging
+  key is set" do
+    @instance.permanent_key = nil
+    @instance.staging_key   = nil
+    assert_nil @instance.effective_key
+  end
+
   # format()
 
   test "format() returns the correct format" do
