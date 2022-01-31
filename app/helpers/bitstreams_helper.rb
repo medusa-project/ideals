@@ -46,9 +46,9 @@ module BitstreamsHelper
   #
   def viewer_for(bitstream)
     format = bitstream.format
-    if format
+    if format.present?
       method = format.viewer_method
-      if method
+      if method.present?
         return send(method, bitstream)
       end
     end
