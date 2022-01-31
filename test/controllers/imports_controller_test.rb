@@ -5,6 +5,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @bulkfile = fixture_file_upload(file_fixture("escher_lego.jpg"), 'image/jpeg')
     @import   = imports(:new)
+    setup_s3
   end
 
   teardown do
