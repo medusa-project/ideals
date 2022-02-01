@@ -8,7 +8,7 @@
       .modal-header
         %h5#complete-modal-label.modal-title Submission Complete!
       .modal-body
-        - if @item.primary_collection.submissions_reviewed
+        - if @item.primary_collection&.submissions_reviewed
           %p
             Your submission will now go through the review process for this
             collection. You will receive an e-mail notification as soon as your
