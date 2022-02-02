@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_26_153625) do
+ActiveRecord::Schema.define(version: 2022_02_02_223247) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
   create_table "ad_groups_user_groups", id: false, force: :cascade do |t|
     t.bigint "ad_group_id", null: false
     t.bigint "user_group_id", null: false
+    t.index ["ad_group_id"], name: "index_ad_groups_user_groups_on_ad_group_id"
+    t.index ["user_group_id"], name: "index_ad_groups_user_groups_on_user_group_id"
   end
 
   create_table "ad_groups_users", id: false, force: :cascade do |t|
@@ -37,6 +39,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.bigint "user_group_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["unit_id"], name: "index_administrator_groups_on_unit_id"
+    t.index ["user_group_id"], name: "index_administrator_groups_on_user_group_id"
   end
 
   create_table "administrators", force: :cascade do |t|
@@ -63,6 +67,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
   create_table "affiliations_user_groups", force: :cascade do |t|
     t.bigint "affiliation_id", null: false
     t.bigint "user_group_id", null: false
+    t.index ["affiliation_id"], name: "index_affiliations_user_groups_on_affiliation_id"
+    t.index ["user_group_id"], name: "index_affiliations_user_groups_on_user_group_id"
   end
 
   create_table "ascribed_elements", force: :cascade do |t|
@@ -72,6 +78,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "uri"
+    t.index ["item_id"], name: "index_ascribed_elements_on_item_id"
+    t.index ["registered_element_id"], name: "index_ascribed_elements_on_registered_element_id"
   end
 
   create_table "bitstream_authorizations", force: :cascade do |t|
@@ -79,6 +87,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.bigint "user_group_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["item_id"], name: "index_bitstream_authorizations_on_item_id"
+    t.index ["user_group_id"], name: "index_bitstream_authorizations_on_user_group_id"
   end
 
   create_table "bitstreams", force: :cascade do |t|
@@ -97,6 +107,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.string "permanent_key"
     t.text "description"
     t.boolean "primary", default: false, null: false
+    t.index ["item_id"], name: "index_bitstreams_on_item_id"
     t.index ["medusa_key"], name: "index_bitstreams_on_medusa_key", unique: true
     t.index ["primary"], name: "index_bitstreams_on_primary"
     t.index ["staging_key"], name: "index_bitstreams_on_staging_key", unique: true
@@ -109,6 +120,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["collection_id", "item_id"], name: "index_collection_item_memberships_on_collection_id_and_item_id", unique: true
+    t.index ["collection_id"], name: "index_collection_item_memberships_on_collection_id"
+    t.index ["item_id"], name: "index_collection_item_memberships_on_item_id"
   end
 
   create_table "collections", force: :cascade do |t|
@@ -125,6 +138,9 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.text "rights"
     t.text "provenance"
     t.boolean "buried", default: false, null: false
+    t.index ["metadata_profile_id"], name: "index_collections_on_metadata_profile_id"
+    t.index ["parent_id"], name: "index_collections_on_parent_id"
+    t.index ["submission_profile_id"], name: "index_collections_on_submission_profile_id"
   end
 
   create_table "departments", force: :cascade do |t|
@@ -133,6 +149,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "user_id"
+    t.index ["user_group_id"], name: "index_departments_on_user_group_id"
+    t.index ["user_id"], name: "index_departments_on_user_id"
   end
 
   create_table "embargoes", force: :cascade do |t|
@@ -143,6 +161,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["expires_at"], name: "index_embargoes_on_expires_at"
+    t.index ["item_id"], name: "index_embargoes_on_item_id"
   end
 
   create_table "events", force: :cascade do |t|
@@ -156,8 +175,11 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "bitstream_id"
     t.datetime "happened_at", precision: 6, default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["bitstream_id"], name: "index_events_on_bitstream_id"
     t.index ["event_type"], name: "index_events_on_event_type"
     t.index ["happened_at"], name: "index_events_on_happened_at"
+    t.index ["item_id"], name: "index_events_on_item_id"
+    t.index ["user_id"], name: "index_events_on_user_id"
   end
 
   create_table "handles", force: :cascade do |t|
@@ -167,7 +189,10 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.bigint "item_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["collection_id"], name: "index_handles_on_collection_id"
+    t.index ["item_id"], name: "index_handles_on_item_id"
     t.index ["suffix"], name: "index_handles_on_suffix", unique: true
+    t.index ["unit_id"], name: "index_handles_on_unit_id"
   end
 
   create_table "hosts", force: :cascade do |t|
@@ -175,6 +200,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.bigint "user_group_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_group_id"], name: "index_hosts_on_user_group_id"
   end
 
   create_table "imports", force: :cascade do |t|
@@ -187,7 +213,9 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.string "last_error_message"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["collection_id"], name: "index_imports_on_collection_id"
     t.index ["status"], name: "index_imports_on_status"
+    t.index ["user_id"], name: "index_imports_on_user_id"
   end
 
   create_table "institutions", force: :cascade do |t|
@@ -213,6 +241,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.string "approval_state", default: "pending", null: false
     t.bigint "inviting_user_id"
     t.index ["email"], name: "index_invitees_on_email", unique: true
+    t.index ["inviting_user_id"], name: "index_invitees_on_inviting_user_id"
   end
 
   create_table "items", force: :cascade do |t|
@@ -224,6 +253,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.text "stage_reason"
     t.index ["discoverable"], name: "index_items_on_discoverable"
     t.index ["stage"], name: "index_items_on_stage"
+    t.index ["submitter_id"], name: "index_items_on_submitter_id"
   end
 
   create_table "local_identities", force: :cascade do |t|
@@ -240,6 +270,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.string "registration_digest"
     t.string "name", null: false
     t.index ["email"], name: "index_local_identities_on_email", unique: true
+    t.index ["invitee_id"], name: "index_local_identities_on_invitee_id"
   end
 
   create_table "manager_groups", force: :cascade do |t|
@@ -247,6 +278,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.bigint "user_group_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["collection_id"], name: "index_manager_groups_on_collection_id"
+    t.index ["user_group_id"], name: "index_manager_groups_on_user_group_id"
   end
 
   create_table "managers", force: :cascade do |t|
@@ -273,6 +306,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.bigint "bitstream_id"
     t.text "raw_request"
     t.text "raw_response"
+    t.index ["bitstream_id"], name: "index_messages_on_bitstream_id"
   end
 
   create_table "metadata_profile_elements", force: :cascade do |t|
@@ -287,6 +321,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["facetable"], name: "index_metadata_profile_elements_on_facetable"
     t.index ["index"], name: "index_metadata_profile_elements_on_index"
+    t.index ["metadata_profile_id"], name: "index_metadata_profile_elements_on_metadata_profile_id"
+    t.index ["registered_element_id"], name: "index_metadata_profile_elements_on_registered_element_id"
     t.index ["searchable"], name: "index_metadata_profile_elements_on_searchable"
     t.index ["sortable"], name: "index_metadata_profile_elements_on_sortable"
     t.index ["visible"], name: "index_metadata_profile_elements_on_visible"
@@ -299,6 +335,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "institution_id", null: false
     t.index ["default"], name: "index_metadata_profiles_on_default"
+    t.index ["institution_id"], name: "index_metadata_profiles_on_institution_id"
     t.index ["name"], name: "index_metadata_profiles_on_name", unique: true
   end
 
@@ -312,6 +349,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.bigint "institution_id", null: false
     t.string "vocabulary_key"
     t.string "input_type"
+    t.index ["institution_id"], name: "index_registered_elements_on_institution_id"
     t.index ["name"], name: "index_registered_elements_on_name", unique: true
     t.index ["uri"], name: "index_registered_elements_on_uri", unique: true
   end
@@ -327,8 +365,10 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.datetime "updated_at", precision: 6, null: false
     t.text "placeholder_text"
     t.index ["index"], name: "index_submission_profile_elements_on_index"
+    t.index ["registered_element_id"], name: "index_submission_profile_elements_on_registered_element_id"
     t.index ["repeatable"], name: "index_submission_profile_elements_on_repeatable"
     t.index ["required"], name: "index_submission_profile_elements_on_required"
+    t.index ["submission_profile_id"], name: "index_submission_profile_elements_on_submission_profile_id"
   end
 
   create_table "submission_profiles", force: :cascade do |t|
@@ -338,6 +378,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "institution_id", null: false
     t.index ["default"], name: "index_submission_profiles_on_default"
+    t.index ["institution_id"], name: "index_submission_profiles_on_institution_id"
     t.index ["name"], name: "index_submission_profiles_on_name", unique: true
   end
 
@@ -346,6 +387,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.bigint "user_group_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["collection_id"], name: "index_submitter_groups_on_collection_id"
+    t.index ["user_group_id"], name: "index_submitter_groups_on_user_group_id"
   end
 
   create_table "submitters", force: :cascade do |t|
@@ -354,6 +397,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["collection_id", "user_id"], name: "index_submitters_on_collection_id_and_user_id", unique: true
+    t.index ["collection_id"], name: "index_submitters_on_collection_id"
+    t.index ["user_id"], name: "index_submitters_on_user_id"
   end
 
   create_table "unit_collection_memberships", force: :cascade do |t|
@@ -363,7 +408,9 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.boolean "primary", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["collection_id"], name: "index_unit_collection_memberships_on_collection_id"
     t.index ["unit_id", "collection_id"], name: "index_unit_collection_memberships_on_unit_id_and_collection_id", unique: true
+    t.index ["unit_id"], name: "index_unit_collection_memberships_on_unit_id"
   end
 
   create_table "units", force: :cascade do |t|
@@ -376,6 +423,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.text "introduction"
     t.text "rights"
     t.boolean "buried", default: false, null: false
+    t.index ["institution_id"], name: "index_units_on_institution_id"
+    t.index ["parent_id"], name: "index_units_on_parent_id"
   end
 
   create_table "user_groups", force: :cascade do |t|
@@ -390,6 +439,8 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
   create_table "user_groups_users", id: false, force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "user_group_id", null: false
+    t.index ["user_group_id"], name: "index_user_groups_users_on_user_group_id"
+    t.index ["user_id"], name: "index_user_groups_users_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -403,7 +454,9 @@ ActiveRecord::Schema.define(version: 2022_01_26_153625) do
     t.bigint "local_identity_id"
     t.string "org_dn"
     t.bigint "affiliation_id"
+    t.index ["affiliation_id"], name: "index_users_on_affiliation_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["local_identity_id"], name: "index_users_on_local_identity_id"
     t.index ["name"], name: "index_users_on_name"
     t.index ["uid"], name: "index_users_on_uid", unique: true
   end
