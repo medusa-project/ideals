@@ -51,7 +51,7 @@ module BitstreamsHelper
       if method.present?
         begin
           return send(method, bitstream)
-        rescue IOError => e
+        rescue => e
           # The bitstream is missing a storage object or cannot otherwise be
           # accessed.
           Rails.logger.warn("#{e} [bitstream ID: #{bitstream.id}]")
