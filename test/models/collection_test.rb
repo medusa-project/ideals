@@ -208,6 +208,7 @@ class CollectionTest < ActiveSupport::TestCase
   end
 
   test "destroy() raises an error when there are dependent items" do
+    setup_s3
     Import.destroy_all
     @instance.collections.delete_all
     assert @instance.items.count > 0
