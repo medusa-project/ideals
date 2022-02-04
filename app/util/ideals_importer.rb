@@ -398,17 +398,17 @@ class IdealsImporter
 
       begin
         case row[2].to_i
-        when ResourceType::UNIT
+        when 4 # community
           unit       = Unit.find_by(id: row[3].to_i)
           if unit && !unit.handle
             handle = unit.build_handle(suffix: suffix)
           end
-        when ResourceType::COLLECTION
+        when 3 # collection
           collection = Collection.find_by(id: row[3].to_i)
           if collection && !collection.handle
             handle = collection&.build_handle(suffix: suffix)
           end
-        when ResourceType::ITEM
+        when 2 # item
           item       = Item.find_by(id: row[3].to_i)
           if item && !item.handle
             handle = item&.build_handle(suffix: suffix)
