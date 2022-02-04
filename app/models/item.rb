@@ -566,7 +566,8 @@ class Item < ApplicationRecord
   private
 
   def email_after_submission
-    if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED
+    if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED &&
+      effective_primary_collection&.submissions_reviewed
       IdealsMailer.item_submitted(self).deliver_now
     end
   end
