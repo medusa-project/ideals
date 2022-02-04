@@ -39,11 +39,11 @@ class IdealsImporter
       row_arr = line.split("|").map(&:strip)
       progress.report(row_num, "Importing bitstreams")
       begin
-        Bitstream.where(id:        row_arr[1].to_i,
-                        item_id:   row_arr[0].to_i,
-                        dspace_id: row_arr[2],
-                        length:    row_arr[3].to_i,
-                        primary:   row_arr[4].present?).first_or_create!
+        Bitstream.where(id: row_arr[1].to_i).first_or_create!(
+          item_id:   row_arr[0].to_i,
+          dspace_id: row_arr[2],
+          length:    row_arr[3].to_i,
+          primary:   row_arr[4].present?)
       rescue ActiveRecord::RecordInvalid
         $stderr.puts "import_bitstreams(): invalid: #{row_arr}"
       end
@@ -69,7 +69,6 @@ class IdealsImporter
       row_arr = line.split("|").map(&:strip)
       bs_id   = row_arr[1].to_i
       string  = row_arr[0]&.strip
-      next unless string.present?
 
       progress.report(row_num, "Importing bitstream bundles")
       begin
