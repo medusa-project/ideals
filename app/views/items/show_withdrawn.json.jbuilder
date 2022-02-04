@@ -6,6 +6,7 @@ json.uri item_url(@item, format: :json)
 if policy(@item).show?
   json.extract! @item, :id, :exists_in_medusa?, :discoverable, :created_at, :updated_at
   json.stage Item::Stages.label_for(@item.stage)
+  json.stage_reason @item.stage_reason
   if @item.primary_collection
     json.primary_collection do
       json.id @item.primary_collection.id
