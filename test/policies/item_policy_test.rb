@@ -1600,7 +1600,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.withdraw?
   end
 
-  test "withdraw?() does not authorize non-sysadmins" do
+  test "withdraw?() does not authorize non-unit-admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -1608,8 +1608,11 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.withdraw?
   end
 
-  test "withdraw?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+  test "withdraw?() authorizes unit admins" do
+    user = users(:norights)
+    unit = @item.effective_primary_unit
+    unit.administering_users << user
+    unit.save!
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = ItemPolicy.new(context, @item)

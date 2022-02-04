@@ -268,7 +268,12 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def withdraw
-    review
+    if (!role || role >= Role::UNIT_ADMINISTRATOR) &&
+      user&.effective_unit_admin?(item.effective_primary_unit)
+      return AUTHORIZED_RESULT
+    end
+    { authorized: false,
+      reason:     "You must be an administrator of the item's primary unit." }
   end
 
 end
