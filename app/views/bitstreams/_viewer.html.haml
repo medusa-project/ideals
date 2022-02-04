@@ -43,28 +43,30 @@
                    item_bitstream_path(@bitstream.item, @bitstream)) |
       %dt Bundle
       %dd= Bitstream::Bundle.label(@bitstream.bundle)
-      - if @bitstream.staging_key.present?
-        %dt Staging Key
-        %dd
-          %code= @bitstream.staging_key
-      - elsif @bitstream.permanent_key.present?
-        %dt Permanent Key
-        %dd
-          %code= @bitstream.permanent_key
+      - if show_sysadmin_content
+        - if @bitstream.staging_key.present?
+          %dt Staging Key
+          %dd
+            %code= @bitstream.staging_key
+        - elsif @bitstream.permanent_key.present?
+          %dt Permanent Key
+          %dd
+            %code= @bitstream.permanent_key
       %dt Primary
       %dd= boolean(@bitstream.primary, style: :word)
-      %dt Submitted For Ingest
-      %dd= boolean(@bitstream.submitted_for_ingest, style: :word)
-      - if @bitstream.medusa_uuid.present?
-        %dt Medusa UUID
-        %dd= link_to(@bitstream.medusa_uuid, @bitstream.medusa_url)
-        %dt Medusa Key
-        %dd= @bitstream.medusa_key
-      - else
-        %dt Exists in Medusa
-        %dd= boolean(false, style: :word)
-        %dt Minimum Access Role
-        %dd= Role.label(@bitstream.role)
+      - if show_sysadmin_content
+        %dt Submitted For Ingest
+        %dd= boolean(@bitstream.submitted_for_ingest, style: :word)
+        - if @bitstream.medusa_uuid.present?
+          %dt Medusa UUID
+          %dd= link_to(@bitstream.medusa_uuid, @bitstream.medusa_url)
+          %dt Medusa Key
+          %dd= @bitstream.medusa_key
+        - else
+          %dt Exists in Medusa
+          %dd= boolean(false, style: :word)
+          %dt Minimum Access Role
+          %dd= Role.label(@bitstream.role)
       %dt Download Count
       %dd= number_with_delimiter(@bitstream.download_count)
       - if @bitstream.description.present?
