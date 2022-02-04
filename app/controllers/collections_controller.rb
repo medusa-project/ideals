@@ -241,7 +241,18 @@ class CollectionsController < ApplicationController
   #
   def show_items
     set_item_results_ivars
-    render partial: "show_items_tab"
+    respond_to do |format|
+      format.html do
+        render partial: "show_items_tab"
+      end
+      format.csv do
+        authorize(@collection, policy_method: :export_items)
+        send_data(CsvExporter.new.export_collection(@collection),
+                  type:        "text/csv",
+                  disposition: "attachment",
+                  filename:    "collection_#{@collection.id}_items.csv")
+      end
+    end
   end
 
   ##

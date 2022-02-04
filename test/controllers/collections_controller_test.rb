@@ -470,18 +470,24 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_items()
 
-  test "show_items() returns HTTP 200" do
-    get collection_items_path(collections(:collection1)), xhr: true
+  test "show_items() returns HTTP 200 for HTML" do
+    get collection_items_path(collections(:collection1))
     assert_response :ok
   end
 
-  test "show_items() returns HTTP 404 for non-XHR requests" do
-    get collection_items_path(collections(:collection1))
-    assert_response :not_found
+  test "show_items() returns HTTP 403 for CSV for non-unit-administrators" do
+    get collection_items_path(collections(:collection1), format: :csv)
+    assert_response :forbidden
+  end
+
+  test "show_items() returns HTTP 200 for CSV for unit administrators" do
+    log_in_as(users(:local_sysadmin))
+    get collection_items_path(collections(:collection1), format: :csv)
+    assert_response :ok
   end
 
   test "show_items() returns HTTP 410 for a buried collection" do
-    get collection_items_path(collections(:buried)), xhr: true
+    get collection_items_path(collections(:buried))
     assert_response :gone
   end
 

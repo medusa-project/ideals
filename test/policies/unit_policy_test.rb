@@ -246,6 +246,39 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_properties?
   end
 
+  # export_items?()
+
+  test "export_items?() returns false with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.export_items?
+  end
+
+  test "export_items?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.export_items?
+  end
+
+  test "export_items?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UnitPolicy.new(context, @unit)
+    assert policy.export_items?
+  end
+
+  test "export_items?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.export_items?
+  end
+
   # index?()
 
   test "index?() returns true with a nil user" do

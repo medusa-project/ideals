@@ -1,8 +1,18 @@
 .btn-group.float-right{role: "group"}
   - if @unit.default_collection && policy(@unit.default_collection).submit_item?
-    = link_to(collection_submit_path(@unit.default_collection), class: "btn btn-light mb-3", role: "button") do
+    = link_to(collection_submit_path(@unit.default_collection), class: "btn btn-light", role: "button") do
       %i.fas.fa-plus
-      Deposit Item Into This Unit
+      Submit Item To This Unit
+  - if policy(@unit).export_items?
+    .dropdown
+      %button#export-button.btn.btn-light.dropdown-toggle{type:            "button",
+                                                          "data-toggle":   "dropdown",
+                                                          "aria-expanded": "false"}
+        %i.fa.fa-download
+        Export
+      .dropdown-menu.dropdown-menu-right{"aria-labelledby": "export-button"}
+        = link_to(unit_items_path(@unit, format: :csv), class: "dropdown-item") do
+          All Items As CSV
 
 .clearfix.mb-3
 

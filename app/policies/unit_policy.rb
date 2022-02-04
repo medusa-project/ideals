@@ -75,6 +75,10 @@ class UnitPolicy < ApplicationPolicy
     update
   end
 
+  def export_items
+    update
+  end
+
   def index
     AUTHORIZED_RESULT
   end

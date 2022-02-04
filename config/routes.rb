@@ -16,8 +16,7 @@ Rails.application.routes.draw do
     match "/collections", to: "collections#show_collections", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/delete", to: "collections#delete", via: :post # different from destroy--see method doc
-    match "/items", to: "collections#show_items", via: :get,
-          constraints: lambda { |request| request.xhr? }
+    match "/items", to: "collections#show_items", via: :get
     match "/properties", to: "collections#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/review-submissions", to: "collections#show_review_submissions", via: :get,
@@ -141,8 +140,7 @@ Rails.application.routes.draw do
     match "/collections", to: "units#show_collections", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/delete", to: "units#delete", via: :post # different from destroy--see method doc
-    match "/items", to: "units#show_items", via: :get,
-          constraints: lambda { |request| request.xhr? }
+    match "/items", to: "units#show_items", via: :get
     match "/properties", to: "units#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "units#show_statistics", via: :get,

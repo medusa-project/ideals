@@ -414,18 +414,24 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # show_items()
 
-  test "show_items() returns HTTP 200" do
-    get unit_items_path(units(:unit1)), xhr: true
+  test "show_items() returns HTTP 200 for HTML" do
+    get unit_items_path(units(:unit1))
     assert_response :ok
   end
 
-  test "show_items() returns HTTP 404 for non-XHR requests" do
-    get unit_items_path(units(:unit1))
-    assert_response :not_found
+  test "show_items() returns HTTP 403 for CSV for non-unit-administrators" do
+    get unit_items_path(units(:unit1), format: :csv)
+    assert_response :forbidden
+  end
+
+  test "show_items() returns HTTP 200 for CSV for unit administrators" do
+    log_in_as(users(:local_sysadmin))
+    get unit_items_path(units(:unit1), format: :csv)
+    assert_response :ok
   end
 
   test "show_items() returns HTTP 410 for a buried unit" do
-    get unit_items_path(units(:buried)), xhr: true
+    get unit_items_path(units(:buried))
     assert_response :gone
   end
 

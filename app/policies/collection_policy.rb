@@ -66,6 +66,10 @@ class CollectionPolicy < ApplicationPolicy
     update
   end
 
+  def export_items
+    effective_manager
+  end
+
   def index
     AUTHORIZED_RESULT
   end

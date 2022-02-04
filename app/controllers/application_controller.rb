@@ -21,12 +21,13 @@ class ApplicationController < ActionController::Base
   # @param entity [Class] Model or any other object to which access can be
   #               authorized.
   # @param policy_class [ApplicationPolicy] Alternative policy class to use.
+  # @param policy_method [Symbol] Alternative policy method to use.
   # @raises [NotAuthorizedError]
   #
-  def authorize(entity, policy_class: nil)
+  def authorize(entity, policy_class: nil, policy_method: nil)
     policy_class ||= "#{controller_name.singularize.camelize}Policy".constantize
     instance = policy_class.new(request_context, entity)
-    result = instance.send(action_name.to_sym)
+    result   = instance.send(policy_method&.to_sym || action_name.to_sym)
     unless result[:authorized]
       e = NotAuthorizedError.new
       e.reason = result[:reason]
@@ -209,8 +210,9 @@ class ApplicationController < ActionController::Base
     @reason = e.reason || e.message
     respond_to do |format|
       format.html { render "errors/error403", status: :forbidden }
-      format.json { render nothing: true, status: :forbidden }
+      format.json { render json: @reason, status: :forbidden }
       format.xml { render xml: {status: 403}.to_xml, status: :forbidden }
+      format.all { render plain: @reason, status: :forbidden }
     end
   end
 
