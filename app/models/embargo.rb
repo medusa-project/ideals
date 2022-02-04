@@ -33,7 +33,7 @@ class Embargo < ApplicationRecord
     {
       IndexFields::DOWNLOAD    => self.download,
       IndexFields::FULL_ACCESS => self.full_access,
-      IndexFields::EXPIRES_AT  => self.expires_at.utc.iso8601
+      IndexFields::EXPIRES_AT  => self.expires_at.iso8601
     }
   end
 

@@ -5,17 +5,13 @@ class EmbargoTest < ActiveSupport::TestCase
   # as_indexed_json()
 
   test "as_indexed_json() returns the correct structure" do
-    expected = {
-      "b_download" => true,
-      "b_full_access" => true,
-      "d_expires_at" => Time.now + 1.hour
-    }
-    actual = embargoes(:one).as_indexed_json
-    assert_equal(expected['b_download'], actual['b_download'])
-    assert_equal(expected['b_full_access'], actual['b_full_access'])
-    assert_equal(Time.now.year, Time.parse(actual['d_expires_at']).year)
-    assert_equal(Time.now.month, Time.parse(actual['d_expires_at']).month)
-    assert_equal(Time.now.day, Time.parse(actual['d_expires_at']).day)
+    expires = Time.now.utc + 1.hour
+    actual  = embargoes(:one).as_indexed_json
+    assert(actual['b_download'])
+    assert(actual['b_full_access'])
+    assert_equal(expires.year, Time.parse(actual['d_expires_at']).year)
+    assert_equal(expires.month, Time.parse(actual['d_expires_at']).month)
+    assert_equal(expires.day, Time.parse(actual['d_expires_at']).day)
   end
 
   # validate()
