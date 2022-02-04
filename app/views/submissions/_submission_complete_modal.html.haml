@@ -17,9 +17,10 @@
             by visiting your submissions page.
         - else
           %p Your submission is now available in IDEALS.
-          %p
-            The persistent link for this item is:
-            = @item.handle&.handle_net_url
+          - if @item.handle # this should always be true
+            %p
+              The persistent link for this item is:
+              = @item.handle.handle_net_url
 
         %p Please contact us if you have any questions.
       .modal-footer
