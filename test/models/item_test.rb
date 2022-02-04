@@ -270,6 +270,13 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_nil item.element("dc:date:submitted").string
   end
 
+  test "complete_submission() assigns a handle" do
+    item = items(:described)
+    item.complete_submission
+    assert_not_nil item.handle.suffix
+    assert_equal item.handle.url, item.element("dcterms:identifier").uri
+  end
+
   # creators()
 
   test "creators() returns a correct string" do

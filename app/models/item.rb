@@ -371,6 +371,7 @@ class Item < ApplicationRecord
     # current ISO-8601 date/time.
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:submitted"),
                         string:             Time.now.iso8601)
+    assign_handle
   end
 
   ##
