@@ -137,6 +137,14 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.delete?
   end
 
+  test "delete?() authorizes institution admins" do
+    user    = users(:uiuc_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.delete?
+  end
+
   test "delete?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
@@ -520,6 +528,14 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "undelete?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.undelete?
+  end
+
+  test "undelete?() authorizes institution admins" do
+    user    = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)

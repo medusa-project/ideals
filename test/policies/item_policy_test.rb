@@ -158,16 +158,16 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.delete?
   end
 
-  test "delete?() does not authorize non-sysadmins" do
-    user    = users(:norights)
+  test "delete?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
-    assert !policy.delete?
+    assert policy.delete?
   end
 
-  test "delete?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+  test "delete?() authorizes institution admins" do
+    user    = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
@@ -186,7 +186,8 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.delete?
   end
 
-  test "delete?() does not authorize the submission owner if the item is not submitting" do
+  test "delete?() does not authorize the submission owner if the item is not
+  submitting" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -196,37 +197,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
     policy = ItemPolicy.new(context, @item)
     assert !policy.delete?
-  end
-
-  test "delete?() authorizes managers of the submission's collection" do
-    doing_user = users(:norights)
-    context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution)
-    collection = collections(:collection1)
-    collection.managing_users << doing_user
-    collection.save!
-
-    @item.submitter          = users(:norights) # somebody else
-    @item.primary_collection = collection
-
-    policy = ItemPolicy.new(context, @item)
-    assert policy.delete?
-  end
-
-  test "delete?() authorizes admins of the submission's collection's unit" do
-    doing_user = users(:norights)
-    context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution)
-    collection               = collections(:collection1)
-    unit                     = collection.primary_unit
-    unit.administering_users << doing_user
-    unit.save!
-
-    @item.submitter          = users(:norights) # somebody else
-    @item.primary_collection = collection
-
-    policy = ItemPolicy.new(context, @item)
-    assert policy.delete?
   end
 
   test "delete?() does not authorize anyone else" do
@@ -1355,14 +1325,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.undelete?
   end
 
-  test "undelete?() does not authorize non-sysadmins" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.undelete?
-  end
-
   test "undelete?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
@@ -1371,59 +1333,11 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.undelete?
   end
 
-  test "undelete?() authorizes the submission owner if the item is buried" do
-    user    = users(:norights)
+  test "undelete?() authorizes institution admins" do
+    user    = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-
-    @item.submitter = user
-    @item.stage     = Item::Stages::BURIED
-
-    policy = ItemPolicy.new(context, @item)
-    assert policy.undelete?
-  end
-
-  test "undelete?() does not authorize the submission owner if the item is not
-  buried" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-
-    @item.submitter = user
-    @item.stage     = Item::Stages::APPROVED
-
-    policy = ItemPolicy.new(context, @item)
-    assert !policy.undelete?
-  end
-
-  test "undelete?() authorizes managers of the submission's collection" do
-    doing_user = users(:norights)
-    context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution)
-    collection = collections(:collection1)
-    collection.managing_users << doing_user
-    collection.save!
-
-    @item.submitter          = users(:norights) # somebody else
-    @item.primary_collection = collection
-
-    policy = ItemPolicy.new(context, @item)
-    assert policy.undelete?
-  end
-
-  test "undelete?() authorizes admins of the submission's collection's unit" do
-    doing_user = users(:norights)
-    context    = RequestContext.new(user:        doing_user,
-                                    institution: doing_user.institution)
-    collection               = collections(:collection1)
-    unit                     = collection.primary_unit
-    unit.administering_users << doing_user
-    unit.save!
-
-    @item.submitter          = users(:norights) # somebody else
-    @item.primary_collection = collection
-
-    policy = ItemPolicy.new(context, @item)
+    policy  = ItemPolicy.new(context, @item)
     assert policy.undelete?
   end
 

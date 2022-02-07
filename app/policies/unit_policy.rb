@@ -49,18 +49,19 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def delete
+    # (Note that the unit must also be empty of collections and child
+    # units; this is validated in the model.)
     if !user
       return LOGGED_OUT_RESULT
-    elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?) ||
-      # unit is a child unit and user is primary admin of its root unit.
-      # (Note that the unit must also be empty of collections and child
-      # units; this is validated in the model.)
-      (unit.child? && Role::UNIT_ADMINISTRATOR &&
-          user == unit.root_parent.primary_administrator)
+    elsif effective_sysadmin?(user, role)
+      return AUTHORIZED_RESULT
+    elsif (!role || role >= Role::INSTITUTION_ADMINISTRATOR) &&
+      user.effective_institution_admin?(unit.institution)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
-      reason: "You must be a primary administrator of the unit's parent unit." }
+      reason:     "You must be an administrator of the institution in which "\
+                  "this unit resides." }
   end
 
   def edit_administrators

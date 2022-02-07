@@ -43,7 +43,17 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def delete
-    create
+    if !user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(user, role)
+      return AUTHORIZED_RESULT
+    elsif (!role || role >= Role::INSTITUTION_ADMINISTRATOR) &&
+      user.effective_institution_admin?(collection.institution)
+      return AUTHORIZED_RESULT
+    end
+    { authorized: false,
+      reason:     "You must be an administrator of the institution in which "\
+                  "the collection resides." }
   end
 
   def edit_collection_membership
