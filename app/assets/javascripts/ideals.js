@@ -197,7 +197,8 @@ const IDEALS = {
      * @constructor
      */
     CheckAllButton: function(button, checkboxes) {
-        button.on('click', function() {
+        button.on('click', function(e) {
+            e.preventDefault();
             const checked = ($(this).data('checked') === 'true');
             if (checked) {
                 checkboxes.prop('checked', false);
