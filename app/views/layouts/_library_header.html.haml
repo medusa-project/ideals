@@ -39,6 +39,7 @@
             - im    = policy(Import).index?
             - insts = policy(Institution).index?
             - inst  = policy(Institution).show?
+            - ex   = policy(Item).export?
             - ir    = policy(Item).review?
             - re    = policy(RegisteredElement).index?
             - mp    = policy(MetadataProfile).index?
@@ -77,6 +78,10 @@
                   = link_to(imports_path, class: "dropdown-item") do
                     = icon_for(Import)
                     Imports
+                - if ex
+                  = link_to(items_export_path, class: "dropdown-item") do
+                    %i.fa.fa-download
+                    Export Items
                 .dropdown-divider
                 - if iv
                   = link_to(invitees_path, class: "dropdown-item") do

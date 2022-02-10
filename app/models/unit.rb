@@ -56,6 +56,7 @@ class Unit < ApplicationRecord
            class_name: "UserGroup", source: :user_group
   has_many :unit_collection_memberships
   has_many :collections, through: :unit_collection_memberships
+  has_many :items, through: :collections
   has_many :units, foreign_key: "parent_id", dependent: :restrict_with_exception
   has_one :handle
   has_one :primary_administrator_relationship, -> { where(primary: true) },

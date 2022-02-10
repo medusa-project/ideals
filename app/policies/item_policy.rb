@@ -111,6 +111,19 @@ class ItemPolicy < ApplicationPolicy
     withdraw
   end
 
+  def export
+    if !user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(user, role)
+      return AUTHORIZED_RESULT
+    elsif (!role || role >= Role::INSTITUTION_ADMINISTRATOR) &&
+      user.any_institution_admin?
+      return AUTHORIZED_RESULT
+    end
+    { authorized: false,
+      reason:     "You must be a system or institution administrator." }
+  end
+
   def index
     AUTHORIZED_RESULT
   end

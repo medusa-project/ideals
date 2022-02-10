@@ -254,6 +254,53 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # export()
+
+  test "export() via GET redirects to login page for logged-out users" do
+    get items_export_path
+    assert_redirected_to login_path
+  end
+
+  test "export() via GET returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get items_export_path
+    assert_response :forbidden
+  end
+
+  test "export() via GET returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get items_export_path
+    assert_response :ok
+  end
+
+  test "export() via POST returns HTTP 400 for an empty handles argument" do
+    log_in_as(users(:local_sysadmin))
+    post items_export_path, params: {
+      handles: "",
+      elements: ["dc:title"]
+    }
+    assert_response :bad_request
+  end
+
+  test "export() via POST returns HTTP 400 for an empty elements argument" do
+    log_in_as(users(:local_sysadmin))
+    post items_export_path, params: {
+      handles: "1/2",
+      elements: []
+    }
+    assert_response :bad_request
+  end
+
+  test "export() via POST exports CSV" do
+    log_in_as(users(:local_sysadmin))
+    post items_export_path, params: {
+      handles: handles(:collection1_handle).to_s,
+      elements: ["dc:title"]
+    }
+    s = response.body
+    assert response.body.start_with?("id,")
+  end
+
   # index()
 
   test "index() returns HTTP 200 for HTML" do

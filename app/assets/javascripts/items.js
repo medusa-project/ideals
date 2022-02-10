@@ -256,6 +256,17 @@ const ReviewItemsView = function() {
     });
 };
 
+/**
+ * Handles export-items view (/items/export).
+ *
+ * @constructor
+ */
+const ExportItemsView = function() {
+    new IDEALS.CheckAllButton(
+        $("button#check-all"),
+        $("input[name='elements[]']"));
+};
+
 $(document).ready(function() {
     if ($("body#list_items").length) {
         new ItemsView();
@@ -263,5 +274,7 @@ $(document).ready(function() {
         new ItemView();
     } else if ($("body#review_items").length) {
         new ReviewItemsView();
+    } else if ($("body#export_items").length) {
+        new ExportItemsView();
     }
 });

@@ -19,6 +19,20 @@ class UserTest < ActiveSupport::TestCase
     assert_nil User.from_autocomplete_string(string)
   end
 
+  # any_institution_admin?()
+
+  test "any_institution_admin?() returns true if the user is an institution
+  admin" do
+    institution = institutions(:uiuc)
+    @instance.org_dn = institution.org_dn
+    assert @instance.any_institution_admin?
+  end
+
+  test "any_institution_admin?() returns false if the user is not an institution
+  admin" do
+    assert !@instance.any_institution_admin?
+  end
+
   # belongs_to?()
 
   test "belongs_to?() returns false for a user not associated with the group" do

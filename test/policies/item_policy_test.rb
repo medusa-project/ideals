@@ -548,6 +548,47 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_withdrawal?
   end
 
+  # export?()
+
+  test "export?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.export?
+  end
+
+  test "export?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.export?
+  end
+
+  test "export?() authorizes institution admins" do
+    user    = users(:uiuc_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.export?
+  end
+
+  test "export?() does not authorize anyone else" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.export?
+  end
+
+  test "export?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.export?
+  end
+
   # index?()
 
   test "index?() returns true with a nil user" do

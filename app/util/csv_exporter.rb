@@ -6,18 +6,28 @@
 class CsvExporter
 
   ##
-  # Exports items from a collection and all of its child collections.
+  # Exports all items from all of the given units and collections, including
+  # child units and collections.
   #
-  # @param collection [Collection]
+  # @param units [Enumerable<Unit>]
+  # @param collections [Enumerable<Collection>]
   # @param elements [Enumerable<String>] Elements to include. If omitted, all
-  #                 of the elements in the collection's
-  #                 {Collection#effective_metadata_profile effective metadata
-  #                 profile} are included.
+  #                 of the elements in the {MetadataProfile#default default
+  #                 metadata profile} are included.
   # @return [String] CSV string.
   #
-  def export_collection(collection, elements: nil)
-    elements     ||= collection.effective_metadata_profile.elements.map(&:name)
-    collection_ids = [collection.id] + collection.all_children.pluck(:id)
+  def export(units: [], collections: [], elements: [])
+    if elements.empty?
+      elements = MetadataProfile.default.elements.map(&:name)
+    end
+    collection_ids = Set.new
+    units.each do |unit|
+      collection_ids += unit.collections.pluck(:id)
+    end
+    collections.each do |collection|
+      collection_ids << collection.id
+      collection_ids += collection.all_children.pluck(:id)
+    end
 
     sql = select_clause(elements) +
       from_clause +
@@ -29,6 +39,23 @@ class CsvExporter
   end
 
   ##
+  # Exports items from a collection and all of its child collections.
+  #
+  # @param collection [Collection]
+  # @param elements [Enumerable<String>] Elements to include. If omitted, all
+  #                 of the elements in the collection's
+  #                 {Collection#effective_metadata_profile effective metadata
+  #                 profile} are included.
+  # @return [String] CSV string.
+  #
+  def export_collection(collection, elements: [])
+    if elements.empty?
+      elements = collection.effective_metadata_profile.elements.map(&:name)
+    end
+    export(collections: [collection], elements: elements)
+  end
+
+  ##
   # Exports all items contained in any of a [Unit]'s collections.
   #
   # @param unit [Unit]
@@ -37,17 +64,8 @@ class CsvExporter
   #                 metadata profile} are included.
   # @return [String] CSV string.
   #
-  def export_unit(unit, elements: nil)
-    elements     ||= MetadataProfile.default.elements.map(&:name)
-    collection_ids = unit.collections.pluck(:id)
-
-    sql = select_clause(elements) +
-      from_clause +
-      "LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id " +
-      "WHERE cim.collection_id IN (#{collection_ids.join(", ")}) " +
-      order_clause
-    results = ActiveRecord::Base.connection.exec_query(sql)
-    to_csv(elements, results)
+  def export_unit(unit, elements: [])
+    export(units: [unit], elements: elements)
   end
 
 

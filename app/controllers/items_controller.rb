@@ -3,8 +3,9 @@
 class ItemsController < ApplicationController
 
   before_action :ensure_logged_in, except: [:index, :show]
-  before_action :set_item, except: [:index, :process_review, :review]
-  before_action :authorize_item, except: [:index, :process_review, :review]
+  before_action :set_item, except: [:export, :index, :process_review, :review]
+  before_action :authorize_item, except: [:export, :index, :process_review,
+                                          :review]
 
   ##
   # Approves an item.
@@ -122,6 +123,41 @@ class ItemsController < ApplicationController
   def edit_withdrawal
     render partial: "items/withdrawal_form",
            locals: { item: @item }
+  end
+
+  ##
+  # Responds to `GET/POST /items/export`. GET returns the form HTML and POST
+  # processes the form data.
+  #
+  def export
+    authorize Item
+    if request.post?
+      # Process elements input into an array of element names.
+      elements = params[:elements].reject(&:blank?)
+      if elements.empty?
+        flash['error'] = "At least one element must be checked."
+        render "export", status: :bad_request and return
+      end
+
+      # Process handles input.
+      handles_str = params[:handles]
+      if handles_str.blank?
+        flash['error'] = "No handles provided."
+        render "export", status: :bad_request and return
+      end
+      handles         = handles_str.split(",")
+      handle_suffixes = handles.map{ |h| h.split("/").last.strip }
+      handles         = Handle.where(suffix: handle_suffixes)
+      collections     = handles.select{ |h| h.collection_id.present? }.map(&:collection)
+      units           = handles.select{ |h| h.unit_id.present? }.map(&:unit)
+      csv             = CsvExporter.new.export(units:       units,
+                                               collections: collections,
+                                               elements:    elements)
+      send_data csv,
+                type: "text/csv",
+                disposition: "attachment",
+                filename: "export.csv"
+    end
   end
 
   ##
