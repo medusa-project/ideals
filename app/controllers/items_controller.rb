@@ -333,7 +333,7 @@ class ItemsController < ApplicationController
           build_metadata
           build_embargoes
         end
-        @item.save! # trigger a reindex
+        @item.save!
       end
     rescue => e
       render partial: "shared/validation_messages",
