@@ -4,7 +4,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @bulkfile = fixture_file_upload(file_fixture("escher_lego.jpg"), 'image/jpeg')
-    @import   = imports(:new)
+    @import   = imports(:saf_new)
     setup_s3
   end
 
@@ -73,14 +73,14 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "delete_all_files() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    @import = imports(:new)
+    @import = imports(:saf_new)
     post import_delete_all_files_path(@import)
     assert_response :forbidden
   end
 
   test "delete_all_files() returns HTTP 204 for authorized users" do
     log_in_as(users(:uiuc_admin))
-    @import = imports(:new)
+    @import = imports(:saf_new)
     post import_delete_all_files_path(@import)
     assert_response :no_content
   end
@@ -89,7 +89,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     user = users(:uiuc_admin)
     log_in_as(user)
 
-    @import = imports(:new)
+    @import = imports(:saf_new)
     File.open(file_fixture("escher_lego.jpg"), "r") do |file|
       @import.upload_file(relative_path: "item1/image.jpg", io: file)
     end
@@ -102,21 +102,21 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   # edit()
 
   test "edit() redirects to login page for logged-out users" do
-    import = imports(:new)
+    import = imports(:saf_new)
     get edit_import_path(import)
     assert_redirected_to login_path
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    import = imports(:new)
+    import = imports(:saf_new)
     get edit_import_path(import)
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
     log_in_as(users(:uiuc_admin))
-    import = imports(:new)
+    import = imports(:saf_new)
     get edit_import_path(import)
     assert_response :ok
   end
@@ -211,7 +211,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() updates an element" do
     log_in_as(users(:uiuc_admin))
-    import        = imports(:new)
+    import        = imports(:saf_new)
     collection_id = collections(:collection1).id
     patch "/imports/#{import.id}",
           xhr: true,
@@ -226,7 +226,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 200" do
     log_in_as(users(:uiuc_admin))
-    import = imports(:new)
+    import = imports(:saf_new)
     patch import_path(import),
           xhr: true,
           params: {
@@ -252,14 +252,14 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "upload_file() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    @import = imports(:new)
+    @import = imports(:saf_new)
     post import_upload_file_path(@import)
     assert_response :forbidden
   end
 
   test "upload_file() returns HTTP 204 for authorized users" do
     log_in_as(users(:uiuc_admin))
-    @import = imports(:new)
+    @import = imports(:saf_new)
     post import_upload_file_path(@import),
          headers: { "X-Relative-Path": "/item1/image.jpg" },
          params:  { bulkfile: @bulkfile }
@@ -269,7 +269,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "upload_file() returns HTTP 400 for a missing X-Relative-Path header" do
     log_in_as(users(:uiuc_admin))
-    @import = imports(:new)
+    @import = imports(:saf_new)
     post import_upload_file_path(@import),
          xhr: true,
          params: {
@@ -284,7 +284,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal 0, @import.object_keys.length
 
-    @import = imports(:new)
+    @import = imports(:saf_new)
     post import_upload_file_path(@import),
          headers: { "X-Relative-Path": "/item1/image.jpg" },
          params:  { bulkfile: @bulkfile }

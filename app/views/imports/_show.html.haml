@@ -1,4 +1,6 @@
 %dl
+  %dt Kind
+  %dd= Import::Kind.to_s(@import.kind)
   %dt Database ID
   %dd= @import.id
   %dt User
@@ -17,6 +19,7 @@
   - if @import.last_error_message.present?
     %dt Last Error Message
     %dd.text-danger= @import.last_error_message
-  %dt Files to Import
-  %dd
-    %pre= @import.files&.join("\n")
+  - if @import.files&.any?
+    %dt Files
+    %dd
+      %pre= @import.files&.join("\n")

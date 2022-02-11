@@ -3,7 +3,7 @@ require 'test_helper'
 class ImportPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @import = imports(:new)
+    @import = imports(:saf_new)
   end
 
   # create?

@@ -1,35 +1,49 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-new:
+csv_new:
   user:               uiuc_admin
   collection:         collection1
+  kind:               <%= Import::Kind::CSV %>
   status:             <%= Import::Status::NEW %>
   percent_complete:   0
   files:              "[]"
   imported_items:     "[]"
   last_error_message:
 
-running:
+saf_new:
   user:               uiuc_admin
   collection:         collection1
+  kind:               <%= Import::Kind::SAF %>
+  status:             <%= Import::Status::NEW %>
+  percent_complete:   0
+  files:              "[]"
+  imported_items:     "[]"
+  last_error_message:
+
+saf_running:
+  user:               uiuc_admin
+  collection:         collection1
+  kind:               <%= Import::Kind::SAF %>
   status:             <%= Import::Status::RUNNING %>
   percent_complete:   0.5
   files:              "[]"
   imported_items:     "[]"
   last_error_message:
 
-succeeded:
+saf_succeeded:
   user:               uiuc_admin
   collection:         collection1
+  kind:               <%= Import::Kind::SAF %>
   status:             <%= Import::Status::SUCCEEDED %>
   percent_complete:   0.5
   files:              "[]"
   imported_items:     "[]"
   last_error_message:
 
-failed:
+saf_failed:
   user:               uiuc_admin
   collection:         collection1
+  kind:               <%= Import::Kind::SAF %>
   status:             <%= Import::Status::FAILED %>
   percent_complete:   0.5
   files:              "[]"

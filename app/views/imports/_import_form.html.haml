@@ -7,6 +7,11 @@
   -# Ensure that `import` is present in the params
   = hidden_field_tag "import[bogus]", nil
 
+  .alert.alert-light
+    = icon_for(:info)
+    These menus only affect new items. If you will only be updating existing
+    items, then just select any collection.
+
   .form-group
     = f.label :unit_id, "Unit"
     = select_tag(:unit_id,

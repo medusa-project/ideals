@@ -79,9 +79,9 @@ class ImportsController < ApplicationController
   # Responds to `PUT/PATCH /imports/:id`
   #
   def update # TODO: rename to complete or something
-    ImportSafPackageJob.perform_later(@import)
-    flash['success'] = "The package has been uploaded. The import will begin "\
-                       "momentarily."
+    ImportJob.perform_later(@import, current_user)
+    flash['success'] = "The files have been uploaded, and the import will "\
+                       "begin momentarily."
     render "shared/reload"
   end
 

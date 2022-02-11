@@ -2,9 +2,19 @@ require "test_helper"
 
 class ImportTest < ActiveSupport::TestCase
 
+  class KindTest < ActiveSupport::TestCase
+
+    test "to_s() returns a correct value" do
+      assert_equal "SAF Package", Import::Kind.to_s(Import::Kind::SAF)
+      assert_equal "CSV File", Import::Kind.to_s(Import::Kind::CSV)
+      assert_equal "Unknown", Import::Kind.to_s(9999)
+    end
+
+  end
+
   setup do
     setup_s3
-    @instance = imports(:new)
+    @instance = imports(:saf_new)
   end
 
   teardown do

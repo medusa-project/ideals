@@ -1,23 +1,43 @@
 ##
-# Represents an import of a batch of [Item]s, such as via [SafImporter].
+# Represents a batch import of [Item]s, such as via [CsvImporter] or
+# [SafImporter].
 #
 # # Attributes
 #
-# * `collection_id`      ID of the [Collection] into which items are to be
+# * `collection_id`      ID of the [Collection] into which new items are to be
 #                        imported.
 # * `created_at`         Managed by ActiveRecord.
 # * `files`              JSON array of all files to import.
 # * `imported_items`     JSON array of objects with `item_id` and `handle` keys.
 #                        This is analogous to the contents of a mapfile (see
 #                        [SafImporter]) and can be used to reconstruct one.
+# * `kind`               One of the [Import::Kind] constant values. This may be
+#                        null in the case of a newly created instance to which
+#                        files have not been uploaded yet.
 # * `last_error_message` Last error message emitted by the importer.
 # * `percent_complete`   Float in the range 0-1.
-#                        TODO: updates within a transaction aren't visible outside of the transaction, so move this into a generic "Task" class which uses a separate database connection.
+#                        TODO: updates within a transaction aren't visible outside of the transaction, so consider using a separate database connection
 # * `status`             One of the [Import::Status] constant values.
 # * `updated_at`         Managed by ActiveRecord.
 # * `user_id`            ID of the [User] who initiated the import.
 #
 class Import < ApplicationRecord
+
+  class Kind
+    SAF = 0
+    CSV = 1
+
+    def self.to_s(kind)
+      case kind
+      when 0
+        "SAF Package"
+      when 1
+        "CSV File"
+      else
+        "Unknown"
+      end
+    end
+  end
 
   class Status
     NEW       = 0

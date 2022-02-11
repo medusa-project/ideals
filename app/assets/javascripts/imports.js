@@ -42,10 +42,17 @@ const ImportsView = function() {
                 //    console.log("onUploadProgressChanged(): " +
                 //        Math.round(e.loaded / e.total * 100));
                 //});
-                // This header value is relative to the package root, so we
-                // have to trim off the package dir itself.
-                xhr.setRequestHeader("X-Relative-Path",
-                    entry.fullPath.split("/").slice(2).join("/"));
+                // For packages, this header value will be relative to the
+                // package root, so we will have to trim off the package dir
+                // itself. But we may also be dealing with individual files
+                // that are not packages, like CSVs, for which this will simply
+                // be the filename..
+                let relativePath = entry.fullPath.split("/").slice(2).join("/");
+                if (relativePath === "") { // root-level files
+                    const parts  = entry.fullPath.split("/");
+                    relativePath = parts[parts.length - 1];
+                }
+                xhr.setRequestHeader("X-Relative-Path", relativePath);
                 xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
                 xhr.onloadend = onUploadedCallback;
                 xhr.onerror   = function(e) { console.error(e); };
