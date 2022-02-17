@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_10_160210) do
+ActiveRecord::Schema.define(version: 2022_02_16_224345) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -456,6 +456,7 @@ ActiveRecord::Schema.define(version: 2022_02_10_160210) do
     t.bigint "local_identity_id"
     t.string "org_dn"
     t.bigint "affiliation_id"
+    t.datetime "last_logged_in_at", precision: 6
     t.index ["affiliation_id"], name: "index_users_on_affiliation_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["local_identity_id"], name: "index_users_on_local_identity_id"

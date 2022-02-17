@@ -35,6 +35,16 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
+  test "create() with valid credentials sets the user's last-logged-in time" do
+    user = users(:norights)
+    post "/auth/identity/callback", params: {
+      auth_key: user.email,
+      password: "password"
+    }
+    user.reload
+    assert user.last_logged_in_at > 5.seconds.ago
+  end
+
   # destroy()
 
   test "destroy() redirects to the root URL" do

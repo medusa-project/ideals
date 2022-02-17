@@ -45,7 +45,13 @@
       - else
         None
   %dt Account Created
-  %dd= local_time user.created_at
+  %dd= local_time(user.created_at)
+  %dt Last Login
+  %dd
+    - if user.last_logged_in_at
+      = local_time(user.last_logged_in_at)
+    - else
+      Never
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-properties-modal", title: "Edit Properties" }

@@ -9,6 +9,7 @@
 #
 # * `created_at`        Managed by ActiveRecord.
 # * `email`             Email address.
+# * `last_logged_in_at` Date/time of last login.
 # * `local_identity_id` Foreign key to {LocalIdentity}. Used only by
 #                       {LocalUser}s; set during processing of the
 #                       registration form.
