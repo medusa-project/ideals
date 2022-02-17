@@ -37,7 +37,8 @@ class SessionsController < ApplicationController
     end
 
     if user&.id
-      user.update!(last_logged_in_at: Time.now)
+      user.update!(auth_hash:         auth,
+                   last_logged_in_at: Time.now)
       session[:user_id] = user.id
       redirect_to return_url
     else

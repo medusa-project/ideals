@@ -52,6 +52,13 @@
       = local_time(user.last_logged_in_at)
     - else
       Never
+  - if current_user.sysadmin?
+    %dt Last Auth Hash
+    %dd
+      - if user.auth_hash
+        %pre= JSON.pretty_generate(user.auth_hash)
+      - else
+        None
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-properties-modal", title: "Edit Properties" }

@@ -7,6 +7,8 @@
 #
 # # Attributes
 #
+# * `auth_hash`         Serialized OmniAuth hash that was supplied at last
+#                       login, composed of information from the Shibboleth IdP.
 # * `created_at`        Managed by ActiveRecord.
 # * `email`             Email address.
 # * `last_logged_in_at` Date/time of last login.
@@ -59,6 +61,8 @@ class User < ApplicationRecord
   validates_uniqueness_of :uid, case_sensitive: true
 
   before_save -> { email.downcase! }
+
+  serialize :auth_hash
 
   breadcrumbs label: :name
 

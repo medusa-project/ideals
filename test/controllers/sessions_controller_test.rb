@@ -35,6 +35,17 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
+  test "create() with valid credentials sets the user's auth hash" do
+    user = users(:norights)
+    user.update!(auth_hash: nil)
+    post "/auth/identity/callback", params: {
+      auth_key: user.email,
+      password: "password"
+    }
+    user.reload
+    assert_not_nil user.auth_hash
+  end
+
   test "create() with valid credentials sets the user's last-logged-in time" do
     user = users(:norights)
     post "/auth/identity/callback", params: {
