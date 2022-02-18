@@ -56,7 +56,7 @@ Rails.application.configure do
   config.active_support.disallowed_deprecation_warnings = []
 
   # Disable the log file.
-  config.logger = ActiveSupport::Logger.new(nil)
+  config.logger = ActiveSupport::Logger.new(STDOUT)
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
