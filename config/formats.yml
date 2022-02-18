@@ -501,6 +501,7 @@ odp:
   category: document
   icon: file-o
   readable_by_vips: false
+  viewer_method: viewerjs_viewer_for
 ods:
   short_name: ODS
   long_name: OpenDocument Spreadsheet
@@ -511,6 +512,7 @@ ods:
   category: document
   icon: file-o
   readable_by_vips: false
+  viewer_method: viewerjs_viewer_for
 odt:
   short_name: ODT
   long_name: OpenDocument Text
@@ -522,6 +524,7 @@ odt:
   category: document
   icon: file-text-o
   readable_by_vips: false
+  viewer_method: viewerjs_viewer_for
 ogg:
   short_name: Ogg
   long_name: Ogg Vorbis
@@ -603,7 +606,7 @@ pdf:
   category: document
   icon: file-pdf-o
   readable_by_vips: true
-  viewer_method: object_tag_for
+  viewer_method: viewerjs_viewer_for
 png:
   short_name: PNG
   long_name: Portable Network Graphics

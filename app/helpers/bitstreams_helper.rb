@@ -55,6 +55,7 @@ module BitstreamsHelper
           # The bitstream is missing a storage object or cannot otherwise be
           # accessed.
           Rails.logger.warn("#{e} [bitstream ID: #{bitstream.id}]")
+          raise e
         end
       end
     end
@@ -107,6 +108,15 @@ module BitstreamsHelper
     html <<   "</pre>"
     html << "</div>"
     raw(html.string)
+  end
+
+  def viewerjs_viewer_for(bitstream)
+    bitstream_path = item_bitstream_stream_path(bitstream)
+    viewer_url     = asset_path("/ViewerJS/#" + bitstream_path)
+    html           = "<iframe src=\"#{viewer_url}\" frameborder=\"0\" "\
+                             "height=\"100%\" width=\"100%\" "\
+                             "allowfullscreen webkitallowfullscreen></iframe>"
+    raw(html)
   end
 
   def video_tag_for(bitstream)
