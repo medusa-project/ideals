@@ -126,7 +126,9 @@ class CsvImporter
 
   def create_item(submitter:, primary_collection:, header_row:, columns:)
     item = CreateItemCommand.new(submitter:          submitter,
-                                 primary_collection: primary_collection).execute
+                                 primary_collection: primary_collection,
+                                 stage:              Item::Stages::APPROVED,
+                                 event_description:  "Item imported from CSV.").execute
     item.assign_handle
     item.approve
     ascribe_metadata(item:       item,

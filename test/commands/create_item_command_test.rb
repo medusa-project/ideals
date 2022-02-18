@@ -9,6 +9,7 @@ class CreateItemCommandTest < ActiveSupport::TestCase
                                        primary_collection: collection)
     item = command.execute
 
+    assert item.discoverable
     assert_equal submission_profile_elements(:default_description).placeholder_text,
                  item.element("dc:description").string
     assert_equal submission_profile_elements(:default_subject).placeholder_text,

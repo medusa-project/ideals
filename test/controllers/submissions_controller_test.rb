@@ -88,7 +88,6 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
       post submissions_path
       item = Item.order(created_at: :desc).first
       assert item.submitting?
-      assert !item.discoverable
     end
   end
 
