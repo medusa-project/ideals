@@ -433,12 +433,13 @@ class Item < ApplicationRecord
   end
 
   ##
-  # @return [MetadataProfile] The primary collection's metadata profile, or the
-  #                           {MetadataProfile#default default profile} if not
-  #                           set.
+  # @return [MetadataProfile] The effective primary collection's metadata
+  #                           profile, or the {MetadataProfile#default default
+  #                           profile} if not set.
   #
   def effective_metadata_profile
-    self.primary_collection&.effective_metadata_profile || MetadataProfile.default
+    self.effective_primary_collection&.effective_metadata_profile ||
+      MetadataProfile.default
   end
 
   ##
