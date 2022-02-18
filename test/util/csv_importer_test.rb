@@ -38,6 +38,7 @@ class CsvImporterTest < ActiveSupport::TestCase
                      submitter:          users(:local_sysadmin),
                      primary_collection: collections(:empty))
     item = Item.order(created_at: :desc).limit(1).first
+    assert_equal Item::Stages::SUBMITTED, item.stage
     assert_equal "New Item", item.title
   end
 
