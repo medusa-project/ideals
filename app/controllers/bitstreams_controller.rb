@@ -142,7 +142,7 @@ class BitstreamsController < ApplicationController
       end
       response.headers['Content-Range'] = sprintf("bytes %d-%d/%d",
                                                   start_offset, end_offset, length)
-      object[:range]                    = sprintf("bytes=%d-%d",
+      s3_request[:range]                = sprintf("bytes=%d-%d",
                                                   start_offset, end_offset)
     end
 
