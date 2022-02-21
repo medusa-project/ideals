@@ -11,6 +11,10 @@ h1 {
   }
 }
 
+.navbar-toggler-icon {
+  background-image: image_url("fontawesome/black/bars.svg");
+}
+
 #navbar-supported-content {
   .nav-item {
     margin-bottom: 0;
