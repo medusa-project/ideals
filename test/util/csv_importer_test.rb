@@ -143,7 +143,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     item = Item.order(created_at: :desc).limit(1).first
     assert_not_nil item.handle
     assert item.discoverable
-    assert_equal Item::Stages::APPROVED, item.stage
+    assert_equal Item::Stages::SUBMITTED, item.stage
 
     # Test metadata
     assert_equal 5, item.elements.length
