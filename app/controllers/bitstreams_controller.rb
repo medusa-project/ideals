@@ -199,6 +199,13 @@ class BitstreamsController < ApplicationController
   #
   def viewer
     render partial: "bitstreams/viewer"
+    # An error here will be fairly common, such as in the case of e.g. a
+    # bitstream for which there is no underlying storage object. We want to
+    # avoid the default error handling in this case, which would cause the
+    # administrator to get swamped with email notifications.
+  rescue => e
+    Rails.logger.warn("#{e}")
+    render plain: "Error: #{e}", status: :internal_server_error
   end
 
 

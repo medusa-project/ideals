@@ -49,14 +49,7 @@ module BitstreamsHelper
     if format.present?
       method = format.viewer_method
       if method.present?
-        begin
-          return send(method, bitstream)
-        rescue => e
-          # The bitstream is missing a storage object or cannot otherwise be
-          # accessed.
-          Rails.logger.warn("#{e} [bitstream ID: #{bitstream.id}]")
-          raise e
-        end
+        return send(method, bitstream)
       end
     end
     no_viewer_for(bitstream)
