@@ -55,8 +55,8 @@ Rails.application.configure do
   # Tell Active Support which deprecation messages to disallow.
   config.active_support.disallowed_deprecation_warnings = []
 
-  # Disable the log file.
-  config.logger = ActiveSupport::Logger.new(STDOUT)
+  # Disable the log file in non-CI testing.
+  config.logger = ActiveSupport::Logger.new((ENV['CI'] == "1") ? nil : STDOUT)
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
