@@ -1,4 +1,4 @@
-FROM ruby:3.0.3-slim
+FROM ruby:3.1.1-slim
 
 ENV CI=1
 ENV RAILS_ENV=test

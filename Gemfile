@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 git_source(:github) {|repo| "https://github.com/#{repo}.git" }
 
-ruby "3.0.3"
+ruby "3.1.1"
 
 gem "autoprefixer-rails"
 gem "aws-sdk-s3", "~> 1"
@@ -34,7 +34,7 @@ gem "local_time"
 #gem "medusa-client", path: "/Users/alexd/Projects/GitHub/medusa-project/medusa-client"
 gem "medusa-client", git: "https://github.com/medusa-project/medusa-client.git"
 # JavaScript runtime
-gem "mini_racer", "~> 0.4.0", platforms: :ruby
+gem "mini_racer", platforms: :ruby
 # Use modernizr-rails to handle different browsers differently
 gem "modernizr-rails"
 # Used to copy files (bitstreams) out of IDEALS-DSpace during a migration.
