@@ -146,8 +146,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_equal Item::Stages::SUBMITTED, item.stage
 
     # Test metadata
-    assert_equal 5, item.elements.length
-    assert_not_nil item.element("dcterms:available")  # added automatically upon approval
+    assert_equal 4, item.elements.length
     assert_not_nil item.element("dcterms:identifier") # added automatically when the handle is assigned
     assert_equal "New CSV Item", item.element("dc:title").string
   end
