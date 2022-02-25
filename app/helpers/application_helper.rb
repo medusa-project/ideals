@@ -410,7 +410,7 @@ module ApplicationHelper
             join(", ")
         date    = resource.elements.
             select{ |e| e.name == config.elements[:date] }.
-            map{ |e| Time.new(e.string).year.to_s }.
+            map{ |e| e.string.to_i.to_s }.
             reject{ |e| e == "0" }.
             join(", ")
         info_parts  = []
