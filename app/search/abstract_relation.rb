@@ -377,7 +377,7 @@ class AbstractRelation
     else
       @result_count = 0
       raise IOError, "#{@response_json['error']['type']}: "\
-          "#{@response_json['error']['root_cause'][0]['reason']}"
+          "#{@response_json['error']['reason']}"
     end
 
     @loaded = true
