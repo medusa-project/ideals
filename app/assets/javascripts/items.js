@@ -39,6 +39,36 @@ const FileNavigator = function() {
         });
     };
 
+    const focus = function(thumb) {
+        const item_id      = thumb.data("item-id");
+        const bitstream_id = thumb.data("bitstream-id");
+        if (bitstream_id === currentBitstreamID) {
+            return;
+        }
+        currentBitstreamID = bitstream_id;
+        viewerColumn.html(IDEALS.Spinner());
+        thumb.siblings().removeClass("selected");
+        thumb.addClass("selected");
+        thumb.focus();
+
+        const url = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
+            bitstream_id + "/viewer";
+        $.ajax({
+            method: "GET",
+            url: url,
+            success: function(data) {
+                viewerColumn.html(data);
+                updateHeight();
+                attachEventListeners();
+                navigator.trigger("IDEALS.FileNavigator.fileChanged");
+            },
+            error: function(data, status, xhr) {
+                $("#file-navigator-viewer-column .spinner-border").hide();
+                viewerColumn.html("<div id='file-navigator-viewer-error'><p>There was an error retrieving this file.</p></div>");
+            }
+        });
+    };
+
     const updateHeight = function() {
         const navigatorHeight = window.innerHeight - 100;
         navigator.css("height", navigatorHeight + "px");
@@ -57,34 +87,21 @@ const FileNavigator = function() {
         updateHeight();
     });
 
-    navigator.find("#file-navigator-thumbnail-column .thumbnail").on("click", function() {
-        const thumb        = $(this);
-        const item_id      = thumb.data("item-id");
-        const bitstream_id = thumb.data("bitstream-id");
-        if (bitstream_id === currentBitstreamID) {
-            return;
+    navigator.find("#file-navigator-thumbnail-column .thumbnail").on("keydown", function(e) {
+        const thumb = $(this);
+        switch (e.keyCode) {
+            case 37: // left arrow
+                focus(thumb.prev());
+                break;
+            case 39: // right arrow
+                focus(thumb.next());
+                break;
         }
-        currentBitstreamID = bitstream_id;
-        viewerColumn.html(IDEALS.Spinner());
-        thumb.siblings().removeClass("selected");
-        thumb.addClass("selected");
+    });
 
-        const url = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
-            bitstream_id + "/viewer";
-        $.ajax({
-            method: "GET",
-            url: url,
-            success: function(data) {
-                viewerColumn.html(data);
-                updateHeight();
-                attachEventListeners();
-                navigator.trigger("IDEALS.FileNavigator.fileChanged");
-            },
-            error: function(data, status, xhr) {
-                $("#file-navigator-viewer-column .spinner-border").hide();
-                viewerColumn.html("<div id='file-navigator-viewer-error'><p>There was an error retrieving this file.</p></div>");
-            }
-        });
+    navigator.find("#file-navigator-thumbnail-column .thumbnail").on("click", function() {
+        const thumb = $(this);
+        focus(thumb);
     }).filter(":first").trigger("click");
 };
 
