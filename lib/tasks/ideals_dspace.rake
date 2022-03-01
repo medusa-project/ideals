@@ -40,7 +40,11 @@ namespace :ideals_dspace do
             bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
                                                               bitstream.original_filename)
             bitstream.upload_to_permanent(local_path)
-            bitstream.save!
+            begin
+              bitstream.save!
+            rescue => e
+              puts "#{e} (bitstream ID; #{bitstream.id})"
+            end
             # Delete it from the temp directory
             File.delete(local_path)
             progress.report(index, "Copying files from IDEALS-DSpace into Medusa")
