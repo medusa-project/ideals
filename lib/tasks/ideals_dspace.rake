@@ -25,9 +25,11 @@ namespace :ideals_dspace do
           bitstreams      = Bitstream.
             where(permanent_key: [nil, ""]).
             where.not(dspace_id: [nil, ""]).
-            order(:id)
+            order(:length)
           bitstream_count = bitstreams.count
           progress        = Progress.new(bitstream_count)
+          puts "#{bitstream_count} bitstreams left"
+
           bitstreams.find_each.with_index do |bitstream, index|
             # Download the file into the temp directory
             remote_path = IDEALS_DSPACE_ASSET_STORE_PATH +
@@ -61,7 +63,8 @@ namespace :ideals_dspace do
           bitstreams      = Bitstream.joins("LEFT JOIN collection_item_memberships m ON m.item_id = bitstreams.item_id").
             where("m.collection_id": args[:collection_id]).
             where(permanent_key: [nil, ""]).
-            where.not(dspace_id: [nil, ""])
+            where.not(dspace_id: [nil, ""]).
+            order(:length)
           bitstream_count = bitstreams.count
           progress        = Progress.new(bitstream_count)
           bitstreams.find_each.with_index do |bitstream, index|
