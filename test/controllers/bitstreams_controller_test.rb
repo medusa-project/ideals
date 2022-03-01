@@ -506,14 +506,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "stream() returns HTTP 500 when the underlying data is missing" do
+  test "stream() returns HTTP 404 when the underlying data is missing" do
     item      = items(:item1)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: "cats.jpg",
                                          length:   234234)
     bitstream.update!(staging_key: nil)
     get item_bitstream_stream_path(item, bitstream)
-    assert_response :internal_server_error
+    assert_response :not_found
   end
 
   test "stream() respects role limits" do

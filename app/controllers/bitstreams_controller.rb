@@ -120,7 +120,10 @@ class BitstreamsController < ApplicationController
     elsif @bitstream.staging_key.present?
       key = @bitstream.staging_key
     else
-      raise IOError, "This bitstream has no corresponding storage object."
+      Rails.logger.warn("Bitstream ID #{@bitstream.id} has no corresponding storage object")
+      render plain:  "This bitstream has no corresponding storage object.",
+             status: :not_found
+      return
     end
 
     s3_request = {
