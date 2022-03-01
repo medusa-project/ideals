@@ -357,7 +357,6 @@ DEPENDENCIES
   medusa-client!
   mini_racer
   modernizr-rails
-  net-scp
   netaddr
   omniauth-identity
   omniauth-rails_csrf_protection
