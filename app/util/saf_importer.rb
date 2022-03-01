@@ -274,9 +274,7 @@ class SafImporter
                             primary:           primary,
                             description:       description,
                             length:            File.size(file_path))
-      File.open(file_path, "r") do |file|
-        bs.upload_to_permanent(file)
-      end
+      bs.upload_to_permanent(file_path)
     end
   end
 

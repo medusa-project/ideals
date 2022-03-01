@@ -718,11 +718,9 @@ class BitstreamTest < ActiveSupport::TestCase
   test "upload_to_permanent() uploads a file to the application bucket" do
     begin
       fixture = file_fixture("escher_lego.jpg")
-      File.open(fixture, "r") do |file|
-        key = Bitstream::PERMANENT_KEY_PREFIX + "file"
-        @instance.update!(permanent_key: key)
-        @instance.upload_to_permanent(file)
-      end
+      key     = Bitstream::PERMANENT_KEY_PREFIX + "file"
+      @instance.update!(permanent_key: key)
+      @instance.upload_to_permanent(fixture)
 
       # Check that the file exists in the bucket.
       config = ::Configuration.instance

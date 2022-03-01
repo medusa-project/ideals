@@ -457,12 +457,15 @@ class Bitstream < ApplicationRecord
   # For use only by the `ideals_dspace:copy` rake task. After migration, this
   # method can be removed.
   #
-  # @param io [IO]
+  # @param file [String]
   #
-  def upload_to_permanent(io) # TODO: remove this after migration out of IDEALS-DSpace
-    S3Client.instance.put_object(bucket: ::Configuration.instance.aws[:bucket],
-                                 key:    self.permanent_key,
-                                 body:   io)
+  def upload_to_permanent(file)
+    # upload_file will automatically use the multipart API for files larger
+    # than 15 MB. (S3 has a 5 GB limit when not using the multipart API.)
+    s3 = Aws::S3::Resource.new(S3Client.client_options)
+    s3.bucket(::Configuration.instance.aws[:bucket]).
+      object(self.permanent_key).
+      upload_file(file)
   end
 
   ##

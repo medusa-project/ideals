@@ -8,6 +8,20 @@ class S3Client
 
   include Singleton
 
+  def self.client_options
+    config = ::Configuration.instance
+    opts   = { region: config.aws[:region] }
+    if Rails.env.development? || Rails.env.test?
+      # In development and test, we connect to a custom endpoint, and
+      # credentials are drawn from the application configuration.
+      opts[:endpoint]         = config.aws[:endpoint]
+      opts[:force_path_style] = true
+      opts[:credentials]      = Aws::Credentials.new(config.aws[:access_key_id],
+                                                     config.aws[:secret_access_key])
+    end
+    opts
+  end
+
   ##
   # @param bucket [String]
   # @return [Boolean]
@@ -77,29 +91,16 @@ class S3Client
     end
   end
 
+
   private
 
-  def client_options
-    config = ::Configuration.instance
-    opts   = { region: config.aws[:region] }
-    if Rails.env.development? || Rails.env.test?
-      # In development and test, we connect to a custom endpoint, and
-      # credentials are drawn from the application configuration.
-      opts[:endpoint]         = config.aws[:endpoint]
-      opts[:force_path_style] = true
-      opts[:credentials]      = Aws::Credentials.new(config.aws[:access_key_id],
-                                                     config.aws[:secret_access_key])
-    end
-    opts
-  end
-
   def get_client
-    @client = Aws::S3::Client.new(client_options) unless @client
+    @client = Aws::S3::Client.new(self.class.client_options) unless @client
     @client
   end
 
   def get_resource
-    @resource = Aws::S3::Resource.new(client_options) unless @resource
+    @resource = Aws::S3::Resource.new(self.class.client_options) unless @resource
     @resource
   end
 

@@ -295,9 +295,7 @@ class ItemTest < ActiveSupport::TestCase
     fixture  = file_fixture(filename)
     @instance.bitstreams.each do |bs|
       bs.update!(permanent_key: Bitstream.permanent_key(@instance.id, filename))
-      File.open(fixture, "r") do |file|
-        bs.upload_to_permanent(file)
-      end
+      bs.upload_to_permanent(fixture)
     end
 
     @instance.delete_from_permanent_storage
