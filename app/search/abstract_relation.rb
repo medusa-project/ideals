@@ -179,7 +179,7 @@ class AbstractRelation
   end
 
   ##
-  # @param orders [String, Enumerable<String>, Enumerable<Hash<String,Symbol>>, Boolean]
+  # @param orders [String, Enumerable<String>, Hash<String,Symbol>, Boolean]
   #               Either a field name to sort ascending, or an Enumerable of
   #               string field names and/or hashes with `field name =>
   #               direction` pairs (`:asc` or `:desc`). Supply false to
