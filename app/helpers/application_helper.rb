@@ -449,10 +449,10 @@ module ApplicationHelper
 
   ##
   # Returns a sort pulldown menu for the given metadata profile. If there are
-  # no sortable elements in the profile, returns a zero-length string.
+  # no sortable elements in the profile, an empty string is returned.
   #
   # @param metadata_profile [MetadataProfile]
-  # @return [String] HTML form element
+  # @return [String] HTML form element.
   #
   def sort_menu(metadata_profile)
     sortable_elements = metadata_profile.elements.where(sortable: true)
@@ -460,18 +460,19 @@ module ApplicationHelper
     html = StringIO.new
     if sortable_elements.any?
       html << '<select name="sort" class="custom-select">'
-      html << '<option value="">Sort by Relevance</option>'
-
+      html <<   '<optgroup label="Sort By&hellip;">'
+      html <<     '<option value="">Relevance</option>'
       # If there is an element in the ?sort= query, select that. Otherwise,
       # select the metadata profile's default sort element.
       selected_element = sortable_elements.
           find{ |e| e.registered_element.indexed_sort_field == params[:sort] }
       sortable_elements.each do |e|
         selected = (e == selected_element) ? 'selected' : ''
-        html << "<option value=\"#{e.registered_element.indexed_sort_field}\" #{selected}>"
-        html <<   "Sort by #{e.label}"
-        html << '</option>'
+        html <<   "<option value=\"#{e.registered_element.indexed_sort_field}\" #{selected}>"
+        html <<     e.label
+        html <<   '</option>'
       end
+      html <<   '</optgroup>'
       html << '</select>'
     end
     raw(html.string)
