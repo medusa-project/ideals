@@ -1,5 +1,5 @@
-- if @submissions.count.positive?
+- if @count.positive?
   = render partial: "submissions_table",
-           locals: { submissions: @submissions }
+           locals: { submissions: @submissions_in_progress }
 - else
   This user has no submissions in progress.

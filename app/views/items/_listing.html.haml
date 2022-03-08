@@ -1,8 +1,7 @@
-- pagination = paginate(count: @count, |
-                        page: @current_page, |
-                        per_page: @window, |
-                        permitted_params: @permitted_params, |
-                        start_arg: defined?(start_arg) ? start_arg : :start) |
+- pagination = paginate(count:            @count, |
+                        page:             @current_page, |
+                        per_page:         @window, |
+                        permitted_params: @permitted_params) |
 
 .card.mb-3
   #search-status.card-body.pt-3.pb-3

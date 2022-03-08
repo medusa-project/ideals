@@ -101,6 +101,210 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  # show_privileges()
+
+  test "show_privileges() redirects to login page for logged-out users" do
+    get user_privileges_path(users(:local_sysadmin)), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "show_privileges() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get user_privileges_path(users(:local_sysadmin)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_privileges() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:norights))
+    get user_privileges_path(users(:local_sysadmin))
+    assert_response :not_found
+  end
+
+  test "show_privileges() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get user_privileges_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_privileges() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get user_privileges_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+
+    get user_privileges_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
+    assert_response :forbidden
+  end
+
+  # show_properties()
+
+  test "show_properties() redirects to login page for logged-out users" do
+    get user_properties_path(users(:local_sysadmin)), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "show_properties() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get user_properties_path(users(:local_sysadmin)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_properties() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:norights))
+    get user_properties_path(users(:local_sysadmin))
+    assert_response :not_found
+  end
+
+  test "show_properties() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get user_properties_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_properties() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get user_properties_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+
+    get user_properties_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
+    assert_response :forbidden
+  end
+
+  # show_submittable_collections()
+
+  test "show_submittable_collections() redirects to login page for logged-out users" do
+    get user_submittable_collections_path(users(:local_sysadmin)), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "show_submittable_collections() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get user_submittable_collections_path(users(:local_sysadmin)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submittable_collections() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:norights))
+    get user_submittable_collections_path(users(:local_sysadmin))
+    assert_response :not_found
+  end
+
+  test "show_submittable_collections() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get user_submittable_collections_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_submittable_collections() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get user_submittable_collections_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+
+    get user_submittable_collections_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
+    assert_response :forbidden
+  end
+
+  # show_submitted_items()
+
+  test "show_submitted_items() redirects to login page for logged-out users" do
+    get user_submitted_items_path(users(:local_sysadmin)), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "show_submitted_items() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get user_submitted_items_path(users(:local_sysadmin)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submitted_items() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:norights))
+    get user_submitted_items_path(users(:local_sysadmin))
+    assert_response :not_found
+  end
+
+  test "show_submitted_items() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get user_submitted_items_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_submitted_items() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get user_submitted_items_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+
+    get user_submitted_items_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
+    assert_response :forbidden
+  end
+
+  # show_submissions_in_progress()
+
+  test "show_submissions_in_progress() redirects to login page for logged-out users" do
+    get user_submissions_in_progress_path(users(:local_sysadmin)), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "show_submissions_in_progress() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get user_submissions_in_progress_path(users(:local_sysadmin)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submissions_in_progress() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:norights))
+    get user_submissions_in_progress_path(users(:local_sysadmin))
+    assert_response :not_found
+  end
+
+  test "show_submissions_in_progress() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get user_submissions_in_progress_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_submissions_in_progress() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get user_submissions_in_progress_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+
+    get user_submissions_in_progress_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
+    assert_response :forbidden
+  end
+
+  # submitted_item_results()
+
+  test "submitted_item_results() redirects to login page for logged-out users" do
+    get user_submitted_item_results_path(users(:local_sysadmin)), xhr: true
+    assert_redirected_to login_path
+  end
+
+  test "submitted_item_results() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get user_submitted_item_results_path(users(:local_sysadmin)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "submitted_item_results() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:norights))
+    get user_submitted_item_results_path(users(:local_sysadmin))
+    assert_response :not_found
+  end
+
+  test "submitted_item_results() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get user_submitted_item_results_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+  end
+
+  test "submitted_item_results() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get user_submitted_item_results_path(users(:local_sysadmin)), xhr: true
+    assert_response :ok
+
+    get user_submitted_item_results_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
+    assert_response :forbidden
+  end
+
   # update_properties()
 
   test "update_properties() redirects to login page for logged-out users" do

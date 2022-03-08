@@ -41,6 +41,30 @@ class UserPolicy < ApplicationPolicy
     sysadmin_or_same_user
   end
 
+  def show_privileges
+    show
+  end
+
+  def show_properties
+    show
+  end
+
+  def show_submittable_collections
+    show
+  end
+
+  def show_submitted_items
+    show
+  end
+
+  def show_submissions_in_progress
+    show
+  end
+
+  def submitted_item_results
+    show_submitted_items
+  end
+
   def update_properties
     sysadmin_or_same_user
   end

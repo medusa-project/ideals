@@ -1,71 +1,73 @@
 - provide :body_id, "show_user"
 - provide :title, @user.name
 
+= hidden_field_tag :user_id, @user.id
+
 %h1
   =icon_for(@user)
-  = @user.uid
+  = @user.name
 
 .row
   .col-sm-5.col-md-4.col-lg-3
-    %ul.nav.nav-pills.flex-column{role: "tablist",
+    %ul.nav.nav-pills.flex-column{role:               "tablist",
                                   "aria-orientation": "vertical"}
       %li.nav-item{role: "presentation"}
-        %a#properties-tab.nav-link.active{"data-toggle": "pill",
-                                          href: "#properties",
-                                          role: "tab",
-                                          "aria-controls": "properties",
+        %a#properties-tab.nav-link.active{"data-toggle":   "pill",
+                                          href:            "#properties-tab-content",
+                                          role:            "tab",
+                                          "aria-controls": "properties-tab-content",
                                           "aria-selected": "true"} Properties
       %li.nav-item{role: "presentation"}
-        %a#privileges-tab.nav-link{"data-toggle": "pill",
-                                   href: "#privileges",
-                                   role: "tab",
-                                   "aria-controls": "privileges",
+        %a#privileges-tab.nav-link{"data-toggle":   "pill",
+                                   href:            "#privileges-tab-content",
+                                   role:            "tab",
+                                   "aria-controls": "privileges-tab-content",
                                    "aria-selected": "false"} Privileges
       %li.nav-item{role: "presentation"}
-        %a#collections-tab.nav-link{"data-toggle": "pill",
-                                    href: "#collections",
-                                    role: "tab",
-                                    "aria-controls": "collections",
-                                    "aria-selected": "false"}
+        %a#submittable-collections-tab.nav-link{"data-toggle":   "pill",
+                                                href:            "#submittable-collections-tab-content",
+                                                role:            "tab",
+                                                "aria-controls": "submittable-collections-tab-content",
+                                                "aria-selected": "false"}
           Submittable Collections
           %span.badge.badge-pill.badge-secondary
-            = @collections_count
+            = @submittable_collections_count
       %li.nav-item{role: "presentation"}
-        %a#items-tab.nav-link{"data-toggle": "pill",
-                              href: "#items",
-                              role: "tab",
-                              "aria-controls": "items",
-                              "aria-selected": "false"}
+        %a#submitted-items-tab.nav-link{"data-toggle":   "pill",
+                                        href:            "#submitted-items-tab-content",
+                                        role:            "tab",
+                                        "aria-controls": "submitted-items-tab-content",
+                                        "aria-selected": "false"}
           Submitted Items
           %span.badge.badge-pill.badge-secondary
-            = @count
+            = @submitted_items_count
       %li.nav-item{role: "presentation"}
-        %a#submissions-tab.nav-link{"data-toggle": "pill",
-                                    href: "#submissions",
-                                    role: "tab",
-                                    "aria-controls": "submissions",
-                                    "aria-selected": "false"}
+        %a#submissions-in-progress-tab.nav-link{"data-toggle":   "pill",
+                                                href:            "#submissions-in-progress-tab-content",
+                                                role:            "tab",
+                                                "aria-controls": "submissions-in-progress-tab-content",
+                                                "aria-selected": "false"}
           Submissions In Progress
           %span.badge.badge-pill.badge-secondary
-            = @submissions_count
+            = @submissions_in_progress_count
 
   .tab-content.col-sm-7.col-md-8.col-lg-9
-    #properties.tab-pane.fade.show.active{role: "tabpanel",
-                                          "aria-labelledby": "properties-tab"}
-      = render partial: "show_properties_tab", locals: { user: @user }
+    #properties-tab-content.tab-pane.fade.show.active{role:              "tabpanel",
+                                                      "aria-labelledby": "properties-tab"}
+      = spinner
 
-    #privileges.tab-pane.fade{role: "tabpanel",
-                              "aria-labelledby": "privileges-tab"}
-      = render partial: "show_privileges_tab", locals: { user: @user }
+    #privileges-tab-content.tab-pane.fade{role:              "tabpanel",
+                                          "aria-labelledby": "privileges-tab"}
+      = spinner
 
-    #collections.tab-pane.fade{role: "tabpanel",
-                               "aria-labelledby": "collections-tab"}
-      = render partial: "show_collections_tab", locals: { user: @user }
+    #submittable-collections-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                       "aria-labelledby": "submittable-collections-tab"}
+      = spinner
 
-    #items.tab-pane.fade{role: "tabpanel",
-                         "aria-labelledby": "items-tab"}
-      = render partial: "show_items_tab"
+    #submitted-items-tab-content.tab-pane.fade{role:              "tabpanel",
+                                               "aria-labelledby": "submitted-items-tab"}
+      = spinner
 
-    #submissions.tab-pane{role: "tabpanel",
-                          "aria-labelledby": "submissions-tab"}
-      = render partial: "show_submissions_tab"
+    #submissions-in-progress-tab-content.tab-pane{role:              "tabpanel",
+                                                  "aria-labelledby": "submissions-in-progress-tab"}
+      = spinner

@@ -180,6 +180,18 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
   end
   resources :users, only: [:index, :show] do
+    match "/submitted-item-results", to: "users#submitted_item_results", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/privileges", to: "users#show_privileges", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/properties", to: "users#show_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/submittable-collections", to: "users#show_submittable_collections", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/submitted-items", to: "users#show_submitted_items", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/submissions-in-progress", to: "users#show_submissions_in_progress", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "users#edit_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/update-properties", to: "users#update_properties", via: [:patch, :post],

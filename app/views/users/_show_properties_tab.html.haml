@@ -1,62 +1,58 @@
--# Requires the following locals:
--#
--# user [User]
-
-- if user.kind_of?(LocalUser)
+- if @user.kind_of?(LocalUser)
   .btn-group.float-right{role: "group"}
-    - if policy(user.becomes(User)).edit_properties?
+    - if policy(@user.becomes(User)).edit_properties?
       -# Edit Properties button
-      %button.btn.btn-light.edit-properties{"data-user-id": user.id,
-                                            "data-target": "#edit-properties-modal",
-                                            "data-toggle": "modal",
-                                            type: "button"}
+      %button.btn.btn-light.edit-properties{"data-user-id": @user.id,
+                                            "data-target":  "#edit-properties-modal",
+                                            "data-toggle":  "modal",
+                                            type:           "button"}
         %i.fas.fa-pencil-alt
         Edit Properties
-    - if user.identity && policy(user.identity).edit_password?
+    - if @user.identity && policy(@user.identity).edit_password?
       -# Change Password button
-      %button.btn.btn-light.change-password{"data-identity-id": user.identity.id,
-                                            "data-target": "#change-password-modal",
-                                            "data-toggle": "modal",
-                                            type: "button"}
+      %button.btn.btn-light.change-password{"data-identity-id": @user.identity.id,
+                                            "data-target":      "#change-password-modal",
+                                            "data-toggle":      "modal",
+                                            type:               "button"}
         %i.fas.fa-key
         Change Password
 
 %dl
   %dt Name
-  %dd= user.name
+  %dd= @user.name
   %dt Email
-  %dd= link_to(user.email, "mailto:#{user.email}")
+  %dd= link_to(@user.email, "mailto:#{@user.email}")
   %dt Phone
-  %dd= user.phone.present? ? link_to(user.phone, "tel:#{user.phone}") : "Unknown"
+  %dd= @user.phone.present? ? link_to(@user.phone, "tel:#{@user.phone}") : "Unknown"
   %dt Affiliation
-  %dd= user.affiliation ? user.affiliation.name : "None"
+  %dd= @user.affiliation ? @user.affiliation.name : "None"
   %dt Department
-  %dd= user.department ? user.department : "None"
+  %dd= @user.department ? @user.department : "None"
   %dt Account Type
-  %dd= user.type.chomp('User')
-  - if user.kind_of?(ShibbolethUser)
-    - if user.institution
+  %dd= @user.type.chomp('User')
+  - if @user.kind_of?(ShibbolethUser)
+    - if @user.institution
       %dt Institution
-      %dd= link_to(user.institution.name, user.institution)
+      %dd= link_to(@user.institution.name, @user.institution)
     %dt Organization DN
     %dd
-      - if user.org_dn # should always be true
-        %code= user.org_dn
+      - if @user.org_dn # should always be true
+        %code= @user.org_dn
       - else
         None
   %dt Account Created
-  %dd= local_time(user.created_at)
+  %dd= local_time(@user.created_at)
   %dt Last Login
   %dd
-    - if user.last_logged_in_at
-      = local_time(user.last_logged_in_at)
+    - if @user.last_logged_in_at
+      = local_time(@user.last_logged_in_at)
     - else
       Never
   - if current_user.sysadmin?
     %dt Last Auth Hash
     %dd
-      - if user.auth_hash
-        %pre= JSON.pretty_generate(user.auth_hash)
+      - if @user.auth_hash
+        %pre= JSON.pretty_generate(@user.auth_hash)
       - else
         None
 

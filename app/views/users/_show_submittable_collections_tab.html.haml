@@ -1,0 +1,22 @@
+- if @count.positive?
+  - pagination = paginate(count:            @count, |
+                          page:             @current_page, |
+                          per_page:         @window, |
+                          permitted_params: @permitted_params) |
+
+  .card.mb-3
+    #search-status.card-body.pt-3.pb-3
+      = search_status(@count, @start, @window, "collection")
+
+  .row.justify-content-md-center
+    .col-md-auto
+      = pagination
+
+  = resource_list(@submittable_collections)
+
+  .row.justify-content-md-center
+    .col-md-auto
+      = pagination
+
+- else
+  This user is not authorized to submit to any collections.

@@ -2,9 +2,8 @@
 
 class UsersController < ApplicationController
   before_action :ensure_logged_in
-  before_action :set_user, only: [:show, :edit_properties, :update_properties]
-  before_action :authorize_user, only: [:show, :edit_properties,
-                                        :update_properties]
+  before_action :set_user, except: :index
+  before_action :authorize_user, except: :index
 
   ##
   # Responds to `GET /users/:id/edit-properties`
@@ -37,37 +36,61 @@ class UsersController < ApplicationController
   # Responds to `GET /users/:id`
   #
   def show
-    @window           = window_size
-    @permitted_params = params.permit(:collections_start, :items_start, :window)
+    set_submitted_items_ivars
+    @submitted_items_count         = @count
+    set_submittable_collections_ivars
+    @submittable_collections_count = @count
+    set_submissions_in_progress_ivars
+    @submissions_in_progress_count = @count
+    @count                         = nil # prevent confusion
+  end
 
-    # Submittable Collections tab content
-    @collections_start        = params[:collections_start].to_i
-    @submittable_collections  = @user.effective_submittable_collections
-    @collections_count        = @submittable_collections.count
-    if @submittable_collections.kind_of?(ActiveRecord::Relation)
-      @submittable_collections  = @submittable_collections.
-          offset(@collections_start).
-          limit(@window)
-    end
-    @current_collections_page = ((@collections_start / @window.to_f).ceil + 1 if @window > 0) || 1
+  ##
+  # Responds to `GET /users/:id/privileges` (XHR only)
+  #
+  def show_privileges
+    render partial: "show_privileges_tab"
+  end
 
-    # Submitted Items tab content
-    @start = params[:items_start].to_i
-    @items = Item.search.
-        institution(current_institution).
-        aggregations(false).
-        filter(Item::IndexFields::SUBMITTER, @user.id).
-        must_not(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
-        order(params[:sort] => params[:direction] == "desc" ? :desc : :asc).
-        limit(@window).
-        start(@start)
-    @items             = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
-    @count             = @items.count
-    @current_page      = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
-    @submissions       = @user.submitted_items.
-        where(stage: Item::Stages::SUBMITTING).
-        order(updated_at: :desc)
-    @submissions_count = @submissions.count
+  ##
+  # Responds to `GET /users/:id/properties` (XHR only)
+  #
+  def show_properties
+    render partial: "show_properties_tab"
+  end
+
+  ##
+  # Responds to `GET /users/:id/submittable-collections` (XHR only)
+  #
+  def show_submittable_collections
+    set_submittable_collections_ivars
+    render partial: "show_submittable_collections_tab"
+  end
+
+  ##
+  # Responds to `GET /users/:id/submitted-items` (XHR only)
+  #
+  def show_submitted_items
+    set_submitted_items_ivars
+    render partial: "show_submitted_items_tab"
+  end
+
+  ##
+  # Responds to `GET /users/:id/submissions-in-progress` (XHR only)
+  #
+  def show_submissions_in_progress
+    set_submissions_in_progress_ivars
+    render partial: "show_submissions_in_progress_tab"
+  end
+
+  ##
+  # Renders results within the submitted items tab in show-user view.
+  #
+  # Responds to `GET /users/:id/submitted-item-results`
+  #
+  def submitted_item_results
+    set_submitted_items_ivars
+    render partial: "items/listing"
   end
 
   ##
@@ -86,7 +109,50 @@ class UsersController < ApplicationController
     end
   end
 
+
   private
+
+  def set_submissions_in_progress_ivars
+    @submissions_in_progress = @user.submitted_items.
+      where(stage: Item::Stages::SUBMITTING).
+      order(updated_at: :desc)
+    @count = @submissions_in_progress.count
+  end
+
+  def set_submittable_collections_ivars
+    @start                   = params[:collections_start].to_i
+    @window                  = window_size
+    @permitted_params        = params.permit(:collections_start, :items_start, :window)
+    @submittable_collections = @user.effective_submittable_collections
+    @count                   = @submittable_collections.count
+    if @submittable_collections.kind_of?(ActiveRecord::Relation)
+      @submittable_collections = @submittable_collections.
+        offset(@start).
+        limit(@window)
+    end
+    @current_page = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
+  end
+
+  def set_submitted_items_ivars
+    @start            = params[:items_start].to_i
+    @window           = window_size
+    @permitted_params = params.permit(:collections_start, :items_start, :window)
+    @items            = Item.search.
+      institution(current_institution).
+      aggregations(false).
+      filter(Item::IndexFields::SUBMITTER, @user.id).
+      must_not(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
+      order(params[:sort] => params[:direction] == "desc" ? :desc : :asc).
+      limit(@window).
+      start(@start)
+    @items             = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
+    @count             = @items.count
+    @current_page      = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
+    @submissions       = @user.submitted_items.
+      where(stage: Item::Stages::SUBMITTING).
+      order(updated_at: :desc)
+    @submissions_count = @submissions.count
+  end
 
   def set_user
     @user = User.find(params[:id] || params[:user_id])

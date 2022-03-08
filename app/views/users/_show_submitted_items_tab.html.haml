@@ -8,6 +8,7 @@
       .col-4
         .input-group
           = sort_menu(MetadataProfile.default)
-  = render partial: "items/listing", locals: { start_arg: :items_start }
+  #items-xhr-content
+    -# items/listing inserted here via XHR
 - else
   This user has not submitted any items.
