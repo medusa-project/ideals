@@ -190,10 +190,14 @@ class AbstractRelation
     if orders
       @orders = [] # reset them
       if orders.respond_to?(:keys)
-        @orders << { field: orders.keys.first,
+        field = orders.keys.first
+        field = field.present? ? field : ElasticsearchIndex::StandardFields::SCORE
+        @orders << { field:     field,
                      direction: orders[orders.keys.first] }
       else
-        @orders << { field: orders.to_s, direction: :asc }
+        field = orders.to_s
+        field = field.present? ? field : ElasticsearchIndex::StandardFields::SCORE
+        @orders << { field: field, direction: :asc }
       end
       @loaded = false
     else
@@ -492,12 +496,14 @@ class AbstractRelation
       # Order by explicit orders, if provided; otherwise sort by the metadata
       # profile's default order, if @orders is set to true; otherwise don't
       # sort.
-      if @orders.respond_to?(:any?) and @orders.any?
+      if @orders.respond_to?(:any?) && @orders.any?
         j.sort do
           @orders.each do |order|
-            j.set! order[:field] do
-              j.order order[:direction]
-              j.unmapped_type 'keyword'
+            j.child! do
+              j.set! order[:field] do
+                j.order order[:direction]
+                j.unmapped_type "keyword" unless order[:field] == ElasticsearchIndex::StandardFields::SCORE
+              end
             end
           end
         end

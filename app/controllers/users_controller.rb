@@ -58,7 +58,7 @@ class UsersController < ApplicationController
         aggregations(false).
         filter(Item::IndexFields::SUBMITTER, @user.id).
         must_not(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
-        order(params[:sort]).
+        order(params[:sort] => params[:direction] == "desc" ? :desc : :asc).
         limit(@window).
         start(@start)
     @items             = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)

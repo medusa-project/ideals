@@ -58,8 +58,9 @@ const UnitView = function() {
             const tabContent = $("#items-tab-content");
             tabContent.html(data);
 
-            const filterField = tabContent.find("input[name=q]");
-            const sortMenu    = tabContent.find("select[name=sort]");
+            const filterField     = tabContent.find("input[name=q]");
+            const sortMenu        = tabContent.find("select[name=sort]");
+            const directionRadios = tabContent.find("input[name=direction]");
 
             const attachResultsEventListeners = function() {
                 $(".page-link").on("click", function(e) {
@@ -95,9 +96,23 @@ const UnitView = function() {
                 clearTimeout(timeout);
                 timeout = setTimeout(refreshResults, IDEALS.KEY_DELAY);
             });
+
+            const showOrHideDirectionRadios = function() {
+                const directionButtonGroup = directionRadios.parents(".btn-group");
+                if (sortMenu.val() === "") { // relevance/no sort
+                    directionButtonGroup.hide();
+                } else {
+                    directionButtonGroup.show();
+                }
+            };
             sortMenu.on("change", function() {
+                showOrHideDirectionRadios();
                 refreshResults();
             });
+            directionRadios.on("change", function() {
+                refreshResults();
+            });
+            showOrHideDirectionRadios();
             attachResultsEventListeners();
             refreshResults();
         });

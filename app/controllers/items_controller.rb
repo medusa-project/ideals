@@ -171,7 +171,7 @@ class ItemsController < ApplicationController
         aggregations(true).
         query_all(results_params[:q]).
         facet_filters(results_params[:fq]).
-        order(params[:sort]).
+        order(params[:sort] => params[:direction] == "desc" ? :desc : :asc).
         start(@start).
         limit(@window)
     @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)

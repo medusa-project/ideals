@@ -399,7 +399,7 @@ class UnitsController < ApplicationController
       institution(current_institution).
       query_all(params[:q]).
       filter(Item::IndexFields::UNITS, params[:unit_id]).
-      order(params[:sort]).
+      order(params[:sort] => params[:direction] == "desc" ? :desc : :asc).
       start(@start).
       limit(@window)
     @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)

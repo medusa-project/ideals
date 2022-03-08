@@ -978,9 +978,23 @@ const ideals_ready = function () {
     }
 
     // Submit forms when a "sort" select menu changes.
-    $("[name=sort]").on("change", function() {
+    const sortMenu              = $("[name=sort]");
+    const directionButtons      = $("[name=direction]");
+    const directionButtionGroup = directionButtons.parents(".btn-group");
+    sortMenu.on("change", function() {
         $(this).parents("form:first").submit();
     });
+    // Submit forms when a "direction" radio changes.
+    directionButtons.on("change", function() {
+        $(this).parents("form:first").submit();
+    });
+    // Hide the direction radios when the sort is by relevance.
+    if ($("[name=sort]").val() === "") {
+        directionButtionGroup.hide();
+    } else {
+        directionButtionGroup.show();
+    }
+
     /*
     // Save the last-selected tab in a cookie.
     $('a[data-toggle="tab"]').on('click', function(e) {

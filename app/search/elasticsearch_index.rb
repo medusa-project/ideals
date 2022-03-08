@@ -35,6 +35,7 @@ class ElasticsearchIndex
     INSTITUTION_KEY = "k_institution_key"
     LAST_INDEXED    = "d_last_indexed"
     LAST_MODIFIED   = "d_last_modified"
+    SCORE           = "_score"
     SEARCH_ALL      = "search_all"
   end
 

@@ -489,7 +489,7 @@ class CollectionsController < ApplicationController
       aggregations(false).
       query_all(params[:q]).
       filter(Item::IndexFields::COLLECTIONS, params[:collection_id]).
-      order(params[:sort]).
+      order(params[:sort] => params[:direction] == "desc" ? :desc : :asc).
       start(@start).
       limit(@window)
     @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)

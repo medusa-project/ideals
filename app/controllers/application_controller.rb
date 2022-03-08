@@ -222,7 +222,7 @@ class ApplicationController < ActionController::Base
   end
 
   def results_params
-    params.permit(:q, :sort, :start, :window, fq: [])
+    params.permit(:direction, :q, :sort, :start, :window, fq: [])
   end
 
   ##

@@ -459,9 +459,14 @@ module ApplicationHelper
 
     html = StringIO.new
     if sortable_elements.any?
+      # Select menu
       html << '<select name="sort" class="custom-select">'
       html <<   '<optgroup label="Sort By&hellip;">'
-      html <<     '<option value="">Relevance</option>'
+      if params[:q].present?
+        html <<   '<option value="">Relevance</option>'
+      else
+        html <<   '<option value="">No Sort</option>'
+      end
       # If there is an element in the ?sort= query, select that. Otherwise,
       # select the metadata profile's default sort element.
       selected_element = sortable_elements.
@@ -474,6 +479,17 @@ module ApplicationHelper
       end
       html <<   '</optgroup>'
       html << '</select>'
+
+      # Ascending/descending radios
+      desc = params[:direction] == "desc"
+      html << '<div class="btn-group btn-group-toggle ml-1" data-toggle="buttons">'
+      html <<   "<label class=\"btn btn-default btn-outline-primary #{!desc ? "active" : ""}\">"
+      html <<     '<input type="radio" name="direction" value="asc" autocomplete="off" checked> &uarr;'
+      html <<   '</label>'
+      html <<   "<label class=\"btn btn-default btn-outline-primary #{desc ? "active" : ""}\">"
+      html <<     '<input type="radio" name="direction" value="desc" autocomplete="off"> &darr;'
+      html <<   '</label>'
+      html << '</div>'
     end
     raw(html.string)
   end
