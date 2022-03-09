@@ -10,15 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_17_160730) do
-
+ActiveRecord::Schema[7.0].define(version: 2022_03_09_202719) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "ad_groups", force: :cascade do |t|
     t.string "urn"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["urn"], name: "index_ad_groups_on_urn", unique: true
   end
 
@@ -37,8 +36,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "administrator_groups", force: :cascade do |t|
     t.bigint "unit_id", null: false
     t.bigint "user_group_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["unit_id"], name: "index_administrator_groups_on_unit_id"
     t.index ["user_group_id"], name: "index_administrator_groups_on_user_group_id"
   end
@@ -46,8 +45,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "administrators", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "unit_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.boolean "primary", default: false, null: false
     t.index ["unit_id", "user_id"], name: "index_administrators_on_unit_id_and_user_id", unique: true
     t.index ["unit_id"], name: "index_administrators_on_unit_id"
@@ -57,8 +56,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
 
   create_table "affiliations", force: :cascade do |t|
     t.string "name", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "key", null: false
     t.index ["key"], name: "index_affiliations_on_key", unique: true
     t.index ["name"], name: "index_affiliations_on_name", unique: true
@@ -75,8 +74,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.text "string", null: false
     t.bigint "registered_element_id", null: false
     t.bigint "item_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "uri"
     t.index ["item_id"], name: "index_ascribed_elements_on_item_id"
     t.index ["registered_element_id"], name: "index_ascribed_elements_on_registered_element_id"
@@ -85,8 +84,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "bitstream_authorizations", force: :cascade do |t|
     t.bigint "item_id", null: false
     t.bigint "user_group_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_bitstream_authorizations_on_item_id"
     t.index ["user_group_id"], name: "index_bitstream_authorizations_on_user_group_id"
   end
@@ -95,8 +94,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.string "staging_key"
     t.bigint "length"
     t.bigint "item_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "original_filename"
     t.string "medusa_uuid"
     t.string "medusa_key"
@@ -117,16 +116,16 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.bigint "collection_id", null: false
     t.bigint "item_id", null: false
     t.boolean "primary", default: false, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["collection_id", "item_id"], name: "index_collection_item_memberships_on_collection_id_and_item_id", unique: true
     t.index ["collection_id"], name: "index_collection_item_memberships_on_collection_id"
     t.index ["item_id"], name: "index_collection_item_memberships_on_item_id"
   end
 
   create_table "collections", force: :cascade do |t|
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.bigint "metadata_profile_id"
     t.bigint "submission_profile_id"
     t.bigint "parent_id"
@@ -146,20 +145,21 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "departments", force: :cascade do |t|
     t.string "name", null: false
     t.bigint "user_group_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_group_id"], name: "index_departments_on_user_group_id"
     t.index ["user_id"], name: "index_departments_on_user_id"
   end
 
   create_table "embargoes", force: :cascade do |t|
-    t.datetime "expires_at", precision: 6, null: false
+    t.datetime "expires_at", null: false
     t.boolean "full_access", default: true, null: false
     t.boolean "download", default: true, null: false
     t.bigint "item_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "reason"
     t.index ["expires_at"], name: "index_embargoes_on_expires_at"
     t.index ["item_id"], name: "index_embargoes_on_item_id"
   end
@@ -171,10 +171,10 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.text "before_changes"
     t.text "after_changes"
     t.bigint "item_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.bigint "bitstream_id"
-    t.datetime "happened_at", precision: 6, default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "happened_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["bitstream_id"], name: "index_events_on_bitstream_id"
     t.index ["event_type"], name: "index_events_on_event_type"
     t.index ["happened_at"], name: "index_events_on_happened_at"
@@ -187,8 +187,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.bigint "unit_id"
     t.bigint "collection_id"
     t.bigint "item_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["collection_id"], name: "index_handles_on_collection_id"
     t.index ["item_id"], name: "index_handles_on_item_id"
     t.index ["suffix"], name: "index_handles_on_suffix", unique: true
@@ -198,8 +198,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "hosts", force: :cascade do |t|
     t.string "pattern", null: false
     t.bigint "user_group_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["user_group_id"], name: "index_hosts_on_user_group_id"
   end
 
@@ -211,8 +211,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.text "files"
     t.text "imported_items"
     t.string "last_error_message"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "kind"
     t.index ["collection_id"], name: "index_imports_on_collection_id"
     t.index ["kind"], name: "index_imports_on_kind"
@@ -224,8 +224,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.string "key", null: false
     t.string "name", null: false
     t.string "org_dn", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "fqdn", null: false
     t.boolean "default", default: false, null: false
     t.index ["default"], name: "index_institutions_on_default"
@@ -236,9 +236,9 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
 
   create_table "invitees", force: :cascade do |t|
     t.string "email", null: false
-    t.datetime "expires_at", precision: 6, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.text "note", null: false
     t.string "approval_state", default: "pending", null: false
     t.bigint "inviting_user_id"
@@ -247,8 +247,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   end
 
   create_table "items", force: :cascade do |t|
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.bigint "submitter_id"
     t.boolean "discoverable", default: false, null: false
     t.integer "stage", default: 0, null: false
@@ -265,10 +265,10 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.boolean "activated", default: false
     t.string "reset_digest"
     t.bigint "invitee_id"
-    t.datetime "reset_sent_at", precision: 6
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.datetime "activated_at", precision: 6
+    t.datetime "reset_sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "activated_at"
     t.string "registration_digest"
     t.string "name", null: false
     t.index ["email"], name: "index_local_identities_on_email", unique: true
@@ -278,8 +278,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "manager_groups", force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "user_group_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["collection_id"], name: "index_manager_groups_on_collection_id"
     t.index ["user_group_id"], name: "index_manager_groups_on_user_group_id"
   end
@@ -287,8 +287,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "managers", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "collection_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["collection_id", "user_id"], name: "index_managers_on_collection_id_and_user_id", unique: true
     t.index ["collection_id"], name: "index_managers_on_collection_id"
     t.index ["user_id"], name: "index_managers_on_user_id"
@@ -300,10 +300,10 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.string "status"
     t.string "medusa_key"
     t.string "medusa_uuid"
-    t.datetime "response_time", precision: 6
+    t.datetime "response_time"
     t.string "error_text"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "operation", null: false
     t.bigint "bitstream_id"
     t.text "raw_request"
@@ -319,8 +319,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.boolean "facetable", default: false, null: false
     t.boolean "searchable", default: false, null: false
     t.boolean "sortable", default: false, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["facetable"], name: "index_metadata_profile_elements_on_facetable"
     t.index ["index"], name: "index_metadata_profile_elements_on_index"
     t.index ["metadata_profile_id"], name: "index_metadata_profile_elements_on_metadata_profile_id"
@@ -333,8 +333,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "metadata_profiles", force: :cascade do |t|
     t.string "name", null: false
     t.boolean "default", default: false, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.bigint "institution_id", null: false
     t.index ["default"], name: "index_metadata_profiles_on_default"
     t.index ["institution_id"], name: "index_metadata_profiles_on_institution_id"
@@ -344,8 +344,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "registered_elements", force: :cascade do |t|
     t.string "name", null: false
     t.text "scope_note"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "uri"
     t.string "label", null: false
     t.bigint "institution_id", null: false
@@ -363,8 +363,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.text "help_text"
     t.boolean "repeatable", default: false, null: false
     t.boolean "required", default: true, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.text "placeholder_text"
     t.index ["index"], name: "index_submission_profile_elements_on_index"
     t.index ["registered_element_id"], name: "index_submission_profile_elements_on_registered_element_id"
@@ -376,8 +376,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "submission_profiles", force: :cascade do |t|
     t.string "name", null: false
     t.boolean "default", default: false, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.bigint "institution_id", null: false
     t.index ["default"], name: "index_submission_profiles_on_default"
     t.index ["institution_id"], name: "index_submission_profiles_on_institution_id"
@@ -387,8 +387,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "submitter_groups", force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "user_group_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["collection_id"], name: "index_submitter_groups_on_collection_id"
     t.index ["user_group_id"], name: "index_submitter_groups_on_user_group_id"
   end
@@ -396,8 +396,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "submitters", force: :cascade do |t|
     t.bigint "collection_id"
     t.bigint "user_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["collection_id", "user_id"], name: "index_submitters_on_collection_id_and_user_id", unique: true
     t.index ["collection_id"], name: "index_submitters_on_collection_id"
     t.index ["user_id"], name: "index_submitters_on_user_id"
@@ -408,8 +408,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.bigint "unit_id", null: false
     t.boolean "unit_default", default: false, null: false
     t.boolean "primary", default: false, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["collection_id"], name: "index_unit_collection_memberships_on_collection_id"
     t.index ["unit_id", "collection_id"], name: "index_unit_collection_memberships_on_unit_id_and_collection_id", unique: true
     t.index ["unit_id"], name: "index_unit_collection_memberships_on_unit_id"
@@ -418,8 +418,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
   create_table "units", force: :cascade do |t|
     t.string "title"
     t.bigint "parent_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.bigint "institution_id"
     t.text "short_description"
     t.text "introduction"
@@ -431,8 +431,8 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
 
   create_table "user_groups", force: :cascade do |t|
     t.string "name", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "key", null: false
     t.index ["key"], name: "index_user_groups_on_key", unique: true
     t.index ["name"], name: "index_user_groups_on_name", unique: true
@@ -449,14 +449,14 @@ ActiveRecord::Schema.define(version: 2022_02_17_160730) do
     t.string "uid", null: false
     t.string "name", null: false
     t.string "email", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "type", null: false
     t.string "phone"
     t.bigint "local_identity_id"
     t.string "org_dn"
     t.bigint "affiliation_id"
-    t.datetime "last_logged_in_at", precision: 6
+    t.datetime "last_logged_in_at"
     t.text "auth_hash"
     t.index ["affiliation_id"], name: "index_users_on_affiliation_id"
     t.index ["email"], name: "index_users_on_email", unique: true

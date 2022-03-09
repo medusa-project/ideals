@@ -17,11 +17,13 @@
           %th Downloads Restricted
           %th All Access Restricted
           %th Expires
+          %th Reason
       %tbody
         - embargoes.each do |embargo|
           %tr
             %td= boolean(embargo.download, style: :word, invert_color: true)
             %td= boolean(embargo.full_access, style: :word, invert_color: true)
             %td= local_date(embargo.expires_at)
+            %td= embargo.reason
   - else
     This item has no embargoes.

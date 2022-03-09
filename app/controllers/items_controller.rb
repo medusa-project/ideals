@@ -415,6 +415,7 @@ class ItemsController < ApplicationController
         end
         @item.embargoes.build(download:    embargo[:download] == "true",
                               full_access: embargo[:full_access] == "true",
+                              reason:      embargo[:reason],
                               expires_at:  TimeUtils.ymd_to_time(embargo[:expires_at_year],
                                                                  embargo[:expires_at_month],
                                                                  embargo[:expires_at_day])).save!

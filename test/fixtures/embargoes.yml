@@ -3,3 +3,4 @@ one:
   expires_at: <%= Time.now + 1.hour %>
   download: true
   full_access: true
+  reason:

@@ -1,5 +1,5 @@
 ##
-# Restricts {Item} access until an expiration date.
+# Restricts [Item] access until an expiration date.
 #
 # # Attributes
 #
@@ -8,6 +8,7 @@
 # * `expires_at`  Date/time at which the embargo expires.
 # * `full_access` If true, all access to the item is restricted.
 # * `item_id`     References the owning {Item}.
+# * `reason`      Reason for the embargo.
 # * `updated_at`  Managed by ActiveRecord.
 #
 class Embargo < ApplicationRecord
