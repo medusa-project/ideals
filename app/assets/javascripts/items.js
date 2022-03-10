@@ -145,10 +145,9 @@ const ItemView = function() {
         $.get(url, function(data) {
             const modalBody = $("#edit-item-embargoes-modal .modal-body");
             modalBody.html(data);
-            const table = modalBody.find("table");
 
-            const updateRowIndices = function() {
-                table.find("tbody > tr").each(function(index, element) {
+            const updateEmbargoIndices = function() {
+                modalBody.find(".card").each(function(index, element) {
                     $(element).find("input, select").each(function() {
                         const input = $(this);
                         const newId = input.attr("id")
@@ -160,25 +159,48 @@ const ItemView = function() {
                     });
                 });
             };
-            const onRemove = function() {
-                const parentRow = $(this).parents("tr");
-                if (table.find("tbody > tr").length > 1) {
-                    parentRow.remove();
-                    updateRowIndices();
-                } else {
-                    parentRow.hide();
-                    parentRow.find("input[type=checkbox]").prop("checked", false);
-                }
-            };
-            modalBody.find(".remove").on("click", onRemove);
-            modalBody.find(".add").on("click", function() {
-                const lastEmbargo = table.find("tr:last");
-                const newEmbargo = lastEmbargo.clone();
+            const onAddEmbargoClicked = function() {
+                const lastEmbargo = modalBody.find(".card:last");
+                const newEmbargo  = lastEmbargo.clone();
                 lastEmbargo.after(newEmbargo);
                 newEmbargo.show();
-                updateRowIndices();
-                newEmbargo.find(".remove").on("click", onRemove);
-            });
+                updateEmbargoIndices();
+                newEmbargo.find(".remove-embargo").on("click", onRemoveEmbargoClicked);
+                newEmbargo.find(".remove-user-group").on("click", onRemoveUserGroupClicked);
+                newEmbargo.find(".add-user-group").on("click", onAddUserGroupClicked);
+            };
+            const onRemoveEmbargoClicked = function() {
+                const cardToRemove = $(this).parents(".card");
+                if (modalBody.find(".card").length > 1) {
+                    cardToRemove.remove();
+                    updateEmbargoIndices();
+                } else {
+                    cardToRemove.hide();
+                    cardToRemove.find("input[type=checkbox]").prop("checked", false);
+                }
+            };
+            modalBody.find(".remove-embargo").on("click", onRemoveEmbargoClicked);
+            modalBody.find(".add-embargo").on("click", onAddEmbargoClicked);
+
+            const onAddUserGroupClicked = function() {
+                const lastUserGroup = $(this).parents(".form-group").find(".user-group:last");
+                const newUserGroup  = lastUserGroup.clone();
+                lastUserGroup.after(newUserGroup);
+                newUserGroup.show();
+                newUserGroup.find("select").attr("disabled", false);
+                newUserGroup.find(".remove-user-group").on("click", onRemoveUserGroupClicked);
+            };
+            const onRemoveUserGroupClicked = function() {
+                const containersToRemove = $(this).parents(".user-group");
+                if (containersToRemove.length > 1) {
+                    containersToRemove.remove();
+                } else {
+                    containersToRemove.hide();
+                    containersToRemove.find("select").attr("disabled", true);
+                }
+            };
+            modalBody.find(".remove-user-group").on("click", onRemoveUserGroupClicked);
+            modalBody.find(".add-user-group").on("click", onAddUserGroupClicked);
         });
     });
     $(".edit-item-membership").on("click", function() {

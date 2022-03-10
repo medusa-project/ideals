@@ -21,6 +21,7 @@ class UserGroup < ApplicationRecord
 
   has_and_belongs_to_many :ad_groups
   has_and_belongs_to_many :affiliations
+  has_and_belongs_to_many :embargoes
   has_and_belongs_to_many :users
 
   validates :name, presence: true # uniqueness enforced by database constraints

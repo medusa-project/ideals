@@ -11,12 +11,18 @@
 # * `reason`      Reason for the embargo.
 # * `updated_at`  Managed by ActiveRecord.
 #
+# # Relationships
+#
+# * `item`        The owning [Item].
+# * `user_groups` Zero or more [UserGroup]s that are exempt from the embargo.
+#
 class Embargo < ApplicationRecord
 
   include Auditable
 
   scope :current, -> { where("expires_at > NOW()")}
   belongs_to :item
+  has_and_belongs_to_many :user_groups, -> { order(:name) }
 
   validate :validate_expiration
   validate :validate_restrictions

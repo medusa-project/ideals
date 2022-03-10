@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_09_202719) do
+ActiveRecord::Schema[7.0].define(version: 2022_03_09_210332) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -162,6 +162,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_09_202719) do
     t.text "reason"
     t.index ["expires_at"], name: "index_embargoes_on_expires_at"
     t.index ["item_id"], name: "index_embargoes_on_item_id"
+  end
+
+  create_table "embargoes_user_groups", id: false, force: :cascade do |t|
+    t.bigint "embargo_id", null: false
+    t.bigint "user_group_id", null: false
+    t.index ["embargo_id", "user_group_id"], name: "index_embargoes_user_groups_on_embargo_id_and_user_group_id", unique: true
   end
 
   create_table "events", force: :cascade do |t|
@@ -486,6 +492,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_09_202719) do
   add_foreign_key "departments", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "departments", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "embargoes", "items", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "embargoes_user_groups", "embargoes", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "embargoes_user_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "bitstreams", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "users", on_update: :cascade, on_delete: :cascade

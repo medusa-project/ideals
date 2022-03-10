@@ -223,6 +223,11 @@ body#show_item {
       padding-left: 0;
     }
   }
+  .embargoes {
+    ul {
+      margin: 0;
+    }
+  }
   #events-accordion {
     .card-header {
       cursor: pointer;

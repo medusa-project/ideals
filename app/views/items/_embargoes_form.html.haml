@@ -12,67 +12,14 @@
   -# Include this only because `item` is required in the params.
   = f.hidden_field :id, value: f.object.id
 
-  %table.table
-    %tbody
-      - embargoes = item.current_embargoes.order(:expires_at)
-      - if embargoes.any?
-        - embargoes.each_with_index do |embargo, index|
-          %tr
-            %td
-              .form-check
-                %label
-                  = check_box_tag "embargoes[#{index}][download]", "true",
-                                  embargo.download, class: 'form-check-input'
-                  Restrict Downloads
-              .form-check
-                %label
-                  = check_box_tag "embargoes[#{index}][full_access]", "true",
-                                  embargo.full_access, class: 'form-check-input'
-                  Restrict All Access
-            %td
-              Until:
-              .form-inline
-                = date_picker(month_select_name: "embargoes[#{index}][expires_at_month]",
-                              day_select_name:   "embargoes[#{index}][expires_at_day]",
-                              year_select_name:  "embargoes[#{index}][expires_at_year]",
-                              selected_month:    embargo.expires_at.month,
-                              selected_day:      embargo.expires_at.day,
-                              selected_year:     embargo.expires_at.year,
-                              latest_year:       Time.now.year + 10)
-            %td
-              = text_area_tag "embargoes[#{index}][reason]", nil, class: "form-control",
-                              placeholder: "Add reason here"
-            %td.text-right
-              %button.btn.btn-danger.remove.ml-3{type: "button"}
-                %i.fa.fa-minus
-      - else
-        %tr
-          %td
-            .form-check
-              %label
-                = check_box_tag "embargoes[0][download]", "true",
-                                false, class: 'form-check-input'
-                Restrict Downloads
-            .form-check
-              %label
-                = check_box_tag "embargoes[0][full_access]", "true",
-                                false, class: 'form-check-input'
-                Restrict All Access
-          %td
-            Until:
-            .form-inline
-              = date_picker(month_select_name: "embargoes[0][expires_at_month]",
-                            day_select_name:   "embargoes[0][expires_at_day]",
-                            year_select_name:  "embargoes[0][expires_at_year]",
-                            latest_year:       Time.now.year + 10)
-          %td
-            = text_area_tag "embargoes[0][reason]", nil, class: "form-control",
-                            placeholder: "Add reason here"
-          %td.text-right
-            %button.btn.btn-danger.remove.ml-3{type: "button"}
-              %i.fa.fa-minus
+  - embargoes = item.current_embargoes.order(:expires_at)
+  - if embargoes.any?
+    - embargoes.each_with_index do |embargo, index|
+      = embargoes_form_card(embargo: embargo, index: index)
+  - else
+    = embargoes_form_card
 
-  %button.btn.btn-success.add{type: "button"}
+  %button.btn.btn-success.add-embargo{type: "button"}
     %i.fa.fa-plus
 
   .clearfix
