@@ -380,6 +380,7 @@ namespace :ideals_dspace do
                  args[:source_db_password],
                  "export_item_metadata.sql",
                  :import_item_metadata)
+      IdealsImporter.instance.process_embargoes
     end
 
     desc "Incrementally migrate item metadata from IDEALS-DSpace into the application"

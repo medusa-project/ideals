@@ -467,6 +467,46 @@ class IdealsImporter
   end
 
   ##
+  # Must be run after {import_item_metadata}.
+  #
+  def process_embargoes
+    @running = true
+    count    = Item.count
+    progress = Progress.new(count)
+    Item.uncached do
+      Item.find_each.with_index do |item, index|
+        expires_at = item.element("dc:date:embargo")&.string&.strip
+        if expires_at.present?
+          begin
+            expires_at = Time.parse(expires_at)
+            if expires_at > Time.now
+              case item.element("dc:description:terms")&.string
+              when "U of I Only"
+                group = UserGroup.find_by_key("uiuc")
+              when "Limited"
+                group = UserGroup.sysadmin
+              else
+                group = nil
+              end
+              embargo_reason = item.element("dc:description:reason")&.string
+              groups = group ? [group] : []
+              item.embargoes.build(download:    true,
+                                   full_access: true,
+                                   expires_at:  expires_at,
+                                   user_groups: groups,
+                                   reason:      embargo_reason).save!
+            end
+          rescue ArgumentError
+          end
+        end
+        progress.report(index, "Processing item embargoes")
+      end
+    end
+  ensure
+    @running = false
+  end
+
+  ##
   # @param csv_pathname [String]
   #
   def import_items(csv_pathname)

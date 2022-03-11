@@ -10,6 +10,9 @@ lg = AdGroup.create!(urn: "urn:mace:uiuc.edu:urbana:library:units:ideals:library
 ug.ad_groups << lg
 ug.save!
 
+ug = UserGroup.create!(key: "uiuc",
+                       name: "UIUC Users")
+
 puts <<-eos
 
 NOTE: In a typical Rails app, `db:seed` initializes the database with default
