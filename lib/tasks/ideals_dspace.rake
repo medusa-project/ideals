@@ -18,22 +18,22 @@ namespace :ideals_dspace do
     # left off.
     #
     desc "Copy all IDEALS-DSpace bitstreams into IDEALS"
-    task :copy, [:ideals_dspace_ssh_user] => :environment do |task, args|
+    task :copy, [:ideals_dspace_ssh_user, :num_threads] => :environment do |task, args|
+      num_threads = args[:num_threads].to_i
       Dir.mktmpdir do |tmpdir|
-        puts "Temp directory: #{tmpdir}"
         Bitstream.uncached do
-          bitstreams      = Bitstream.
+          bitstreams = Bitstream.
             where(permanent_key: [nil, ""]).
             where.not(dspace_id: [nil, ""]).
             order(:length)
-          bitstream_count = bitstreams.count
-          progress        = Progress.new(bitstream_count)
-          puts "#{bitstream_count} bitstreams left"
-
-          bitstreams.find_each.with_index do |bitstream, index|
+          puts "#{bitstreams.count} bitstreams to copy"
+          puts "Temp directory: #{tmpdir}"
+          ThreadUtils.process_in_parallel(bitstreams,
+                                          num_threads:    num_threads,
+                                          print_progress: true) do |bitstream|
             # Download the file into the temp directory
             remote_path = IDEALS_DSPACE_ASSET_STORE_PATH +
-                bitstream.dspace_relative_path
+              bitstream.dspace_relative_path
             local_path  = File.join(tmpdir, "#{bitstream.id}")
 
             `scp #{args[:ideals_dspace_ssh_user]}@#{IDEALS_DSPACE_HOSTNAME}:#{remote_path} #{local_path}`
@@ -46,10 +46,10 @@ namespace :ideals_dspace do
               bitstream.save!
             rescue => e
               puts "#{e} (bitstream ID; #{bitstream.id})"
+              puts e.backtrace
             end
             # Delete it from the temp directory
             File.delete(local_path)
-            progress.report(index, "Copying files from IDEALS-DSpace into Medusa")
           end
         end
       end
