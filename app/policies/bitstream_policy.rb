@@ -71,9 +71,13 @@ class BitstreamPolicy < ApplicationPolicy
         reason:     "You must be a manager of the primary collection in "\
                     "which the file's item resides."
       }
-    elsif bitstream.item.current_embargoes.count > 0
-      return { authorized: false,
-               reason: "This file's owning item is embargoed." }
+    elsif bitstream.item.current_embargoes.any?
+      bitstream.item.current_embargoes.each do |embargo|
+        unless user && embargo.exempt?(user)
+          return { authorized: false,
+                   reason:     "This file's owning item is embargoed." }
+        end
+      end
     elsif role && role < bitstream.role
       return { authorized: false,
                reason:     "Your role is not allowed to access this file." }

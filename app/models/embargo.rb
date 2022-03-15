@@ -44,6 +44,17 @@ class Embargo < ApplicationRecord
     }
   end
 
+  ##
+  # @param user [User]
+  # @return [Boolean] Whether the given user is exempt from the embargo.
+  #
+  def exempt?(user)
+    self.user_groups.each do |group|
+      return true if group.includes?(user)
+    end
+    false
+  end
+
 
   private
 

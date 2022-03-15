@@ -14,6 +14,23 @@ class EmbargoTest < ActiveSupport::TestCase
     assert_equal(expires.day, Time.parse(actual['d_expires_at']).day)
   end
 
+  # exempt?()
+
+  test "exempt?() returns false when the given user is not exempt from the
+  embargo" do
+    embargo = embargoes(:one)
+    user    = users(:norights)
+    assert !embargo.exempt?(user)
+  end
+
+  test "exempt?() returns true when the given user is exempt from the embargo" do
+    embargo = embargoes(:one)
+    user    = users(:local_sysadmin)
+    assert !embargo.exempt?(user)
+    embargo.user_groups << user_groups(:sysadmin)
+    assert embargo.exempt?(user)
+  end
+
   # validate()
 
   test "validate() does not allow expires_at to be in the past" do

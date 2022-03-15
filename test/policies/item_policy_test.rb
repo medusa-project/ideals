@@ -252,6 +252,23 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.download_counts?
   end
 
+  test "download_counts?() does not restrict access to embargoed items when the
+  current user is exempt from the embargo" do
+    user         = users(:norights)
+    group        = user_groups(:temp)
+    group.users << user
+    context      = RequestContext.new(user:        user,
+                                      institution: user.institution)
+    item         = items(:item1)
+    policy       = ItemPolicy.new(context, item)
+    assert policy.download_counts?
+
+    item.embargoes.build(expires_at:  Time.now + 1.hour,
+                         full_access: true,
+                         user_groups: [group]).save!
+    assert policy.download_counts?
+  end
+
   test "download_counts?() restricts access to buried items" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
@@ -791,6 +808,23 @@ class ItemPolicyTest < ActiveSupport::TestCase
     item.embargoes.build(expires_at: Time.now + 1.hour,
                          full_access: true).save!
     assert !policy.show?
+  end
+
+  test "show?() does not restrict access to embargoed items when the current
+  user is exempt from the embargo" do
+    user         = users(:norights)
+    group        = user_groups(:temp)
+    group.users << user
+    context      = RequestContext.new(user:        user,
+                                      institution: user.institution)
+    item         = items(:item1)
+    policy       = ItemPolicy.new(context, item)
+    assert policy.show?
+
+    item.embargoes.build(expires_at:  Time.now + 1.hour,
+                         full_access: true,
+                         user_groups: [group]).save!
+    assert policy.show?
   end
 
   test "show?() authorizes sysadmins to undiscoverable items" do

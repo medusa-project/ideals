@@ -154,7 +154,11 @@ class ItemPolicy < ApplicationPolicy
     elsif !@item.discoverable
       return { authorized: false, reason: "This item is not discoverable." }
     elsif @item.current_embargoes.where(full_access: true).count > 0
-      return { authorized: false, reason: "This item is embargoed." }
+      @item.current_embargoes.where(full_access: true).each do |embargo|
+        unless user && embargo.exempt?(user)
+          return { authorized: false, reason: "This item is embargoed." }
+        end
+      end
     end
     AUTHORIZED_RESULT
   end

@@ -294,6 +294,25 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.download?
   end
 
+  test "download?() does not restrict bitstreams whose owning items are
+  embargoed when the current user is exempt from all embargoes" do
+    user         = users(:norights)
+    group        = user_groups(:temp)
+    group.users << user
+
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    bitstream = bitstreams(:item2_in_medusa)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.download?
+
+    bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
+                                   full_access: true,
+                                   download:    true,
+                                   user_groups: [group]).save!
+    assert policy.download?
+  end
+
   test "download?() authorizes non-content bitstreams to collection managers" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
@@ -535,6 +554,25 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.object?
   end
 
+  test "object?() does not restrict bitstreams whose owning items are embargoed
+  when the current user is exempt from all embargoes" do
+    user         = users(:norights)
+    group        = user_groups(:temp)
+    group.users << user
+
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    bitstream = bitstreams(:item2_in_medusa)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.object?
+
+    bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
+                                   full_access: true,
+                                   download:    true,
+                                   user_groups: [group]).save!
+    assert policy.object?
+  end
+
   test "object?() authorizes non-content bitstreams to collection managers" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
@@ -626,6 +664,25 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
                                    download:   true).save!
     assert !policy.show?
+  end
+
+  test "show?() does not restrict bitstreams whose owning items are embargoed
+  when the current user is exempt from all embargoes" do
+    user         = users(:norights)
+    group        = user_groups(:temp)
+    group.users << user
+
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    bitstream = bitstreams(:item2_in_medusa)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.show?
+
+    bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
+                                   full_access: true,
+                                   download:    true,
+                                   user_groups: [group]).save!
+    assert policy.show?
   end
 
   test "show?() authorizes clients whose hostname or IP matches a user group
@@ -759,6 +816,25 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
                                    download:   true).save!
     assert !policy.stream?
+  end
+
+  test "stream?() does not restrict bitstreams whose owning items are embargoed
+  when the current user is exempt from all embargoes" do
+    user         = users(:norights)
+    group        = user_groups(:temp)
+    group.users << user
+
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    bitstream = bitstreams(:item2_in_medusa)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.stream?
+
+    bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
+                                   full_access: true,
+                                   download:    true,
+                                   user_groups: [group]).save!
+    assert policy.stream?
   end
 
   test "stream?() authorizes non-content bitstreams to collection managers" do
@@ -952,6 +1028,25 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
                                    download:   true).save!
     assert !policy.viewer?
+  end
+
+  test "viewer?() does not restrict bitstreams whose owning items are embargoed
+  when the current user is exempt from all embargoes" do
+    user         = users(:norights)
+    group        = user_groups(:temp)
+    group.users << user
+
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    bitstream = bitstreams(:item2_in_medusa)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.viewer?
+
+    bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
+                                   full_access: true,
+                                   download:    true,
+                                   user_groups: [group]).save!
+    assert policy.viewer?
   end
 
   test "viewer?() authorizes non-content bitstreams to collection managers" do
