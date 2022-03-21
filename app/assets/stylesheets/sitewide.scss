@@ -75,6 +75,11 @@ h1 {
   }
 }
 
+.active .badge { /* TODO: this should arguably go in the theme */
+  background: white;
+  color: $uofi-blue;
+}
+
 .nav {
   margin-bottom: 1em;
 }

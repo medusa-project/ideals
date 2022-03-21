@@ -602,6 +602,34 @@ class ItemTest < ActiveSupport::TestCase
     assert !@instance.submitting?
   end
 
+  # temp_embargo_expires_at
+
+  test "temp_embargo_expires_at must be in YYYY-MM-DD format" do
+    @instance.temp_embargo_expires_at = "bogus"
+    assert !@instance.valid?
+    @instance.temp_embargo_expires_at = "2053-05-3"
+    assert !@instance.valid?
+    @instance.temp_embargo_expires_at = "2053-5-03"
+    assert !@instance.valid?
+    @instance.temp_embargo_expires_at = "20530503"
+    assert !@instance.valid?
+    @instance.temp_embargo_expires_at = "2053-05-03"
+    assert @instance.valid?
+  end
+
+  # temp_embargo_type
+
+  test "temp_embargo_type must be a valid value" do
+    @instance.temp_embargo_type = "bogus"
+    assert !@instance.valid?
+    @instance.temp_embargo_type = "open"
+    assert @instance.valid?
+    @instance.temp_embargo_type = "uofi"
+    assert @instance.valid?
+    @instance.temp_embargo_type = "closed"
+    assert @instance.valid?
+  end
+
   # title() (Describable concern)
 
   test "title() returns the title element value" do

@@ -18,28 +18,49 @@
 
 %ul.nav.nav-pills.nav-justified{role: "tablist"}
   %li.nav-item
-    %a#properties-tab.nav-link.active{"data-toggle": "tab",
-                                      href: "#properties",
-                                      role: "tab",
+    %a#properties-tab.nav-link.active{"data-toggle":   "tab",
+                                      href:            "#properties",
+                                      role:            "tab",
                                       "aria-controls": "properties",
-                                      "aria-selected": "true"} Step 1: Pick a Collection
+                                      "aria-selected": "true"}
+      %span.badge.badge-pill 1
+      Pick a Collection
+
   %li.nav-item
-    %a#metadata-tab.nav-link{"data-toggle": "tab",
-                             href: "#metadata",
-                             role: "tab",
+    %a#access-tab.nav-link{"data-toggle":   "tab",
+                           href:            "#access",
+                           role:            "tab",
+                           "aria-controls": "access",
+                           "aria-selected": "true"}
+      %span.badge.badge-pill 2
+      Access
+
+  %li.nav-item
+    %a#metadata-tab.nav-link{"data-toggle":   "tab",
+                             href:            "#metadata",
+                             role:            "tab",
                              "aria-controls": "metadata",
-                             "aria-selected": "true"} Step 2: Metadata
+                             "aria-selected": "true"}
+      %span.badge.badge-pill 3
+      Metadata
+
   %li.nav-item
-    %a#files-tab.nav-link{"data-toggle": "tab",
-                          href: "#files",
-                          role: "tab",
+    %a#files-tab.nav-link{"data-toggle":   "tab",
+                          href:            "#files",
+                          role:            "tab",
                           "aria-controls": "files",
-                          "aria-selected": "true"} Step 3: Files
+                          "aria-selected": "true"}
+      %span.badge.badge-pill 4
+      Files
 
 .tab-content
   #properties.tab-pane.fade.show.active{role: "tabpanel",
                                         "aria-labelledby": "properties-tab"}
     = render partial: "deposit_properties_form"
+
+  #access.tab-pane.fade{role: "tabpanel",
+                        "aria-labelledby": "access-tab"}
+    = render partial: "deposit_access_form"
 
   #metadata.tab-pane.fade{role: "tabpanel",
                           "aria-labelledby": "metadata-tab"}

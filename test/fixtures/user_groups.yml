@@ -18,6 +18,10 @@ temp:
   users:
   ad_groups:
 
+uiuc:
+  key: uiuc
+  name: U of I Users
+
 unused:
   key: unused
   name: Unused Group

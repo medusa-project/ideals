@@ -1,0 +1,87 @@
+-# frozen_string_literal: true
+
+= form_for(@item, url: submission_path(@item), remote: true,
+           html: { id: "access-form" }) do |f|
+  = token_tag(nil)
+
+  #access-messages.error-messages
+    -# populated via ajax
+
+  %section#type-section
+    .row.mb-3
+      .col-sm-10
+        .form-check.mb-1
+          = radio_button_tag("item[temp_embargo_type]", "open",
+                             f.object.temp_embargo_type == "open",
+                             class: "form-check-input")
+          = label_tag("item_temp_embargo_type_open",
+                      "Open",
+                      class: "form-check-label")
+        .form-check.mb-1
+          = radio_button_tag("item[temp_embargo_type]", "uofi",
+                             f.object.temp_embargo_type == "uofi",
+                             class: "form-check-input")
+          = label_tag("item_temp_embargo_type_uofi",
+                      "U of I-only",
+                      class: "form-check-label")
+        .form-check.mb-1
+          = radio_button_tag("item[temp_embargo_type]", "closed",
+                             f.object.temp_embargo_type == "closed",
+                             class: "form-check-input")
+          = label_tag("item_temp_embargo_type_closed",
+                      "Closed access (not recommended)",
+                      class: "form-check-label")
+        .form-check.mb-1{style: "display: none"}
+          = check_box_tag("item[temp_embargo_hide_records]", "true",
+                          false,
+                          class: "form-check-input")
+          = label_tag("item_temp_embargo_hide_records",
+                      "Hide records in search and browse",
+                      class: "form-check-label")
+      .col-sm-2.message
+        .text-success
+          %i.fa.fa-check
+          Value saved
+        .text-danger
+          %i.fa.fa-exclamation-triangle
+          Invalid value
+
+  %section#expiry-section{style: "display: none"}
+    .row.mb-3
+      .col-sm-10
+        = label_tag("item[temp_embargo_expires_at]", "Lift date")
+        = text_field_tag("item[temp_embargo_expires_at]",
+                         f.object.temp_embargo_expires_at,
+                         class: "form-control",
+                         placeholder: "YYYY-MM-DD")
+      .col-sm-2.message
+        .text-success
+          %i.fa.fa-check
+          Value saved
+        .text-danger
+          %i.fa.fa-exclamation-triangle
+          Invalid value
+
+  %section#reason-section{style: "display: none"}
+    .row.mb-3
+      .col-sm-10
+        = label_tag("item[temp_embargo_reason]", "Reason for restriction")
+        = text_area_tag("item[temp_embargo_reason]",
+                        f.object.temp_embargo_reason,
+                        class: "form-control")
+      .col-sm-2.message
+        .text-success
+          %i.fa.fa-check
+          Value saved
+        .text-danger
+          %i.fa.fa-exclamation-triangle
+          Invalid value
+
+  .text-center.mb-3
+    .btn-group{role: "group"}
+      %button.btn.btn-light.step-2-to-1{type: "button"}
+        %i.fa.fa-arrow-left
+        Previous Step
+      %button.btn.btn-light.step-2-to-3{type: "button"}
+        Next Step
+        %i.fa.fa-arrow-right

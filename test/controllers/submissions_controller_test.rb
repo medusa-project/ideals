@@ -75,6 +75,27 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
                  item.stage
   end
 
+  test "complete() attaches a correct Embargo" do
+    item = items(:submitting)
+    assert item.submitting?
+    log_in_as(item.submitter)
+    item.update!(temp_embargo_type:       "uofi",
+                 temp_embargo_expires_at: "2053-01-01",
+                 temp_embargo_reason:     "Test reason")
+    post submission_complete_path(item)
+
+    item.reload
+    assert_nil item.temp_embargo_type
+    assert_nil item.temp_embargo_expires_at
+    assert_nil item.temp_embargo_reason
+    assert_equal 1, item.embargoes.length
+    embargo = item.embargoes.first
+    assert_equal Time.parse("2053-01-01"), embargo.expires_at
+    assert_equal "Test reason", embargo.reason
+    assert_equal 1, embargo.user_groups.length
+    assert_equal "uiuc", embargo.user_groups.first.key
+  end
+
   # create()
 
   test "create() redirects to login page for logged-out users" do

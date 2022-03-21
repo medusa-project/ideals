@@ -37,6 +37,7 @@ class SubmissionsController < ApplicationController
     UpdateItemCommand.new(item:        @item,
                           user:        current_user,
                           description: "Completed the submission process.").execute do
+      build_embargo
       @item.complete_submission
       @item.save!
     end
@@ -115,6 +116,7 @@ class SubmissionsController < ApplicationController
     end
   end
 
+
   private
 
   def authorize_item
@@ -134,7 +136,9 @@ class SubmissionsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:submitter_id)
+    params.require(:item).permit(:submitter_id, :temp_embargo_type,
+                                 :temp_embargo_expires_at,
+                                 :temp_embargo_reason)
   end
 
   def set_item
@@ -142,7 +146,29 @@ class SubmissionsController < ApplicationController
   end
 
   ##
-  # Builds and ascribes {AscribedElement}s to the item based on user input.
+  # Builds and ascribes an [Embargo] to the item based on user input.
+  #
+  def build_embargo
+    ActiveRecord::Base.transaction do
+      @item.embargoes.destroy_all
+      if @item.temp_embargo_type != "open"
+        embargo = @item.embargoes.build(full_access: true,
+                                        download:    true,
+                                        expires_at:  Time.parse(@item.temp_embargo_expires_at),
+                                        reason:      @item.temp_embargo_reason)
+        if @item.temp_embargo_type == "uofi"
+          embargo.user_groups << UserGroup.find_by_key("uiuc")
+        end
+
+        @item.temp_embargo_type       = nil
+        @item.temp_embargo_expires_at = nil
+        @item.temp_embargo_reason     = nil
+      end
+    end
+  end
+
+  ##
+  # Builds and ascribes [AscribedElement]s to the item based on user input.
   # Doing this manually is easier than using Rails nested attributes.
   #
   def build_metadata
@@ -151,7 +177,7 @@ class SubmissionsController < ApplicationController
         @item.elements.destroy_all
         params[:elements].select{ |e| e[:string].present? }.each do |element|
           @item.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
-                               string:             element[:string]).save
+                               string:             element[:string])
         end
       end
     end

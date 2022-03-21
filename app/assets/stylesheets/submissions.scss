@@ -19,10 +19,23 @@ body#deposit-agreement-body {
 
 body#edit_submission {
   .message {
-    div {
+    .text-success, .text-danger {
       display: none;
     }
   }
+
+  // Access section
+
+  #item_temp_embargo_expires_at {
+    width: 9em;
+  }
+
+  #item_temp_embargo_reason {
+    height: 6em;
+  }
+
+  // Metadata section
+
   table.metadata {
     td:first-child {
       width: 30%;
@@ -37,6 +50,8 @@ body#edit_submission {
       display: none;
     }
   }
+
+  // Files section
 
   table.files {
     td {

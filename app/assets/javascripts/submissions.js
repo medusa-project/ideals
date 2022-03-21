@@ -89,6 +89,8 @@ const SubmissionForm = function() {
     const unitsMenu         = $("[name=unit_id]");
     const collectionSection = $("#collection-section");
     const collectionsMenu   = $("[name='item[primary_collection_id]']");
+    // Access section
+    const accessForm        = form.filter("#access-form");
     // Metadata section
     const metadataForm      = form.filter("#metadata-form");
     // Files section
@@ -100,13 +102,19 @@ const SubmissionForm = function() {
     var lastEditedInput;
 
     $("button.step-1-to-2").on("click", function() {
-        $("#metadata-tab").tab("show");
+        $("#access-tab").tab("show");
     });
     $("button.step-2-to-3").on("click", function() {
+        $("#metadata-tab").tab("show");
+    });
+    $("button.step-3-to-4").on("click", function() {
         $("#files-tab").tab("show");
     });
-    $("button.step-3-to-2").on("click", function() {
+    $("button.step-4-to-3").on("click", function() {
         $("#metadata-tab").tab("show");
+    });
+    $("button.step-3-to-2").on("click", function() {
+        $("#access-tab").tab("show");
     });
     $("button.step-2-to-1").on("click", function() {
         $("#properties-tab").tab("show");
@@ -121,7 +129,7 @@ const SubmissionForm = function() {
             if (lastEditedInput.is(":valid")) {
                 $.ajax({
                     type: form.attr("method"),
-                    url: form.attr("action"),
+                    url:  form.attr("action"),
                     data: form.serialize(),
                     success: function () {
                         successMessage.show();
@@ -142,8 +150,9 @@ const SubmissionForm = function() {
      * Should be called after every valid edit (except file uploads).
      *
      * @param lastEditedInput {jQuery}
+     * @param onError {Function} Optional.
      */
-    this.save = function(lastEditedInput) {
+    this.save = function(lastEditedInput, onError) {
         const localForm = lastEditedInput.parents("form");
         $.ajax({
             type: localForm.attr("method"),
@@ -155,35 +164,25 @@ const SubmissionForm = function() {
                 setTimeout(function () {
                     successMessage.fadeOut();
                 }, 4000);
-            }
+            },
+            error: onError
         });
     };
 
+    const setError = function(container, message) {
+        container.empty();
+        if (message != null) {
+            container.html("<div class='alert alert-danger'>" + message + "</div>");
+        }
+    };
+
+    /****************** Properties/Collections section *********************/
+
     const setPropertiesError = function(message) {
-        const messages = propertiesForm.find("#properties-messages");
-        messages.empty();
-        if (message != null) {
-            messages.html("<div class='alert alert-danger'>" + message + "</div>");
-        }
+        setError(propertiesForm.find("#properties-messages"), message);
     };
 
-    const setMetadataError = function(message) {
-        const messages = metadataForm.find("#metadata-messages");
-        messages.empty();
-        if (message != null) {
-            messages.html("<div class='alert alert-danger'>" + message + "</div>");
-        }
-    };
-
-    const setFilesError = function(message) {
-        const messages = filesForm.find("#files-messages");
-        messages.empty();
-        if (message != null) {
-            messages.html("<div class='alert alert-danger'>" + message + "</div>");
-        }
-    };
-
-    this.validateProperties = function() {
+    this.validatePropertiesSection = function() {
         // Check that a collection has been selected.
         if (collectionsMenu.val() > 0) {
             setPropertiesError(null);
@@ -193,40 +192,6 @@ const SubmissionForm = function() {
         }
         return true;
     };
-
-    this.validateMetadata = function(includeRequired) {
-        // Check that all required elements are filled in.
-        let isValid = true;
-        metadataForm.find("input[required], textarea[required]").each(function() {
-            if ($(this).val().length < 1) {
-                isValid = false;
-            }
-        });
-        if (isValid) {
-            setMetadataError(null);
-        } else if (includeRequired) {
-            setMetadataError("Please ensure that all required elements are filled in.");
-            return false;
-        }
-        return true;
-    };
-
-    this.validateFiles = function() {
-        setFilesError(null);
-        // Check that at least one file has been uploaded.
-        if (uploader.numUploadedFiles() < 1) {
-            setFilesError("You must upload at least one file.");
-            return false;
-        }
-        // Check that there are no uploads in progress.
-        if (uploader.numUploadingFiles() > 0) {
-            setFilesError("Wait for file uploads to complete.");
-            return false;
-        }
-        return true;
-    };
-
-    /****************** Properties/Collections section *********************/
 
     const fetchCollectionsForUnit = function(unitID, onComplete) {
         collectionSection.hide();
@@ -272,7 +237,94 @@ const SubmissionForm = function() {
         });
     }
 
+    /************************** Access section *****************************/
+
+    const setAccessError = function(message) {
+        setError(accessForm.find("#access-messages"), message);
+    };
+
+    this.validateAccessLiftDate = function() {
+        return accessForm.find("input[name='item[temp_embargo_expires_at]']").val()
+            .match(/\d{4}-\d{2}-\d{2}/);
+    }
+
+    this.validateAccessSection = function() {
+        if (accessForm.find("input[name='item[temp_embargo_type]']").val() !== "open") {
+            if (!self.validateAccessLiftDate()) {
+                setAccessError("Lift date must be in YYYY-MM-DD format.");
+                return false;
+            } else if (!accessForm.find("input[name='item[temp_embargo_reason]']").val().length < 1) {
+                setAccessError("Reason is required.");
+                return false;
+            }
+        }
+        setAccessError(null);
+        return true;
+    };
+
+    const showOrHideEmbargoElements = function() {
+        const typeCheckbox             = accessForm.find("input[name='item[temp_embargo_type]']");
+        const expirySection            = $("section#expiry-section");
+        const reasonSection            = $("section#reason-section");
+        const hideRecordsCheckboxGroup = $("section#type-section #item_temp_embargo_hide_records").parent();
+        if (typeCheckbox.filter(":checked").val() === "open") {
+            hideRecordsCheckboxGroup.hide();
+            expirySection.hide();
+            reasonSection.hide();
+        } else if (typeCheckbox.filter(":checked").val() === "closed") {
+            hideRecordsCheckboxGroup.show();
+            expirySection.show();
+            reasonSection.show();
+        } else { // U of I only
+            hideRecordsCheckboxGroup.hide();
+            expirySection.show();
+            reasonSection.show();
+        }
+    };
+
+    accessForm.find("input[name='item[temp_embargo_type]']").on("change", function() {
+        showOrHideEmbargoElements();
+    });
+    showOrHideEmbargoElements();
+
+    accessForm.find("input, select, textarea").on("change", function() {
+        self.save($(this));
+    });
+
+    accessForm.find("input[name='item[temp_embargo_expires_at]'").on("change", function() {
+        const messageDiv     = $(this).parents(".row").find(".message");
+        const successMessage = messageDiv.find(".text-success");
+        const errorMessage   = messageDiv.find(".text-danger");
+        if (self.validateAccessLiftDate()) {
+            errorMessage.hide();
+        } else {
+            successMessage.hide();
+            errorMessage.show();
+        }
+    });
+
     /************************* Metadata section ****************************/
+
+    const setMetadataError = function(message) {
+        setError(metadataForm.find("#metadata-messages"), message);
+    };
+
+    this.validateMetadataSection = function(includeRequired) {
+        // Check that all required elements are filled in.
+        let isValid = true;
+        metadataForm.find("input[required], textarea[required]").each(function() {
+            if ($(this).val().length < 1) {
+                isValid = false;
+            }
+        });
+        if (isValid) {
+            setMetadataError(null);
+        } else if (includeRequired) {
+            setMetadataError("Please ensure that all required elements are filled in.");
+            return false;
+        }
+        return true;
+    };
 
     /**
      * Reads the family name & given name text fields of person-type submission
@@ -325,7 +377,7 @@ const SubmissionForm = function() {
 
     const onElementChanged = function(element) {
         lastEditedInput = element;
-        self.validateMetadata(false);
+        self.validateMetadataSection(false);
         self.save(lastEditedInput);
     };
 
@@ -394,21 +446,44 @@ const SubmissionForm = function() {
 
     /*************************** Files section *****************************/
 
+    const setFilesError = function(message) {
+        setError(filesForm.find("#files-messages"), message);
+    };
+
+    this.validateFilesSection = function() {
+        setFilesError(null);
+        // Check that at least one file has been uploaded.
+        if (uploader.numUploadedFiles() < 1) {
+            setFilesError("You must upload at least one file.");
+            return false;
+        }
+        // Check that there are no uploads in progress.
+        if (uploader.numUploadingFiles() > 0) {
+            setFilesError("Wait for file uploads to complete.");
+            return false;
+        }
+        return true;
+    };
+
     // Rather than submitting the form, this button validates everything, sends
     // a POST request to the submission-complete route, and finally opens the
     // "submission complete" modal. (Everything in the form has been submitted
     // via XHR already.)
     completionForm.find("input[type=submit]").on("click", function(e) {
         e.preventDefault();
-        if (!self.validateProperties()) {
+        if (!self.validatePropertiesSection()) {
             $("#properties-tab").click();
             return false;
         }
-        if (!self.validateMetadata(true)) {
+        if (!self.validateAccessSection()) {
+            $("#access-tab").click();
+            return false;
+        }
+        if (!self.validateMetadataSection(true)) {
             $("#metadata-tab").click();
             return false;
         }
-        if (!self.validateFiles()) {
+        if (!self.validateFilesSection()) {
             return false;
         }
         $.ajax({
