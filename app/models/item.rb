@@ -242,7 +242,7 @@ class Item < ApplicationRecord
   ##
   # Sets {stage} to {Stages::APPROVED} and creates an associated
   # `dcterms:available` [AscribedElement] with a string value of the current
-  # ISO-8601 date/time.
+  # ISO-8601 timestamp.
   #
   # @return [void]
   #
@@ -375,7 +375,7 @@ class Item < ApplicationRecord
   ##
   # Updates the {stage} property and creates an associated
   # `dcterms:date:submitted` element with a string value of the current
-  # ISO-8601 date/time.
+  # ISO-8601 timestamp.
   #
   # @return [void]
   #
@@ -386,7 +386,7 @@ class Item < ApplicationRecord
       self.approve
     end
     # Assign a dcterms:date:submitted element with a string value of the
-    # current ISO-8601 date/time.
+    # current ISO-8601 timestamp.
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:submitted"),
                         string:             Time.now.iso8601)
     assign_handle
@@ -404,6 +404,7 @@ class Item < ApplicationRecord
   # For use in testing only.
   #
   def delete_from_permanent_storage
+    raise "This method only works in the test environment" unless Rails.env.test?
     self.bitstreams.each(&:delete_from_permanent_storage)
   end
 
@@ -465,7 +466,7 @@ class Item < ApplicationRecord
   #                      collection in the {collections} association.
   #
   def effective_primary_collection
-    #noinspection RubyYardReturnMatch
+    #noinspection RubyMismatchedReturnType
     self.primary_collection || self.collections.first
   end
 
@@ -475,6 +476,7 @@ class Item < ApplicationRecord
   #                association.
   #
   def effective_primary_unit
+    #noinspection RubyMismatchedReturnType
     self.effective_primary_collection&.primary_unit || self.collections.first.primary_unit
   end
 
@@ -540,7 +542,7 @@ class Item < ApplicationRecord
   # @return [Unit]
   #
   def primary_unit
-    #noinspection RubyYardReturnMatch
+    #noinspection RubyMismatchedReturnType
     self.primary_collection&.primary_unit
   end
 
