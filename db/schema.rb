@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
+ActiveRecord::Schema[7.0].define(version: 2022_03_24_153500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,13 +24,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
   create_table "ad_groups_user_groups", id: false, force: :cascade do |t|
     t.bigint "ad_group_id", null: false
     t.bigint "user_group_id", null: false
-    t.index ["ad_group_id"], name: "index_ad_groups_user_groups_on_ad_group_id"
-    t.index ["user_group_id"], name: "index_ad_groups_user_groups_on_user_group_id"
+    t.index ["ad_group_id", "user_group_id"], name: "index_ad_groups_user_groups_on_ad_group_id_and_user_group_id", unique: true
   end
 
   create_table "ad_groups_users", id: false, force: :cascade do |t|
     t.bigint "ad_group_id", null: false
     t.bigint "user_id", null: false
+    t.index ["ad_group_id", "user_id"], name: "index_ad_groups_users_on_ad_group_id_and_user_id", unique: true
   end
 
   create_table "administrator_groups", force: :cascade do |t|
@@ -38,8 +38,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.bigint "user_group_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["unit_id"], name: "index_administrator_groups_on_unit_id"
-    t.index ["user_group_id"], name: "index_administrator_groups_on_user_group_id"
+    t.index ["user_group_id", "unit_id"], name: "index_administrator_groups_on_user_group_id_and_unit_id", unique: true
   end
 
   create_table "administrators", force: :cascade do |t|
@@ -49,9 +48,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.datetime "updated_at", null: false
     t.boolean "primary", default: false, null: false
     t.index ["unit_id", "user_id"], name: "index_administrators_on_unit_id_and_user_id", unique: true
-    t.index ["unit_id"], name: "index_administrators_on_unit_id"
     t.index ["user_id", "unit_id", "primary"], name: "index_administrators_on_user_id_and_unit_id_and_primary"
-    t.index ["user_id"], name: "index_administrators_on_user_id"
   end
 
   create_table "affiliations", force: :cascade do |t|
@@ -66,8 +63,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
   create_table "affiliations_user_groups", force: :cascade do |t|
     t.bigint "affiliation_id", null: false
     t.bigint "user_group_id", null: false
-    t.index ["affiliation_id"], name: "index_affiliations_user_groups_on_affiliation_id"
-    t.index ["user_group_id"], name: "index_affiliations_user_groups_on_user_group_id"
+    t.index ["affiliation_id", "user_group_id"], name: "aff_ug", unique: true
   end
 
   create_table "ascribed_elements", force: :cascade do |t|
@@ -86,8 +82,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.bigint "user_group_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["item_id"], name: "index_bitstream_authorizations_on_item_id"
-    t.index ["user_group_id"], name: "index_bitstream_authorizations_on_user_group_id"
+    t.index ["item_id", "user_group_id"], name: "index_bitstream_authorizations_on_item_id_and_user_group_id", unique: true
   end
 
   create_table "bitstreams", force: :cascade do |t|
@@ -106,8 +101,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.string "permanent_key"
     t.text "description"
     t.boolean "primary", default: false, null: false
+    t.index ["bundle"], name: "index_bitstreams_on_bundle"
     t.index ["item_id"], name: "index_bitstreams_on_item_id"
     t.index ["medusa_key"], name: "index_bitstreams_on_medusa_key", unique: true
+    t.index ["medusa_uuid"], name: "index_bitstreams_on_medusa_uuid"
+    t.index ["original_filename"], name: "index_bitstreams_on_original_filename"
+    t.index ["permanent_key"], name: "index_bitstreams_on_permanent_key"
     t.index ["primary"], name: "index_bitstreams_on_primary"
     t.index ["staging_key"], name: "index_bitstreams_on_staging_key", unique: true
   end
@@ -119,8 +118,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["collection_id", "item_id"], name: "index_collection_item_memberships_on_collection_id_and_item_id", unique: true
-    t.index ["collection_id"], name: "index_collection_item_memberships_on_collection_id"
-    t.index ["item_id"], name: "index_collection_item_memberships_on_item_id"
   end
 
   create_table "collections", force: :cascade do |t|
@@ -137,6 +134,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.text "rights"
     t.text "provenance"
     t.boolean "buried", default: false, null: false
+    t.index ["buried"], name: "index_collections_on_buried"
     t.index ["metadata_profile_id"], name: "index_collections_on_metadata_profile_id"
     t.index ["parent_id"], name: "index_collections_on_parent_id"
     t.index ["submission_profile_id"], name: "index_collections_on_submission_profile_id"
@@ -148,8 +146,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
-    t.index ["user_group_id"], name: "index_departments_on_user_group_id"
-    t.index ["user_id"], name: "index_departments_on_user_id"
+    t.index ["user_group_id", "user_id"], name: "index_departments_on_user_group_id_and_user_id", unique: true
   end
 
   create_table "embargoes", force: :cascade do |t|
@@ -289,8 +286,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.bigint "user_group_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["collection_id"], name: "index_manager_groups_on_collection_id"
-    t.index ["user_group_id"], name: "index_manager_groups_on_user_group_id"
+    t.index ["collection_id", "user_group_id"], name: "index_manager_groups_on_collection_id_and_user_group_id", unique: true
   end
 
   create_table "managers", force: :cascade do |t|
@@ -299,8 +295,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["collection_id", "user_id"], name: "index_managers_on_collection_id_and_user_id", unique: true
-    t.index ["collection_id"], name: "index_managers_on_collection_id"
-    t.index ["user_id"], name: "index_managers_on_user_id"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -398,8 +392,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.bigint "user_group_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["collection_id"], name: "index_submitter_groups_on_collection_id"
-    t.index ["user_group_id"], name: "index_submitter_groups_on_user_group_id"
+    t.index ["collection_id", "user_group_id"], name: "index_submitter_groups_on_collection_id_and_user_group_id", unique: true
   end
 
   create_table "submitters", force: :cascade do |t|
@@ -408,8 +401,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["collection_id", "user_id"], name: "index_submitters_on_collection_id_and_user_id", unique: true
-    t.index ["collection_id"], name: "index_submitters_on_collection_id"
-    t.index ["user_id"], name: "index_submitters_on_user_id"
   end
 
   create_table "unit_collection_memberships", force: :cascade do |t|
@@ -419,9 +410,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
     t.boolean "primary", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["collection_id"], name: "index_unit_collection_memberships_on_collection_id"
     t.index ["unit_id", "collection_id"], name: "index_unit_collection_memberships_on_unit_id_and_collection_id", unique: true
-    t.index ["unit_id"], name: "index_unit_collection_memberships_on_unit_id"
   end
 
   create_table "units", force: :cascade do |t|
@@ -450,8 +439,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_15_200127) do
   create_table "user_groups_users", id: false, force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "user_group_id", null: false
-    t.index ["user_group_id"], name: "index_user_groups_users_on_user_group_id"
-    t.index ["user_id"], name: "index_user_groups_users_on_user_id"
+    t.index ["user_id", "user_group_id"], name: "index_user_groups_users_on_user_id_and_user_group_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
