@@ -590,6 +590,116 @@ class IdealsImporter
   ##
   # @param csv_pathname [String]
   #
+  def import_user_group_joins(csv_pathname)
+    @running = true
+    LOGGER.debug("import_user_group_joins(): importing %s", csv_pathname)
+
+    line_count = count_lines(csv_pathname)
+    progress   = Progress.new(line_count)
+
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
+      row_arr          = line.split("|").map(&:strip)
+      group_id         = row_arr[0].to_i
+      child_id         = row_arr[1].to_i
+      next if group_id == 0 # skip the anonymous group
+      unit_admin_id    = row_arr[2].to_i
+      col_admin_id     = row_arr[3].to_i
+      col_admin2_id    = row_arr[4].to_i
+      col_submitter_id = row_arr[5].to_i
+
+      begin
+        if unit_admin_id > 0
+          AdministratorGroup.where(user_group_id: child_id || group_id,
+                                   unit_id:       unit_admin_id).first_or_create!
+        elsif col_admin_id > 0
+          ManagerGroup.where(user_group_id: child_id || group_id,
+                             collection_id: col_admin_id).first_or_create!
+        elsif col_admin2_id > 0
+          ManagerGroup.where(user_group_id: child_id || group_id,
+                             collection_id: col_admin2_id).first_or_create!
+        elsif col_submitter_id > 0
+          SubmitterGroup.where(user_group_id: child_id || group_id,
+                               collection_id: col_submitter_id).first_or_create!
+        end
+      rescue ActiveRecord::RecordInvalid
+        # nothing we can do
+      end
+
+      progress.report(row_num, "Importing user group joins")
+    end
+  ensure
+    @running = false
+  end
+
+  ##
+  # @param csv_pathname [String]
+  #
+  def import_user_groups(csv_pathname)
+    @running = true
+    LOGGER.debug("import_user_groups(): importing %s", csv_pathname)
+
+    line_count = count_lines(csv_pathname)
+    progress   = Progress.new(line_count)
+
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
+
+      row_arr  = line.split("|").map(&:strip)
+      group_id = row_arr[0].to_i
+      next if group_id == 0 # skip the anonymous group
+      name     = row_arr[1]
+      key      = name.downcase.
+        gsub(" [automated]", ""). # trim off " [automated]"
+        gsub(" - ", "_").         # replace dash space dash with underscore
+        gsub(/[^a-z0-9\-_]/, "_"). # replace non-alphanumerics & dashes with underscore
+        gsub(/_{2,}/, "_").       # replace multiple underscores with one
+        gsub(/_$/, "")            # trim off trailing underscore
+      next if name.blank?
+
+      UserGroup.where(id: group_id).first_or_create!(name: name, key: key)
+
+      progress.report(row_num, "Importing user groups")
+    end
+  ensure
+    @running = false
+  end
+
+  ##
+  # @param csv_pathname [String]
+  #
+  def import_user_groups_2_users(csv_pathname)
+    @running = true
+    LOGGER.debug("import_user_groups_2_users(): importing %s", csv_pathname)
+
+    line_count = count_lines(csv_pathname)
+    progress   = Progress.new(line_count)
+
+    File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
+      next if row_num == 0 # skip header row
+
+      row_arr  = line.split("|").map(&:strip)
+      group_id = row_arr[0].to_i
+      user_id  = row_arr[1].to_i
+      begin
+        group = UserGroup.find(group_id)
+        unless group.user_ids.include?(user_id)
+          group.user_ids << user_id
+          group.save!
+        end
+      rescue ActiveRecord::RecordNotFound
+        # nothing we can do
+      end
+
+      progress.report(row_num, "Importing user group-user joins")
+    end
+  ensure
+    @running = false
+  end
+
+  ##
+  # @param csv_pathname [String]
+  #
   def import_user_metadata(csv_pathname)
     @running = true
     LOGGER.debug("import_user_metadata(): importing %s", csv_pathname)

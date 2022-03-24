@@ -399,6 +399,72 @@ namespace :ideals_dspace do
     end
   end
 
+  namespace :user_groups do
+    desc "Migrate user groups from IDEALS-DSpace into the application"
+    task :migrate, [:source_db_name,
+                    :source_db_host,
+                    :source_db_user,
+                    :source_db_password] => :environment do |task, args|
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 args[:source_db_password],
+                 "export_user_groups.sql",
+                 :import_user_groups)
+    end
+
+    desc "Incrementally migrate user groups from IDEALS-DSpace into the application"
+    task :migrate_incremental, [:source_db_name,
+                                :source_db_host,
+                                :source_db_user,
+                                :source_db_password] => :environment do |task, args|
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 args[:source_db_password],
+                 "export_user_groups.sql",
+                 :import_user_groups)
+    end
+
+    desc "Migrate user group joins from IDEALS-DSpace into the application"
+    task :migrate_joins, [:source_db_name,
+                          :source_db_host,
+                          :source_db_user,
+                          :source_db_password] => :environment do |task, args|
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 args[:source_db_password],
+                 "export_user_group_joins.sql",
+                 :import_user_group_joins)
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 args[:source_db_password],
+                 "export_user_groups_2_users.sql",
+                 :import_user_groups_2_users)
+    end
+
+    desc "Incrementally migrate user group joins from IDEALS-DSpace into the application"
+    task :migrate_joins_incremental, [:source_db_name,
+                                :source_db_host,
+                                :source_db_user,
+                                :source_db_password] => :environment do |task, args|
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 args[:source_db_password],
+                 "export_user_group_joins.sql",
+                 :import_user_group_joins)
+      do_migrate(args[:source_db_name],
+                 args[:source_db_host],
+                 args[:source_db_user],
+                 args[:source_db_password],
+                 "export_user_groups_2_users.sql",
+                 :import_user_groups_2_users)
+    end
+  end
+
   namespace :users do
     desc "Migrate users from IDEALS-DSpace into the application"
     task :migrate, [:source_db_name,
@@ -452,11 +518,13 @@ namespace :ideals_dspace do
     dbuser = args[:source_db_user]
     dbpass = args[:source_db_password]
     Rake::Task["ideals_dspace:metadata:migrate_registry"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["ideals_dspace:user_groups:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:users:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:communities:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:collections:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:items:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:bitstreams:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["ideals_dspace:user_groups:migrate_joins"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:handles:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     puts "WARNING: This is the last step, but it takes a long time. "\
         "You can ctrl+c if you don't need full item metadata."
@@ -473,11 +541,13 @@ namespace :ideals_dspace do
     dbuser = args[:source_db_user]
     dbpass = args[:source_db_password]
     Rake::Task["ideals_dspace:metadata:migrate_registry_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["ideals_dspace:user_groups:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:users:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:communities:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:collections:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:items:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:bitstreams:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["ideals_dspace:user_groups:migrate_joins_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:handles:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["ideals_dspace:metadata:migrate_item_values_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
   end
