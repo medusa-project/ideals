@@ -2,7 +2,7 @@
 - provide :title, "User Groups"
 
 .btn-group.float-right{role: "group"}
-  / Add User Group button
+  -# Add User Group button
   %button.btn.btn-light.add-user-group{"data-target": "#add-user-group-modal",
                                        "data-toggle": "modal", type: "button"}
     %i.fa.fa-plus
@@ -10,17 +10,9 @@
 
 %h1 User Groups
 
-%table.table
-  %thead
-    %tr
-      %th Name
-      %th Key
-  %tbody
-    - @user_groups.each do |group|
-      %tr
-        %td= link_to(group.name, group)
-        %td
-          %code= link_to(group.key, group)
+%ul
+  - @user_groups.each do |group|
+    %li= link_to(group.name, group)
 
 = render partial: 'add_modal'
 = render partial: "shared/ajax_modal",
