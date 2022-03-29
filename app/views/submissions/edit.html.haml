@@ -54,18 +54,18 @@
       Files
 
 .tab-content
-  #properties.tab-pane.fade.show.active{role: "tabpanel",
+  #properties.tab-pane.fade.show.active{role:              "tabpanel",
                                         "aria-labelledby": "properties-tab"}
-    = render partial: "deposit_properties_form"
+    = render partial: "submit_properties_form"
 
-  #access.tab-pane.fade{role: "tabpanel",
+  #access.tab-pane.fade{role:              "tabpanel",
                         "aria-labelledby": "access-tab"}
-    = render partial: "deposit_access_form"
+    = render partial: "submit_access_form"
 
-  #metadata.tab-pane.fade{role: "tabpanel",
+  #metadata.tab-pane.fade{role:              "tabpanel",
                           "aria-labelledby": "metadata-tab"}
-    = render partial: "deposit_metadata_form"
+    = render partial: "submit_metadata_form"
 
-  #files.tab-pane.fade{role: "tabpanel",
+  #files.tab-pane.fade{role:              "tabpanel",
                        "aria-labelledby": "files-tab"}
-    = render partial: "deposit_files_form"
+    = render partial: "submit_files_form"

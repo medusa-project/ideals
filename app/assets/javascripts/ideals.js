@@ -476,7 +476,7 @@ const IDEALS = {
             }
             // All clear.
             // N.B.: This structure must be kept in sync with the structure in
-            // the view template (deposit_files_form_uploads).
+            // the view template (submit_files_form_uploads).
             filesTable.append("<tr data-filename='" + file.name + "'>" +
                 "    <td></td>" +
                 "    <td>" + file.name + "</td>" +
