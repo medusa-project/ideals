@@ -329,6 +329,7 @@ GEM
     yard (0.9.27)
       webrick (~> 1.7.0)
     zeitwerk (2.5.4)
+    zip_tricks (5.6.0)
 
 PLATFORMS
   ruby
@@ -373,6 +374,7 @@ DEPENDENCIES
   sprockets-rails
   uglifier (>= 2.7.2)
   yard
+  zip_tricks
 
 RUBY VERSION
    ruby 3.1.1p18

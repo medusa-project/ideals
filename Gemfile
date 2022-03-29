@@ -58,6 +58,8 @@ gem "scars-bootstrap-theme", github: "medusa-project/scars-bootstrap-theme", bra
 gem "sprockets-rails"
 # Use Uglifier as compressor for JavaScript assets
 gem "uglifier", ">= 2.7.2"
+# Generates bitstream zip downloads
+gem "zip_tricks"
 
 group :development do
   # Reduces boot times through caching; required in config/boot.rb

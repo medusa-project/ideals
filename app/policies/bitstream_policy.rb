@@ -2,6 +2,41 @@
 
 class BitstreamPolicy < ApplicationPolicy
 
+  class Scope
+    attr_reader :owning_item, :user, :role, :relation
+
+    ##
+    # @param request_context [RequestContext]
+    # @param relation [ActiveRecord::Relation<Bitstream>]
+    # @param owning_item [Item] Item owning the bitstreams in {relation}.
+    #
+    def initialize(request_context, relation, owning_item)
+      @owning_item     = owning_item
+      @request_context = request_context
+      @user            = request_context&.user
+      @role            = request_context&.role_limit || Role::NO_LIMIT
+      @relation        = relation
+    end
+
+    ##
+    # N.B.: this method assumes that the owning item has already been
+    # authorized.
+    #
+    # @return [ActiveRecord::Relation]
+    #
+    def resolve
+      unless BitstreamPolicy.new(@request_context, nil).effective_sysadmin?(user, role)
+        # Only collection managers and above can download bitstreams outside
+        # of the content bundle.
+        unless user&.effective_manager?(owning_item.primary_collection)
+          @relation = @relation.where(bundle: Bitstream::Bundle::CONTENT)
+        end
+        @relation = @relation.where("role <= ?", role) if role
+      end
+      @relation
+    end
+  end
+
   attr_reader :user, :role, :bitstream
 
   ##
@@ -45,6 +80,11 @@ class BitstreamPolicy < ApplicationPolicy
 
   def edit
     update
+  end
+
+  def index
+    # Everyone is authorized, but the policy scope may narrow the results.
+    AUTHORIZED_RESULT
   end
 
   def ingest

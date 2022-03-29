@@ -1,14 +1,16 @@
-# frozen_string_literal: true
-
 class BitstreamsController < ApplicationController
+
+  include ZipTricks::RailsStreaming
 
   LOGGER = CustomLogger.new(BitstreamsController)
 
-  before_action :ensure_logged_in, except: [:object, :show, :stream, :viewer]
+  before_action :ensure_logged_in, except: [:index, :object, :show, :stream,
+                                            :viewer]
 
-  before_action :set_item, only: :create
-  before_action :set_bitstream, except: :create
-  before_action :authorize_bitstream, except: :create
+  before_action :set_item, only: [:create, :index]
+  before_action :set_bitstream, except: [:create, :index]
+  before_action :authorize_item, only: :index
+  before_action :authorize_bitstream, except: [:create, :index]
 
   ##
   # Accepts raw files (i.e. not `multipart/form-data`) via the file upload
@@ -60,6 +62,32 @@ class BitstreamsController < ApplicationController
     raise ActiveRecord::RecordNotFound unless request.xhr?
     render partial: "bitstreams/edit_form",
            locals: { bitstream: @bitstream }
+  end
+
+  ##
+  # Responds to `GET /items/:item_id/bitstreams`
+  #
+  def index
+    respond_to do |format|
+      format.zip do
+        bitstreams = policy_scope(@item.bitstreams,
+                                  owning_item:        @item,
+                                  policy_scope_class: BitstreamPolicy::Scope)
+        if bitstreams.any?
+          response.headers["Content-Disposition"] =
+            "attachment; filename=\"item-#{@item.id}.zip\""
+          zip_tricks_stream(auto_rename_duplicate_filenames: true) do |zip|
+            bitstreams.each do |bs|
+              zip.write_deflated_file(bs.original_filename.to_s) do |sink|
+                sink << bs.data
+              end
+            end
+          end
+        else
+          head :no_content
+        end
+      end
+    end
   end
 
   ##
@@ -216,6 +244,12 @@ class BitstreamsController < ApplicationController
 
   def authorize_bitstream
     @bitstream ? authorize(@bitstream) : skip_authorization
+  end
+
+  def authorize_item
+    @item ? authorize(@item,
+                      policy_class:  ItemPolicy,
+                      policy_method: :show) : skip_authorization
   end
 
   def bitstream_params

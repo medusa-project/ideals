@@ -2,6 +2,55 @@ require 'test_helper'
 
 class BitstreamPolicyTest < ActiveSupport::TestCase
 
+  class ScopeTest < ActiveSupport::TestCase
+
+    test "resolve() sets no filters for sysadmins" do
+      user        = users(:local_sysadmin)
+      context     = RequestContext.new(user:        user,
+                                       institution: user.institution)
+      owning_item = items(:approved)
+      relation    = owning_item.bitstreams
+      count       = relation.count
+      scope       = BitstreamPolicy::Scope.new(context, relation, owning_item)
+      assert_equal count, scope.resolve.count
+    end
+
+    test "resolve() sets filters out non-content bitstreams" do
+      user        = users(:norights)
+      context     = RequestContext.new(user:        user,
+                                       institution: user.institution)
+      owning_item = items(:approved)
+      relation    = owning_item.bitstreams
+      count       = relation.count
+      assert count > 0
+
+      # Assign one of the bitstreams to a non-content bundle, which only
+      # collection managers and above are allowed to access.
+      relation.first.update!(bundle: Bitstream::Bundle::LICENSE)
+      relation = owning_item.bitstreams
+      scope    = BitstreamPolicy::Scope.new(context, relation, owning_item)
+      assert_equal count - 1, scope.resolve.count
+    end
+
+    test "resolve() respects role limits" do
+      user        = users(:norights)
+      context     = RequestContext.new(user:        user,
+                                       institution: user.institution,
+                                       role_limit:  Role::LOGGED_OUT)
+      owning_item = items(:approved)
+      relation    = owning_item.bitstreams
+      count       = relation.count
+      assert count > 0
+
+      # make one of the bitstreams inaccessible to all but sysadmins
+      relation.first.update!(role: Role::SYSTEM_ADMINISTRATOR)
+      relation = owning_item.bitstreams
+      scope    = BitstreamPolicy::Scope.new(context, relation, owning_item)
+      assert_equal count - 1, scope.resolve.count
+    end
+
+  end
+
   setup do
     @bitstream = bitstreams(:item1_in_staging)
   end
@@ -402,6 +451,21 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert !policy.edit?
+  end
+
+  # index?()
+
+  test "index?() returns true with a nil user" do
+    policy = BitstreamPolicy.new(nil, Bitstream)
+    assert policy.index?
+  end
+
+  test "index?() authorizes everyone" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, Bitstream)
+    assert policy.index?
   end
 
   # ingest?()

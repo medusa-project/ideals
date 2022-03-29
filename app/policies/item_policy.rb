@@ -9,7 +9,7 @@ class ItemPolicy < ApplicationPolicy
     # @param request_context [RequestContext]
     # @param relation [ItemRelation]
     #
-    def initialize(request_context, relation)
+    def initialize(request_context, relation, options)
       @request_context = request_context
       @user            = request_context&.user
       @role            = request_context&.role_limit || Role::NO_LIMIT

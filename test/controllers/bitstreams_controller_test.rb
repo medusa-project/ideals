@@ -107,6 +107,35 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # index()
+
+  test "index() with a non-zip format returns HTTP 415" do
+    item = items(:approved)
+    get item_bitstreams_path(item)
+    assert_response :unsupported_media_type
+  end
+
+  test "index() with no results returns HTTP 204" do
+    item = items(:approved)
+    item.bitstreams.delete_all
+    get item_bitstreams_path(item, format: :zip)
+    assert_response :no_content
+  end
+
+  test "index() returns HTTP 200" do
+    item = items(:approved)
+    get item_bitstreams_path(item, format: :zip)
+    assert_response :ok
+  end
+
+  test "index() returns correct headers" do
+    item = items(:approved)
+    get item_bitstreams_path(item, format: :zip)
+    assert_equal "application/zip", response.header['Content-Type']
+    assert_equal "attachment; filename=\"item-#{item.id}.zip\"",
+                 response.header['Content-Disposition']
+  end
+
   # ingest()
 
   test "ingest() redirects to login page for logged-out users" do

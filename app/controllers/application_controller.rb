@@ -74,7 +74,7 @@ class ApplicationController < ActionController::Base
   def policy_scope(relation, options = {})
     class_ = options[:policy_scope_class] ||
         "#{controller_name.singularize.camelize}Policy::Scope".constantize
-    instance = class_.new(request_context, relation)
+    instance = class_.new(request_context, relation, options)
     instance.resolve
   end
 
