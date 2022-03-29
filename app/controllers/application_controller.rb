@@ -101,6 +101,12 @@ class ApplicationController < ActionController::Base
                        role_limit:      role_limit)
   end
 
+  ##
+  # Vestigial growth from when we were using the Pundit gem.
+  #
+  def skip_authorization
+  end
+
   def store_location
     if request.get? && !request.xhr?
       ignored_paths = ["/auth/failure", "/auth/shibboleth/callback",
