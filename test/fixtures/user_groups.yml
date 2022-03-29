@@ -7,8 +7,6 @@ hostname:
 sysadmin:
   key: sysadmin
   name: System Administrators
-  users:
-    - local_sysadmin
   ad_groups:
     - sysadmin
 
