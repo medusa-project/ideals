@@ -231,7 +231,7 @@ class Bitstream < ApplicationRecord
     config = ::Configuration.instance
     bucket = config.aws[:bucket]
     key    = self.effective_key
-    S3Client.instance.get_object(bucket: bucket, key: key).body.read
+    S3Client.instance.get_object(bucket: bucket, key: key).body
   end
 
   def delete_derivatives

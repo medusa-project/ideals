@@ -79,7 +79,7 @@ class BitstreamsController < ApplicationController
           zip_tricks_stream(auto_rename_duplicate_filenames: true) do |zip|
             bitstreams.each do |bs|
               zip.write_deflated_file(bs.original_filename.to_s) do |sink|
-                sink << bs.data
+                sink << bs.data.read
               end
             end
           end

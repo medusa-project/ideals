@@ -93,7 +93,7 @@ module BitstreamsHelper
   def text_viewer_for(bitstream)
     # Downloading the text and putting it in a <pre> makes it easier to style
     # than putting it in an <object>.
-    text = bitstream.kind_of?(Bitstream) ? bitstream.data : bitstream
+    text = bitstream.kind_of?(Bitstream) ? bitstream.data.read : bitstream
     html = StringIO.new
     html << "<div class=\"text-viewer\">"
     html <<   "<pre>"
@@ -122,7 +122,7 @@ module BitstreamsHelper
   end
 
   def xml_viewer_for(bitstream)
-    doc = Nokogiri::XML(bitstream.data, &:noblanks)
+    doc = Nokogiri::XML(bitstream.data.read, &:noblanks)
     xml = doc.to_xml(indent: 4, indent_text: " ")
     text_viewer_for(xml)
   end
