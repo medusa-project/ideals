@@ -35,14 +35,14 @@ class Unit < ApplicationRecord
     CREATED               = ElasticsearchIndex::StandardFields::CREATED
     ID                    = ElasticsearchIndex::StandardFields::ID
     INSTITUTION_KEY       = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
-    INTRODUCTION          = "t_introduction"
+    INTRODUCTION          = "metadata_introduction"
     LAST_INDEXED          = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED         = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     PARENT                = "i_parent_id"
     PRIMARY_ADMINISTRATOR = "i_primary_administrator_id"
-    RIGHTS                = "t_rights"
-    SHORT_DESCRIPTION     = "t_short_description"
-    TITLE                 = "t_title"
+    RIGHTS                = "metadata_rights"
+    SHORT_DESCRIPTION     = "metadata_short_description"
+    TITLE                 = "metadata_title"
   end
 
   belongs_to :institution
