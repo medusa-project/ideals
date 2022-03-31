@@ -144,7 +144,7 @@ rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
 rails "ideals_dspace:bitstreams:copy[ideals_dspace_ssh_user]"
 rails "ideals_dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]" # optional
-rails ideals:bitstreams:read_full_text
+rails "ideals:bitstreams:read_full_text[2]"
 ```
 N.B.: (`dbhost` etc.) are only required if the database is on a different host
 and/or the database user is different from the default.
@@ -168,7 +168,7 @@ rails "ideals_dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails elasticsearch:reindex[2] # thread count
 rails "ideals_dspace:bitstreams:copy[ideals_dspace_ssh_user,4]"
 rails "ideals_dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]"
-rails ideals:bitstreams:read_full_text
+rails "ideals:bitstreams:read_full_text[4]"
 ```
 
 ## Create a user account

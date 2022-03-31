@@ -5,21 +5,22 @@ namespace :ideals do
   namespace :bitstreams do
 
     desc "Read the full text of bitstreams for which this has not been done yet"
-    task read_full_text: :environment do
+    task :read_full_text, [:thread_count] => :environment do |task, args|
+      num_threads = args[:thread_count].to_i
+      num_threads = 1 if num_threads < 1
+
       bitstreams = Bitstream.
         where(full_text_checked_at: nil).
         where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").
         order(:id)
-      count      = bitstreams.count
-      progress   = Progress.new(count)
+      count = bitstreams.count
       puts "#{count} bitstreams for which full text has not yet been checked."
       puts "This command can be canceled and resumed without losing progress."
 
-      Bitstream.uncached do
-        bitstreams.find_each.with_index do |bs, index|
-          bs.read_full_text
-          progress.report(index, "reading full text")
-        end
+      ThreadUtils.process_in_parallel(bitstreams,
+                                      num_threads: num_threads,
+                                      print_progress: true) do |bs|
+        bs.read_full_text
       end
     end
 
