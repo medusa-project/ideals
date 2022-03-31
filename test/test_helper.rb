@@ -69,11 +69,14 @@ class ActiveSupport::TestCase
     bucket = ::Configuration.instance.aws[:bucket]
     client.create_bucket(bucket: bucket) unless client.bucket_exists?(bucket)
 
-    Bitstream.all.each do |bs|
-      key = bs.permanent_key.present? ? bs.permanent_key : bs.staging_key
-      client.put_object(bucket: bucket,
-                        key:    key,
-                        body:   file_fixture("escher_lego.jpg").to_s)
+    Bitstream.
+      where.not(staging_key: nil).
+      where.not(permanent_key: nil).each do |bs|
+      File.open(file_fixture(bs.original_filename), "r") do |file|
+        client.put_object(bucket: bucket,
+                          key:    bs.effective_key,
+                          body:   file)
+      end
     end
   end
 

@@ -45,7 +45,7 @@ awaiting_ingest_into_medusa:
   staging_key:
   permanent_key:        <%= Bitstream::PERMANENT_KEY_PREFIX %>/approved_in_permanent
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego2.jpg
+  original_filename:    escher_lego.jpg
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -71,8 +71,8 @@ item2_in_medusa:
   staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/item2_in_medusa
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego2.jpg
-  medusa_key:           test/test/escher_lego2.jpg
+  original_filename:    escher_lego.jpg
+  medusa_key:           test/test/escher_lego.jpg
   medusa_uuid:          3d2a99d5-2f5b-401e-80c1-864a95e3acf7
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
