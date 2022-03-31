@@ -13,9 +13,10 @@ class ThreadUtils
                                &block)
     # Divide the total number of items into num_threads segments, and have
     # each thread work on a segment.
+    total_count      = items.count
+    return if total_count < 1
     mutex            = Mutex.new
     threads          = Set.new
-    total_count      = items.count
     progress         = Progress.new(total_count)
     item_index       = 0
     num_threads      = [num_threads, total_count].min
