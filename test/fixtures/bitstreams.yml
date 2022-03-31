@@ -57,8 +57,8 @@ approved_in_permanent:
   submitted_for_ingest: true
   staging_key:
   permanent_key:        <%= Bitstream::PERMANENT_KEY_PREFIX %>/approved_in_permanent
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego2.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pdf.pdf")) %>
+  original_filename:    pdf.pdf
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>

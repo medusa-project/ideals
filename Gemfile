@@ -23,6 +23,8 @@ gem "haml"
 gem "haml-rails"
 # Application HTTP client
 gem "httpclient"
+# Assists in converting non-Unicode text during full text extraction
+gem "iconv"
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem "jbuilder", "~> 2.5"
 # Use jquery as the JavaScript library
@@ -43,6 +45,8 @@ gem "netaddr"
 gem "omniauth-identity"
 # Enables Shibboleth logins.
 gem "omniauth-shibboleth"
+# Extracts text from PDFs
+gem "pdf-reader"
 # Our database
 gem "pg"
 # Our application server

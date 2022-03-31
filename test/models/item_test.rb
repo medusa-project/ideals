@@ -167,6 +167,7 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_empty doc[Item::IndexFields::CREATED]
     assert doc[Item::IndexFields::DISCOVERABLE]
     assert_equal 0, doc[Item::IndexFields::EMBARGOES].length
+    assert_empty doc[Item::IndexFields::FULL_TEXT]
     assert_match /\w+ \w* \w+/,
                  doc[Item::IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY]
     assert_equal @instance.institution.key,

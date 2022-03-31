@@ -4,6 +4,25 @@ namespace :ideals do
 
   namespace :bitstreams do
 
+    desc "Read the full text of bitstreams for which this has not been done yet"
+    task read_full_text: :environment do
+      bitstreams = Bitstream.
+        where(full_text_checked_at: nil).
+        where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").
+        order(:id)
+      count      = bitstreams.count
+      progress   = Progress.new(count)
+      puts "#{count} bitstreams for which full text has not yet been checked."
+      puts "This command can be canceled and resumed without losing progress."
+
+      Bitstream.uncached do
+        bitstreams.find_each.with_index do |bs, index|
+          bs.read_full_text
+          progress.report(index, "reading full text")
+        end
+      end
+    end
+
     desc "Handle bitstreams for which ingest messages have been sent but no
     response messages have been received"
     task sync_with_medusa: :environment do

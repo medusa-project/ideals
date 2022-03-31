@@ -47,6 +47,13 @@
 #                           IDEALS-DSpace. This is only relevant during
 #                           migration out of that system and can be removed
 #                           once migration is complete.
+# * `full_text`             Full text, generally extracted from the contents of
+#                           e.g. PDF- or text-type bitstreams. See also
+#                           {checked_full_text}.
+# * `full_text_checked_at`  Date/time that the bitstream's content was last
+#                           checked for full text. When this is set,
+#                           {full_text} may or may not contain anything, but
+#                           when it's not set, it certainly doesn't.
 # * `item_id`:              Foreign key to [Item].
 # * `length`:               Size in bytes.
 # * `medusa_key`:           Full object key within the Medusa S3 bucket. Set
@@ -88,6 +95,7 @@ class Bitstream < ApplicationRecord
 
   before_save :ensure_primary_uniqueness
   after_save :ingest_into_medusa, if: -> { permanent_key.present? && saved_change_to_permanent_key? && !submitted_for_ingest }
+  after_save :read_full_text_async, if: -> { full_text_checked_at.blank? && effective_key.present? && !IdealsImporter.instance.running? }
   before_destroy :delete_derivatives, :delete_from_staging
   before_destroy :delete_from_medusa, if: -> { medusa_uuid.present? }
 
@@ -454,8 +462,58 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # For use only by the `ideals_dspace:copy` rake task. After migration, this
-  # method can be removed.
+  # Scans the bitstream content for full text, assigns it to {full_text},
+  # updates {full_text_checked_at}, saves the instance, and reindexes the
+  # owning [Item].
+  #
+  # @param force [Boolean] Whether to read full text even if it has already
+  #                        been checked for.
+  # @return [void]
+  #
+  def read_full_text(force: false)
+    return if (!force && full_text_checked_at.present?) || IdealsImporter.instance.running?
+    text = nil
+    #noinspection RubyRedundantSafeNavigation,RubyCaseWithoutElseBlockInspection
+    case self.format&.short_name
+    when "PDF"
+      begin
+        reader = PDF::Reader.new(self.data)
+        pages  = []
+        reader.pages.each do |page|
+          begin
+            pages << page.text
+          rescue PDF::Reader::MalformedPDFError, RangeError
+            # Nothing we can do about this page, but catch the error just in
+            # case we are successful at processing other pages.
+          end
+        end
+        text = pages.join("\n")
+      rescue PDF::Reader::MalformedPDFError
+        # nothing we can do
+      end
+    when "Text"
+      text = self.data.read
+    else
+      self.update!(full_text_checked_at: Time.now) and return
+    end
+    text = Iconv.conv('UTF-8//IGNORE', 'UTF-8', text)[0..-2] # convert to UTF-8
+    text.delete!("\u0000")                                   # strip null bytes
+    changed = (text != self.full_text)
+    self.update!(full_text_checked_at: Time.now,
+                 full_text:            text)
+    self.item.reindex if changed
+  end
+
+  ##
+  # Invokes an asynchronous job to call {read_full_text} in the background.
+  #
+  def read_full_text_async
+    ReadFullTextJob.perform_later(self)
+  end
+
+  ##
+  # For use only by the `ideals_dspace:bitstreams:copy` rake task. After
+  # migration, this method can be removed.
   #
   # @param file [String]
   #
