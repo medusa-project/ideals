@@ -277,6 +277,27 @@ module ApplicationHelper
   end
 
   ##
+  # @param ascribed_elements [Enumerable<AscribedElement>]
+  # @param profile [MetadataProfile] If provided, only
+  #        {MetadataProfileElement#visible visible elements} are displayed.
+  # @return [String] Series of meta elements.
+  #
+  def metadata_as_meta_tags(ascribed_elements, profile = nil)
+    html = StringIO.new
+    all_elements = profile ?
+                     profile.elements.where(visible: true).order(:index) :
+                     RegisteredElement.all.order(:label)
+    all_elements.each do |element|
+      matching_ascribed_elements =
+        ascribed_elements.select{ |e| e.name == element.name }
+      matching_ascribed_elements.each do |asc_e|
+        html << "<meta name=\"#{element.name.gsub(":", ".")}\" value=\"#{sanitize(asc_e.string)}\">"
+      end
+    end
+    raw(html.string)
+  end
+
+  ##
   # @param count [Integer] Total number of results. Note that this will be
   #              limited internally to {ElasticsearchClient::MAX_RESULT_WINDOW}
   #              to avoid overwhelming the search server.

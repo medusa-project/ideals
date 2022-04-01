@@ -1,4 +1,6 @@
 - if policy(@item).show_metadata?
+  - provide(:head_content, metadata_as_meta_tags(@item.elements,
+                           @item.effective_metadata_profile))
   %h2.mt-5
     Description
     - if policy(@item).edit_metadata?
