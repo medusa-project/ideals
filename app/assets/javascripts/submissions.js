@@ -267,18 +267,18 @@ const SubmissionForm = function() {
         const expirySection            = $("section#expiry-section");
         const reasonSection            = $("section#reason-section");
         const hideRecordsCheckboxGroup = $("section#type-section #item_temp_embargo_hide_records").parent();
-        if (typeCheckbox.filter(":checked").val() === "open") {
-            hideRecordsCheckboxGroup.hide();
-            expirySection.hide();
-            reasonSection.hide();
-        } else if (typeCheckbox.filter(":checked").val() === "closed") {
+        if (typeCheckbox.filter(":checked").val() === "closed") {
             hideRecordsCheckboxGroup.show();
             expirySection.show();
             reasonSection.show();
-        } else { // U of I only
+        } else if (typeCheckbox.filter(":checked").val() === "uofi") {
             hideRecordsCheckboxGroup.hide();
             expirySection.show();
             reasonSection.show();
+        } else { // open
+            hideRecordsCheckboxGroup.hide();
+            expirySection.hide();
+            reasonSection.hide();
         }
     };
 
