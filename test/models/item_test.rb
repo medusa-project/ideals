@@ -278,16 +278,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal item.handle.url, item.element("dcterms:identifier").uri
   end
 
-  # creators()
-
-  test "creators() returns a correct string" do
-    @instance.elements.build(registered_element: registered_elements(:creator),
-                             string: "Creator 1")
-    @instance.elements.build(registered_element: registered_elements(:creator),
-                             string: "Creator 2")
-    assert_equal "Creator 1, Creator 2", @instance.creators
-  end
-
   # delete_from_permanent_storage()
 
   test "delete_from_permanent_storage() deletes all associated Bitstreams from

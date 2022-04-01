@@ -12,7 +12,7 @@
   = icon_for(@item)
   = @item.title
 
-%h4.creators= @item.creators
+%h4.creators= @item.elements.select{ |e| e.name == "dc:creator" }.map(&:string).join("; ")
 
 .mb-3
 

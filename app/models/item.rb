@@ -395,14 +395,6 @@ class Item < ApplicationRecord
   end
 
   ##
-  # @return [String] Comma-delimited list of all values of all `dc:creator`
-  #                  elements.
-  #
-  def creators
-    self.elements.select{ |e| e.name == "dc:creator" }.map(&:string).join(", ")
-  end
-
-  ##
   # For use in testing only.
   #
   def delete_from_permanent_storage
