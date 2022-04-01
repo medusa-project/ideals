@@ -132,7 +132,7 @@ class Collection < ApplicationRecord
   validate :validate_buried, if: -> { buried }
   validate :validate_exhumed, if: -> { !buried }
 
-  after_save :assign_handle, if: -> { handle.nil? && !IdealsImporter.instance.running? }
+  after_save :assign_handle, if: -> { handle.nil? && !DspaceImporter.instance.running? }
   before_destroy :validate_empty
 
   breadcrumbs parent: :breadcrumb_parent, label: :title
@@ -524,7 +524,7 @@ class Collection < ApplicationRecord
   # @return [void]
   #
   def assign_handle
-    if self.handle.nil? && !IdealsImporter.instance.running?
+    if self.handle.nil? && !DspaceImporter.instance.running?
       self.handle = Handle.create!(collection: self)
     end
   end

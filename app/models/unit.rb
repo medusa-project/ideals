@@ -70,8 +70,8 @@ class Unit < ApplicationRecord
   validate :validate_buried, if: -> { buried }
   validate :validate_parent, :validate_primary_administrator
 
-  after_save :assign_handle, if: -> { handle.nil? && !IdealsImporter.instance.running? }
-  after_create :create_default_collection, unless: -> { IdealsImporter.instance.running? }
+  after_save :assign_handle, if: -> { handle.nil? && !DspaceImporter.instance.running? }
+  after_create :create_default_collection, unless: -> { DspaceImporter.instance.running? }
   before_destroy :validate_empty
 
   breadcrumbs parent: :parent, label: :title
@@ -183,7 +183,7 @@ class Unit < ApplicationRecord
   # Creates a new {Collection} and assigns the instance as its primary unit.
   #
   # N.B.: This method doesn't work properly during an
-  # {IdealsImporter#running? import}. This is because units are imported before
+  # {DspaceImporter#running? import}. This is because units are imported before
   # collections and imported IDs are fixed, so any collection IDs created here
   # would get overwritten in the subsequent collection-import step. The
   # importer instead has to invoke this method on all units **after** all
@@ -453,7 +453,7 @@ class Unit < ApplicationRecord
   # @return [void]
   #
   def assign_handle
-    if self.handle.nil? && !IdealsImporter.instance.running?
+    if self.handle.nil? && !DspaceImporter.instance.running?
       self.handle = Handle.create!(unit: self)
     end
   end

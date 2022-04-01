@@ -23,7 +23,7 @@ class AscribedElement < ApplicationRecord
   # `updated_at` column is updated and it is reindexed) when the instance is
   # updated. Normally, this is desired. However, it happens to make bulk-
   # importing metadata excruciatingly slow, so it is disabled during imports.
-  belongs_to :item, touch: !IdealsImporter.instance.running?
+  belongs_to :item, touch: !DspaceImporter.instance.running?
 
   validates :string, presence: true
 

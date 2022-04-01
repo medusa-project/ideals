@@ -18,9 +18,9 @@
 # avoiding multiple indexings of the same object. Resources should be indexed
 # manually after import, perhaps using the `elasticsearch:reindex` rake task.
 #
-class IdealsImporter
+class DspaceImporter
 
-  LOGGER = CustomLogger.new(IdealsImporter)
+  LOGGER = CustomLogger.new(DspaceImporter)
 
   include Singleton
 

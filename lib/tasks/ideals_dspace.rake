@@ -380,7 +380,7 @@ namespace :ideals_dspace do
                  args[:source_db_password],
                  "export_item_metadata.sql",
                  :import_item_metadata)
-      IdealsImporter.instance.process_embargoes
+      DspaceImporter.instance.process_embargoes
     end
 
     desc "Incrementally migrate item metadata from IDEALS-DSpace into the application"
@@ -604,7 +604,7 @@ namespace :ideals_dspace do
           cmd = sprintf(cmd, source_db_name, in_sql_file, out_csv_file)
           puts "ERROR: #{cmd}" unless system(cmd)
         end
-        IdealsImporter.instance.send(import_method, out_csv_file)
+        DspaceImporter.instance.send(import_method, out_csv_file)
       end
     ensure
       tempfile&.unlink
