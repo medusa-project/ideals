@@ -51,22 +51,24 @@ class CollectionRelation < AbstractRelation
       j.query do
         j.bool do
           # Query
-          if @query.present?
+          if @queries.any?
             j.must do
-              if !@exact_match
+              if @queries.length == 1 && !@exact_match
                 # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
                 j.simple_query_string do
-                  j.query @query[:query]
-                  j.default_operator 'AND'
-                  j.flags 'NONE'
-                  j.lenient true
-                  j.fields [@query[:field]]
+                  j.query            @queries.first[:query]
+                  j.default_operator "AND"
+                  j.flags            "NONE"
+                  j.lenient          true
+                  j.fields           [@queries.first[:field]]
                 end
               else
-                j.term do
-                  # Use the keyword field to get an exact match.
-                  j.set! @query[:field] + EntityElement::KEYWORD_FIELD_SUFFIX,
-                         sanitized_query
+                @queries.each do |query|
+                  j.child! do
+                    j.match_phrase do
+                      j.set! query[:field], sanitize(query[:query])
+                    end
+                  end
                 end
               end
             end
