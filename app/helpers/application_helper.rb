@@ -158,15 +158,16 @@ module ApplicationHelper
   #                                 {Item::IndexFields::PRIMARY_UNIT_ID},
   #                                 corresponding to `container`.
   # @param placeholder [String] Placeholder text.
-  # @param submit_text [String] Text to put in the submit button.
-  # @return [String] HTML div element without surrounding form.
+  # @param submit_text [String] Text to put in the submit button. If omitted,
+  #                             a submit button will not be appended.
+  # @return [String] HTML `div` element without surrounding form.
   #
-  def filter_field(name: "q",
-                   icon: nil,
-                   container: nil,
+  def filter_field(name:            "q",
+                   icon:            nil,
+                   container:       nil,
                    container_field: nil,
-                   placeholder: nil,
-                   submit_text: nil)
+                   placeholder:     nil,
+                   submit_text:     nil)
     html = StringIO.new
     html << hidden_field_tag(container_field, container.id) if container
     if icon
@@ -174,10 +175,11 @@ module ApplicationHelper
       html <<   "<i class=\"#{icon}\"></i>"
       html << "</div>"
     end
-    html << search_field_tag(name, "",
-                             placeholder: raw(placeholder),
-                             'aria-label': 'Search',
-                             class: 'form-control')
+    html << search_field_tag(name,
+                             params[name.to_sym],
+                             placeholder:  raw(placeholder),
+                             'aria-label': "Search",
+                             class:        "form-control")
     if submit_text
       html << "<div class=\"input-group-append\">"
       html <<   submit_tag(submit_text,
@@ -474,22 +476,19 @@ module ApplicationHelper
   # @return [String] HTML form element.
   #
   def sort_menu(metadata_profile)
+    results_params    = params.permit(Search::RESULTS_PARAMS)
     sortable_elements = metadata_profile.elements.where(sortable: true)
-
-    html = StringIO.new
+    html              = StringIO.new
     if sortable_elements.any?
       # Select menu
       html << '<select name="sort" class="custom-select">'
       html <<   '<optgroup label="Sort By&hellip;">'
-      if params[:q].present?
-        html <<   '<option value="">Relevance</option>'
-      else
-        html <<   '<option value="">No Sort</option>'
-      end
+      html <<     '<option value="">Relevance</option>'
+
       # If there is an element in the ?sort= query, select that. Otherwise,
       # select the metadata profile's default sort element.
       selected_element = sortable_elements.
-          find{ |e| e.registered_element.indexed_sort_field == params[:sort] }
+          find{ |e| e.registered_element.indexed_sort_field == results_params[:sort] }
       sortable_elements.each do |e|
         selected = (e == selected_element) ? 'selected' : ''
         html <<   "<option value=\"#{e.registered_element.indexed_sort_field}\" #{selected}>"
@@ -500,7 +499,7 @@ module ApplicationHelper
       html << '</select>'
 
       # Ascending/descending radios
-      desc = params[:direction] == "desc"
+      desc = results_params[:direction] == "desc"
       html << '<div class="btn-group btn-group-toggle ml-1" data-toggle="buttons">'
       html <<   "<label class=\"btn btn-default btn-outline-primary #{!desc ? "active" : ""}\">"
       html <<     '<input type="radio" name="direction" value="asc" autocomplete="off" checked> &uarr;'

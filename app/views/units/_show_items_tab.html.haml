@@ -18,14 +18,46 @@
 
 - if @items.count.positive?
   = form_tag(unit_path(@unit), method: :get, class: "filter") do
+    = hidden_field_tag("fq[]", "#{Item::IndexFields::UNIT_TITLES}:#{@unit.title}")
+    .card.mb-3
+      .card-body
+        %ul#search-tabs.nav.nav-pills.mb-0{role: "tablist"}
+          %li.nav-item{role: "presentation"}
+            %a#all-items-tab.nav-link.active{"data-toggle":   "pill",
+                                             href:            "#all-items",
+                                             role:            "tab",
+                                             "aria-controls": "all-items",
+                                             "aria-selected": "true"} All Items
+          %li.nav-item{role: "presentation"}
+            %a#simple-search-tab.nav-link{"data-toggle":   "pill",
+                                          href:            "#simple-search",
+                                          role:            "tab",
+                                          "aria-controls": "simple-search",
+                                          "aria-selected": "true"} Simple Search
+          %li.nav-item{role: "presentation"}
+            %a#advanced-search-tab.nav-link{"data-toggle":   "pill",
+                                            href:            "#advanced-search",
+                                            role:            "tab",
+                                            "aria-controls": "advanced-search",
+                                            "aria-selected": "true"} Advanced Search
+        .tab-content
+          #all-items.tab-pane.fade.show.active{role:              "tabpanel",
+                                               "aria-labelledby": "all-items-tab"}
+            -# this tab is empty
+          #simple-search.tab-pane.fade.mt-3{role: "tabpanel",
+                                            "aria-labelledby": "simple-search-tab"}
+            .input-group.filter-field
+              = filter_field
+          #advanced-search.tab-pane.fade.mt-3{role: "tabpanel",
+                                              "aria-labelledby": "advanced-search-tab"}
+            = advanced_search_form
+
     .row.justify-content-between
-      .col-6
-        .input-group.mb-3.filter-field
-          = hidden_field_tag("fq[]", "#{Item::IndexFields::UNIT_TITLES}:#{@unit.title}")
-          = filter_field(icon: "fa fa-filter", placeholder: "Filter")
-      .col-6
-        .input-group
+      .col-8
+      .col-4
+        .input-group.mb-3
           = sort_menu(MetadataProfile.default)
+
   #items-xhr-content
     -# items/listing inserted here via XHR
 - else

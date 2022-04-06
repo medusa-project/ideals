@@ -102,17 +102,19 @@ class InviteesController < ApplicationController
   #
   def index
     authorize(Invitee)
-    @start    = results_params[:start].to_i
-    @window   = window_size
-    @invitees = Invitee.
-        where("email LIKE ?", "%#{params[:q]}%").
-        where("approval_state LIKE ?", "%#{params[:approval_state]}%").
+    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+                                        Search::SIMPLE_SEARCH_PARAMS +
+                                        [:approval_state, :class])
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    @invitees         = Invitee.
+        where("email LIKE ?", "%#{@permitted_params[:q]}%").
+        where("approval_state LIKE ?", "%#{@permitted_params[:approval_state]}%").
         order(:created_at).
         limit(@window).
         offset(@start)
     @count            = @invitees.count
     @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
-    @permitted_params = results_params
     @new_invitee      = Invitee.new
   end
 
@@ -172,10 +174,6 @@ class InviteesController < ApplicationController
 
   def invitee_params
     params.require(:invitee).permit(:email, :note)
-  end
-
-  def results_params
-    params.permit(:approval_state, :class, :q, :start, :window)
   end
 
   def set_invitee

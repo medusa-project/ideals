@@ -2,6 +2,8 @@
 
 class UnitsController < ApplicationController
 
+  include Search
+
   before_action :ensure_logged_in, only: [:create, :delete,
                                           :edit_administrators,
                                           :edit_membership, :edit_properties,
@@ -393,19 +395,21 @@ class UnitsController < ApplicationController
   end
 
   def set_item_results_ivars
-    @start = params[:start].to_i
-    @window = window_size
-    @items = Item.search.
+    @permitted_params = params.permit(RESULTS_PARAMS + [:unit_id])
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    @items            = Item.search.
       institution(current_institution).
-      query_all(params[:q]).
-      filter(Item::IndexFields::UNITS, params[:unit_id]).
-      order(params[:sort] => params[:direction] == "desc" ? :desc : :asc).
+      aggregations(false).
+      filter(Item::IndexFields::UNITS, @permitted_params[:unit_id]).
+      order(@permitted_params[:sort] => (@permitted_params[:direction] == "desc") ? :desc : :asc).
       start(@start).
       limit(@window)
-    @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
-    @count            = @items.count
-    @current_page     = @items.page
-    @permitted_params = results_params
+    process_search_input(@items)
+
+    @items        = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
+    @count        = @items.count
+    @current_page = @items.page
   end
 
   def unit_params

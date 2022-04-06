@@ -227,10 +227,6 @@ class ApplicationController < ActionController::Base
            status: :unsupported_media_type
   end
 
-  def results_params
-    params.permit(:direction, :q, :sort, :start, :window, fq: [])
-  end
-
   ##
   # @return [ToDoList] The {ApplicationController#current_user current user}'s
   #                    to-do list. The result is cached.

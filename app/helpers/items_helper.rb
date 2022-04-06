@@ -1,6 +1,120 @@
 module ItemsHelper
 
   ##
+  # @return [String] Form elements for the advanced search form, excluding the
+  #                  outer `form` element.
+  #
+  def advanced_search_form
+    html = StringIO.new
+    # Title
+    html << '<div class="form-group row">'
+    html <<   label_tag("title", "Title",
+                        class: "col-sm-3 col-form-label")
+    html <<   '<div class="col-sm-9">'
+    html <<     text_field_tag("title", params[:"dc:title"],
+                               class: "form-control")
+    html <<   '</div>'
+    html << '</div>'
+    # Author
+    html << '<div class="form-group row">'
+    html <<   label_tag("author", "Author",
+                        class: "col-sm-3 col-form-label")
+    html <<   '<div class="col-sm-9">'
+    html <<     text_field_tag("author", params[:"dc:creator"],
+                               class: "form-control")
+    html <<   '</div>'
+    html << '</div>'
+    # Advisor or Committee Member
+    html << '<div class="form-group row">'
+    html <<   label_tag("advisor", "Advisor or Committee Member",
+                        class: "col-sm-3 col-form-label")
+    html <<   '<div class="col-sm-9">'
+    html <<     text_field_tag("advisor", params[:advisor],
+                               class: "form-control")
+    html <<     '<div class="form-check">'
+    checked = (params[:advisor_type] == "advisor") ? "checked" : ""
+    html <<       "<input class=\"form-check-input\" type=\"checkbox\" name=\"advisor_type\" value=\"advisor\" id=\"advisor-advisor\" #{checked}>"
+    html <<       '<label class="form-check-label" for="advisor-advisor">'
+    html <<         'Advisor (Masters) / Director of Research (Doctoral)'
+    html <<       '</label>'
+    html <<     '</div>'
+    html <<     '<div class="form-check">'
+    checked = (params[:advisor_type] == "committee_chair") ? "checked" : ""
+    html <<       "<input class=\"form-check-input\" type=\"checkbox\" name=\"advisor_type\" value=\"committee_chair\" id=\"advisor-committee-chair\" #{checked}>"
+    html <<       '<label class="form-check-label" for="advisor-committee-chair">'
+    html <<         'Committee Chair (Doctoral)'
+    html <<       '</label>'
+    html <<     '</div>'
+    html <<     '<div class="form-check">'
+    checked = (params[:advisor_type] == "committee_member") ? "checked" : ""
+    html <<       "<input class=\"form-check-input\" type=\"checkbox\" name=\"advisor_type\" value=\"committee_member\" id=\"advisor-committee-member\" #{checked}>"
+    html <<       '<label class="form-check-label" for="advisor-committee-member">'
+    html <<         'Committee Member (Doctoral)'
+    html <<       '</label>'
+    html <<     '</div>'
+    html <<   '</div>'
+    html << '</div>'
+    # Degree Level
+    html << '<div class="form-group row">'
+    html <<   label_tag("degree_level", "Degree Level",
+                        class: "col-sm-3 col-form-label")
+    html <<   '<div class="col-sm-9">'
+    html <<     select_tag("degree_level", options_for_select([["All", nil], %w(Master's Master's), %w(Doctoral Doctoral)]),
+                           class: "custom-select")
+    html <<   '</div>'
+    html << '</div>'
+    # Department
+    html << '<div class="form-group row">'
+    html <<   label_tag("department", "Department",
+                        class: "col-sm-3 col-form-label")
+    html <<   '<div class="col-sm-9">'
+    html <<     text_field_tag("department", params[:department],
+                               class: "form-control")
+    html <<   '</div>'
+    html << '</div>'
+    # Date Deposited
+    html << '<div class="form-group row">'
+    html <<   label_tag("date_deposited", "Date Deposited",
+                        class: "col-sm-3 col-form-label")
+    html <<   '<div class="col-sm-9">'
+    html <<     text_field_tag("date_deposited", params[:date_deposited],
+                               class: "form-control")
+    html <<   '</div>'
+    html << '</div>'
+    # Full Text
+    html << '<div class="form-group row">'
+    html <<   label_tag("full_text", "Full Text",
+                        class: "col-sm-3 col-form-label")
+    html <<   '<div class="col-sm-9">'
+    html <<     text_field_tag("full_text", params[:full_text], class: "form-control")
+    html <<     '<div class="form-check">'
+    checked = (params[:full_text_type] == "full_text" || params[:full_text_type].blank?) ?
+                "checked" : ""
+    html <<       "<input class=\"form-check-input\" type=\"radio\" name=\"full_text_type\" value=\"full_text\" id=\"full-text-full-text\" #{checked}>"
+    html <<       '<label class="form-check-label" for="full-text-full-text">'
+    html <<         'Full Text'
+    html <<       '</label>'
+    html <<     '</div>'
+    html <<     '<div class="form-check">'
+    checked = (params[:full_text_type] == "abstract") ? "checked" : ""
+    html <<       "<input class=\"form-check-input\" type=\"radio\" name=\"full_text_type\" value=\"abstract\" id=\"full-text-abstract\" #{checked}>"
+    html <<       '<label class="form-check-label" for="full-text-abstract">'
+    html <<         'Abstract'
+    html <<       '</label>'
+    html <<     '</div>'
+    html <<     '<div class="form-check">'
+    checked = (params[:full_text_type] == "keywords") ? "checked" : ""
+    html <<       "<input class=\"form-check-input\" type=\"radio\" name=\"full_text_type\" value=\"keywords\" id=\"full-text-keywords\" #{checked}>"
+    html <<       '<label class="form-check-label" for="full-text-keywords">'
+    html <<         'Keywords'
+    html <<       '</label>'
+    html <<     '</div>'
+    html <<   '</div>'
+    html << '</div>'
+    raw(html.string)
+  end
+
+  ##
   # @param embargo [Embargo] Optional.
   # @param index [Integer] Row index.
   # @return [String] HTML string.

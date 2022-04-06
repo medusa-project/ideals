@@ -2,6 +2,8 @@
 
 class ItemsController < ApplicationController
 
+  include Search
+
   before_action :ensure_logged_in, except: [:index, :show]
   before_action :set_item, except: [:export, :index, :process_review, :review]
   before_action :authorize_item, except: [:export, :index, :process_review,
@@ -164,21 +166,24 @@ class ItemsController < ApplicationController
   # Responds to `GET /items`
   #
   def index
-    @start  = results_params[:start].to_i
-    @window = window_size
-    @items = Item.search.
-        institution(current_institution).
-        aggregations(true).
-        query_all(results_params[:q]).
-        facet_filters(results_params[:fq]).
-        order(params[:sort] => params[:direction] == "desc" ? :desc : :asc).
-        start(@start).
-        limit(@window)
-    @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
-    @count            = @items.count
-    @facets           = @items.facets
-    @current_page     = @items.page
-    @permitted_params = results_params
+    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+                                        Search::ADVANCED_SEARCH_PARAMS +
+                                        Search::RESULTS_PARAMS)
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    @items            = Item.search.
+      institution(current_institution).
+      aggregations(true).
+      facet_filters(@permitted_params[:fq]).
+      order(@permitted_params[:sort] => (@permitted_params[:direction] == "desc") ? :desc : :asc).
+      start(@start).
+      limit(@window)
+    process_search_input(@items)
+
+    @items        = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
+    @count        = @items.count
+    @facets       = @items.facets
+    @current_page = @items.page
   end
 
   ##
@@ -227,9 +232,10 @@ class ItemsController < ApplicationController
   #
   def review
     authorize Item
-    @start  = results_params[:start].to_i
-    @window = window_size
-    @items  = Item.search.
+    @permitted_params = params.permit(Search::RESULTS_PARAMS)
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    @items            = Item.search.
         institution(current_institution).
         aggregations(false).
         filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
@@ -238,7 +244,6 @@ class ItemsController < ApplicationController
         limit(@window)
     @count            = @items.count
     @current_page     = @items.page
-    @permitted_params = results_params
   end
 
   ##

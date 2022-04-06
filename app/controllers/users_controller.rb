@@ -18,17 +18,19 @@ class UsersController < ApplicationController
   #
   def index
     authorize(User)
-    @start  = params[:start].to_i
-    @window = window_size
-    q = "%#{params[:q]}%"
-    @users  = User.where("LOWER(name) LIKE ? OR LOWER(uid) LIKE ?", q, q).
+    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+                                        Search::SIMPLE_SEARCH_PARAMS +
+                                        [:class])
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    q                 = "%#{@permitted_params[:q]}%"
+    @users            = User.where("LOWER(name) LIKE ? OR LOWER(uid) LIKE ?", q, q).
         where(org_dn: current_institution.org_dn).
-        where("type LIKE ?", "%#{params[:class]}").
+        where("type LIKE ?", "%#{@permitted_params[:class]}").
         order(:name)
     @count            = @users.count
     @users            = @users.limit(@window).offset(@start)
     @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
-    @permitted_params = results_params
     @new_invitee      = Invitee.new
   end
 

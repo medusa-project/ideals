@@ -2,6 +2,8 @@
 
 class CollectionsController < ApplicationController
 
+  include Search
+
   before_action :ensure_logged_in, only: [:create, :delete,
                                           :edit_collection_membership,
                                           :edit_managers, :edit_properties,
@@ -138,21 +140,22 @@ class CollectionsController < ApplicationController
   #
   def index
     if params[:format] != "json"
-      render plain: "Not Acceptable", status: :not_acceptable
-      return
+      render plain: "Not Acceptable",
+             status: :not_acceptable and return
     end
-    @start  = results_params[:start].to_i
-    @window = window_size
-    @collections = Collection.search.
+    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+                                        Search::SIMPLE_SEARCH_PARAMS)
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    @collections      = Collection.search.
         institution(current_institution).
         aggregations(false).
-        query_all(results_params[:q]).
+        query_all(@permitted_params[:q]).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         start(@start).
         limit(@window)
     @count            = @collections.count
     @current_page     = @collections.page
-    @permitted_params = results_params
   end
 
   ##
@@ -274,12 +277,12 @@ class CollectionsController < ApplicationController
   # Responds to `GET /collections/:id/review-submissions`
   #
   def show_review_submissions
-    @review_start            = results_params[:start].to_i
+    @review_permitted_params = params.permit(Search::RESULTS_PARAMS)
+    @review_start            = @review_permitted_params[:start].to_i
     @review_window           = window_size
     @review_items            = review_items(@review_start, @review_window)
     @review_count            = @review_items.count
     @review_current_page     = @review_items.page
-    @review_permitted_params = results_params
     render partial: "show_review_submissions_tab"
   end
 
@@ -482,20 +485,21 @@ class CollectionsController < ApplicationController
   end
 
   def set_item_results_ivars
-    @start  = params[:start].to_i
-    @window = window_size
-    @items  = Item.search.
+    @permitted_params = params.permit(RESULTS_PARAMS + [:collection_id])
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    @items            = Item.search.
       institution(current_institution).
       aggregations(false).
-      query_all(params[:q]).
-      filter(Item::IndexFields::COLLECTIONS, params[:collection_id]).
-      order(params[:sort] => params[:direction] == "desc" ? :desc : :asc).
+      filter(Item::IndexFields::COLLECTIONS, @permitted_params[:collection_id]).
+      order(@permitted_params[:sort] => (@permitted_params[:direction] == "desc") ? :desc : :asc).
       start(@start).
       limit(@window)
-    @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
-    @count            = @items.count
-    @current_page     = @items.page
-    @permitted_params = params.permit(:q, :start)
+    process_search_input(@items)
+
+    @items        = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
+    @count        = @items.count
+    @current_page = @items.page
   end
 
 end

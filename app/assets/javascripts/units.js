@@ -58,7 +58,9 @@ const UnitView = function() {
             const tabContent = $("#items-tab-content");
             tabContent.html(data);
 
-            const filterField     = tabContent.find("input[name=q]");
+            const searchForm      = tabContent.find("form");
+            const searchFields    = searchForm.find("input[type=text], input[type=search], textarea");
+            const searchControls  = searchForm.find("input[type=radio], input[type=checkbox], select");
             const sortMenu        = tabContent.find("select[name=sort]");
             const directionRadios = tabContent.find("input[name=direction]");
 
@@ -69,7 +71,7 @@ const UnitView = function() {
                 });
             };
 
-            const refreshResults = function (url) {
+            const refreshResults = function(url) {
                 const container = $("#items-xhr-content");
                 container.html(IDEALS.Spinner());
                 if (!url) {
@@ -78,7 +80,7 @@ const UnitView = function() {
                 $.ajax({
                     method:  "GET",
                     url:     url,
-                    data:    filterField.parents("form").serialize(),
+                    data:    searchForm.serialize(),
                     success: function(data) {
                         container.html(data);
                         attachResultsEventListeners();
@@ -92,9 +94,21 @@ const UnitView = function() {
             };
 
             let timeout = null;
-            filterField.on("keyup", function() {
+            searchFields.on("keyup", function() {
                 clearTimeout(timeout);
-                timeout = setTimeout(refreshResults, IDEALS.KEY_DELAY);
+                timeout = setTimeout(function() {
+                    refreshResults();
+                }, IDEALS.KEY_DELAY);
+            });
+            searchControls.on("change", function() {
+                refreshResults();
+            });
+            // When the search-type tab is changed, clear the input from all
+            // other tabs.
+            tabContent.find('a[data-toggle="pill"]').on('hidden.bs.tab', function(e) {
+                const hiddenPane = $($(e.target).attr("href"));
+                hiddenPane.find("input[type=text], input[type=search], textarea").val("");
+                searchControls.trigger("change");
             });
 
             const showOrHideDirectionRadios = function() {
