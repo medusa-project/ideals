@@ -1,37 +1,43 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 described_title:
-  string: Some title
+  string:             Some title
   uri:
   registered_element: title
-  item: described
+  item:               described
+  position:           1
 
 described_description:
-  string: Some description
+  string:             Some description
   uri:
   registered_element: description
-  item: described
+  item:               described
+  position:           1
 
 described_subject:
-  string: Some subject
+  string:             Some subject
   uri:
   registered_element: subject
-  item: described
+  item:               described
+  position:           1
 
 in_medusa_title:
-  string: Some title
+  string:             Some title
   uri:
   registered_element: title
-  item: in_medusa
+  item:               in_medusa
+  position:           1
 
 submitting_item_title:
-  string: Some title
+  string:             Some title
   uri:
   registered_element: title
-  item: submitting
+  item:               submitting
+  position:           1
 
 submitted_item_title:
-  string: Some title
+  string:             Some title
   uri:
   registered_element: title
-  item: submitted
+  item:               submitted
+  position:           1

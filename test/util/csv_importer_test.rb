@@ -14,7 +14,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   # import()
 
-  test "import() handles multi-value elements correctly" do
+  test "import() parses multi-value elements correctly" do
     csv = CSV.generate do |row|
       row << ["id", "dc:creator"]
       row << ["+", "Bob||Susan||Chris"]
@@ -27,6 +27,24 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert creators.include?("Bob")
     assert creators.include?("Susan")
     assert creators.include?("Chris")
+  end
+
+  test "import() assigns positions to multi-value elements" do
+    csv = CSV.generate do |row|
+      row << ["id", "dc:creator"]
+      row << ["+", "Bob||Susan||Chris"]
+    end
+    @instance.import(csv:                csv,
+                     submitter:          users(:local_sysadmin),
+                     primary_collection: collections(:empty))
+    item     = Item.order(created_at: :desc).limit(1).first
+    creators = item.elements.
+      where(registered_element: RegisteredElement.find_by_name("dc:creator")).
+      order(:position).
+      pluck(:position)
+    assert_equal 1, creators[0]
+    assert_equal 2, creators[1]
+    assert_equal 3, creators[2]
   end
 
   test "import() creates a new item" do

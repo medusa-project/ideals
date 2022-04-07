@@ -446,13 +446,15 @@ class DspaceImporter
       elem_name += ":#{row_arr[2]}" if row_arr[2].present?
       reg_elem   = RegisteredElement.find_by_name(elem_name)
       string     = row_arr[3]&.strip&.gsub("@@@@", "\n")
+      place      = row_arr[5].to_i
       next unless string.present?
 
       progress.report(row_num, "Importing item metadata (1/2)")
       begin
         AscribedElement.create!(registered_element: reg_elem,
                                 item_id:            item_id,
-                                string:             string)
+                                string:             string,
+                                position:           place)
       rescue ActiveRecord::RecordInvalid
         # This may be caused by either a nonexistent RegisteredElement, or a
         # nonexistent Item. Not much we can do in either case.

@@ -249,30 +249,30 @@ module ApplicationHelper
   def metadata_as_dl(ascribed_elements, profile = nil)
     html = StringIO.new
     html << "<dl class=\"metadata\">"
-    all_elements = profile ?
+    reg_elements = profile ?
                        profile.elements.where(visible: true).order(:index) :
                        RegisteredElement.all.order(:label)
-    all_elements.each do |element|
-      matching_ascribed_elements =
-          ascribed_elements.select{ |e| e.name == element.name }
-      if matching_ascribed_elements.any?
-        html << "<dt>"
-        html <<   element.label
-        html << "</dt>"
-        html << "<dd>"
-        if matching_ascribed_elements.length > 1
-          html << "<ul>"
-          matching_ascribed_elements.each do |asc_e|
-            html << "<li>"
-            html <<   sanitize(asc_e.string)
-            html << "</li>"
-          end
-          html << "</ul>"
-        else
-          html << sanitize(matching_ascribed_elements.first.string)
+    reg_elements.each do |element|
+      matching_ascribed_elements = ascribed_elements.
+          select{ |e| e.name == element.name }.
+          sort_by(&:position)
+      next if matching_ascribed_elements.empty?
+      html << "<dt>"
+      html <<   element.label
+      html << "</dt>"
+      html << "<dd>"
+      if matching_ascribed_elements.length > 1
+        html << "<ul>"
+        matching_ascribed_elements.each do |asc_e|
+          html << "<li>"
+          html <<   sanitize(asc_e.string)
+          html << "</li>"
         end
-        html << "</dd>"
+        html << "</ul>"
+      else
+        html << sanitize(matching_ascribed_elements.first.string)
       end
+      html << "</dd>"
     end
     html << "</dl>"
     raw(html.string)
@@ -282,18 +282,20 @@ module ApplicationHelper
   # @param ascribed_elements [Enumerable<AscribedElement>]
   # @param profile [MetadataProfile] If provided, only
   #        {MetadataProfileElement#visible visible elements} are displayed.
-  # @return [String] Series of meta elements.
+  # @return [String] Series of HTML meta tags.
   #
   def metadata_as_meta_tags(ascribed_elements, profile = nil)
     html = StringIO.new
-    all_elements = profile ?
+    reg_elements = profile ?
                      profile.elements.where(visible: true).order(:index) :
                      RegisteredElement.all.order(:label)
-    all_elements.each do |element|
-      matching_ascribed_elements =
-        ascribed_elements.select{ |e| e.name == element.name }
-      matching_ascribed_elements.each do |asc_e|
-        html << "<meta name=\"#{element.name.gsub(":", ".")}\" value=\"#{sanitize(asc_e.string)}\">"
+    reg_elements.each do |reg_element|
+      ascribed_elements.
+        select{ |e| e.name == reg_element.name }.
+        sort_by(&:position).
+        each do |asc_e|
+        html << "<meta name=\"#{reg_element.name.gsub(":", ".")}\" "\
+                "value=\"#{sanitize(asc_e.string)}\">"
       end
     end
     raw(html.string)

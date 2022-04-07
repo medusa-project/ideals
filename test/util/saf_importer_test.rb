@@ -25,8 +25,8 @@ class SafImporterTest < ActiveSupport::TestCase
     end
   end
 
-  test "import_from_path() raises an error for a missing file component on a line of the
-  content file" do
+  test "import_from_path() raises an error for a missing file component on a
+  line of the content file" do
     package = File.join(PACKAGES_PATH, "missing_file_on_content_file_line")
     assert_raises IOError do
       @instance.import_from_path(pathname:           package,
@@ -35,7 +35,8 @@ class SafImporterTest < ActiveSupport::TestCase
     end
   end
 
-  test "import_from_path() raises an error for an illegal flag in a content file" do
+  test "import_from_path() raises an error for an illegal flag in a content
+  file" do
     package = File.join(PACKAGES_PATH, "illegal_content_file_flag")
     assert_raises IOError do
       @instance.import_from_path(pathname:           package,
@@ -44,8 +45,8 @@ class SafImporterTest < ActiveSupport::TestCase
     end
   end
 
-  test "import_from_path() raises an error for a missing file that is present in the
-  content file" do
+  test "import_from_path() raises an error for a missing file that is present
+  in the content file" do
     package = File.join(PACKAGES_PATH, "missing_file")
     assert_raises IOError do
       @instance.import_from_path(pathname:           package,
@@ -63,8 +64,8 @@ class SafImporterTest < ActiveSupport::TestCase
     end
   end
 
-  test "import_from_path() raises an error when encountering a registered element not
-  present in the registry" do
+  test "import_from_path() raises an error when encountering a registered
+  element not present in the registry" do
     package = File.join(PACKAGES_PATH, "illegal_metadata_element")
     assert_raises IOError do
       @instance.import_from_path(pathname:           package,
@@ -107,10 +108,14 @@ class SafImporterTest < ActiveSupport::TestCase
     assert !bs.primary
 
     # Test metadata
-    assert_equal 7, item.elements.length
+    assert_equal 9, item.elements.length
     assert_not_nil item.element("dcterms:available")  # added automatically upon approval
     assert_not_nil item.element("dcterms:identifier") # added automatically when the handle is assigned
     assert_equal "Escher Lego", item.element("dc:title").string
+    assert_equal "Subject 1", item.elements.select{ |e| e.name == "dc:subject"}[0].string
+    assert_equal 1, item.elements.select{ |e| e.name == "dc:subject"}[0].position
+    assert_equal "Subject 2", item.elements.select{ |e| e.name == "dc:subject"}[1].string
+    assert_equal 2, item.elements.select{ |e| e.name == "dc:subject"}[1].position
     assert_equal "2021", item.element("dc:date:submitted").string
     assert_equal "Computer Science", item.element("etd:degree:department").string
     assert_equal "Masters", item.element("etd:degree:level").string

@@ -78,4 +78,16 @@ class AscribedElementTest < ActiveSupport::TestCase
     assert_nil @instance.person_name
   end
 
+  # position
+
+  test "position must be greater than or equal to 1" do
+    assert @instance.valid?
+    @instance.position = -1
+    assert !@instance.valid?
+    @instance.position = 0
+    assert !@instance.valid?
+    @instance.position = 1
+    assert @instance.valid?
+  end
+
 end

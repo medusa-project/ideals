@@ -156,13 +156,14 @@ class CsvImporter
       element_name  = header_row[column_index]
       item.elements.select{ |e| e.name == element_name }.each(&:destroy)
       values = cell_value.split(MULTI_VALUE_DELIMITER)
-      values.select(&:present?).each do |value|
+      values.select(&:present?).each_with_index do |value, value_index|
         reg_el = RegisteredElement.find_by_name(element_name)
         unless reg_el
           raise ArgumentError, "Element not present in registry: #{element_name}"
         end
         item.elements.build(registered_element: reg_el,
-                            string:             value.strip)
+                            string:             value.strip,
+                            position:           value_index + 1)
       end
     end
   end

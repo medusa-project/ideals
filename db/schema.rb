@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_30_140431) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_06_191030) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -73,6 +73,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_30_140431) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "uri"
+    t.integer "position", default: 1, null: false
     t.index ["item_id"], name: "index_ascribed_elements_on_item_id"
     t.index ["registered_element_id"], name: "index_ascribed_elements_on_registered_element_id"
   end

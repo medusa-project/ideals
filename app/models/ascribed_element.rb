@@ -1,15 +1,18 @@
 ##
-# Attachment of a {RegisteredElement} to a resource--either an {Item} or
-# {Collection}.
+# Attachment of a [RegisteredElement] to a resource--either an [Item] or a
+# [Collection].
 #
 # # Attributes
 #
-# * `collection_id`:         ID of the associated {Collection}. Set only if
+# * `collection_id`:         ID of the associated [Collection]. Set only if
 #                            `item_id` is not set.
 # * `created_at`:            Managed by ActiveRecord.
-# * `item_id`:               ID of the associated {Item}. Set only if
+# * `item_id`:               ID of the associated [Item]. Set only if
 #                            `collection_id` is not set.
-# * `registered_element_id`: ID of the associated {RegisteredElement}.
+# * `position`               Position relative to other [AscribedElement]s
+#                            **with the same name** attached to the same
+#                            resource. The counting starts at 1.
+# * `registered_element_id`: ID of the associated [RegisteredElement].
 # * `string`:                String value. Note that this may contain a date,
 #                            which, when received from the submission form, is
 #                            in `Month DD, YYYY` format.
@@ -26,6 +29,8 @@ class AscribedElement < ApplicationRecord
   belongs_to :item, touch: !DspaceImporter.instance.running?
 
   validates :string, presence: true
+  validates :position, numericality: { greater_than_or_equal_to: 1 },
+            allow_blank: false
 
   ##
   # @return [Date] Instance corresponding to the string value if it is

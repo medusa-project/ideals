@@ -1,4 +1,6 @@
 <dublin_core>
   <dcvalue element="title" qualifier="none">Escher Lego</dcvalue>
+  <dcvalue element="subject" qualifier="none">Subject 1</dcvalue>
+  <dcvalue element="subject" qualifier="none">Subject 2</dcvalue>
   <dcvalue element="date" qualifier="submitted">2021</dcvalue>
 </dublin_core>

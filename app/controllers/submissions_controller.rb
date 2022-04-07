@@ -6,6 +6,8 @@
 #
 class SubmissionsController < ApplicationController
 
+  include MetadataSubmission
+
   before_action :ensure_logged_in
   before_action :set_item, only: [:complete, :destroy, :edit, :update]
   before_action :authorize_item, only: [:destroy, :update]
@@ -104,13 +106,13 @@ class SubmissionsController < ApplicationController
           @item.primary_collection =
             Collection.find(params[:item][:primary_collection_id])
         end
-        build_metadata
+        build_metadata(@item) # MetadataSubmission concern
         @item.save!
       end
     rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @item.errors.any? ? @item : e },
-             status: :bad_request
+             locals:  { object: @item.errors.any? ? @item : e },
+             status:  :bad_request
     else
       head :no_content
     end
@@ -163,22 +165,6 @@ class SubmissionsController < ApplicationController
         @item.temp_embargo_type       = nil
         @item.temp_embargo_expires_at = nil
         @item.temp_embargo_reason     = nil
-      end
-    end
-  end
-
-  ##
-  # Builds and ascribes [AscribedElement]s to the item based on user input.
-  # Doing this manually is easier than using Rails nested attributes.
-  #
-  def build_metadata
-    if params[:elements].present?
-      ActiveRecord::Base.transaction do
-        @item.elements.destroy_all
-        params[:elements].select{ |e| e[:string].present? }.each do |element|
-          @item.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
-                               string:             element[:string])
-        end
       end
     end
   end

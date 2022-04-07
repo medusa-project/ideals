@@ -2,6 +2,7 @@
 
 class ItemsController < ApplicationController
 
+  include MetadataSubmission
   include Search
 
   before_action :ensure_logged_in, except: [:index, :show]
@@ -335,7 +336,7 @@ class ItemsController < ApplicationController
             end
           end
           @item.update!(item_params)
-          build_metadata
+          build_metadata(@item) # MetadataSubmission concern
           build_embargoes
         end
         @item.save!
@@ -425,24 +426,6 @@ class ItemsController < ApplicationController
                               expires_at:     TimeUtils.ymd_to_time(embargo[:expires_at_year],
                                                                     embargo[:expires_at_month],
                                                                     embargo[:expires_at_day])).save!
-      end
-    end
-  end
-
-  ##
-  # Builds and ascribes [AscribedElement]s to the item based on user input.
-  # This is done manually because to do it using Rails nested attributes would
-  # be harder.
-  #
-  def build_metadata
-    if params[:elements].present?
-      ActiveRecord::Base.transaction do
-        @item.elements.destroy_all
-        params[:elements].select{ |e| e[:string].present? }.each do |element|
-          @item.elements.build(registered_element: RegisteredElement.find_by_name(element[:name]),
-                               string:             element[:string],
-                               uri:                element[:uri])
-        end
       end
     end
   end

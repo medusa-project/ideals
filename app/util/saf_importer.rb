@@ -345,14 +345,18 @@ class SafImporter
   def add_metadata(item:,
                    metadata_relative_path:,
                    metadata_file_content:)
-    doc    = Nokogiri::XML(metadata_file_content)
-    schema = doc.xpath("/*/@schema").text
-    schema = "dc" if schema.blank?
+    doc      = Nokogiri::XML(metadata_file_content)
+    schema   = doc.xpath("/*/@schema").text
+    schema   = "dc" if schema.blank?
+    tmp_name = nil
+    position = 1
     doc.xpath("//dcvalue").each do |node|
       element   = node["element"]
       qualifier = node["qualifier"]
       name      = "#{schema}:#{element}"
       name     += ":#{qualifier}" if qualifier && qualifier != "none"
+      position = 1 if name != tmp_name
+      tmp_name = name
 
       re = RegisteredElement.find_by_name(name)
       unless re
@@ -360,7 +364,9 @@ class SafImporter
                        "element (#{name}) that does not exist in the registry"
       end
       item.elements.build(registered_element: re,
-                          string:             node.text)
+                          string:             node.text,
+                          position:           position)
+      position += 1
     end
   end
 
