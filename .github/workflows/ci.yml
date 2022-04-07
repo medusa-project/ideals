@@ -8,4 +8,4 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v2
       - name: Run the tests
-        run: docker-compose up --exit-code-from ideals
+        run: docker-compose up --build --exit-code-from ideals
