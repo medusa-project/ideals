@@ -67,6 +67,12 @@
           %dd= boolean(false, style: :word)
           %dt Minimum Access Role
           %dd= Role.label(@bitstream.role)
+        %dt Full Text Extracted
+        %dd
+          - if @bitstream.full_text_checked_at
+            = local_time(@bitstream.full_text_checked_at)
+          - else
+            Never
       %dt Download Count
       %dd= number_with_delimiter(@bitstream.download_count)
       - if @bitstream.description.present?
