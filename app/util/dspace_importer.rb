@@ -665,7 +665,15 @@ class DspaceImporter
         gsub(/_$/, "")            # trim off trailing underscore
       next if name.blank?
 
-      UserGroup.where(id: group_id).first_or_create!(name: name, key: key)
+      group = UserGroup.where(id: group_id).first_or_create!(name: name, key: key)
+      # These are UIUC's attribute (department)-based groups. Their name is the
+      # department name minus the "[automated]" suffix.
+      if [2, 7, 8, 9, 41, 42, 43, 489, 490, 491, 492].include?(group_id)
+        dept_name = name.gsub("[automated]", "").strip
+        if group.departments.where(name: dept_name).count < 1
+          group.departments.build(name: dept_name).save!
+        end
+      end
 
       progress.report(row_num, "Importing user groups")
     end
