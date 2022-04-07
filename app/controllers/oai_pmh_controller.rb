@@ -14,7 +14,7 @@
 # * `oai_dc`: Dublin Core; exposes `dc:` elements; required by OAI-PMH
 # * `qdc`:    Qualified Dublin Core; exposes `dc:` and `dcterms:` elements.
 # * `dim`:    DSpace format that exposes all elements. This is a legacy format
-#             carried over from IDEALS-DSpace, as it is used by the
+#             carried over from DSpace, as it is used by the
 #             [Search Gateway](https://digital.library.illinois.edu). Once that
 #             application has been migrated to use the `native` format, it can
 #             be removed.

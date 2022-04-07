@@ -44,9 +44,9 @@
 # * `created_at`:           Managed by ActiveRecord.
 # * `description`:          Description.
 # * `dspace_id`:            `bitstream.internal_id` column value from
-#                           IDEALS-DSpace. This is only relevant during
-#                           migration out of that system and can be removed
-#                           once migration is complete.
+#                           DSpace. This is only relevant during migration out
+#                           of DSpace and can be removed once migration is
+#                           complete.
 # * `full_text`             Full text, generally extracted from the contents of
 #                           e.g. PDF- or text-type bitstreams. See also
 #                           {checked_full_text}.
@@ -332,11 +332,10 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # This method is only used during migration out of IDEALS-DSpace. It can be
-  # removed afterwards.
+  # This method is only used during migration out of DSpace.
   #
-  # @return [String,nil] Path on the IDEALS-DSpace file system relative to the
-  #                      asset store root.
+  # @return [String,nil] Path on the DSpace file system relative to the asset
+  #                      store root.
   #
   def dspace_relative_path
     dspace_id.present? ? ["",
@@ -512,8 +511,7 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # For use only by the `ideals_dspace:bitstreams:copy` rake task. After
-  # migration, this method can be removed.
+  # For use by the `dspace:bitstreams:copy` rake task.
   #
   # @param file [String]
   #

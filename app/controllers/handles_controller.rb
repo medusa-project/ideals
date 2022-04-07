@@ -3,7 +3,7 @@
 class HandlesController < ApplicationController
 
   ##
-  # Permanently redirects URLs from IDEALS-DSpace to their modern counterparts.
+  # Permanently redirects URLs from DSpace to their modern counterparts.
   #
   # Responds to `/handle/:prefix/:suffix`.
   #

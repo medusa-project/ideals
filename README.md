@@ -119,11 +119,11 @@ $ brew services restart rabbitmq
 Refer to the instructions in the
 [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally).
 
-## Migrate content from IDEALS-DSpace into the application
+## Migrate content from DSpace into the application
 
 The migration process requires dropping the existing database and starting over
-with a new one. A prerequisite is a dump of the IDEALS-DSpace database loaded
-into a PostgreSQL instance and named `dbname`.
+with a new one. A prerequisite is a dump of the DSpace database loaded into a
+PostgreSQL instance and named `dbname`.
 
 The migration process is divided into two steps. The first step migrates
 critical data--the core entities needed to make the application usable. It
@@ -139,11 +139,11 @@ database.
 rails elasticsearch:purge
 rails storage:purge
 rails db:reset
-rails "ideals_dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
+rails "dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
-rails "ideals_dspace:bitstreams:copy[ideals_dspace_ssh_user]"
-rails "ideals_dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]" # optional
+rails "dspace:bitstreams:copy[dspace_ssh_user]"
+rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]" # optional
 rails "ideals:bitstreams:read_full_text[2]"
 ```
 N.B.: (`dbhost` etc.) are only required if the database is on a different host
@@ -151,23 +151,26 @@ and/or the database user is different from the default.
 
 ### In production
 
+(See `lib/tasks/dspace.rake` for detailed documentation of the intended
+migration process.)
+
 ```sh
 ~/bin/stop-rails
 rails elasticsearch:purge
 rails storage:purge
 rails db:reset
-rails "ideals_dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
+rails "dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails ideals:seed
-# Stop here until IDEALS-DSpace is decommissioned or read-only, then:
-rails "ideals_dspace:migrate_incremental[dbname,dbhost,dbuser,dbpass]"
+# Stop here until DSpace is decommissioned or read-only, then:
+rails "dspace:migrate_incremental[dbname,dbhost,dbuser,dbpass]"
 rails elasticsearch:reindex[2] # thread count
 # This user must authorize your SSH key for passwordless login
-rails "ideals_dspace:bitstreams:copy[ideals_dspace_ssh_user]"
-# Stop here until IDEALS-DSpace is decommissioned or read-only, then:
-rails "ideals_dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
+rails "dspace:bitstreams:copy[dspace_ssh_user]"
+# Stop here until DSpace is decommissioned or read-only, then:
+rails "dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails elasticsearch:reindex[2] # thread count
-rails "ideals_dspace:bitstreams:copy[ideals_dspace_ssh_user,4]"
-rails "ideals_dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]"
+rails "dspace:bitstreams:copy[dspace_ssh_user,4]"
+rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]"
 rails "ideals:bitstreams:read_full_text[4]"
 ```
 

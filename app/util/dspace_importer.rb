@@ -1,6 +1,10 @@
 ##
-# Imports content from "Old IDEALS" (IDEALS-DSpace) into the application.
-# Methods work in conjunction with the SQL scripts in the `scripts` directory.
+# Imports content from DSpace into the application. Methods work in conjunction
+# with the SQL scripts in the `scripts` directory.
+#
+# The main entry point into the migration system is not via this class, but
+# rather via the `dspace` rake tasks. See that file for detailed documentation
+# of the migration tools & process.
 #
 # An import can be run into a fresh destination database, or into a destination
 # database already populated with content, in order to pick up content added to
@@ -10,8 +14,7 @@
 # know when it is running.
 #
 # N.B.: methods must be invoked in a certain order. See the
-# `ideals_dspace:migrate_critical` and `ideals_dspace:migrate_non_critical`
-# rake tasks.
+# `dspace:migrate_critical` and `dspace:migrate_non_critical` rake tasks.
 #
 # N.B. 2: methods do not create or update objects within transactions, which
 # means that objects don't get indexed. This is in order to save time by
@@ -177,7 +180,7 @@ class DspaceImporter
           Event.create!(bitstream_id: bs_id,
                         happened_at:  month,
                         event_type:   Event::Type::DOWNLOAD,
-                        description:  "Imported download from IDEALS-DSpace")
+                        description:  "Imported download from DSpace")
         end
       end
     end
@@ -459,9 +462,8 @@ class DspaceImporter
         # This may be caused by either a nonexistent RegisteredElement, or a
         # nonexistent Item. Not much we can do in either case.
       rescue ActiveRecord::InvalidForeignKey
-        # IDEALS-DSpace does not have a hard elements-items foreign key and
-        # there is some inconsistency, which we have not much choice but to
-        # ignore.
+        # DSpace does not have a hard elements-items foreign key and there may
+        # be some inconsistency, which we have not much choice but to ignore.
       end
     end
   ensure
@@ -483,8 +485,8 @@ class DspaceImporter
             expires_at = Time.parse(expires_at)
             if expires_at > Time.now
               # Embargoes without expiration are set to the year 10000 in
-              # IDEALS-DSpace. But Elasticsearch can't handle dates that far
-              # in the future, so adjust to 3000.
+              # DSpace. But Elasticsearch can't handle dates that far in the
+              # future, so adjust to 3000.
               expires_at = expires_at.change(year: 3000) if expires_at.year > 3000
               case item.element("dc:description:terms")&.string
               when "U of I Only"
@@ -550,7 +552,7 @@ class DspaceImporter
       end
       item.events.where(event_type:  Event::Type::CREATE).
         first_or_create!(after_changes: JSON.generate(item.as_change_hash),
-                         description: "Item imported from IDEALS-DSpace.")
+                         description: "Item imported from DSpace.")
       progress.report(row_num, "Importing items")
     end
     update_pkey_sequence("items")

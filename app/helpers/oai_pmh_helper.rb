@@ -33,7 +33,7 @@ module OaiPmhHelper
                          unit_handle_suffix:       nil,
                          host:)
     # see section 2.4: http://www.openarchives.org/OAI/openarchivesprotocol.html
-    # These formats match the ones used by IDEALS-DSpace.
+    # These formats match the ones used by DSpace.
     if item
       return "oai:#{host}:#{item.handle}"
     elsif collection_handle_suffix

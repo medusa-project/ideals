@@ -1,15 +1,64 @@
 require 'rake'
 
 ##
-# These tasks relate to migrating data out of IDEALS-DSpace. After the
-# migration is complete, they can be removed.
+# These tasks assist in migrating data into the application from DSpace.
 #
-namespace :ideals_dspace do
+# The goal is to support a migration from a production DSpace to a production
+# this-app instance with zero downtime and without having to switch either
+# system into a read-only mode.
+#
+# # Task organization
+#
+# 1. The main database migration tasks:
+#     * `migrate_critical` migrates all critical content (i.e. that which is
+#       needed for the application to present in an acceptable state in
+#       production) from DSpace's database.
+#     * `migrate_incremental` migrates content that has been added or changed
+#       in DSpace since a previous migration via `migrate_critical`.
+#     * `migrate_non_critical` migrates all non-critical content (i.e. content
+#       that is not needed immediately during a migration into production) from
+#       DSpace's database. This is relatively unimportant content (like e.g.
+#       historical download statistics) that would take a long time to migrate
+#       but should not hold up a migration.
+# 2. Entity-specific migration tasks:
+#     * `dspace:bitstreams:migrate`, `dspace:bitstreams:migrate_incremental`,
+#       etc. These and similar tasks in other entity namespaces are invoked by
+#       the top-level `migrate_critical` and `migrate_incremental` tasks, so
+#       are not user-invoked during a real migration. There is a certain order
+#       in which they have to be invoked, because some entities are dependent
+#       on other entities already being in place. But being able to invoke them
+#       manually helps in development & debugging.
+# 3. File copying tasks:
+#     * `dspace:bitstreams:copy` copies files from DSpace's file system to the
+#       application bucket via SCP. This task can be used once all of the
+#       bitstreams' database records have been migrated (via `dspace:migrate`
+#       or `dspace:bitstreams:migrate`).
+#     * `dspace:bitstreams:copy_collection` and `dspace:bitstreams:copy_item`
+#       work like the above but limit the copying to a single collection or
+#       item. This is useful in e.g. development, where copying potentially
+#       hundreds of GB of files may not be practical.
+#
+# # The migration process
+#
+# 1. With DSpace still running in production and this application waiting in
+#    the wings but not yet publicly accessible, `migrate_critical` is run.
+#    This may take several hours or days to run.
+# 2. `dspace:bitstreams:copy` is run. This will take even longer to run.
+# 3. DSpace is taken out of production and replaced with this application.
+# 4. `migrate_incremental``is run to migrate any content that was added to
+#    DSpace since the time the last migration was started.
+# 5. `dspace:bitstreams:copy` is run again to copy any files corresponding to
+#    any new bitstreams that were just incrementally migrated. At this point,
+#    we are confident that all critical content from DSpace has been migrated.
+# 6. `migrate_non_critical` is run. This will take a long time, but it's not a
+#    big deal.
+#
+namespace :dspace do
 
   namespace :bitstreams do
 
-    IDEALS_DSPACE_HOSTNAME         = "ideals.illinois.edu"
-    IDEALS_DSPACE_ASSET_STORE_PATH = "/services/ideals-dspace/data/dspace/assetstore"
+    DSPACE_HOSTNAME         = "ideals.illinois.edu"
+    DSPACE_ASSET_STORE_PATH = "/services/ideals-dspace/data/dspace/assetstore"
 
     ##
     # Do this AFTER database content has been migrated.
@@ -17,8 +66,11 @@ namespace :ideals_dspace do
     # This is resumable--if stopped and run again, it will pick up where it
     # left off.
     #
-    desc "Copy all IDEALS-DSpace bitstreams into IDEALS"
-    task :copy, [:ideals_dspace_ssh_user, :num_threads] => :environment do |task, args|
+    # The invoking user's public SSH key must be present in the DSpace user's
+    # `.ssh/authorized_keys` file.
+    #
+    desc "Copy all DSpace bitstreams into IDEALS"
+    task :copy, [:dspace_ssh_user, :num_threads] => :environment do |task, args|
       num_threads = args[:num_threads].to_i
       Dir.mktmpdir do |tmpdir|
         Bitstream.uncached do
@@ -32,11 +84,11 @@ namespace :ideals_dspace do
                                           num_threads:    num_threads,
                                           print_progress: true) do |bitstream|
             # Download the file into the temp directory
-            remote_path = IDEALS_DSPACE_ASSET_STORE_PATH +
+            remote_path = DSPACE_ASSET_STORE_PATH +
               bitstream.dspace_relative_path
             local_path  = File.join(tmpdir, "#{bitstream.id}")
 
-            `scp #{args[:ideals_dspace_ssh_user]}@#{IDEALS_DSPACE_HOSTNAME}:#{remote_path} #{local_path}`
+            `scp #{args[:dspace_ssh_user]}@#{DSPACE_HOSTNAME}:#{remote_path} #{local_path}`
 
             # Upload it to the application S3 bucket
             bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
@@ -55,8 +107,8 @@ namespace :ideals_dspace do
       end
     end
 
-    desc "Copy one collection's bitstreams from IDEALS-DSpace into IDEALS"
-    task :copy_collection, [:collection_id, :ideals_dspace_ssh_user] => :environment do |task, args|
+    desc "Copy one collection's bitstreams from DSpace into IDEALS"
+    task :copy_collection, [:collection_id, :dspace_ssh_user] => :environment do |task, args|
       Dir.mktmpdir do |tmpdir|
         puts "Temp directory: #{tmpdir}"
         bitstreams      = Bitstream.joins("LEFT JOIN collection_item_memberships m ON m.item_id = bitstreams.item_id").
@@ -68,11 +120,11 @@ namespace :ideals_dspace do
         progress        = Progress.new(bitstream_count)
         bitstreams.find_each.with_index do |bitstream, index|
           # Download the file into the temp directory
-          remote_path = IDEALS_DSPACE_ASSET_STORE_PATH +
+          remote_path = DSPACE_ASSET_STORE_PATH +
             bitstream.dspace_relative_path
           local_path  = File.join(tmpdir, "#{bitstream.id}")
 
-          `scp #{args[:ideals_dspace_ssh_user]}@#{IDEALS_DSPACE_HOSTNAME}:#{remote_path} #{local_path}`
+          `scp #{args[:dspace_ssh_user]}@#{DSPACE_HOSTNAME}:#{remote_path} #{local_path}`
 
           # Upload it to the application S3 bucket
           bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
@@ -81,13 +133,13 @@ namespace :ideals_dspace do
           bitstream.save!
           # Delete it from the temp directory
           File.delete(local_path)
-          progress.report(index, "Copying files from IDEALS-DSpace into Medusa")
+          progress.report(index, "Copying files from DSpace into Medusa")
         end
       end
     end
 
-    desc "Copy one item's bitstreams from IDEALS-DSpace into IDEALS"
-    task :copy_item, [:item_id, :ideals_dspace_ssh_user] => :environment do |task, args|
+    desc "Copy one item's bitstreams from DSpace into IDEALS"
+    task :copy_item, [:item_id, :dspace_ssh_user] => :environment do |task, args|
       Dir.mktmpdir do |tmpdir|
         puts "Temp directory: #{tmpdir}"
         item            = Item.find(args[:item_id])
@@ -96,11 +148,11 @@ namespace :ideals_dspace do
         progress        = Progress.new(bitstream_count)
         bitstreams.each_with_index do |bitstream, index|
           # Download the file into the temp directory
-          remote_path = IDEALS_DSPACE_ASSET_STORE_PATH +
+          remote_path = DSPACE_ASSET_STORE_PATH +
             bitstream.dspace_relative_path
           local_path  = File.join(tmpdir, "#{bitstream.id}")
 
-          `scp #{args[:ideals_dspace_ssh_user]}@#{IDEALS_DSPACE_HOSTNAME}:#{remote_path} #{local_path}`
+          `scp #{args[:dspace_ssh_user]}@#{DSPACE_HOSTNAME}:#{remote_path} #{local_path}`
 
           # Upload it to the application S3 bucket
           bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
@@ -109,12 +161,12 @@ namespace :ideals_dspace do
           bitstream.save!
           # Delete it from the temp directory
           File.delete(local_path)
-          progress.report(index, "Copying files from IDEALS-DSpace into Medusa")
+          progress.report(index, "Copying files from DSpace into Medusa")
         end
       end
     end
 
-    desc "Migrate bitstreams from IDEALS-DSpace into the application"
+    desc "Migrate bitstreams from DSpace"
     task :migrate, [:source_db_name,
                     :source_db_host,
                     :source_db_user,
@@ -139,7 +191,7 @@ namespace :ideals_dspace do
                  :import_bitstream_metadata)
     end
 
-    desc "Incrementally migrate bitstreams from IDEALS-DSpace into the application"
+    desc "Incrementally migrate bitstreams from DSpace"
     task :migrate_incremental, [:source_db_name,
                                 :source_db_host,
                                 :source_db_user,
@@ -168,7 +220,7 @@ namespace :ideals_dspace do
                  joined_ids)
     end
 
-    desc "Migrate bitstream statistics from IDEALS-DSpace into the application"
+    desc "Migrate bitstream statistics from DSpace"
     task :migrate_statistics, [:source_db_name,
                                :source_db_host,
                                :source_db_user,
@@ -183,7 +235,7 @@ namespace :ideals_dspace do
   end
 
   namespace :collections do
-    desc "Migrate collections from IDEALS-DSpace into the application"
+    desc "Migrate collections from DSpace"
     task :migrate, [:source_db_name,
                     :source_db_host,
                     :source_db_user,
@@ -202,7 +254,7 @@ namespace :ideals_dspace do
                  :import_collections_2_communities)
     end
 
-    desc "Incrementally migrate collections from IDEALS-DSpace into the application"
+    desc "Incrementally migrate collections from DSpace"
     task :migrate_incremental, [:source_db_name,
                                 :source_db_host,
                                 :source_db_user,
@@ -225,7 +277,7 @@ namespace :ideals_dspace do
   end
 
   namespace :communities do
-    desc "Migrate communities from IDEALS-DSpace into the application"
+    desc "Migrate communities from DSpace"
     task :migrate, [:source_db_name,
                     :source_db_host,
                     :source_db_user,
@@ -244,7 +296,7 @@ namespace :ideals_dspace do
                  :import_communities_2_communities)
     end
 
-    desc "Incrementally migrate communities from IDEALS-DSpace into the application"
+    desc "Incrementally migrate communities from DSpace"
     task :migrate_incremental, [:source_db_name,
                                 :source_db_host,
                                 :source_db_user,
@@ -267,7 +319,7 @@ namespace :ideals_dspace do
   end
 
   namespace :handles do
-    desc "Migrate handles from IDEALS-DSpace into the application"
+    desc "Migrate handles from DSpace"
     task :migrate, [:source_db_name,
                     :source_db_host,
                     :source_db_user,
@@ -280,7 +332,7 @@ namespace :ideals_dspace do
                  :import_handles)
     end
 
-    desc "Incrementally migrate handles from IDEALS-DSpace into the application"
+    desc "Incrementally migrate handles from DSpace"
     task :migrate_incremental, [:source_db_name,
                                 :source_db_host,
                                 :source_db_user,
@@ -299,7 +351,7 @@ namespace :ideals_dspace do
   end
 
   namespace :items do
-    desc "Migrate items from IDEALS-DSpace into the application"
+    desc "Migrate items from DSpace"
     task :migrate, [:source_db_name,
                     :source_db_host,
                     :source_db_user,
@@ -318,7 +370,7 @@ namespace :ideals_dspace do
                  :import_collections_2_items)
     end
 
-    desc "Incrementally migrate items from IDEALS-DSpace into the application"
+    desc "Incrementally migrate items from DSpace"
     task :migrate_incremental, [:source_db_name,
                                 :source_db_host,
                                 :source_db_user,
@@ -341,7 +393,7 @@ namespace :ideals_dspace do
   end
 
   namespace :metadata do
-    desc "Migrate metadata registry from IDEALS-DSpace into the application"
+    desc "Migrate metadata registry from DSpace"
     task :migrate_registry, [:source_db_name,
                              :source_db_host,
                              :source_db_user,
@@ -354,7 +406,7 @@ namespace :ideals_dspace do
                  :import_metadata_registry)
     end
 
-    desc "Incrementally migrate metadata registry from IDEALS-DSpace into the application"
+    desc "Incrementally migrate metadata registry from DSpace"
     task :migrate_registry_incremental, [:source_db_name,
                                          :source_db_host,
                                          :source_db_user,
@@ -369,7 +421,7 @@ namespace :ideals_dspace do
                  joined_ids)
     end
 
-    desc "Migrate item metadata from IDEALS-DSpace into the application"
+    desc "Migrate item metadata from DSpace"
     task :migrate_item_values, [:source_db_name,
                                 :source_db_host,
                                 :source_db_user,
@@ -383,7 +435,7 @@ namespace :ideals_dspace do
       DspaceImporter.instance.process_embargoes
     end
 
-    desc "Incrementally migrate item metadata from IDEALS-DSpace into the application"
+    desc "Incrementally migrate item metadata from DSpace"
     task :migrate_item_values_incremental, [:source_db_name,
                                             :source_db_host,
                                             :source_db_user,
@@ -400,7 +452,7 @@ namespace :ideals_dspace do
   end
 
   namespace :user_groups do
-    desc "Migrate user groups from IDEALS-DSpace into the application"
+    desc "Migrate user groups from DSpace"
     task :migrate, [:source_db_name,
                     :source_db_host,
                     :source_db_user,
@@ -413,7 +465,7 @@ namespace :ideals_dspace do
                  :import_user_groups)
     end
 
-    desc "Incrementally migrate user groups from IDEALS-DSpace into the application"
+    desc "Incrementally migrate user groups from DSpace"
     task :migrate_incremental, [:source_db_name,
                                 :source_db_host,
                                 :source_db_user,
@@ -426,7 +478,7 @@ namespace :ideals_dspace do
                  :import_user_groups)
     end
 
-    desc "Migrate user group joins from IDEALS-DSpace into the application"
+    desc "Migrate user group joins from DSpace"
     task :migrate_joins, [:source_db_name,
                           :source_db_host,
                           :source_db_user,
@@ -445,7 +497,7 @@ namespace :ideals_dspace do
                  :import_user_groups_2_users)
     end
 
-    desc "Incrementally migrate user group joins from IDEALS-DSpace into the application"
+    desc "Incrementally migrate user group joins from DSpace"
     task :migrate_joins_incremental, [:source_db_name,
                                 :source_db_host,
                                 :source_db_user,
@@ -466,7 +518,7 @@ namespace :ideals_dspace do
   end
 
   namespace :users do
-    desc "Migrate users from IDEALS-DSpace into the application"
+    desc "Migrate users from DSpace"
     task :migrate, [:source_db_name,
                     :source_db_host,
                     :source_db_user,
@@ -485,7 +537,7 @@ namespace :ideals_dspace do
                  :import_user_metadata)
     end
 
-    desc "Incrementally migrate users from IDEALS-DSpace into the application"
+    desc "Incrementally migrate users from DSpace"
     task :migrate_incremental, [:source_db_name,
                                 :source_db_host,
                                 :source_db_user,
@@ -508,7 +560,7 @@ namespace :ideals_dspace do
     end
   end
 
-  desc "Migrate critical content from IDEALS-DSpace into the application"
+  desc "Migrate critical content from DSpace"
   task :migrate_critical, [:source_db_name,
                            :source_db_host,
                            :source_db_user,
@@ -517,21 +569,21 @@ namespace :ideals_dspace do
     dbhost = args[:source_db_host]
     dbuser = args[:source_db_user]
     dbpass = args[:source_db_password]
-    Rake::Task["ideals_dspace:metadata:migrate_registry"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:user_groups:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:users:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:communities:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:collections:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:items:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:bitstreams:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:user_groups:migrate_joins"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:handles:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:metadata:migrate_registry"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:user_groups:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:users:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:communities:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:collections:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:items:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:bitstreams:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:user_groups:migrate_joins"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:handles:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     puts "WARNING: This is the last step, but it takes a long time. "\
         "You can ctrl+c if you don't need full item metadata."
-    Rake::Task["ideals_dspace:metadata:migrate_item_values"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:metadata:migrate_item_values"].invoke(dbname, dbhost, dbuser, dbpass)
   end
 
-  desc "Migrate recently added critical content from IDEALS-DSpace into the application"
+  desc "Migrate recently added critical content from DSpace"
   task :migrate_incremental, [:source_db_name,
                               :source_db_host,
                               :source_db_user,
@@ -540,19 +592,19 @@ namespace :ideals_dspace do
     dbhost = args[:source_db_host]
     dbuser = args[:source_db_user]
     dbpass = args[:source_db_password]
-    Rake::Task["ideals_dspace:metadata:migrate_registry_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:user_groups:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:users:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:communities:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:collections:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:items:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:bitstreams:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:user_groups:migrate_joins_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:handles:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
-    Rake::Task["ideals_dspace:metadata:migrate_item_values_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:metadata:migrate_registry_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:user_groups:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:users:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:communities:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:collections:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:items:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:bitstreams:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:user_groups:migrate_joins_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:handles:migrate_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:metadata:migrate_item_values_incremental"].invoke(dbname, dbhost, dbuser, dbpass)
   end
 
-  desc "Migrate non-critical content from IDEALS-DSpace into the application"
+  desc "Migrate non-critical content from DSpace"
   task :migrate_non_critical, [:source_db_name,
                                :source_db_host,
                                :source_db_user,
@@ -561,7 +613,7 @@ namespace :ideals_dspace do
     dbhost = args[:source_db_host]
     dbuser = args[:source_db_user]
     dbpass = args[:source_db_password]
-    Rake::Task["ideals_dspace:bitstreams:migrate_statistics"].invoke(dbname, dbhost, dbuser, dbpass)
+    Rake::Task["dspace:bitstreams:migrate_statistics"].invoke(dbname, dbhost, dbuser, dbpass)
   end
 
   def do_migrate(source_db_name, source_db_host, source_db_user,

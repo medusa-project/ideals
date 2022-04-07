@@ -46,7 +46,7 @@ Rails.application.routes.draw do
     match "/submit", to: "submissions#agreement", via: :get
     match "/undelete", to: "collections#undelete", via: :post
   end
-  # This is an old IDEALS-DSpace route.
+  # This is an old DSpace route.
   match "/dspace-oai/request", to: redirect('/oai-pmh', status: 301), via: :all
   resources :file_formats, path: "file-formats", only: :index
   match "/handle/:prefix/:suffix", to: "handles#redirect", via: :get, as: "redirect_handle"
