@@ -7,9 +7,23 @@ class IdealsSeeder
     update_registered_elements
     seed_metadata_profiles
     seed_submission_profiles
+    seed_affiliations
   end
 
   private
+
+  def seed_affiliations
+    Affiliation.create!(key:  "staff",
+                        name: "Staff")
+    Affiliation.create!(key:  "graduate",
+                        name: "Graduate Student")
+    Affiliation.create!(key:  "masters",
+                        name: "Masters Student")
+    Affiliation.create!(key:  "phd",
+                        name: "Ph.D Student")
+    Affiliation.create!(key:  "undergrad",
+                        name: "Undergraduate Student")
+  end
 
   def seed_metadata_profiles
     # For the list of elements to include, see:
