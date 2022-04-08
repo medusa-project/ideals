@@ -144,7 +144,7 @@ rails ideals:seed
 rails elasticsearch:reindex[2] # thread count
 rails "dspace:bitstreams:copy[dspace_ssh_user]"
 rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]" # optional
-rails "ideals:bitstreams:read_full_text[2]"
+rails "ideals:bitstreams:read_full_text[2]" # optional
 ```
 N.B.: (`dbhost` etc.) are only required if the database is on a different host
 and/or the database user is different from the default.
@@ -155,23 +155,25 @@ and/or the database user is different from the default.
 migration process.)
 
 ```sh
-~/bin/stop-rails
 rails elasticsearch:purge
 rails storage:purge
 rails db:reset
 rails "dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails ideals:seed
-# Stop here until DSpace is decommissioned or read-only, then:
+rails elasticsearch:reindex[2] # thread count
+# This user must authorize your SSH key for passwordless login
+rails "dspace:bitstreams:copy[dspace_ssh_user]"
+
+# Wait here until DSpace is decommissioned or read-only, then:
 rails "dspace:migrate_incremental[dbname,dbhost,dbuser,dbpass]"
 rails elasticsearch:reindex[2] # thread count
 # This user must authorize your SSH key for passwordless login
 rails "dspace:bitstreams:copy[dspace_ssh_user]"
-# Stop here until DSpace is decommissioned or read-only, then:
-rails "dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
-rails elasticsearch:reindex[2] # thread count
-rails "dspace:bitstreams:copy[dspace_ssh_user,4]"
-rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]"
+
+# At this point, the application is fully live and DSpace is decommissioned,
+# but its database is still running.
 rails "ideals:bitstreams:read_full_text[4]"
+rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]"
 ```
 
 ## Create a user account

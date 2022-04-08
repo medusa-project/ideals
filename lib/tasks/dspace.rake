@@ -4,54 +4,63 @@ require 'rake'
 # These tasks assist in migrating data into the application from DSpace.
 #
 # The goal is to support a migration from a production DSpace to a production
-# this-app instance with zero downtime and without having to switch either
+# this-app instance with minimal downtime and without having to switch either
 # system into a read-only mode.
 #
 # # Task organization
 #
-# 1. The main database migration tasks:
-#     * `migrate_critical` migrates all critical content (i.e. that which is
-#       needed for the application to present in an acceptable state in
-#       production) from DSpace's database.
-#     * `migrate_incremental` migrates content that has been added or changed
-#       in DSpace since a previous migration via `migrate_critical`.
-#     * `migrate_non_critical` migrates all non-critical content (i.e. content
-#       that is not needed immediately during a migration into production) from
-#       DSpace's database. This is relatively unimportant content (like e.g.
-#       historical download statistics) that would take a long time to migrate
-#       but should not hold up a migration.
-# 2. Entity-specific migration tasks:
-#     * `dspace:bitstreams:migrate`, `dspace:bitstreams:migrate_incremental`,
-#       etc. These and similar tasks in other entity namespaces are invoked by
-#       the top-level `migrate_critical` and `migrate_incremental` tasks, so
-#       are not user-invoked during a real migration. There is a certain order
-#       in which they have to be invoked, because some entities are dependent
-#       on other entities already being in place. But being able to invoke them
-#       manually helps in development & debugging.
-# 3. File copying tasks:
-#     * `dspace:bitstreams:copy` copies files from DSpace's file system to the
-#       application bucket via SCP. This task can be used once all of the
-#       bitstreams' database records have been migrated (via `dspace:migrate`
-#       or `dspace:bitstreams:migrate`).
-#     * `dspace:bitstreams:copy_collection` and `dspace:bitstreams:copy_item`
-#       work like the above but limit the copying to a single collection or
-#       item. This is useful in e.g. development, where copying potentially
-#       hundreds of GB of files may not be practical.
+# ## The main database migration tasks
+#
+# * `migrate_critical` migrates all critical content (i.e. that which is needed
+#   for the application to present in an acceptable state in production) from
+#   DSpace's database.
+# * `migrate_incremental` migrates content that has been added or changed in
+#   DSpace since a previous migration via `migrate_critical`.
+# * `migrate_non_critical` migrates all non-critical content (i.e. content that
+#   is not needed immediately during a migration into production) from DSpace's
+#   database. This is relatively unimportant content (like e.g. historical
+#   download statistics) that would take a long time to migrate but should not
+#   hold up a migration.
+#
+# ## Entity-specific migration tasks
+#
+# * `dspace:bitstreams:migrate`, `dspace:bitstreams:migrate_incremental`, etc.
+#   These and similar tasks in other entity namespaces are invoked by the top-
+#   level `migrate_critical` and `migrate_incremental` tasks, so are not user-
+#   invoked during a real migration. There is a certain order in which they
+#   have to be invoked, because some entities are dependent on other entities
+#   already being in place. But being able to invoke them manually helps in
+#   development & debugging.
+#
+# ## File copying tasks
+#
+# * dspace:bitstreams:copy` copies files from DSpace's file system to the
+#   application bucket via SCP. This task can be used once all of the
+#   bitstreams' database records have been migrated (via `dspace:migrate` or
+#   `dspace:bitstreams:migrate`).
+# * `dspace:bitstreams:copy_collection` and `dspace:bitstreams:copy_item` work
+#   like the above but limit the copying to a single collection or item. This
+#   is useful in e.g. development, where copying potentially hundreds of GB of
+#   files may not be practical.
 #
 # # The migration process
 #
 # 1. With DSpace still running in production and this application waiting in
-#    the wings but not yet publicly accessible, `migrate_critical` is run.
-#    This may take several hours or days to run.
-# 2. `dspace:bitstreams:copy` is run. This will take even longer to run.
-# 3. DSpace is taken out of production and replaced with this application.
-# 4. `migrate_incremental``is run to migrate any content that was added to
-#    DSpace since the time the last migration was started.
-# 5. `dspace:bitstreams:copy` is run again to copy any files corresponding to
+#    the wings but not yet publicly accessible, `dspace:migrate_critical` is
+#    run. This may take several hours or days to complete.
+# 2. The application's database is seeded via `ideals:seed`.
+# 3. Migrated content is indexed in Elasticsearch via `elasticsearch:reindex`.
+# 4. `dspace:bitstreams:copy` is run. This will take a long time to complete.
+# 5. DSpace is taken out of production and replaced with this application.
+# 6. `dspace:migrate_incremental``is run to migrate any content that was added
+#    to DSpace since the time the last migration was started.
+# 7. `elasticsearch:reindex` is run again to index the content that was just
+#    incrementally migrated.
+# 8. `dspace:bitstreams:copy` is run again to copy any files corresponding to
 #    any new bitstreams that were just incrementally migrated. At this point,
 #    we are confident that all critical content from DSpace has been migrated.
-# 6. `migrate_non_critical` is run. This will take a long time, but it's not a
-#    big deal.
+# 9. `ideals:bitstreams:read_full_text` is run. This will take a long time.
+# 10. `dspace:migrate_non_critical` is run. This will take a long time.
 #
 namespace :dspace do
 
