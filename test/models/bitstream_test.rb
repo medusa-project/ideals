@@ -729,6 +729,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # read_full_text_async()
 
   test "read_full_text_async() works when full_text_checked_at is not set" do
+    @instance = bitstreams(:approved_in_permanent)
     @instance.update!(full_text_checked_at: nil,
                       full_text:            nil)
     @instance.read_full_text_async
