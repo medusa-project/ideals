@@ -1,18 +1,27 @@
-FROM ruby:3.1.1-slim
+FROM ubuntu:21.10
 
 ENV CI=1
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/Chicago
 ENV RAILS_ENV=test
 ENV RAILS_LOG_TO_STDOUT=true
 ENV SECRET_KEY_BASE=whateverdoesntmatter
 
 RUN apt-get update && apt-get install -y \
-  build-essential \
-  libmagic-dev \
-  libpq-dev \
-  libvips-tools \
-  curl \
-  git \
-  shared-mime-info
+    build-essential \
+    libmagic-dev \
+    libpq-dev \
+    libssl-dev \
+    zlib1g-dev \
+    libvips-tools \
+    curl \
+    git \
+    shared-mime-info
+
+# Install Ruby
+RUN git clone https://github.com/rbenv/ruby-build.git \
+    && PREFIX=/usr/local ./ruby-build/install.sh \
+    && ruby-build -v 3.1.1 /usr/local
 
 RUN mkdir app
 WORKDIR app
