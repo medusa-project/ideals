@@ -372,8 +372,8 @@ class Bitstream < ApplicationRecord
   #
   def format
     unless @format
-      ext = self.original_filename.split(".").last
-      @format = FileFormat.for_extension(ext)
+      ext = self.original_filename&.split(".").last
+      @format = FileFormat.for_extension(ext) if ext
     end
     @format
   end
