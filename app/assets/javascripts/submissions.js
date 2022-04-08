@@ -245,11 +245,11 @@ const SubmissionForm = function() {
 
     this.validateAccessLiftDate = function() {
         return accessForm.find("input[name='item[temp_embargo_expires_at]']").val()
-            .match(/\d{4}-\d{2}-\d{2}/);
+            .match(/\d{4}-\d{2}-\d{2}/) != null;
     }
 
     this.validateAccessSection = function() {
-        if (accessForm.find("input[name='item[temp_embargo_type]']").val() !== "open") {
+        if (accessForm.find("input[name='item[temp_embargo_type]']:checked").val() !== "open") {
             if (!self.validateAccessLiftDate()) {
                 setAccessError("Lift date must be in YYYY-MM-DD format.");
                 return false;
