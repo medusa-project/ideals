@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/medusa-project/amqp_helper.git
-  revision: e4e43afb82a498dba3d0946b853fbe8cfa16a94a
+  revision: 3d322265777af591ffe2dbb90271fb983a3431e1
   specs:
     amqp_helper (0.2.2)
       bunny
@@ -279,7 +279,7 @@ GEM
       zeitwerk (~> 2.5)
     rainbow (3.0.0)
     rake (13.0.6)
-    rbtree (0.4.4)
+    rbtree (0.4.5)
     recaptcha (5.8.1)
       json
     regexp_parser (2.2.0)
