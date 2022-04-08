@@ -153,7 +153,7 @@ class SubmissionsController < ApplicationController
   def build_embargo
     ActiveRecord::Base.transaction do
       @item.embargoes.destroy_all
-      if @item.temp_embargo_type != "open"
+      if @item.temp_embargo_type.present? && @item.temp_embargo_type != "open"
         embargo = @item.embargoes.build(full_access: true,
                                         download:    true,
                                         expires_at:  Time.parse(@item.temp_embargo_expires_at),

@@ -95,7 +95,12 @@ class Bitstream < ApplicationRecord
 
   before_save :ensure_primary_uniqueness
   after_save :ingest_into_medusa, if: -> { permanent_key.present? && saved_change_to_permanent_key? && !submitted_for_ingest }
-  after_save :read_full_text_async, if: -> { full_text_checked_at.blank? && effective_key.present? && !DspaceImporter.instance.running? }
+  after_save :read_full_text_async, if: -> {
+    can_read_full_text? &&
+    full_text_checked_at.blank? &&
+    effective_key.present? &&
+    (!ActiveSupport::TestCase.method_defined?(:seeding?) || !ActiveSupport::TestCase.seeding?) &&
+    !DspaceImporter.instance.running? }
   before_destroy :delete_derivatives, :delete_from_staging
   before_destroy :delete_from_medusa, if: -> { medusa_uuid.present? }
 
@@ -230,6 +235,13 @@ class Bitstream < ApplicationRecord
   #
   def authorized_by?(user_group)
     self.item.bitstream_authorizations.where(user_group: user_group).count > 0
+  end
+
+  ##
+  # @return [Boolean] Whether {read_full_text full text can be read}.
+  #
+  def can_read_full_text?
+    %w(PDF Text).include?(self.format&.short_name)
   end
 
   ##
@@ -470,7 +482,7 @@ class Bitstream < ApplicationRecord
   # @return [void]
   #
   def read_full_text(force: false)
-    return if (!force && full_text_checked_at.present?) || DspaceImporter.instance.running?
+    return if !force && full_text_checked_at.present?
     text = nil
     #noinspection RubyRedundantSafeNavigation,RubyCaseWithoutElseBlockInspection
     case self.format&.short_name

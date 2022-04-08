@@ -8,6 +8,10 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
+  def self.seeding?
+    @@seeding
+  end
+
   ##
   # Seeded bitstreams have an invalid staging_key and/or permanent_key
   # property (because an item ID is needed to compute one). This method fixes
@@ -89,6 +93,7 @@ class ActiveSupport::TestCase
     bucket = ::Configuration.instance.aws[:bucket]
     client.create_bucket(bucket: bucket) unless client.bucket_exists?(bucket)
 
+    @@seeding = true
     Bitstream.where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").each do |bs|
       fix_bitstream_keys(bs)
       File.open(file_fixture(bs.original_filename), "r") do |file|
@@ -97,6 +102,7 @@ class ActiveSupport::TestCase
                           body:   file)
       end
     end
+    @@seeding = false
   end
 
   def teardown_s3

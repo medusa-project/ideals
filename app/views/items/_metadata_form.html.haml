@@ -26,12 +26,10 @@
               %table.table-sm.table-borderless
                 %tr
                   %td String:
-                  %td = text_area_tag "elements[][string]", asc_element.string,
-                                      class: "form-control"
+                  %td= text_area_tag("elements[][string]", asc_element.string, class: "form-control")
                 %tr
                   %td URI:
-                  %td = text_field_tag "elements[][uri]", asc_element.uri,
-                                       class: "form-control"
+                  %td= text_field_tag("elements[][uri]", asc_element.uri, class: "form-control")
             %td
               %button.btn.btn-sm.btn-outline-danger.remove{type:  "button",
                                                            style: "white-space: nowrap"}

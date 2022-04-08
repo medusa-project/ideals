@@ -8,8 +8,8 @@ class ReadFullTextJobTest < ActiveSupport::TestCase
 
   test "perform() reads full text" do
     bs = bitstreams(:approved_in_permanent)
-    assert_nil bs.full_text_checked_at
-    assert_nil bs.full_text
+    bs.update!(full_text_checked_at: nil,
+               full_text:            nil)
 
     ReadFullTextJob.new.perform(bs)
     assert_not_nil bs.full_text_checked_at

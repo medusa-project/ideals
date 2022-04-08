@@ -273,10 +273,14 @@ class SafImporterTest < ActiveSupport::TestCase
     assert !bs.primary
 
     # Test metadata
-    assert_equal 7, item.elements.length
+    assert_equal 9, item.elements.length
     assert_not_nil item.element("dcterms:available")  # added automatically upon approval
     assert_not_nil item.element("dcterms:identifier") # added automatically when the handle is assigned
     assert_equal "Escher Lego", item.element("dc:title").string
+    assert_equal "Subject 1", item.elements.select{ |e| e.name == "dc:subject"}[0].string
+    assert_equal 1, item.elements.select{ |e| e.name == "dc:subject"}[0].position
+    assert_equal "Subject 2", item.elements.select{ |e| e.name == "dc:subject"}[1].string
+    assert_equal 2, item.elements.select{ |e| e.name == "dc:subject"}[1].position
     assert_equal "2021", item.element("dc:date:submitted").string
     assert_equal "Computer Science", item.element("etd:degree:department").string
     assert_equal "Masters", item.element("etd:degree:level").string

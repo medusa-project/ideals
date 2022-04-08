@@ -35,12 +35,12 @@ class BitstreamTest < ActiveSupport::TestCase
 
   setup do
     setup_s3
+    clear_message_queue
     @instance = bitstreams(:item1_in_staging)
     assert @instance.valid?
   end
 
   teardown do
-    clear_message_queue
     teardown_s3
   end
 
@@ -141,6 +141,18 @@ class BitstreamTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.bundle = Bitstream::Bundle::CONTENT
     assert @instance.valid?
+  end
+
+  # can_read_full_text?()
+
+  test "can_read_full_text?() returns true for a supported format" do
+    @instance.original_filename = "doc.pdf"
+    assert @instance.can_read_full_text?
+  end
+
+  test "can_read_full_text?() returns false for an unsupported format" do
+    @instance.original_filename = "image.jpg"
+    assert !@instance.can_read_full_text?
   end
 
   # data()
@@ -524,8 +536,8 @@ class BitstreamTest < ActiveSupport::TestCase
     AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
       config = ::Configuration.instance
       assert_equal "ingest", message['operation']
-      assert_equal "#{@instance.id}/escher_lego2.jpg", message['staging_key']
-      assert_equal "#{config.handles[:prefix]}/#{@instance.item.handle.suffix}/escher_lego2.jpg",
+      assert_equal "#{@instance.id}/escher_lego.jpg", message['staging_key']
+      assert_equal "#{config.handles[:prefix]}/#{@instance.item.handle.suffix}/escher_lego.jpg",
                    message['target_key']
       assert_equal @instance.class.to_s, message['pass_through']['class']
       assert_equal @instance.id, message['pass_through']['identifier']
@@ -658,8 +670,8 @@ class BitstreamTest < ActiveSupport::TestCase
   test "read_full_text() works when full_text_checked_at is not set and force
   argument is false" do
     @instance = bitstreams(:approved_in_permanent)
-    @instance.full_text_checked_at = nil
-    @instance.full_text            = nil
+    @instance.update!(full_text_checked_at: nil,
+                      full_text:            nil)
     @instance.read_full_text(force: false)
 
     assert_not_nil @instance.full_text_checked_at
@@ -669,8 +681,8 @@ class BitstreamTest < ActiveSupport::TestCase
   test "read_full_text() works when full_text_checked_at is not set and force
   argument is true" do
     @instance = bitstreams(:approved_in_permanent)
-    @instance.full_text_checked_at = nil
-    @instance.full_text            = nil
+    @instance.update!(full_text_checked_at: nil,
+                      full_text:            nil)
     @instance.read_full_text(force: true)
 
     assert_not_nil @instance.full_text_checked_at
@@ -680,10 +692,10 @@ class BitstreamTest < ActiveSupport::TestCase
   test "read_full_text() does nothing when full_text_checked_at is set and
   force argument is false" do
     @instance = bitstreams(:approved_in_permanent)
-    checked_at = Time.now
+    checked_at = Time.now.utc
     text       = "cats"
-    @instance.full_text_checked_at = checked_at
-    @instance.full_text            = text
+    @instance.update!(full_text_checked_at: checked_at,
+                      full_text:            text)
     @instance.read_full_text(force: false)
 
     assert_equal checked_at, @instance.full_text_checked_at
@@ -692,7 +704,9 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "read_full_text() works when full_text_checked_at is set and
   force argument is true" do
-    @instance = bitstreams(:approved_in_permanent)
+    @instance               = bitstreams(:approved_in_permanent)
+    @instance.permanent_key = Bitstream.permanent_key(@instance.item_id,
+                                                      @instance.original_filename)
     checked_at = Time.now
     text       = "cats"
     @instance.full_text_checked_at = checked_at
@@ -704,8 +718,8 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "read_full_text() does nothing with an incompatible format" do
-    assert_nil @instance.full_text_checked_at
-    assert_nil @instance.full_text
+    @instance.update!(full_text_checked_at: nil,
+                      full_text:            nil)
     @instance.read_full_text(force: true)
 
     assert_not_nil @instance.full_text_checked_at
@@ -715,8 +729,8 @@ class BitstreamTest < ActiveSupport::TestCase
   # read_full_text_async()
 
   test "read_full_text_async() works when full_text_checked_at is not set" do
-    @instance.full_text_checked_at = nil
-    @instance.full_text            = nil
+    @instance.update!(full_text_checked_at: nil,
+                      full_text:            nil)
     @instance.read_full_text_async
 
     sleep 2
@@ -727,10 +741,10 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "read_full_text_async() does nothing when full_text_checked_at is set" do
-    checked_at = Time.now
+    checked_at = Time.now.utc
     text       = "cats"
-    @instance.full_text_checked_at = checked_at
-    @instance.full_text            = text
+    @instance.update!(full_text_checked_at: checked_at,
+                      full_text:            text)
     @instance.read_full_text_async
 
     sleep 2
@@ -804,7 +818,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() does not read full text when full_text_is_checked_at is set" do
     @instance = bitstreams(:approved_in_permanent)
-    time      = Time.now
+    time      = Time.now.utc
     @instance.update!(full_text_checked_at: time,
                       full_text:            "cats")
     sleep 2
