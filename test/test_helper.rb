@@ -8,6 +8,26 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
+  ##
+  # Seeded bitstreams have an invalid staging_key and/or permanent_key
+  # property (because an item ID is needed to compute one). This method fixes
+  # these properties.
+  #
+  def fix_bitstream_keys(bitstream)
+    submitted_for_ingest = bitstream.submitted_for_ingest
+    if bitstream.staging_key.present?
+      bitstream.staging_key = Bitstream.staging_key(bitstream.item_id,
+                                                    bitstream.original_filename)
+    end
+    if bitstream.permanent_key.present?
+      bitstream.permanent_key = Bitstream.permanent_key(bitstream.item_id,
+                                                        bitstream.original_filename)
+    end
+    bitstream.save!
+    # Restore submitted_for_ingest to its initial value
+    bitstream.update_column(:submitted_for_ingest, submitted_for_ingest)
+  end
+
   def log_in_as(user)
     if user.kind_of?(ShibbolethUser)
       # N.B. 1: See "request_type option" section for info about using
@@ -69,9 +89,8 @@ class ActiveSupport::TestCase
     bucket = ::Configuration.instance.aws[:bucket]
     client.create_bucket(bucket: bucket) unless client.bucket_exists?(bucket)
 
-    Bitstream.
-      where.not(staging_key: nil).
-      where.not(permanent_key: nil).each do |bs|
+    Bitstream.where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").each do |bs|
+      fix_bitstream_keys(bs)
       File.open(file_fixture(bs.original_filename), "r") do |file|
         client.put_object(bucket: bucket,
                           key:    bs.effective_key,

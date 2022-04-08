@@ -1,9 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+#
+# N.B.: staging_key and permanent_key depend on the owning item ID, so must be
+# set in tests via Bitstream.staging_key() and permanent_key().
+# They are set to temporary values here in order to get seeded into the bucket.
 
 item1_in_staging:
   item:                 item1
   submitted_for_ingest: false
-  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/item1_in_staging
+  staging_key:          <%= SecureRandom.hex %>
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   original_filename:    escher_lego.jpg
@@ -16,7 +20,7 @@ item1_in_staging:
 submitting_in_staging:
   item:                 submitting
   submitted_for_ingest: false
-  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/submitting_in_staging
+  staging_key:          <%= SecureRandom.hex %>
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   original_filename:    escher_lego.jpg
@@ -29,7 +33,7 @@ submitting_in_staging:
 submitted_in_staging:
   item:                 submitted
   submitted_for_ingest: false
-  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/submitted_in_staging
+  staging_key:          <%= SecureRandom.hex %>
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   original_filename:    escher_lego.jpg
@@ -43,7 +47,7 @@ awaiting_ingest_into_medusa:
   item:                 awaiting_ingest_into_medusa
   submitted_for_ingest: false
   staging_key:
-  permanent_key:        <%= Bitstream::PERMANENT_KEY_PREFIX %>/approved_in_permanent
+  permanent_key:        <%= SecureRandom.hex %>
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   original_filename:    escher_lego.jpg
   medusa_key:
@@ -56,7 +60,7 @@ approved_in_permanent:
   item:                 approved
   submitted_for_ingest: true
   staging_key:
-  permanent_key:        <%= Bitstream::PERMANENT_KEY_PREFIX %>/approved_in_permanent
+  permanent_key:        <%= SecureRandom.hex %>
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pdf.pdf")) %>
   original_filename:    pdf.pdf
   medusa_key:
@@ -68,8 +72,8 @@ approved_in_permanent:
 item2_in_medusa:
   item:                 in_medusa
   submitted_for_ingest: true
-  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/item2_in_medusa
-  permanent_key:
+  staging_key:
+  permanent_key:        <%= SecureRandom.hex %>
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   original_filename:    escher_lego.jpg
   medusa_key:           test/test/escher_lego.jpg
@@ -81,10 +85,10 @@ item2_in_medusa:
 license_bundle:
   item:                 item1
   submitted_for_ingest: false
-  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/license_bundle
+  staging_key:          <%= SecureRandom.hex %>
   permanent_key:
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pooh.jpg")) %>
+  original_filename:    pooh.jpg
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -94,10 +98,10 @@ license_bundle:
 role_limited:
   item:                 item1
   submitted_for_ingest: false
-  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/role_limited
+  staging_key:          <%= SecureRandom.hex %>
   permanent_key:
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "crane.jpg")) %>
+  original_filename:    crane.jpg
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::SYSTEM_ADMINISTRATOR %>
@@ -107,7 +111,7 @@ role_limited:
 undiscoverable_in_staging:
   item:                 undiscoverable
   submitted_for_ingest: false
-  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/undiscoverable_in_staging
+  staging_key:          <%= SecureRandom.hex %>
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   original_filename:    escher_lego.jpg
@@ -120,7 +124,7 @@ undiscoverable_in_staging:
 withdrawn_in_staging:
   item:                 withdrawn
   submitted_for_ingest: false
-  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/withdrawn_in_staging
+  staging_key:          <%= SecureRandom.hex %>
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   original_filename:    escher_lego.jpg
@@ -133,7 +137,7 @@ withdrawn_in_staging:
 collection1_collection1_item1_in_staging:
   item:                 collection1_collection1_item1
   submitted_for_ingest: false
-  staging_key:          <%= Bitstream::STAGING_KEY_PREFIX %>/collection1_collection1_item1_in_staging
+  staging_key:          <%= SecureRandom.hex %>
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
   original_filename:    escher_lego.jpg
