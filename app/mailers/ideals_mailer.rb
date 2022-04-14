@@ -89,13 +89,6 @@ class IdealsMailer < ApplicationMailer
     mail(to: invitee.email, subject: "Your IDEALS account request")
   end
 
-  def contact_help(params) # TODO: use this or lose it
-    @params = params
-    mail(from:    @params["help-email"],
-         to:      [::Configuration.instance.mail[:from], @params["help-email"]],
-         subject: "#{subject_prefix} Help Request")
-  end
-
   def error(error_text)
     @error_text = error_text
     mail(reply_to: NO_REPLY_ADDRESS,
