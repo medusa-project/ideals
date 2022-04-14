@@ -698,7 +698,7 @@ class BitstreamTest < ActiveSupport::TestCase
                       full_text:            text)
     @instance.read_full_text(force: false)
 
-    assert_equal checked_at, @instance.full_text_checked_at
+    assert_equal checked_at.to_i, @instance.full_text_checked_at.to_i
     assert_equal text, @instance.full_text
   end
 
@@ -751,7 +751,7 @@ class BitstreamTest < ActiveSupport::TestCase
     sleep 2
 
     @instance.reload
-    assert_equal checked_at, @instance.full_text_checked_at
+    assert_equal checked_at.to_i, @instance.full_text_checked_at.to_i
     assert_equal text, @instance.full_text
   end
 
@@ -825,7 +825,7 @@ class BitstreamTest < ActiveSupport::TestCase
     sleep 2
 
     @instance.reload
-    assert_equal time, @instance.full_text_checked_at
+    assert_equal time.to_i, @instance.full_text_checked_at.to_i
     assert_equal "cats", @instance.full_text
   end
 
