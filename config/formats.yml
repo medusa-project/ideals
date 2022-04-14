@@ -3,12 +3,21 @@
 # application. It is used to assign names, icons, and viewers to user-submitted
 # files in the user interface. See the FileFormat class for more information.
 #
-# This is not a comprehensive list of all formats in existence, but is a
-# pretty comprehensive list of all formats in the IDEALS database as of early
-# 2020. It should be updated from time to time to accommodate new user-
-# submitted formats.
+# This is not a comprehensive list of all formats in existence, but is a mostly
+# comprehensive list of formats in the IDEALS database as of mid-2022. It
+# should be updated from time to time to accommodate new user-submitted formats.
 #
 
+7z:
+  short_name: 7Zip
+  long_name: 7Zip
+  extensions:
+    - 7z
+  media_types:
+    - application/x-7z-compressed
+  category: archive
+  icon: file-archive-o
+  readable_by_vips: false
 aac:
   short_name: AAC
   long_name: Advanced Audio Coding
@@ -88,6 +97,16 @@ bmp:
   icon: file-image-o
   readable_by_vips: true
   viewer_method: image_tag_for
+bz2:
+  short_name: bzip2
+  long_name: bzip2
+  extensions:
+    - bz2
+  media_types:
+    - application/x-bzip2
+  category: archive
+  icon: file-archive-o
+  readable_by_vips: false
 css:
   short_name: CSS
   long_name: Cascading Style Sheets
@@ -123,6 +142,7 @@ docx:
   long_name: Word Document
   extensions:
     - docx
+    - docm
   media_types:
     - application/vnd.openxmlformats-officedocument.wordprocessingml.document
   category: document
@@ -148,6 +168,26 @@ eps:
   category: document
   icon: file-text-o
   readable_by_vips: false
+epub:
+  short_name: ePUB
+  long_name: ePUB
+  extensions:
+    - epub
+  media_types:
+    - application/epub+zip
+  category: document
+  icon: file-text-o
+  readable_by_vips: false
+exe:
+  short_name: EXE
+  long_name: Windows Executable
+  extensions:
+    - exe
+  media_types:
+    - application/octet-stream
+  category: binary
+  icon: file-o
+  readable_by_vips: false
 fla:
   short_name: Flash
   long_name: Flash Animation
@@ -168,6 +208,18 @@ flac:
     - audio/x-flac
   category: audio
   icon: file-audio-o
+  readable_by_vips: false
+flv:
+  short_name: FLV
+  long_name: Flash Video
+  extensions:
+    - flv
+    - f4v
+  media_types:
+    - video/x-flv
+    - video/mp4
+  category: video
+  icon: file-video-o
   readable_by_vips: false
 fm:
   short_name: FM
@@ -281,6 +333,16 @@ latex:
   category: document
   icon: file-code-o
   readable_by_vips: false
+lyx:
+  short_name: LyX
+  long_name: LyX
+  extensions:
+    - lyx
+  media_types:
+    - application/octet-stream
+  category: document
+  icon: file-text-o
+  readable_by_vips: false
 ma:
   short_name: Maya
   long_name: Maya ASCII Scene
@@ -301,6 +363,17 @@ mjpeg2000:
     - video/mj2
   category: video
   icon: file-video-o
+  readable_by_vips: false
+mobi:
+  short_name: Mobi
+  long_name: Mobipocket
+  extensions:
+    - mobi
+    - prc
+  media_types:
+    - application/x-mobipocket-ebook
+  category: document
+  icon: file-text-o
   readable_by_vips: false
 mp1_audio:
   short_name: MP1
@@ -607,6 +680,17 @@ pdf:
   icon: file-pdf-o
   readable_by_vips: true
   viewer_method: viewerjs_viewer_for
+php:
+  short_name: PHP
+  long_name: PHP Script
+  extensions:
+    - php
+  media_types:
+    - text/plain
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+  viewer_method: text_viewer_for
 png:
   short_name: PNG
   long_name: Portable Network Graphics
@@ -649,6 +733,7 @@ pptx:
   long_name: PowerPoint
   extensions:
     - pptx
+    - pptm
   media_types:
     - application/vnd.openxmlformats-officedocument.presentationml.presentation
   category: document
@@ -678,6 +763,17 @@ psd:
   category: image
   icon: file-image-o
   readable_by_vips: false
+py:
+  short_name: Python
+  long_name: Python Script
+  extensions:
+    - py
+  media_types:
+    - text/plain
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+  viewer_method: text_viewer_for
 quicktime:
   short_name: QuickTime
   long_name: QuickTime
@@ -700,6 +796,18 @@ r:
   category: code
   icon: file-code-o
   readable_by_vips: false
+  viewer_method: text_viewer_for
+rb:
+  short_name: Ruby
+  long_name: Ruby Script
+  extensions:
+    - rb
+  media_types:
+    - text/plain
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+  viewer_method: text_viewer_for
 ra:
   short_name: RA
   long_name: RealAudio
@@ -875,6 +983,17 @@ stw:
   category: document
   icon: file-o
   readable_by_vips: false
+svg:
+  short_name: SVG
+  long_name: Scalable Vector Graphics
+  extensions:
+    - svg
+  media_types:
+    - image/svg+xml
+  category: image
+  icon: file-image-o
+  readable_by_vips: true
+  viewer_method: image_tag_for
 sxc:
   short_name: OpenOffice Calc
   long_name: OpenOffice Calc
@@ -1062,6 +1181,7 @@ xlsx:
   long_name: Excel
   extensions:
     - xlsx
+    - xlsm
   media_types:
     - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
   category: document
@@ -1084,6 +1204,7 @@ zip:
   long_name: Zip
   extensions:
     - zip
+    - zipx
   media_types:
     - application/zip
   category: archive
