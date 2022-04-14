@@ -507,8 +507,8 @@ class Bitstream < ApplicationRecord
     else
       self.update!(full_text_checked_at: Time.now) and return
     end
-    text = Iconv.conv('UTF-8//IGNORE', 'UTF-8', text)[0..-2] # convert to UTF-8
-    text.delete!("\u0000")                                   # strip null bytes
+    text = StringUtils.utf8(text) # convert to UTF-8
+    text.delete!("\u0000")        # strip null bytes
     changed = (text != self.full_text)
     self.update!(full_text_checked_at: Time.now,
                  full_text:            text)

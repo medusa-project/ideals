@@ -23,6 +23,14 @@ class StringUtils
   end
 
   ##
+  # @param string [String] Input string in any encoding.
+  # @return [String] UTF-8 string.
+  #
+  def self.utf8(string)
+    Iconv.conv('UTF-8//IGNORE', 'UTF-8', string)[0..-2]
+  end
+
+  ##
   # @param email [String] Email address.
   # @return [Boolean]
   #
