@@ -68,14 +68,14 @@ class RegisteredElement < ApplicationRecord
   #                  in indexed documents.
   #
   def indexed_keyword_field
-    [indexed_name, KEYWORD_FIELD_SUFFIX].join
+    [indexed_field, KEYWORD_FIELD_SUFFIX].join
   end
 
   ##
   # @return [String] Name of the field in which the element is stored in
   #                  indexed documents.
   #
-  def indexed_name # TODO: rename to indexed_field
+  def indexed_field
     # N.B.: changing this probably requires changing the index schema and/or
     # reindexing.
     [METADATA_FIELD_PREFIX,
@@ -87,7 +87,7 @@ class RegisteredElement < ApplicationRecord
   #                  indexed documents.
   #
   def indexed_sort_field
-    [indexed_name, SORTABLE_FIELD_SUFFIX].join
+    [indexed_field, SORTABLE_FIELD_SUFFIX].join
   end
 
   def to_param

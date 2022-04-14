@@ -327,7 +327,7 @@ class Item < ApplicationRecord
 
     # Index ascribed metadata elements into dynamic fields.
     self.elements.each do |element|
-      field = element.registered_element.indexed_name
+      field = element.registered_element.indexed_field
       doc[field] = [] unless doc[field]&.respond_to?(:each)
       doc[field] << element.string[0..ElasticsearchClient::MAX_KEYWORD_FIELD_LENGTH]
     end

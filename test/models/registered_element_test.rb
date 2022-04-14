@@ -41,14 +41,14 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert_equal "metadata_dc_title.keyword", @instance.indexed_keyword_field
   end
 
-  # indexed_name()
+  # indexed_field()
 
-  test "indexed_name() returns the expected name" do
-    assert_equal "metadata_dc_title", @instance.indexed_name
+  test "indexed_field() returns the expected name" do
+    assert_equal "metadata_dc_title", @instance.indexed_field
   end
 
-  test "indexed_name() replaces reserved characters" do
-    assert_equal "metadata_dc_title", @instance.indexed_name
+  test "indexed_field() replaces reserved characters" do
+    assert_equal "metadata_dc_title", @instance.indexed_field
   end
 
   # indexed_sort_field()
