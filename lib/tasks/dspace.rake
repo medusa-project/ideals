@@ -81,6 +81,7 @@ namespace :dspace do
     desc "Copy all DSpace bitstreams into IDEALS"
     task :copy, [:dspace_ssh_user, :num_threads] => :environment do |task, args|
       num_threads = args[:num_threads].to_i
+      num_threads = 1 if num_threads < 1
       Dir.mktmpdir do |tmpdir|
         Bitstream.uncached do
           bitstreams = Bitstream.
