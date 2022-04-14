@@ -14,11 +14,14 @@ namespace :handles do
 
   desc 'Create/update handles for all database entities'
   task :put_all => :environment do |task, args|
-    count = Handle.count
-    progress = Progress.new(count)
-    Handle.all.each_with_index do |handle, i|
-      handle.put_to_server
-      progress.report(i, "Uploading handles")
+    Handle.uncached do
+      handles  = Handle.all.order(:id)
+      count    = handles.count
+      progress = Progress.new(count)
+      handles.find_each.with_index do |handle, index|
+        handle.put_to_server
+        progress.report(index, "Uploading handles")
+      end
     end
   end
 
