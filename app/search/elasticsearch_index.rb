@@ -16,8 +16,7 @@
 # old index are compatible with the new index, then this is a simple matter of
 # running the `elasticsearch:indexes:reindex` rake task. Otherwise, all
 # database entities need to be reindexed into the new index. This is more time-
-# consuming and involves the `elasticsearch:items:reindex`,
-# `elasticsearch:collections:reindex` rake  tasks. # TODO: these commands are from kumquat and need to be updated
+# consuming and involves the `elasticsearch:reindex` rake task.
 #
 # Once the new index has been populated, either the application's
 # `elasticsearch/index` configuration key must be updated to point to it, or
