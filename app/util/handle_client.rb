@@ -86,6 +86,9 @@ class HandleClient
     struct['values']
   end
 
+  ##
+  # @return [Enumerable<String>]
+  #
   def get_handles
     url = "#{api_endpoint}/handles?prefix=#{prefix}"
     response = client.get(url)
