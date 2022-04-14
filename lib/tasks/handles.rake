@@ -2,7 +2,14 @@ namespace :handles do
 
   desc 'Delete all IDEALS handles from the handle server'
   task :purge => :environment do
-    HandleClient.new # TODO: write this
+    client   = HandleClient.new
+    handles  = client.get_handles
+    progress = Progress.new(handles.length)
+
+    handles.each_with_index do |handle, index|
+      client.delete_handle(handle)
+      progress.report(index, "Purging handles")
+    end
   end
 
   desc 'Create/update handles for all database entities'
