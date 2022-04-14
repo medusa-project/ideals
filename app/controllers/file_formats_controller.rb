@@ -12,7 +12,7 @@ class FileFormatsController < ApplicationController
           COUNT(id) AS count
       FROM bitstreams
       GROUP BY ext
-      ORDER BY ext;"
+      ORDER BY count DESC;"
     results = ActiveRecord::Base.connection.exec_query(sql)
     @accounted_formats   = []
     @unaccounted_formats = []
