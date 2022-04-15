@@ -8,21 +8,20 @@
 # Any entity that needs to appear in results that:
 #
 # 1. Are faceted
-# 2. Are natural-sorted
+# 2. Are natural- or relevance-sorted
 # 3. Would require a complicated/impossible SQL query
 # 4. Need better performance than the database can provide
 #
 # # Querying
 #
 # A low-level interface to Elasticsearch is provided by {ElasticsearchClient},
-# but in most cases, it's better to use the higher-level query interface
-# provided by the various {AbstractRelation} subclasses, which are easier to
-# use, and take public accessibility etc. into account.
+# but in most cases, it's easier to use the higher-level query interface
+# provided by the various {AbstractRelation} subclasses.
 #
 # # Persistence Callbacks
 #
 # **IMPORTANT NOTE**: Instances are automatically indexed in Elasticsearch (see
-# {as_indexed_json}) upon transaction commit. They are **not** indexed on
+# {as_indexed_json}) upon transaction commit. They are **not** indexed upon
 # save or destroy. Whenever creating, updating, or deleting outside of a
 # transaction, you must {reindex reindex} or {delete_document delete} the
 # document manually.
@@ -33,8 +32,8 @@ module Indexed
   class_methods do
     ##
     # Normally this method should not be used except to delete "orphaned"
-    # documents with no database counterpart. See the module documentation for
-    # information about correct document deletion.
+    # documents with no database counterpart, which theoretically should never
+    # exist.
     #
     def delete_document(id)
       query = {
@@ -87,8 +86,9 @@ module Indexed
 
     ##
     # Reindexes all of the class' indexed documents. Multi-threaded indexing is
-    # supported to potentially make this go a lot faster, but care must be
-    # taken not to overwhelm the Elasticsearch cluster.
+    # supported to potentially make this go faster, but care must be taken not
+    # to overwhelm the Elasticsearch cluster, which will knock it into a
+    # read-only mode.
     #
     # N.B. 1: Cursory testing suggests that benefit diminishes rapidly beyond 2
     # threads.
@@ -131,8 +131,10 @@ module Indexed
     after_commit -> { self.class.delete_document(index_id) }, on: :destroy
 
     ##
-    # @return [Hash] Indexable JSON representation of the instance. Does not
-    #                need to include the model's ID.
+    # @return [Hash] Indexable representation of the instance to be serialized
+    #                as JSON. Most importantly, a
+    #                {ElasticsearchIndex::StandardFields::CLASS} key is
+    #                included.
     #
     def as_indexed_json
       raise 'Including classes must override as_indexed_json()'

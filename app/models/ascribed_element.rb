@@ -1,6 +1,11 @@
 ##
-# Attachment of a [RegisteredElement] to a resource--either an [Item] or a
-# [Collection].
+# Attachment of a [RegisteredElement] to a [Describable] resource--typically
+# either an [Item] or a [Collection].
+#
+# N.B.: Because it is so common to access multiple elements ascribed to the
+# same entity during a single request, it is usually very beneficial for
+# performance to call `includes(:elements)` on an [ActiveRecord::Relation]
+# before accessing the results.
 #
 # # Attributes
 #

@@ -3,9 +3,10 @@
 #
 # Properties
 #
-# * `category`:         archive, audio, binary, code, document, image, video
-# * `extensions`:       Extensions that files of this type may have, in order of
-#                       preference.
+# * `category`:         `archive`, `audio`, `binary`, `code`, `document`,
+#                       `image`, or `video`
+# * `extensions`:       Extensions that files of this type may have, in order
+#                       of likelihood/preference.
 # * `icon`:             One of the files (minus extension) in
 #                       `app/assets/images/fontawesome`
 # * `long_name`:        Long name.
@@ -14,7 +15,7 @@
 #                       library (VIPS) in order to generate representative
 #                       images.
 # * `short_name`:       Short name.
-# * `viewer_method`:    Name of a {BitstreamsHelper} method that will render
+# * `viewer_method`:    Name of a [BitstreamsHelper] method that will render
 #                       a viewer for the format.
 #
 class FileFormat

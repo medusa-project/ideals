@@ -12,8 +12,8 @@
 # instance. When it is approved, it is moved to a location under
 # {PERMANENT_KEY_PREFIX}, and {permanent_key} is set on its corresponding
 # instance. Also, a message is sent to Medusa to ingest it into the IDEALS file
-# group. Upon receipt of a success message, {medusa_key} is set on its
-# corresponding instance.
+# group. Upon receipt of a success message, {medusa_key} and {medusa_uuid} are
+# set on its corresponding instance.
 #
 # # Formats/media types
 #
@@ -27,7 +27,7 @@
 # {original_filename} is the "source of truth."
 #
 # When a format cannot be inferred, {format} will return `nil.` In this case it
-# may be necessary to update the format database; see {FileFormat} for more
+# may be necessary to update the format database; see [FileFormat] for more
 # information.
 #
 # # Derivative images
