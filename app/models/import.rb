@@ -16,7 +16,6 @@
 #                        files have not been uploaded yet.
 # * `last_error_message` Last error message emitted by the importer.
 # * `percent_complete`   Float in the range 0-1.
-#                        TODO: updates within a transaction aren't visible outside of the transaction, so consider using a separate database connection
 # * `status`             One of the [Import::Status] constant values.
 # * `updated_at`         Managed by ActiveRecord.
 # * `user_id`            ID of the [User] who initiated the import.
@@ -61,6 +60,11 @@ class Import < ApplicationRecord
   before_destroy :delete_all_files
 
   validates :status, inclusion: { in: Status.all }
+
+  # Instances will often be updated from inside transactions, outside of which
+  # any updates would not be visible. So, we use a different database
+  # connection. (See config/database.yml.)
+  establish_connection "#{Rails.env}_2".to_sym
 
   def delete_all_files
     config = ::Configuration.instance

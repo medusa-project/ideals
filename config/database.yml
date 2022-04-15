@@ -1,6 +1,11 @@
 ##
-# N.B.: Connection settings should not be edited in this file; edit the
+# N.B. 1: Connection settings should not be edited in this file; edit the
 # main application configuration instead.
+#
+# N.B. 2: The "*_2" databases enable the use of separate connection pools.
+# The use case for this is to be able to update certain ActiveRecord instances
+# from inside `ActiveRecord::Base.transaction` blocks and for those updates to
+# be visible outside of the transaction. (See the Task model, for example.)
 #
 
 #############################################################################
@@ -30,6 +35,9 @@ development: &development
   username: <%= dev_config['primary_db'] ? dev_config['primary_db']['username'] : nil %>
   password: <%= dev_config['primary_db'] ? dev_config['primary_db']['password'] : nil %>
 
+development_2:
+  <<: *development
+
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
@@ -41,7 +49,7 @@ test: &test
   username: <%= test_config['primary_db'] ? test_config['primary_db']['username'] : nil %>
   password: <%= test_config['primary_db'] ? test_config['primary_db']['password'] : nil %>
 
-cucumber:
+test_2:
   <<: *test
 
 #############################################################################
@@ -58,6 +66,9 @@ demo: &demo
   username: <%= db ? db[:username] : nil %>
   password: <%= db ? db[:password] : nil%>
 
+demo_2:
+  <<: *demo
+
 production: &production
   <<: *default
   host:     <%= db ? db[:host] : nil %>
@@ -65,3 +76,6 @@ production: &production
   database: <%= db ? db[:database] : nil %>
   username: <%= db ? db[:username] : nil %>
   password: <%= db ? db[:password] : nil%>
+
+production_2:
+  <<: *production
