@@ -79,6 +79,10 @@ group :development do
   gem 'yard'
 end
 
+group :test do
+  gem "minitest-reporters"
+end
+
 group :production do
   gem "omniauth-rails_csrf_protection"
 end
