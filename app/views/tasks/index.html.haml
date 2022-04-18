@@ -1,0 +1,11 @@
+- provide :title, 'Tasks'
+- provide :body_id, 'tasks'
+
+%h1 Tasks
+
+#tasks-list
+  = render partial: "tasks"
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "show-task-modal",
+                   title: "Task" }

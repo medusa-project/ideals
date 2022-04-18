@@ -227,6 +227,8 @@ module ApplicationHelper
       else
         icon = "fa fa-exclamation-triangle"
       end
+    when "Task"
+      icon = "fa fa-ellipsis-h"
     when "Unit"
       icon = "fa fa-building"
     when "User", "LocalUser", "ShibbolethUser"

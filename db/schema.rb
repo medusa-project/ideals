@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_06_191030) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_15_191324) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -407,6 +407,24 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_06_191030) do
     t.index ["collection_id", "user_id"], name: "index_submitters_on_collection_id_and_user_id", unique: true
   end
 
+  create_table "tasks", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "name", null: false
+    t.integer "status", default: 0, null: false
+    t.string "status_text", null: false
+    t.float "percent_complete", default: 0.0, null: false
+    t.datetime "started_at"
+    t.datetime "stopped_at"
+    t.boolean "indeterminate", default: false, null: false
+    t.text "detail"
+    t.text "backtrace"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["started_at"], name: "index_tasks_on_started_at"
+    t.index ["status"], name: "index_tasks_on_status"
+    t.index ["stopped_at"], name: "index_tasks_on_stopped_at"
+  end
+
   create_table "unit_collection_memberships", force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "unit_id", null: false
@@ -514,6 +532,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_06_191030) do
   add_foreign_key "submitter_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "tasks", "users", on_update: :cascade, on_delete: :nullify
   add_foreign_key "unit_collection_memberships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "unit_collection_memberships", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "units", "institutions", on_update: :cascade, on_delete: :restrict

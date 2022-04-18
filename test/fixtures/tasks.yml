@@ -1,0 +1,67 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+pending:
+  name:             PendingTask
+  status:           <%= Task::Status::PENDING %>
+  status_text:      Waiting to run
+  percent_complete: 0
+  started_at:
+  stopped_at:
+  indeterminate:    false
+  detail:
+  backtrace:
+
+running:
+  name:             RunningTask
+  status:           <%= Task::Status::RUNNING %>
+  status_text:      Running
+  percent_complete: 0.25
+  started_at:       <%= Time.now %>
+  stopped_at:
+  indeterminate:    false
+  detail:
+  backtrace:
+
+paused:
+  name:             PausedTask
+  status:           <%= Task::Status::PAUSED %>
+  status_text:      Paused
+  percent_complete: 0.25
+  started_at:       <%= Time.now %>
+  stopped_at:
+  indeterminate:    false
+  detail:
+  backtrace:
+
+stopped:
+  name:             StoppedTask
+  status:           <%= Task::Status::STOPPED %>
+  status_text:      Stopped
+  percent_complete: 0.25
+  started_at:       <%= Time.now %>
+  stopped_at:       <%= Time.now %>
+  indeterminate:    false
+  detail:
+  backtrace:
+
+succeeded:
+  name:             SucceededTask
+  status:           <%= Task::Status::SUCCEEDED %>
+  status_text:      Succeeded
+  percent_complete: 1
+  started_at:       <%= Time.now %>
+  stopped_at:       <%= Time.now %>
+  indeterminate:    false
+  detail:
+  backtrace:
+
+failed:
+  name:             FailedTask
+  status:           <%= Task::Status::FAILED %>
+  status_text:      Failed
+  percent_complete: 0.75
+  started_at:       <%= Time.now %>
+  stopped_at:       <%= Time.now %>
+  indeterminate:    false
+  detail:           Something happened
+  backtrace:        Pretend that this is a backtrace

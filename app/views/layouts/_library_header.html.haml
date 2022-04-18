@@ -39,13 +39,14 @@
             - im    = policy(Import).index?
             - insts = policy(Institution).index?
             - inst  = policy(Institution).show?
-            - ex   = policy(Item).export?
+            - ex    = policy(Item).export?
             - ir    = policy(Item).review?
             - re    = policy(RegisteredElement).index?
             - mp    = policy(MetadataProfile).index?
             - sp    = policy(SubmissionProfile).index?
             - iv    = policy(Invitee).index?
             - msg   = policy(Message).index?
+            - ta    = policy(Task).index?
             - u     = policy(User).index?
             - ug    = policy(UserGroup).index?
             - if re || mp || sp || u || ug
@@ -108,6 +109,9 @@
                       My Institution
                   - if msg
                     .dropdown-divider
+                    = link_to(tasks_path, class: "dropdown-item") do
+                      = icon_for(Task)
+                      Tasks
                     = link_to(file_formats_path, class: "dropdown-item") do
                       = icon_for(FileFormat)
                       File Formats
