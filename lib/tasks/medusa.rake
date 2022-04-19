@@ -7,8 +7,8 @@ namespace :medusa do
     message.send_message
   end
 
-  desc "Delete all bitstreams"
-  task :delete_all_bitstreams => :environment do
+  desc "Delete all files in the file group"
+  task :delete_all_files => :environment do
     raise "This task is not available in production." if Rails.env.production?
     config = ::Configuration.instance
     fg_id  = config.medusa[:file_group_id]

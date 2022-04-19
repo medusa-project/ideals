@@ -140,11 +140,11 @@ rails elasticsearch:purge
 rails storage:purge
 rails db:reset
 rails "dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
-rails ideals:seed
+rails ideals:seed_database
 rails elasticsearch:reindex[2] # thread count
 rails "dspace:bitstreams:copy[dspace_ssh_user]"
 rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]" # optional
-rails "ideals:bitstreams:read_full_text[2]" # optional
+rails "bitstreams:read_full_text[2]" # optional
 ```
 N.B.: (`dbhost` etc.) are only required if the database is on a different host
 and/or the database user is different from the default.
@@ -159,7 +159,7 @@ rails elasticsearch:purge
 rails storage:purge
 rails db:reset
 rails "dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
-rails ideals:seed
+rails ideals:seed_database
 rails elasticsearch:reindex[2] # thread count
 # This user must authorize your SSH key for passwordless login
 rails "dspace:bitstreams:copy[dspace_ssh_user]"
@@ -172,7 +172,7 @@ rails "dspace:bitstreams:copy[dspace_ssh_user]"
 
 # At this point, the application is fully live and DSpace is decommissioned,
 # but its database is still running.
-rails "ideals:bitstreams:read_full_text[4]"
+rails "bitstreams:read_full_text[4]"
 rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]"
 ```
 
@@ -184,8 +184,8 @@ info is provided by a Shibboleth SP. There are rake tasks to create sysadmins
 of both types:
 
 ```sh
-rails "ideals:users:create_local_sysadmin[email,password]"
-rails "ideals:users:create_shib_sysadmin[netid]"
+rails "users:create_local_sysadmin[email,password]"
+rails "users:create_shib_sysadmin[netid]"
 ```
 
 ## Run the web app

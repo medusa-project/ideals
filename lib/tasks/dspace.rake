@@ -59,7 +59,7 @@ require 'rake'
 # 8. `dspace:bitstreams:copy` is run again to copy any files corresponding to
 #    any new bitstreams that were just incrementally migrated. At this point,
 #    we are confident that all critical content from DSpace has been migrated.
-# 9. `ideals:bitstreams:read_full_text` is run. This will take a long time.
+# 9. `bitstreams:read_full_text` is run. This will take a long time.
 # 10. `dspace:migrate_non_critical` is run. This will take a long time.
 #
 namespace :dspace do
