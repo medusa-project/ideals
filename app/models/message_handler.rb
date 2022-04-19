@@ -109,6 +109,17 @@ class MessageHandler
   end
 
   ##
+  # An ingest may fail for one of three reasons:
+  #
+  # 1. A file already exists at the target path.
+  # 2. A file is already scheduled for ingestion.
+  # 3. The staging key in the sent message was blank.
+  #
+  # Only #3 is really an error as far as IDEALS is concerned, but there is no
+  # way to disambiguate these by the message alone.
+  #
+  # TODO: it would be useful to have Medusa return distinct errors for these different scenarios
+  #
   # @param message_json [String] JSON-serialized message.
   # @param message_hash [Hash] Deserialized message.
   # @private
