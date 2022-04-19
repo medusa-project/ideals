@@ -432,12 +432,12 @@ module ApplicationHelper
         creator = resource.elements.
             select{ |e| e.name == config.elements[:creator] }.
             map(&:string).
-            join(", ")
+            join("; ")
         date    = resource.elements.
             select{ |e| e.name == config.elements[:date] }.
             map{ |e| e.string.to_i.to_s }.
             reject{ |e| e == "0" }.
-            join(", ")
+            join("; ")
         info_parts  = []
         info_parts << creator if creator.present?
         info_parts << date if date.present?
