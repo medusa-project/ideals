@@ -65,8 +65,8 @@
         - else
           %dt Exists in Medusa
           %dd= boolean(false, style: :word)
-          %dt Minimum Access Role
-          %dd= Role.label(@bitstream.role)
+        %dt Minimum Access Role
+        %dd= Role.label(@bitstream.role)
         %dt Full Text Extracted
         %dd
           - if @bitstream.full_text_checked_at
