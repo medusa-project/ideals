@@ -193,6 +193,18 @@ class ItemTest < ActiveSupport::TestCase
                  doc[title.registered_element.indexed_field]
   end
 
+  test "as_indexed_json() includes only indexed elements" do
+    # Mark title as unindexed.
+    title_name = Configuration.instance.elements[:title]
+    item       = items(:described)
+    item.effective_metadata_profile.elements.
+      find{ |e| e.name == title_name }.
+      update!(indexed: false)
+    doc        = item.as_indexed_json
+    reg_title  = RegisteredElement.find_by_name(title_name)
+    assert_nil doc[reg_title.indexed_field]
+  end
+
   # assign_handle()
 
   test "assign_handle() does nothing if the instance already has a handle" do

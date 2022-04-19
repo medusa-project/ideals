@@ -1,8 +1,8 @@
 class MetadataProfilesController < ApplicationController
 
   before_action :ensure_logged_in
-  before_action :set_profile, only: [:clone, :edit, :show, :update, :destroy]
-  before_action :authorize_profile, only: [:clone, :edit, :show, :update, :destroy]
+  before_action :set_profile, except: [:create, :index]
+  before_action :authorize_profile, except: [:create, :index]
 
   ##
   # Responds to `POST /admin/metadata-profiles/:id/clone`
@@ -72,6 +72,19 @@ class MetadataProfilesController < ApplicationController
   end
 
   ##
+  # Asynchronously reindexes all items in all collections associated with a
+  # given metadata profile.
+  #
+  # Responds to `POST /metadata-profiles/:id/reindex-items`
+  #
+  def reindex_items
+    ReindexItemsJob.perform_later(@profile.collections.to_a)
+    flash['success'] = "Items are being reindexed in the background. "\
+                       "This will take a while."
+    redirect_back fallback_location: metadata_profile_path(@profile)
+  end
+
+  ##
   # Responds to `GET /metadata-profiles/:id`
   #
   def show
@@ -97,6 +110,7 @@ class MetadataProfilesController < ApplicationController
       render "shared/reload"
     end
   end
+
 
   private
 

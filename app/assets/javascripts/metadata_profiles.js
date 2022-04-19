@@ -37,6 +37,10 @@ const MetadataProfileView = function() {
             "/elements/" + element_id + "/edit";
         $.get(url, function(data) {
             $("#edit-element-modal .modal-body").html(data);
+            $("#indexed-warning").hide();
+            $("input[name='metadata_profile_element[indexed]']").on("change", function() {
+                $("#indexed-warning").show();
+            });
         });
     });
 };

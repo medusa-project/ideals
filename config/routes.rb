@@ -120,6 +120,7 @@ Rails.application.routes.draw do
   resources :messages, only: :index
   resources :metadata_profiles, path: "metadata-profiles" do
     match "/clone", to: "metadata_profiles#clone", via: :post
+    match "/reindex-items", to: "metadata_profiles#reindex_items", via: :post
     resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]
   end
   match '/oai-pmh', to: 'oai_pmh#handle', via: %w(get post), as: 'oai_pmh'

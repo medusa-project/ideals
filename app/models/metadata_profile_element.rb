@@ -9,6 +9,8 @@
 #                           results views.
 # * `index`                 Zero-based position within the owning
 #                           {MetadataProfile}.
+# * `indexed`               Whether the element is indexed in searchable
+#                           documents.
 # * `metadata_profile_id`   ID of the associated metadata profile. Foreign key.
 # * `registered_element_id` ID of the associated {RegisteredElement}. Foreign
 #                           key.

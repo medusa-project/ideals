@@ -205,6 +205,39 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
+  # reindex_items?()
+
+  test "reindex_items?() returns false with a nil user" do
+    policy = MetadataProfilePolicy.new(nil, @profile)
+    assert !policy.reindex_items?
+  end
+
+  test "reindex_items?() does not authorize non-sysadmins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.reindex_items?
+  end
+
+  test "reindex_items?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert policy.reindex_items?
+  end
+
+  test "reindex_items?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.reindex_items?
+  end
+
   # show?()
 
   test "show?() returns false with a nil user" do

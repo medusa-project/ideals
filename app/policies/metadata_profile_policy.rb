@@ -37,6 +37,10 @@ class MetadataProfilePolicy < ApplicationPolicy
     create
   end
 
+  def reindex_items
+    effective_sysadmin(user, role)
+  end
+
   def show
     index
   end

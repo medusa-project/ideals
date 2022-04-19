@@ -328,6 +328,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_15_191324) do
     t.boolean "sortable", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "indexed", default: true, null: false
     t.index ["facetable"], name: "index_metadata_profile_elements_on_facetable"
     t.index ["index"], name: "index_metadata_profile_elements_on_index"
     t.index ["metadata_profile_id"], name: "index_metadata_profile_elements_on_metadata_profile_id"

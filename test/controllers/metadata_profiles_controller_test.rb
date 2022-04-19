@@ -158,6 +158,44 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  # reindex_items()
+
+  test "reindex_items() redirects to login page for logged-out users" do
+    post metadata_profile_reindex_items_path(metadata_profiles(:default))
+    assert_redirected_to login_path
+  end
+
+  test "reindex_items() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    post metadata_profile_reindex_items_path(metadata_profiles(:default))
+    assert_response :forbidden
+  end
+
+  test "reindex_items() returns HTTP 404 for a nonexistent profile" do
+    log_in_as(users(:local_sysadmin))
+    post "/metadata-profiles/99999/reindex-items"
+    assert_response :not_found
+  end
+
+  test "reindex_items() redirects back for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    profile = metadata_profiles(:default)
+    post metadata_profile_reindex_items_path(profile)
+    assert_redirected_to metadata_profile_path(profile)
+  end
+
+  test "reindex_items() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    profile = metadata_profiles(:default)
+    post metadata_profile_reindex_items_path(profile)
+    # The dot thing has got to be a Rails bug...
+    assert_redirected_to metadata_profiles_path(profile).gsub("/metadata-profiles.",
+                                                              "/metadata-profiles/")
+
+    post metadata_profile_reindex_items_path(profile, role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # show()
 
   test "show() redirects to login page for logged-out users" do

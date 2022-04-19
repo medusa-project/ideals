@@ -8,6 +8,7 @@ default_title:
   facetable: false
   searchable: true
   sortable: true
+  indexed: true
 
 default_description:
   metadata_profile: default
@@ -17,6 +18,7 @@ default_description:
   facetable: false
   searchable: true
   sortable: false
+  indexed: true
 
 default_subject:
   metadata_profile: default
@@ -26,3 +28,4 @@ default_subject:
   facetable: true
   searchable: true
   sortable: false
+  indexed: true
