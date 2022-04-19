@@ -24,6 +24,13 @@ class MessageTest < ActiveSupport::TestCase
                  Message.outgoing_queue
   end
 
+  # label()
+
+  test "label() returns a correct value" do
+    message = messages(:ingest_no_response)
+    assert_equal "#{message.operation} @ #{message.created_at}", message.label
+  end
+
   # medusa_url()
 
   test "medusa_url() returns a URL when medusa_uuid is set" do

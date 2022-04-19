@@ -2,7 +2,10 @@
 
 class MessagesController < ApplicationController
 
-  before_action :ensure_logged_in, :authorize_sysadmin
+  before_action :ensure_logged_in
+  before_action :authorize_index, only: :index
+  before_action :load_message, only: :show
+  before_action :authorize_message, only: :show
 
   ##
   # Responds to `GET /messages`.
@@ -11,11 +14,23 @@ class MessagesController < ApplicationController
     @messages = Message.order(updated_at: :desc).limit(100)
   end
 
+  def show
+    @breadcrumbable = @message
+  end
+
 
   private
 
-  def authorize_sysadmin
+  def authorize_index
     authorize(Message)
+  end
+
+  def load_message
+    @message = Message.find(params[:id])
+  end
+
+  def authorize_message
+    @message ? authorize(@message) : skip_authorization
   end
 
 end

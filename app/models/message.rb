@@ -25,6 +25,8 @@
 #
 class Message < ApplicationRecord
 
+  include Breadcrumb
+
   class Operation
     DELETE = "delete"
     INGEST = "ingest"
@@ -54,6 +56,10 @@ class Message < ApplicationRecord
   #
   def self.outgoing_queue
     ::Configuration.instance.medusa[:outgoing_queue]
+  end
+
+  def label
+    "#{self.operation} @ #{self.created_at}"
   end
 
   ##

@@ -117,7 +117,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/withdraw", to: "items#withdraw", via: :patch
   end
-  resources :messages, only: :index
+  resources :messages, only: [:index, :show]
   resources :metadata_profiles, path: "metadata-profiles" do
     match "/clone", to: "metadata_profiles#clone", via: :post
     match "/reindex-items", to: "metadata_profiles#reindex_items", via: :post

@@ -1,0 +1,8 @@
+- provide :title, @message.label
+
+%h1.mb-3
+  = icon_for(@message)
+  Message
+  = @message.id
+
+= render partial: "show", locals: { message: @message }

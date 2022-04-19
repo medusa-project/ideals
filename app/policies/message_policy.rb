@@ -17,4 +17,8 @@ class MessagePolicy < ApplicationPolicy
     effective_sysadmin(user, role)
   end
 
+  def show
+    index
+  end
+
 end

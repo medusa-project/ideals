@@ -27,6 +27,9 @@
 
   #file-navigator-viewer-info
     %dl
+      - if @bitstream.description.present?
+        %dt Description
+        %dd= @bitstream.description
       - if @bitstream.format
         %dt Format
         %dd= @bitstream.format.long_name
@@ -55,6 +58,8 @@
       %dt Primary
       %dd= boolean(@bitstream.primary, style: :word)
       - if show_sysadmin_content
+        %dt Minimum Access Role
+        %dd= Role.label(@bitstream.role)
         %dt Submitted For Ingest
         %dd= boolean(@bitstream.submitted_for_ingest, style: :word)
         - if @bitstream.medusa_uuid.present?
@@ -65,16 +70,21 @@
         - else
           %dt Exists in Medusa
           %dd= boolean(false, style: :word)
-        %dt Minimum Access Role
-        %dd= Role.label(@bitstream.role)
-        %dt Full Text Extracted
+        - if @bitstream.messages.any?
+          %dt Medusa Messages
+          %dd
+            %ul
+              - @bitstream.messages.each do |message|
+                %li
+                  = link_to(badge_for_message_operation(message.operation), message, target: "_blank")
+                  &nbsp;
+                  = link_to(local_time(message.created_at), message, target: "_blank")
+                  = link_to(badge_for_message_status(message.status), message, target: "_blank")
+        %dt Checked For Full Text
         %dd
           - if @bitstream.full_text_checked_at
             = local_time(@bitstream.full_text_checked_at)
           - else
-            Never
-      %dt Download Count
+            = boolean(false, style: :word)
+      %dt Downloads
       %dd= number_with_delimiter(@bitstream.download_count)
-      - if @bitstream.description.present?
-        %dt Description
-        %dd= @bitstream.description
