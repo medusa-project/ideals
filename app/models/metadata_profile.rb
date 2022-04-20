@@ -41,6 +41,7 @@ class MetadataProfile < ApplicationRecord
   validates :name, presence: true, length: { minimum: 2 },
             uniqueness: { case_sensitive: false }
 
+  after_create :ascribe_default_elements
   after_save :ensure_default_uniqueness
 
   ##
@@ -79,6 +80,20 @@ class MetadataProfile < ApplicationRecord
 
 
   private
+
+  ##
+  # Ascribes some baseline [MetadataProfileElement]s to a newly created
+  # profile.
+  #
+  def ascribe_default_elements
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
+                        index:              0,
+                        indexed:            true,
+                        facetable:          false,
+                        searchable:         true,
+                        sortable:           true,
+                        visible:            true).save!
+  end
 
   ##
   # Sets all other instances as "not default" if the instance is marked as

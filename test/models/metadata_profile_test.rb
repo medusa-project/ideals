@@ -8,6 +8,12 @@ class MetadataProfileTest < ActiveSupport::TestCase
 
   # base-level tests
 
+  test "new instances have some default elements ascribed to them" do
+    profile = MetadataProfile.create!(name:        "Test Profile",
+                                      institution: institutions(:uiuc))
+    assert_equal 1, profile.elements.count
+  end
+
   test "instances with dependent collections cannot be destroyed" do
     assert_raises ActiveRecord::DeleteRestrictionError do
       @instance.destroy!
