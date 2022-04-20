@@ -150,6 +150,7 @@ class SafImporter
 
   ##
   # @param import [Import]
+  # @param task [Task] Optional; supply to receive progress updates.
   # @return [void]
   # @raises [StandardError] Various error types depending on all of the things
   #                         that can go wrong. If this occurs, the
@@ -157,7 +158,7 @@ class SafImporter
   #                         with an inventory of items that were imported
   #                         successfully prior to the error occurring.
   #
-  def import_from_s3(import)
+  def import_from_s3(import, task: nil)
     client            = S3Client.instance
     bucket            = ::Configuration.instance.aws[:bucket]
     item_key_prefixes = import.item_key_prefixes
@@ -216,15 +217,20 @@ class SafImporter
         }
         import.update!(percent_complete: index / item_key_prefixes.length.to_f,
                        imported_items:   imported_items)
+        task&.progress(index / item_key_prefixes.length.to_f,
+                       status_text: "Importing #{item_key_prefixes.length} items from SAF package")
       end
     end
   rescue => e
     import.update!(status:             Import::Status::FAILED,
                    last_error_message: e.message)
+    task&.fail(backtrace: e.backtrace,
+               detail:    e.message)
     raise e
   else
     import.update!(status:             Import::Status::SUCCEEDED,
                    last_error_message: nil)
+    task&.succeed
   end
 
 

@@ -287,29 +287,6 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_equal "Michigan Institute of Technology", item.element("etd:degree:grantor").string
   end
 
-  test "import_from_s3() sets the import status to succeeded upon success" do
-    package = File.join(PACKAGES_PATH, "valid_item")
-    import  = imports(:saf_new)
-    upload_to_s3(package, import)
-
-    @instance.import_from_s3(import)
-    import.reload
-    assert_equal Import::Status::SUCCEEDED, import.status
-  end
-
-  test "import_from_s3() sets the import status to failed upon error" do
-    package = File.join(PACKAGES_PATH, "one_invalid_item")
-    import  = imports(:saf_new)
-    upload_to_s3(package, import)
-
-    assert_raises IOError do
-      @instance.import_from_s3(import)
-    end
-
-    import.reload
-    assert_equal Import::Status::FAILED, import.status
-  end
-
   test "import_from_s3() adds imported items to imported_items upon failure" do
     package = File.join(PACKAGES_PATH, "one_invalid_item")
     import  = imports(:saf_new)
@@ -351,6 +328,53 @@ class SafImporterTest < ActiveSupport::TestCase
                                        "handle"  => "100/100"}])
       @instance.import_from_s3(import)
     end
+  end
+
+  test "import_from_s3() sets the import status to succeeded upon success" do
+    package = File.join(PACKAGES_PATH, "valid_item")
+    import  = imports(:saf_new)
+    upload_to_s3(package, import)
+
+    @instance.import_from_s3(import)
+    import.reload
+    assert_equal Import::Status::SUCCEEDED, import.status
+  end
+
+  test "import_from_s3() sets the import status to failed upon error" do
+    package = File.join(PACKAGES_PATH, "one_invalid_item")
+    import  = imports(:saf_new)
+    upload_to_s3(package, import)
+
+    assert_raises IOError do
+      @instance.import_from_s3(import)
+    end
+
+    import.reload
+    assert_equal Import::Status::FAILED, import.status
+  end
+
+  test "import_from_s3() succeeds the provided Task upon success" do
+    package = File.join(PACKAGES_PATH, "valid_item")
+    import  = imports(:saf_new)
+    upload_to_s3(package, import)
+    task    = Task.create!(name: "MyTask", status_text: "Hi")
+
+    @instance.import_from_s3(import, task: task)
+
+    assert_equal Import::Status::SUCCEEDED, task.status
+  end
+
+  test "import_from_s3() fails the provided Task upon failure" do
+    package = File.join(PACKAGES_PATH, "one_invalid_item")
+    import  = imports(:saf_new)
+    upload_to_s3(package, import)
+    task    = Task.create!(name: "MyTask", status_text: "Hi")
+
+    assert_raises IOError do
+      @instance.import_from_s3(import, task: task)
+    end
+
+    assert_equal Import::Status::FAILED, task.status
   end
 
 

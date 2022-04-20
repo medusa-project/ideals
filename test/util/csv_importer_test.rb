@@ -140,6 +140,38 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_equal "Some subject", item.element("dc:subject").string # existing value
   end
 
+  test "import() succeeds the provided Task object upon success" do
+    item = items(:described)
+    csv = CSV.generate do |row|
+      row << ["id", "dc:title"]
+      row << ["#{item.id}", "New Title"]
+    end
+    task = Task.create!(name: "TestImport", status_text: "Lorem Ipsum")
+    @instance.import(csv:                csv,
+                     submitter:          users(:local_sysadmin),
+                     primary_collection: collections(:empty),
+                     task:               task)
+    assert_equal Task::Status::SUCCEEDED, task.status
+    assert_equal 1, task.percent_complete
+  end
+
+  test "import() fails the provided Task object upon error" do
+    item = items(:described)
+    csv = CSV.generate do |row|
+      row << ["id", "bogus"]
+      row << ["#{item.id}", "Bogus element value"]
+    end
+    task = Task.create!(name: "TestImport", status_text: "Lorem Ipsum")
+    assert_raises do
+      @instance.import(csv:                csv,
+                       submitter:          users(:local_sysadmin),
+                       primary_collection: collections(:empty),
+                       task:               task)
+    end
+    assert_equal Task::Status::FAILED, task.status
+    assert_equal 0, task.percent_complete
+  end
+
   # import_from_s3()
 
   test "import_from_s3() sets the import kind" do
@@ -192,6 +224,33 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_equal Import::Status::FAILED, import.status
   end
 
+  test "import_from_s3() succeeds the provided Task object upon success" do
+    csv    = file_fixture("csv/new.csv")
+    import = imports(:csv_new)
+    upload_to_s3(csv, import)
+    task   = Task.create(name:        "TestTask",
+                         status_text: "Hi")
+
+    @instance.import_from_s3(import, users(:local_sysadmin),
+                             task: task)
+
+    assert_equal Task::Status::SUCCEEDED, task.status
+  end
+
+  test "import_from_s3() succeeds the provided Task object upon error" do
+    csv    = file_fixture("csv/illegal_element.csv")
+    import = imports(:csv_new)
+    upload_to_s3(csv, import)
+    task   = Task.create(name:        "TestTask",
+                         status_text: "Hi")
+
+    assert_raises do
+      @instance.import_from_s3(import, users(:local_sysadmin),
+                               task: task)
+    end
+
+    assert_equal Task::Status::FAILED, task.status
+  end
 
   private
 

@@ -52,36 +52,49 @@ class CsvImporter
   #                               `handle` keys will be added.
   # @param print_progress [Boolean] Whether to print progress updates to
   #                                 stdout.
+  # @param task [Task] Optional; supply to receive progress updates.
   # @return [void]
   #
   def import(csv:,
              submitter:,
              primary_collection:,
              imported_items: [],
-             print_progress: false)
+             print_progress: false,
+             task:           nil)
     rows     = CSV.parse(csv)
     num_rows = rows.length - 1 # exclude header
     progress = print_progress ? Progress.new(num_rows) : nil
     # Work inside a transaction to avoid any incompletely created items.
     Import.transaction do
-      rows[1..].each_with_index do |row, row_index|
-        progress&.report(row_index, "Importing #{num_rows} items from CSV")
-        item_id = row[0].strip
-        if item_id == NEW_ITEM_INDICATOR
-          item = create_item(submitter:          submitter,
-                             primary_collection: primary_collection,
-                             header_row:         rows[0],
-                             columns:            row[1..])
-        else
-          item = update_item(item_id:    item_id,
-                             submitter:  submitter,
-                             header_row: rows[0],
-                             columns:    row[1..])
+      begin
+        rows[1..].each_with_index do |row, row_index|
+          status_text = "Importing #{num_rows} items from CSV"
+          progress&.report(row_index, status_text)
+          task&.progress(row_index / (rows.length - 1).to_f,
+                         status_text: status_text)
+          item_id = row[0].strip
+          if item_id == NEW_ITEM_INDICATOR
+            item = create_item(submitter:          submitter,
+                               primary_collection: primary_collection,
+                               header_row:         rows[0],
+                               columns:            row[1..])
+          else
+            item = update_item(item_id:    item_id,
+                               submitter:  submitter,
+                               header_row: rows[0],
+                               columns:    row[1..])
+          end
+          imported_items << {
+            item_id: item.id,
+            handle:  item.handle&.handle
+          }
         end
-        imported_items << {
-          item_id: item.id,
-          handle:  item.handle&.handle
-        }
+      rescue => e
+        task&.fail(backtrace: e.backtrace,
+                   detail:    e.message)
+        raise e
+      else
+        task&.succeed
       end
     end
   end
@@ -92,9 +105,10 @@ class CsvImporter
   #
   # @param import [Import]
   # @param submitter [User]
+  # @param task [Task] Optional; supply to receive progress updates.
   # @return [void]
   #
-  def import_from_s3(import, submitter)
+  def import_from_s3(import, submitter, task: nil)
     client         = S3Client.instance
     bucket         = ::Configuration.instance.aws[:bucket]
     object_keys    = import.object_keys
@@ -110,15 +124,19 @@ class CsvImporter
     import(csv:                csv,
            submitter:          submitter,
            primary_collection: import.collection,
-           imported_items:     imported_items)
+           imported_items:     imported_items,
+           task:               task)
   rescue => e
     import.update!(status:             Import::Status::FAILED,
                    last_error_message: e.message)
+    task&.fail(detail:    e.message,
+               backtrace: e.backtrace)
     raise e
   else
     import.update!(status:             Import::Status::SUCCEEDED,
                    imported_items:     imported_items,
                    last_error_message: nil)
+    task&.succeed
   end
 
 
