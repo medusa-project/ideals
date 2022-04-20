@@ -136,6 +136,18 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
                  response.header['Content-Disposition']
   end
 
+  test "index() ascribes a download event to all downloaded bitstreams" do
+    item = items(:approved)
+    item.bitstreams.each do |bs|
+      assert_equal 0, bs.download_count
+    end
+
+    get item_bitstreams_path(item, format: :zip)
+    item.bitstreams.each do |bs|
+      assert_equal 1, bs.download_count
+    end
+  end
+
   # ingest()
 
   test "ingest() redirects to login page for logged-out users" do
@@ -225,7 +237,27 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "object() increments the bitstream's download count" do
+  test "object() increments the bitstream's download count when dl=1" do
+    fixture   = file_fixture("pdf.pdf")
+    item      = items(:item1)
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      get item_bitstream_object_path(item, bitstream), params: { dl: 1 }
+      bitstream.reload
+      assert_equal 1, bitstream.download_count
+    ensure
+      bitstream.delete_from_staging
+    end
+  end
+
+  test "object() does not increment the bitstream's download count when a dl
+  argument is not provided" do
     fixture   = file_fixture("pdf.pdf")
     item      = items(:item1)
     bitstream = Bitstream.new_in_staging(item:     item,
@@ -238,7 +270,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       end
       get item_bitstream_object_path(item, bitstream)
       bitstream.reload
-      assert_equal 1, bitstream.download_count
+      assert_equal 0, bitstream.download_count
     ensure
       bitstream.delete_from_staging
     end
@@ -454,25 +486,6 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       assert_equal File.size(fixture), response.body.length
     ensure
       bitstream.delete_from_permanent_storage
-    end
-  end
-
-  test "stream() increments the bitstream's download count" do
-    fixture   = file_fixture("pdf.pdf")
-    item      = items(:item1)
-    bitstream = Bitstream.new_in_staging(item:     item,
-                                         filename: File.basename(fixture),
-                                         length:   File.size(fixture))
-    bitstream.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bitstream.upload_to_staging(file)
-      end
-      get item_bitstream_stream_path(item, bitstream)
-      bitstream.reload
-      assert_equal 1, bitstream.download_count
-    ensure
-      bitstream.delete_from_staging
     end
   end
 

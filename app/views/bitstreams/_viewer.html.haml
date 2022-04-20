@@ -5,7 +5,7 @@
   .btn-group{role: "group"}
     - if policy(@bitstream).download?
       -# Download button
-      = link_to(item_bitstream_object_path(@bitstream.item, @bitstream), class: "btn btn-sm btn-dark text-success") do
+      = link_to(item_bitstream_object_path(@bitstream.item, @bitstream, dl: 1), class: "btn btn-sm btn-dark text-success") do
         %i.fa.fa-download
         Download
     - if show_sysadmin_content

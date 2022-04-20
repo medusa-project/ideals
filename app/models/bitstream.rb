@@ -38,6 +38,10 @@
 # URL points to an image in the application S3 bucket, which is generated
 # on-the-fly and cached.
 #
+# # Download statistics
+#
+# See [BitstreamsController] documentation.
+#
 # # Attributes
 #
 # * `bundle`                One of the [Bundle] constant values.

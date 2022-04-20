@@ -22,14 +22,15 @@ class MedusaDownloaderClient
   # item, and returns its URL.
   #
   # @param item [Item]
+  # @param user [User]
   # @return [String] Download URL to which clients can be redirected.
   # @raises [ArgumentError] If illegal arguments have been supplied.
   # @raises [IOError] If there is an error communicating with the Downloader.
   #
-  def download_url(item:)
+  def download_url(item:, user: nil)
     raise ArgumentError, "Item is nil" if item.nil?
     # Compile the list of items to include in the file.
-    targets = targets_for(item)
+    targets = targets_for(item, user: user)
     if targets.empty?
       raise ArgumentError, "This item either has no files to download, or "\
           "you are not authorized to download any of them."
@@ -141,11 +142,13 @@ class MedusaDownloaderClient
 
   ##
   # @param item [Item]
+  # @param user [User]
   # @return [Enumerable<Hash>]
   #
-  def targets_for(item)
+  def targets_for(item, user: nil)
     targets = []
     item.bitstreams.each do |bs|
+      bs.add_download(user: user)
       if @request_context.nil? || BitstreamPolicy.new(@request_context, bs).download?
         targets << { type: "file", path: bs.medusa_key }
       end

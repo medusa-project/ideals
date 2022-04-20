@@ -1,3 +1,22 @@
+##
+# # Note about downloads
+#
+# Every time a [Bitstream] is "downloaded," an [Event] of type
+# [Event::Type::DOWNLOAD] is supposed to get ascribed to it, which effectively
+# increments its download count. But what is considered a download?
+#
+# 1. Downloading a single bitstream using a download button?
+# 2. Downloading a zip file full of bitstreams using a download button?
+# 2. Loading a bitstream or its representation into the main item viewer?
+# 3. Receiving a request for a pre-signed URL to the bitstream's content via
+#    {object}?
+# 4. Streaming a bitstream's content through via {stream}?
+#     a. Are multiple ranged requests to {stream} all considered independent
+#        downloads? Or only non-ranged requests?
+#
+# It turns out that we are considering only #1 and #2 to be downloads, so
+# caveat emptor about download statistics.
+#
 class BitstreamsController < ApplicationController
 
   include ZipTricks::RailsStreaming
@@ -78,6 +97,7 @@ class BitstreamsController < ApplicationController
             "attachment; filename=\"item-#{@item.id}.zip\""
           zip_tricks_stream(auto_rename_duplicate_filenames: true) do |zip|
             bitstreams.each do |bs|
+              bs.add_download(user: current_user)
               zip.write_deflated_file(bs.original_filename.to_s) do |sink|
                 sink << bs.data.read
               end
@@ -109,6 +129,9 @@ class BitstreamsController < ApplicationController
   # Creates a presigned URL for downloading the given [Bitstream] and redirects
   # to it via HTTP 307.
   #
+  # If a `dl=1` query argument is supplied, a download event is ascribed to
+  # the bitstream.
+  #
   # Note that for XHR requests, this requires an appropriate CORS policy to be
   # set on the bucket.
   #
@@ -118,7 +141,7 @@ class BitstreamsController < ApplicationController
   #
   def object
     url = @bitstream.presigned_url(content_disposition: download_content_disposition)
-    @bitstream.add_download(user: current_user)
+    @bitstream.add_download(user: current_user) if params[:dl] == "1"
     redirect_to url,
                 status:           :temporary_redirect,
                 allow_other_host: true
@@ -136,7 +159,7 @@ class BitstreamsController < ApplicationController
   ##
   # Streams a bitstream's data.
   #
-  # N.B.: {object} is preferred as it won't tie up a request connection.
+  # N.B.: {object} is preferred, as it won't tie up a request connection.
   #
   # Responds to `GET /items/:item_id/bitstreams/:id/stream`.
   #
@@ -196,8 +219,6 @@ class BitstreamsController < ApplicationController
   rescue ActionController::Live::ClientDisconnected => e
     # Rescue this or else Rails will log it at error level.
     LOGGER.debug('show(): %s', e)
-  else
-    @bitstream.add_download(user: current_user)
   ensure
     response.stream.close
   end
