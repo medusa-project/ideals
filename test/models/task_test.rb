@@ -122,12 +122,6 @@ class TaskTest < ActiveSupport::TestCase
     assert_equal 0.85, task.percent_complete
   end
 
-  test "progress() does not set started_at when the argument is 0" do
-    task = tasks(:pending)
-    task.progress(0)
-    assert_nil task.started_at
-  end
-
   test "progress() sets started_at when the argument is greater than 1 and
   started_at is blank" do
     task = tasks(:pending)
