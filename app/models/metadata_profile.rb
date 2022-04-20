@@ -41,7 +41,7 @@ class MetadataProfile < ApplicationRecord
   validates :name, presence: true, length: { minimum: 2 },
             uniqueness: { case_sensitive: false }
 
-  after_create :ascribe_default_elements
+  after_create :ascribe_default_elements, if: -> { elements.empty? }
   after_save :ensure_default_uniqueness
 
   ##
@@ -86,13 +86,15 @@ class MetadataProfile < ApplicationRecord
   # profile.
   #
   def ascribe_default_elements
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
-                        index:              0,
-                        indexed:            true,
-                        facetable:          false,
-                        searchable:         true,
-                        sortable:           true,
-                        visible:            true).save!
+    if self.elements.empty?
+      self.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
+                          index:              0,
+                          indexed:            true,
+                          facetable:          false,
+                          searchable:         true,
+                          sortable:           true,
+                          visible:            true).save!
+    end
   end
 
   ##
