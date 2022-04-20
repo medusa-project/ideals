@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
 # Install Ruby
 RUN git clone https://github.com/rbenv/ruby-build.git \
     && PREFIX=/usr/local ./ruby-build/install.sh \
-    && ruby-build -v 3.1.1 /usr/local
+    && ruby-build -v 3.1.2 /usr/local
 
 RUN mkdir app
 WORKDIR app
