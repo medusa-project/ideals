@@ -9,9 +9,10 @@ class SubmissionsController < ApplicationController
   include MetadataSubmission
 
   before_action :ensure_logged_in
-  before_action :set_item, only: [:complete, :destroy, :edit, :update]
+  before_action :set_item, only: [:complete, :destroy, :edit, :status, :update]
   before_action :authorize_item, only: [:destroy, :update]
   before_action :check_submitting, only: [:complete, :destroy, :edit, :update]
+  before_action :check_submitted, only: :status
 
   ##
   # Displays the deposit agreement. At the end of the agreement is a submit
@@ -29,24 +30,33 @@ class SubmissionsController < ApplicationController
   end
 
   ##
-  # Completes an in-progress submission. The intent is for the submission
-  # form's complete-submission button to POST to this via XHR.
+  # Handles the final submit button in the submission form, completing a
+  # submission.
   #
-  # Responds to `POST /submissions/:id/complete`
+  # Responds to `POST /submissions/:id/complete`.
   #
   def complete
     raise "Item is not in a submitting state." unless @item.submitting?
-    UpdateItemCommand.new(item:        @item,
-                          user:        current_user,
-                          description: "Completed the submission process.").execute do
-      build_embargo
-      @item.complete_submission
-      @item.save!
+    begin
+      UpdateItemCommand.new(item:        @item,
+                            user:        current_user,
+                            description: "Completed the submission process.").execute do
+        build_embargo
+        @item.complete_submission
+        @item.save!
+      end
+    rescue => e
+      flash['error'] = "#{e}"
+      redirect_to submission_path(@item)
+    else
+      if @item.primary_collection&.submissions_reviewed
+        redirect_to submission_status_path(@item)
+      else
+        flash['success'] = "Your submission is complete! "\
+                           "Your submitted item appears below."
+        redirect_to @item
+      end
     end
-  rescue ActiveRecord::RecordInvalid => e
-    render plain: "#{e}", status: :bad_request
-  rescue => e
-    render plain: "#{e}", status: :conflict
   end
 
   ##
@@ -92,6 +102,17 @@ class SubmissionsController < ApplicationController
   end
 
   ##
+  # Displays the status of a submission that is awaiting approval. Users are
+  # redirected here following a submission into a collection that requires
+  # approval for submitted items. For all other items, users are redirected
+  # directly to the item and never arrive here.
+  #
+  # Responds to `GET /submissions/:id/status`.
+  #
+  def status
+  end
+
+  ##
   # Responds to `PATCH/PUT /submissions/:id`
   #
   def update
@@ -133,6 +154,13 @@ class SubmissionsController < ApplicationController
   def check_submitting
     unless @item.submitting?
       flash['error'] = "This item has already been submitted."
+      redirect_back fallback_location: root_path
+    end
+  end
+
+  def check_submitted
+    unless @item.submitted?
+      flash['error'] = "This item is not in a submitted state."
       redirect_back fallback_location: root_path
     end
   end

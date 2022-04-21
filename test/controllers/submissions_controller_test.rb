@@ -63,6 +63,26 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  test "complete() redirects to the item when its collection is not reviewing
+  submissions" do
+    item = items(:submitting)
+    item.primary_collection.update!(submissions_reviewed: false)
+
+    log_in_as(item.submitter)
+    post submission_complete_path(item)
+    assert_redirected_to item
+  end
+
+  test "complete() redirects to the submission status page when its collection
+  is reviewing submissions" do
+    item = items(:submitting)
+    item.primary_collection.update!(submissions_reviewed: true)
+
+    log_in_as(item.submitter)
+    post submission_complete_path(item)
+    assert_redirected_to submission_status_path(item)
+  end
+
   test "complete() updates the item's stage attribute" do
     item = items(:submitting)
     assert item.submitting?
@@ -179,6 +199,28 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     item = items(:item1)
     log_in_as(item.submitter)
     get edit_submission_path(item)
+    assert_redirected_to root_path
+  end
+
+  # status()
+
+  test "status() redirects to login page for logged-out users" do
+    item = items(:submitted)
+    get submission_status_path(item)
+    assert_redirected_to login_path
+  end
+
+  test "status() returns HTTP 200 for logged-in users" do
+    item = items(:submitted)
+    log_in_as(item.submitter)
+    get submission_status_path(item)
+    assert_response :ok
+  end
+
+  test "status() redirects back when an item is not in the submitted stage" do
+    item = items(:item1)
+    log_in_as(item.submitter)
+    get submission_status_path(item)
     assert_redirected_to root_path
   end
 

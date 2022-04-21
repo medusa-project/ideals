@@ -133,6 +133,7 @@ Rails.application.routes.draw do
   end
   resources :submissions, except: [:index, :show] do
     match "/complete", to: "submissions#complete", via: :post
+    match "/status", to: "submissions#status", via: :get
   end
   match "/submit", to: "submissions#agreement", via: :get
   resources :tasks, only: [:index, :show]

@@ -79,11 +79,9 @@ const AgreementView = function() {
  * @constructor
  */
 const SubmissionForm = function() {
-    const ROOT_URL   = $("input[name=root_url]").val();
-    const CSRF_TOKEN = $("input[name=authenticity_token]").val();
-
     const self              = this;
-    const form              = $("form.edit_item");
+    const form              = $("form#properties-form, form#access-form, " +
+                              "form#metadata-form, form#files-form");
     // Properties section
     const propertiesForm    = form.filter("#properties-form");
     const unitsMenu         = $("[name=unit_id]");
@@ -465,12 +463,8 @@ const SubmissionForm = function() {
         return true;
     };
 
-    // Rather than submitting the form, this button validates everything, sends
-    // a POST request to the submission-complete route, and finally opens the
-    // "submission complete" modal. (Everything in the form has been submitted
-    // via XHR already.)
+    // Validate everything before submitting.
     completionForm.find("input[type=submit]").on("click", function(e) {
-        e.preventDefault();
         if (!self.validatePropertiesSection()) {
             $("#properties-tab").click();
             return false;
@@ -486,21 +480,6 @@ const SubmissionForm = function() {
         if (!self.validateFilesSection()) {
             return false;
         }
-        $.ajax({
-            type:    "POST",
-            url:     ROOT_URL + $('[name=complete_submission_path]').val(),
-            headers: { "X-CSRF-Token": CSRF_TOKEN },
-            success: function() {
-                $("#complete-modal").modal("show");
-            },
-            error:   function(xhr, status, request) {
-                console.log(xhr);
-                console.log(status);
-                console.log(request);
-                setFilesError("The submission failed to complete. This may be a bug.");
-            }
-        });
-        return false;
     });
 };
 
