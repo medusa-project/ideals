@@ -498,11 +498,13 @@ class DspaceImporter
               end
               embargo_reason = item.element("dc:description:reason")&.string
               groups = group ? [group] : []
-              item.embargoes.build(download:    true,
-                                   full_access: true,
-                                   expires_at:  expires_at,
-                                   user_groups: groups,
-                                   reason:      embargo_reason).save!
+              if item.embargoes.where(expires_at: expires_at).count < 1
+                item.embargoes.build(download:    true,
+                                     full_access: true,
+                                     expires_at:  expires_at,
+                                     user_groups: groups,
+                                     reason:      embargo_reason).save!
+              end
             end
           rescue ArgumentError
           end
