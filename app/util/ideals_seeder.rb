@@ -184,11 +184,13 @@ class IdealsSeeder
       input_type: RegisteredElement::InputType::TEXT_FIELD,
       label:      "Geographic Coverage")
     RegisteredElement.find_by_name("dc:creator").update!(
-      input_type: RegisteredElement::InputType::TEXT_FIELD,
-      label:      "Creator")
+      input_type:       RegisteredElement::InputType::TEXT_FIELD,
+      label:            "Creator",
+      highwire_mapping: "citation_author")
     RegisteredElement.find_by_name("dc:date:issued").update!(
-      input_type: RegisteredElement::InputType::TEXT_FIELD,
-      label:      "Date of Publication")
+      input_type:       RegisteredElement::InputType::TEXT_FIELD,
+      label:            "Date of Publication",
+      highwire_mapping: "citation_publication_date")
     RegisteredElement.find_by_name("dc:description:abstract").update!(
       input_type: RegisteredElement::InputType::TEXT_AREA,
       label:      "Abstract")
@@ -196,19 +198,22 @@ class IdealsSeeder
       input_type: RegisteredElement::InputType::TEXT_FIELD,
       label:      "Sponsor/Grant No.")
     RegisteredElement.find_by_name("dc:identifier").update!(
-      label:          "Identifier",
-      vocabulary_key: Vocabulary::Key::DEGREE_NAMES)
+      label:            "Identifier",
+      vocabulary_key:   Vocabulary::Key::DEGREE_NAMES,
+      highwire_mapping: "citation_id")
     RegisteredElement.find_by_name("dc:identifier:bibliographicCitation").update!(
       input_type: RegisteredElement::InputType::TEXT_FIELD,
       label:      "Complete Citation For This Item")
     RegisteredElement.find_by_name("dc:identifier:uri").update!(
       label: "Identifiers: URI or URL")
     RegisteredElement.find_by_name("dc:language").update!(
-      label:          "Language",
-      vocabulary_key: Vocabulary::Key::COMMON_ISO_LANGUAGES)
+      label:            "Language",
+      vocabulary_key:   Vocabulary::Key::COMMON_ISO_LANGUAGES,
+      highwire_mapping: "citation_language")
     RegisteredElement.find_by_name("dc:publisher").update!(
-      input_type: RegisteredElement::InputType::TEXT_FIELD,
-      label:      "Publisher")
+      input_type:       RegisteredElement::InputType::TEXT_FIELD,
+      label:            "Publisher",
+      highwire_mapping: "citation_publisher")
     RegisteredElement.find_by_name("dc:relation:ispartof").update!(
       input_type: RegisteredElement::InputType::TEXT_FIELD,
       label:      "Series Name/Report No.")
@@ -216,11 +221,13 @@ class IdealsSeeder
       input_type: RegisteredElement::InputType::TEXT_FIELD,
       label:      "Copyright Statement")
     RegisteredElement.find_by_name("dc:subject").update!(
-      input_type: RegisteredElement::InputType::TEXT_FIELD,
-      label:      "Keyword")
+      input_type:       RegisteredElement::InputType::TEXT_FIELD,
+      label:            "Keyword",
+      highwire_mapping: "citation_keywords")
     RegisteredElement.find_by_name("dc:title").update!(
-      input_type: RegisteredElement::InputType::TEXT_FIELD,
-      label:      "Title")
+      input_type:       RegisteredElement::InputType::TEXT_FIELD,
+      label:            "Title",
+      highwire_mapping: "citation_title")
     RegisteredElement.find_by_name("dc:type").update!(
       label:          "Type of Resource",
       vocabulary_key: Vocabulary::Key::COMMON_TYPES)

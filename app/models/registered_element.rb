@@ -6,13 +6,17 @@
 #
 # # Attributes
 #
-# * `created_at`     Managed by ActiveRecord.
-# * `input_type`     One of the {InputType} constant values.
-# * `label`          Element label. Often overrides {name} for end-user display.
-# * `name`           Element name.
-# * `updated_at`     Managed by ActiveRecord.
-# * `uri`            Linked Data URI.
-# * `vocabulary_key` One of the vocabulary key constant values in {Vocabulary}.
+# * `created_at`       Managed by ActiveRecord.
+# * `highwire_mapping` Name of an equivalent element in the Highwire Press
+#                      meta tag vocabulary.
+# * `input_type`       One of the [InputType] constant values.
+# * `label`            Element label. Often overrides {name} for end-user
+#                      display.
+# * `name`             Element name.
+# * `updated_at`       Managed by ActiveRecord.
+# * `uri`              Linked Data URI.
+# * `vocabulary_key`   One of the vocabulary key constant values in
+#                      [Vocabulary].
 #
 class RegisteredElement < ApplicationRecord
 

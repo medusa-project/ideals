@@ -77,9 +77,10 @@ class RegisteredElementsController < ApplicationController
   private
 
   def registered_element_params
-    params.require(:registered_element).permit(:input_type, :institution_id,
-                                               :label, :name, :scope_note,
-                                               :uri, :vocabulary_key)
+    params.require(:registered_element).permit(:highwire_mapping, :input_type,
+                                               :institution_id, :label, :name,
+                                               :scope_note, :uri,
+                                               :vocabulary_key)
   end
 
   def set_element

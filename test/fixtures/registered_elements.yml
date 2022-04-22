@@ -5,6 +5,7 @@ available:
   name: dcterms:available
   uri: http://purl.org/dc/terms/available
   label: Date Available
+  highwire_mapping:
   scope_note:
 
 creator:
@@ -12,6 +13,7 @@ creator:
   name: dc:creator
   uri: http://purl.org/dc/terms/creator
   label: Creator
+  highwire_mapping:
   scope_note:
 
 dateSubmitted:
@@ -19,6 +21,7 @@ dateSubmitted:
   name: dc:date:submitted
   uri: http://purl.org/dc/terms/dateSubmitted
   label: Date Submitted
+  highwire_mapping:
   scope_note:
 
 description:
@@ -27,6 +30,7 @@ description:
   uri: http://purl.org/dc/terms/description
   label: Description
   input_type: <%= RegisteredElement::InputType::TEXT_AREA %>
+  highwire_mapping:
   scope_note:
 
 identifier:
@@ -34,6 +38,7 @@ identifier:
   name: dcterms:identifier
   uri: http://purl.org/dc/terms/identifier
   label: Identifier
+  highwire_mapping:
   scope_note:
 
 subject:
@@ -42,6 +47,7 @@ subject:
   uri: http://purl.org/dc/terms/subject
   label: Subject
   input_type: <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
   scope_note:
 
 title:
@@ -50,6 +56,7 @@ title:
   uri: http://purl.org/dc/terms/title
   label: Title
   input_type: <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
   scope_note:
 
 unused:
@@ -57,6 +64,7 @@ unused:
   name: unused
   uri: http://example.org/unused
   label: Unused
+  highwire_mapping:
   scope_note: This element is not attached to any resources.
 
 degree_department:
@@ -64,6 +72,7 @@ degree_department:
   name: etd:degree:department
   uri: http://example.org/degree/department
   label: Degree Department
+  highwire_mapping:
   scope_note: Used by SafImporterTest.
 
 degree_level:
@@ -71,6 +80,7 @@ degree_level:
   name: etd:degree:level
   uri: http://example.org/degree/level
   label: Degree Level
+  highwire_mapping:
   scope_note: Used by SafImporterTest.
 
 degree_grantor:
@@ -78,4 +88,5 @@ degree_grantor:
   name: etd:degree:grantor
   uri: http://example.org/degree/grantor
   label: Degree Grantor
+  highwire_mapping:
   scope_note: Used by SafImporterTest.
