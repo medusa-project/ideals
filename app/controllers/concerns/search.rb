@@ -6,7 +6,7 @@ module Search
                             :department, :date_deposited, :full_text,
                             :full_text_type, :title]
   SIMPLE_SEARCH_PARAMS   = [:q]
-  RESULTS_PARAMS         = [:direction, :fq, :sort, :start]
+  RESULTS_PARAMS         = [:direction, { fq: [] }, :sort, :start]
 
   ##
   # @param relation [ItemRelation]
