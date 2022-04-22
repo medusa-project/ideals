@@ -5,7 +5,9 @@
 #
 # * `created_at`  Managed by ActiveRecord.
 # * `download`    If true, downloads are restricted.
-# * `expires_at`  Date/time at which the embargo expires.
+# * `expires_at`  Date/time at which the embargo expires. For embargoes that
+#                 never expire, the year is 3000. (In DSpace the year is 10000,
+#                 but Elasticsearch can't handle dates that far out.)
 # * `full_access` If true, all access to the item is restricted.
 # * `item_id`     References the owning {Item}.
 # * `reason`      Reason for the embargo.

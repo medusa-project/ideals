@@ -485,8 +485,8 @@ class DspaceImporter
             expires_at = Time.parse(expires_at)
             if expires_at > Time.now
               # Embargoes without expiration are set to the year 10000 in
-              # DSpace. But Elasticsearch can't handle dates that far in the
-              # future, so adjust to 3000.
+              # DSpace. But Elasticsearch can't handle dates that far out, so
+              # adjust to 3000.
               expires_at = expires_at.change(year: 3000) if expires_at.year > 3000
               case item.element("dc:description:terms")&.string
               when "U of I Only"
