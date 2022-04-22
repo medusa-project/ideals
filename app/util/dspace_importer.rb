@@ -485,9 +485,14 @@ class DspaceImporter
             expires_at = Time.parse(expires_at)
             if expires_at > Time.now
               # Embargoes without expiration are set to the year 10000 in
-              # DSpace. But Elasticsearch can't handle dates that far out, so
-              # adjust to 3000.
-              expires_at = expires_at.change(year: 3000) if expires_at.year > 3000
+              # DSpace. But Elasticsearch can't handle years that far out, so
+              # pull them in.
+              if expires_at.year > 2500
+                expires_at = expires_at.change(year: 2500)
+                perpetual  = true
+              else
+                perpetual = false
+              end
               case item.element("dc:description:terms")&.string
               when "U of I Only"
                 group = UserGroup.find_by_key("uiuc")
@@ -501,6 +506,7 @@ class DspaceImporter
               if item.embargoes.where(expires_at: expires_at).count < 1
                 item.embargoes.build(download:    true,
                                      full_access: true,
+                                     perpetual:   perpetual,
                                      expires_at:  expires_at,
                                      user_groups: groups,
                                      reason:      embargo_reason).save!

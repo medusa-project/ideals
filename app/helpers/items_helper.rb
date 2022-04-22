@@ -120,6 +120,9 @@ module ItemsHelper
   # @return [String] HTML string.
   #
   def embargoes_form_card(embargo: nil, index: 0)
+    selected_year = Time.now.year
+    latest_year   = Time.now.year + 100
+
     html = StringIO.new
     html << '<div class="card mb-3">'
     html <<   '<div class="card-header">'
@@ -129,9 +132,23 @@ module ItemsHelper
     html <<       '</button>'
     html <<     '</div>'
     html <<     '<div class="form-inline">'
-    html <<       '<span class="mr-2">Until</span>'
-    selected_year = Time.now.year
-    latest_year   = Time.now.year + 100
+    html <<       '<div class="form-check">'
+    html <<         '<label class="mr-3">'
+    html <<           radio_button_tag("embargoes[0][perpetual]", "true",
+                                       embargo&.perpetual,
+                                       class: 'form-check-input')
+    html <<           "Never expires"
+    html <<         '</label>'
+    html <<       '</div>'
+    html <<       '<div class="form-check">'
+    html <<         '<label class="mr-2">'
+    html <<           radio_button_tag("embargoes[0][perpetual]", "false",
+                                       !embargo&.perpetual,
+                                       class: 'form-check-input')
+    html <<           "Expires at"
+    html <<         '</label>'
+    html <<       '</div>'
+
     if embargo && embargo.expires_at.year > latest_year
       selected_year = latest_year
     end

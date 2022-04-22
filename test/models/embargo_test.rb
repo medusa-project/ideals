@@ -31,15 +31,29 @@ class EmbargoTest < ActiveSupport::TestCase
     assert embargo.exempt?(user)
   end
 
-  # validate()
+  # expires_at
 
-  test "validate() does not allow expires_at to be in the past" do
+  test "expires_at cannot be in the past if perpetual is false" do
     item = items(:item1)
-    e =item.embargoes.build(expires_at:  1.minute.ago,
-                            download:    true,
-                            full_access: true)
+    e = item.embargoes.build(expires_at:  1.minute.ago,
+                             perpetual:   false,
+                             download:    true,
+                             full_access: true)
     assert !e.valid?
   end
+
+  # expires_at
+
+  test "expires_at can be in the past if perpetual is true" do
+    item = items(:item1)
+    e = item.embargoes.build(expires_at:  1.minute.ago,
+                             perpetual:   true,
+                             download:    true,
+                             full_access: true)
+    assert e.valid?
+  end
+
+  # validate()
 
   test "validate() requires at least one restriction" do
     item = items(:item1)

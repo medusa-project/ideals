@@ -6,10 +6,12 @@
 # * `created_at`  Managed by ActiveRecord.
 # * `download`    If true, downloads are restricted.
 # * `expires_at`  Date/time at which the embargo expires. For embargoes that
-#                 never expire, the year is 3000. (In DSpace the year is 10000,
-#                 but Elasticsearch can't handle dates that far out.)
+#                 never expire, {perpetual} is `true` and the value of this
+#                 attribute is irrelevant.
 # * `full_access` If true, all access to the item is restricted.
 # * `item_id`     References the owning {Item}.
+# * `perpetual`   Whether the embargo ever expires. If `true`, the embargo
+#                 never expires and the value of {expires_at} is irrelevant.
 # * `reason`      Reason for the embargo.
 # * `updated_at`  Managed by ActiveRecord.
 #
@@ -22,7 +24,7 @@ class Embargo < ApplicationRecord
 
   include Auditable
 
-  scope :current, -> { where("expires_at > NOW()")}
+  scope :current, -> { where("perpetual = true OR expires_at > NOW()")}
   belongs_to :item
   has_and_belongs_to_many :user_groups, -> { order(:name) }
 
@@ -39,10 +41,12 @@ class Embargo < ApplicationRecord
   # @return [Hash]
   #
   def as_indexed_json
+    expires_at = self.expires_at
+    expires_at = Time.now + 1000.years if self.perpetual
     {
       IndexFields::DOWNLOAD    => self.download,
       IndexFields::FULL_ACCESS => self.full_access,
-      IndexFields::EXPIRES_AT  => self.expires_at.iso8601
+      IndexFields::EXPIRES_AT  => expires_at.iso8601
     }
   end
 
@@ -64,7 +68,7 @@ class Embargo < ApplicationRecord
   # Ensures that {expires_at} is not in the past.
   #
   def validate_expiration
-    if expires_at < Time.now
+    if expires_at < Time.now && !perpetual
       errors.add(:expires_at, "must be in the future")
     end
   end

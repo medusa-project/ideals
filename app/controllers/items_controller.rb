@@ -415,17 +415,17 @@ class ItemsController < ApplicationController
     if params[:embargoes].respond_to?(:each)
       @item.embargoes.destroy_all
       params[:embargoes].each_value do |embargo|
-        if params[:embargoes].values.length == 1 && !embargo[:download] &&
-          !embargo[:full_access]
-          return
-        end
+        return if params[:embargoes].values.length == 1 &&
+          embargo[:download] != "true" &&
+          embargo[:full_access] != "true"
         @item.embargoes.build(download:       embargo[:download] == "true",
                               full_access:    embargo[:full_access] == "true",
                               user_group_ids: embargo[:user_group_ids]&.uniq,
                               reason:         embargo[:reason],
+                              perpetual:      embargo[:perpetual] == "true",
                               expires_at:     TimeUtils.ymd_to_time(embargo[:expires_at_year],
                                                                     embargo[:expires_at_month],
-                                                                    embargo[:expires_at_day])).save!
+                                                                    embargo[:expires_at_day]))
       end
     end
   end

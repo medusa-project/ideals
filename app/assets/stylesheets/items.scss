@@ -214,6 +214,11 @@ body#show_item {
       }
     }
   }
+  #edit-item-embargoes-modal {
+    .user-group.form-inline select {
+      width: 100%;
+    }
+  }
   dl.metadata, dl.properties {
     display: grid;
     grid-template-columns: 26% auto;

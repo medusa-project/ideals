@@ -19,9 +19,10 @@
           - elsif embargo.download
             Downloads
           restricted
-          - if embargo.expires_at.year > 2500
+          - if embargo.perpetual
             in perpetuity
           - else
+            until
             = local_date(embargo.expires_at)
         .card-body
           .row
