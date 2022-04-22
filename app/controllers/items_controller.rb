@@ -167,7 +167,7 @@ class ItemsController < ApplicationController
   # Responds to `GET /items`
   #
   def index
-    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+    @permitted_params = params.permit(Search::SIMPLE_SEARCH_PARAMS +
                                         Search::ADVANCED_SEARCH_PARAMS +
                                         Search::RESULTS_PARAMS)
     @start            = @permitted_params[:start].to_i
