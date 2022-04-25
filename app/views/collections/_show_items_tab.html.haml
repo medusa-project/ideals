@@ -56,7 +56,7 @@
       .col-8
       .col-4
         .input-group.mb-3
-          = sort_menu(MetadataProfile.default)
+          = sort_menu(@collection.effective_metadata_profile)
 
   #items-xhr-content
     -# items/listing inserted here via XHR
