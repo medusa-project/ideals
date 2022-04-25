@@ -74,11 +74,16 @@ module ApplicationHelper
   # @param month_select_name [String]
   # @param day_select_name [String]
   # @param year_select_name [String]
-  # @param selected_month [Integer]
-  # @param selected_day [Integer]
-  # @param selected_year [Integer]
+  # @param selected_month [Integer] Supply `0` to select the blank item if
+  #                                 `include_blanks` is `true`.
+  # @param selected_day [Integer]   Supply `0` to select the blank item if
+  #                                 `include_blanks` is `true`.
+  # @param selected_year [Integer]  Supply `0` to select the blank item if
+  #                                 `include_blanks` is `true`.
   # @param earliest_year [Integer]
   # @param latest_year [Integer]
+  # @param include_blanks [Boolean] Whether to include a blank year, month, &
+  #                                 day.
   # @return [String]
   #
   def date_picker(month_select_name: "month",
@@ -88,7 +93,8 @@ module ApplicationHelper
                   selected_day:      Time.now.day,
                   selected_year:     Time.now.year,
                   earliest_year:     Time.now.year,
-                  latest_year:       Time.now.year)
+                  latest_year:       Time.now.year,
+                  include_blanks:    false)
     m_options = (1..12).map{ |m| [Date::MONTHNAMES[m], m] }
     d_options = (1..31)
     y_options = (earliest_year..latest_year)
@@ -97,12 +103,15 @@ module ApplicationHelper
     html << "<div class='form-group date-picker'>"
     html <<   select_tag(month_select_name,
                          options_for_select(m_options, selected_month),
+                         include_blank: include_blanks,
                          class: "custom-select mr-1")
     html <<   select_tag(day_select_name,
                          options_for_select(d_options, selected_day),
+                         include_blank: include_blanks,
                          class: "custom-select mr-1")
     html <<   select_tag(year_select_name,
                          options_for_select(y_options, selected_year),
+                         include_blank: include_blanks,
                          class: "custom-select")
     html << "</div>"
     raw(html.string)
