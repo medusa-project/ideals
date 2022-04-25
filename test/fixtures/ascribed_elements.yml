@@ -3,41 +3,41 @@
 described_title:
   string:             Some title
   uri:
-  registered_element: title
+  registered_element: dc_title
   item:               described
   position:           1
 
 described_description:
   string:             Some description
   uri:
-  registered_element: description
+  registered_element: dc_description
   item:               described
   position:           1
 
 described_subject:
   string:             Some subject
   uri:
-  registered_element: subject
+  registered_element: dc_subject
   item:               described
   position:           1
 
 in_medusa_title:
   string:             Some title
   uri:
-  registered_element: title
+  registered_element: dc_title
   item:               in_medusa
   position:           1
 
 submitting_item_title:
   string:             Some title
   uri:
-  registered_element: title
+  registered_element: dc_title
   item:               submitting
   position:           1
 
 submitted_item_title:
   string:             Some title
   uri:
-  registered_element: title
+  registered_element: dc_title
   item:               submitted
   position:           1

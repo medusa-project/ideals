@@ -49,7 +49,7 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
   test "index is required" do
     assert_raises ActiveRecord::RecordInvalid do
       SubmissionProfileElement.create!(submission_profile: submission_profiles(:default),
-                                       registered_element: registered_elements(:title))
+                                       registered_element: registered_elements(:dc_title))
     end
   end
 
@@ -75,7 +75,7 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
   test "submission_profile is required" do
     assert_raises ActiveRecord::RecordInvalid do
       SubmissionProfileElement.create!(index: 0,
-                                       registered_element: registered_elements(:title))
+                                       registered_element: registered_elements(:dc_title))
     end
   end
 
@@ -91,9 +91,9 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
   test "registered_element must be unique within a submission profile" do
     profile = submission_profiles(:unused)
     profile.elements.build(index: 0,
-                           registered_element: registered_elements(:title))
+                           registered_element: registered_elements(:dc_title))
     profile.elements.build(index: 1,
-                           registered_element: registered_elements(:title))
+                           registered_element: registered_elements(:dc_title))
   end
 
   # update()

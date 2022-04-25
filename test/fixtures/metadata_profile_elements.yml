@@ -2,7 +2,7 @@
 
 default_title:
   metadata_profile: default
-  registered_element: title
+  registered_element: dc_title
   index: 0
   visible: true
   facetable: false
@@ -12,7 +12,7 @@ default_title:
 
 default_description:
   metadata_profile: default
-  registered_element: description
+  registered_element: dc_description
   index: 1
   visible: true
   facetable: false
@@ -22,7 +22,7 @@ default_description:
 
 default_subject:
   metadata_profile: default
-  registered_element: subject
+  registered_element: dc_subject
   index: 2
   visible: true
   facetable: true

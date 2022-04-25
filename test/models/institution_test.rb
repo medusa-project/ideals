@@ -76,7 +76,7 @@ class InstitutionTest < ActiveSupport::TestCase
             bitstream.add_download
           end
           # The query won't return items without a title.
-          item.elements.build(registered_element: registered_elements(:title),
+          item.elements.build(registered_element: registered_elements(:dc_title),
                               string: "This is the title").save!
           item_count += 1 if item.bitstreams.any?
         end
@@ -98,7 +98,7 @@ class InstitutionTest < ActiveSupport::TestCase
             bitstream.add_download
           end
           # The query won't return items without a title.
-          item.elements.build(registered_element: registered_elements(:title),
+          item.elements.build(registered_element: registered_elements(:dc_title),
                               string: "This is the title").save!
         end
       end
@@ -119,7 +119,7 @@ class InstitutionTest < ActiveSupport::TestCase
             bitstream.add_download
           end
           # The query won't return items without a title.
-          item.elements.build(registered_element: registered_elements(:title),
+          item.elements.build(registered_element: registered_elements(:dc_title),
                               string: "This is the title").save!
         end
       end

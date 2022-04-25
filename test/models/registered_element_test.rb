@@ -3,7 +3,7 @@ require 'test_helper'
 class RegisteredElementTest < ActiveSupport::TestCase
 
   setup do
-    @instance = registered_elements(:title)
+    @instance = registered_elements(:dc_title)
     assert @instance.valid?
   end
 

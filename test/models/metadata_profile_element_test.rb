@@ -49,7 +49,7 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
   test "index is required" do
     assert_raises ActiveRecord::RecordInvalid do
       MetadataProfileElement.create!(metadata_profile: metadata_profiles(:default),
-                                     registered_element: registered_elements(:title))
+                                     registered_element: registered_elements(:dc_title))
     end
   end
 
@@ -69,7 +69,7 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
   test "metadata_profile is required" do
     assert_raises ActiveRecord::RecordInvalid do
       MetadataProfileElement.create!(index: 0,
-                                     registered_element: registered_elements(:title))
+                                     registered_element: registered_elements(:dc_title))
     end
   end
 
@@ -91,9 +91,9 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
   test "registered_element must be unique within a metadata profile" do
     profile = metadata_profiles(:unused)
     profile.elements.build(index: 0,
-                           registered_element: registered_elements(:title))
+                           registered_element: registered_elements(:dc_title))
     profile.elements.build(index: 1,
-                           registered_element: registered_elements(:title))
+                           registered_element: registered_elements(:dc_title))
   end
 
   # update()

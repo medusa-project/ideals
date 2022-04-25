@@ -117,9 +117,9 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_equal "Subject 2", item.elements.select{ |e| e.name == "dc:subject"}[1].string
     assert_equal 2, item.elements.select{ |e| e.name == "dc:subject"}[1].position
     assert_equal "2021", item.element("dc:date:submitted").string
-    assert_equal "Computer Science", item.element("etd:degree:department").string
-    assert_equal "Masters", item.element("etd:degree:level").string
-    assert_equal "Michigan Institute of Technology", item.element("etd:degree:grantor").string
+    assert_equal "Computer Science", item.element("thesis:degree:department").string
+    assert_equal "Masters", item.element("thesis:degree:level").string
+    assert_equal "Michigan Institute of Technology", item.element("thesis:degree:grantor").string
   end
 
   test "import_from_path() adds correct mapfile lines upon failure" do
@@ -282,9 +282,9 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_equal "Subject 2", item.elements.select{ |e| e.name == "dc:subject"}[1].string
     assert_equal 2, item.elements.select{ |e| e.name == "dc:subject"}[1].position
     assert_equal "2021", item.element("dc:date:submitted").string
-    assert_equal "Computer Science", item.element("etd:degree:department").string
-    assert_equal "Masters", item.element("etd:degree:level").string
-    assert_equal "Michigan Institute of Technology", item.element("etd:degree:grantor").string
+    assert_equal "Computer Science", item.element("thesis:degree:department").string
+    assert_equal "Masters", item.element("thesis:degree:level").string
+    assert_equal "Michigan Institute of Technology", item.element("thesis:degree:grantor").string
   end
 
   test "import_from_s3() adds imported items to imported_items before failure" do

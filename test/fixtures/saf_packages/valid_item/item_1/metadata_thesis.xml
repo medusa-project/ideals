@@ -1,4 +1,4 @@
-<dublin_core schema="etd">
+<dublin_core schema="thesis">
   <dcvalue element="degree" qualifier="department">Computer Science</dcvalue>
   <dcvalue element="degree" qualifier="level">Masters</dcvalue>
   <dcvalue element="degree" qualifier="grantor">Michigan Institute of Technology</dcvalue>

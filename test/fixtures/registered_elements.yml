@@ -1,132 +1,250 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-abstract:
-  institution: uiuc
-  name: dc:description:abstract
-  uri: http://purl.org/dc/terms/abstract
-  label: Abstract
-  highwire_mapping:
-  scope_note:
-
-available:
-  institution: uiuc
-  name: dcterms:available
-  uri: http://purl.org/dc/terms/available
-  label: Date Available
-  highwire_mapping:
-  scope_note:
-
-contributor:
-  institution: uiuc
-  name: dc:contributor
-  uri: http://purl.org/dc/terms/contributor
-  label: Contributor
-  highwire_mapping:
-  scope_note:
-
-creator:
-  institution: uiuc
-  name: dc:creator
-  uri: http://purl.org/dc/terms/creator
-  label: Creator
-  highwire_mapping:
-  scope_note:
-
-dateIssued:
-  institution: uiuc
-  name: dc:date:issued
-  uri: http://purl.org/dc/terms/dateIssued
-  label: Date Issued
-  highwire_mapping:
-  scope_note:
-
-dateSubmitted:
-  institution: uiuc
-  name: dc:date:submitted
-  uri: http://purl.org/dc/terms/dateSubmitted
-  label: Date Submitted
-  highwire_mapping:
-  scope_note:
-
-description:
-  institution: uiuc
-  name: dc:description
-  uri: http://purl.org/dc/terms/description
-  label: Description
-  input_type: <%= RegisteredElement::InputType::TEXT_AREA %>
-  highwire_mapping:
-  scope_note:
-
-identifier:
-  institution: uiuc
-  name: dcterms:identifier
-  uri: http://purl.org/dc/terms/identifier
-  label: Identifier
-  highwire_mapping:
-  scope_note:
-
-subject:
-  institution: uiuc
-  name: dc:subject
-  uri: http://purl.org/dc/terms/subject
-  label: Subject
-  input_type: <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-title:
-  institution: uiuc
-  name: dc:title
-  uri: http://purl.org/dc/terms/title
-  label: Title
-  input_type: <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-type:
-  institution: uiuc
-  name: dc:type
-  uri: http://purl.org/dc/terms/type
-  label: Type
-  highwire_mapping:
-  scope_note:
-
 unused:
-  institution: uiuc
-  name: unused
-  uri: http://example.org/unused
-  label: Unused
+  institution:      uiuc
+  name:             unused
+  label:            Unused
+  uri:              http://example.org/unused
   highwire_mapping:
-  scope_note: This element is not attached to any resources.
+  scope_note:       This element is not attached to any resources.
 
-uri:
-  institution: uiuc
-  name: dc:identifier:uri
-  uri: http://purl.org/dc/terms/identifierURI
-  label: URI
+#################################### dc #####################################
+
+dc_contributor:
+  institution:      uiuc
+  name:             dc:contributor
+  label:            Contributor
+  uri:              http://purl.org/dc/contributor
   highwire_mapping:
   scope_note:
 
-degree_department:
-  institution: uiuc
-  name: etd:degree:department
-  uri: http://example.org/degree/department
-  label: Degree Department
+dc_contributor_advisor:
+  institution:      uiuc
+  name:             dc:contributor:advisor
+  label:            Advisor
+  uri:              http://purl.org/dc/advisor
   highwire_mapping:
-  scope_note: Used by SafImporterTest.
+  scope_note:
 
-degree_level:
-  institution: uiuc
-  name: etd:degree:level
-  uri: http://example.org/degree/level
-  label: Degree Level
+dc_contributor_committeeChair:
+  institution:      uiuc
+  name:             dc:contributor:committeeChair
+  label:            Committee Chair
+  uri:              http://purl.org/dc/committeeChair
   highwire_mapping:
-  scope_note: Used by SafImporterTest.
+  scope_note:
 
-degree_grantor:
-  institution: uiuc
-  name: etd:degree:grantor
-  uri: http://example.org/degree/grantor
-  label: Degree Grantor
+dc_coverage_spatial:
+  institution:      uiuc
+  name:             dc:coverage:spatial
+  label:            Spatial Coverage
+  uri:              http://purl.org/dc/coverageSpatial
   highwire_mapping:
-  scope_note: Used by SafImporterTest.
+  scope_note:
+
+dc_creator:
+  institution:      uiuc
+  name:             dc:creator
+  label:            Creator
+  uri:              http://purl.org/dc/creator
+  highwire_mapping:
+  scope_note:
+
+dc_date_issued:
+  institution:      uiuc
+  name:             dc:date:issued
+  label:            Date Issued
+  uri:              http://purl.org/dc/dateIssued
+  highwire_mapping:
+  scope_note:
+
+dc_date_submitted:
+  institution:      uiuc
+  name:             dc:date:submitted
+  label:            Date Submitted
+  uri:              http://purl.org/dc/dateSubmitted
+  highwire_mapping:
+  scope_note:
+
+dc_description:
+  institution:      uiuc
+  name:             dc:description
+  label:            Description
+  uri:              http://purl.org/dc/description
+  input_type:       <%= RegisteredElement::InputType::TEXT_AREA %>
+  highwire_mapping:
+  scope_note:
+
+dc_description_abstract:
+  institution:      uiuc
+  name:             dc:description:abstract
+  label:            Abstract
+  uri:              http://purl.org/dc/abstract
+  highwire_mapping:
+  scope_note:
+
+dc_description_sponsorship:
+  institution:      uiuc
+  name:             dc:description:sponsorship
+  label:            Sponsorship
+  uri:              http://purl.org/dc/sponsorship
+  highwire_mapping:
+  scope_note:
+
+dc_identifier:
+  institution:      uiuc
+  name:             dc:identifier
+  label:            Identifier
+  uri:              http://purl.org/dc/identifier
+  highwire_mapping:
+  scope_note:
+
+dc_identifier_bibliographicCitation:
+  institution:      uiuc
+  name:             dc:identifier:bibliographicCitation
+  label:            Bibliographic Citation
+  uri:              http://purl.org/dc/bibliographicCitation
+  highwire_mapping:
+  scope_note:
+
+dc_identifier_uri:
+  institution:      uiuc
+  name:             dc:identifier:uri
+  label:            URI
+  uri:              http://purl.org/dc/identifierURI
+  highwire_mapping:
+  scope_note:
+
+dc_language:
+  institution:      uiuc
+  name:             dc:language
+  label:            Language
+  uri:              http://purl.org/dc/language
+  highwire_mapping:
+  scope_note:
+
+dc_publisher:
+  institution:      uiuc
+  name:             dc:publisher
+  label:            Publisher
+  uri:              http://purl.org/dc/publisher
+  highwire_mapping:
+  scope_note:
+
+dc_relation_ispartof:
+  institution:      uiuc
+  name:             dc:relation:ispartof
+  label:            Is Part Of
+  uri:              http://purl.org/dc/ispartof
+  highwire_mapping:
+  scope_note:
+
+dc_rights:
+  institution:      uiuc
+  name:             dc:rights
+  label:            Rights
+  uri:              http://purl.org/dc/rights
+  highwire_mapping:
+  scope_note:
+
+dc_subject:
+  institution:      uiuc
+  name:             dc:subject
+  label:            Subject
+  uri:              http://purl.org/dc/subject
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+dc_title:
+  institution:      uiuc
+  name:             dc:title
+  label:            Title
+  uri:              http://purl.org/dc/title
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+dc_type:
+  institution:      uiuc
+  name:             dc:type
+  label:            Type
+  uri:              http://purl.org/dc/type
+  highwire_mapping:
+  scope_note:
+
+dc_type_genre:
+  institution:      uiuc
+  name:             dc:type:genre
+  label:            Genre
+  uri:              http://purl.org/dc/typeGenre
+  highwire_mapping:
+  scope_note:
+
+################################# dcterms ###################################
+
+dcterms_available:
+  institution:      uiuc
+  name:             dcterms:available
+  label:            Date Available
+  uri:              http://purl.org/dc/terms/available
+  highwire_mapping:
+  scope_note:
+
+dcterms_identifier:
+  institution:      uiuc
+  name:             dcterms:identifier
+  label:            Identifier
+  uri:              http://purl.org/dc/terms/identifier
+  highwire_mapping:
+  scope_note:
+
+############################### etd ###############################
+
+thesis_degree_department:
+  institution:      uiuc
+  name:             thesis:degree:department
+  label:            Degree Department
+  uri:              http://example.org/degree/department
+  highwire_mapping:
+  scope_note:       Used by SafImporterTest
+
+thesis_degree_discipline:
+  institution:      uiuc
+  name:             thesis:degree:discipline
+  label:            Degree Discipline
+  uri:              http://example.org/degree/discipline
+  highwire_mapping:
+  scope_note:
+
+thesis_degree_grantor:
+  institution:      uiuc
+  name:             thesis:degree:grantor
+  label:            Degree Grantor
+  uri:              http://example.org/degree/grantor
+  highwire_mapping:
+  scope_note:       Used by SafImporterTest
+
+thesis_degree_level:
+  institution:      uiuc
+  name:             thesis:degree:level
+  label:            Degree Level
+  uri:              http://example.org/degree/level
+  highwire_mapping:
+  scope_note:       Used by SafImporterTest
+
+thesis_degree_name:
+  institution:      uiuc
+  name:             thesis:degree:name
+  label:            Degree Name
+  uri:              http://example.org/degree/name
+  highwire_mapping:
+  scope_note:
+
+thesis_degree_program:
+  institution:      uiuc
+  name:             thesis:degree:program
+  label:            Degree Program
+  uri:              http://example.org/degree/program
+  highwire_mapping:
+  scope_note:

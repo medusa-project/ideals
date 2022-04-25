@@ -3,7 +3,7 @@ require 'test_helper'
 class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @element = registered_elements(:title)
+    @element = registered_elements(:dc_title)
   end
 
   # create?()

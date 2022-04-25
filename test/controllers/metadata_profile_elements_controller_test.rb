@@ -23,7 +23,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              metadata_profile_element: {
-                 registered_element_id: registered_elements(:title).id,
+                 registered_element_id: registered_elements(:dc_title).id,
                  metadata_profile_id: @profile.id,
                  label: "Title",
                  index: 0
@@ -38,7 +38,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              metadata_profile_element: {
-                 registered_element_id: registered_elements(:title).id,
+                 registered_element_id: registered_elements(:dc_title).id,
                  metadata_profile_id: @profile.id,
                  label: "Title",
                  index: 0
@@ -54,7 +54,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
                metadata_profile_element: {
-                   registered_element_id: registered_elements(:title).id,
+                   registered_element_id: registered_elements(:dc_title).id,
                    metadata_profile_id: @profile.id,
                    label: "Title",
                    index: 0
@@ -69,7 +69,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              metadata_profile_element: {
-                 registered_element_id: registered_elements(:title).id,
+                 registered_element_id: registered_elements(:dc_title).id,
                  metadata_profile_id: @profile.id,
                  index: -1 # invalid
              }
@@ -159,7 +159,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               metadata_profile_element: {
-                  registered_element_id: registered_elements(:title).id,
+                  registered_element_id: registered_elements(:dc_title).id,
                   metadata_profile_id: @profile.id,
                   index: 2
               }
@@ -175,7 +175,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               metadata_profile_element: {
-                  registered_element_id: registered_elements(:title).id,
+                  registered_element_id: registered_elements(:dc_title).id,
                   metadata_profile_id: @profile.id,
                   label: "New Label",
                   index: 0
@@ -191,7 +191,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               metadata_profile_element: {
-                  registered_element_id: registered_elements(:title).id,
+                  registered_element_id: registered_elements(:dc_title).id,
                   metadata_profile_id: @profile.id,
                   index: -1 # invalid
               }
