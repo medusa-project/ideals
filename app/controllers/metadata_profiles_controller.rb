@@ -28,6 +28,7 @@ class MetadataProfilesController < ApplicationController
     authorize @profile
     begin
       @profile.save!
+      @profile.add_default_elements
     rescue
       render partial: "shared/validation_messages",
              locals: { object: @profile },

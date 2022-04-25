@@ -41,7 +41,6 @@ class MetadataProfile < ApplicationRecord
   validates :name, presence: true, length: { minimum: 2 },
             uniqueness: { case_sensitive: false }
 
-  after_create :ascribe_default_elements, if: -> { elements.empty? }
   after_save :ensure_default_uniqueness
 
   ##
@@ -49,6 +48,22 @@ class MetadataProfile < ApplicationRecord
   #
   def self.default
     MetadataProfile.find_by_default(true)
+  end
+
+  ##
+  # Ascribes some baseline [MetadataProfileElement]s to a newly created
+  # profile.
+  #
+  def add_default_elements
+    if self.elements.empty?
+      self.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
+                          index:              0,
+                          indexed:            true,
+                          facetable:          false,
+                          searchable:         true,
+                          sortable:           true,
+                          visible:            true).save!
+    end
   end
 
   def breadcrumb_label
@@ -80,22 +95,6 @@ class MetadataProfile < ApplicationRecord
 
 
   private
-
-  ##
-  # Ascribes some baseline [MetadataProfileElement]s to a newly created
-  # profile.
-  #
-  def ascribe_default_elements
-    if self.elements.empty?
-      self.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
-                          index:              0,
-                          indexed:            true,
-                          facetable:          false,
-                          searchable:         true,
-                          sortable:           true,
-                          visible:            true).save!
-    end
-  end
 
   ##
   # Sets all other instances as "not default" if the instance is marked as

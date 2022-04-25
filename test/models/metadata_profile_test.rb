@@ -8,12 +8,6 @@ class MetadataProfileTest < ActiveSupport::TestCase
 
   # base-level tests
 
-  test "new instances have some default elements ascribed to them" do
-    profile = MetadataProfile.create!(name:        "Test Profile",
-                                      institution: institutions(:uiuc))
-    assert_equal 1, profile.elements.count
-  end
-
   test "instances with dependent collections cannot be destroyed" do
     assert_raises ActiveRecord::DeleteRestrictionError do
       @instance.destroy!
@@ -33,6 +27,24 @@ class MetadataProfileTest < ActiveSupport::TestCase
 
   test "default() returns the default metadata profile" do
     assert_equal metadata_profiles(:default).id, MetadataProfile.default.id
+  end
+
+  # add_default_elements()
+
+  test "add_default_elements() adds default elements to an instance that does
+  not have any elements" do
+    profile = MetadataProfile.create!(name:        "Test Profile",
+                                      institution: institutions(:uiuc))
+    profile.add_default_elements
+    assert_equal 1, profile.elements.count
+  end
+
+  test "add_default_elements() does not add any elements to an instance that
+  already has elements" do
+    profile = metadata_profiles(:default)
+    count = profile.elements.count
+    profile.add_default_elements
+    assert_equal count, profile.elements.count
   end
 
   # default
