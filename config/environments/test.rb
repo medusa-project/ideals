@@ -27,8 +27,7 @@ Rails.application.configure do
   config.action_controller.perform_caching = false
   config.cache_store = :null_store
 
-  config.active_job.queue_adapter = :async
-  config.active_job.queue_name_prefix = "ideals_test"
+  config.active_job.queue_adapter = :test
 
   # Raise exceptions instead of rendering exception templates.
   config.action_dispatch.show_exceptions = false
