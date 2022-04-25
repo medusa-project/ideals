@@ -27,6 +27,7 @@ class SubmissionProfilesController < ApplicationController
     @profile = SubmissionProfile.new(submission_profile_params)
     authorize @profile
     begin
+      @profile.add_default_elements
       @profile.save!
     rescue
       render partial: "shared/validation_messages",

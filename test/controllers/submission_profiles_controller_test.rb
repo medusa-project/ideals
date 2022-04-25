@@ -69,7 +69,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "create() creates a profile" do
+  test "create() creates a profile and adds default elements to it" do
     user = users(:uiuc_admin)
     log_in_as(user)
     assert_difference "SubmissionProfile.count" do
@@ -82,6 +82,8 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
                }
            }
     end
+    profile = SubmissionProfile.order(created_at: :desc).limit(1).first
+    assert profile.elements.count > 0
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
