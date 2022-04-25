@@ -516,7 +516,7 @@ module ApplicationHelper
   # @param metadata_profile [MetadataProfile]
   # @return [String] HTML form element.
   #
-  def sort_menu(metadata_profile)
+  def sort_menu(metadata_profile = MetadataProfile.default)
     results_params    = params.permit(Search::RESULTS_PARAMS)
     sortable_elements = metadata_profile.elements.where(sortable: true)
     html              = StringIO.new
