@@ -26,10 +26,80 @@ class IdealsSeeder
   end
 
   def seed_metadata_profiles
+    # Default metadata profile
     profile = MetadataProfile.create!(name:        "Default Metadata Profile",
                                       institution: Institution.find_by_key("uiuc"),
                                       default:     true)
     profile.add_default_elements
+
+    # ETD metadata profile
+    profile = MetadataProfile.create!(name:        "ETD Metadata Profile",
+                                      institution: Institution.find_by_key("uiuc"),
+                                      default:     false)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
+                           index:              0,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           facetable:          false,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
+                           index:              1,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           facetable:          true,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:submitted"),
+                           index:              2,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           facetable:          false,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:advisor"),
+                           index:              3,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           facetable:          true,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeChair"),
+                           index:              4,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           facetable:          true,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeMember"),
+                           index:              5,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           facetable:          true,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
+                           index:              6,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           false,
+                           facetable:          true,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:uri"),
+                           index:              7,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           false,
+                           facetable:          false,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
+                           index:              8,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           false,
+                           facetable:          true,
+                           indexed:            true)
+    profile.save!
   end
 
   def seed_submission_profiles
