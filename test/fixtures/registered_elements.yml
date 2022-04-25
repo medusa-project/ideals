@@ -1,5 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+abstract:
+  institution: uiuc
+  name: dc:description:abstract
+  uri: http://purl.org/dc/terms/abstract
+  label: Abstract
+  highwire_mapping:
+  scope_note:
+
 available:
   institution: uiuc
   name: dcterms:available
@@ -8,11 +16,27 @@ available:
   highwire_mapping:
   scope_note:
 
+contributor:
+  institution: uiuc
+  name: dc:contributor
+  uri: http://purl.org/dc/terms/contributor
+  label: Contributor
+  highwire_mapping:
+  scope_note:
+
 creator:
   institution: uiuc
   name: dc:creator
   uri: http://purl.org/dc/terms/creator
   label: Creator
+  highwire_mapping:
+  scope_note:
+
+dateIssued:
+  institution: uiuc
+  name: dc:date:issued
+  uri: http://purl.org/dc/terms/dateIssued
+  label: Date Issued
   highwire_mapping:
   scope_note:
 
@@ -59,6 +83,14 @@ title:
   highwire_mapping:
   scope_note:
 
+type:
+  institution: uiuc
+  name: dc:type
+  uri: http://purl.org/dc/terms/type
+  label: Type
+  highwire_mapping:
+  scope_note:
+
 unused:
   institution: uiuc
   name: unused
@@ -66,6 +98,14 @@ unused:
   label: Unused
   highwire_mapping:
   scope_note: This element is not attached to any resources.
+
+uri:
+  institution: uiuc
+  name: dc:identifier:uri
+  uri: http://purl.org/dc/terms/identifierURI
+  label: URI
+  highwire_mapping:
+  scope_note:
 
 degree_department:
   institution: uiuc

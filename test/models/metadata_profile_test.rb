@@ -36,15 +36,15 @@ class MetadataProfileTest < ActiveSupport::TestCase
     profile = MetadataProfile.create!(name:        "Test Profile",
                                       institution: institutions(:uiuc))
     profile.add_default_elements
-    assert_equal 1, profile.elements.count
+    assert profile.elements.count > 1
   end
 
-  test "add_default_elements() does not add any elements to an instance that
-  already has elements" do
+  test "add_default_elements() raises an error if the instance already has
+  elements attached to it" do
     profile = metadata_profiles(:default)
-    count = profile.elements.count
-    profile.add_default_elements
-    assert_equal count, profile.elements.count
+    assert_raises do
+      profile.add_default_elements
+    end
   end
 
   # default

@@ -55,15 +55,64 @@ class MetadataProfile < ApplicationRecord
   # profile.
   #
   def add_default_elements
-    if self.elements.empty?
-      self.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
-                          index:              0,
-                          indexed:            true,
-                          facetable:          false,
-                          searchable:         true,
-                          sortable:           true,
-                          visible:            true).save!
-    end
+    raise "Instance already has elements ascribed to it" if self.elements.any?
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
+                        index:              0,
+                        visible:            true,
+                        searchable:         true,
+                        sortable:           true,
+                        facetable:          false,
+                        indexed:            true)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
+                        index:              1,
+                        visible:            true,
+                        searchable:         true,
+                        sortable:           true,
+                        facetable:          true,
+                        indexed:            true)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
+                        index:              2,
+                        visible:            true,
+                        searchable:         true,
+                        sortable:           true,
+                        facetable:          true,
+                        indexed:            true)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor"),
+                        index:              3,
+                        visible:            true,
+                        searchable:         true,
+                        sortable:           false,
+                        facetable:          false,
+                        indexed:            true)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:abstract"),
+                        index:              4,
+                        visible:            true,
+                        searchable:         true,
+                        sortable:           false,
+                        facetable:          false,
+                        indexed:            true)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:issued"),
+                        index:              5,
+                        visible:            true,
+                        searchable:         true,
+                        sortable:           true,
+                        facetable:          false,
+                        indexed:            true)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:uri"),
+                        index:              6,
+                        visible:            true,
+                        searchable:         true,
+                        sortable:           false,
+                        facetable:          false,
+                        indexed:            true)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
+                        index:              7,
+                        visible:            true,
+                        searchable:         true,
+                        sortable:           false,
+                        facetable:          true,
+                        indexed:            true)
+    self.save!
   end
 
   def breadcrumb_label
