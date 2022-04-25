@@ -29,6 +29,24 @@ class SubmissionProfileTest < ActiveSupport::TestCase
     assert_equal submission_profiles(:default).id, SubmissionProfile.default.id
   end
 
+  # add_default_elements()
+
+  test "add_default_elements() adds default elements to an instance that does
+  not have any elements" do
+    profile = SubmissionProfile.create!(name:        "Test Profile",
+                                        institution: institutions(:uiuc))
+    profile.add_default_elements
+    assert profile.elements.count > 1
+  end
+
+  test "add_default_elements() raises an error if the instance already has
+  elements attached to it" do
+    profile = submission_profiles(:default)
+    assert_raises do
+      profile.add_default_elements
+    end
+  end
+
   # default
 
   test "setting a profile as the default sets all other instances to not-default" do

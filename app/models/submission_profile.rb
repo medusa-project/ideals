@@ -48,6 +48,111 @@ class SubmissionProfile < ApplicationRecord
     SubmissionProfile.find_by_default(true)
   end
 
+  ##
+  # Ascribes some baseline [SubmissionProfileElement]s to a newly created
+  # profile.
+  #
+  def add_default_elements
+    raise "Instance already has elements ascribed to it" if self.elements.any?
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
+                        index:              0,
+                        repeatable:         false,
+                        required:           true)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:issued"),
+                        index:              1,
+                        repeatable:         true,
+                        required:           true)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
+                        index:              2,
+                        repeatable:         true,
+                        required:           true)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
+                        index:              3,
+                        repeatable:         true,
+                        required:           true)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
+                        index:              4,
+                        repeatable:         true,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor"),
+                        index:              5,
+                        repeatable:         true,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:abstract"),
+                        index:              6,
+                        repeatable:         false,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:coverage:spatial"),
+                        index:              7,
+                        repeatable:         true,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:type:genre"),
+                        index:              8,
+                        repeatable:         true,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:language"),
+                        index:              9,
+                        repeatable:         false,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:bibliographicCitation"),
+                        index:              10,
+                        repeatable:         false,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:publisher"),
+                        index:              11,
+                        repeatable:         false,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:relation:ispartof"),
+                        index:              12,
+                        repeatable:         true,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:sponsorship"),
+                        index:              13,
+                        repeatable:         true,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:rights"),
+                        index:              14,
+                        repeatable:         true,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier"),
+                        index:              15,
+                        repeatable:         true,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:name"),
+                        index:              16,
+                        repeatable:         false,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:level"),
+                        index:              17,
+                        repeatable:         false,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeChair"),
+                        index:              18,
+                        repeatable:         true,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:advisor"),
+                        index:              19,
+                        repeatable:         true,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:grantor"),
+                        index:              20,
+                        repeatable:         false,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:discipline"),
+                        index:              21,
+                        repeatable:         false,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:department"),
+                        index:              22,
+                        repeatable:         false,
+                        required:           false)
+    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:program"),
+                        index:              23,
+                        repeatable:         false,
+                        required:           false)
+    self.save!
+  end
+
   def breadcrumb_label
     name
   end
