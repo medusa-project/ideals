@@ -174,7 +174,7 @@ class SafImporter
       # Work inside a transaction to avoid any incompletely created items.
       Import.transaction do
         item = ImportItemCommand.new(primary_collection: import.collection).execute
-        item.assign_handle
+        item.assign_handle # TODO: figure out how to do this right before saving
 
         # Add bitstreams corresponding to each line in the content file.
         content_file_key = item_dir + "/content"

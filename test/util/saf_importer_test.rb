@@ -287,7 +287,7 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_equal "Michigan Institute of Technology", item.element("etd:degree:grantor").string
   end
 
-  test "import_from_s3() adds imported items to imported_items upon failure" do
+  test "import_from_s3() adds imported items to imported_items before failure" do
     package = File.join(PACKAGES_PATH, "one_invalid_item")
     import  = imports(:saf_new)
     upload_to_s3(package, import)
@@ -297,7 +297,7 @@ class SafImporterTest < ActiveSupport::TestCase
     end
 
     import.reload
-    imported_item = Item.order(updated_at: :desc).limit(1).first
+    imported_item = Item.order(created_at: :desc).limit(1).first
     assert_equal [{"item_id" => "item_1",
                    "handle"  => imported_item.handle.handle}],
                  import.imported_items
@@ -361,7 +361,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
     @instance.import_from_s3(import, task: task)
 
-    assert_equal Import::Status::SUCCEEDED, task.status
+    assert_equal Task::Status::SUCCEEDED, task.status
   end
 
   test "import_from_s3() fails the provided Task upon failure" do
@@ -374,7 +374,7 @@ class SafImporterTest < ActiveSupport::TestCase
       @instance.import_from_s3(import, task: task)
     end
 
-    assert_equal Import::Status::FAILED, task.status
+    assert_equal Task::Status::FAILED, task.status
   end
 
 
