@@ -33,108 +33,10 @@ class IdealsSeeder
   end
 
   def seed_submission_profiles
-    # This list of elements is taken from:
-    # https://uofi.app.box.com/notes/593479281190
     profile = SubmissionProfile.create!(name: "Default Submission Profile",
                                         institution: Institution.find_by_key("uiuc"),
                                         default: true)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
-                           index: 0,
-                           repeatable: false,
-                           required: true)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:issued"),
-                           index: 1,
-                           repeatable: true,
-                           required: true)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
-                           index: 2,
-                           repeatable: true,
-                           required: true)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
-                           index: 3,
-                           repeatable: true,
-                           required: true)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
-                           index: 4,
-                           repeatable: true,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor"),
-                           index: 5,
-                           repeatable: true,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:abstract"),
-                           index: 6,
-                           repeatable: false,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:coverage:spatial"),
-                           index: 7,
-                           repeatable: true,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type:genre"),
-                           index: 8,
-                           repeatable: true,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:language"),
-                           index: 9,
-                           repeatable: false,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:bibliographicCitation"),
-                           index: 10,
-                           repeatable: false,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:publisher"),
-                           index: 11,
-                           repeatable: false,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:relation:ispartof"),
-                           index: 12,
-                           repeatable: true,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:sponsorship"),
-                           index: 13,
-                           repeatable: true,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:rights"),
-                           index: 14,
-                           repeatable: true,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier"),
-                           index: 15,
-                           repeatable: true,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:name"),
-                           index: 16,
-                           repeatable: false,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:level"),
-                           index: 17,
-                           repeatable: false,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeChair"),
-                           index: 18,
-                           repeatable: true,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:advisor"),
-                           index: 19,
-                           repeatable: true,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:grantor"),
-                           index: 20,
-                           repeatable: false,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:discipline"),
-                           index: 21,
-                           repeatable: false,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:department"),
-                           index: 22,
-                           repeatable: false,
-                           required: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:program"),
-                           index: 23,
-                           repeatable: false,
-                           required: false)
-    profile.save!
+    profile.add_default_elements
   end
 
   def update_registered_elements
