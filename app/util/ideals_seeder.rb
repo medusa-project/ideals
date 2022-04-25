@@ -26,42 +26,10 @@ class IdealsSeeder
   end
 
   def seed_metadata_profiles
-    # For the list of elements to include, see:
-    # https://bugs.library.illinois.edu/browse/IR-65
-    profile = MetadataProfile.create!(name: "Default Metadata Profile",
+    profile = MetadataProfile.create!(name:        "Default Metadata Profile",
                                       institution: Institution.find_by_key("uiuc"),
-                                      default: true)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
-                           index: 0,
-                           visible: true,
-                           facetable: false,
-                           searchable: true,
-                           sortable: true)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:issued"),
-                           index: 1,
-                           visible: true,
-                           facetable: false,
-                           searchable: true,
-                           sortable: true)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
-                           index: 2,
-                           visible: true,
-                           facetable: true,
-                           searchable: true,
-                           sortable: false)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:uri"),
-                           index: 3,
-                           visible: true,
-                           facetable: false,
-                           searchable: true,
-                           sortable: true)
-    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
-                           index: 4,
-                           visible: true,
-                           facetable: true,
-                           searchable: true,
-                           sortable: false)
-    profile.save!
+                                      default:     true)
+    profile.add_default_elements
   end
 
   def seed_submission_profiles
