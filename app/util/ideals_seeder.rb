@@ -120,6 +120,9 @@ class IdealsSeeder
     RegisteredElement.find_by_name("dc:contributor:committeeChair").update!(
       input_type: RegisteredElement::InputType::TEXT_FIELD,
       label:      "Dissertation Chair")
+    RegisteredElement.find_by_name("dc:contributor:committeeMember").update!(
+      input_type: RegisteredElement::InputType::TEXT_FIELD,
+      label:      "Dissertation Committee Member")
     RegisteredElement.find_by_name("dc:coverage:spatial").update!(
       input_type: RegisteredElement::InputType::TEXT_FIELD,
       label:      "Geographic Coverage")
@@ -128,9 +131,12 @@ class IdealsSeeder
       label:            "Creator",
       highwire_mapping: "citation_author")
     RegisteredElement.find_by_name("dc:date:issued").update!(
-      input_type:       RegisteredElement::InputType::TEXT_FIELD,
+      input_type:       RegisteredElement::InputType::DATE,
       label:            "Date of Publication",
       highwire_mapping: "citation_publication_date")
+    RegisteredElement.find_by_name("dc:date:submitted").update!(
+      input_type:       RegisteredElement::InputType::DATE,
+      label:            "Date Deposited")
     RegisteredElement.find_by_name("dc:description:abstract").update!(
       input_type: RegisteredElement::InputType::TEXT_AREA,
       label:      "Abstract")
