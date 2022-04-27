@@ -209,13 +209,24 @@ class AbstractRelation
   ##
   # Adds a query to search a particular field.
   #
+  # To search any field, use {query_all} instead.
+  #
+  # {query} may be a string or, for date-type fields, a hash containing
+  # `:year`, `:month`, and/or `:day` keys pointing to integer values.
+  #
   # @param field [String, Symbol] Field name
-  # @param query [String]
+  # @param query [String] See above.
   # @param exact_match [Boolean]
   # @return [self]
   #
   def query(field, query, exact_match = false)
-    @queries    << { field: field.to_s, query: query.to_s } if query.present?
+    return self if query.blank?
+    if query.respond_to?(:keys)
+      query = query.to_h.deep_symbolize_keys
+    else
+      query = query.to_s
+    end
+    @queries    << { field: field.to_s, query: query }
     @exact_match = exact_match
     @loaded      = false
     self
@@ -402,19 +413,35 @@ class AbstractRelation
           if @queries.any?
             j.must do
               if @queries.length == 1 && !@exact_match
-                # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
-                j.simple_query_string do
-                  j.query            @queries.first[:query]
-                  j.default_operator "AND"
-                  j.flags            "NONE"
-                  j.lenient          true
-                  j.fields           [@queries.first[:field]]
+                query = @queries.first
+                if query.kind_of?(String)
+                  # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
+                  j.simple_query_string do
+                    j.query            query[:query]
+                    j.default_operator "AND"
+                    j.flags            "NONE"
+                    j.lenient          true
+                    j.fields           [query[:field]]
+                  end
+                else
+                  date_range_from_query(j, query)
                 end
               else
                 @queries.each do |query|
                   j.child! do
-                    j.match_phrase do
-                      j.set! query[:field], sanitize(query[:query])
+                    if query.kind_of?(String)
+                      j.match_phrase do
+                        j.set! query[:field], sanitize(query[:query])
+                      end
+                    else
+                      j.range do
+                        j.timestamp do
+                          date  = query[:year]
+                          date += "-#{query[:month]}" if query[:month]
+                          date += "-#{query[:day]}" if query[:day]
+                          j.gte date
+                        end
+                      end
                     end
                   end
                 end
@@ -531,6 +558,25 @@ class AbstractRelation
 
 
   private
+
+  def date_range_from_query(j, query)
+    j.range do
+      j.set! query[:field] do
+        begin_date  = query[:query][:year]
+        end_date    = "#{query[:query][:year]}+1y"
+        if query[:query][:month].present?
+          begin_date += "-#{query[:query][:month]}"
+          end_date    = "#{query[:query][:year]}-#{query[:query][:month]}+1m"
+        end
+        if query[:query][:day].present?
+          begin_date += "-#{query[:query][:day]}"
+          end_date    = "#{query[:query][:year]}-#{query[:query][:month]}-#{query[:query][:day]}+1d"
+        end
+        j.gte begin_date
+        j.lt end_date
+      end
+    end
+  end
 
   def get_class
     self.class.to_s.gsub("Relation", "").constantize

@@ -2,61 +2,52 @@ module Search
 
   include ActiveSupport::Concern
 
-  ADVANCED_SEARCH_PARAMS = [:advisor, :advisor_type, :author, :degree_level,
-                            :department, :date_deposited, :full_text,
-                            :full_text_type, :title]
+  ADVANCED_SEARCH_PARAMS = [:full_text, { elements: [] }]
   SIMPLE_SEARCH_PARAMS   = [:q]
   RESULTS_PARAMS         = [:direction, { fq: [] }, :sort, :start]
 
   ##
+  # Mutates the given [ItemRelation] to reflect input from a simple or advanced
+  # search form.
+  #
   # @param relation [ItemRelation]
+  # @return [void]
   #
   def process_search_input(relation)
-    permitted_params = params.permit(SIMPLE_SEARCH_PARAMS + ADVANCED_SEARCH_PARAMS)
-    elements         = RegisteredElement.all
+    # Params from simple search will contain only `q`.
+    # Advanced search params are expected to arrive in the following structure:
+    # {
+    #   elements: [
+    #     element_name => string,
+    #     element_name => string,
+    #     element_name => {
+    #       month: integer,
+    #       day:   integer,
+    #       year:  integer
+    #     }
+    #   ],
+    #   full_text: string
+    # }
+    permitted_params = params.permit!
 
-    ####################### Simple Search fields ############################
+    # Simple search fields
     relation.query_all(permitted_params[:q]) if permitted_params[:q].present?
 
-    ###################### Advanced Search fields ###########################
-    # Title
-    relation.query(elements.find{ |e| e.name == "dc:title"}.indexed_field,
-                   permitted_params[:title]) if permitted_params[:title].present?
-    # Author
-    relation.query(elements.find{ |e| e.name == "dc:creator"}.indexed_field,
-                   permitted_params[:author]) if permitted_params[:author].present?
-    # Advisor
-    case permitted_params[:advisor_type]
-    when "advisor"
-      relation.query(elements.find{ |e| e.name == "dc:contributor:advisor"}.indexed_field,
-                     permitted_params[:advisor])
-    when "committee_chair"
-      relation.query(elements.find{ |e| e.name == "dc:contributor:committeeChair"}.indexed_field,
-                     permitted_params[:advisor])
-    when "committee_member"
-      relation.query(elements.find{ |e| e.name == "dc:contributor:committeeMember"}.indexed_field,
-                     permitted_params[:advisor])
+    # Advanced search fields
+    # (These generally come from ItemsHelper.advanced_search_form().)
+    if permitted_params[:elements]&.respond_to?(:each)
+      all_elements = RegisteredElement.all
+      permitted_params[:elements].each do |e_name, value|
+        value = nil if value.respond_to?(:keys) && value[:year].blank?
+        if value.present?
+          relation.query(all_elements.find{ |e| e.name == e_name}.indexed_field,
+                         value)
+        end
+      end
     end
-    # Degree Level
-    relation.query(elements.find{ |e| e.name == "thesis:degree:level"}.indexed_field,
-                   permitted_params[:degree_level]) if permitted_params[:degree_level].present?
-    # Department
-    relation.query(elements.find{ |e| e.name == "thesis:degree:department"}.indexed_field,
-                   permitted_params[:department]) if permitted_params[:department].present?
-    # Date Deposited
-    relation.query(elements.find{ |e| e.name == "dc:date:submitted"}.indexed_field,
-                   permitted_params[:date_deposited])if permitted_params[:date_deposited].present?
-    # Full Text
-    case permitted_params[:full_text_type]
-    when "full_text"
-      relation.query(Item::IndexFields::FULL_TEXT, permitted_params[:full_text])
-    when "abstract"
-      relation.query(elements.find{ |e| e.name == "dc:description:abstract"}.indexed_field,
-                     permitted_params[:full_text])
-    when "keywords"
-      relation.query(elements.find{ |e| e.name == "dc:subject"}.indexed_field,
-                     permitted_params[:full_text])
-    end
+
+    # Full text
+    relation.query(Item::IndexFields::FULL_TEXT, permitted_params[:full_text])
   end
 
 end
