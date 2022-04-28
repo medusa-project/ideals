@@ -7,12 +7,12 @@ class IdealsSeeder
     update_registered_elements
     seed_metadata_profiles
     seed_submission_profiles
-    seed_affiliations
+    seed_user_group_data
   end
 
   private
 
-  def seed_affiliations
+  def seed_user_group_data
     Affiliation.create!(key:  "staff",
                         name: "Staff")
     Affiliation.create!(key:  "graduate",
@@ -23,6 +23,9 @@ class IdealsSeeder
                         name: "Ph.D Student")
     Affiliation.create!(key:  "undergrad",
                         name: "Undergraduate Student")
+
+    group = UserGroup.create!(key: "uiuc", name: "UIUC Users")
+    group.email_patterns.build(pattern: "@illinois.edu").save!
   end
 
   def seed_metadata_profiles
