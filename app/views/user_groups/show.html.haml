@@ -154,6 +154,26 @@
                   %li= affiliation.name
             - else
               %p None
+    .row.mb-3
+      .col-sm-6
+        .card
+          .card-body
+            - if can_edit
+              .float-right
+                %button.btn.btn-light.btn-sm.edit-email-patterns{"data-target": "#edit-email-patterns-modal",
+                                                                   "data-toggle": "modal",
+                                                                   "data-user-group-id": @user_group.id,
+                                                                   type: "button"}
+                  %i.fa.fa-pencil-alt
+                  Edit
+            %h4.card-title Email Address Patterns
+            - if @email_patterns.any?
+              %ul
+                - @email_patterns.each do |pattern|
+                  %li
+                    %code= pattern.pattern
+            - else
+              %p None
 
   #usage.tab-pane.fade{role: "tabpanel",
                        "aria-labelledby": "usage-tab"}
@@ -215,3 +235,5 @@
          locals: { id: "edit-hosts-modal", title: "Edit Hosts" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-netid-users-modal", title: "Edit NetID Users" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-email-patterns-modal", title: "Edit Email Address Patterns" }

@@ -49,6 +49,13 @@ class UserGroupTest < ActiveSupport::TestCase
     assert @instance.includes?(user)
   end
 
+  test "includes?() returns true for a user whose email address matches a
+  pattern on the instance" do
+    user = users(:norights)
+    @instance.email_patterns.build(pattern: "example.edu").save!
+    assert @instance.includes?(user)
+  end
+
   test "includes?() returns true for a user belonging to an AD group associated
   with the instance" do
     user         = users(:uiuc)

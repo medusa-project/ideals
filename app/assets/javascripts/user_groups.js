@@ -20,9 +20,6 @@ const UserGroupForm = {
     }
 }
 
-// All the functionality is the same.
-const AdGroupForm = UserGroupForm;
-
 /**
  * Handles list-user-groups view (/user-groups).
  *
@@ -55,7 +52,7 @@ const UserGroupView = function() {
         const url = ROOT_URL + "/user-groups/" + id + "/edit-ad-groups";
         $.get(url, function(data) {
             $("#edit-ad-groups-modal .modal-body").html(data);
-            AdGroupForm.attachEventListeners();
+            UserGroupForm.attachEventListeners();
         });
     });
     $("button.edit-affiliations").on("click", function() {
@@ -93,6 +90,14 @@ const UserGroupView = function() {
         const url = ROOT_URL + "/user-groups/" + id + "/edit-hosts";
         $.get(url, function(data) {
             $("#edit-hosts-modal .modal-body").html(data);
+            UserGroupForm.attachEventListeners();
+        });
+    });
+    $("button.edit-email-patterns").on("click", function() {
+        const id = $(this).data("user-group-id");
+        const url = ROOT_URL + "/user-groups/" + id + "/edit-email-patterns";
+        $.get(url, function(data) {
+            $("#edit-email-patterns-modal .modal-body").html(data);
             UserGroupForm.attachEventListeners();
         });
     });

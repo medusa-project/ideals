@@ -175,6 +175,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-departments", to: "user_groups#edit_departments", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/edit-email-patterns", to: "user_groups#edit_email_patterns", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-hosts", to: "user_groups#edit_hosts", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-local-users", to: "user_groups#edit_local_users", via: :get,

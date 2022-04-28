@@ -16,6 +16,7 @@ class UserGroup < ApplicationRecord
   has_many :administrator_groups
   has_many :bitstream_authorizations
   has_many :departments
+  has_many :email_patterns
   has_many :hosts
   has_many :manager_groups
   has_many :submitter_groups
@@ -46,7 +47,7 @@ class UserGroup < ApplicationRecord
 
   ##
   # @return [Enumerable<User>] All users either directly associated with the
-  #         instance or being in an AD group associated with the instance.
+  #         instance or belonging to an AD group associated with the instance.
   #
   def all_users
     self.users + User.
@@ -64,9 +65,10 @@ class UserGroup < ApplicationRecord
   #
   # ```
   # (is a directly associated User)
-  # OR (is a ShibbolethUser AND belongs to an associated AD Group)
+  # OR (has an email address matching one of the email patterns)
   # OR (belongs to an associated department)
   # OR (is of an associated affiliation)
+  # OR (is a ShibbolethUser AND belongs to an associated AD Group)
   # ```
   #
   # @param user [User]
@@ -75,13 +77,16 @@ class UserGroup < ApplicationRecord
   def includes?(user)
     # is a directly associated User
     self.users.where(id: user.id).count.positive? ||
-    # belongs to an associated AD group
-    (user.kind_of?(ShibbolethUser) &&
-      self.ad_groups.find{ |g| user.belongs_to_ad_group?(g) }.present?) ||
+    # has a matching email address
+    self.email_patterns.find{ |p| p.matches?(user.email) }.present? ||
     # belongs to an associated department
     self.departments.where(name: user.department&.name).count.positive? ||
     # is of an associated affiliation
-    self.affiliations.where(id: user.affiliation_id).count.positive?
+    self.affiliations.where(id: user.affiliation_id).count.positive? ||
+    # belongs to an associated AD group
+    # (this check comes last because it is the most expensive)
+    (user.kind_of?(ShibbolethUser) &&
+      self.ad_groups.find{ |g| user.belongs_to_ad_group?(g) }.present?)
   end
 
   ##

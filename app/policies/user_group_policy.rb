@@ -45,6 +45,10 @@ class UserGroupPolicy < ApplicationPolicy
     edit
   end
 
+  def edit_email_patterns
+    edit
+  end
+
   def edit_hosts
     edit
   end

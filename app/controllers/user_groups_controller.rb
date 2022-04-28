@@ -70,6 +70,14 @@ class UserGroupsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /user-groups/:id/edit-email-patterns` (XHR only)
+  #
+  def edit_email_patterns
+    render partial: "user_groups/email_patterns_form",
+           locals: { user_group: @user_group }
+  end
+
+  ##
   # Responds to `GET /user-groups/:id/edit-hosts` (XHR only)
   #
   def edit_hosts
@@ -106,12 +114,13 @@ class UserGroupsController < ApplicationController
   # Responds to `GET /user-groups/:id`
   #
   def show
-    @local_users  = @user_group.local_users.order(:name)
-    @netid_users  = @user_group.netid_users.order(:name)
-    @ad_groups    = @user_group.ad_groups.order(:name)
-    @hosts        = @user_group.hosts.order(:pattern)
-    @departments  = @user_group.departments.order(:name)
-    @affiliations = @user_group.affiliations.order(:name)
+    @local_users    = @user_group.local_users.order(:name)
+    @netid_users    = @user_group.netid_users.order(:name)
+    @ad_groups      = @user_group.ad_groups.order(:name)
+    @hosts          = @user_group.hosts.order(:pattern)
+    @departments    = @user_group.departments.order(:name)
+    @affiliations   = @user_group.affiliations.order(:name)
+    @email_patterns = @user_group.email_patterns.order(:pattern)
   end
 
   ##
@@ -120,39 +129,12 @@ class UserGroupsController < ApplicationController
   def update
     begin
       UserGroup.transaction do
-        # AD groups require manual processing.
-        if params[:user_group][:ad_groups]&.respond_to?(:each)
-          @user_group.ad_groups.destroy_all
-          params[:user_group][:ad_groups].select(&:present?).each do |name|
-            @user_group.ad_groups.build(name: name)
-          end
-        end
-        # NetID users require manual processing.
-        if params[:user_group][:netid_users]&.respond_to?(:each)
-          @user_group.netid_users.destroy_all
-          params[:user_group][:netid_users].select(&:present?).each do |netid|
-            uid   = "#{netid}@illinois.edu"
-            email = uid
-            user  = ShibbolethUser.find_by_uid(uid) || ShibbolethUser.new(uid:   uid,
-                                                                          email: email,
-                                                                          name:  netid)
-            @user_group.users << user
-          end
-        end
-        # Hosts require manual processing.
-        if params[:user_group][:hosts]&.respond_to?(:each)
-          @user_group.hosts.destroy_all
-          params[:user_group][:hosts].select(&:present?).each do |pattern|
-            @user_group.hosts.build(pattern: pattern)
-          end
-        end
-        # Departments require manual processing.
-        if params[:user_group][:departments]&.respond_to?(:each)
-          @user_group.departments.destroy_all
-          params[:user_group][:departments].select(&:present?).each do |name|
-            @user_group.departments.build(name: name)
-          end
-        end
+        # Process input from the various edit modals.
+        build_ad_groups
+        build_netid_users
+        build_hosts
+        build_departments
+        build_email_patterns
         @user_group.update!(user_group_params)
       end
     rescue
@@ -165,7 +147,58 @@ class UserGroupsController < ApplicationController
     end
   end
 
+
   private
+
+  def build_ad_groups
+    if params[:user_group][:ad_groups]&.respond_to?(:each)
+      @user_group.ad_groups.destroy_all
+      params[:user_group][:ad_groups].select(&:present?).each do |name|
+        @user_group.ad_groups.build(name: name)
+      end
+    end
+  end
+
+  def build_departments
+    if params[:user_group][:departments]&.respond_to?(:each)
+      @user_group.departments.destroy_all
+      params[:user_group][:departments].select(&:present?).each do |name|
+        @user_group.departments.build(name: name)
+      end
+    end
+  end
+
+  def build_email_patterns
+    if params[:user_group][:email_patterns]&.respond_to?(:each)
+      @user_group.email_patterns.destroy_all
+      params[:user_group][:email_patterns].select(&:present?).each do |pattern|
+        @user_group.email_patterns.build(pattern: pattern)
+      end
+    end
+  end
+
+  def build_hosts
+    if params[:user_group][:hosts]&.respond_to?(:each)
+      @user_group.hosts.destroy_all
+      params[:user_group][:hosts].select(&:present?).each do |pattern|
+        @user_group.hosts.build(pattern: pattern)
+      end
+    end
+  end
+
+  def build_netid_users
+    if params[:user_group][:netid_users]&.respond_to?(:each)
+      @user_group.netid_users.destroy_all
+      params[:user_group][:netid_users].select(&:present?).each do |netid|
+        uid   = "#{netid}@illinois.edu"
+        email = uid
+        user  = ShibbolethUser.find_by_uid(uid) || ShibbolethUser.new(uid:   uid,
+                                                                      email: email,
+                                                                      name:  netid)
+        @user_group.users << user
+      end
+    end
+  end
 
   def user_group_params
     params.require(:user_group).permit(:key, :name, affiliation_ids: [],

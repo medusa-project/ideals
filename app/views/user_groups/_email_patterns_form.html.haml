@@ -1,0 +1,31 @@
+-# @param user_group [UserGroup]
+
+= form_for(user_group, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .alert.alert-light
+    = icon_for(:info)
+    Surround the pattern with slashes (e.g.
+    %code /@example.org/
+    ) to use a regular expression. Otherwise, the pattern will be searched for
+    literally within an email address.
+
+  .form-group
+    - patterns = f.object.email_patterns.order(:pattern).to_a
+    - patterns << "" if patterns.empty?
+    - patterns.each do |pattern|
+      .input-group.mb-3
+        = text_field_tag "user_group[email_patterns][]", pattern,
+                         class: "form-control"
+        .input-group-append
+          %button.btn.btn-outline-danger.remove{type: "button"}
+            %i.fa.fa-minus
+
+  %button.btn.btn-outline-success.add{type: "button"}
+    %i.fa.fa-plus
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Edit", class: "btn btn-primary")
