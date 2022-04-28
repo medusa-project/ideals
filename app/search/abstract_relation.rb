@@ -423,7 +423,7 @@ class AbstractRelation
                     j.lenient          true
                     j.fields           [query[:field]]
                   end
-                else
+                elsif query[:query].respond_to?(:keys) && query[:query][:year]
                   date_range_from_query(j, query)
                 end
               else
