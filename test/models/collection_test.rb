@@ -532,6 +532,13 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal handle.id, @instance.handle.id
   end
 
+  # submissions_reviewed
+
+  test "submissions_reviewed is false by default" do
+    c = Collection.new
+    assert !c.submissions_reviewed
+  end
+
   # submitted_item_count()
 
   test "submitted_item_count() returns a correct count when not including children" do
