@@ -58,10 +58,11 @@ class UserGroupTest < ActiveSupport::TestCase
 
   test "includes?() returns true for a user belonging to an AD group associated
   with the instance" do
-    user         = users(:uiuc)
-    group        = @instance.ad_groups.first
-    group.users << user
-    group.save!
+    # In the test environment, a user is considered to be in a group if both
+    # the NetID contains "admin" and the user group contains an AD group with
+    # the string "admin" in it.
+    @instance.ad_groups.build(name: "test admin group")
+    user = users(:uiuc_admin)
     assert @instance.includes?(user)
   end
 
