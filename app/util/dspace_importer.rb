@@ -666,11 +666,11 @@ class DspaceImporter
       next if group_id == 0 # skip the anonymous group
       name     = row_arr[1]
       key      = name.downcase.
-        gsub(" [automated]", ""). # trim off " [automated]"
-        gsub(" - ", "_").         # replace dash space dash with underscore
+        gsub(" [automated]", "").  # trim off " [automated]"
+        gsub(" - ", "_").          # replace dash space dash with underscore
         gsub(/[^a-z0-9\-_]/, "_"). # replace non-alphanumerics & dashes with underscore
-        gsub(/_{2,}/, "_").       # replace multiple underscores with one
-        gsub(/_$/, "")            # trim off trailing underscore
+        gsub(/_{2,}/, "_").        # replace multiple underscores with one
+        gsub(/_$/, "")             # trim off trailing underscore
       next if name.blank?
 
       group = UserGroup.where(id: group_id).first_or_create!(name: name, key: key)
@@ -681,8 +681,15 @@ class DspaceImporter
         if group.departments.where(name: dept_name).count < 1
           group.departments.build(name: dept_name).save!
         end
+      # These are UIUC's AD group-based groups. Their name is the group name
+      # minus the "[automated]" suffix.
+      elsif [349, 267, 269, 776, 871, 655, 35, 596, 881, 599, 374, 600, 375, 505,
+             635, 601].include?(group_id)
+        group_name = name.gsub("[automated]", "").strip
+        if group.ad_groups.where(name: group_name).count < 1
+          group.ad_groups.build(name: group_name).save!
+        end
       end
-
       progress.report(row_num, "Importing user groups")
     end
   ensure
