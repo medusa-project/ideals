@@ -10,27 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_22_202420) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_27_160459) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "ad_groups", force: :cascade do |t|
-    t.string "urn"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["urn"], name: "index_ad_groups_on_urn", unique: true
-  end
-
-  create_table "ad_groups_user_groups", id: false, force: :cascade do |t|
-    t.bigint "ad_group_id", null: false
     t.bigint "user_group_id", null: false
-    t.index ["ad_group_id", "user_group_id"], name: "index_ad_groups_user_groups_on_ad_group_id_and_user_group_id", unique: true
-  end
-
-  create_table "ad_groups_users", id: false, force: :cascade do |t|
-    t.bigint "ad_group_id", null: false
-    t.bigint "user_id", null: false
-    t.index ["ad_group_id", "user_id"], name: "index_ad_groups_users_on_ad_group_id_and_user_id", unique: true
+    t.string "name", null: false
   end
 
   create_table "administrator_groups", force: :cascade do |t|
@@ -487,8 +475,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_22_202420) do
     t.index ["uid"], name: "index_users_on_uid", unique: true
   end
 
-  add_foreign_key "ad_groups_user_groups", "ad_groups"
-  add_foreign_key "ad_groups_user_groups", "user_groups"
+  add_foreign_key "ad_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrator_groups", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrator_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade

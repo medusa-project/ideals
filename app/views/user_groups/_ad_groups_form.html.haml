@@ -4,17 +4,19 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  = hidden_field_tag "user_group[ad_group_ids][]"
-  - AdGroup.all.sort_by(&:short_name).each do |group|
-    .form-check
-      %strong
-        = check_box_tag "user_group[ad_group_ids][]", group.id,
-                        f.object.ad_groups.include?(group),
-                        { id: "user_group_ad_group_ids_#{group.id}", class: "form-check-input" }
-        = label_tag "user_group_ad_group_ids_#{group.id}",
-        group.short_name, class: "form-check-label"
-      %br
-      %code.text-secondary= group.urn
+  .form-group
+    - names = f.object.ad_groups.order(:name).to_a
+    - names << "" if names.empty?
+    - names.each do |name|
+      .input-group.mb-3
+        = text_field_tag "user_group[ad_groups][]", name,
+                         class: "form-control"
+        .input-group-append
+          %button.btn.btn-outline-danger.remove{type: "button"}
+            %i.fa.fa-minus
+
+  %button.btn.btn-outline-success.add{type: "button"}
+    %i.fa.fa-plus
 
   .clearfix
     .float-right

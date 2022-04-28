@@ -7,14 +7,11 @@ hostname:
 sysadmin:
   key: sysadmin
   name: System Administrators
-  ad_groups:
-    - sysadmin
 
 temp:
   key: temp
   name: Temporary Group
   users:
-  ad_groups:
 
 uiuc:
   key: uiuc

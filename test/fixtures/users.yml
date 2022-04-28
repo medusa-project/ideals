@@ -60,8 +60,6 @@ uiuc_admin:
   email: shibadmin@illinois.edu
   phone: (888) 555-1235
   org_dn: <%= ShibbolethUser::UIUC_ORG_DN %>
-  ad_groups:
-    - sysadmin
 
 somewhere:
   type: ShibbolethUser

@@ -32,7 +32,7 @@ class UserGroupTest < ActiveSupport::TestCase
     assert @instance.all_users.include?(users(:local_sysadmin))
   end
 
-  test "all_users() returns ShibbolethUsers belonging to an associated LDAP group" do
+  test "all_users() returns ShibbolethUsers belonging to an associated AD group" do
     assert @instance.all_users.include?(users(:uiuc_admin))
   end
 
@@ -49,11 +49,12 @@ class UserGroupTest < ActiveSupport::TestCase
     assert @instance.includes?(user)
   end
 
-  test "includes?() returns true for a user belonging to an LDAP group
-  associated with the instance" do
+  test "includes?() returns true for a user belonging to an AD group associated
+  with the instance" do
     user         = users(:uiuc)
     group        = @instance.ad_groups.first
     group.users << user
+    group.save!
     assert @instance.includes?(user)
   end
 

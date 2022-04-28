@@ -12,6 +12,7 @@
 class UserGroup < ApplicationRecord
   include Breadcrumb
 
+  has_many :ad_groups
   has_many :administrator_groups
   has_many :bitstream_authorizations
   has_many :departments
@@ -19,13 +20,12 @@ class UserGroup < ApplicationRecord
   has_many :manager_groups
   has_many :submitter_groups
 
-  has_and_belongs_to_many :ad_groups
   has_and_belongs_to_many :affiliations
   has_and_belongs_to_many :embargoes
   has_and_belongs_to_many :users
 
   validates :name, presence: true # uniqueness enforced by database constraints
-  validates :key, presence: true # uniqueness enforced by database constraints
+  validates :key, presence: true  # uniqueness enforced by database constraints
 
   ##
   # @param hostname [String]
@@ -46,12 +46,12 @@ class UserGroup < ApplicationRecord
 
   ##
   # @return [Enumerable<User>] All users either directly associated with the
-  #         instance or being in an LDAP group associated with the instance.
+  #         instance or being in an AD group associated with the instance.
   #
   def all_users
     self.users + User.
-        joins("INNER JOIN ad_groups_users ON ad_groups_users.user_id = users.id").
-        where("ad_groups_users.ad_group_id IN (?)", self.ad_group_ids)
+        joins("INNER JOIN ad_groups ON ad_groups.user_id = users.id").
+        where("ad_groups.name IN (?)", self.ad_groups.map(&:name))
   end
 
   def breadcrumb_label
@@ -63,8 +63,10 @@ class UserGroup < ApplicationRecord
   # instance. Membership is determined by the following logic:
   #
   # ```
-  # (is a directly associated User) OR (belongs to an associated AD Group) OR
-  # (belongs to an associated department) OR (is of an associated affiliation)
+  # (is a directly associated User)
+  # OR (is a ShibbolethUser AND belongs to an associated AD Group)
+  # OR (belongs to an associated department)
+  # OR (is of an associated affiliation)
   # ```
   #
   # @param user [User]
@@ -74,10 +76,8 @@ class UserGroup < ApplicationRecord
     # is a directly associated User
     self.users.where(id: user.id).count.positive? ||
     # belongs to an associated AD group
-    User.joins("INNER JOIN ad_groups_users ON ad_groups_users.user_id = users.id").
-      where("ad_groups_users.ad_group_id IN (?)", self.ad_group_ids).
-      where(id: user.id).
-      count.positive? ||
+    (user.kind_of?(ShibbolethUser) &&
+      self.ad_groups.find{ |g| user.belongs_to_ad_group?(g) }.present?) ||
     # belongs to an associated department
     self.departments.where(name: user.department&.name).count.positive? ||
     # is of an associated affiliation

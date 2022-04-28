@@ -41,10 +41,6 @@ class UserPolicy < ApplicationPolicy
     sysadmin_or_same_user
   end
 
-  def show_privileges
-    show
-  end
-
   def show_properties
     show
   end

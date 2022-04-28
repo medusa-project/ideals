@@ -33,26 +33,25 @@ class UserTest < ActiveSupport::TestCase
     assert !@instance.any_institution_admin?
   end
 
-  # belongs_to?()
+  # belongs_to_user_group?()
 
-  test "belongs_to?() returns false for a user not associated with the group" do
-    assert !@instance.belongs_to?(user_groups(:sysadmin))
+  test "belongs_to_user_group?() returns false for a user not associated with
+  the group" do
+    assert !@instance.belongs_to_user_group?(user_groups(:sysadmin))
   end
 
-  test "belongs_to?() returns true for a user directly associated with the
-  group" do
+  test "belongs_to_user_group?() returns true for a user directly associated
+  with the group" do
     group                  = user_groups(:sysadmin)
     @instance.user_groups << group
-    assert @instance.belongs_to?(group)
+    assert @instance.belongs_to_user_group?(group)
   end
 
-  test "belongs_to?() returns true for a user belonging to an LDAP group
-  associated with the group" do
-    user            = users(:uiuc)
-    user_group      = user_groups(:sysadmin)
-    ad_group        = user_group.ad_groups.first
-    ad_group.users << user
-    assert user.belongs_to?(user_group)
+  test "belongs_to_user_group?() returns true for a user belonging to an AD
+  group associated with the group" do
+    user       = users(:uiuc_admin)
+    user_group = user_groups(:sysadmin)
+    assert user.belongs_to_user_group?(user_group)
   end
 
   # effective_institution_admin?()

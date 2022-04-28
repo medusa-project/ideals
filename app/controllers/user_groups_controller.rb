@@ -108,7 +108,7 @@ class UserGroupsController < ApplicationController
   def show
     @local_users  = @user_group.local_users.order(:name)
     @netid_users  = @user_group.netid_users.order(:name)
-    @ad_groups    = @user_group.ad_groups.order(:urn)
+    @ad_groups    = @user_group.ad_groups.order(:name)
     @hosts        = @user_group.hosts.order(:pattern)
     @departments  = @user_group.departments.order(:name)
     @affiliations = @user_group.affiliations.order(:name)
@@ -120,8 +120,14 @@ class UserGroupsController < ApplicationController
   def update
     begin
       UserGroup.transaction do
+        # AD groups require manual processing.
+        if params[:user_group][:ad_groups]&.respond_to?(:each)
+          @user_group.ad_groups.destroy_all
+          params[:user_group][:ad_groups].select(&:present?).each do |name|
+            @user_group.ad_groups.build(name: name)
+          end
+        end
         # NetID users require manual processing.
-        # Departments require manual processing.
         if params[:user_group][:netid_users]&.respond_to?(:each)
           @user_group.netid_users.destroy_all
           params[:user_group][:netid_users].select(&:present?).each do |netid|
@@ -162,9 +168,8 @@ class UserGroupsController < ApplicationController
   private
 
   def user_group_params
-    params.require(:user_group).permit(:key, :name, ad_group_ids: [],
-                                       affiliation_ids: [], department_ids: [],
-                                       user_ids: [])
+    params.require(:user_group).permit(:key, :name, affiliation_ids: [],
+                                       department_ids: [], user_ids: [])
   end
 
   def set_user_group

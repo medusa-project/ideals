@@ -12,19 +12,19 @@
 # * `created_at`        Managed by ActiveRecord.
 # * `email`             Email address.
 # * `last_logged_in_at` Date/time of last login.
-# * `local_identity_id` Foreign key to {LocalIdentity}. Used only by
-#                       {LocalUser}s; set during processing of the
+# * `local_identity_id` Foreign key to [LocalIdentity]. Used only by
+#                       [LocalUser]s; set during processing of the
 #                       registration form.
 # * `name`              The user's name in whatever format they choose to
 #                       provide it.
 # * `org_dn`            `eduPersonOrgDN` property supplied by Shibboleth. Only
-#                       {ShibbolethUser}s have this. This is used as the
-#                       association column between {Institution}.
+#                       [ShibbolethUser]s have this. This is used as the
+#                       association column between [Institution].
 # * `phone`             The user's phone number.
 # * `type`              Supports Rails single-table inheritance (STI).
-# * `uid`               For {ShibbolethUser}s, this is the UID provided by
+# * `uid`               For [ShibbolethUser]s, this is the UID provided by
 #                       Shibboleth (which is probably the EPPN). For
-#                       {IdentityUser}s, it's the email address.
+#                       [IdentityUser]s, it's the email address.
 # * `updated_at:        Managed by ActiveRecord.
 #
 class User < ApplicationRecord
@@ -35,8 +35,8 @@ class User < ApplicationRecord
   belongs_to :affiliation, optional: true
   belongs_to :identity, class_name: "LocalIdentity",
              foreign_key: "local_identity_id", inverse_of: :user, optional: true
-  # ShibbolethUsers only!
   has_one :department
+  # ShibbolethUsers only!
   has_many :administrators
   has_many :administering_units, through: :administrators, source: :unit
   has_many :events
@@ -50,8 +50,7 @@ class User < ApplicationRecord
   has_many :submitters
   has_many :submitting_collections, through: :submitters, source: :collection
   has_many :tasks
-  has_and_belongs_to_many :ad_groups
-  # This includes only directly assigned user groups. See `belongs_to?()`
+  # This includes only directly assigned user groups. See `belongs_to_user_group?()`
   has_and_belongs_to_many :user_groups
 
   validates :email, presence: true, length: {maximum: 255},
@@ -96,7 +95,7 @@ class User < ApplicationRecord
   # @param user_group [UserGroup]
   # @return [Boolean]
   #
-  def belongs_to?(user_group)
+  def belongs_to_user_group?(user_group)
     user_group.includes?(self)
   end
 
@@ -209,7 +208,7 @@ class User < ApplicationRecord
   def manager?(collection)
     return true if collection.managers.where(user_id: self.id).count > 0
     collection.managing_groups.each do |group|
-      return true if self.belongs_to?(group)
+      return true if self.belongs_to_user_group?(group)
     end
     false
   end
@@ -223,7 +222,7 @@ class User < ApplicationRecord
   def submitter?(collection)
     return true if collection.submitters.where(user_id: self.id).count > 0
     collection.submitting_groups.each do |group|
-      return true if self.belongs_to?(group)
+      return true if self.belongs_to_user_group?(group)
     end
     false
   end
@@ -256,7 +255,7 @@ class User < ApplicationRecord
   def unit_admin?(unit)
     return true if unit.administrators.where(user_id: self.id).count > 0
     unit.administering_groups.each do |group|
-      return true if self.belongs_to?(group)
+      return true if self.belongs_to_user_group?(group)
     end
     false
   end

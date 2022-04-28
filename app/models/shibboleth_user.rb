@@ -8,6 +8,7 @@
 #
 class ShibbolethUser < User
 
+  # TODO: move this and/or make it configurable/get rid of it
   UIUC_ORG_DN = "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu"
 
   ##
@@ -32,7 +33,6 @@ class ShibbolethUser < User
   def self.no_omniauth(email)
     email_string = email.to_s.strip
     raise ArgumentError, "email address required" unless email && !email_string.empty?
-
     raise ArgumentError, "valid email address required" unless email_string.match(URI::MailTo::EMAIL_REGEXP)
 
     ShibbolethUser.find_by(email: email) ||
@@ -53,19 +53,30 @@ class ShibbolethUser < User
     user
   end
 
-  def self.fetch_ad_groups(auth)
-    groups = []
-    auth.dig("extra", "raw_info", "member")&.split(";")&.each do |group_urn|
-      groups << AdGroup.find_or_create_by(urn: group_urn)
-    end
-    groups
-  end
-
   def self.netid_from_email(email)
     return nil unless email.respond_to?(:split)
     netid = email.split("@").first
     return nil if netid.blank?
     netid
+  end
+
+  ##
+  # Performs an LDAP query to determine whether the instance belongs to the
+  # given group.
+  #
+  # N.B.: in development and test environments, no query is executed, and
+  # instead the return value is `true` if the NetID and group name both include
+  # the string `admin`.
+  #
+  # @param group [AdGroup,String]
+  # @return [Boolean]
+  #
+  def belongs_to_ad_group?(group)
+    group = group.to_s
+    if Rails.env.development? || Rails.env.test?
+      return self.netid.include?("admin") && group.include?("admin")
+    end
+    LdapQuery.new.is_member_of?(self.netid, group)
   end
 
   def netid
@@ -76,15 +87,15 @@ class ShibbolethUser < User
   # @return [Boolean]
   #
   def sysadmin?
-    (UserGroup.sysadmin.ad_groups & self.ad_groups).any?
+    UserGroup.sysadmin.ad_groups.find{ |g| self.belongs_to_ad_group?(g) }.present?
   end
 
   def update_with_omniauth(auth)
     auth = auth.deep_stringify_keys
-    # By design, logging in wipes out certain existing user properties and
-    # replaces them with current information from the Shib IdP. By supplying
-    # this custom attribute, we can preserve the user properties that are set
-    # up in test fixture data.
+    # By design, logging in overwrites certain existing user properties with
+    # current information from the Shib IdP. By supplying this custom
+    # attribute, we can preserve the user properties that are set up in test
+    # fixture data.
     return if auth.dig("extra", "raw_info", "overwriteUserAttrs") == "false"
 
     # N.B.: we must access the auth hash carefully because not all properties
@@ -96,7 +107,6 @@ class ShibbolethUser < User
                        "#{auth.dig("extra", "raw_info", "sn")}"
     self.org_dn      = auth.dig("extra", "raw_info", "org-dn")
     self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
-    self.ad_groups = self.class.fetch_ad_groups(auth)
     self.affiliation = Affiliation.from_shibboleth(auth)
     dept             = auth.dig("extra", "raw_info", "departmentCode")
     self.department  = Department.create!(name: dept) if dept

@@ -101,40 +101,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  # show_privileges()
-
-  test "show_privileges() redirects to login page for logged-out users" do
-    get user_privileges_path(users(:local_sysadmin)), xhr: true
-    assert_redirected_to login_path
-  end
-
-  test "show_privileges() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    get user_privileges_path(users(:local_sysadmin)), xhr: true
-    assert_response :forbidden
-  end
-
-  test "show_privileges() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:norights))
-    get user_privileges_path(users(:local_sysadmin))
-    assert_response :not_found
-  end
-
-  test "show_privileges() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
-    get user_privileges_path(users(:local_sysadmin)), xhr: true
-    assert_response :ok
-  end
-
-  test "show_privileges() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    get user_privileges_path(users(:local_sysadmin)), xhr: true
-    assert_response :ok
-
-    get user_privileges_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
-    assert_response :forbidden
-  end
-
   # show_properties()
 
   test "show_properties() redirects to login page for logged-out users" do

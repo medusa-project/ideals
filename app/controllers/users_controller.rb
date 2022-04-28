@@ -48,13 +48,6 @@ class UsersController < ApplicationController
   end
 
   ##
-  # Responds to `GET /users/:id/privileges` (XHR only)
-  #
-  def show_privileges
-    render partial: "show_privileges_tab"
-  end
-
-  ##
   # Responds to `GET /users/:id/properties` (XHR only)
   #
   def show_properties
@@ -164,10 +157,6 @@ class UsersController < ApplicationController
   def authorize_user
     # N.B.: without becomes(), a separate policy class would be required.
     @user ? authorize(@user.becomes(User)) : skip_authorization
-  end
-
-  def privileges_params
-    params.require(:user).permit(:sysadmin, user_group_ids: [])
   end
 
   def properties_params

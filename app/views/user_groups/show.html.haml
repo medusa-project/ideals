@@ -56,10 +56,7 @@
             - if @ad_groups.any?
               %ul
                 - @ad_groups.each do |group|
-                  %li
-                    %strong= group.short_name
-                    %br
-                    %code.text-secondary= group.urn
+                  %li= group.name
             - else
               %p None
       .col-sm-6
@@ -207,7 +204,7 @@
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-user-group-modal", title: "Edit User Group" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-ad-groups-modal", title: "Edit AD Groups", size: :lg }
+         locals: { id: "edit-ad-groups-modal", title: "Edit AD Groups" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-affiliations-modal", title: "Edit Affiliations" }
 = render partial: "shared/ajax_modal",
