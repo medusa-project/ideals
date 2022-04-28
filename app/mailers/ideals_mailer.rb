@@ -13,10 +13,10 @@ class IdealsMailer < ApplicationMailer
   # @param user [User] Current user.
   # @return [String]
   #
-  def self.error_body(exception, url: nil, user: nil)
+  def self.error_body(exception, url_path: nil, user: nil)
     io = StringIO.new
     io << "Error"
-    io << " on #{url}" if url
+    io << " on #{url_path}" if url_path
     io << ":\nClass: #{exception.class}\n"
     io << "Message: #{exception.message}\n"
     io << "Time: #{Time.now.iso8601}\n"

@@ -192,8 +192,8 @@ class ApplicationController < ActionController::Base
 
     else
       @message = IdealsMailer.error_body(exception,
-                                         url:  request.url,
-                                         user: current_user)
+                                         url_path: request.path,
+                                         user:     current_user)
       Rails.logger.error(@message)
       IdealsMailer.error(@message).deliver_now unless Rails.env.development?
 

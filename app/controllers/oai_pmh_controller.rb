@@ -290,8 +290,8 @@ class OaiPmhController < ApplicationController
 
   def rescue_template_error(error)
     message = IdealsMailer.error_body(error,
-                                      url:  request.url,
-                                      user: current_user)
+                                      url_path: request.path,
+                                      user:     current_user)
     Rails.logger.error(message)
     IdealsMailer.error(message).deliver_now unless Rails.env.development?
 
