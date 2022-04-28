@@ -170,6 +170,7 @@ class SafImporter
                    status: Import::Status::RUNNING)
 
     # Iterate through each item pseudo-directory.
+    item = nil
     item_key_prefixes.each_with_index do |item_dir, index|
       # Work inside a transaction to avoid any incompletely created items.
       Import.transaction do
@@ -222,6 +223,7 @@ class SafImporter
       end
     end
   rescue => e
+    item&.destroy!
     import.update!(status:             Import::Status::FAILED,
                    last_error_message: e.message)
     task&.fail(backtrace: e.backtrace,

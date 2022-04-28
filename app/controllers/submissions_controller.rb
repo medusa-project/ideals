@@ -47,7 +47,7 @@ class SubmissionsController < ApplicationController
       end
     rescue => e
       flash['error'] = "#{e}"
-      redirect_to submission_path(@item)
+      redirect_to edit_submission_path(@item)
     else
       if @item.primary_collection&.submissions_reviewed
         redirect_to submission_status_path(@item)

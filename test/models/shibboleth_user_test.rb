@@ -76,13 +76,6 @@ class ShibbolethUserTest < ActiveSupport::TestCase
     assert_not_nil ShibbolethUser.from_omniauth(self.class.auth_hash)
   end
 
-  test "from_omniauth() creates corresponding AdGroups for all of the user's
-  LDAP groups" do
-    AdGroup.destroy_all
-    ShibbolethUser.from_omniauth(self.class.auth_hash)
-    assert_equal 1, AdGroup.count
-  end
-
   test "from_omniauth() sets correct properties" do
     user = ShibbolethUser.from_omniauth(self.class.auth_hash)
     assert_equal "example@illinois.edu", user.uid

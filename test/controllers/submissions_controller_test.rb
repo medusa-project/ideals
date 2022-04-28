@@ -32,11 +32,11 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "complete() returns HTTP 200 for logged-in users" do
+  test "complete() returns HTTP 302 for logged-in users" do
     item = items(:submitting)
     log_in_as(item.submitter)
     post submission_complete_path(item)
-    assert_response :no_content
+    assert_redirected_to submission_status_path(item)
   end
 
   test "complete() returns HTTP 302 when an item has already been submitted" do
@@ -47,20 +47,22 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
-  test "complete() returns HTTP 400 when the item is missing any required metadata fields" do
+  test "complete() redirects to the edit-submission form when the item is
+  missing any required metadata fields" do
     item = items(:submitting)
     item.elements.destroy_all
     log_in_as(item.submitter)
     post submission_complete_path(item)
-    assert_response :bad_request
+    assert_redirected_to edit_submission_path(item)
   end
 
-  test "complete() returns HTTP 400 when the item has no associated bitstreams" do
+  test "complete() redirects to the edit-submission form when the item has no
+  associated bitstreams" do
     item = items(:submitting)
     item.bitstreams.destroy_all
     log_in_as(item.submitter)
     post submission_complete_path(item)
-    assert_response :bad_request
+    assert_redirected_to edit_submission_path(item)
   end
 
   test "complete() redirects to the item when its collection is not reviewing
