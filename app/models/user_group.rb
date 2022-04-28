@@ -50,9 +50,8 @@ class UserGroup < ApplicationRecord
   #         instance or belonging to an AD group associated with the instance.
   #
   def all_users
-    self.users + User.
-        joins("INNER JOIN ad_groups ON ad_groups.user_id = users.id").
-        where("ad_groups.name IN (?)", self.ad_groups.map(&:name))
+    self.users +
+      ShibbolethUser.all.select{ |u| u.belongs_to_user_group?(self) }
   end
 
   def breadcrumb_label
