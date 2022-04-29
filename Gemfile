@@ -27,7 +27,7 @@ gem "httpclient"
 # Assists in converting non-Unicode text during full text extraction
 gem "iconv"
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem "jbuilder", "~> 2.5"
+gem "jbuilder"
 # Use jquery as the JavaScript library
 gem "jquery-rails"
 gem "js_cookie_rails"

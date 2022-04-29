@@ -368,7 +368,7 @@ DEPENDENCIES
   haml-rails
   httpclient
   iconv
-  jbuilder (~> 2.5)
+  jbuilder
   jquery-rails
   js_cookie_rails
   local_time
