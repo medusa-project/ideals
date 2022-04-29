@@ -17,12 +17,7 @@ class ReindexItemsJob < ApplicationJob
                                             "associated with the "\
                                             "#{profile.name} metadata profile")
     begin
-      # Gather an item count.
-      item_count = 0
-      collections.each do |col|
-        item_count += col.items.count
-      end
-
+      item_count = collections.map{ |c| c.items.count }.sum
       task.update!(status_text: "Reindexing #{item_count} items associated "\
                                 "with the #{profile.name} metadata.profile")
       index = 0
