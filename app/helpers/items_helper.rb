@@ -68,7 +68,7 @@ module ItemsHelper
     html << '<div class="card mb-3">'
     html <<   '<div class="card-header">'
     html <<     '<div class="float-right">'
-    html <<       '<button class="btn btn-danger remove-embargo" type="button">'
+    html <<       '<button class="btn btn-outline-danger remove-embargo" type="button">'
     html <<         '<i class="fa fa-minus"></i> '
     html <<       '</button>'
     html <<     '</div>'
@@ -135,7 +135,7 @@ module ItemsHelper
     else
       html << embargo_user_group_row
     end
-    html <<           '<button class="btn btn-success btn-sm add-user-group" type="button">'
+    html <<           '<button class="btn btn-outline-success btn-sm add-user-group" type="button">'
     html <<             '<i class="fa fa-plus"></i>'
     html <<           '</button>'
     html <<         '</div>'
@@ -225,7 +225,7 @@ module ItemsHelper
     html <<   select_tag("embargoes[#{index}][user_group_ids][]",
                          options_for_select(UserGroup.all.map{ |g| [g.name, g.id] }, group&.id),
                          class: "custom-select")
-    html <<   '<button class="btn btn-danger btn-sm ml-2 remove-user-group" type="button">'
+    html <<   '<button class="btn btn-outline-danger btn-sm ml-2 remove-user-group" type="button">'
     html <<     '<i class="fa fa-minus"></i>'
     html <<   '</button>'
     html << '</div>'

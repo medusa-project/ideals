@@ -530,7 +530,7 @@ const IDEALS = {
             // "Remove" button
             const removalCell = row.find("td:last-child");
             removalCell.html(
-                "<button class='btn btn-sm btn-danger remove' type='button'>" +
+                "<button class='btn btn-sm btn-outline-danger remove' type='button'>" +
                 "   <i class='fa fa-minus'></i> Remove" +
                 "</button>");
             removalCell.find("button.remove").on("click", function() {
@@ -561,7 +561,7 @@ const IDEALS = {
             // "Remove" button
             const removalCell = row.find("td:last-child");
             removalCell.html(
-                "<button class='btn btn-sm btn-danger remove' type='button'>" +
+                "<button class='btn btn-sm btn-outline-danger remove' type='button'>" +
                 "   <i class='fa fa-minus'></i> Remove" +
                 "</button>");
             removalCell.find("button.remove").on("click", function() {
