@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_28_205459) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_29_143509) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,6 +19,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_28_205459) do
     t.datetime "updated_at", null: false
     t.bigint "user_group_id", null: false
     t.string "name", null: false
+    t.index ["user_group_id"], name: "index_ad_groups_on_user_group_id"
   end
 
   create_table "administrator_groups", force: :cascade do |t|
@@ -146,6 +147,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_28_205459) do
     t.string "pattern", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_group_id"], name: "index_email_patterns_on_user_group_id"
   end
 
   create_table "embargoes", force: :cascade do |t|
@@ -327,6 +329,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_28_205459) do
     t.boolean "indexed", default: true, null: false
     t.index ["facetable"], name: "index_metadata_profile_elements_on_facetable"
     t.index ["index"], name: "index_metadata_profile_elements_on_index"
+    t.index ["indexed"], name: "index_metadata_profile_elements_on_indexed"
     t.index ["metadata_profile_id"], name: "index_metadata_profile_elements_on_metadata_profile_id"
     t.index ["registered_element_id"], name: "index_metadata_profile_elements_on_registered_element_id"
     t.index ["searchable"], name: "index_metadata_profile_elements_on_searchable"
@@ -421,6 +424,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_28_205459) do
     t.index ["started_at"], name: "index_tasks_on_started_at"
     t.index ["status"], name: "index_tasks_on_status"
     t.index ["stopped_at"], name: "index_tasks_on_stopped_at"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
   create_table "unit_collection_memberships", force: :cascade do |t|
