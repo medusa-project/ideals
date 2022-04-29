@@ -61,56 +61,56 @@ class MetadataProfile < ApplicationRecord
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
-                        facetable:          false,
+                        faceted:            false,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
                         index:              1,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
-                        facetable:          true,
+                        faceted:            true,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
                         index:              2,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
-                        facetable:          true,
+                        faceted:            true,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor"),
                         index:              3,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
-                        facetable:          false,
+                        faceted:            false,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:abstract"),
                         index:              4,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
-                        facetable:          false,
+                        faceted:            false,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:issued"),
                         index:              5,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
-                        facetable:          false,
+                        faceted:            false,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:uri"),
                         index:              6,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
-                        facetable:          false,
+                        faceted:            false,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
                         index:              7,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
-                        facetable:          true,
+                        faceted:            true,
                         indexed:            true)
     self.save!
   end
@@ -138,8 +138,8 @@ class MetadataProfile < ApplicationRecord
   ##
   # @return [Enumerable<MetadataProfileElement>]
   #
-  def facetable_elements
-    self.elements.where(facetable: true).order(:index)
+  def faceted_elements
+    self.elements.where(faceted: true).order(:index)
   end
 
 

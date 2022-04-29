@@ -74,7 +74,7 @@
         %th Visible
         %th Searchable
         %th Sortable
-        %th Facetable
+        %th Faceted
         %th Indexed
       %tbody
         - @profile.elements.each do |element|
@@ -98,7 +98,7 @@
             %td.boolean= boolean(element.visible)
             %td.boolean= boolean(element.searchable)
             %td.boolean= boolean(element.sortable)
-            %td.boolean= boolean(element.facetable)
+            %td.boolean= boolean(element.faceted)
             %td.boolean= boolean(element.indexed)
 
   - unless @profile.default

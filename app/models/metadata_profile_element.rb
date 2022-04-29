@@ -5,7 +5,7 @@
 # # Attributes
 #
 # * `created_at`            Managed by ActiveRecord.
-# * `facetable`             Whether the element is used to provide facets in
+# * `faceted`               Whether the element is used to provide facets in
 #                           results views.
 # * `index`                 Zero-based position within the owning
 #                           {MetadataProfile}.

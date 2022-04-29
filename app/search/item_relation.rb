@@ -14,7 +14,7 @@ class ItemRelation < AbstractRelation
             keyword_field: Item::IndexFields::UNIT_TITLES
         }
     ]
-    elements += metadata_profile.elements.where(facetable: true).map do |e|
+    elements += metadata_profile.elements.where(faceted: true).map do |e|
       {
           label: e.label,
           keyword_field: e.registered_element.indexed_keyword_field

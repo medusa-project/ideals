@@ -67,7 +67,7 @@ class MetadataProfileElementsController < ApplicationController
   private
 
   def element_params
-    params.require(:metadata_profile_element).permit(:facetable, :index,
+    params.require(:metadata_profile_element).permit(:faceted, :index,
                                                      :indexed,
                                                      :metadata_profile_id,
                                                      :registered_element_id,

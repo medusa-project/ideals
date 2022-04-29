@@ -1,31 +1,31 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 default_title:
-  metadata_profile: default
+  metadata_profile:   default
   registered_element: dc_title
-  index: 0
-  visible: true
-  facetable: false
-  searchable: true
-  sortable: true
-  indexed: true
+  index:              0
+  visible:            true
+  faceted:            false
+  searchable:         true
+  sortable:           true
+  indexed:            true
 
 default_description:
-  metadata_profile: default
+  metadata_profile:   default
   registered_element: dc_description
-  index: 1
-  visible: true
-  facetable: false
-  searchable: true
-  sortable: false
-  indexed: true
+  index:              1
+  visible:            true
+  faceted:            false
+  searchable:         true
+  sortable:           false
+  indexed:            true
 
 default_subject:
-  metadata_profile: default
+  metadata_profile:   default
   registered_element: dc_subject
-  index: 2
-  visible: true
-  facetable: true
-  searchable: true
-  sortable: false
-  indexed: true
+  index:              2
+  visible:            true
+  faceted:            true
+  searchable:         true
+  sortable:           false
+  indexed:            true

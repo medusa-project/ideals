@@ -1,6 +1,6 @@
 ##
 # Abstract base class for type-specific "relations." These are inspired by, and
-# conceptually the same as, {ActiveRecord::Relation}, and serve the dual
+# conceptually the same as, [ActiveRecord::Relation], and serve the dual
 # purpose of simplifying Elasticsearch querying (which can be pretty
 # complicated and awkward) by wrapping it up into an ActiveRecord-style Builder
 # pattern, and marshalling the results into an object that behaves the same way
@@ -12,8 +12,8 @@
 # expects every searchable model to define its own subclass of this class.
 # It's possible that the subclass may not even need to override anything (i.e.
 # it may be empty). Otherwise, it may need to override {facet_elements}, if it
-# doesn't want to use only the facetable {MetadataProfileElements} in the
-# default {MetadataProfile}.
+# doesn't want to use only the faceted [MetadataProfileElement]s in the
+# default [MetadataProfile].
 #
 # For more extensive customizations, it can override {build_query}, which
 # basically grants it full control over the query that gets sent to
@@ -340,7 +340,7 @@ class AbstractRelation
   end
 
   ##
-  # This default implementation returns all of the facetable elements in the
+  # This default implementation returns all of the faceted elements in the
   # {MetadataProfile#default default metadata profile}. Override it to return
   # others.
   #
@@ -349,7 +349,7 @@ class AbstractRelation
   #                                           keys.
   #
   def facet_elements
-    MetadataProfile.default.elements.where(facetable: true).map do |e|
+    MetadataProfile.default.elements.where(faceted: true).map do |e|
       {
           label: e.registered_element.label,
           keyword_field: e.registered_element.indexed_keyword_field

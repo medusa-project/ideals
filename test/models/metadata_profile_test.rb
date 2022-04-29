@@ -66,10 +66,10 @@ class MetadataProfileTest < ActiveSupport::TestCase
     assert_equal @instance.elements.length, dup.elements.length
   end
 
-  # facetable_elements()
+  # faceted_elements()
 
-  test "facetable_elements() returns only facetable elements" do
-    assert_equal ["Subject"], @instance.facetable_elements.map(&:label)
+  test "faceted_elements() returns only faceted elements" do
+    assert_equal ["Subject"], @instance.faceted_elements.map(&:label)
   end
 
   # name
