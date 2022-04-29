@@ -95,7 +95,7 @@ const SubmissionForm = function() {
     const filesForm         = form.filter("#files-form");
     const uploader          = new IDEALS.ItemFileUploader();
     // Files section
-    const completionForm    = form.filter("#completion-form");
+    const completionForm    = $("#completion-form");
 
     var lastEditedInput;
 

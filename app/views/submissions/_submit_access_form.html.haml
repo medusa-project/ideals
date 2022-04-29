@@ -12,7 +12,7 @@
       .col-sm-10
         .form-check.mb-1
           = radio_button_tag("item[temp_embargo_type]", "open",
-                             f.object.temp_embargo_type == "open",
+                             (f.object.temp_embargo_type == "open" || f.object.temp_embargo_type.blank?),
                              class: "form-check-input")
           = label_tag("item_temp_embargo_type_open",
                       "Open",
