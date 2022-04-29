@@ -36,6 +36,21 @@ class UserGroupTest < ActiveSupport::TestCase
     assert @instance.all_users.include?(users(:uiuc_admin))
   end
 
+  # destroy()
+
+  test "destroy() destroys an ordinary group" do
+    group = user_groups(:unused)
+    group.destroy!
+    assert group.destroyed?
+  end
+
+  test "destroy() does not destroy a system-required group" do
+    group = user_groups(:sysadmin)
+    assert_raises ActiveRecord::RecordNotDestroyed do
+      group.destroy!
+    end
+  end
+
   # includes?()
 
   test "includes?() returns false for a user not associated with the instance" do

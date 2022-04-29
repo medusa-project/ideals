@@ -12,6 +12,8 @@
 class UserGroup < ApplicationRecord
   include Breadcrumb
 
+  SYSTEM_REQUIRED_GROUPS = %w(sysadmin)
+
   has_many :ad_groups
   has_many :administrator_groups
   has_many :bitstream_authorizations
@@ -27,6 +29,8 @@ class UserGroup < ApplicationRecord
 
   validates :name, presence: true # uniqueness enforced by database constraints
   validates :key, presence: true  # uniqueness enforced by database constraints
+
+  before_destroy :prevent_destroy_of_required_group
 
   ##
   # @param hostname [String]
@@ -100,6 +104,16 @@ class UserGroup < ApplicationRecord
   #
   def netid_users
     self.users.where(type: ShibbolethUser.to_s)
+  end
+
+
+  private
+
+  def prevent_destroy_of_required_group
+    if SYSTEM_REQUIRED_GROUPS.include?(self.key)
+      errors.add(:base, :undestroyable)
+      throw :abort
+    end
   end
 
 end

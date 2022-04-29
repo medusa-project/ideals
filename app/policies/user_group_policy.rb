@@ -26,7 +26,13 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def destroy
-    create
+    result = create
+    if result[:authorized] &&
+        UserGroup::SYSTEM_REQUIRED_GROUPS.include?(user_group.key)
+      return { authorized: false,
+               reason: "This group cannot be deleted." }
+    end
+    result
   end
 
   def edit

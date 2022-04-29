@@ -3,7 +3,7 @@ require 'test_helper'
 class UserGroupPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @user_group = user_groups(:sysadmin)
+    @user_group = user_groups(:unused)
   end
 
   # create?()
@@ -111,6 +111,14 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.destroy?
+  end
+
+  test "destroy?() does not authorize system-required groups" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.destroy?
   end
 
   # edit?()
