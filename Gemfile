@@ -5,10 +5,11 @@ git_source(:github) {|repo| "https://github.com/#{repo}.git" }
 
 ruby "3.1.2"
 
+# scars-bootstrap-theme needs this
 gem "autoprefixer-rails"
 gem "aws-sdk-s3", "~> 1"
 # Use ActiveModel has_secure_password for local identity users
-gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3"
 # No Bootstrap! This is provided by scars-bootstrap-theme.
 #gem "bootstrap"
 # Handles RabbitMQ messages.

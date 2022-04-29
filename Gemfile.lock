@@ -114,7 +114,7 @@ GEM
       aws-sigv4 (~> 1.4)
     aws-sigv4 (1.4.0)
       aws-eventstream (~> 1, >= 1.0.2)
-    bcrypt (3.1.16)
+    bcrypt (3.1.17)
     builder (3.2.4)
     bunny (2.19.0)
       amq-protocol (~> 2.3, >= 2.3.1)
@@ -357,7 +357,7 @@ DEPENDENCIES
   amqp_helper (~> 0.2.0)!
   autoprefixer-rails
   aws-sdk-s3 (~> 1)
-  bcrypt (~> 3.1.7)
+  bcrypt (~> 3)
   bunny
   capistrano-bundler
   capistrano-rails
