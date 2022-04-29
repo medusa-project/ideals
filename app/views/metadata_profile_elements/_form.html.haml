@@ -34,10 +34,10 @@
     .form-check
       = f.check_box :indexed, class: "form-check-input"
       = f.label :indexed, class: "form-check-label"
-    %p#indexed-warning.text-warning
+    #indexed-warning.alert.alert-light
       = icon_for(:warning)
-      When this value is changed, all items in all collections that use this
-      metadata profile must then be reindexed using the Reindex Items button.
+      After the "Indexed" checkbox is changed, all items in all collections that
+      use this profile must be reindexed using the Reindex Items button.
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
