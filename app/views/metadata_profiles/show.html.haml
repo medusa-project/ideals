@@ -22,7 +22,7 @@
     = link_to(metadata_profile_reindex_items_path(@profile), method: "post",
                                                              role:   "button",
                                                              class:  "btn btn-light") do
-      %i.fa.fa-copy
+      %i.fa.fa-sync
       Reindex Items
   - if policy(@profile).destroy?
     -# Delete button
