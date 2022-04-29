@@ -414,7 +414,7 @@ class AbstractRelation
             j.must do
               if @queries.length == 1 && !@exact_match
                 query = @queries.first
-                if query.kind_of?(String)
+                if query[:query].kind_of?(String)
                   # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
                   j.simple_query_string do
                     j.query            query[:query]
