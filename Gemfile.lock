@@ -198,7 +198,6 @@ GEM
       builder
       minitest (>= 5.0)
       ruby-progressbar
-    modernizr-rails (2.7.1)
     net-imap (0.2.3)
       digest
       net-protocol
@@ -375,7 +374,6 @@ DEPENDENCIES
   medusa-client!
   mini_racer
   minitest-reporters
-  modernizr-rails
   netaddr
   omniauth-identity
   omniauth-rails_csrf_protection

@@ -38,8 +38,6 @@ gem "local_time"
 gem "medusa-client", git: "https://github.com/medusa-project/medusa-client.git"
 # JavaScript runtime
 gem "mini_racer", platforms: :ruby
-# Use modernizr-rails to handle different browsers differently
-gem "modernizr-rails"
 # Assists in parsing IP address CIDR ranges.
 gem "netaddr"
 # Enables local identity logins.
