@@ -9,6 +9,8 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
+  - unit_options = unit_tree_options(include_only_admin: true,
+                                     include_blank:      false)
   - f.object.collection_item_memberships.each do |membership|
     .row.unit-collection-combo
       = hidden_field_tag "initial_unit_ids[]", membership.collection.primary_unit.id
@@ -17,8 +19,6 @@
         .form-group.row
           = label_tag :unit_id, "Unit", class: "col-sm-2 col-form-label"
           .col-sm-10
-            - unit_options = unit_tree_options(include_only_admin: true, |
-                                               include_blank: membership.collection.primary_unit.id.blank?) |
             = select_tag(:unit_id, options_for_select(unit_options, membership.collection.primary_unit.id),
                          class: "custom-select unit-menu")
         .form-group.row
