@@ -104,12 +104,12 @@
 
   %hr
 
-  = form_tag submissions_path, method: :post do
+  = form_tag(submissions_path, method: :post) do
     = hidden_field_tag(:primary_collection_id, params[:collection_id])
     .row
-      .col-sm-2
-        = submit_tag("Begin Submission", class: "btn btn-primary")
-      .col-sm-10
+      .col-sm-3
+        = submit_tag("Begin Submission", class: "btn btn-secondary btn-lg")
+      .col-sm-9
         #feedback.text-danger.ml-2
           = icon_for(:warning)
           The selections you have made indicate that you are not ready to deposit your dataset. IDEALS curators are available to discuss your dataset with you. Please contact us!

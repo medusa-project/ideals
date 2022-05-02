@@ -62,7 +62,16 @@ const AgreementView = function() {
     };
 
     const conditionallyEnableSubmitButton = function() {
-        $("input[type=submit]").prop("disabled", !validateResponses());
+        const result       = validateResponses();
+        const submitButton = $("input[type=submit]");
+        submitButton.prop("disabled", !result);
+        if (result) {
+            submitButton.removeClass("btn-secondary");
+            submitButton.addClass("btn-success");
+        } else {
+            submitButton.removeClass("btn-success");
+            submitButton.addClass("btn-secondary");
+        }
     };
 
     $("input.response").on("click", function() {
