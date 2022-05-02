@@ -1,10 +1,4 @@
--# frozen_string_literal: true
--#
--# Required locals:
--#
--# unit [Unit]
--#
-= form_for(unit, remote: true) do |f|
+= form_for(@unit, remote: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 

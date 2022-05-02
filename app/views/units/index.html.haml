@@ -3,9 +3,10 @@
 
 -if policy(Unit).new?
   .btn-group.float-right{role: "group"}
-    / Add Unit button
-    %button.btn.btn-light{"data-target": "#add-unit-modal",
-                          "data-toggle": "modal", type: "button"}
+    -# Add Unit button
+    %button.btn.btn-light.add-unit{"data-target": "#add-unit-modal",
+                                   "data-toggle": "modal",
+                                   type:          "button"}
       %i.fa.fa-plus
       Add Unit
 
@@ -13,4 +14,6 @@
 
 = expandable_unit_list(@units)
 
-= render partial: "units/add_modal", locals: { unit: @new_unit }
+= render partial: "shared/ajax_modal",
+         locals: { id: "add-unit-modal",
+                   title: "Add Unit" }

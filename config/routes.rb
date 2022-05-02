@@ -137,7 +137,7 @@ Rails.application.routes.draw do
   end
   match "/submit", to: "submissions#agreement", via: :get
   resources :tasks, only: [:index, :show]
-  resources :units, except: [:destroy, :edit, :new] do
+  resources :units, except: [:destroy, :edit] do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/access", to: "units#show_access", via: :get,
           constraints: lambda { |request| request.xhr? }

@@ -8,8 +8,8 @@ class UnitsController < ApplicationController
                                           :edit_administrators,
                                           :edit_membership, :edit_properties,
                                           :show_access, :undelete, :update]
-  before_action :set_unit, except: [:create, :index]
-  before_action :check_buried, except: [:create, :index, :show, :undelete]
+  before_action :set_unit, except: [:create, :index, :new]
+  before_action :check_buried, except: [:create, :index, :new, :show, :undelete]
   before_action :authorize_unit, except: [:create, :index]
 
   ##
@@ -131,7 +131,6 @@ class UnitsController < ApplicationController
         include_children(false).
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(9999)
-    @new_unit = Unit.new
   end
 
   ##
@@ -175,6 +174,14 @@ class UnitsController < ApplicationController
   def item_results
     set_item_results_ivars
     render partial: "items/listing"
+  end
+
+  ##
+  # Responds to `GET /units/new` (XHR only)
+  #
+  def new
+    @unit = Unit.new
+    render partial: "new_form"
   end
 
   ##

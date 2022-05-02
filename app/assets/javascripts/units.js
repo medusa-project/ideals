@@ -8,6 +8,13 @@ const UnitsView = function() {
     new IDEALS.LocalUserAutocompleter(
         $("input[name=primary_administrator], input[name='administering_users[]']"));
     new IDEALS.MultiElementList();
+
+    $(".add-unit").on("click", function() {
+        const url = "/units/new";
+        $.get(url, function(data) {
+            $("#add-unit-modal .modal-body").html(data);
+        });
+    });
 };
 
 /**
