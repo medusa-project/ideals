@@ -67,9 +67,9 @@ class MetadataProfileElementsController < ApplicationController
   private
 
   def element_params
-    params.require(:metadata_profile_element).permit(:faceted, :index,
-                                                     :indexed,
+    params.require(:metadata_profile_element).permit(:faceted, :indexed,
                                                      :metadata_profile_id,
+                                                     :position,
                                                      :registered_element_id,
                                                      :searchable, :sortable,
                                                      :visible)

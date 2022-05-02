@@ -6,7 +6,7 @@ module ItemsHelper
   #                  outer `form` element.
   #
   def advanced_search_form(metadata_profile = MetadataProfile.default)
-    mp_elements = metadata_profile.elements.select(&:searchable).sort_by(&:index)
+    mp_elements = metadata_profile.elements.select(&:searchable).sort_by(&:position)
     html     = StringIO.new
 
     mp_elements.each do |mp_e|

@@ -210,7 +210,7 @@ module ApplicationHelper
     # Find all registered elements that have Highwire mappings.
     reg_elements = entity.effective_metadata_profile.elements.
       where(visible: true).
-      order(:index).
+      order(:position).
       map(&:registered_element).
       select{ |e| e.highwire_mapping.present? }
     name_value_map = {} # hash of Highwire name keys -> sanitized values
@@ -298,7 +298,7 @@ module ApplicationHelper
     html = StringIO.new
     html << "<dl class=\"metadata\">"
     reg_elements = profile ?
-                       profile.elements.where(visible: true).order(:index) :
+                       profile.elements.where(visible: true).order(:position) :
                        RegisteredElement.all.order(:label)
     reg_elements.each do |element|
       matching_ascribed_elements = ascribed_elements.
@@ -335,7 +335,7 @@ module ApplicationHelper
   def metadata_as_meta_tags(ascribed_elements, profile = nil)
     html = StringIO.new
     reg_elements = profile ?
-                     profile.elements.where(visible: true).order(:index) :
+                     profile.elements.where(visible: true).order(:position) :
                      RegisteredElement.all.order(:label)
     reg_elements.each do |reg_element|
       ascribed_elements.

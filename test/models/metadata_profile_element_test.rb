@@ -19,43 +19,29 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
 
   # create()
 
-  test "create() updates indexes in the owning profile" do
+  test "create() updates positions in the owning profile" do
     reg_element = RegisteredElement.create!(institution: institutions(:uiuc),
                                             name:        "newElement",
                                             label:       "New Element")
     profile = metadata_profiles(:default)
-    MetadataProfileElement.create!(index: 1,
+    MetadataProfileElement.create!(position: 1,
                                    registered_element: reg_element,
                                    metadata_profile: profile)
-    # Assert that the indexes are sequential and zero-based.
-    profile.elements.order(:index).each_with_index do |e, i|
-      assert_equal i, e.index
+    # Assert that the positions are sequential and zero-based.
+    profile.elements.order(:position).each_with_index do |e, i|
+      assert_equal i, e.position
     end
   end
 
   # destroy()
 
-  test "destroy() updates indexes in the owning profile" do
+  test "destroy() updates positions in the owning profile" do
     profile = @instance.metadata_profile
     @instance.destroy!
-    # Assert that the indexes are sequential and zero-based.
-    profile.elements.order(:index).each_with_index do |e, i|
-      assert_equal i, e.index
+    # Assert that the positions are sequential and zero-based.
+    profile.elements.order(:position).each_with_index do |e, i|
+      assert_equal i, e.position
     end
-  end
-
-  # index
-
-  test "index is required" do
-    assert_raises ActiveRecord::RecordInvalid do
-      MetadataProfileElement.create!(metadata_profile: metadata_profiles(:default),
-                                     registered_element: registered_elements(:dc_title))
-    end
-  end
-
-  test 'index must be greater than or equal to 0' do
-    @instance.index = -1
-    assert !@instance.valid?
   end
 
   # label()
@@ -68,7 +54,7 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
 
   test "metadata_profile is required" do
     assert_raises ActiveRecord::RecordInvalid do
-      MetadataProfileElement.create!(index: 0,
+      MetadataProfileElement.create!(position: 0,
                                      registered_element: registered_elements(:dc_title))
     end
   end
@@ -79,40 +65,56 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
     assert_equal "dc:title", @instance.name
   end
 
+  # position
+
+  test "position is required" do
+    assert_raises ActiveRecord::RecordInvalid do
+      MetadataProfileElement.create!(metadata_profile: metadata_profiles(:default),
+                                     registered_element: registered_elements(:dc_title))
+    end
+  end
+
+  test 'position must be greater than or equal to 0' do
+    @instance.position = -1
+    assert !@instance.valid?
+  end
+
   # registered_element
 
   test "registered_element is required" do
     assert_raises ActiveRecord::RecordInvalid do
-      MetadataProfileElement.create!(index: 0,
+      MetadataProfileElement.create!(position: 0,
                                      metadata_profile: metadata_profiles(:default))
     end
   end
 
   test "registered_element must be unique within a metadata profile" do
     profile = metadata_profiles(:unused)
-    profile.elements.build(index: 0,
+    profile.elements.build(position: 0,
                            registered_element: registered_elements(:dc_title))
-    profile.elements.build(index: 1,
+    profile.elements.build(position: 1,
                            registered_element: registered_elements(:dc_title))
   end
 
   # update()
 
-  test "update() update indexes in the owning profile when increasing an element index" do
-    assert_equal 0, @instance.index
-    @instance.update!(index: 2)
-    # Assert that the indexes are sequential and zero-based.
-    @instance.metadata_profile.elements.order(:index).each_with_index do |e, i|
-      assert_equal i, e.index
+  test "update() update positions in the owning profile when increasing an
+  element position" do
+    assert_equal 0, @instance.position
+    @instance.update!(position: 2)
+    # Assert that the positions are sequential and zero-based.
+    @instance.metadata_profile.elements.order(:position).each_with_index do |e, i|
+      assert_equal i, e.position
     end
   end
 
-  test "update() updates indexes in the owning profile when decreasing an element index" do
-    @instance = @instance.metadata_profile.elements.where(index: 2).first
-    @instance.update!(index: 0)
-    # Assert that the indexes are sequential and zero-based.
-    @instance.metadata_profile.elements.order(:index).each_with_index do |e, i|
-      assert_equal i, e.index
+  test "update() updates positions in the owning profile when decreasing an
+  element position" do
+    @instance = @instance.metadata_profile.elements.where(position: 2).first
+    @instance.update!(position: 0)
+    # Assert that the positions are sequential and zero-based.
+    @instance.metadata_profile.elements.order(:position).each_with_index do |e, i|
+      assert_equal i, e.position
     end
   end
 

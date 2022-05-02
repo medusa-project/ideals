@@ -24,12 +24,12 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
                                             name:        "newElement",
                                             label:       "New Element")
     profile = submission_profiles(:default)
-    SubmissionProfileElement.create!(index: 1,
+    SubmissionProfileElement.create!(position: 1,
                                      registered_element: reg_element,
                                      submission_profile: profile)
     # Assert that the indexes are sequential and zero-based.
-    profile.elements.order(:index).each_with_index do |e, i|
-      assert_equal i, e.index
+    profile.elements.order(:position).each_with_index do |e, i|
+      assert_equal i, e.position
     end
   end
 
@@ -39,23 +39,9 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
     profile = @instance.submission_profile
     @instance.destroy!
     # Assert that the indexes are sequential and zero-based.
-    profile.elements.order(:index).each_with_index do |e, i|
-      assert_equal i, e.index
+    profile.elements.order(:position).each_with_index do |e, i|
+      assert_equal i, e.position
     end
-  end
-
-  # index
-
-  test "index is required" do
-    assert_raises ActiveRecord::RecordInvalid do
-      SubmissionProfileElement.create!(submission_profile: submission_profiles(:default),
-                                       registered_element: registered_elements(:dc_title))
-    end
-  end
-
-  test 'index must be greater than or equal to 0' do
-    @instance.index = -1
-    assert !@instance.valid?
   end
 
   # label()
@@ -70,11 +56,25 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
     assert_equal @instance.registered_element.name, @instance.name
   end
 
+  # position
+
+  test "position is required" do
+    assert_raises ActiveRecord::RecordInvalid do
+      SubmissionProfileElement.create!(submission_profile: submission_profiles(:default),
+                                       registered_element: registered_elements(:dc_title))
+    end
+  end
+
+  test 'position must be greater than or equal to 0' do
+    @instance.position = -1
+    assert !@instance.valid?
+  end
+
   # submission_profile
 
   test "submission_profile is required" do
     assert_raises ActiveRecord::RecordInvalid do
-      SubmissionProfileElement.create!(index: 0,
+      SubmissionProfileElement.create!(position: 0,
                                        registered_element: registered_elements(:dc_title))
     end
   end
@@ -83,36 +83,36 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
 
   test "registered_element is required" do
     assert_raises ActiveRecord::RecordInvalid do
-      SubmissionProfileElement.create!(index: 0,
+      SubmissionProfileElement.create!(position: 0,
                                        submission_profile: submission_profiles(:default))
     end
   end
 
   test "registered_element must be unique within a submission profile" do
     profile = submission_profiles(:unused)
-    profile.elements.build(index: 0,
+    profile.elements.build(position: 0,
                            registered_element: registered_elements(:dc_title))
-    profile.elements.build(index: 1,
+    profile.elements.build(position: 1,
                            registered_element: registered_elements(:dc_title))
   end
 
   # update()
 
   test "update() update indexes in the owning profile when increasing an element index" do
-    assert_equal 0, @instance.index
-    @instance.update!(index: 2)
+    assert_equal 0, @instance.position
+    @instance.update!(position: 2)
     # Assert that the indexes are sequential and zero-based.
-    @instance.submission_profile.elements.order(:index).each_with_index do |e, i|
-      assert_equal i, e.index
+    @instance.submission_profile.elements.order(:position).each_with_index do |e, i|
+      assert_equal i, e.position
     end
   end
 
   test "update() updates indexes in the owning profile when decreasing an element index" do
-    @instance = @instance.submission_profile.elements.where(index: 2).first
-    @instance.update!(index: 0)
+    @instance = @instance.submission_profile.elements.where(position: 2).first
+    @instance.update!(position: 0)
     # Assert that the indexes are sequential and zero-based.
-    @instance.submission_profile.elements.order(:index).each_with_index do |e, i|
-      assert_equal i, e.index
+    @instance.submission_profile.elements.order(:position).each_with_index do |e, i|
+      assert_equal i, e.position
     end
   end
 

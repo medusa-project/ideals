@@ -25,7 +25,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
              submission_profile_element: {
                  registered_element_id: registered_elements(:dc_title).id,
                  submission_profile_id: @profile.id,
-                 index: 0
+                 position: 0
              }
          }
     assert_response :forbidden
@@ -39,7 +39,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
              submission_profile_element: {
                  registered_element_id: registered_elements(:dc_title).id,
                  submission_profile_id: @profile.id,
-                 index: 0
+                 position: 0
              }
          }
     assert_response :ok
@@ -54,7 +54,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
                submission_profile_element: {
                    registered_element_id: registered_elements(:dc_title).id,
                    submission_profile_id: @profile.id,
-                   index: 0
+                   position: 0
                }
            }
     end
@@ -68,7 +68,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
              submission_profile_element: {
                  registered_element_id: registered_elements(:dc_title).id,
                  submission_profile_id: @profile.id,
-                 index: -1 # invalid
+                 position: -1 # invalid
              }
          }
     assert_response :bad_request
@@ -156,11 +156,11 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
               submission_profile_element: {
                   registered_element_id: registered_elements(:dc_title).id,
                   submission_profile_id: @profile.id,
-                  index: 2
+                  position: 2
               }
           }
     element.reload
-    assert_equal 2, element.index
+    assert_equal 2, element.position
   end
 
   test "update() returns HTTP 200" do
@@ -172,7 +172,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
               submission_profile_element: {
                   registered_element_id: registered_elements(:dc_title).id,
                   submission_profile_id: @profile.id,
-                  index: 0
+                  position: 0
               }
           }
     assert_response :ok
@@ -187,7 +187,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
               submission_profile_element: {
                   registered_element_id: registered_elements(:dc_title).id,
                   submission_profile_id: @profile.id,
-                  index: -1 # invalid
+                  position: -1 # invalid
               }
           }
     assert_response :bad_request

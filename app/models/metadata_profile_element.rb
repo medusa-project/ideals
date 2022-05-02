@@ -1,18 +1,18 @@
 ##
-# Encapsulates an element in a {MetadataProfile}. Essentially this is a
-# glorified join model between {MetadataProfile} and {RegisteredElement}.
+# Encapsulates an element in a [MetadataProfile]. Essentially this is a
+# glorified join model between [MetadataProfile] and [RegisteredElement].
 #
 # # Attributes
 #
 # * `created_at`            Managed by ActiveRecord.
 # * `faceted`               Whether the element is used to provide facets in
 #                           results views.
-# * `index`                 Zero-based position within the owning
-#                           {MetadataProfile}.
 # * `indexed`               Whether the element is indexed in searchable
 #                           documents.
 # * `metadata_profile_id`   ID of the associated metadata profile. Foreign key.
-# * `registered_element_id` ID of the associated {RegisteredElement}. Foreign
+# * `position`              Zero-based position relative to other elements in
+#                           the owning [MetadataProfile].
+# * `registered_element_id` ID of the associated [RegisteredElement]. Foreign
 #                           key.
 # * `searchable`            Whether users can search on the element.
 # * `sortable`              Whether results can be sorted on the element.
@@ -23,19 +23,19 @@ class MetadataProfileElement < ApplicationRecord
   belongs_to :metadata_profile, inverse_of: :elements, touch: true
   belongs_to :registered_element, inverse_of: :metadata_profile_elements
 
-  # index -- note that uniqueness is not validated here as we are going to
-  # handle that in persistence callbacks instead.
-  validates :index, numericality: { only_integer: true,
-                                    greater_than_or_equal_to: 0 }
-  validates_presence_of :index
+  # Note that uniqueness is not validated here as we are going to handle that
+  # in persistence callbacks instead.
+  validates :position, numericality: { only_integer: true,
+                                       greater_than_or_equal_to: 0 }
+  validates_presence_of :position
 
   # registered_element_id
   validates_presence_of :registered_element_id
   validates_uniqueness_of :registered_element_id, scope: :metadata_profile_id
 
-  before_create :shift_element_indexes_before_create
-  before_update :shift_element_indexes_before_update
-  after_destroy :shift_element_indexes_after_destroy
+  before_create :shift_element_positions_before_create
+  before_update :shift_element_positions_before_update
+  after_destroy :shift_element_positions_after_destroy
 
   ##
   # @return [String] Label of the associated {RegisteredElement}.
@@ -54,39 +54,39 @@ class MetadataProfileElement < ApplicationRecord
   private
 
   ##
-  # Increments the indexes of all elements in the owning {MetadataProfile} that
-  # are greater than or equal to the index of this instance, in order to make
-  # room for it.
+  # Increments the positions of all elements in the owning [MetadataProfile]
+  # that are greater than or equal to the position of this instance, in order
+  # to make room for it.
   #
-  def shift_element_indexes_before_create
+  def shift_element_positions_before_create
     transaction do
-      self.metadata_profile.elements.where("index >= ?", self.index).each do |e|
-        # update_column skips callbacks, which would cause this method to
-        # be called recursively.
-        e.update_column(:index, e.index + 1)
+      self.metadata_profile.elements.where("position >= ?", self.position).each do |e|
+        # update_column skips callbacks, which would cause this method to be
+        # called recursively.
+        e.update_column(:position, e.position + 1)
       end
     end
   end
 
   ##
-  # Updates the indexes of all elements in the owning {MetadataProfile} to
+  # Updates the positions of all elements in the owning [MetadataProfile] to
   # ensure that they are sequential.
   #
-  def shift_element_indexes_before_update
-    if self.index_changed? && self.metadata_profile
-      min       = [self.index_was, self.index].min
-      max       = [self.index_was, self.index].max
-      increased = (self.index_was < self.index)
+  def shift_element_positions_before_update
+    if self.position_changed? && self.metadata_profile
+      min       = [self.position_was, self.position].min
+      max       = [self.position_was, self.position].max
+      increased = (self.position_was < self.position)
 
       transaction do
         self.metadata_profile.elements.
-            where('id != ? AND index >= ? AND index <= ?', self.id, min, max).each do |e|
+            where('id != ? AND position >= ? AND position <= ?', self.id, min, max).each do |e|
           if increased # shift the range down
             # update_column skips callbacks, which would cause this method to
             # be called recursively.
-            e.update_column(:index, e.index - 1)
+            e.update_column(:position, e.position - 1)
           else # shift it up
-            e.update_column(:index, e.index + 1)
+            e.update_column(:position, e.position + 1)
           end
         end
       end
@@ -94,16 +94,16 @@ class MetadataProfileElement < ApplicationRecord
   end
 
   ##
-  # Updates the indexes of all elements in the owning {MetadataProfile} to
+  # Updates the positions of all elements in the owning [MetadataProfile] to
   # ensure that they are sequential and zero-based.
   #
-  def shift_element_indexes_after_destroy
+  def shift_element_positions_after_destroy
     if self.metadata_profile && self.destroyed?
       transaction do
-        self.metadata_profile.elements.order(:index).each_with_index do |element, index|
+        self.metadata_profile.elements.order(:position).each_with_index do |element, position|
           # update_column skips callbacks, which would cause this method to be
           # called recursively.
-          element.update_column(:index, index) if element.index != index
+          element.update_column(:position, position) if element.position != position
         end
       end
     end

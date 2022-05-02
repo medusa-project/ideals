@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_29_195118) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_02_152906) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -319,7 +319,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_29_195118) do
   create_table "metadata_profile_elements", force: :cascade do |t|
     t.bigint "metadata_profile_id", null: false
     t.bigint "registered_element_id", null: false
-    t.integer "index", null: false
+    t.integer "position", null: false
     t.boolean "visible", default: true, null: false
     t.boolean "faceted", default: false, null: false
     t.boolean "searchable", default: false, null: false
@@ -328,9 +328,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_29_195118) do
     t.datetime "updated_at", null: false
     t.boolean "indexed", default: true, null: false
     t.index ["faceted"], name: "index_metadata_profile_elements_on_faceted"
-    t.index ["index"], name: "index_metadata_profile_elements_on_index"
     t.index ["indexed"], name: "index_metadata_profile_elements_on_indexed"
     t.index ["metadata_profile_id"], name: "index_metadata_profile_elements_on_metadata_profile_id"
+    t.index ["position"], name: "index_metadata_profile_elements_on_position"
     t.index ["registered_element_id"], name: "index_metadata_profile_elements_on_registered_element_id"
     t.index ["searchable"], name: "index_metadata_profile_elements_on_searchable"
     t.index ["sortable"], name: "index_metadata_profile_elements_on_sortable"
@@ -367,14 +367,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_29_195118) do
   create_table "submission_profile_elements", force: :cascade do |t|
     t.bigint "submission_profile_id", null: false
     t.bigint "registered_element_id", null: false
-    t.integer "index", null: false
+    t.integer "position", null: false
     t.text "help_text"
     t.boolean "repeatable", default: false, null: false
     t.boolean "required", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "placeholder_text"
-    t.index ["index"], name: "index_submission_profile_elements_on_index"
+    t.index ["position"], name: "index_submission_profile_elements_on_position"
     t.index ["registered_element_id"], name: "index_submission_profile_elements_on_registered_element_id"
     t.index ["repeatable"], name: "index_submission_profile_elements_on_repeatable"
     t.index ["required"], name: "index_submission_profile_elements_on_required"

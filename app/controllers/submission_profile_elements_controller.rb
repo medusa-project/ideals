@@ -68,7 +68,7 @@ class SubmissionProfileElementsController < ApplicationController
   private
 
   def element_params
-    params.require(:submission_profile_element).permit(:help_text, :index,
+    params.require(:submission_profile_element).permit(:help_text, :position,
                                                        :placeholder_text,
                                                        :registered_element_id,
                                                        :repeatable, :required,

@@ -3,7 +3,7 @@
 default_title:
   metadata_profile:   default
   registered_element: dc_title
-  index:              0
+  position:           0
   visible:            true
   faceted:            false
   searchable:         true
@@ -13,7 +13,7 @@ default_title:
 default_description:
   metadata_profile:   default
   registered_element: dc_description
-  index:              1
+  position:           1
   visible:            true
   faceted:            false
   searchable:         true
@@ -23,7 +23,7 @@ default_description:
 default_subject:
   metadata_profile:   default
   registered_element: dc_subject
-  index:              2
+  position:           2
   visible:            true
   faceted:            true
   searchable:         true

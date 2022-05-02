@@ -12,12 +12,12 @@
       class: "custom-select")
   - if profile.elements.any?
     .form-group
-      = f.label :index, "Position After"
-      = f.select(:index, profile.elements.where("id != ?", element&.id || -1).map.with_index { |e, i| [e.label, i + 1] },
-        { selected: element.index },
+      = f.label :position, "Position After"
+      = f.select(:position, profile.elements.where("id != ?", element&.id || -1).map.with_index { |e, i| [e.label, i + 1] },
+        { selected: element.position },
         class: "custom-select")
   - else
-    = f.hidden_field :index, value: 0
+    = f.hidden_field :position, value: 0
   .form-group
     .form-check
       = f.check_box :visible, class: "form-check-input"

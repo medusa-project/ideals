@@ -34,7 +34,7 @@ class MetadataProfile < ApplicationRecord
 
   has_many :collections, inverse_of: :metadata_profile,
            dependent: :restrict_with_exception
-  has_many :elements, -> { order(:index) },
+  has_many :elements, -> { order(:position) },
            class_name: "MetadataProfileElement", inverse_of: :metadata_profile,
            dependent: :destroy
 
@@ -57,56 +57,56 @@ class MetadataProfile < ApplicationRecord
   def add_default_elements
     raise "Instance already has elements ascribed to it" if self.elements.any?
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
-                        index:              0,
+                        position:           0,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
                         faceted:            false,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
-                        index:              1,
+                        position:           1,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
                         faceted:            true,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
-                        index:              2,
+                        position:           2,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
                         faceted:            true,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor"),
-                        index:              3,
+                        position:           3,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
                         faceted:            false,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:abstract"),
-                        index:              4,
+                        position:           4,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
                         faceted:            false,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:issued"),
-                        index:              5,
+                        position:           5,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
                         faceted:            false,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:uri"),
-                        index:              6,
+                        position:           6,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
                         faceted:            false,
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
-                        index:              7,
+                        position:           7,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
@@ -139,7 +139,7 @@ class MetadataProfile < ApplicationRecord
   # @return [Enumerable<MetadataProfileElement>]
   #
   def faceted_elements
-    self.elements.where(faceted: true).order(:index)
+    self.elements.where(faceted: true).order(:position)
   end
 
 
