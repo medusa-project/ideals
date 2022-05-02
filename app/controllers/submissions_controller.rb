@@ -38,9 +38,22 @@ class SubmissionsController < ApplicationController
   def complete
     raise "Item is not in a submitting state." unless @item.submitting?
     begin
-      UpdateItemCommand.new(item:        @item,
-                            user:        current_user,
-                            description: "Completed the submission process.").execute do
+      # Normally at the end of the updating process, UpdateItemCommand would
+      # add an event of Type::UPDATE with a `before_changes` property
+      # containing the current (as in, at this very point) state of the item.
+      # But several changes have been made to the item through the submission
+      # form, outside of any other UpdateItemCommands, since it was created.
+      # So we provide the item's state immediately after the last create event
+      # in order to capture those.
+      after_create_state = @item.events.
+        where(event_type: Event::Type::CREATE).
+        limit(1).
+        first&.
+        after_changes
+      UpdateItemCommand.new(item:           @item,
+                            user:           current_user,
+                            description:    "Completed the submission process.",
+                            before_changes: after_create_state).execute do
         build_embargo
         @item.complete_submission
         @item.save!
