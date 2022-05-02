@@ -516,17 +516,6 @@ const IDEALS = {
             row.find("td:first-child").html("<i class='fa fa-check text-success'></i>");
             row.find(".progress").remove();
 
-            // "Ingest Into Medusa" button (only available to admins)
-            if (window.location.pathname.match(/^\/items\/\d+/)) {
-                const ingestCell = row.find("td:nth-child(5)");
-                ingestCell.html(
-                    "<button class='btn btn-sm btn-light ingest' type='button'>" +
-                    "   <i class='fa fa-upload'></i> Ingest Into Medusa" +
-                    "</button>");
-                ingestCell.find("button.ingest").on("click", function () {
-                    onIngestFileButtonClicked($(this));
-                });
-            }
             // "Remove" button
             const removalCell = row.find("td:last-child");
             removalCell.html(
@@ -547,17 +536,6 @@ const IDEALS = {
             row.find("td:first-child").html("<i class='fa fa-times text-danger'></i>");
             row.find(".progress").remove();
 
-            // "Ingest Into Medusa" button (only available to admins)
-            if (window.location.pathname.match(/^\/items\/\d+/)) {
-                const ingestCell = row.find("td:nth-child(5)");
-                ingestCell.html(
-                    "<button class='btn btn-sm btn-light ingest' type='button'>" +
-                    "   <i class='fa fa-upload'></i> Ingest Into Medusa" +
-                    "</button>");
-                ingestCell.find("button.ingest").on("click", function () {
-                    onIngestFileButtonClicked($(this));
-                });
-            }
             // "Remove" button
             const removalCell = row.find("td:last-child");
             removalCell.html(
@@ -581,32 +559,6 @@ const IDEALS = {
          */
         this.numUploadingFiles = function() {
             return numUploadingFiles;
-        };
-
-        /**
-         * Ingests a file into Medusa.
-         *
-         * @param button {jQuery}
-         */
-        const onIngestFileButtonClicked = function(button) {
-            const row          = button.parents("tr");
-            const bitstreamURI = row.data("uri") + "/ingest";
-            const onSuccess    = function() {
-                button.fadeOut(IDEALS.FADE_TIME, function() {
-                    button.parent().html("<span class='text-success'>" +
-                        "<i class='fa fa-check'></i> Message Sent</span>");
-                    row.find("button.remove").remove();
-                    button.remove();
-                });
-            };
-            const onError      = function(xhr, status, error) {
-                console.error(xhr);
-                console.error(status);
-                console.error(error);
-                alert("There was an error ingesting the file. If this error " +
-                    "persists, please contact IDEALS staff.");
-            };
-            new IDEALS.Client().post(bitstreamURI, onSuccess, onError);
         };
 
         /**
@@ -657,10 +609,6 @@ const IDEALS = {
                 onProgressChanged, onComplete, onError);
         };
 
-        filesTable.find("button.ingest").on("click", function(e) {
-            e.preventDefault();
-            onIngestFileButtonClicked($(this));
-        });
         filesTable.find("button.remove").on("click", function(e) {
             e.preventDefault();
             onRemoveFileButtonClicked($(this));
