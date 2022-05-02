@@ -103,7 +103,7 @@ class SubmissionProfileElement < ApplicationRecord
   def shift_element_positions_after_destroy
     if self.submission_profile && self.destroyed?
       transaction do
-        self.submission_profile.elements.order(:position).each_with_index do |element, index|
+        self.submission_profile.elements.order(:position).each_with_index do |element, position|
           # update_column skips callbacks, which would cause this method to be
           # called recursively.
           element.update_column(:position, position) if element.position != position
