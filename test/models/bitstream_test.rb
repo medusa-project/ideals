@@ -367,7 +367,51 @@ class BitstreamTest < ActiveSupport::TestCase
 
   # destroy()
 
-  test "destroy() does not send a message to Medusa if medusa_uuid is not set" do
+  test "destroy() deletes the corresponding file from the staging area of the
+  application bucket" do
+    @instance = bitstreams(:submitted_in_staging)
+    client = S3Client.instance
+    bucket = ::Configuration.instance.aws[:bucket]
+    key    = Bitstream.staging_key(@instance.item_id,
+                                   @instance.original_filename)
+
+    assert client.object_exists?(bucket: bucket, key: key)
+
+    @instance.destroy!
+    assert !client.object_exists?(bucket: bucket, key: key)
+  end
+
+  test "destroy() deletes the corresponding file from the permanent area of the
+  application bucket" do
+    @instance = bitstreams(:approved_in_permanent)
+    client    = S3Client.instance
+    bucket    = ::Configuration.instance.aws[:bucket]
+    key       = Bitstream.permanent_key(@instance.item_id,
+                                        @instance.original_filename)
+
+    assert client.object_exists?(bucket: bucket, key: key)
+
+    @instance.destroy!
+    assert !client.object_exists?(bucket: bucket, key: key)
+  end
+
+  test "destroy() deletes corresponding derivatives" do
+    @instance  = bitstreams(:submitted_in_staging)
+    client     = S3Client.instance
+    bucket     = ::Configuration.instance.aws[:bucket]
+    key_prefix = @instance.send(:derivative_key_prefix)
+    @instance.derivative_url(size: 256) # generate a derivative
+
+    assert client.objects(bucket:     bucket,
+                          key_prefix: key_prefix).count > 0
+
+    @instance.destroy!
+    assert_equal 0, client.objects(bucket:     bucket,
+                                   key_prefix: key_prefix).count
+  end
+
+  test "destroy() does not send a delete message to Medusa if medusa_uuid is
+  not set" do
     @instance = bitstreams(:submitted_in_staging)
     @instance.destroy!
     AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
@@ -375,7 +419,7 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
-  test "destroy() sends a message to Medusa if medusa_uuid is set" do
+  test "destroy() sends a delete message to Medusa if medusa_uuid is set" do
     Message.destroy_all
     @instance = bitstreams(:item2_in_medusa)
     @instance.destroy!

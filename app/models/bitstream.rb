@@ -105,7 +105,8 @@ class Bitstream < ApplicationRecord
     effective_key.present? &&
     (!ActiveSupport::TestCase.method_defined?(:seeding?) || !ActiveSupport::TestCase.seeding?) &&
     !DspaceImporter.instance.running? }
-  before_destroy :delete_derivatives, :delete_from_staging
+  before_destroy :delete_derivatives, :delete_from_staging,
+                 :delete_from_permanent_storage
   before_destroy :delete_from_medusa, if: -> { medusa_uuid.present? }
 
   ##
@@ -333,7 +334,7 @@ class Bitstream < ApplicationRecord
     end
 
     aws_client = client.send(:get_client)
-    signer = Aws::S3::Presigner.new(client: aws_client)
+    signer     = Aws::S3::Presigner.new(client: aws_client)
     signer.presigned_url(:get_object,
                          bucket:     bucket,
                          key:        key,
