@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_02_152906) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_03_211343) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -151,7 +151,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_02_152906) do
   end
 
   create_table "embargoes", force: :cascade do |t|
-    t.datetime "expires_at", null: false
+    t.datetime "expires_at"
     t.boolean "full_access", default: true, null: false
     t.boolean "download", default: true, null: false
     t.bigint "item_id"

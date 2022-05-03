@@ -42,7 +42,7 @@ class Embargo < ApplicationRecord
   #
   def as_indexed_json
     expires_at = self.expires_at
-    expires_at = Time.now + 1000.years if self.perpetual
+    expires_at = Time.now + 1000.years if self.perpetual || !expires_at
     {
       IndexFields::DOWNLOAD    => self.download,
       IndexFields::FULL_ACCESS => self.full_access,
@@ -68,7 +68,7 @@ class Embargo < ApplicationRecord
   # Ensures that {expires_at} is not in the past.
   #
   def validate_expiration
-    if expires_at < Time.now && !perpetual
+    if !perpetual && expires_at && expires_at < Time.now
       errors.add(:expires_at, "must be in the future")
     end
   end
