@@ -8,6 +8,21 @@
 # should be updated from time to time to accommodate new user-submitted formats.
 #
 
+3gpp:
+  short_name: 3GPP
+  long_name: 3GPP
+  extensions:
+    - 3gpp
+    - 3gp
+    - 3gpp2
+    - 3gp2
+  media_types:
+    - video/3gpp
+    - video/3gpp2
+  category: video
+  icon: file-video-o
+  readable_by_vips: false
+  viewer_method: video_tag_for
 7z:
   short_name: 7Zip
   long_name: 7Zip
@@ -86,6 +101,16 @@ avi:
   icon: file-video-o
   readable_by_vips: false
   viewer_method: video_tag_for
+bibtex:
+  short_name: BibTeX
+  long_name: BibTeX
+  extensions:
+    - bib
+  media_types:
+    - application/x-bibtex
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
 bmp:
   short_name: BMP
   long_name: Bitmap
@@ -97,6 +122,16 @@ bmp:
   icon: file-image-o
   readable_by_vips: true
   viewer_method: image_tag_for
+bst:
+  short_name: BST
+  long_name: BibTeX Style Document
+  extensions:
+    - bst
+  media_types:
+    - application/x-bibtex
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
 bz2:
   short_name: bzip2
   long_name: bzip2
@@ -187,6 +222,16 @@ exe:
     - application/octet-stream
   category: binary
   icon: file-o
+  readable_by_vips: false
+f:
+  short_name: Fortran
+  long_name: Fortran
+  extensions:
+    - f
+  media_types:
+    - text/x-fortran
+  category: code
+  icon: file-code-o
   readable_by_vips: false
 fla:
   short_name: Flash
@@ -343,6 +388,16 @@ lyx:
   category: document
   icon: file-text-o
   readable_by_vips: false
+matlab:
+  short_name: MATLAB
+  long_name: MATLAB
+  extensions:
+    - m
+  media_types:
+    - text/x-matlab
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
 ma:
   short_name: Maya
   long_name: Maya ASCII Scene
@@ -352,6 +407,16 @@ ma:
     - text/plain
   category: document
   icon: file-text-o
+  readable_by_vips: false
+maude:
+  short_name: Maude
+  long_name: Maude
+  extensions:
+    - maude
+  media_types:
+    - text/plain
+  category: code
+  icon: file-code-o
   readable_by_vips: false
 mjpeg2000:
   short_name: MJPEG2000
@@ -1096,6 +1161,17 @@ tsv:
   category: document
   icon: file-text-o
   readable_by_vips: false
+ttf:
+  short_name: TTF
+  long_name: TrueType Font
+  extensions:
+    - ttf
+  media_types:
+    - font/ttf
+    - application/x-font-ttf
+  category: font
+  icon: file-o
+  readable_by_vips: false
 txt:
   short_name: Text
   long_name: Plain Text
@@ -1107,6 +1183,16 @@ txt:
   icon: file-text-o
   readable_by_vips: false
   viewer_method: text_viewer_for
+vb:
+  short_name: Visual Basic Class
+  long_name: Visual Basic Class
+  extensions:
+    - cls
+  media_types:
+    - text/plain
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
 vsd:
   short_name: VSD
   long_name: Visio Drawing
@@ -1192,6 +1278,18 @@ xml:
   long_name: XML
   extensions:
     - xml
+  media_types:
+    - application/xml
+    - text/xml
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+  viewer_method: xml_viewer_for
+xsd:
+  short_name: XSD
+  long_name: XML Schema
+  extensions:
+    - xsd
   media_types:
     - application/xml
     - text/xml

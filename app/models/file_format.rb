@@ -4,7 +4,7 @@
 # Properties
 #
 # * `category`:         `archive`, `audio`, `binary`, `code`, `document`,
-#                       `image`, or `video`
+#                       `font`, `image`, or `video`
 # * `extensions`:       Extensions that files of this type may have, in order
 #                       of likelihood/preference.
 # * `icon`:             One of the files (minus extension) in
