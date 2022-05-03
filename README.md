@@ -16,14 +16,19 @@ This is a getting-started guide for developers.
 * Elasticsearch >= 7.x with the
   [ICU analysis plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html)
   installed
-* An S3 endpoint, such as AWS S3 or [Minio Server](https://min.io)
+* An S3 storage service, such as AWS S3 or [Minio Server](https://min.io)
+* VIPS
+
+Integration with the Medusa preservation repository at the UIUC Library
+requires a couple more dependencies:
+
+* RabbitMQ
 * A Handle.net server. (See the
   [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally)
   for setup instructions.)
-* RabbitMQ
-* VIPS
 
-(This stuff is all up and running in docker-compose; see the testing section.)
+(All of this stuff is up and running in `docker compose`; see the testing
+section.)
 
 # Installation
 
@@ -68,23 +73,23 @@ rails "elasticsearch:indexes:create[ideals_test]"
 ```
 Note: the index schema may change from time to time. Index schemas can't
 generally be changed in place, so a new index has to be created with the new
-schema, and then either existing documents migrated into it, or new documents
-loaded into it. For the development index, you may prefer to have separate
+schema, and then either existing documents migrated into it ("reindexed" in
+Elasticsearch terminology which is fairly quick), or new documents loaded into
+it (very slow). For the development index, you may prefer to have separate
 "blue" and "green" indexes and to switch back-and-forth between them as needed:
 
 ```sh
 rails "elasticsearch:indexes:create[ideals_blue_development]"
 rails "elasticsearch:indexes:create_alias[ideals_blue_development,ideals_development]"
 ```
-Then when you need to create a new index, you can switch to the "green" one and
-delete the blue one:
+
+Then when you need to create a new index, you can switch to the other color:
 
 ```sh
 rails "elasticsearch:indexes:create[ideals_green_development]"
 rails "elasticsearch:indexes:copy[ideals_blue_development,ideals_green_development]"
 rails "elasticsearch:indexes:delete_alias[ideals_blue_development,ideals_development]"
 rails "elasticsearch:indexes:create_alias[ideals_green_development,ideals_development]"
-rails "elasticsearch:indexes:delete[ideals_blue_development]"
 ```
 (Instead of using aliases, you could also change the `elasticsearch/index` key
 in your `development.yml`.)
@@ -92,7 +97,7 @@ in your `development.yml`.)
 Note 2: the above does not apply to the test index. This index will be
 recreated automatically when the tests are run.
 
-## Configure RabbitMQ
+## Configure RabbitMQ (UIUC only)
 
 ```sh
 $ brew install rabbitmq
@@ -105,16 +110,17 @@ $ rabbitmqctl add_user <username> <password>
 $ rabbitmqctl set_user_tags <username> administrator
 $ rabbitmqctl set_permissions -p / <username> '.*' '.*' '.*'
 ```
-Open the management interface at http://localhost:15672.
-Log in using the credentials you just created
+Open the management interface at `http://localhost:15672`. Log in using the
+credentials you just created.
+
 In the Queues tab, in the "Add a new queue" section, add two queues named
-`ideals_to_medusa` `medusa_to_ideals`, both with default properties.
-Then restart RabbitMQ:
+`ideals_to_medusa` `medusa_to_ideals`, both with default properties. Then
+restart RabbitMQ:
 ```sh
 $ brew services restart rabbitmq
 ```
 
-## Configure the Handle.net server
+## Configure the Handle.net server (UIUC only)
 
 Refer to the instructions in the
 [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally).
@@ -125,13 +131,8 @@ The migration process requires dropping the existing database and starting over
 with a new one. A prerequisite is a dump of the DSpace database loaded into a
 PostgreSQL instance and named `dbname`.
 
-The migration process is divided into two steps. The first step migrates
-critical data--the core entities needed to make the application usable. It
-should be possible to deploy to production with only this data intact.
-
-The second step migrates non-critical data like statistics, which may take a
-lot longer than the first step. This step does not have to be done on a fresh
-database.
+The migration process is divided into several steps and is documented in detail
+in `lib/tasks/dspace.rake`.
 
 ### In development
 
@@ -146,13 +147,8 @@ rails "dspace:bitstreams:copy[dspace_ssh_user]"
 rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]" # optional
 rails "bitstreams:read_full_text[2]" # optional
 ```
-N.B.: (`dbhost` etc.) are only required if the database is on a different host
-and/or the database user is different from the default.
 
 ### In production
-
-(See `lib/tasks/dspace.rake` for detailed documentation of the intended
-migration process.)
 
 ```sh
 rails elasticsearch:purge
@@ -162,13 +158,13 @@ rails "dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
 rails ideals:seed_database
 rails elasticsearch:reindex[2] # thread count
 # This user must authorize your SSH key for passwordless login
-rails "dspace:bitstreams:copy[dspace_ssh_user]"
+rails "dspace:bitstreams:copy[dspace_ssh_user,4]"
 
 # Wait here until DSpace is decommissioned or read-only, then:
 rails "dspace:migrate_incremental[dbname,dbhost,dbuser,dbpass]"
 rails elasticsearch:reindex[2] # thread count
 # This user must authorize your SSH key for passwordless login
-rails "dspace:bitstreams:copy[dspace_ssh_user]"
+rails "dspace:bitstreams:copy[dspace_ssh_user,4]"
 
 # At this point, the application is fully live and DSpace is decommissioned,
 # but its database is still running.
@@ -210,7 +206,7 @@ In other environments, multi-tenancy can be tested by adding some lines to
 ```
 127.0.0.1 ideals-host1.local
 127.0.0.1 ideals-host2.local
-# this is only used for testing data imported from "old IDEALS"
+# this is only used for testing data imported from DSpace
 127.0.0.1 ideals-uiuc.local
 ```
 
@@ -222,16 +218,15 @@ order to play around with multi-tenancy.
 
 # Branches & Environments
 
-| Rails Environment | Git Branch                 | Machine                | Configuration File                       |
-|-------------------|----------------------------|------------------------|------------------------------------------|
-| `development`     | any (usually `develop`)    | Local                  | `config/credentials/development.yml`     |
-| `test`            | any                        | Local & GitHub Actions | `config/credentials/test.yml` & `ci.yml` |
-| `demo`            | `demo`                     | aws-ideals-demo        | `config/credentials/demo.yml.enc`        |
-| `production`      | `production`               | aws-ideals-production  | `config/credentials/production.yml.enc`  |
+| Rails Environment | Git Branch            | Machine                | Configuration File                       |
+|-------------------|-----------------------|------------------------|------------------------------------------|
+| `development`     | any (often `develop`) | Local                  | `config/credentials/development.yml`     |
+| `test`            | any                   | Local & GitHub Actions | `config/credentials/test.yml` & `ci.yml` |
+| `demo`            | `demo`                | aws-ideals-demo        | `config/credentials/demo.yml.enc`        |
+| `production`      | `production`          | aws-ideals-production  | `config/credentials/production.yml.enc`  |
 
-Files that end in `.enc` are encrypted. Obtain the encryption key for the
-corresponding file and then use `rails credentials:edit -e <environment>` to
-edit it.
+Files that end in `.enc` are encrypted. Obtain the encryption key from a team
+member and then use `rails credentials:edit -e <environment>` to edit it.
 
 `config/credentials/template.yml` contains the canonical configuration
 structure that all config files must use.
@@ -253,12 +248,12 @@ Minitest is used for model and controller tests. `rails test` runs the tests.
 
 Tests may depend on any or all of the dependent services (Elasticsearch,
 RabbitMQ, etc.). It's perfectly legitimate to install all of that stuff on your
-local machine and run the tests there. You can also use `docker-compose`, which
+local machine and run the tests there. You can also use `docker compose`, which
 will initialize a container, copy the code base into it, spin up all of the
 service containers, and run the tests:
 
 ```sh
-$ docker-compose up --build --exit-code-from ideals
+$ docker compose up --build --exit-code-from ideals
 ```
 
 This is how tests are run in continuous integration, which uses
