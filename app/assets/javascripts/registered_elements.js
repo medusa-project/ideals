@@ -5,6 +5,24 @@ const RegisteredElementsView = function() {
 
     const ROOT_URL = $('input[name="root_url"]').val();
 
+    // Implement a simple client-side search.
+    $("[name=q]").on("keyup", function() {
+        const q      = $(this).val().toLowerCase();
+        const names  = $(".element-name");
+        const labels = $(".element-label");
+        for (let i = 0; i < names.length; i++) {
+            const nameNode  = $(names[i]);
+            const labelNode = $(labels[i]);
+            const card      = nameNode.parents(".card");
+            if (nameNode.text().toLowerCase().includes(q) ||
+                    labelNode.text().toLowerCase().includes(q)) {
+                card.show();
+            } else {
+                card.hide();
+            }
+        }
+    });
+
     $('button.edit-element').on('click', function() {
         const element_name = $(this).data('element-name');
         const url = ROOT_URL + '/elements/' + element_name + '/edit';

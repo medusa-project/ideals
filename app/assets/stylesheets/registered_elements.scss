@@ -1,4 +1,7 @@
 body#registered_elements {
+  input[type=search] {
+    max-width: 12em;
+  }
   table {
     tr td:first-child {
       width: 1px;

@@ -2,13 +2,19 @@
 - provide :title, "Element Registry"
 
 .btn-group.float-right{role: "group"}
-  / Add Element button
+  -# Add Element button
   %button.btn.btn-light{"data-target": "#add-element-modal",
                         "data-toggle": "modal", type: "button"}
     %i.fa.fa-plus
     Add Element
 
 %h1 Element Registry
+
+.card.mb-3
+  .card-body
+    = form_tag do
+      .form-inline
+        = search_field_tag(:q, "", placeholder: "Filter", class: "form-control")
 
 - @elements.each do |element|
   .card.mb-3
@@ -25,12 +31,12 @@
                                                     data: { confirm: 'Are you sure you want to delete this element?' }) do
           %i.fa.fa-trash
           Delete
-      %h5.card-title= element.label
+      %h5.card-title.element-label= element.label
       .row
         .col-sm-2.text-right
           %strong Name
         .col-sm-10
-          %code= element.name
+          %code.element-name= element.name
         .col-sm-2.text-right
           %strong URI
         .col-sm-10
