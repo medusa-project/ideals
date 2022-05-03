@@ -1,6 +1,8 @@
-- pagination = paginate(count: @count, page: @current_page, per_page: @window, permitted_params: @permitted_params)
-
-- if @items.count > 1
+- if @items.any?
+  - pagination = paginate(count:            @count,
+                          page:             @current_page,
+                          per_page:         @window,
+                          permitted_params: @permitted_params)
   .card
     #search-status.card-body.pt-3.pb-3
       = search_status(@count, @start, @window, "item")
@@ -9,12 +11,15 @@
           %i.far.fa-check-square
           Check All
 
-.row.justify-content-md-center.mt-3
-  .col-md-auto
-    = pagination
+  .row.justify-content-md-center.mt-3
+    .col-md-auto
+      = pagination
 
-= review_list(@items)
+  = review_list(@items)
 
-.row.justify-content-md-center
-  .col-md-auto
-    = pagination
+  .row.justify-content-md-center
+    .col-md-auto
+      = pagination
+
+- else
+  %p There are no submitted items to review.
