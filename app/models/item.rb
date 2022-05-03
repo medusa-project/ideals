@@ -165,7 +165,7 @@ class Item < ApplicationRecord
   belongs_to :submitter, class_name: "User", inverse_of: "submitted_items",
              optional: true
 
-  before_save :email_after_submission
+  before_save :email_after_submission, :prune_duplicate_elements
   before_update :set_stage_reason
   before_destroy :restrict_in_archive_deletion
 
@@ -588,9 +588,26 @@ class Item < ApplicationRecord
 
   def email_after_submission
     if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED &&
-      effective_primary_collection&.submissions_reviewed
+        effective_primary_collection&.submissions_reviewed
       IdealsMailer.item_submitted(self).deliver_now
     end
+  end
+
+  ##
+  # Destroys associated [AscribedElement]s that have the same {string}, {uri},
+  # and {registered_element} attribute as another element.
+  #
+  def prune_duplicate_elements
+    all_elements    = self.elements.to_a
+    unique_elements = []
+    all_elements.each do |e|
+      unless unique_elements.find{ |ue| e.string == ue.string &&
+          e.uri == ue.uri &&
+          e.registered_element_id == ue.registered_element_id }
+        unique_elements << e
+      end
+    end
+    (all_elements - unique_elements).each(&:destroy!)
   end
 
   def restrict_in_archive_deletion

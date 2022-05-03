@@ -314,7 +314,8 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal "Some description", item.description
   end
 
-  test "description() returns an empty string when there is no description element" do
+  test "description() returns an empty string when there is no description
+  element" do
     item = items(:undescribed)
     assert_equal "", item.description
   end
@@ -355,7 +356,8 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal bitstream_count, @instance.download_count
   end
 
-  test "download_count() returns a correct count when supplying start and end times" do
+  test "download_count() returns a correct count when supplying start and end
+  times" do
     bitstream_count = @instance.bitstreams.count
     @instance.bitstreams.each do |bitstream|
       bitstream.add_download
@@ -488,7 +490,8 @@ class ItemTest < ActiveSupport::TestCase
 
   # metadata_profile()
 
-  test "metadata_profile() returns the primary collection's effective metadata profile" do
+  test "metadata_profile() returns the primary collection's effective metadata
+  profile" do
     assert_equal metadata_profiles(:default), @instance.metadata_profile
   end
 
@@ -535,18 +538,47 @@ class ItemTest < ActiveSupport::TestCase
 
   # required_elements_present?()
 
-  test "required_elements_present?() returns false if not all required elements are present" do
+  test "required_elements_present?() returns false if not all required elements
+  are present" do
     @instance.elements.destroy_all
     assert !@instance.required_elements_present?
   end
 
-  test "required_elements_present?() returns true if all required elements are present" do
+  test "required_elements_present?() returns true if all required elements are
+  present" do
     @instance.elements.build(registered_element: registered_elements(:dc_title),
-                             string: "Title").save
+                             string:             "Title").save
     assert @instance.required_elements_present?
   end
 
   # save()
+
+  test "save() prunes duplicate AscribedElements" do
+    re = registered_elements(:dc_title)
+    @instance.elements.destroy_all
+    @instance.elements.build(registered_element: re,
+                             string:             "cats",
+                             uri:                "http://example.org/cats")
+    @instance.elements.build(registered_element: re,
+                             string:             "cats",
+                             uri:                "http://example.org/cats")
+    @instance.elements.build(registered_element: re,
+                             string:             "dogs",
+                             uri:                "http://example.org/dogs")
+    @instance.elements.build(registered_element: re,
+                             string:             "dogs",
+                             uri:                nil)
+    @instance.save!
+
+    @instance.reload
+    assert_equal 3, @instance.elements.length
+    assert_equal 1, @instance.elements.where(string: "cats",
+                                             uri:    "http://example.org/cats").count
+    assert_equal 1, @instance.elements.where(string: "dogs",
+                                             uri:    "http://example.org/dogs").count
+    assert_equal 1, @instance.elements.where(string: "dogs",
+                                             uri:    nil).count
+  end
 
   test "save() sends an email when the stage changes from submitting to
   submitted and the primary collection is reviewing submissions" do
