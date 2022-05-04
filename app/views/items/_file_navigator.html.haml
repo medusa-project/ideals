@@ -1,4 +1,10 @@
-- if @content_bitstreams.length + @other_bitstreams.length > 0
+- result = policy(@item).show_file_navigator
+- if !result[:authorized]
+  .alert.alert-secondary
+    %i.fa.fa-lock
+    = result[:reason]
+
+- elsif @content_bitstreams.length + @other_bitstreams.length > 0
   #file-navigator
     #file-navigator-thumbnail-column
       #file-navigator-thumbnail-content

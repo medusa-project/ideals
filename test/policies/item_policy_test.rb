@@ -1158,6 +1158,41 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.show_events?
   end
 
+  # show_file_navigator?()
+
+  test "show_file_navigator?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.show_file_navigator?
+  end
+
+  test "show_file_navigator?() authorizes users belonging to an exempted user
+  group on an embargo" do
+    user              = users(:norights)
+    user_group        = user_groups(:unused)
+    user_group.users << user
+    user_group.save!
+    @item.embargoes.build(download:    true,
+                          perpetual:   true,
+                          user_groups: [user_group])
+
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.show_file_navigator?
+  end
+
+  test "show_file_navigator?() does not authorize download-embargoed items" do
+    @item   = items(:embargoed)
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_file_navigator?
+  end
+
   # show_metadata?()
 
   test "show_metadata?() returns true with a nil user to an item that is

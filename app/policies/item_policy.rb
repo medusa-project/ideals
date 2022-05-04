@@ -209,6 +209,30 @@ class ItemPolicy < ApplicationPolicy
   end
 
   ##
+  # This method is used only in a view template after {show} has already
+  # authorized access to the view, so it only contains limited additional logic.
+  #
+  def show_file_navigator
+    return AUTHORIZED_RESULT if effective_sysadmin?(user, role)
+    dl_embargoes = @item.current_embargoes.where(download: true)
+    dl_embargoes.each do |embargo|
+      unless user && embargo.exempt?(user)
+        if embargo.user_groups.length > 1
+          reason = "This item's files can only be accessed by the "\
+                   "following groups: " + embargo.user_groups.map(&:name).join(", ")
+        elsif embargo.user_groups.length == 1
+          reason = "This item's files can only be accessed by the "\
+                   "#{embargo.user_groups.first.name} group."
+        else
+          reason = "This item's files are restricted."
+        end
+        return { authorized: false, reason: reason }
+      end
+    end
+    AUTHORIZED_RESULT
+  end
+
+  ##
   # Authorization to show public metadata only.
   #
   # @see show_all_metadata
