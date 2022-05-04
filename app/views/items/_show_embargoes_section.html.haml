@@ -15,9 +15,9 @@
       .card.mb-3
         .card-header
           - if embargo.full_access
-            All access
+            All file & metadata access
           - elsif embargo.download
-            Downloads
+            File downloads
           restricted
           - if embargo.perpetual
             in perpetuity
@@ -27,7 +27,7 @@
         .card-body
           .row
             .col-sm-5
-              %h6 Excepted User Groups
+              %h6 Exempted User Groups
               - if embargo.user_groups.any?
                 %ul
                 - embargo.user_groups.each do |group|

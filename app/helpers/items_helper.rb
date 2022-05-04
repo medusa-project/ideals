@@ -112,7 +112,7 @@ module ItemsHelper
     html <<               check_box_tag("embargoes[#{index}][download]", "true",
                                         embargo&.download,
                                         class: 'form-check-input')
-    html <<               "Downloads"
+    html <<               "Files Only"
     html <<             '</label>'
     html <<           '</div>'
     html <<           '<div class="form-check">'
@@ -120,14 +120,14 @@ module ItemsHelper
     html <<               check_box_tag("embargoes[#{index}][full_access]", "true",
                                         embargo&.full_access,
                                         class: 'form-check-input')
-    html <<               "All Access"
+    html <<               "All Access (files & metadata suppressed from public view)"
     html <<             '</label>'
     html <<           '</div>'
     html <<         '</div>'
     html <<       '</div>'
     html <<       '<div class="col-sm-8">'
     html <<         '<div class="form-group">'
-    html <<           'Excepted User Groups'
+    html <<           'Exempted User Groups'
     if embargo && embargo.user_groups.any?
       embargo.user_groups.each_with_index do |group, index|
         html << embargo_user_group_row(group: group, index: index)
@@ -223,8 +223,8 @@ module ItemsHelper
     html << "<div class=\"user-group form-inline mb-2\" "\
                   "style=\"#{group ? "" : "display: none"}\">"
     html <<   select_tag("embargoes[#{index}][user_group_ids][]",
-                         options_for_select(UserGroup.all.map{ |g| [g.name, g.id] }, group&.id),
-                         class: "custom-select")
+                         options_for_select(UserGroup.all.order(:name).pluck(:name, :id), group&.id),
+                         class: "custom-select", style: "width: 90%")
     html <<   '<button class="btn btn-outline-danger btn-sm ml-2 remove-user-group" type="button">'
     html <<     '<i class="fa fa-minus"></i>'
     html <<   '</button>'
