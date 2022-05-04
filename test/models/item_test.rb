@@ -136,8 +136,7 @@ class ItemTest < ActiveSupport::TestCase
     @instance.elements.build(registered_element: registered_elements(:dc_title),
                              string: "Alternate title")
     # add an embargo
-    @instance.embargoes.build(download: true,
-                              full_access: true,
+    @instance.embargoes.build(kind:       Embargo::Kind::ALL_ACCESS,
                               expires_at: Time.now + 1.day)
     hash = @instance.as_change_hash
     # we will assume that if one property is correct, the rest are
@@ -148,7 +147,7 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal "Alternate title", hash['element:dc:title-2:string']
 
     # test embargoes
-    assert hash['embargo:0:download']
+    assert_equal "ALL_ACCESS", hash['embargo:0:kind']
 
     # test bitstreams
     @instance = items(:item1)

@@ -153,8 +153,8 @@ class ItemPolicy < ApplicationPolicy
       return { authorized: false, reason: "This item is not approved." }
     elsif !@item.discoverable
       return { authorized: false, reason: "This item is not discoverable." }
-    elsif @item.current_embargoes.where(full_access: true).count > 0
-      @item.current_embargoes.where(full_access: true).each do |embargo|
+    else
+      @item.current_embargoes.where(kind: Embargo::Kind::ALL_ACCESS).each do |embargo|
         unless user && embargo.exempt?(user)
           return { authorized: false, reason: "This item is embargoed." }
         end
@@ -214,8 +214,7 @@ class ItemPolicy < ApplicationPolicy
   #
   def show_file_navigator
     return AUTHORIZED_RESULT if effective_sysadmin?(user, role)
-    dl_embargoes = @item.current_embargoes.where(download: true)
-    dl_embargoes.each do |embargo|
+      @item.current_embargoes.each do |embargo|
       unless user && embargo.exempt?(user)
         if embargo.user_groups.length > 1
           reason = "This item's files can only be accessed by the "\

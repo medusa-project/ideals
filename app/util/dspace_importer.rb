@@ -504,8 +504,7 @@ class DspaceImporter
               embargo_reason = item.element("dc:description:reason")&.string
               groups = group ? [group] : []
               if item.embargoes.where(expires_at: expires_at).count < 1
-                item.embargoes.build(download:    true,
-                                     full_access: true,
+                item.embargoes.build(kind:        Embargo::Kind::ALL_ACCESS,
                                      perpetual:   perpetual,
                                      expires_at:  expires_at,
                                      user_groups: groups,

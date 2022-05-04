@@ -339,7 +339,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     assert policy.download?
     bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
-                                   download:   true).save!
+                                   kind:       Embargo::Kind::DOWNLOAD).save!
     assert !policy.download?
   end
 
@@ -356,8 +356,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.download?
 
     bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
-                                   full_access: true,
-                                   download:    true,
+                                   kind:        Embargo::Kind::ALL_ACCESS,
                                    user_groups: [group]).save!
     assert policy.download?
   end
@@ -614,7 +613,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     assert policy.object?
     bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
-                                   download:   true).save!
+                                   kind:       Embargo::Kind::DOWNLOAD).save!
     assert !policy.object?
   end
 
@@ -631,8 +630,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.object?
 
     bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
-                                   full_access: true,
-                                   download:    true,
+                                   kind:        Embargo::Kind::ALL_ACCESS,
                                    user_groups: [group]).save!
     assert policy.object?
   end
@@ -726,7 +724,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     assert policy.show?
     bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
-                                   download:   true).save!
+                                   kind:       Embargo::Kind::DOWNLOAD).save!
     assert !policy.show?
   end
 
@@ -743,8 +741,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.show?
 
     bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
-                                   full_access: true,
-                                   download:    true,
+                                   kind:        Embargo::Kind::ALL_ACCESS,
                                    user_groups: [group]).save!
     assert policy.show?
   end
@@ -878,7 +875,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     assert policy.stream?
     bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
-                                   download:   true).save!
+                                   kind:       Embargo::Kind::DOWNLOAD).save!
     assert !policy.stream?
   end
 
@@ -895,8 +892,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.stream?
 
     bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
-                                   full_access: true,
-                                   download:    true,
+                                   kind:        Embargo::Kind::ALL_ACCESS,
                                    user_groups: [group]).save!
     assert policy.stream?
   end
@@ -1090,7 +1086,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     assert policy.viewer?
     bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
-                                   download:   true).save!
+                                   kind:       Embargo::Kind::DOWNLOAD).save!
     assert !policy.viewer?
   end
 
@@ -1107,8 +1103,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.viewer?
 
     bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
-                                   full_access: true,
-                                   download:    true,
+                                   kind:        Embargo::Kind::ALL_ACCESS,
                                    user_groups: [group]).save!
     assert policy.viewer?
   end

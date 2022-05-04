@@ -195,8 +195,7 @@ class SubmissionsController < ApplicationController
     ActiveRecord::Base.transaction do
       @item.embargoes.destroy_all
       if @item.temp_embargo_type.present? && @item.temp_embargo_type != "open"
-        embargo = @item.embargoes.build(full_access: true,
-                                        download:    true,
+        embargo = @item.embargoes.build(kind:        Embargo::Kind::ALL_ACCESS,
                                         expires_at:  Time.parse(@item.temp_embargo_expires_at),
                                         reason:      @item.temp_embargo_reason)
         if @item.temp_embargo_type == "uofi"

@@ -1,15 +1,15 @@
 ##
-# Restricts [Item] access until an expiration date.
+# Restricts [Item] access either perpetually or until a certain date,
+# optionally exempting one or more [UserGroup]s.
 #
 # # Attributes
 #
 # * `created_at`  Managed by ActiveRecord.
-# * `download`    If true, downloads are restricted.
 # * `expires_at`  Date/time at which the embargo expires. For embargoes that
 #                 never expire, {perpetual} is `true` and the value of this
 #                 attribute is irrelevant.
-# * `full_access` If true, all access to the item is restricted.
-# * `item_id`     References the owning {Item}.
+# * `kind`        Value of one of the [Import::Kind] constants.
+# * `item_id`     References the owning [Item].
 # * `perpetual`   Whether the embargo ever expires. If `true`, the embargo
 #                 never expires and the value of {expires_at} is irrelevant.
 # * `reason`      Reason for the embargo.
@@ -28,13 +28,33 @@ class Embargo < ApplicationRecord
   belongs_to :item
   has_and_belongs_to_many :user_groups, -> { order(:name) }
 
+  validates_inclusion_of :kind, in: -> (value) { Kind.all }
+
   validate :validate_expiration
-  validate :validate_restrictions
 
   class IndexFields
-    DOWNLOAD    = "b_download"
     EXPIRES_AT  = "d_expires_at"
-    FULL_ACCESS = "b_full_access"
+    KIND        = "i_kind"
+  end
+
+  class Kind
+    # All access to the item via any means is restricted.
+    ALL_ACCESS = 0
+    # The item's bitstreams cannot be accessed.
+    DOWNLOAD   = 1
+
+    ##
+    # @return [Enumerable<Integer>]
+    #
+    def self.all
+      Kind.constants.map { |c| Kind.const_get(c) }
+    end
+  end
+
+  def as_change_hash
+    hash         = super
+    hash['kind'] = Kind::constants.find{ |c| Kind.const_get(c) == self.kind }.to_s
+    hash
   end
 
   ##
@@ -44,9 +64,8 @@ class Embargo < ApplicationRecord
     expires_at = self.expires_at
     expires_at = Time.now + 1000.years if self.perpetual || !expires_at
     {
-      IndexFields::DOWNLOAD    => self.download,
-      IndexFields::FULL_ACCESS => self.full_access,
-      IndexFields::EXPIRES_AT  => expires_at.iso8601
+      IndexFields::EXPIRES_AT => expires_at.iso8601,
+      IndexFields::KIND       => self.kind
     }
   end
 
@@ -70,15 +89,6 @@ class Embargo < ApplicationRecord
   def validate_expiration
     if !perpetual && expires_at && expires_at < Time.now
       errors.add(:expires_at, "must be in the future")
-    end
-  end
-
-  ##
-  # Ensures that at least one restriction is set.
-  #
-  def validate_restrictions
-    unless download || full_access
-      errors.add(:base, "At least one restriction must be applied.")
     end
   end
 

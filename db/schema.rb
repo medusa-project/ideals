@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_03_211343) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_04_151535) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -152,13 +152,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_03_211343) do
 
   create_table "embargoes", force: :cascade do |t|
     t.datetime "expires_at"
-    t.boolean "full_access", default: true, null: false
-    t.boolean "download", default: true, null: false
     t.bigint "item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "reason"
     t.boolean "perpetual", default: false, null: false
+    t.integer "kind", null: false
     t.index ["expires_at"], name: "index_embargoes_on_expires_at"
     t.index ["item_id"], name: "index_embargoes_on_item_id"
   end

@@ -109,18 +109,18 @@ module ItemsHelper
     html <<           'Restrict'
     html <<           '<div class="form-check">'
     html <<             '<label>'
-    html <<               check_box_tag("embargoes[#{index}][download]", "true",
-                                        embargo&.download,
-                                        class: 'form-check-input')
-    html <<               "Files Only"
+    html <<               radio_button_tag("embargoes[#{index}][kind]", Embargo::Kind::DOWNLOAD,
+                                           (embargo&.kind == Embargo::Kind::DOWNLOAD),
+                                           class: 'form-check-input')
+    html <<               " Files Only"
     html <<             '</label>'
     html <<           '</div>'
     html <<           '<div class="form-check">'
     html <<             '<label>'
-    html <<               check_box_tag("embargoes[#{index}][full_access]", "true",
-                                        embargo&.full_access,
-                                        class: 'form-check-input')
-    html <<               "All Access (files & metadata suppressed from public view)"
+    html <<               radio_button_tag("embargoes[#{index}][kind]", Embargo::Kind::ALL_ACCESS,
+                                           (embargo&.kind == Embargo::Kind::ALL_ACCESS),
+                                           class: 'form-check-input')
+    html <<               " All Access (files & metadata suppressed from public view)"
     html <<             '</label>'
     html <<           '</div>'
     html <<         '</div>'

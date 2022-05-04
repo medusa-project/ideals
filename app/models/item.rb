@@ -310,7 +310,9 @@ class Item < ApplicationRecord
     doc[IndexFields::COLLECTIONS]        = collections.map(&:id)
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
     doc[IndexFields::DISCOVERABLE]       = self.discoverable
-    doc[IndexFields::EMBARGOES]          = self.current_embargoes.select(&:full_access).map(&:as_indexed_json)
+    doc[IndexFields::EMBARGOES]          = self.current_embargoes.
+        select{ |e| e.kind == Embargo::Kind::ALL_ACCESS }.
+        map(&:as_indexed_json)
     doc[IndexFields::FULL_TEXT]          = self.bitstreams.pluck(:full_text).join("\n").strip
     doc[IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY] =
         self.unit_and_collection_sort_key

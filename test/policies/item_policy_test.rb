@@ -248,7 +248,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     policy  = ItemPolicy.new(context, item)
     assert policy.download_counts?
     item.embargoes.build(expires_at: Time.now + 1.hour,
-                         full_access: true).save!
+                         kind:       Embargo::Kind::ALL_ACCESS).save!
     assert !policy.download_counts?
   end
 
@@ -264,7 +264,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.download_counts?
 
     item.embargoes.build(expires_at:  Time.now + 1.hour,
-                         full_access: true,
+                         kind:        Embargo::Kind::ALL_ACCESS,
                          user_groups: [group]).save!
     assert policy.download_counts?
   end
@@ -806,7 +806,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     policy  = ItemPolicy.new(context, item)
     assert policy.show?
     item.embargoes.build(expires_at: Time.now + 1.hour,
-                         full_access: true).save!
+                         kind:       Embargo::Kind::ALL_ACCESS).save!
     assert !policy.show?
   end
 
@@ -822,7 +822,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show?
 
     item.embargoes.build(expires_at:  Time.now + 1.hour,
-                         full_access: true,
+                         kind:        Embargo::Kind::ALL_ACCESS,
                          user_groups: [group]).save!
     assert policy.show?
   end
@@ -1174,7 +1174,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user_group        = user_groups(:unused)
     user_group.users << user
     user_group.save!
-    @item.embargoes.build(download:    true,
+    @item.embargoes.build(kind:        Embargo::Kind::DOWNLOAD,
                           perpetual:   true,
                           user_groups: [user_group])
 
@@ -1381,7 +1381,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     policy  = ItemPolicy.new(context, item)
     assert policy.statistics?
     item.embargoes.build(expires_at: Time.now + 1.hour,
-                         full_access: true).save!
+                         kind:       Embargo::Kind::ALL_ACCESS).save!
     assert !policy.statistics?
   end
 

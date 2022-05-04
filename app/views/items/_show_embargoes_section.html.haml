@@ -14,9 +14,9 @@
     - embargoes.each do |embargo|
       .card.mb-3
         .card-header
-          - if embargo.full_access
+          - if embargo.kind == Embargo::Kind::ALL_ACCESS
             All file & metadata access
-          - elsif embargo.download
+          - elsif embargo.kind == Embargo::Kind::DOWNLOAD
             File downloads
           restricted
           - if embargo.perpetual
