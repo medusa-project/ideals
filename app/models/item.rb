@@ -33,7 +33,7 @@
 # * `stage_reason`            Reason for setting the {stage} attribute to its
 #                             current value.
 # * `submitter_id`            Foreign key to {User}.
-# * `temp_embargo_type`       Temporarily holds the embargo type during the
+# * `temp_embargo_kind`       Temporarily holds the embargo kind during the
 #                             submission process. When the item is submitted, a
 #                             full-fledged [Embargo] instance is attached to
 #                             the {embargoes} relationship and this value is
@@ -41,12 +41,17 @@
 #                             columns are needed because the submission form
 #                             saves an item after every form element change,
 #                             whether or not enough information has been input
-#                             to construct a valid [Embargo] instance.
+#                             to construct a complete/valid [Embargo] instance.
 # * `temp_embargo_expires_at` Temporarily holds the embargo lift date during
 #                             the submission process. (See
-#                             {temp_embargo_type}.)
+#                             {temp_embargo_kind}.)
 # * `temp_embargo_reason`     Temporarily holds the embargo reason during the
-#                             submission process. (See {temp_embargo_type}.)
+#                             submission process. (See {temp_embargo_kind}.)
+# * `temp_embargo_type`       Temporarily holds the embargo type during the
+#                             submission process. This corresponds to the radio
+#                             buttons in the access section of the submission
+#                             form, and not with any property of [Embargo].
+#                             (See {temp_embargo_kind}.)
 # * `updated_at`              Managed by ActiveRecord.
 #
 # # Relationships
@@ -169,10 +174,12 @@ class Item < ApplicationRecord
   before_update :set_stage_reason
   before_destroy :restrict_in_archive_deletion
 
-  validates :temp_embargo_type, inclusion: { in: %w(open uofi closed) },
+  validates :temp_embargo_kind, inclusion: { in: Embargo::Kind::all },
                                 allow_blank: true
   validates :temp_embargo_expires_at, format: /\d{4}-\d{2}-\d{2}/,
                                       allow_blank: true
+  validates :temp_embargo_type, inclusion: { in: %w(open uofi closed) },
+                                allow_blank: true
   validates :stage, inclusion: { in: Stages.all }
   validate :validate_exhumed, if: -> { stage != Item::Stages::BURIED }
   validate :validate_submission_includes_bitstreams,

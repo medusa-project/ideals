@@ -651,6 +651,15 @@ class ItemTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # temp_embargo_kind
+
+  test "temp_embargo_kind must be a valid value" do
+    @instance.temp_embargo_kind = 99
+    assert !@instance.valid?
+    @instance.temp_embargo_kind = Embargo::Kind::DOWNLOAD
+    assert @instance.valid?
+  end
+
   # temp_embargo_type
 
   test "temp_embargo_type must be a valid value" do

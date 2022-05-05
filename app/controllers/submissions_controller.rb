@@ -93,16 +93,14 @@ class SubmissionsController < ApplicationController
   # @see destroy
   #
   def destroy
-    begin
-      @item.destroy!
-    rescue => e
-      flash['error'] = "#{e}"
-    else
-      ElasticsearchClient.instance.refresh
-      flash['success'] = "Your submission has been canceled."
-    ensure
-      redirect_to root_path
-    end
+    @item.destroy!
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    ElasticsearchClient.instance.refresh
+    flash['success'] = "Your submission has been canceled."
+  ensure
+    redirect_to root_path
   end
 
   ##
@@ -179,9 +177,9 @@ class SubmissionsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:submitter_id, :temp_embargo_type,
-                                 :temp_embargo_expires_at,
-                                 :temp_embargo_reason)
+    params.require(:item).permit(:submitter_id, :temp_embargo_expires_at,
+                                 :temp_embargo_kind, :temp_embargo_reason,
+                                 :temp_embargo_type)
   end
 
   def set_item
@@ -195,17 +193,17 @@ class SubmissionsController < ApplicationController
     ActiveRecord::Base.transaction do
       @item.embargoes.destroy_all
       if @item.temp_embargo_type.present? && @item.temp_embargo_type != "open"
-        embargo = @item.embargoes.build(kind:        Embargo::Kind::ALL_ACCESS,
-                                        expires_at:  Time.parse(@item.temp_embargo_expires_at),
-                                        reason:      @item.temp_embargo_reason)
+        embargo = @item.embargoes.build(kind:       @item.temp_embargo_kind || Embargo::Kind::DOWNLOAD,
+                                        expires_at: Time.parse(@item.temp_embargo_expires_at),
+                                        reason:     @item.temp_embargo_reason)
         if @item.temp_embargo_type == "uofi"
           embargo.user_groups << UserGroup.find_by_key("uiuc")
         end
-
-        @item.temp_embargo_type       = nil
-        @item.temp_embargo_expires_at = nil
-        @item.temp_embargo_reason     = nil
       end
+      @item.temp_embargo_type       = nil
+      @item.temp_embargo_kind       = nil
+      @item.temp_embargo_expires_at = nil
+      @item.temp_embargo_reason     = nil
     end
   end
 

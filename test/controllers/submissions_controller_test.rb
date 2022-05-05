@@ -97,25 +97,87 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
                  item.stage
   end
 
-  test "complete() attaches a correct Embargo" do
+  test "complete() does not attach an embargo when the open radio is selected" do
     item = items(:submitting)
-    assert item.submitting?
+    log_in_as(item.submitter)
+    item.update!(temp_embargo_type:       "open",
+                 temp_embargo_kind:       Embargo::Kind::DOWNLOAD)
+    post submission_complete_path(item)
+
+    item.reload
+    assert_nil item.temp_embargo_kind
+    assert_nil item.temp_embargo_type
+    assert_nil item.temp_embargo_expires_at
+    assert_nil item.temp_embargo_reason
+    assert item.embargoes.empty?
+  end
+
+  test "complete() attaches a correct embargo when the UofI-only radio is selected" do
+    item = items(:submitting)
     log_in_as(item.submitter)
     item.update!(temp_embargo_type:       "uofi",
+                 temp_embargo_kind:       Embargo::Kind::DOWNLOAD,
                  temp_embargo_expires_at: "2053-01-01",
                  temp_embargo_reason:     "Test reason")
     post submission_complete_path(item)
 
     item.reload
+    assert_nil item.temp_embargo_kind
     assert_nil item.temp_embargo_type
     assert_nil item.temp_embargo_expires_at
     assert_nil item.temp_embargo_reason
     assert_equal 1, item.embargoes.length
     embargo = item.embargoes.first
+    assert_equal Embargo::Kind::DOWNLOAD, embargo.kind
     assert_equal Time.parse("2053-01-01"), embargo.expires_at
     assert_equal "Test reason", embargo.reason
     assert_equal 1, embargo.user_groups.length
     assert_equal "uiuc", embargo.user_groups.first.key
+  end
+
+  test "complete() attaches a correct Embargo when the closed radio is selected" do
+    item = items(:submitting)
+    log_in_as(item.submitter)
+    item.update!(temp_embargo_type:       "closed",
+                 temp_embargo_kind:       Embargo::Kind::DOWNLOAD,
+                 temp_embargo_expires_at: "2053-01-01",
+                 temp_embargo_reason:     "Test reason")
+    post submission_complete_path(item)
+
+    item.reload
+    assert_nil item.temp_embargo_kind
+    assert_nil item.temp_embargo_type
+    assert_nil item.temp_embargo_expires_at
+    assert_nil item.temp_embargo_reason
+    assert_equal 1, item.embargoes.length
+    embargo = item.embargoes.first
+    assert_equal Embargo::Kind::DOWNLOAD, embargo.kind
+    assert_equal Time.parse("2053-01-01"), embargo.expires_at
+    assert_equal "Test reason", embargo.reason
+    assert embargo.user_groups.empty?
+  end
+
+  test "complete() attaches a correct embargo when the hide records checkbox is
+  checked" do
+    item = items(:submitting)
+    log_in_as(item.submitter)
+    item.update!(temp_embargo_type:       "closed",
+                 temp_embargo_kind:       Embargo::Kind::ALL_ACCESS,
+                 temp_embargo_expires_at: "2053-01-01",
+                 temp_embargo_reason:     "Test reason")
+    post submission_complete_path(item)
+
+    item.reload
+    assert_nil item.temp_embargo_kind
+    assert_nil item.temp_embargo_type
+    assert_nil item.temp_embargo_expires_at
+    assert_nil item.temp_embargo_reason
+    assert_equal 1, item.embargoes.length
+    embargo = item.embargoes.first
+    assert_equal Embargo::Kind::ALL_ACCESS, embargo.kind
+    assert_equal Time.parse("2053-01-01"), embargo.expires_at
+    assert_equal "Test reason", embargo.reason
+    assert embargo.user_groups.empty?
   end
 
   # create()

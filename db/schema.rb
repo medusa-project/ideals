@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_04_151535) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_04_205247) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -257,9 +257,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_04_151535) do
     t.boolean "discoverable", default: false, null: false
     t.integer "stage", default: 0, null: false
     t.text "stage_reason"
-    t.string "temp_embargo_type"
     t.string "temp_embargo_expires_at"
     t.text "temp_embargo_reason"
+    t.string "temp_embargo_type"
+    t.integer "temp_embargo_kind"
     t.index ["discoverable"], name: "index_items_on_discoverable"
     t.index ["stage"], name: "index_items_on_stage"
     t.index ["submitter_id"], name: "index_items_on_submitter_id"

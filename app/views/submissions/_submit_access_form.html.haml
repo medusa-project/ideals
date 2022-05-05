@@ -32,11 +32,13 @@
                       "Closed access (not recommended)",
                       class: "form-check-label")
         .form-check.mb-1{style: "display: none"}
-          = check_box_tag("item[temp_embargo_hide_records]", "true",
-                          false,
+          = hidden_field_tag("item[temp_embargo_kind]", Embargo::Kind::DOWNLOAD)
+          = check_box_tag("item[temp_embargo_kind]",
+                          Embargo::Kind::ALL_ACCESS,
+                          f.object.temp_embargo_kind == Embargo::Kind::ALL_ACCESS,
                           class: "form-check-input")
-          = label_tag("item_temp_embargo_hide_records",
-                      "Hide records in search and browse",
+          = label_tag("item_temp_embargo_kind",
+                      "Suppress records from public access",
                       class: "form-check-label")
       .col-sm-2.message
         .text-success

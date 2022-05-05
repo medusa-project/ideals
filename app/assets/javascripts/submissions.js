@@ -270,15 +270,15 @@ const SubmissionForm = function() {
     };
 
     const showOrHideEmbargoElements = function() {
-        const typeCheckbox             = accessForm.find("input[name='item[temp_embargo_type]']");
+        const typeRadios               = accessForm.find("input[name='item[temp_embargo_type]']");
         const expirySection            = $("section#expiry-section");
         const reasonSection            = $("section#reason-section");
-        const hideRecordsCheckboxGroup = $("section#type-section #item_temp_embargo_hide_records").parent();
-        if (typeCheckbox.filter(":checked").val() === "closed") {
+        const hideRecordsCheckboxGroup = $("section#type-section #item_temp_embargo_kind").parent();
+        if (typeRadios.filter(":checked").val() === "closed") {
             hideRecordsCheckboxGroup.show();
             expirySection.show();
             reasonSection.show();
-        } else if (typeCheckbox.filter(":checked").val() === "uofi") {
+        } else if (typeRadios.filter(":checked").val() === "uofi") {
             hideRecordsCheckboxGroup.hide();
             expirySection.show();
             reasonSection.show();
