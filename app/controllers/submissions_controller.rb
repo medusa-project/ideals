@@ -58,14 +58,15 @@ class SubmissionsController < ApplicationController
   end
 
   ##
-  # Creates a new {Item} upon acceptance of the {new deposit agreement}.
+  # Creates a new [Item] upon acceptance of the {new deposit agreement}.
   # After the submission has been created, the user is redirected to {edit}.
   #
   # Responds to `POST /submissions`.
   #
   def create
-    command = CreateItemCommand.new(submitter: current_user)
-    item    = command.execute
+    collection = Collection.find_by(id: params[:primary_collection_id]) # may be nil
+    item       = CreateItemCommand.new(submitter:          current_user,
+                                       primary_collection: collection).execute
     authorize item, policy_class: SubmissionPolicy # this should always succeed
     redirect_to edit_submission_path(item)
   end
@@ -110,8 +111,11 @@ class SubmissionsController < ApplicationController
     # This will be nil if we are arriving at /submit, but otherwise we will
     # use it to pre-select the collection in the submission form.
     @collection  = Collection.find_by(id: params[:collection_id])
+    # These are all submissions in the same collection, or no collection.
     @submissions = current_user.submitted_items.
+      joins(:collection_item_memberships).
       where(stage: Item::Stages::SUBMITTING).
+      where("collection_item_memberships.collection_id": @collection&.id).
       order(:updated_at)
   end
 

@@ -1,7 +1,12 @@
 - provide :body_id, "deposit-agreement-body"
 - provide :title, "Submit an Item"
 
-%h1 Submit an Item
+%h1
+  Submit an Item
+  - if @collection
+    %small
+      to
+      = @collection.title
 
 - if @submissions.any?
   #submissions-in-progress.card.text-white.bg-info.mb-3
@@ -16,9 +21,9 @@
             - else
               = link_to(raw("Started #{local_time_ago(item.created_at)} (collection not selected)"),
                         edit_submission_path(item))
-  %button.begin-submission.btn.btn-outline-primary Begin New Submission
 
-#deposit-agreement.accordion.mb-3{style: "#{@submissions.any? ? "display: none" : ""}"}
+
+#deposit-agreement.accordion.mb-3
   %p To start your deposit, please review the deposit agreement and answer the following questions.
 
   .card
@@ -120,7 +125,7 @@
   %hr
 
   = form_tag(submissions_path, method: :post) do
-    = hidden_field_tag(:primary_collection_id, params[:collection_id])
+    = hidden_field_tag(:primary_collection_id, @collection&.id)
     .row
       .col-sm-3
         = submit_tag("Begin Submission", class: "btn btn-secondary btn-lg")

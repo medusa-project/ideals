@@ -4,10 +4,6 @@
  * @constructor
  */
 const AgreementView = function() {
-    if ($("#submissions-in-progress").length === 0) {
-        $("#questions").show();
-    }
-
     // Switch the plus icon in the expand-deposit-agreement section to a minus
     // icon upon click, and vice versa.
     const depositAgreementSection = $('#deposit-agreement');
