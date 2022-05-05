@@ -10,6 +10,7 @@ class CollectionsController < ApplicationController
                                           :edit_submitters,
                                           :edit_unit_membership,
                                           :edit_user_access, :show_access,
+                                          :show_properties,
                                           :show_review_submissions, :undelete,
                                           :update]
   before_action :set_collection, except: [:create, :index]

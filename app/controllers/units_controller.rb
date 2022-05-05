@@ -7,7 +7,8 @@ class UnitsController < ApplicationController
   before_action :ensure_logged_in, only: [:create, :delete,
                                           :edit_administrators,
                                           :edit_membership, :edit_properties,
-                                          :show_access, :undelete, :update]
+                                          :show_access, :show_properties,
+                                          :undelete, :update]
   before_action :set_unit, except: [:create, :index, :new]
   before_action :check_buried, except: [:create, :index, :new, :show, :undelete]
   before_action :authorize_unit, except: [:create, :index]
