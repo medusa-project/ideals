@@ -11,19 +11,6 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
-  # agreement()
-
-  test "agreement() redirects to login page for logged-out users" do
-    get submit_path
-    assert_redirected_to login_path
-  end
-
-  test "agreement() returns HTTP 200 for logged-in users" do
-    log_in_as(users(:norights))
-    get submit_path
-    assert_response :ok
-  end
-
   # complete()
 
   test "complete() redirects to login page for logged-out users" do
@@ -264,6 +251,19 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(item.submitter)
     get edit_submission_path(item)
     assert_redirected_to root_path
+  end
+
+  # new()
+
+  test "new() redirects to login page for logged-out users" do
+    get submit_path
+    assert_redirected_to login_path
+  end
+
+  test "new() returns HTTP 200 for logged-in users" do
+    log_in_as(users(:norights))
+    get submit_path
+    assert_response :ok
   end
 
   # status()

@@ -15,10 +15,6 @@ class SubmissionPolicy < ApplicationPolicy
     @item            = item
   end
 
-  def agreement
-    create
-  end
-
   def complete
     update
   end
@@ -33,6 +29,10 @@ class SubmissionPolicy < ApplicationPolicy
 
   def edit
     update
+  end
+
+  def new
+    create
   end
 
   def update

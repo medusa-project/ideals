@@ -15,21 +15,6 @@ class SubmissionsController < ApplicationController
   before_action :check_submitted, only: :status
 
   ##
-  # Displays the deposit agreement. At the end of the agreement is a submit
-  # button that POSTs to {create}.
-  #
-  # Clients may arrive here from a main menu, or from a
-  # {CollectionsController#show show-collection page}.
-  #
-  # Responds to `GET /deposit` and `GET /collections/:collection_id/deposit`.
-  #
-  def agreement
-    @submissions = current_user.submitted_items.
-        where(stage: Item::Stages::SUBMITTING).
-        order(:updated_at)
-  end
-
-  ##
   # Handles the final submit button in the submission form, completing a
   # submission.
   #
@@ -73,7 +58,7 @@ class SubmissionsController < ApplicationController
   end
 
   ##
-  # Creates a new {Item} upon acceptance of the {agreement deposit agreement}.
+  # Creates a new {Item} upon acceptance of the {new deposit agreement}.
   # After the submission has been created, the user is redirected to {edit}.
   #
   # Responds to `POST /submissions`.
@@ -110,6 +95,24 @@ class SubmissionsController < ApplicationController
   #
   def edit
     @submission_profile = @item.effective_submission_profile
+  end
+
+  ##
+  # Displays the deposit agreement. At the end of the agreement is a submit
+  # button that POSTs to {create}.
+  #
+  # Clients may arrive here from a main menu, or from a
+  # {CollectionsController#show show-collection page}.
+  #
+  # Responds to `GET /submit` and `GET /collections/:collection_id/deposit`.
+  #
+  def new
+    # This will be nil if we are arriving at /submit, but otherwise we will
+    # use it to pre-select the collection in the submission form.
+    @collection  = Collection.find_by(id: params[:collection_id])
+    @submissions = current_user.submitted_items.
+      where(stage: Item::Stages::SUBMITTING).
+      order(:updated_at)
   end
 
   ##

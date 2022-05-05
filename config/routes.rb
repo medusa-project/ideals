@@ -43,7 +43,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/item-download-counts", to: "collections#item_download_counts", via: :get
     match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
-    match "/submit", to: "submissions#agreement", via: :get
+    match "/submit", to: "submissions#new", via: :get
     match "/undelete", to: "collections#undelete", via: :post
   end
   # This is an old DSpace route.
@@ -135,7 +135,7 @@ Rails.application.routes.draw do
     match "/complete", to: "submissions#complete", via: :post
     match "/status", to: "submissions#status", via: :get
   end
-  match "/submit", to: "submissions#agreement", via: :get
+  match "/submit", to: "submissions#new", via: :get
   resources :tasks, only: [:index, :show]
   resources :units, except: [:destroy, :edit] do
     # These all render content for the main tab panes in show-unit view via XHR.

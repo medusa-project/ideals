@@ -6,31 +6,6 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     @item = items(:item1)
   end
 
-  # agreement?()
-
-  test "agreement?() returns false with a nil user" do
-    policy = SubmissionPolicy.new(nil, @item)
-    assert !policy.agreement?
-  end
-
-  test "agreement?() authorizes logged-in users" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = SubmissionPolicy.new(context, @item)
-    assert policy.agreement?
-  end
-
-  test "agreement?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_OUT)
-    policy  = SubmissionPolicy.new(context, @item)
-    assert !policy.agreement?
-  end
-
   # complete?()
 
   test "complete?() returns false with a nil user" do
@@ -299,6 +274,31 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = SubmissionPolicy.new(context, @item)
     assert !policy.edit?
+  end
+
+  # new?()
+
+  test "new?() returns false with a nil user" do
+    policy = SubmissionPolicy.new(nil, @item)
+    assert !policy.new?
+  end
+
+  test "new?() authorizes logged-in users" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = SubmissionPolicy.new(context, @item)
+    assert policy.new?
+  end
+
+  test "new?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_OUT)
+    policy  = SubmissionPolicy.new(context, @item)
+    assert !policy.new?
   end
 
   # update?()
