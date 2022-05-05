@@ -18,7 +18,7 @@ const CollectionView = function() {
                 });
             });
         });
-    }).trigger("show.bs.tab");
+    });
 
     $("#units-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/collections/" + collectionID + "/units";
@@ -126,7 +126,7 @@ const CollectionView = function() {
             attachResultsEventListeners();
             refreshResults();
         });
-    });
+    }).trigger("show.bs.tab");
 
     $("#review-submissions-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/collections/" + collectionID + "/review-submissions";

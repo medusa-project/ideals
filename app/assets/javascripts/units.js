@@ -37,7 +37,7 @@ const UnitView = function() {
                 });
             });
         });
-    }).trigger("show.bs.tab");
+    });
 
     $("#units-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/units/" + unitID + "/units";
@@ -137,7 +137,7 @@ const UnitView = function() {
             attachResultsEventListeners();
             refreshResults();
         });
-    });
+    }).trigger("show.bs.tab");
 
     $("#statistics-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/units/" + unitID + "/statistics";

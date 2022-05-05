@@ -13,22 +13,13 @@
   .col-sm-5.col-md-4.col-lg-3
     .nav.flex-column.nav-pills{role: "tablist",
                                "aria-orientation": "vertical"}
-      %a#properties-tab.nav-link.active{href: "#properties-tab-content",
-                                        "data-toggle": "pill",
-                                        role: "tab",
-                                        "aria-controls": "properties-tab-content",
-                                        "aria-selected": "true"}
-        = icon_for(:info)
-        Properties
-
-      %a#units-tab.nav-link{href: "#units-tab-content",
-                            "data-toggle": "pill",
-                            role: "tab",
-                            "aria-controls": "units-tab-content",
-                            "aria-selected": "false"}
-        = icon_for(Unit)
-        Unit Membership
-
+      %a#items-tab.nav-link.active{href: "#items-tab-content",
+                                   "data-toggle": "pill",
+                                   role: "tab",
+                                   "aria-controls": "items-tab-content",
+                                   "aria-selected": "true"}
+        = icon_for(Item)
+        Items
       %a#collections-tab.nav-link{href: "#collections-tab-content",
                                   "data-toggle": "pill",
                                   role: "tab",
@@ -36,15 +27,13 @@
                                   "aria-selected": "false"}
         = icon_for(Collection)
         Collection Membership
-
-      %a#items-tab.nav-link{href: "#items-tab-content",
+      %a#units-tab.nav-link{href: "#units-tab-content",
                             "data-toggle": "pill",
                             role: "tab",
-                            "aria-controls": "items-tab-content",
+                            "aria-controls": "units-tab-content",
                             "aria-selected": "false"}
-        = icon_for(Item)
-        Items
-
+        = icon_for(Unit)
+        Unit Membership
       - if policy(@collection).show_review_submissions?
         %a#review-submissions-tab.nav-link{href: "#review-submissions-tab-content",
                                            "data-toggle": "tab",
@@ -56,6 +45,14 @@
           - if @review_count > 0
             %small.badge-pill.badge-danger= @review_count
 
+      %a#properties-tab.nav-link{href: "#properties-tab-content",
+                                 "data-toggle": "pill",
+                                 role: "tab",
+                                 "aria-controls": "properties-tab-content",
+                                 "aria-selected": "false"}
+        = icon_for(:info)
+        Properties
+
       - if policy(@collection).show_statistics?
         %a#statistics-tab.nav-link{href: "#statistics-tab-content",
                                   "data-toggle": "tab",
@@ -65,7 +62,6 @@
                                   "aria-selected": "false"}
           %i.fa.fa-chart-bar
           Statistics
-
       - if policy(@collection).show_access?
         %a#access-tab.nav-link{href: "#access-tab-content",
                                "data-toggle": "tab",
@@ -76,35 +72,29 @@
           Access
 
   .tab-content.col-sm-7.col-md-8.col-lg-9
-    #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
-                                                      "aria-labelledby": "properties-tab"}
+    #items-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                                 "aria-labelledby": "items-tab"}
       = spinner
-
-    #units-tab-content.tab-pane.fade.show{role: "tabpanel",
+    #collections-tab-content.tab-pane.fade{role: "tabpanel",
+                                           "aria-labelledby": "collections-tab"}
+      = spinner
+    #units-tab-content.tab-pane.fade{role: "tabpanel",
                                           "aria-labelledby": "units-tab"}
       = spinner
-
-    #collections-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                "aria-labelledby": "collections-tab"}
+    #properties-tab-content.tab-pane.fade{role: "tabpanel",
+                                          "aria-labelledby": "properties-tab"}
       = spinner
-
-    #items-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                          "aria-labelledby": "items-tab"}
-      = spinner
-
     - if policy(@collection).show_statistics?
-      #statistics-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                 "aria-labelledby": "statistics-tab"}
+      #statistics-tab-content.tab-pane.fade{role: "tabpanel",
+                                            "aria-labelledby": "statistics-tab"}
         = spinner
-
     - if policy(@collection).show_review_submissions?
-      #review-submissions-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                                         "aria-labelledby": "review-submissions-tab"}
+      #review-submissions-tab-content.tab-pane.fade{role: "tabpanel",
+                                                    "aria-labelledby": "review-submissions-tab"}
         = spinner
-
     - if policy(@collection).show_access?
-      #access-tab-content.tab-pane.fade.show{role: "tabpanel",
-                                             "aria-labelledby": "access-tab"}
+      #access-tab-content.tab-pane.fade{role: "tabpanel",
+                                        "aria-labelledby": "access-tab"}
         = spinner
 
 = render partial: "collections/add_modal",
