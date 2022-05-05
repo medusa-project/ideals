@@ -9,7 +9,8 @@
   - users = [ShibbolethUser.new] if users.empty?
   - users.each do |user|
     .input-group.mb-3
-      = text_field_tag "user_group[netid_users][]", user.name,
+      = text_field_tag "user_group[netid_users][]", user.netid,
+                       placeholder: "NetID",
                        class: "form-control"
       .input-group-append
         %button.btn.btn-outline-danger.remove{type: "button"}
