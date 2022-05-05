@@ -113,7 +113,7 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def show_properties
-    show
+    effective_admin
   end
 
   def show_statistics
@@ -133,11 +133,21 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def update
-    if user
-      return AUTHORIZED_RESULT if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
-      return AUTHORIZED_RESULT if unit != Unit &&
-        role >= Role::UNIT_ADMINISTRATOR && user.effective_unit_admin?(unit)
+    effective_admin
+  end
+
+
+  private
+
+  def effective_admin
+    if !user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(user, role)
+      return AUTHORIZED_RESULT
+    elsif role >= Role::UNIT_ADMINISTRATOR && user.effective_unit_admin?(unit)
+      return AUTHORIZED_RESULT
     end
     { authorized: false, reason: "You must be an administrator of the unit." }
   end
+
 end

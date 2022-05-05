@@ -113,7 +113,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def show_properties
-    show
+    effective_manager
   end
 
   def show_review_submissions

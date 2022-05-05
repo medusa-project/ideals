@@ -44,15 +44,14 @@
           Review Submissions
           - if @review_count > 0
             %small.badge-pill.badge-danger= @review_count
-
-      %a#properties-tab.nav-link{href: "#properties-tab-content",
-                                 "data-toggle": "pill",
-                                 role: "tab",
-                                 "aria-controls": "properties-tab-content",
-                                 "aria-selected": "false"}
-        = icon_for(:info)
-        Properties
-
+      - if policy(@collection).show_properties?
+        %a#properties-tab.nav-link{href: "#properties-tab-content",
+                                   "data-toggle": "pill",
+                                   role: "tab",
+                                   "aria-controls": "properties-tab-content",
+                                   "aria-selected": "false"}
+          = icon_for(:info)
+          Properties
       - if policy(@collection).show_statistics?
         %a#statistics-tab.nav-link{href: "#statistics-tab-content",
                                   "data-toggle": "tab",
@@ -79,11 +78,12 @@
                                            "aria-labelledby": "collections-tab"}
       = spinner
     #units-tab-content.tab-pane.fade{role: "tabpanel",
-                                          "aria-labelledby": "units-tab"}
+                                     "aria-labelledby": "units-tab"}
       = spinner
-    #properties-tab-content.tab-pane.fade{role: "tabpanel",
-                                          "aria-labelledby": "properties-tab"}
-      = spinner
+    - if policy(@collection).show_properties?
+      #properties-tab-content.tab-pane.fade{role: "tabpanel",
+                                            "aria-labelledby": "properties-tab"}
+        = spinner
     - if policy(@collection).show_statistics?
       #statistics-tab-content.tab-pane.fade{role: "tabpanel",
                                             "aria-labelledby": "statistics-tab"}
