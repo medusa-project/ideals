@@ -110,7 +110,7 @@ class CsvImporter
   #
   def import_from_s3(import, submitter, task: nil)
     client         = S3Client.instance
-    bucket         = ::Configuration.instance.aws[:bucket]
+    bucket         = ::Configuration.instance.storage[:bucket]
     object_keys    = import.object_keys
     csv_object_key = object_keys.first
     imported_items = []

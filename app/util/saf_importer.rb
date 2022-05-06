@@ -160,7 +160,7 @@ class SafImporter
   #
   def import_from_s3(import, task: nil)
     client            = S3Client.instance
-    bucket            = ::Configuration.instance.aws[:bucket]
+    bucket            = ::Configuration.instance.storage[:bucket]
     item_key_prefixes = import.item_key_prefixes
     imported_items    = import.imported_items || []
     item_key_prefixes.reject!{ |k| imported_items.select{ |i| k.end_with?(i['item_id']) }.any? }
@@ -297,7 +297,7 @@ class SafImporter
                              content_file_key:,
                              content_file_content:)
     client = S3Client.instance
-    bucket = Configuration.instance.aws[:bucket]
+    bucket = Configuration.instance.storage[:bucket]
     content_file_content.split("\n").each_with_index do |line, line_index|
       line.strip!
       next if line.blank?

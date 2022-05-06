@@ -146,7 +146,7 @@ class ImportTest < ActiveSupport::TestCase
                             io:            file)
     end
     expected_key = @instance.object_key("item1/escher_lego.jpg")
-    assert S3Client.instance.object_exists?(bucket: ::Configuration.instance.aws[:bucket],
+    assert S3Client.instance.object_exists?(bucket: ::Configuration.instance.storage[:bucket],
                                             key:    expected_key)
   end
 

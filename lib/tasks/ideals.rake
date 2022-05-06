@@ -11,7 +11,8 @@ namespace :ideals do
 
   desc "Purge all objects from the application storage"
   task :purge_bucket => :environment do
-    S3Client.instance.delete_objects(bucket: ::Configuration.instance.aws[:bucket])
+    config = ::Configuration.instance
+    S3Client.instance.delete_objects(bucket: config.storage[:bucket])
   end
 
   desc "Seed the database (AFTER MIGRATION)"

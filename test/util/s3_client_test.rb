@@ -3,7 +3,7 @@ require 'test_helper'
 class S3ClientTest < ActiveSupport::TestCase
 
   setup do
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
     client = S3Client.instance
     unless client.bucket_exists?(bucket)
       client.create_bucket(bucket: bucket)
@@ -11,14 +11,14 @@ class S3ClientTest < ActiveSupport::TestCase
   end
 
   teardown do
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
     S3Client.instance.delete_objects(bucket: bucket, key_prefix: "/")
   end
 
   # bucket_exists?()
 
   test "bucket_exists?() returns true when the bucket exists" do
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
     assert S3Client.instance.bucket_exists?(bucket)
   end
 
@@ -29,7 +29,7 @@ class S3ClientTest < ActiveSupport::TestCase
   # delete_objects()
 
   test "delete_objects() deletes all intended objects" do
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
     client = S3Client.instance
     file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")
     client.put_object(bucket: bucket,
@@ -52,7 +52,7 @@ class S3ClientTest < ActiveSupport::TestCase
   # num_objects()
 
   test "num_objects() returns a correct count" do
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
     client = S3Client.instance
     file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")
     client.put_object(bucket: bucket,
@@ -68,7 +68,7 @@ class S3ClientTest < ActiveSupport::TestCase
 
   test "object_exists?() returns true when the object exists" do
     config = ::Configuration.instance
-    bucket = config.aws[:bucket]
+    bucket = config.storage[:bucket]
     key    = "test-#{SecureRandom.hex}"
     client = S3Client.instance
     begin
@@ -86,14 +86,14 @@ class S3ClientTest < ActiveSupport::TestCase
   end
 
   test "object_exists?() returns false when the object does not exist" do
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
     assert !S3Client.instance.object_exists?(bucket: bucket, key: "bogus")
   end
 
   # objects()
 
   test "objects() returns a correct value" do
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
     client = S3Client.instance
     file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")
     client.put_object(bucket: bucket,
@@ -110,7 +110,7 @@ class S3ClientTest < ActiveSupport::TestCase
   test "upload_path() uploads correct objects with correct keys" do
     root_path = File.join(Rails.root, "test", "fixtures", "saf_packages", "valid_item")
     client    = S3Client.instance
-    bucket    = ::Configuration.instance.aws[:bucket]
+    bucket    = ::Configuration.instance.storage[:bucket]
     client.upload_path(root_path:  root_path,
                        bucket:     bucket,
                        key_prefix: "prefix/")

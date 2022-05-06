@@ -178,7 +178,7 @@ class BitstreamsController < ApplicationController
     end
 
     s3_request = {
-      bucket: ::Configuration.instance.aws[:bucket],
+      bucket: ::Configuration.instance.storage[:bucket],
       key:    key
     }
 

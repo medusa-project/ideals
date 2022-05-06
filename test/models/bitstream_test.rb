@@ -159,7 +159,8 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "data() raises an error when an object does not exist in either the
   staging or permanent area" do
-    S3Client.instance.delete_object(bucket: ::Configuration.instance.aws[:bucket],
+    config = ::Configuration.instance
+    S3Client.instance.delete_object(bucket: config.storage[:bucket],
                                     key:    @instance.staging_key)
     assert_raises Aws::S3::Errors::NoSuchKey do
       @instance.data
@@ -185,7 +186,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "delete_derivatives() deletes all derivatives" do
     client = S3Client.instance
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
 
     # upload the source image to the staging area of the application S3 bucket
     File.open(file_fixture("escher_lego.jpg"), "r") do |file|
@@ -253,14 +254,14 @@ class BitstreamTest < ActiveSupport::TestCase
     permanent_key = @instance.permanent_key
 
     # Check that the file exists in the bucket.
-    assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+    assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
                                             key:    permanent_key)
 
     # Delete it.
     @instance.delete_from_permanent_storage
 
     # Check that it has been deleted.
-    assert !S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+    assert !S3Client.instance.object_exists?(bucket: config.storage[:bucket],
                                              key:    permanent_key)
   end
 
@@ -277,7 +278,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
     # Check that the file exists in the bucket.
     config = ::Configuration.instance
-    assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+    assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
                                             key:    @instance.permanent_key)
 
     # Delete it.
@@ -309,14 +310,14 @@ class BitstreamTest < ActiveSupport::TestCase
     staging_key = @instance.staging_key
 
     # Check that the file exists in the bucket.
-    assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+    assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
                                             key:    staging_key)
 
     # Delete it.
     @instance.delete_from_staging
 
     # Check that it has been deleted.
-    assert !S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+    assert !S3Client.instance.object_exists?(bucket: config.storage[:bucket],
                                              key:    staging_key)
   end
 
@@ -332,7 +333,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
     # Check that the file exists in the bucket.
     config = ::Configuration.instance
-    assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+    assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
                                             key:    @instance.staging_key)
 
     # Delete it.
@@ -371,7 +372,7 @@ class BitstreamTest < ActiveSupport::TestCase
   application bucket" do
     @instance = bitstreams(:submitted_in_staging)
     client = S3Client.instance
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
     key    = Bitstream.staging_key(@instance.item_id,
                                    @instance.original_filename)
 
@@ -385,7 +386,7 @@ class BitstreamTest < ActiveSupport::TestCase
   application bucket" do
     @instance = bitstreams(:approved_in_permanent)
     client    = S3Client.instance
-    bucket    = ::Configuration.instance.aws[:bucket]
+    bucket    = ::Configuration.instance.storage[:bucket]
     key       = Bitstream.permanent_key(@instance.item_id,
                                         @instance.original_filename)
 
@@ -398,7 +399,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "destroy() deletes corresponding derivatives" do
     @instance  = bitstreams(:submitted_in_staging)
     client     = S3Client.instance
-    bucket     = ::Configuration.instance.aws[:bucket]
+    bucket     = ::Configuration.instance.storage[:bucket]
     key_prefix = @instance.send(:derivative_key_prefix)
     @instance.derivative_url(size: 256) # generate a derivative
 
@@ -677,7 +678,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
       # Check that the file exists in the bucket.
       config = ::Configuration.instance
-      assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+      assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
                                               key:    @instance.permanent_key)
     ensure
       @instance.delete_from_staging
@@ -913,7 +914,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
       # Check that the file exists in the bucket.
       config = ::Configuration.instance
-      assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+      assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
                                               key:    @instance.permanent_key)
     ensure
       @instance.delete_from_permanent_storage
@@ -935,7 +936,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
       # Check that the file exists in the bucket.
       config = ::Configuration.instance
-      assert S3Client.instance.object_exists?(bucket: config.aws[:bucket],
+      assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
                                               key:    @instance.staging_key)
     ensure
       @instance.delete_from_staging

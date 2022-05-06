@@ -254,14 +254,15 @@ class Bitstream < ApplicationRecord
   #
   def data
     config = ::Configuration.instance
-    bucket = config.aws[:bucket]
+    bucket = config.storage[:bucket]
     key    = self.effective_key
     S3Client.instance.get_object(bucket: bucket, key: key).body
   end
 
   def delete_derivatives
     begin
-      S3Client.instance.delete_objects(bucket:     ::Configuration.instance.aws[:bucket],
+      config = ::Configuration.instance
+      S3Client.instance.delete_objects(bucket:     config.storage[:bucket],
                                        key_prefix: derivative_key_prefix)
     rescue Aws::S3::Errors::NoSuchBucket
       # This would hopefully only happen because of a test environment
@@ -294,7 +295,7 @@ class Bitstream < ApplicationRecord
   #
   def delete_from_permanent_storage
     return if self.permanent_key.blank?
-    S3Client.instance.delete_object(bucket: ::Configuration.instance.aws[:bucket],
+    S3Client.instance.delete_object(bucket: ::Configuration.instance.storage[:bucket],
                                     key:    self.permanent_key)
     self.update!(permanent_key: nil)
   rescue Aws::S3::Errors::NotFound
@@ -307,7 +308,7 @@ class Bitstream < ApplicationRecord
   #
   def delete_from_staging
     return if self.staging_key.blank?
-    S3Client.instance.delete_object(bucket: ::Configuration.instance.aws[:bucket],
+    S3Client.instance.delete_object(bucket: ::Configuration.instance.storage[:bucket],
                                     key:    self.staging_key)
     self.update!(staging_key: nil)
   rescue Aws::S3::Errors::NotFound
@@ -327,7 +328,7 @@ class Bitstream < ApplicationRecord
       raise "Derivatives are not supported for this format."
     end
     client = S3Client.instance
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
     key    = derivative_key(region: region, size: size, format: :jpg)
     unless client.object_exists?(bucket: bucket, key: key)
       generate_derivative(region: region, size: size, format: :jpg)
@@ -444,7 +445,7 @@ class Bitstream < ApplicationRecord
 
   def move_into_permanent_storage
     client        = S3Client.instance
-    bucket        = ::Configuration.instance.aws[:bucket]
+    bucket        = ::Configuration.instance.storage[:bucket]
     permanent_key = self.class.permanent_key(self.item_id,
                                              self.original_filename)
     transaction do
@@ -463,7 +464,7 @@ class Bitstream < ApplicationRecord
   #
   def presigned_url(content_disposition: "attachment")
     config = ::Configuration.instance
-    bucket = config.aws[:bucket]
+    bucket = config.storage[:bucket]
     key    = self.effective_key
     unless key
       raise IOError, "This bitstream has no corresponding storage object."
@@ -536,7 +537,7 @@ class Bitstream < ApplicationRecord
     # upload_file will automatically use the multipart API for files larger
     # than 15 MB. (S3 has a 5 GB limit when not using the multipart API.)
     s3 = Aws::S3::Resource.new(S3Client.client_options)
-    s3.bucket(::Configuration.instance.aws[:bucket]).
+    s3.bucket(::Configuration.instance.storage[:bucket]).
       object(self.permanent_key).
       upload_file(file)
   end
@@ -548,7 +549,8 @@ class Bitstream < ApplicationRecord
   # @param io [IO]
   #
   def upload_to_staging(io)
-    S3Client.instance.put_object(bucket: ::Configuration.instance.aws[:bucket],
+    config = ::Configuration.instance
+    S3Client.instance.put_object(bucket: config.storage[:bucket],
                                  key:    self.staging_key,
                                  body:   io)
   end
@@ -576,7 +578,7 @@ class Bitstream < ApplicationRecord
   #
   def download_to_temp_file
     config        = Configuration.instance
-    source_bucket = config.aws[:bucket]
+    source_bucket = config.storage[:bucket]
     source_key    = self.effective_key
     tempfile      = Tempfile.new("#{self.class}-#{self.id}")
     S3Client.instance.get_object(bucket:          source_bucket,
@@ -601,7 +603,7 @@ class Bitstream < ApplicationRecord
   #
   def generate_derivative(region:, size:, format:)
     config          = Configuration.instance
-    target_bucket   = config.aws[:bucket]
+    target_bucket   = config.storage[:bucket]
     target_key      = derivative_key(region: region, size: size, format: format)
     source_tempfile = download_to_temp_file
     begin

@@ -381,8 +381,9 @@ class SafImporterTest < ActiveSupport::TestCase
   private
 
   def upload_to_s3(package, import)
+    config = ::Configuration.instance
     S3Client.instance.upload_path(root_path:  package,
-                                  bucket:     ::Configuration.instance.aws[:bucket],
+                                  bucket:     config.storage[:bucket],
                                   key_prefix: import.root_key_prefix)
   end
 

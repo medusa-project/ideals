@@ -68,7 +68,7 @@ class Import < ApplicationRecord
 
   def delete_all_files
     config = ::Configuration.instance
-    S3Client.instance.delete_objects(bucket:     config.aws[:bucket],
+    S3Client.instance.delete_objects(bucket:     config.storage[:bucket],
                                      key_prefix: self.root_key_prefix)
   end
 
@@ -97,7 +97,8 @@ class Import < ApplicationRecord
   # @return [Enumerable<String>] All object keys in the package.
   #
   def object_keys
-    S3Client.instance.objects(bucket:     ::Configuration.instance.aws[:bucket],
+    config = ::Configuration.instance
+    S3Client.instance.objects(bucket:     config.storage[:bucket],
                               key_prefix: root_key_prefix).map(&:key)
   end
 
@@ -118,7 +119,7 @@ class Import < ApplicationRecord
       IO.copy_stream(io, tempfile)
       tempfile.close
       client = S3Client.instance
-      bucket = ::Configuration.instance.aws[:bucket]
+      bucket = ::Configuration.instance.storage[:bucket]
       key    = object_key(relative_path)
       # When used to simply upload the IO argument, put_object() fails randomly
       # and silently as of AWS SDK 1.111.0/Rails 7. Here is a workaround

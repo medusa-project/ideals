@@ -96,7 +96,7 @@ class ActiveSupport::TestCase
   #
   def setup_s3
     client = S3Client.instance
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
     client.create_bucket(bucket: bucket) unless client.bucket_exists?(bucket)
 
     @@seeding = true
@@ -113,7 +113,7 @@ class ActiveSupport::TestCase
 
   def teardown_s3
     client = S3Client.instance
-    bucket = ::Configuration.instance.aws[:bucket]
+    bucket = ::Configuration.instance.storage[:bucket]
     client.delete_objects(bucket: bucket)
   end
 

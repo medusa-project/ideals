@@ -10,14 +10,14 @@ class S3Client
 
   def self.client_options
     config = ::Configuration.instance
-    opts   = { region: config.aws[:region] }
+    opts   = { region: config.storage[:region] }
     if Rails.env.development? || Rails.env.test?
       # In development and test, we connect to a custom endpoint, and
       # credentials are drawn from the application configuration.
-      opts[:endpoint]         = config.aws[:endpoint]
+      opts[:endpoint]         = config.storage[:endpoint]
       opts[:force_path_style] = true
-      opts[:credentials]      = Aws::Credentials.new(config.aws[:access_key_id],
-                                                     config.aws[:secret_access_key])
+      opts[:credentials]      = Aws::Credentials.new(config.storage[:access_key_id],
+                                                     config.storage[:secret_access_key])
     end
     opts
   end
