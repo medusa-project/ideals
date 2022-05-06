@@ -474,10 +474,10 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "show_properties() respects role limits" do
     log_in_as(users(:local_sysadmin))
     get unit_properties_path(units(:unit1)), xhr: true
-    assert_select(".edit-properties")
+    assert_select(".edit-unit-properties")
 
     get unit_properties_path(units(:unit1), role: Role::LOGGED_OUT), xhr: true
-    assert_select(".edit-properties", false)
+    assert_select(".edit-unit-properties", false)
   end
 
   # show_statistics()
