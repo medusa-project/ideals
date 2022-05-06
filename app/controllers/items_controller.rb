@@ -279,11 +279,6 @@ class ItemsController < ApplicationController
       format.json do
         render "show"
       end
-      format.zip do
-        client       = MedusaDownloaderClient.new(request_context: request_context)
-        download_url = client.download_url(item: @item, user: current_user)
-        redirect_to download_url, status: :see_other
-      end
     end
   end
 
