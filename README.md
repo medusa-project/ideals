@@ -127,14 +127,10 @@ Refer to the instructions in the
 
 ## Migrate content from DSpace into the application
 
-The migration process requires dropping the existing database and starting over
-with a new one. A prerequisite is a dump of the DSpace database loaded into a
-PostgreSQL instance and named `dbname`.
+See [README_MIGRATION.md](README_MIGRATION.md) for detailed information about
+the migration process.
 
-The migration process is divided into several steps and is documented in detail
-in `lib/tasks/dspace.rake`.
-
-### In development
+Below is a basic summary that will work in development:
 
 ```sh
 rails elasticsearch:purge
@@ -146,30 +142,6 @@ rails elasticsearch:reindex[2] # thread count
 rails "dspace:bitstreams:copy[dspace_ssh_user]"
 rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]" # optional
 rails "bitstreams:read_full_text[2]" # optional
-```
-
-### In production
-
-```sh
-rails elasticsearch:purge
-rails storage:purge
-rails db:reset
-rails "dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
-rails ideals:seed_database
-rails elasticsearch:reindex[2] # thread count
-# This user must authorize your SSH key for passwordless login
-rails "dspace:bitstreams:copy[dspace_ssh_user,4]"
-
-# Wait here until DSpace is decommissioned or read-only, then:
-rails "dspace:migrate_incremental[dbname,dbhost,dbuser,dbpass]"
-rails elasticsearch:reindex[2] # thread count
-# This user must authorize your SSH key for passwordless login
-rails "dspace:bitstreams:copy[dspace_ssh_user,4]"
-
-# At this point, the application is fully live and DSpace is decommissioned,
-# but its database is still running.
-rails "bitstreams:read_full_text[4]"
-rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]"
 ```
 
 ## Create a user account

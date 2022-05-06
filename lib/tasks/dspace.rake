@@ -3,9 +3,7 @@ require 'rake'
 ##
 # These tasks assist in migrating data into the application from DSpace.
 #
-# The goal is to support a migration from a production DSpace to a production
-# this-app instance with minimal downtime and without having to switch either
-# system into a read-only mode.
+# See `README_MIGRATION.md` for an overview of the migration process.
 #
 # # Task organization
 #
@@ -42,25 +40,6 @@ require 'rake'
 #   like the above but limit the copying to a single collection or item. This
 #   is useful in e.g. development, where copying potentially hundreds of GB of
 #   files may not be practical.
-#
-# # The migration process
-#
-# 1. With DSpace still running in production and this application waiting in
-#    the wings but not yet publicly accessible, `dspace:migrate_critical` is
-#    run. This may take several hours or days to complete.
-# 2. The application's database is seeded via `ideals:seed`.
-# 3. Migrated content is indexed in Elasticsearch via `elasticsearch:reindex`.
-# 4. `dspace:bitstreams:copy` is run. This will take a long time to complete.
-# 5. DSpace is taken out of production and replaced with this application.
-# 6. `dspace:migrate_incremental``is run to migrate any content that was added
-#    to DSpace since the time the last migration was started.
-# 7. `elasticsearch:reindex` is run again to index the content that was just
-#    incrementally migrated.
-# 8. `dspace:bitstreams:copy` is run again to copy any files corresponding to
-#    any new bitstreams that were just incrementally migrated. At this point,
-#    we are confident that all critical content from DSpace has been migrated.
-# 9. `bitstreams:read_full_text` is run. This will take a long time.
-# 10. `dspace:migrate_non_critical` is run. This will take a long time.
 #
 namespace :dspace do
 
