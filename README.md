@@ -1,14 +1,17 @@
 # IDEALS
 
-This is the Ruby on Rails web application component of IDEALS, the Illinois
-Digital Environment for Access to Learning and Scholarship, which publishes
-research and scholarship from the University of Illinois at Urbana-Champaign.
+This is the Ruby on Rails web application component of
+[IDEALS](https://www.ideals.illinois.edu), the Illinois Digital Environment for
+Access to Learning and Scholarship, which publishes research and scholarship
+from the University of Illinois at Urbana-Champaign.
 
 This is a getting-started guide for developers.
 
 # Quick Links
 
+* [GitHub Project](https://github.com/medusa-project/ideals)
 * [JIRA Project](https://bugs.library.illinois.edu/projects/IR)
+* [Illinois Wiki](https://wiki.illinois.edu//wiki/display/IDEALS/IDEALS+Resources+and+Information)
 
 # Dependencies
 
@@ -18,14 +21,10 @@ This is a getting-started guide for developers.
   installed
 * An S3 storage service, such as AWS S3 or [Minio Server](https://min.io)
 * VIPS
-
-Integration with the Medusa preservation repository at the UIUC Library
-requires a couple more dependencies:
-
 * RabbitMQ
-* A Handle.net server. (See the
+* A Handle.net server (see the
   [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally)
-  for setup instructions.)
+  for setup instructions)
 
 (All of this stuff is up and running in `docker compose`; see the testing
 section.)
@@ -49,9 +48,6 @@ $ cd ideals
 # Install Ruby into rbenv
 $ rbenv install "$(< .ruby-version)"
 
-# Install Bundler
-$ gem install bundler
-
 # Install application gems
 $ bundle install
 ```
@@ -63,7 +59,8 @@ $ cd config/credentials
 $ cp template.yml development.yml
 $ cp template.yml test.yml
 ```
-Edit both as necessary.
+Edit both as necessary. See `template.yml` for documentation of the
+configuration format.
 
 ## Create the Elasticsearch indexes
 
@@ -74,9 +71,10 @@ rails "elasticsearch:indexes:create[ideals_test]"
 Note: the index schema may change from time to time. Index schemas can't
 generally be changed in place, so a new index has to be created with the new
 schema, and then either existing documents migrated into it ("reindexed" in
-Elasticsearch terminology which is fairly quick), or new documents loaded into
-it (very slow). For the development index, you may prefer to have separate
-"blue" and "green" indexes and to switch back-and-forth between them as needed:
+Elasticsearch terminology), which is fairly quick, or new documents loaded into
+it, which is very slow. For the development index, you may prefer to have
+separate "blue" and "green" indexes and to switch back-and-forth between them
+as needed:
 
 ```sh
 rails "elasticsearch:indexes:create[ideals_blue_development]"
@@ -97,7 +95,7 @@ in your `development.yml`.)
 Note 2: the above does not apply to the test index. This index will be
 recreated automatically when the tests are run.
 
-## Configure RabbitMQ (UIUC only)
+## Configure RabbitMQ
 
 ```sh
 $ brew install rabbitmq
@@ -120,7 +118,7 @@ restart RabbitMQ:
 $ brew services restart rabbitmq
 ```
 
-## Configure the Handle.net server (UIUC only)
+## Configure the Handle.net server
 
 Refer to the instructions in the
 [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally).
