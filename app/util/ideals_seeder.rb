@@ -5,10 +5,96 @@ class IdealsSeeder
 
   def seed
     update_registered_elements
+    seed_metadata_profiles
+    seed_submission_profiles
   end
 
 
   private
+
+  def seed_metadata_profiles
+    # Default metadata profile
+    profile = MetadataProfile.create!(name:        "Default Metadata Profile",
+                                      institution: Institution.find_by_key("uiuc"),
+                                      default:     true)
+    profile.add_default_elements
+
+    # ETD metadata profile
+    profile = MetadataProfile.create!(name:        "ETD Metadata Profile",
+                                      institution: Institution.find_by_key("uiuc"),
+                                      default:     false)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
+                           position:           0,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           faceted:            false,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
+                           position:           1,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           faceted:            true,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:submitted"),
+                           position:           2,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           faceted:            false,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:advisor"),
+                           position:           3,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           faceted:            true,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeChair"),
+                           position:           4,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           faceted:            true,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeMember"),
+                           position:           5,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           true,
+                           faceted:            true,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
+                           position:           6,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           false,
+                           faceted:            true,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:uri"),
+                           position:           7,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           false,
+                           faceted:            false,
+                           indexed:            true)
+    profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
+                           position:           8,
+                           visible:            true,
+                           searchable:         true,
+                           sortable:           false,
+                           faceted:            true,
+                           indexed:            true)
+    profile.save!
+  end
+
+  def seed_submission_profiles
+    profile = SubmissionProfile.create!(name:        "Default Submission Profile",
+                                        institution: Institution.find_by_key("uiuc"),
+                                        default:     true)
+    profile.add_default_elements
+  end
 
   def update_registered_elements
     # See: https://uofi.app.box.com/notes/593479281190
