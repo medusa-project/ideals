@@ -127,8 +127,10 @@ module Indexed
   end
 
   included do
-    after_commit :reindex, on: [:create, :update]
-    after_commit -> { self.class.delete_document(index_id) }, on: :destroy
+    after_commit :reindex, on: [:create, :update],
+                 if: -> { !DspaceImporter.instance.running? }
+    after_commit -> { self.class.delete_document(index_id) }, on: :destroy,
+                 if: -> { !DspaceImporter.instance.running? }
 
     ##
     # @return [Hash] Indexable representation of the instance to be serialized
