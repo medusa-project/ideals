@@ -394,35 +394,23 @@ class DspaceImporter
       row          = line.split(",")
       handle_parts = row[1].split("/")
       suffix       = handle_parts.last
-      handle       = nil
+      resource_id  = row[3].to_i
 
       progress.report(row_num, "Importing handles")
 
       begin
         case row[2].to_i
         when 4 # community
-          unit       = Unit.find_by(id: row[3].to_i)
-          if unit && !unit.handle
-            handle = unit.build_handle(suffix: suffix)
-          end
+          Handle.create!(unit_id: resource_id, suffix: suffix)
         when 3 # collection
-          collection = Collection.find_by(id: row[3].to_i)
-          if collection && !collection.handle
-            handle = collection&.build_handle(suffix: suffix)
-          end
+          Handle.create!(collection_id: resource_id, suffix: suffix)
         when 2 # item
-          item       = Item.find_by(id: row[3].to_i)
-          if item && !item.handle
-            handle = item&.build_handle(suffix: suffix)
-          end
+          Handle.create!(item_id: resource_id, suffix: suffix)
         else
           # Getting here would be unexpected, but also unrecoverable
         end
-        handle&.save!
-      rescue ActiveRecord::RecordNotUnique
+      rescue ActiveRecord::InvalidForeignKey, ActiveRecord::RecordNotUnique
         # nothing we can do
-      rescue ActiveRecord::RecordNotSaved => e
-        raise e unless e.message.include?("Failed to remove the existing associated handle")
       end
     end
     Handle.set_suffix_start(Handle.order(suffix: :desc).limit(1).first.suffix + 1)
