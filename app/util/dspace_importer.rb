@@ -546,8 +546,8 @@ class DspaceImporter
                             discoverable: discoverable)
       end
       item.events.where(event_type:  Event::Type::CREATE).
-        first_or_create!(after_changes: JSON.generate(item.as_change_hash),
-                         description: "Item imported from DSpace.")
+        first_or_create!(after_changes: item.as_change_hash,
+                         description:   "Item imported from DSpace.")
       progress.report(row_num, "Importing items")
     end
     update_pkey_sequence("items")
