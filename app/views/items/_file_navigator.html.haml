@@ -8,8 +8,8 @@
   #file-navigator
     #file-navigator-thumbnail-column
       #file-navigator-thumbnail-content
+        - tabindex = 0
         - if @content_bitstreams.any?
-          - tabindex = 0
           .section-heading
             Content Files
           - @content_bitstreams.each do |bitstream|
