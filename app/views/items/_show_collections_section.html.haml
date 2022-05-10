@@ -8,4 +8,4 @@
                                                  role: "button"}
         %i.fas.fa-pencil-alt
         Change
-  = resource_list(@collections, primary_id: @item.primary_collection.id)
+  = resource_list(@collections, primary_id: @item.primary_collection&.id)
