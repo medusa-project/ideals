@@ -131,7 +131,6 @@ class MessageHandler
                       error_text:    message_hash['error'],
                       response_time: Time.now,
                       raw_response:  message_json)
-      IdealsMailer.error("Failed to ingest into Medusa:\n#{message_hash.to_yaml}").deliver_now
     else
       IdealsMailer.error("Outgoing message not found for staging key:"\
           "#{message_hash['staging_key']}\n\n Response:\n"\
