@@ -98,7 +98,7 @@ class Bitstream < ApplicationRecord
   validates_inclusion_of :role, in: -> (value) { Role.all }
 
   before_save :ensure_primary_uniqueness
-  after_save :ingest_into_medusa, if: -> { permanent_key.present? && saved_change_to_permanent_key? && !submitted_for_ingest }
+  after_save :ingest_into_medusa, if: -> { item.handle.present? && permanent_key.present? && saved_change_to_permanent_key? && !submitted_for_ingest }
   after_save :read_full_text_async, if: -> {
     can_read_full_text? &&
     full_text_checked_at.blank? &&
