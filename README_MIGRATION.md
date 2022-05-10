@@ -1,15 +1,19 @@
 # Migration
 
 The goal with regard to migration out of DSpace is to be able to do it with
-minimal downtime and without having to switch either system--the production
-DSpace or the production this-app instance--into a read-only mode.
+zero downtime and without having to switch either system into a read-only mode.
 
-In practice, downtime should not be necessary, but some recently created items
-on the DSpace side may be "404" for a time in the new application. Also,
-historical download statistics and full text search will not be available for
-several days.
+The drawbacks of this are that recently created items on the DSpace side will
+be "404" for a time in the new application, and that historical download
+statistics and full text search will be unavailable for several days.
 
-Not all DSpace data is migrated--only what is needed at UIUC Library.
+The migration process preserves the database IDs of the main entities
+(communities, collections, and items) being migrated. The application
+intercepts requests to the old entity URL paths and redirects them to their new
+equivalents, so no broken links should result.
+
+Not all DSpace data is migrated--only what is needed at UIUC Library. There is
+actually quite a lot of data that does **not** get migrated.
 
 ## Prerequisites
 
@@ -33,13 +37,15 @@ Time estimates are based on the size of the UIUC Library's DSpace instance
 
 1. `rails db:prepare` creates and seeds the database.
 2. `rails dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]` migrates
-   DSpace's database content. This may take several hours or days to complete.
+   DSpace's database content. This will take 8+ hours.
 3. `rails ideals:seed_database` seeds the database with some additional data.
 4. `rails elasticsearch:reindex[2]` indexes migrated content in Elasticsearch.
    The argument is the parallelism count, which can speed up the process, but
-   can also overwhelm the Elasticsearch cluster if too large.
-5. `rails dspace:bitstreams:copy[dspace_ssh_user,4]` is run. The second
-   argument is the parallelism count. This will likely take several days.
+   can also overwhelm the Elasticsearch cluster if too large. With a safe
+   parallelism of 2, this should take around 4 hours.
+6. `rails dspace:bitstreams:copy[dspace_ssh_user,4]` is run. The second
+   argument is the parallelism count. This will likely take several days. If
+   interrupted, it will pick up where it left off when resumed.
 
 Now we change the DNS to point to this app instead of DSpace. DSpace is no
 longer publicly accessible, but its database is still running.
@@ -53,7 +59,7 @@ longer publicly accessible, but its database is still running.
    migrated.
 
 At this point, we are confident that all critical content from DSpace has been
-migrated.
+migrated, so we move on to the non-critical content.
 
 9. `rails dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]` migrates 
    remaining relatively unimportant content from DSpace. This will take several
@@ -61,4 +67,5 @@ migrated.
 
 DSpace can now be fully decommissioned.
 
-10. `rails bitstreams:read_full_text[4]` is run. This will take several days.
+10. `rails bitstreams:read_full_text[4]` is run. This will take several more
+    days.
