@@ -148,6 +148,10 @@ namespace :dspace do
                                                             bitstream.original_filename)
           bitstream.upload_to_permanent(local_path)
           bitstream.save!
+          unless item.handle
+            puts "WARNING: owning item does not have a handle, so can't be "\
+                 "ingested into Medusa"
+          end
           # Delete it from the temp directory
           File.delete(local_path)
           progress.report(index, "Copying files from DSpace into Medusa")
