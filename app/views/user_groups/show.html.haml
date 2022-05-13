@@ -113,7 +113,11 @@
             - if @netid_users.any?
               %ul
                 - @netid_users.each do |user|
-                  %li= link_to("#{user.name} (#{user.netid})", user.becomes(User))
+                  %li
+                    - if user.name != user.netid
+                      = link_to("#{user.name} (#{user.netid})", user.becomes(User))
+                    - else
+                      = link_to(user.netid, user.becomes(User))
             - else
               %p None
 
