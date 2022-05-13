@@ -56,8 +56,6 @@ class MessageHandlerTest < ActiveSupport::TestCase
     assert_not_nil message.response_time
     assert_equal incoming_message['staging_key'], message.staging_key
     assert_equal incoming_message['error'], message.error_text
-
-    assert IdealsMailer.deliveries.any?
   end
 
   test "handle() handles a delete-succeeded message" do
