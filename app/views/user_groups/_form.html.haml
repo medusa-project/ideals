@@ -15,5 +15,5 @@
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
-      = f.submit(f.object.new_record? ? "Create" : "Edit",
+      = f.submit(f.object.new_record? ? "Create" : "Save Changes",
                  class: "btn btn-primary")
