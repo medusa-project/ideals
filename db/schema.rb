@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_04_205247) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_13_153054) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -460,7 +460,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_04_205247) do
     t.index ["name"], name: "index_user_groups_on_name", unique: true
   end
 
-  create_table "user_groups_users", id: false, force: :cascade do |t|
+  create_table "user_groups_users", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "user_group_id", null: false
     t.index ["user_id", "user_group_id"], name: "index_user_groups_users_on_user_id_and_user_group_id", unique: true

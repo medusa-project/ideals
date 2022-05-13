@@ -188,7 +188,7 @@ class UserGroupsController < ApplicationController
 
   def build_netid_users
     if params[:user_group][:netid_users]&.respond_to?(:each)
-      @user_group.netid_users.destroy_all
+      UserGroupUser.where(user_group: @user_group).destroy_all
       params[:user_group][:netid_users].select(&:present?).each do |netid|
         uid   = "#{netid}@illinois.edu"
         email = uid
