@@ -94,9 +94,9 @@ class UsersController < ApplicationController
   def update_properties
     begin
       @user.update!(properties_params)
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @user },
+             locals: { object: @user.errors.any? ? @user : e },
              status: :bad_request
     else
       flash['success'] = "Properties of user #{@user.name} have been updated."

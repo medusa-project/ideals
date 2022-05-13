@@ -112,9 +112,9 @@ class LocalIdentitiesController < ApplicationController
   def update_password
     begin
       @identity.update!(identity_password_params)
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @identity },
+             locals: { object: @identity.errors.any? ? @identity : e },
              status: :bad_request
     else
       flash['success'] = "Your password has been changed."

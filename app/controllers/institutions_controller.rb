@@ -14,9 +14,9 @@ class InstitutionsController < ApplicationController
     authorize @institution
     begin
       @institution.save!
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @institution },
+             locals: { object: @institution.errors.any? ? @institution : e },
              status: :bad_request
     else
       flash['success'] = "Institution \"#{@institution.name}\" created."
@@ -184,9 +184,9 @@ class InstitutionsController < ApplicationController
   def update
     begin
       @institution.update!(institution_params)
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @institution },
+             locals: { object: @institution.errors.any? ? @institution : e },
              status: :bad_request
     else
       flash['success'] = "Institution \"#{@institution.name}\" updated."

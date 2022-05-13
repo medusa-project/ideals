@@ -29,9 +29,9 @@ class SubmissionProfilesController < ApplicationController
     begin
       @profile.add_default_elements
       @profile.save!
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @profile },
+             locals: { object: @profile.errors.any? ? @profile : e },
              status: :bad_request
     else
       flash['success'] = "Submission profile \"#{@profile.name}\" created."
@@ -89,9 +89,9 @@ class SubmissionProfilesController < ApplicationController
   def update
     begin
       @profile.update!(submission_profile_params)
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @profile },
+             locals: { object: @profile.errors.any? ? @profile : e },
              status: :bad_request
     else
       flash['success'] = "Submission profile \"#{@profile.name}\" updated."

@@ -12,9 +12,9 @@ class RegisteredElementsController < ApplicationController
     authorize @element
     begin
       @element.save!
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @element },
+             locals: { object: @element.errors.any? ? @element : e },
              status: :bad_request
     else
       flash['success'] = "Element \"#{@element.name}\" created."
@@ -64,9 +64,9 @@ class RegisteredElementsController < ApplicationController
   def update
     begin
       @element.update!(registered_element_params)
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @element },
+             locals: { object: @element.errors.any? ? @element : e },
              status: :bad_request
     else
       flash['success'] = "Element \"#{@element.name}\" updated."

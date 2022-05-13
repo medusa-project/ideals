@@ -13,9 +13,9 @@ class ImportsController < ApplicationController
     @import.user = current_user
     begin
       @import.save!
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @import },
+             locals: { object: @import.errors.any? ? @import : e },
              status: :bad_request
     else
       flash['success'] = "Import created."

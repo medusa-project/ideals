@@ -29,9 +29,9 @@ class MetadataProfilesController < ApplicationController
     begin
       @profile.save!
       @profile.add_default_elements
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @profile },
+             locals: { object: @profile.errors.any? ? @profile : e },
              status: :bad_request
     else
       flash['success'] = "Metadata profile \"#{@profile.name}\" created."
@@ -102,9 +102,9 @@ class MetadataProfilesController < ApplicationController
   def update
     begin
       @profile.update!(metadata_profile_params)
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @profile },
+             locals: { object: @profile.errors.any? ? @profile : e },
              status: :bad_request
     else
       flash['success'] = "Metadata profile \"#{@profile.name}\" updated."

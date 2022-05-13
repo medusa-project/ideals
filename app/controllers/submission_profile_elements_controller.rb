@@ -13,9 +13,9 @@ class SubmissionProfileElementsController < ApplicationController
     authorize @element, policy_class: SubmissionProfilePolicy
     begin
       @element.save!
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @element },
+             locals: { object: @element.errors.any? ? @element : e },
              status: :bad_request
     else
       flash['success'] = "Element \"#{@element.label}\" created."
@@ -55,9 +55,9 @@ class SubmissionProfileElementsController < ApplicationController
   def update
     begin
       @element.update!(element_params)
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @element },
+             locals: { object: @element.errors.any? ? @element : e },
              status: :bad_request
     else
       flash['success'] = "Element \"#{@element.label}\" updated."

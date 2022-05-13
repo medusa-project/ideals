@@ -12,9 +12,9 @@ class UserGroupsController < ApplicationController
     authorize @user_group
     begin
       @user_group.save!
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @user_group },
+             locals: { object: @user_group.errors.any? ? @user_group : e },
              status: :bad_request
     else
       flash['success'] = "User group \"#{@user_group.name}\" created."
@@ -137,9 +137,9 @@ class UserGroupsController < ApplicationController
         build_email_patterns
         @user_group.update!(user_group_params)
       end
-    rescue
+    rescue => e
       render partial: "shared/validation_messages",
-             locals: { object: @user_group },
+             locals: { object: @user_group.errors.any? ? @user_group : e },
              status: :bad_request
     else
       flash['success'] = "User group \"#{@user_group.name}\" updated."
