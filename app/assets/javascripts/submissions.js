@@ -350,10 +350,18 @@ const SubmissionForm = function() {
     metadataForm.find("[name=month], [name=day], [name=year]").on("change", function() {
         const hiddenInput = $("#" + $(this).data("for"));
         const parent      = hiddenInput.parent();
-        const month       = parent.find("[name=month]").val();
-        const day         = parent.find("[name=day]").val();
+        const month       = parent.find("[name=month]").val(); // may be empty
+        const day         = parent.find("[name=day]").val();   // may be empty
         const year        = parent.find("[name=year]").val();
-        hiddenInput.val(month + " " + day + ", " + year);
+        let date;
+        if (month && day) {
+            date = month + " " + day + ", " + year;
+        } else if (month) {
+            date = month + " " + year;
+        } else {
+            date = year;
+        }
+        hiddenInput.val(date);
     });
 
     // When a "Type of Resource" of "Other" is selected, add a text field next

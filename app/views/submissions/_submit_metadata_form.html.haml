@@ -58,10 +58,12 @@
                       = select_tag("month",
                                    options_for_select((1..12).map{ |d| Date.parse("#{'%02d' % d}/01").strftime("%B") },
                                                       date&.strftime("%B")),
+                                   include_blank: true,
                                    data: { for: hidden_input_id },
                                    class: "custom-select mr-2")
                       = select_tag("day",
                                    options_for_select((1..31), date&.day),
+                                   include_blank: true,
                                    data: { for: hidden_input_id },
                                    class: "custom-select mr-2")
                       = select_tag("year",
