@@ -678,7 +678,8 @@ const IDEALS = {
         $("button.add").on("click", function(e) {
             const last_tr = $(this).parent(".form-group").find("table.metadata > tbody > tr:last-child");
             const clone = last_tr.clone();
-            clone.find("input").val("");
+            clone.find("input, textarea").val("");
+            clone.find("select:first > option:first").prop("selected", true);
             last_tr.after(clone);
             updateEventListeners();
             e.preventDefault();
