@@ -50,7 +50,7 @@
         .col-sm-10
           = element.vocabulary ? "Menu" : element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
         .col-sm-2.text-right
-          %strong Highwire Mapping
+          %strong Highwire Press Mapping
         .col-sm-10
           - if element.highwire_mapping
             %code= element.highwire_mapping
