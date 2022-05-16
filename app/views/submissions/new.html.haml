@@ -10,7 +10,7 @@
 
 - if @submissions.any?
   #submissions-in-progress.card.text-white.bg-info.mb-3
-    .card-header= "#{pluralize(@submissions.length, "submission")} in progress"
+    .card-header= "You have #{pluralize(@submissions.length, "submission")} in progress."
     .card-body.pt-3.pr-2.pb-2.pl-2
       %ul
         - @submissions.each do |item|
