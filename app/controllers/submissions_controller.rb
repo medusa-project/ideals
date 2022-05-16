@@ -115,8 +115,11 @@ class SubmissionsController < ApplicationController
     @submissions = current_user.submitted_items.
       joins(:collection_item_memberships).
       where(stage: Item::Stages::SUBMITTING).
-      where("collection_item_memberships.collection_id": @collection&.id).
       order(:updated_at)
+    if @collection
+      @submissions = @submissions.
+        where("collection_item_memberships.collection_id": @collection.id)
+    end
   end
 
   ##
