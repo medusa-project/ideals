@@ -76,37 +76,31 @@ class DspaceImporter
       progress.report(row_num, "Importing bitstream bundles")
       begin
         b = Bitstream.find(bs_id)
-        if b.original_filename&.downcase == "license.txt"
+        case string
+        when "LICENSE"
           bundle = Bitstream::Bundle::LICENSE
-        elsif b.original_filename&.downcase&.end_with?(".pdf")
+        when "METADATA"
+          bundle = Bitstream::Bundle::METADATA
+        when "ORIGINAL"
           bundle = Bitstream::Bundle::CONTENT
+        when "TEXT"
+          bundle = Bitstream::Bundle::TEXT
+        when "CONVERSION"
+          bundle = Bitstream::Bundle::CONVERSION
+        when "THUMBNAIL"
+          bundle = Bitstream::Bundle::THUMBNAIL
+        when "ARCHIVE"
+          bundle = Bitstream::Bundle::ARCHIVE
+        when "SOURCE"
+          bundle = Bitstream::Bundle::SOURCE
+        when "BRANDED_PREVIEW"
+          bundle = Bitstream::Bundle::BRANDED_PREVIEW
+        when "NOTES"
+          bundle = Bitstream::Bundle::NOTES
+        when "SWORD"
+          bundle = Bitstream::Bundle::SWORD
         else
-          case string
-          when "LICENSE"
-            bundle = Bitstream::Bundle::LICENSE
-          when "METADATA"
-            bundle = Bitstream::Bundle::METADATA
-          when "ORIGINAL"
-            bundle = Bitstream::Bundle::CONTENT
-          when "TEXT"
-            bundle = Bitstream::Bundle::TEXT
-          when "CONVERSION"
-            bundle = Bitstream::Bundle::CONVERSION
-          when "THUMBNAIL"
-            bundle = Bitstream::Bundle::THUMBNAIL
-          when "ARCHIVE"
-            bundle = Bitstream::Bundle::ARCHIVE
-          when "SOURCE"
-            bundle = Bitstream::Bundle::SOURCE
-          when "BRANDED_PREVIEW"
-            bundle = Bitstream::Bundle::BRANDED_PREVIEW
-          when "NOTES"
-            bundle = Bitstream::Bundle::NOTES
-          when "SWORD"
-            bundle = Bitstream::Bundle::SWORD
-          else
-            raise ArgumentError, "Unrecognized bundle: #{string}"
-          end
+          raise ArgumentError, "Unrecognized bundle: #{string}"
         end
         b.update!(bundle: bundle) if b.bundle != bundle
       rescue ActiveRecord::RecordNotFound

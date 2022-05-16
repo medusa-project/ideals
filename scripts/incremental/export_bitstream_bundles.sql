@@ -1,8 +1,8 @@
-copy (SELECT v.text_value, b.bitstream_id
+copy (SELECT v.text_value, b2b.bitstream_id
       FROM metadatavalue v
-          LEFT JOIN bitstream b ON b.bitstream_id = v.resource_id
+          INNER JOIN bundle2bitstream b2b ON b2b.bundle_id = v.resource_id
       WHERE v.resource_type_id = 1
-          AND b.bitstream_id NOT IN (####)
-      ORDER BY b.bitstream_id)
+          AND b2b.bitstream_id NOT IN (####)
+      ORDER BY b2b.bitstream_id)
     TO STDOUT
     WITH DELIMITER '|' CSV HEADER;
