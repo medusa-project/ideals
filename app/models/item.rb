@@ -83,7 +83,7 @@ class Item < ApplicationRecord
     CREATED            = ElasticsearchIndex::StandardFields::CREATED
     DISCOVERABLE       = "b_discoverable"
     EMBARGOES          = "o_embargoes"
-    FULL_TEXT          = "t_full_text"
+    FULL_TEXT          = ElasticsearchIndex::StandardFields::FULL_TEXT
     GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY = "k_unit_collection_sort_key"
     ID                 = ElasticsearchIndex::StandardFields::ID
     INSTITUTION_KEY    = ElasticsearchIndex::StandardFields::INSTITUTION_KEY

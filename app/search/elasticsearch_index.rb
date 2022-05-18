@@ -30,6 +30,7 @@ class ElasticsearchIndex
   class StandardFields
     CLASS           = "k_class"
     CREATED         = "d_created"
+    FULL_TEXT       = "t_full_text"
     ID              = "_id"
     INSTITUTION_KEY = "k_institution_key"
     LAST_INDEXED    = "d_last_indexed"
