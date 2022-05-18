@@ -176,9 +176,12 @@ class ItemsController < ApplicationController
       institution(current_institution).
       aggregations(true).
       facet_filters(@permitted_params[:fq]).
-      order(@permitted_params[:sort] => (@permitted_params[:direction] == "desc") ? :desc : :asc).
       start(@start).
       limit(@window)
+    if @permitted_params[:sort]
+      @items.order(@permitted_params[:sort] =>
+                     (@permitted_params[:direction] == "desc") ? :desc : :asc)
+    end
     process_search_input(@items)
 
     @items        = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
