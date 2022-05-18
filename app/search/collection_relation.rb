@@ -53,7 +53,7 @@ class CollectionRelation < AbstractRelation
           # Query
           if @queries.any?
             j.must do
-              if @queries.length == 1 && !@exact_match
+              if @queries.length == 1
                 # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
                 j.simple_query_string do
                   j.query            @queries.first[:query]

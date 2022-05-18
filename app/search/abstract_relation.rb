@@ -43,7 +43,6 @@ class AbstractRelation
 
     @aggregations    = false
     @bucket_limit    = DEFAULT_BUCKET_LIMIT
-    @exact_match     = false
     @filters         = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @limit           = ElasticsearchClient::MAX_RESULT_WINDOW
     @must_nots       = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
@@ -216,10 +215,9 @@ class AbstractRelation
   #
   # @param field [String, Symbol] Field name
   # @param query [String] See above.
-  # @param exact_match [Boolean]
   # @return [self]
   #
-  def query(field, query, exact_match = false)
+  def query(field, query)
     return self if query.blank?
     if query.respond_to?(:keys)
       query = query.to_h.deep_symbolize_keys
@@ -227,7 +225,6 @@ class AbstractRelation
       query = query.to_s
     end
     @queries    << { field: field.to_s, query: query }
-    @exact_match = exact_match
     @loaded      = false
     self
   end
@@ -277,7 +274,7 @@ class AbstractRelation
   end
 
   ##
-  # Required by the {Enumerable} contract.
+  # Required by the [Enumerable] contract.
   #
   def each(&block)
     to_a.each(&block)
@@ -412,7 +409,7 @@ class AbstractRelation
           # Query
           if @queries.any?
             j.must do
-              if @queries.length == 1 && !@exact_match
+              if @queries.length == 1
                 query = @queries.first
                 if query[:query].kind_of?(String)
                   # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
