@@ -20,6 +20,7 @@
 # * `visible`               Whether the element is visible to users.
 #
 class MetadataProfileElement < ApplicationRecord
+
   belongs_to :metadata_profile, inverse_of: :elements, touch: true
   belongs_to :registered_element, inverse_of: :metadata_profile_elements
 
@@ -38,6 +39,27 @@ class MetadataProfileElement < ApplicationRecord
   after_destroy :shift_element_positions_after_destroy
 
   ##
+  # Alias of {RegisteredElement#indexed_field}.
+  #
+  def indexed_field
+    self.registered_element.indexed_field
+  end
+
+  ##
+  # Alias of {RegisteredElement#indexed_keyword_field}.
+  #
+  def indexed_keyword_field
+    self.registered_element.indexed_keyword_field
+  end
+
+  ##
+  # Alias of {RegisteredElement#indexed_sort_field}.
+  #
+  def indexed_sort_field
+    self.registered_element.indexed_sort_field
+  end
+
+  ##
   # @return [String] Label of the associated {RegisteredElement}.
   #
   def label
@@ -50,6 +72,7 @@ class MetadataProfileElement < ApplicationRecord
   def name
     self.registered_element.name
   end
+
 
   private
 
