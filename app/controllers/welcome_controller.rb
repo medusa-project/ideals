@@ -20,7 +20,5 @@ class WelcomeController < ApplicationController
     # rescue this error.
   end
 
-  def login_choice; end
-
   def on_failed_registration; end
 end
