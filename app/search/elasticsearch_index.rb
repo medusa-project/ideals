@@ -25,17 +25,24 @@
 class ElasticsearchIndex
 
   ##
-  # Standard fields present in all documents.
+  # Standard fields present in all or most documents.
   #
   class StandardFields
     CLASS           = "k_class"
     CREATED         = "d_created"
+    # Only item documents may have this.
     FULL_TEXT       = "t_full_text"
+    # Contains the value of {Indexed#index_id()}.
     ID              = "_id"
     INSTITUTION_KEY = "k_institution_key"
     LAST_INDEXED    = "d_last_indexed"
     LAST_MODIFIED   = "d_last_modified"
+    # Relevance score in a returned document.
     SCORE           = "_score"
+    # Many fields get copied into this field automatically by ES, but its use
+    # is frowned upon because it does not respect
+    # {MetadataProfileElement#relevance_weight field weights}. See
+    # {ElasticsearchClient#query}.
     SEARCH_ALL      = "search_all"
   end
 
