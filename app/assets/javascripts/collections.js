@@ -104,6 +104,7 @@ const CollectionView = function() {
             tabContent.find('a[data-toggle="pill"]').on('hidden.bs.tab', function(e) {
                 const hiddenPane = $($(e.target).attr("href"));
                 hiddenPane.find("input[type=text], input[type=search], textarea").val("");
+                hiddenPane.find("select > option:first-child").prop("selected", "selected");
                 searchControls.trigger("change");
             });
 
