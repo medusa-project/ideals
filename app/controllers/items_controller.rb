@@ -178,7 +178,7 @@ class ItemsController < ApplicationController
       facet_filters(@permitted_params[:fq]).
       start(@start).
       limit(@window)
-    if @permitted_params[:sort]
+    if @permitted_params[:sort].present?
       @items.order(@permitted_params[:sort] =>
                      (@permitted_params[:direction] == "desc") ? :desc : :asc)
     end
