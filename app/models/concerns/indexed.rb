@@ -27,6 +27,19 @@
 # transaction, you must {reindex reindex} or {delete_document delete} the
 # document manually.
 #
+# # How Elasticsearch interaction works in the application
+#
+# There are two layers of Elasticsearch interaction:
+#
+# 1. [ElasticsearchClient] handles all of the HTTP communication. Although this
+#    alone would be enough to communicate with Elasticsearch, the queries that
+#    are needed tend to be quite complex, so another layer exists to help with
+#    that:
+# 2. [AbstractRelation] subclasses enable query construction and results
+#    marshaling in the manner of [ActiveRecord::Relation] on model objects
+#    that include this module. They use [ElasticsearchClient] behind the
+#    scenes.
+#
 # # Author's note
 #
 # Why is a custom client solution used instead of the official Elastic Ruby
@@ -35,7 +48,7 @@
 # a complicated and perhaps poorly documented & supported glue layer. This
 # system also provides a nicer interface to ES than Elastic's gems, which
 # require clients to understand ES concepts to construct their queries, which
-# is hardly trivial to do. Also, this application is hosted in AWS, which has
+# are hardly trivial. Also, this application is hosted in AWS, which has
 # recently forked ES into its own OpenSearch product, which is not guaranteed
 # to remain compatible with Elastic's gems and does not have a friendly gem of
 # its own.
