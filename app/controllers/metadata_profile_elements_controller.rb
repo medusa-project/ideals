@@ -71,6 +71,7 @@ class MetadataProfileElementsController < ApplicationController
                                                      :metadata_profile_id,
                                                      :position,
                                                      :registered_element_id,
+                                                     :relevance_weight,
                                                      :searchable, :sortable,
                                                      :visible)
   end

@@ -76,7 +76,31 @@
         %th Sortable
         %th Faceted
         %th Indexed
+        %th Relevance Weight
       %tbody
+        %tr
+          %td{style: "width: 1px; white-space: nowrap"}
+            .btn-group
+              %button.btn.btn-light.btn-sm.edit-profile{"data-target":     "#edit-profile-modal",
+                                                        "data-toggle":     "modal",
+                                                        "data-profile-id": @profile.id,
+                                                        type:              "button"}
+                %i.fa.fa-pencil-alt
+                Edit
+          %td Full Text
+          %td.boolean= boolean(false)
+          %td.boolean= boolean(true)
+          %td.boolean= boolean(false)
+          %td.boolean= boolean(false)
+          %td.boolean= boolean(true)
+          %td
+            .progress
+              .progress-bar{role: "progressbar",
+                              style: "width: #{@profile.full_text_relevance_weight * 10}%",
+                              "aria-valuenow": @profile.full_text_relevance_weight,
+                              "aria-valuemin": MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
+                              "aria-valuemax": MetadataProfileElement::MAX_RELEVANCE_WEIGHT}
+                = @profile.full_text_relevance_weight
         - @profile.elements.each do |element|
           %tr
             %td{style: "width: 1px; white-space: nowrap"}
@@ -100,6 +124,14 @@
             %td.boolean= boolean(element.sortable)
             %td.boolean= boolean(element.faceted)
             %td.boolean= boolean(element.indexed)
+            %td
+              .progress
+                .progress-bar{role: "progressbar",
+                              style: "width: #{element.relevance_weight * 10}%",
+                              "aria-valuenow": element.relevance_weight,
+                              "aria-valuemin": MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
+                              "aria-valuemax": MetadataProfileElement::MAX_RELEVANCE_WEIGHT}
+                  = element.relevance_weight
 
   - unless @profile.default
     #collections.tab-pane.fade{role: "tabpanel",

@@ -39,6 +39,10 @@
         = icon_for(:warning)
         After the "Indexed" checkbox is changed, all items in all collections that
         use this profile must be reindexed using the Reindex Items button.
+  .form-group
+    = f.label :relevance_weight, "Relevance Weight (1-10)"
+    = f.number_field :relevance_weight, min: 1, max: 10, class: "form-control"
+
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel

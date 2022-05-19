@@ -10,6 +10,9 @@
     = f.label :name
     = f.text_field :name, class: 'form-control'
   .form-group
+    = f.label :full_text_relevance_weight, "Full Text Relevance Weight (1-10)"
+    = f.number_field :full_text_relevance_weight, min: 1, max: 10, class: 'form-control'
+  .form-group
     .form-check
       = f.check_box :default, class: 'form-check-input'
       = f.label :default, class: "form-check-label"

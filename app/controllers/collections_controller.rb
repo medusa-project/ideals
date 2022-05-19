@@ -151,7 +151,7 @@ class CollectionsController < ApplicationController
     @collections      = Collection.search.
         institution(current_institution).
         aggregations(false).
-        query_all(@permitted_params[:q]).
+        query_searchable_fields(@permitted_params[:q]).
         order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
         start(@start).
         limit(@window)
@@ -492,6 +492,7 @@ class CollectionsController < ApplicationController
     @items            = Item.search.
       institution(current_institution).
       aggregations(false).
+      metadata_profile(@collection.effective_metadata_profile).
       filter(Item::IndexFields::COLLECTIONS, @permitted_params[:collection_id]).
       order(@permitted_params[:sort] => (@permitted_params[:direction] == "desc") ? :desc : :asc).
       start(@start).

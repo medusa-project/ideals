@@ -72,6 +72,26 @@ class MetadataProfileTest < ActiveSupport::TestCase
     assert_equal ["Subject"], @instance.faceted_elements.map(&:label)
   end
 
+  # full_text_relevance_weight
+
+  test "full_text_relevance_weight must be greater than 0" do
+    assert @instance.valid?
+    @instance.full_text_relevance_weight = 0
+    assert !@instance.valid?
+  end
+
+  test "full_text_relevance_weight must be less than 11" do
+    assert @instance.valid?
+    @instance.full_text_relevance_weight = 11
+    assert !@instance.valid?
+  end
+
+  test "full_text_relevance_weight can be between 1 and 10" do
+    assert @instance.valid?
+    @instance.full_text_relevance_weight = 5
+    assert @instance.valid?
+  end
+
   # name
 
   test "name must be present" do

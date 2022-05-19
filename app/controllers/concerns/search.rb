@@ -10,7 +10,8 @@ module Search
   # Mutates the given [ItemRelation] to reflect input from a simple or advanced
   # search form.
   #
-  # @param relation [ItemRelation]
+  # @param relation [ItemRelation] The {ItemRelation#metadata_profile()
+  #                                metadata profile} should already be set.
   # @return [void]
   #
   def process_search_input(relation)
@@ -30,24 +31,23 @@ module Search
     # }
     permitted_params = params.permit!
 
-    # Simple search fields
-    relation.query_all(permitted_params[:q]) if permitted_params[:q].present?
-
-    # Advanced search fields
-    # (These generally come from ItemsHelper.advanced_search_form().)
-    if permitted_params[:elements]&.respond_to?(:each)
-      all_elements = RegisteredElement.all
-      permitted_params[:elements].each do |e_name, value|
-        value = nil if value.respond_to?(:keys) && value[:year].blank?
-        if value.present?
-          relation.query(all_elements.find{ |e| e.name == e_name}.indexed_field,
-                         value)
+    if permitted_params[:q].present? # simple search
+      relation.query_searchable_fields(permitted_params[:q])
+    else # advanced search
+      # (These fields generally come from ItemsHelper.advanced_search_form().)
+      if permitted_params[:elements]&.respond_to?(:each)
+        all_elements = RegisteredElement.all
+        permitted_params[:elements].each do |e_name, term|
+          term = nil if term.respond_to?(:keys) && term[:year].blank?
+          if term.present?
+            field = all_elements.find{ |e| e.name == e_name}.indexed_field
+            relation.multi_query(field, term)
+          end
         end
+        # Full text
+        relation.multi_query(Item::IndexFields::FULL_TEXT, permitted_params[:full_text])
       end
     end
-
-    # Full text
-    relation.query(Item::IndexFields::FULL_TEXT, permitted_params[:full_text])
   end
 
 end

@@ -14,12 +14,23 @@
 #                           the owning [MetadataProfile].
 # * `registered_element_id` ID of the associated [RegisteredElement]. Foreign
 #                           key.
+# * `relevance_weight`      Weight of the element when computing a result
+#                           relevance score. These are Elasticsearch weights
+#                           with a default and minimum of 1 and a maximum of
+#                           10.
 # * `searchable`            Whether users can search on the element.
 # * `sortable`              Whether results can be sorted on the element.
 # * `updated_at`            Managed by ActiveRecord.
 # * `visible`               Whether the element is visible to users.
 #
 class MetadataProfileElement < ApplicationRecord
+
+  MIN_RELEVANCE_WEIGHT     = 1
+  MAX_RELEVANCE_WEIGHT     = 10
+  # This should be synchronized with the default values of the
+  # `metadata_profile_elements.relevance_weight` and
+  # `metadata_profiles.full_text_relevance_weight` database columns.
+  DEFAULT_RELEVANCE_WEIGHT = 5
 
   belongs_to :metadata_profile, inverse_of: :elements, touch: true
   belongs_to :registered_element, inverse_of: :metadata_profile_elements
@@ -30,9 +41,12 @@ class MetadataProfileElement < ApplicationRecord
                                        greater_than_or_equal_to: 0 }
   validates_presence_of :position
 
-  # registered_element_id
   validates_presence_of :registered_element_id
   validates_uniqueness_of :registered_element_id, scope: :metadata_profile_id
+
+  validates :relevance_weight, numericality: { only_integer: true,
+                                               greater_than_or_equal_to: MIN_RELEVANCE_WEIGHT,
+                                               less_than_or_equal_to: MAX_RELEVANCE_WEIGHT }
 
   before_create :shift_element_positions_before_create
   before_update :shift_element_positions_before_update

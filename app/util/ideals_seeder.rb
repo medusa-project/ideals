@@ -25,6 +25,7 @@ class IdealsSeeder
                                       default:     false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
                            position:           0,
+                           relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                            visible:            true,
                            searchable:         true,
                            sortable:           true,
@@ -32,6 +33,7 @@ class IdealsSeeder
                            indexed:            true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
                            position:           1,
+                           relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                            visible:            true,
                            searchable:         true,
                            sortable:           true,
@@ -67,6 +69,7 @@ class IdealsSeeder
                            indexed:            true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
                            position:           6,
+                           relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                            visible:            true,
                            searchable:         true,
                            sortable:           false,

@@ -25,6 +25,9 @@
 #                                 (Only one metadata profile can be marked
 #                                 default--this is enforced by an `after_save`
 #                                 callback.)
+# * `full_text_relevance_weight`  Weight of the full text field when computing
+#                                 a result relevance score. See
+#                                 {MetadataProfileElement#relevance_weight}.
 # * `updated_at`                  Managed by ActiveRecord.
 #
 class MetadataProfile < ApplicationRecord
@@ -37,6 +40,10 @@ class MetadataProfile < ApplicationRecord
   has_many :elements, -> { order(:position) },
            class_name: "MetadataProfileElement", inverse_of: :metadata_profile,
            dependent: :destroy
+
+  validates :full_text_relevance_weight, numericality: { only_integer: true,
+                                                         greater_than_or_equal_to: MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
+                                                         less_than_or_equal_to: MetadataProfileElement::MAX_RELEVANCE_WEIGHT }
 
   validates :name, presence: true, length: { minimum: 2 },
             uniqueness: { case_sensitive: false }
@@ -58,6 +65,7 @@ class MetadataProfile < ApplicationRecord
     raise "Instance already has elements ascribed to it" if self.elements.any?
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
                         position:           0,
+                        relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
@@ -65,6 +73,7 @@ class MetadataProfile < ApplicationRecord
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
                         position:           1,
+                        relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
@@ -72,6 +81,7 @@ class MetadataProfile < ApplicationRecord
                         indexed:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
                         position:           2,
+                        relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,

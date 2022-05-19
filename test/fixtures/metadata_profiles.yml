@@ -1,16 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 default:
-  name: Default Profile
-  default: true
-  institution: uiuc
+  name:                       Default Profile
+  default:                    true
+  institution:                uiuc
+  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 empty:
-  name: Empty Profile
-  default: false
-  institution: uiuc
+  name:                       Empty Profile
+  default:                    false
+  institution:                uiuc
+  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 unused:
-  name: Unused Profile
-  default: false
-  institution: uiuc
+  name:                       Unused Profile
+  default:                    false
+  institution:                uiuc
+  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>

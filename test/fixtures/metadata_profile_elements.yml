@@ -9,6 +9,7 @@ default_title:
   searchable:         true
   sortable:           true
   indexed:            true
+  relevance_weight:   <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 default_description:
   metadata_profile:   default
@@ -19,6 +20,7 @@ default_description:
   searchable:         true
   sortable:           false
   indexed:            true
+  relevance_weight:   <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 default_subject:
   metadata_profile:   default
@@ -29,3 +31,4 @@ default_subject:
   searchable:         true
   sortable:           false
   indexed:            true
+  relevance_weight:   <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>

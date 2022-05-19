@@ -42,25 +42,15 @@ class UnitRelation < AbstractRelation
       j.query do
         j.bool do
           # Query
-          if @queries.any?
+          if @query
             j.must do
-              if @queries.length == 1
-                # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
-                j.simple_query_string do
-                  j.query            @queries.first[:query]
-                  j.default_operator "AND"
-                  j.flags            "NONE"
-                  j.lenient          true
-                  j.fields           [@queries.first[:field]]
-                end
-              else
-                @queries.each do |query|
-                  j.child! do
-                    j.match_phrase do
-                      j.set! query[:field], sanitize(query[:query])
-                    end
-                  end
-                end
+              # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
+              j.simple_query_string do
+                j.query            sanitize(@query[:term])
+                j.default_operator "AND"
+                j.flags            "NONE"
+                j.lenient          true
+                j.fields           @query[:fields]
               end
             end
           end

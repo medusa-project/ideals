@@ -132,6 +132,26 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
                            registered_element: registered_elements(:dc_title))
   end
 
+  # relevance_weight
+
+  test "relevance_weight must be greater than 0" do
+    assert @instance.valid?
+    @instance.relevance_weight = 0
+    assert !@instance.valid?
+  end
+
+  test "relevance_weight must be less than 11" do
+    assert @instance.valid?
+    @instance.relevance_weight = 11
+    assert !@instance.valid?
+  end
+
+  test "relevance_weight can be between 1 and 10" do
+    assert @instance.valid?
+    @instance.relevance_weight = 5
+    assert @instance.valid?
+  end
+
   # update()
 
   test "update() update positions in the owning profile when increasing an
