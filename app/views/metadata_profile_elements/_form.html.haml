@@ -13,7 +13,8 @@
   - if profile.elements.any?
     .form-group
       = f.label :position, "Position After"
-      = f.select(:position, profile.elements.where("id != ?", element&.id || -1).map.with_index { |e, i| [e.label, i + 1] },
+      = f.select(:position,
+        [["", 0]] + profile.elements.where("id != ?", element&.id || -1).map.with_index { |e, i| [e.label, i + 1] },
         { selected: element.position },
         class: "custom-select")
   - else
