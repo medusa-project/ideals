@@ -3,10 +3,13 @@
 # conceptually the same as, [ActiveRecord::Relation], and serve the dual
 # purpose of simplifying Elasticsearch querying (which can be pretty
 # complicated and awkward) by wrapping it up into an ActiveRecord-style Builder
-# pattern, and marshalling the results into an object that behaves the same way
-# as the one returned from ActiveRecord's querying methods.
+# pattern, and marshalling the results into an object that behaves the same as
+# the one returned from ActiveRecord's querying methods.
 #
 # TLDR: it makes interacting with Elasticsearch more like ActiveRecord.
+#
+# See [Indexed] for an overview of how Elasticsearch interaction works in the
+# application.
 #
 # The normal way of obtaining an instance is via {Indexed#search}. That method
 # expects every searchable model to define its own subclass of this class.
@@ -16,17 +19,10 @@
 # default [MetadataProfile].
 #
 # For more extensive customizations, it can override {build_query}, which
-# basically grants it full control over the query that gets sent to
-# Elasticsearch.
+# grants it full control over the query that gets sent to Elasticsearch.
 #
-# The Elasticsearch request and response communications are logged and are also
-# available via {request_json} and {response_json}.
-#
-# Why this class and not
-# [elasticsearch-model](https://github.com/elastic/elasticsearch-rails/tree/master/elasticsearch-model)?
-# Ultimately they are apples and oranges. This class fills a gap that that gem
-# doesn't, namely hiding complicated Elasticsearch queries behind a friendly
-# interface.
+# The request and response communications are logged and are also available via
+# {request_json} and {response_json}.
 #
 class AbstractRelation
 

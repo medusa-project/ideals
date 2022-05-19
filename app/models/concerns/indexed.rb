@@ -3,28 +3,42 @@
 # almost all of the functionality they need except for {as_indexed_json}, which
 # must be overridden.
 #
-# # What Gets Indexed?
+# # What gets indexed?
 #
-# Any entity that needs to appear in results that:
+# Any entity that will appear in results that:
 #
 # 1. Are faceted
 # 2. Are natural- or relevance-sorted
-# 3. Would require a complicated/impossible SQL query
-# 4. Need better performance than the database can provide
+# 3. Are field-weighted
+# 4. Would require a complicated/impossible SQL query
+# 5. Need better performance than the database can provide
 #
 # # Querying
 #
-# A low-level interface to Elasticsearch is provided by {ElasticsearchClient},
+# A low-level interface to Elasticsearch is provided by [ElasticsearchClient],
 # but in most cases, it's easier to use the higher-level query interface
-# provided by the various {AbstractRelation} subclasses.
+# provided by the various [AbstractRelation] subclasses.
 #
-# # Persistence Callbacks
+# # Persistence callbacks
 #
-# **IMPORTANT NOTE**: Instances are automatically indexed in Elasticsearch (see
-# {as_indexed_json}) upon transaction commit. They are **not** indexed upon
-# save or destroy. Whenever creating, updating, or deleting outside of a
+# Documents are automatically submitted to Elasticsearch (see
+# {as_indexed_json}) upon transaction commit. They are **not** sent upon save
+# or destroy. Whenever creating, updating, or deleting outside of a
 # transaction, you must {reindex reindex} or {delete_document delete} the
 # document manually.
+#
+# # Author's note
+#
+# Why is a custom client solution used instead of the official Elastic Ruby
+# gems? This application needs fine-grained control over searching, and I am
+# worried about obscuring the communication between it and Elasticsearch behind
+# a complicated and perhaps poorly documented & supported glue layer. This
+# system also provides a nicer interface to ES than Elastic's gems, which
+# require clients to understand ES concepts to construct their queries, which
+# is hardly trivial to do. Also, this application is hosted in AWS, which has
+# recently forked ES into its own OpenSearch product, which is not guaranteed
+# to remain compatible with Elastic's gems and does not have a friendly gem of
+# its own.
 #
 module Indexed
   extend ActiveSupport::Concern
