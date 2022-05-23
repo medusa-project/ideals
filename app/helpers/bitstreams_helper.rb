@@ -95,7 +95,8 @@ module BitstreamsHelper
 
     # Stream the PDF instead of providing a presigned S3 URL. The presigned URL
     # does not support ranges, which the PDF viewer may require.
-    bitstream_path = item_bitstream_stream_path(bitstream)
+    bitstream_path = item_bitstream_stream_path(bitstream,
+                                                'response-content-disposition': "inline")
 
     # Add a ViewerJS viewer
     viewer_url     = asset_path("/ViewerJS/#" + bitstream_path)

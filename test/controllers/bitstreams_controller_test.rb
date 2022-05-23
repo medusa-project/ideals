@@ -583,6 +583,26 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "stream() supports a response-content-disposition argument" do
+    fixture   = file_fixture("pdf.pdf")
+    item      = items(:item1)
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
+    bitstream.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bitstream.upload_to_staging(file)
+      end
+      bitstream.move_into_permanent_storage
+      get item_bitstream_stream_path(item, bitstream,
+                                     "response-content-disposition": "inline")
+      assert_equal "inline", response.header['Content-Disposition']
+    ensure
+      bitstream.delete_from_permanent_storage
+    end
+  end
+
   # update()
 
   test "update() redirects to login page for logged-out users" do

@@ -207,7 +207,8 @@ class BitstreamsController < ApplicationController
 
     response.status                         = status
     response.headers['Content-Type']        = @bitstream.media_type
-    response.headers['Content-Disposition'] = download_content_disposition
+    response.headers['Content-Disposition'] = params[:'response-content-disposition'] ||
+                                                download_content_disposition
     response.headers['Content-Length']      = s3_response.content_length.to_s
     response.headers['Last-Modified']       = s3_response.last_modified.utc.strftime("%a, %d %b %Y %T GMT")
     response.headers['Cache-Control']       = "public, must-revalidate, max-age=0"
