@@ -39,6 +39,7 @@ class AbstractRelation
 
     @aggregations     = false
     @bucket_limit     = DEFAULT_BUCKET_LIMIT
+    @filter_ranges    = [] # Array<Hash<Symbol,String>> with :field, :op, and :value keys
     @filters          = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @limit            = ElasticsearchClient::MAX_RESULT_WINDOW
     @metadata_profile = MetadataProfile.default
@@ -49,6 +50,7 @@ class AbstractRelation
     # Note to subclass implementations: the raw term should not be passed to
     # Elasticsearch. Use {sanitize}.
     @query            = nil # Hash<Symbol,String> Hash with :fields and :term keys
+    @shoulds          = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @start            = 0
 
     @loaded = false
@@ -119,7 +121,26 @@ class AbstractRelation
   # @see must_not
   #
   def filter(field, value)
-    @filters << [field, value]
+    if value.respond_to?(:each)
+      value.each do |v|
+        @shoulds << [field, v]
+      end
+    else
+      @filters << [field, value]
+    end
+    @loaded = false
+    self
+  end
+
+  ##
+  # @param field [String]
+  # @param op [Symbol] `:gt`, `:gte`, `:lt`, or `:lte`
+  # @param value [String]
+  # @return [self]
+  # @see must_not_range
+  #
+  def filter_range(field, op, value)
+    @filter_ranges << { field: field, op: op, value: value }
     @loaded = false
     self
   end
@@ -209,6 +230,7 @@ class AbstractRelation
   # @param op [Symbol] `:gt`, `:gte`, `:lt`, or `:lte`
   # @param value [String]
   # @return [self]
+  # @see filter_range
   #
   def must_not_range(field, op, value)
     @must_not_ranges << { field: field, op: op, value: value }
@@ -530,15 +552,30 @@ class AbstractRelation
                     j.set! ElasticsearchIndex::StandardFields::CLASS, get_class.to_s
                   end
                 end
-
                 @filters.each do |key_value|
                   unless key_value[1].nil?
                     j.child! do
-                      if key_value[0].respond_to?(:each)
-                        j.terms do
-                          j.set! key_value[0], key_value[1]
-                        end
-                      else
+                      j.term do
+                        j.set! key_value[0], key_value[1]
+                      end
+                    end
+                  end
+                end
+                @filter_ranges.each do |range|
+                  j.child! do
+                    j.range do
+                      j.set! range[:field] do
+                        j.set! range[:op], range[:value]
+                      end
+                    end
+                  end
+                end
+              end
+              if @shoulds.any?
+                j.should do
+                  @shoulds.each do |key_value|
+                    unless key_value[1].nil?
+                      j.child! do
                         j.term do
                           j.set! key_value[0], key_value[1]
                         end

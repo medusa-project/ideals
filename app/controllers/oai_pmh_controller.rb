@@ -187,26 +187,31 @@ class OaiPmhController < ApplicationController
   private
 
   def fetch_results_for_list_identifiers_or_records
-    @results = Item.
-      non_embargoed. # TODO: this is waaay too slow
-      distinct("items.id").
-      joins("LEFT JOIN collection_item_memberships cim ON cim.item_id = items.id").
-      joins("LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id").
-      where("items.stage": [Item::Stages::APPROVED,
-                            Item::Stages::WITHDRAWN,
-                            Item::Stages::BURIED]).
-      order("items.updated_at")
+    @results = Item.search
+    # brutal hack because ItemRelation adds a default "must not" in its initializer
+    @results.instance_variable_set("@must_nots", [])
+    @results.aggregations(false).
+      institution(Institution.find_by_key(:uiuc)).
+      filter(Item::IndexFields::STAGE, [Item::Stages::APPROVED,
+                                        Item::Stages::WITHDRAWN,
+                                        Item::Stages::BURIED]).
+      must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::EXPIRES_AT}",
+                     :gt,
+                     Time.now.strftime("%Y-%m-%d")).
+      order(Item::IndexFields::LAST_MODIFIED)
 
     from = get_from
     if from
       from_time = Time.parse(from).utc.iso8601
-      @results  = @results.where("items.updated_at >= ?", from_time)
+      @results  = @results.filter_range(Item::IndexFields::LAST_MODIFIED,
+                                        :gte, from_time)
     end
 
     until_ = get_until
     if until_
       until_time = Time.parse(until_).utc.iso8601
-      @results   = @results.where("items.updated_at <= ?", until_time)
+      @results   = @results.filter_range(Item::IndexFields::LAST_MODIFIED,
+                                         :lte, until_time)
     end
 
     set = get_set
@@ -217,19 +222,21 @@ class OaiPmhController < ApplicationController
         handle = Handle.find_by_suffix(parts[2])
         case parts[0]
         when "com"
-          @results = @results.where("ucm.unit_id": handle.unit_id)
+          @results = @results.filter(Item::IndexFields::UNITS,
+                                     handle.unit_id)
         when "col"
-          @results = @results.where("cim.collection_id": handle.collection_id)
+          @results = @results.filter(Item::IndexFields::COLLECTIONS,
+                                     handle.collection_id)
         end
       end
     end
     @total_num_results = @results.count
 
-    @errors << { code: "noRecordsMatch",
+    @errors << { code:        "noRecordsMatch",
                  description: "No matching records." } if @total_num_results < 1
 
     @results_offset      = get_start
-    @results             = @results.offset(@results_offset)
+    @results             = @results.start(@results_offset)
     @next_page_available = (@results_offset + MAX_RESULT_WINDOW < @total_num_results)
     @resumption_token    = resumption_token(set, from, until_, @results_offset,
                                             @metadata_format)
