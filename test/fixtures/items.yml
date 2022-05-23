@@ -7,73 +7,56 @@ item1: # TODO: remove this
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
-  discoverable: true
 
 submitting:
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::SUBMITTING %>
   stage_reason:
-  discoverable: false
 
 submitted:
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::SUBMITTED %>
   stage_reason:
-  discoverable: false
 
 approved:
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
-  discoverable: true
 
 awaiting_ingest_into_medusa:
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
-  discoverable: true
 
 in_medusa:
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
-  discoverable: true
 
 described:
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
-  discoverable: true
 
 embargoed:
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
-  discoverable: true
 
 undescribed:
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
-  discoverable: true
-
-undiscoverable:
-  submitter:    local_sysadmin
-  stage:        <%= Item::Stages::APPROVED %>
-  stage_reason:
-  discoverable: false
 
 withdrawn:
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::WITHDRAWN %>
   stage_reason:
-  discoverable: false
 
 buried:
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::BURIED %>
   stage_reason:
-  discoverable: true
 
 # collection1_collection1 items
 
@@ -81,4 +64,3 @@ collection1_collection1_item1:
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
-  discoverable: true

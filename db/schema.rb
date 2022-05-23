@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_18_201231) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_19_211903) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -160,6 +160,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_18_201231) do
     t.integer "kind", null: false
     t.index ["expires_at"], name: "index_embargoes_on_expires_at"
     t.index ["item_id"], name: "index_embargoes_on_item_id"
+    t.index ["kind"], name: "index_embargoes_on_kind"
+    t.index ["perpetual"], name: "index_embargoes_on_perpetual"
   end
 
   create_table "embargoes_user_groups", id: false, force: :cascade do |t|
@@ -254,14 +256,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_18_201231) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "submitter_id"
-    t.boolean "discoverable", default: false, null: false
     t.integer "stage", default: 0, null: false
     t.text "stage_reason"
     t.string "temp_embargo_expires_at"
     t.text "temp_embargo_reason"
     t.string "temp_embargo_type"
     t.integer "temp_embargo_kind"
-    t.index ["discoverable"], name: "index_items_on_discoverable"
     t.index ["stage"], name: "index_items_on_stage"
     t.index ["submitter_id"], name: "index_items_on_submitter_id"
   end

@@ -45,11 +45,6 @@ collection1_undescribed:
   item:       undescribed
   primary:    true
 
-collection1_undiscoverable:
-  collection: collection1
-  item:       undiscoverable
-  primary:    true
-
 collection1_withdrawn:
   collection: collection1
   item:       withdrawn

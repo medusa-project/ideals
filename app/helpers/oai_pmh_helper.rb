@@ -8,7 +8,7 @@ module OaiPmhHelper
     matches = identifier.match(/oai:[\w.-]+(:\d+)?:(\d+)\/(\d+)/)
     if matches && matches.length >= 4
       handle = Handle.find_by_suffix(matches[3])
-      return handle.item if handle&.item&.discoverable
+      return handle.item if handle&.item&.all_access_embargoes&.empty?
     end
     nil
   end

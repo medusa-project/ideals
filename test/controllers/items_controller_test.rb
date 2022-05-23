@@ -313,12 +313,12 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "index() omits submitting, undiscoverable, withdrawn, and buried items
+  test "index() omits submitting, embargoed, withdrawn, and buried items
   by default" do
     Item.reindex_all
     ElasticsearchClient.instance.refresh
 
-    expected_count = Item.where(discoverable: true).
+    expected_count = Item.non_embargoed.
         where.not(stage: [Item::Stages::SUBMITTING,
                           Item::Stages::WITHDRAWN,
                           Item::Stages::BURIED]).
@@ -468,8 +468,8 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "show() returns HTTP 403 for undiscoverable items" do
-    get item_path(items(:undiscoverable))
+  test "show() returns HTTP 403 for embargoed items" do
+    get item_path(items(:embargoed))
     assert_response :forbidden
   end
 

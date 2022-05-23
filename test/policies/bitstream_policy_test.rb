@@ -255,11 +255,11 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.download?
   end
 
-  test "download?() restricts undiscoverable items by default" do
+  test "download?() restricts embargoed items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
     assert !policy.download?
   end
 
@@ -279,11 +279,11 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.download?
   end
 
-  test "download?() authorizes sysadmins to undiscoverable items" do
+  test "download?() authorizes sysadmins to embargoed items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
     assert policy.download?
   end
 
@@ -529,11 +529,11 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.object?
   end
 
-  test "object?() restricts undiscoverable items by default" do
+  test "object?() restricts embargoed items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
     assert !policy.object?
   end
 
@@ -553,11 +553,11 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.object?
   end
 
-  test "object?() authorizes sysadmins to undiscoverable items" do
+  test "object?() authorizes sysadmins to embargoed items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
     assert policy.object?
   end
 
@@ -650,11 +650,11 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
-  test "show?() restricts undiscoverable items by default" do
+  test "show?() restricts embargoed items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
     assert !policy.show?
   end
 
@@ -674,11 +674,11 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() authorizes sysadmins to undiscoverable items" do
+  test "show?() authorizes sysadmins to embargoed items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
     assert policy.show?
   end
 
@@ -791,11 +791,11 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.stream?
   end
 
-  test "stream?() restricts undiscoverable items by default" do
+  test "stream?() restricts embargoed items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
     assert !policy.stream?
   end
 
@@ -815,11 +815,11 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.stream?
   end
 
-  test "stream?() authorizes sysadmins to undiscoverable items" do
+  test "stream?() authorizes sysadmins to embargoed items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
     assert policy.stream?
   end
 
@@ -1002,11 +1002,11 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.viewer?
   end
 
-  test "viewer?() restricts undiscoverable items by default" do
+  test "viewer?() restricts embargoed items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
     assert !policy.viewer?
   end
 
@@ -1026,11 +1026,11 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.viewer?
   end
 
-  test "viewer?() authorizes sysadmins to undiscoverable items" do
+  test "viewer?() authorizes sysadmins to embargoed items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:undiscoverable_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
     assert policy.viewer?
   end
 

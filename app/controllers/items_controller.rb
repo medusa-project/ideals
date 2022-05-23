@@ -396,7 +396,7 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:discoverable, :stage, :stage_reason,
+    params.require(:item).permit(:stage, :stage_reason,
                                  collection_item_memberships_attributes: [
                                    :collection_id, :id, :primary])
   end

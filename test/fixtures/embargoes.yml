@@ -1,4 +1,11 @@
-one:
+download:
+  item:       embargoed
+  expires_at: <%= Time.now + 1.hour %>
+  kind:       <%= Embargo::Kind::DOWNLOAD %>
+  perpetual:  false
+  reason:
+
+all_access:
   item:       embargoed
   expires_at: <%= Time.now + 1.hour %>
   kind:       <%= Embargo::Kind::ALL_ACCESS %>

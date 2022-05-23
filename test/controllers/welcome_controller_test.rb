@@ -27,13 +27,8 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
     Item.reindex_all
     refresh_elasticsearch
 
-    expected_count = Item.
-      where(discoverable: true,
-            stage:        Item::Stages::APPROVED).
-      count
-
     get root_path
-    assert_equal "Search across #{expected_count} items",
+    assert_equal "Search across 8 items",
                  response.body.match(/Search across \d+ items/)[0]
   end
 

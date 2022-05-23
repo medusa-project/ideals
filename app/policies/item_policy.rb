@@ -24,7 +24,6 @@ class ItemPolicy < ApplicationPolicy
         relation
       else
         relation.
-          filter(Item::IndexFields::DISCOVERABLE, true).
           filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
           must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::EXPIRES_AT}",
                          :gt,
@@ -151,8 +150,6 @@ class ItemPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif !@item.approved?
       return { authorized: false, reason: "This item is not approved." }
-    elsif !@item.discoverable
-      return { authorized: false, reason: "This item is not discoverable." }
     else
       @item.current_embargoes.where(kind: Embargo::Kind::ALL_ACCESS).each do |embargo|
         unless user && embargo.exempt?(user)

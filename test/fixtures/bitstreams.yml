@@ -108,8 +108,8 @@ role_limited:
   bundle:               <%= Bitstream::Bundle::CONTENT %>
   description:          Sample description
 
-undiscoverable_in_staging:
-  item:                 undiscoverable
+embargoed_in_staging:
+  item:                 embargoed
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:

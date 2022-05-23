@@ -3,7 +3,7 @@ require 'test_helper'
 class EmbargoTest < ActiveSupport::TestCase
 
   setup do
-    @instance = embargoes(:one)
+    @instance = embargoes(:all_access)
   end
 
   # as_change_hash()

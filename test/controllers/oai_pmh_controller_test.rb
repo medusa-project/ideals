@@ -175,7 +175,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     assert_select "Identify > repositoryName", "IDEALS @ Illinois"
     assert_select "Identify > baseURL", "http://www.example.com/oai-pmh"
     assert_select "Identify > protocolVersion", "2.0"
-    items = Item.where(discoverable: true).order(created_at: :desc).limit(1)
+    items = Item.non_embargoed.order(created_at: :desc).limit(1)
     assert_select "Identify > earliestDatestamp", items.first.created_at.utc.iso8601
     assert_select "Identify > deletedRecord", "persistent"
     assert_select "Identify > granularity", "YYYY-MM-DDThh:mm:ssZ"

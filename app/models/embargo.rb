@@ -24,6 +24,7 @@ class Embargo < ApplicationRecord
 
   include Auditable
 
+  scope :all_access, -> { where(kind: Kind::ALL_ACCESS) }
   scope :current, -> { where("perpetual = true OR expires_at > NOW()")}
   belongs_to :item
   has_and_belongs_to_many :user_groups, -> { order(:name) }

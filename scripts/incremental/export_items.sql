@@ -1,4 +1,4 @@
-copy (SELECT i.item_id, i.submitter_id, i.in_archive, i.withdrawn, i.discoverable
+copy (SELECT i.item_id, i.submitter_id, i.in_archive, i.withdrawn
     FROM item i
     WHERE i.item_id NOT IN (####)
     ORDER BY i.item_id)

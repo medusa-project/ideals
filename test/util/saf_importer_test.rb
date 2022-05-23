@@ -83,7 +83,6 @@ class SafImporterTest < ActiveSupport::TestCase
     # Test the created item's immediate properties
     item = Item.order(created_at: :desc).limit(1).first
     assert_not_nil item.handle
-    assert item.discoverable
     assert_equal Item::Stages::APPROVED, item.stage
 
     # Test bitstream #1
@@ -248,7 +247,6 @@ class SafImporterTest < ActiveSupport::TestCase
     # Test the created item's immediate properties
     item = Item.order(created_at: :desc).limit(1).first
     assert_not_nil item.handle
-    assert item.discoverable
     assert_equal Item::Stages::APPROVED, item.stage
 
     # Test bitstream #1

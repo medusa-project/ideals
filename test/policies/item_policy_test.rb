@@ -20,7 +20,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
       relation = ItemRelation.new
       scope    = ItemPolicy::Scope.new(context, relation)
       assert_equal [
-                       [Item::IndexFields::DISCOVERABLE, true],
                        [Item::IndexFields::STAGE, Item::Stages::APPROVED]
                    ],
                    scope.resolve.instance_variable_get("@filters")
@@ -34,7 +33,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
       relation = ItemRelation.new
       scope    = ItemPolicy::Scope.new(context, relation)
       assert_equal [
-                       [Item::IndexFields::DISCOVERABLE, true],
                        [Item::IndexFields::STAGE, Item::Stages::APPROVED]
                    ],
                    scope.resolve.instance_variable_get("@filters")
@@ -224,14 +222,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.download_counts?
   end
 
-  test "download_counts?() restricts undiscoverable items by default" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:undiscoverable))
-    assert !policy.download_counts?
-  end
-
   test "download_counts?() restricts submitting items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
@@ -278,11 +268,11 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.download_counts?
   end
 
-  test "download_counts?() authorizes sysadmins to undiscoverable items" do
+  test "download_counts?() authorizes sysadmins to embargoed items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:undiscoverable))
+    policy  = ItemPolicy.new(context, items(:embargoed))
     assert policy.download_counts?
   end
 
@@ -782,14 +772,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
-  test "show?() restricts undiscoverable items by default" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:undiscoverable))
-    assert !policy.show?
-  end
-
   test "show?() restricts submitting items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
@@ -827,11 +809,11 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
-  test "show?() authorizes sysadmins to undiscoverable items" do
+  test "show?() authorizes sysadmins to embargoed items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:undiscoverable))
+    policy  = ItemPolicy.new(context, items(:embargoed))
     assert policy.show?
   end
 
@@ -943,7 +925,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:undiscoverable))
+    policy  = ItemPolicy.new(context, items(:embargoed))
     assert policy.show_all_metadata?
   end
 
@@ -1357,14 +1339,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.statistics?
   end
 
-  test "statistics?() restricts undiscoverable items by default" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:undiscoverable))
-    assert !policy.statistics?
-  end
-
   test "statistics?() restricts submitting items by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
@@ -1394,11 +1368,11 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.statistics?
   end
 
-  test "statistics?() authorizes sysadmins to undiscoverable items" do
+  test "statistics?() authorizes sysadmins to embargoed items" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:undiscoverable))
+    policy  = ItemPolicy.new(context, items(:embargoed))
     assert policy.statistics?
   end
 

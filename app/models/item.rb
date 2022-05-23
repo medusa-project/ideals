@@ -23,11 +23,6 @@
 # # Attributes
 #
 # * `created_at`              Managed by ActiveRecord.
-# * `discoverable`            If false, the submitter has indicated during
-#                             submission that the item should be private, which
-#                             means it should not be included in search
-#                             results, and its metadata should not be available
-#                             except to administrators.
 # * `stage`                   Lifecycle stage, whose value is one of the
 #                             [Stages] constant values.
 # * `stage_reason`            Reason for setting the {stage} attribute to its
@@ -81,7 +76,6 @@ class Item < ApplicationRecord
     COLLECTION_TITLES  = "k_collection_titles"
     COLLECTIONS        = "i_collection_ids"
     CREATED            = ElasticsearchIndex::StandardFields::CREATED
-    DISCOVERABLE       = "b_discoverable"
     EMBARGOES          = "o_embargoes"
     FULL_TEXT          = ElasticsearchIndex::StandardFields::FULL_TEXT
     GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY = "k_unit_collection_sort_key"
@@ -135,8 +129,7 @@ class Item < ApplicationRecord
     REJECTED   = 350
 
     ##
-    # An item that has been withdrawn, a.k.a. made no longer discoverable, by
-    # an administrator.
+    # An item that has been withdrawn by an administrator.
     WITHDRAWN  = 400
 
     ##
@@ -154,6 +147,7 @@ class Item < ApplicationRecord
     end
   end
 
+  has_many :all_access_embargoes, -> { current && all_access }, class_name: "Embargo"
   has_many :bitstreams
   has_many :bitstream_authorizations
   has_many :collection_item_memberships
@@ -187,6 +181,19 @@ class Item < ApplicationRecord
   validate :validate_primary_bitstream
 
   breadcrumbs parent: :primary_collection, label: :title
+
+  ##
+  # Convenience method that returns all non-embargoed [Item]s, excluding
+  # download embargoes.
+  #
+  # @return [ActiveRecord::Relation<Item>]
+  #
+  def self.non_embargoed
+    Item.left_outer_joins(:embargoes).
+      where("(embargoes.perpetual != true OR embargoes.perpetual IS NULL) "\
+            "AND (embargoes.expires_at < NOW() OR embargoes.expires_at IS NULL)").
+      where("embargoes.kind != ? OR embargoes.kind IS NULL", Embargo::Kind::ALL_ACCESS)
+  end
 
   ##
   # @return [Enumerable<User>] All managers of all owning collections,
@@ -255,8 +262,7 @@ class Item < ApplicationRecord
   # @return [void]
   #
   def approve
-    self.stage        = Stages::APPROVED
-    self.discoverable = true
+    self.stage = Stages::APPROVED
     unless self.elements.find{ |e| e.name == "dcterms:available" }
       self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
                           string:             Time.now.iso8601)
@@ -316,7 +322,6 @@ class Item < ApplicationRecord
     doc[IndexFields::COLLECTION_TITLES]  = collections.map(&:title)
     doc[IndexFields::COLLECTIONS]        = collections.map(&:id)
     doc[IndexFields::CREATED]            = self.created_at.utc.iso8601
-    doc[IndexFields::DISCOVERABLE]       = self.discoverable
     doc[IndexFields::EMBARGOES]          = self.current_embargoes.
         select{ |e| e.kind == Embargo::Kind::ALL_ACCESS }.
         map(&:as_indexed_json)

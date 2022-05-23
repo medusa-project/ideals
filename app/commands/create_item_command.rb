@@ -23,8 +23,7 @@ class CreateItemCommand < Command
     Item.transaction do
       item = Item.create!(submitter:          @submitter,
                           primary_collection: @primary_collection,
-                          stage:              @stage,
-                          discoverable:       true)
+                          stage:              @stage)
 
       # For every element with placeholder text in the item's effective
       # submission profile, ascribe a metadata element with a value of that

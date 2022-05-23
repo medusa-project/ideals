@@ -294,9 +294,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "object() returns HTTP 403 for undiscoverable items" do
+  test "object() returns HTTP 403 for embargoed items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:undiscoverable)
+    item      = items(:embargoed)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -387,9 +387,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "show() returns HTTP 403 for undiscoverable items" do
+  test "show() returns HTTP 403 for embargoed items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:undiscoverable)
+    item      = items(:embargoed)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -507,9 +507,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "stream() returns HTTP 403 for undiscoverable items" do
+  test "stream() returns HTTP 403 for embargoed items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:undiscoverable)
+    item      = items(:embargoed)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -685,9 +685,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "viewer() returns HTTP 403 for undiscoverable items" do
+  test "viewer() returns HTTP 403 for embargoed items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:undiscoverable)
+    item      = items(:embargoed)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))

@@ -101,9 +101,6 @@ class BitstreamPolicy < ApplicationPolicy
     elsif !bitstream.item.approved?
       return { authorized: false,
                reason:     "This file's owning item is not approved." }
-    elsif !bitstream.item.discoverable
-      return { authorized: false,
-               reason:     "This file's owning item is not discoverable." }
     elsif bitstream.bundle != Bitstream::Bundle::CONTENT &&
       !user&.effective_manager?(bitstream.item.primary_collection)
       return {

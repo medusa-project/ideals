@@ -36,8 +36,6 @@
       - if @item.stage_reason.present?
         %br
         = @item.stage_reason
-    %dt Discoverable
-    %dd= boolean(@item.discoverable, style: :word)
     %dt User Groups Allowed to Access Files
     %dd
       - if @item.bitstream_authorizations.any?

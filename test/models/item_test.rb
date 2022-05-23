@@ -34,6 +34,12 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal count - 1, Item.search.institution(institutions(:uiuc)).count
   end
 
+  # non_embargoed()
+
+  test "non_embargoed() returns all non-all-access-embargoed items" do
+    assert_equal Item.count - 1, Item.non_embargoed.count
+  end
+
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
@@ -53,6 +59,15 @@ class ItemTest < ActiveSupport::TestCase
 
   test "search() returns an ItemRelation" do
     assert_kind_of ItemRelation, Item.search.institution(institutions(:uiuc))
+  end
+
+  # all_access_embargoes()
+
+  test "all_access_embargoes() returns all all-access embargoes" do
+    assert_equal 0, @instance.all_access_embargoes.length
+
+    @instance = items(:embargoed)
+    assert_equal 1, @instance.all_access_embargoes.length
   end
 
   # all_collection_managers()
@@ -91,12 +106,6 @@ class ItemTest < ActiveSupport::TestCase
     item = items(:described)
     item.approve
     assert_equal Item::Stages::APPROVED, item.stage
-  end
-
-  test "approve() sets the discoverable property to true" do
-    item = items(:described)
-    item.approve
-    assert item.discoverable
   end
 
   test "approve() creates an associated dcterms:available element if one does
@@ -140,7 +149,7 @@ class ItemTest < ActiveSupport::TestCase
                               expires_at: Time.now + 1.day)
     hash = @instance.as_change_hash
     # we will assume that if one property is correct, the rest are
-    assert hash['discoverable']
+    assert_equal Item::Stages::label_for(Item::Stages::APPROVED), hash['stage']
 
     # test associated elements
     assert_equal "Some title", hash['element:dc:title:string']
@@ -164,7 +173,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_empty doc[Item::IndexFields::COLLECTION_TITLES]
     assert_not_empty doc[Item::IndexFields::COLLECTIONS]
     assert_not_empty doc[Item::IndexFields::CREATED]
-    assert doc[Item::IndexFields::DISCOVERABLE]
     assert_equal 0, doc[Item::IndexFields::EMBARGOES].length
     assert_empty doc[Item::IndexFields::FULL_TEXT]
     assert_match /\w+ \w* \w+/,

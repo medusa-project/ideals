@@ -131,11 +131,11 @@ class OaiPmhController < ApplicationController
   end
 
   def do_identify
-    @sample_item        = Item.where(discoverable: true,
-                                     stage: Item::Stages::APPROVED).
-                            order(:updated_at).
-                            limit(1).
-                            first
+    @sample_item        = Item.non_embargoed.
+      where(stage: Item::Stages::APPROVED).
+      order(:updated_at).
+      limit(1).
+      first
     @earliest_datestamp = @sample_item.updated_at.utc.iso8601
     @base_url           = oai_pmh_url
     "identify"
@@ -188,14 +188,14 @@ class OaiPmhController < ApplicationController
 
   def fetch_results_for_list_identifiers_or_records
     @results = Item.
-      distinct(:id).
+      non_embargoed. # TODO: this is waaay too slow
+      distinct("items.id").
       joins("LEFT JOIN collection_item_memberships cim ON cim.item_id = items.id").
       joins("LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id").
-      where(discoverable: true,
-            stage: [Item::Stages::APPROVED,
-                    Item::Stages::WITHDRAWN,
-                    Item::Stages::BURIED]).
-      order(:updated_at)
+      where("items.stage": [Item::Stages::APPROVED,
+                            Item::Stages::WITHDRAWN,
+                            Item::Stages::BURIED]).
+      order("items.updated_at")
 
     from = get_from
     if from

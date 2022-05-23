@@ -521,7 +521,6 @@ class DspaceImporter
       submitter_id = row[1]
       submitting   = row[2] != "t"
       withdrawn    = row[3] == "t"
-      discoverable = row[4] == "t"
       if withdrawn
         stage = Item::Stages::WITHDRAWN
       elsif submitting
@@ -531,13 +530,11 @@ class DspaceImporter
       end
       begin
         item = Item.where(id: id).first_or_create!(submitter_id: submitter_id,
-                                                   stage:        stage,
-                                                   discoverable: discoverable)
+                                                   stage:        stage)
       rescue ActiveRecord::InvalidForeignKey
         item = Item.create!(id:           id,
                             submitter_id: nil,
-                            stage:        stage,
-                            discoverable: discoverable)
+                            stage:        stage)
       end
       item.events.where(event_type:  Event::Type::CREATE).
         first_or_create!(after_changes: item.as_change_hash,
