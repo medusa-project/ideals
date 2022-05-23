@@ -847,6 +847,24 @@ const IDEALS = {
             }
             const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
             return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
+        },
+
+        /**
+         * @returns {Boolean}
+         */
+        isPDFSupportedNatively: function() {
+            function hasAcrobatInstalled() {
+                function getActiveXObject(name) {
+                    try { return new ActiveXObject(name); } catch(e) {}
+                }
+                return getActiveXObject('AcroPDF.PDF') || getActiveXObject('PDF.PdfCtrl');
+            }
+
+            function isApple() {
+                return /Mac|iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+            }
+
+            return navigator.mimeTypes['application/pdf'] || hasAcrobatInstalled() || isApple();
         }
 
     }

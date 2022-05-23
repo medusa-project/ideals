@@ -117,11 +117,20 @@ const ItemView = function() {
 
     new FileNavigator();
     $("#file-navigator").on("IDEALS.FileNavigator.fileChanged", function() {
+        const viewerjsViewer  = $("#viewerjs-pdf-viewer");
+        const nativePDFViewer = $("#native-pdf-viewer");
+        if (IDEALS.Util.isPDFSupportedNatively()) {
+            viewerjsViewer.hide();
+            nativePDFViewer.show();
+        } else {
+            viewerjsViewer.show();
+            nativePDFViewer.hide();
+        }
         $(this).find(".edit-bitstream").on("click", function() {
             const item_id      = $(this).data("item-id");
             const bitstream_id = $(this).data("bitstream-id");
-            const url          = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
-                bitstream_id + "/edit";
+            const url          = ROOT_URL + "/items/" + item_id +
+                "/bitstreams/" + bitstream_id + "/edit";
             $.get(url, function(data) {
                 $("#edit-bitstream-modal .modal-body").html(data);
             });

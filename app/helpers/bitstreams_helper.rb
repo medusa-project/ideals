@@ -87,6 +87,32 @@ module BitstreamsHelper
       "type=\"#{bitstream.media_type}\"></object>")
   end
 
+  def pdf_viewer_for(bitstream)
+    html = StringIO.new
+    # This container will contain two different viewers: ViewerJS and a native
+    # viewer. One or the other will be shown via JS depending on whether the
+    # browser already supports PDF.
+
+    # Stream the PDF instead of providing a presigned S3 URL. The presigned URL
+    # does not support ranges, which the PDF viewer may require.
+    bitstream_path = item_bitstream_stream_path(bitstream)
+
+    # Add a ViewerJS viewer
+    viewer_url     = asset_path("/ViewerJS/#" + bitstream_path)
+    html <<   "<iframe id=\"viewerjs-pdf-viewer\" "\
+                  "src=\"#{viewer_url}\" frameborder=\"0\" "\
+                  "height=\"100%\" width=\"100%\" "\
+                  "allowfullscreen webkitallowfullscreen></iframe>"
+
+    # Add a generic embedded viewer; this is preferable to PDF.js when
+    # the browser supports embedded PDFs
+    html      << raw("<object id=\"native-pdf-viewer\" "\
+                         "data=\"#{bitstream_path}\" "\
+                         "type=\"#{bitstream.media_type}\"></object>")
+
+    raw(html.string)
+  end
+
   ##
   # @param bitstream [Bitstream,String]
   #
@@ -101,15 +127,6 @@ module BitstreamsHelper
     html <<   "</pre>"
     html << "</div>"
     raw(html.string)
-  end
-
-  def viewerjs_viewer_for(bitstream)
-    bitstream_path = item_bitstream_stream_path(bitstream)
-    viewer_url     = asset_path("/ViewerJS/#" + bitstream_path)
-    html           = "<iframe src=\"#{viewer_url}\" frameborder=\"0\" "\
-                             "height=\"100%\" width=\"100%\" "\
-                             "allowfullscreen webkitallowfullscreen></iframe>"
-    raw(html)
   end
 
   def video_tag_for(bitstream)
