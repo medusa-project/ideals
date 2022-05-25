@@ -582,15 +582,22 @@ module ApplicationHelper
   end
 
   ##
-  # @param entity [Item]
+  # Returns a thumbnail image for an item. This is distinct from an {icon_for
+  # icon}.
+  #
+  # @param item [Item]
   # @return [String,nil] HTML image tag or nil.
   #
-  def thumbnail_for(entity)
-    if entity.kind_of?(Item)
-      bs = entity.representative_bitstream
+  def thumbnail_for(item)
+    if item.kind_of?(Item)
+      bs = item.representative_bitstream
       if bs&.has_representative_image?
-        return raw("<img src=\"#{bs.derivative_url(region: :square, size: 512)}\" "\
-                    "alt=\"Thumbnail for #{entity.title}\"/>")
+        url = bs.derivative_url(region:         :square,
+                                size:           512,
+                                generate_async: true)
+        if url
+          return raw("<img src=\"#{url}\" alt=\"Thumbnail for #{item.title}\"/>")
+        end
       end
     end
     nil

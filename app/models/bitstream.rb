@@ -320,20 +320,29 @@ class Bitstream < ApplicationRecord
   ##
   # @param region [Symbol] `:full` or `:square`.
   # @param size [Integer]  Power-of-2 size constraint (128, 256, 512, etc.)
+  # @param generate_async [Boolean] Whether to generate the derivative (if
+  #                                 necessary) asynchronously. If true, and the
+  #                                 image has not already been generated, nil
+  #                                 is returned.
   # @return [String] Pre-signed URL for a derivative image with the given
   #                  characteristics. If no such image exists, it is generated
   #                  automatically.
   # @raises [Aws::S3::Errors::NotFound]
   #
-  def derivative_url(region: :full, size:)
+  def derivative_url(region: :full, size:, generate_async: false)
     unless has_representative_image?
       raise "Derivatives are not supported for this format."
     end
-    client = S3Client.instance
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = derivative_key(region: region, size: size, format: :jpg)
+    client       = S3Client.instance
+    bucket       = ::Configuration.instance.storage[:bucket]
+    key          = derivative_key(region: region, size: size, format: :jpg)
     unless client.object_exists?(bucket: bucket, key: key)
-      generate_derivative(region: region, size: size, format: :jpg)
+      if generate_async
+        GenerateDerivativeImageJob.perform_later(self, region, size, :jpg)
+        return nil
+      else
+        generate_derivative(region: region, size: size, format: :jpg)
+      end
     end
 
     aws_client = client.send(:get_client)
@@ -613,8 +622,8 @@ class Bitstream < ApplicationRecord
       source_tempfile = download_to_temp_file
       if source_tempfile
         crop = (region == :square) ? "--crop centre" : ""
-        # ruby-vips gem is also an option here, but I experienced an inexplicable
-        # hanging issue on some images, so vipsthumbnail will do just as well.
+        # ruby-vips gem is also an option here, but I experienced hanging on
+        # some images, so vipsthumbnail will do just as well.
         `vipsthumbnail #{source_tempfile.path} #{crop} --size #{size}x#{size} -o %s-#{region}-#{size}.#{format}`
         deriv_path = File.join(File.dirname(source_tempfile.path),
                                "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
