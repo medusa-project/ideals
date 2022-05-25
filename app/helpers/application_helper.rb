@@ -259,6 +259,12 @@ module ApplicationHelper
       icon = "fa fa-university"
     when "Item"
       icon = "fa fa-cube"
+      if entity.kind_of?(Item)
+        bs   = entity.representative_bitstream
+        if bs
+          icon = "fa fa-#{bs.format.icon.gsub(/-o$/, "")}"
+        end
+      end
     when "Message"
       icon = "fa fa-envelope"
     when "MetadataProfile", "SubmissionProfile"

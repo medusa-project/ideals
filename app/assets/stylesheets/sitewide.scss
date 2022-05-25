@@ -41,18 +41,21 @@ h1 {
     font-size: 100px;
   }
   .icon-thumbnail, .image-thumbnail {
+    $thumb-width: 120px;
     margin-right: 10px;
     max-height: 120px;
-    max-width: 120px;
+    max-width: $thumb-width;
+    text-align: center;
     img {
-      width: 120px;
+      width: $thumb-width;
     }
     a {
-      color: $gray-600;
+      color: $gray-500;
       display: flex;
       flex-direction: row;
-      align-items: flex-start;
-      padding: 0 0.25em 0.25em 0;
+      align-items: center;
+      justify-content: center;
+      width: $thumb-width;
     }
     a:hover {
       text-decoration: none;
