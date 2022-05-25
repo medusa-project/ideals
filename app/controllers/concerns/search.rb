@@ -8,7 +8,7 @@ module Search
 
   include ActiveSupport::Concern
 
-  ADVANCED_SEARCH_PARAMS = [:full_text, { elements: [] }]
+  ADVANCED_SEARCH_PARAMS = [:full_text, { elements: MetadataProfile.default.elements.map(&:name) }]
   SIMPLE_SEARCH_PARAMS   = [:q]
   RESULTS_PARAMS         = [:direction, { fq: [] }, :sort, :start]
 
