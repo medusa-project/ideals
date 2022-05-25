@@ -458,11 +458,20 @@ module ApplicationHelper
     html = StringIO.new
     resources.each do |resource|
       html << "<div class=\"media resource-list mb-3\">"
-      html <<   "<div class=\"thumbnail\">"
-      html <<     link_to(resource) do
-                    icon_for(resource)
-                  end
-      html <<   "</div>"
+      thumb = thumbnail_for(resource)
+      if thumb
+        html <<   "<div class=\"image-thumbnail\">"
+        html <<     link_to(resource) do
+          thumb
+        end
+        html <<   "</div>"
+      else
+        html <<   "<div class=\"icon-thumbnail\">"
+        html <<     link_to(resource) do
+          icon_for(resource)
+        end
+        html <<   "</div>"
+      end
       html <<   "<div class=\"media-body\">"
       html <<     "<h5 class=\"mt-0 mb-0\">"
       html <<       link_to(resource.title, resource)
@@ -570,6 +579,21 @@ module ApplicationHelper
         <span class="sr-only">Loading&hellip;</span>
       </div>
     </div>')
+  end
+
+  ##
+  # @param entity [Item]
+  # @return [String,nil] HTML image tag or nil.
+  #
+  def thumbnail_for(entity)
+    if entity.kind_of?(Item)
+      bs = entity.representative_bitstream
+      if bs&.has_representative_image?
+        return raw("<img src=\"#{bs.derivative_url(region: :square, size: 512)}\" "\
+                    "alt=\"Thumbnail for #{entity.title}\"/>")
+      end
+    end
+    nil
   end
 
 

@@ -37,9 +37,16 @@ h1 {
     display: flex;
     align-items: center;
   }
-  .thumbnail {
-    font-size: 4em;
-    height: 80px;
+  .icon-thumbnail {
+    font-size: 100px;
+  }
+  .icon-thumbnail, .image-thumbnail {
+    margin-right: 10px;
+    max-height: 120px;
+    max-width: 120px;
+    img {
+      width: 120px;
+    }
     a {
       color: $gray-600;
       display: flex;

@@ -109,6 +109,8 @@ class Bitstream < ApplicationRecord
                  :delete_from_permanent_storage
   before_destroy :delete_from_medusa, if: -> { medusa_uuid.present? }
 
+  LOGGER = CustomLogger.new(Bitstream)
+
   ##
   # Bitstreams are initially uploaded to a location under this key prefix.
   #
@@ -605,21 +607,27 @@ class Bitstream < ApplicationRecord
     config          = Configuration.instance
     target_bucket   = config.storage[:bucket]
     target_key      = derivative_key(region: region, size: size, format: format)
-    source_tempfile = download_to_temp_file
+    source_tempfile = nil
+    deriv_path      = nil
     begin
-      crop = (region == :square) ? "--crop centre" : ""
-      # ruby-vips gem is also an option here, but I experienced an inexplicable
-      # hanging issue on some images, so vipsthumbnail will do just as well.
-      `vipsthumbnail #{source_tempfile.path} #{crop} --size #{size}x#{size} -o %s-#{region}-#{size}.#{format}`
-      deriv_path = File.join(File.dirname(source_tempfile.path),
-                             "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
-      File.open(deriv_path, "rb") do |file|
-        S3Client.instance.put_object(bucket: target_bucket,
-                                     key:    target_key,
-                                     body:   file)
+      source_tempfile = download_to_temp_file
+      if source_tempfile
+        crop = (region == :square) ? "--crop centre" : ""
+        # ruby-vips gem is also an option here, but I experienced an inexplicable
+        # hanging issue on some images, so vipsthumbnail will do just as well.
+        `vipsthumbnail #{source_tempfile.path} #{crop} --size #{size}x#{size} -o %s-#{region}-#{size}.#{format}`
+        deriv_path = File.join(File.dirname(source_tempfile.path),
+                               "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
+        File.open(deriv_path, "rb") do |file|
+          S3Client.instance.put_object(bucket: target_bucket,
+                                       key:    target_key,
+                                       body:   file)
+        end
       end
+    rescue => e
+      LOGGER.warn("generate_derivative(): #{e}")
     ensure
-      source_tempfile.unlink
+      source_tempfile&.unlink
       FileUtils.rm(deriv_path) rescue nil
     end
   end

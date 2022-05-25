@@ -561,6 +561,14 @@ class Item < ApplicationRecord
   end
 
   ##
+  # @return [Bitstream]
+  #
+  def representative_bitstream
+    self.bitstreams.find(&:primary) ||
+      self.bitstreams.find{ |b| b.bundle == Bitstream::Bundle::CONTENT }
+  end
+
+  ##
   # N.B.: This is not a model validation because instances are allowed to be
   # missing elements during the submission process.
   #

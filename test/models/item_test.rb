@@ -543,6 +543,46 @@ class ItemTest < ActiveSupport::TestCase
       count
   end
 
+  # representative_bitstream()
+
+  test "representative_bitstream() returns the primary bitstream if one exists" do
+    @instance = Item.create
+    b1 = @instance.bitstreams.build(primary: true,
+                                    bundle: Bitstream::Bundle::CONTENT,
+                                    original_filename: "image.jpg")
+    b2 = @instance.bitstreams.build(primary: false,
+                                    bundle: Bitstream::Bundle::LICENSE,
+                                    original_filename: "license.txt")
+
+    assert_same b1, @instance.representative_bitstream
+  end
+
+  test "representative_bitstream() returns a bitstream in the content bundle if
+  a primary bitstream does not exist" do
+    @instance = Item.create
+    b1 = @instance.bitstreams.build(primary:           false,
+                                    bundle:            Bitstream::Bundle::CONTENT,
+                                    original_filename: "image.jpg")
+    b2 = @instance.bitstreams.build(primary:           false,
+                                    bundle:            Bitstream::Bundle::LICENSE,
+                                    original_filename: "license.txt")
+
+    assert_same b1, @instance.representative_bitstream
+  end
+
+  test "representative_bitstream() returns nil if no representative bitstream
+  exists" do
+    @instance = Item.create
+    @instance.bitstreams.build(primary:           false,
+                               bundle:            Bitstream::Bundle::NOTES,
+                               original_filename: "notes.txt")
+    @instance.bitstreams.build(primary:           false,
+                               bundle:            Bitstream::Bundle::LICENSE,
+                               original_filename: "license.txt")
+
+    assert_nil @instance.representative_bitstream
+  end
+
   # required_elements_present?()
 
   test "required_elements_present?() returns false if not all required elements
