@@ -12,6 +12,7 @@ class ReindexItemsJob < ApplicationJob
     collections = args[0]
     profile     = collections.first.effective_metadata_profile
     task        = Task.create!(name:        self.class.name,
+                               started_at:  Time.now,
                                status_text: "Reindexing items in "\
                                             "#{collections.length} collections "\
                                             "associated with the "\

@@ -21,11 +21,13 @@ class ImportJob < ApplicationJob
 
     if keys.length == 1 && keys[0].split(".").last.downcase == "csv"
       task = Task.create!(name:        self.class.name,
+                          started_at:  Time.now,
                           status_text: "Importing items from CSV")
       CsvImporter.new.import_from_s3(import, submitter, task: task)
       Import::Kind::CSV
     else
       task = Task.create!(name:        self.class.name,
+                          started_at:  Time.now,
                           status_text: "Importing items from SAF package")
       SafImporter.new.import_from_s3(import, task: task)
       Import::Kind::SAF
