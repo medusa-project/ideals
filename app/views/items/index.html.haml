@@ -1,20 +1,56 @@
 - provide :body_id, "list_items"
-- provide :title, "Items"
+- provide :title, "Results"
 
-%h1 Items
+%h1 Results
 
 = form_tag(items_path, method: :get) do
+  .card.mb-3
+    .card-body
+      %ul#search-tabs.nav.nav-pills.mb-0{role: "tablist"}
+        %li.nav-item{role: "presentation"}
+          %a#all-items-tab.nav-link.active{"data-toggle":   "pill",
+                                           href:            "#all-items",
+                                           role:            "tab",
+                                           "aria-controls": "all-items",
+                                           "aria-selected": "true"} All Items
+        %li.nav-item{role: "presentation"}
+          %a#simple-search-tab.nav-link{"data-toggle":   "pill",
+                                        href:            "#simple-search",
+                                        role:            "tab",
+                                        "aria-controls": "simple-search",
+                                        "aria-selected": "true"} Simple Search
+        %li.nav-item{role: "presentation"}
+          %a#advanced-search-tab.nav-link{"data-toggle":   "pill",
+                                          href:            "#advanced-search",
+                                          role:            "tab",
+                                          "aria-controls": "advanced-search",
+                                          "aria-selected": "true"} Advanced Search
+      .tab-content
+        #all-items.tab-pane.fade.show.active{role:              "tabpanel",
+                                             "aria-labelledby": "all-items-tab"}
+          -# this tab is empty
+        #simple-search.tab-pane.fade.mt-3{role: "tabpanel",
+                                          "aria-labelledby": "simple-search-tab"}
+          .input-group.filter-field
+            = filter_field(submit_text: "Search")
+        #advanced-search.tab-pane.fade.mt-3{role: "tabpanel",
+                                            "aria-labelledby": "advanced-search-tab"}
+          = advanced_search_form
+          .row
+            .col-sm-3
+            .col-sm-9
+              = submit_tag("Search", class: "btn btn-outline-primary")
+
   .row
     .facets.col-sm-4.col-lg-3.col-xl-2
       = facets_as_cards(@facets, @permitted_params)
 
     .col-sm-8.col-lg-9.col.xl-10
       .row.justify-content-between
+        .col-8
         .col-4
-          .input-group.mb-3.filter-field
-            = filter_field(icon: "fa fa-filter", submit_text: "Filter")
-        .col-4
-          .input-group
+          .input-group.mb-3
             = sort_menu
+
       #listing
         = render partial: "listing"

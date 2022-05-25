@@ -5,6 +5,48 @@
  */
 const ItemsView = function() {
     new IDEALS.FacetSet().init();
+
+    const params           = new URLSearchParams(window.location.search);
+    const allItemsTab      = $("#all-items-tab");
+    const advSearchTab     = $("#advanced-search-tab");
+    const advSearchContent = $("#advanced-search");
+
+    // Select a search-type tab depending on the URL query.
+    if (params.get("q")) {
+        $("#simple-search-tab").tab('show');
+    } else {
+        let found = false;
+        advSearchContent.find("input, select").each(function() {
+            found = true;
+            if (params.get($(this).attr("name"))) {
+                advSearchTab.tab('show');
+            }
+        });
+        if (!found) {
+            allItemsTab.tab('show');
+        }
+    }
+
+    // Fill in advanced search fields from the URL query.
+    advSearchContent.find("input[type=text], input[type=number], select").each(function() {
+        $(this).val(params.get($(this).attr("name")));
+    });
+
+    // When the All Items tab is selected, remove all other search input.
+    allItemsTab.on("show.bs.tab", function() {
+        window.location = "/items";
+    });
+
+    // When the Simple Search or Advanced Search submit button is clicked,
+    // clear all form fields in the other tab pane, so they don't get sent
+    // along as well.
+    $("input[type=submit]").on("click", function() {
+        const tabPane       = $(this).parents(".tab-pane");
+        const tabPaneID     = tabPane.attr("id");
+        const otherTabPanes = tabPane.parent().find(".tab-pane:not([id=" + tabPaneID + "])");
+        otherTabPanes.find("input[type=text], input[type=search], textarea").val("");
+        otherTabPanes.find("option:first-child").prop("selected", "selected");
+    });
 };
 
 /**
