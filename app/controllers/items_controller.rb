@@ -168,7 +168,7 @@ class ItemsController < ApplicationController
   #
   def index
     @permitted_params = params.permit(Search::SIMPLE_SEARCH_PARAMS +
-                                        Search::ADVANCED_SEARCH_PARAMS +
+                                        Search::advanced_search_params +
                                         Search::RESULTS_PARAMS)
     @start            = @permitted_params[:start].to_i
     @window           = window_size

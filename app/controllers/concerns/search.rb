@@ -8,9 +8,12 @@ module Search
 
   include ActiveSupport::Concern
 
-  ADVANCED_SEARCH_PARAMS = [:full_text, { elements: MetadataProfile.default.elements.map(&:name) }]
   SIMPLE_SEARCH_PARAMS   = [:q]
   RESULTS_PARAMS         = [:direction, { fq: [] }, :sort, :start]
+
+  def self.advanced_search_params
+    [:full_text, { elements: MetadataProfile.default.elements.map(&:name) }]
+  end
 
   ##
   # Mutates the given [ItemRelation] to reflect input from a simple or advanced
