@@ -119,7 +119,7 @@ class IdealsMailer < ApplicationMailer
     if item.primary_collection&.managing_users&.any?
       recipients = item.primary_collection.managing_users.map(&:email)
     else
-      recipients = config.admin[:tech_mail_list] # TODO: use a different config key
+      recipients = config.admin[:tech_mail_list]
     end
     mail(reply_to: NO_REPLY_ADDRESS,
          to:       recipients,
