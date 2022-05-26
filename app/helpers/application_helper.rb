@@ -468,20 +468,11 @@ module ApplicationHelper
     html = StringIO.new
     resources.each do |resource|
       html << "<div class=\"media resource-list mb-3\">"
-      thumb = thumbnail_for(resource)
-      if thumb
-        html <<   "<div class=\"image-thumbnail\">"
-        html <<     link_to(resource) do
-          thumb
-        end
-        html <<   "</div>"
-      else
-        html <<   "<div class=\"icon-thumbnail\">"
-        html <<     link_to(resource) do
-          icon_for(resource)
-        end
-        html <<   "</div>"
+      html <<   "<div class=\"icon-thumbnail\">"
+      html <<     link_to(resource) do
+        icon_for(resource)
       end
+      html <<   "</div>"
       html <<   "<div class=\"media-body\">"
       html <<     "<h5 class=\"mt-0 mb-0\">"
       html <<       link_to(resource.title, resource)
