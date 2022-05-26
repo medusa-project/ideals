@@ -565,7 +565,12 @@ class Item < ApplicationRecord
   #
   def representative_bitstream
     self.bitstreams.find(&:primary) ||
-      self.bitstreams.find{ |b| b.bundle == Bitstream::Bundle::CONTENT }
+      self.bitstreams.
+        select{ |b| b.bundle == Bitstream::Bundle::CONTENT }.
+        sort{ |a, b|
+          (a.original_filename.split(".").last.downcase == 'pdf' ? 'a' : 'zzz') <=>
+          b.original_filename.split(".").last.downcase }.
+        first
   end
 
   ##
