@@ -260,9 +260,13 @@ module ApplicationHelper
     when "Item"
       icon = "fa fa-cube"
       if entity.kind_of?(Item)
-        bs   = entity.representative_bitstream
+        bs = entity.representative_bitstream
         if bs
-          icon = "fa fa-#{bs.format.icon.gsub(/-o$/, "")}"
+          icon = bs.format.icon
+          # TODO: this is an ugly hack because the FA SVGs referenced in
+          # formats.yml are from an earlier version of FA
+          icon = "file-alt" if icon == "file-text-o"
+          icon = "far fa-#{icon.gsub(/-o$/, "")}"
         end
       end
     when "Message"
