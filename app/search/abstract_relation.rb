@@ -340,16 +340,6 @@ class AbstractRelation
   end
 
   ##
-  # @param name [String] Field name.
-  # @return [self]
-  # @see filter
-  #
-  def remove_filter(name) # TODO: remove this
-    @filters.reject!{ |f| f[0] == name }
-    self
-  end
-
-  ##
   # @param start [Integer]
   # @return [self]
   #
