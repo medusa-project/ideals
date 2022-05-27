@@ -113,11 +113,11 @@ class SubmissionsController < ApplicationController
     @collection  = Collection.find_by(id: params[:collection_id])
     # These are all submissions in the same collection, or no collection.
     @submissions = current_user.submitted_items.
-      joins(:collection_item_memberships).
       where(stage: Item::Stages::SUBMITTING).
       order(:updated_at)
     if @collection
       @submissions = @submissions.
+        joins(:collection_item_memberships).
         where("collection_item_memberships.collection_id": @collection.id)
     end
   end
