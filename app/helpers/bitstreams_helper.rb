@@ -13,17 +13,21 @@ module BitstreamsHelper
   # @param size [Integer] See {Bitstream#derivative_url}. This is the literal
   #                       size of the image; the `img` tag has no `width`/
   #                       `height` attribute and must be sized via CSS.
+  # @param generate_async [Boolean]
   # @param attrs [Hash] Additional tag attributes.
   # @return [String] HTML `img` tag.
   #
   def representative_image_tag(bitstream,
                                region: :full,
                                size:,
+                               generate_async: false,
                                **attrs)
     path = nil
     if bitstream.has_representative_image?
       begin
-        path = bitstream.derivative_url(region: region, size: size)
+        path = bitstream.derivative_url(region:         region,
+                                        size:           size,
+                                        generate_async: generate_async)
         svg  = false
       rescue
         # The object may not exist, or something else is wrong, but we can't

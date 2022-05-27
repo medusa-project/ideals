@@ -18,9 +18,10 @@
                        "data-bitstream-id": bitstream.id,
                        tabindex:            tabindex}
               = representative_image_tag(bitstream,
-                                         region: :square,
-                                         size:   512,
-                                         title:  bitstream.original_filename)
+                                         region:         :square,
+                                         size:           512,
+                                         generate_async: true,
+                                         title:          bitstream.original_filename)
               = bitstream.original_filename
               - tabindex += 1
         - if @other_bitstreams.any?
@@ -32,9 +33,10 @@
                        "data-bitstream-id": bitstream.id,
                        tabindex:            tabindex}
               = representative_image_tag(bitstream,
-                                         region: :square,
-                                         size:   512,
-                                         title:  bitstream.original_filename)
+                                         region:         :square,
+                                         size:           512,
+                                         generate_async: true,
+                                         title:          bitstream.original_filename)
               = bitstream.original_filename
               - tabindex += 1
       - if @item.approved?
