@@ -260,11 +260,13 @@ class ApplicationController < ActionController::Base
 
       # Submissions to complete (outside of the submission view)
       if controller_name != "submissions" || action_name != "edit"
-        count = current_user.submitted_items.where(stage: Item::Stages::SUBMITTING).count
+        items = current_user.submitted_items.where(stage: Item::Stages::SUBMITTING)
+        count = items.count
         if count > 0
+          path = (count == 1) ? edit_submission_path(items.first) : submit_path
           @list.items << {
               message: "Resume #{count} #{"submission".pluralize(count)}",
-              url: submit_path
+              url:     path
           }
           @list.total_items += count
         end
