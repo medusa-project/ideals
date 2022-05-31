@@ -12,11 +12,16 @@ body#welcome {
     height: 200px;
     flex-flow: column nowrap;
     justify-content: center;
-    .input-group {
-      margin: 0px !important;
-    }
+    align-items: center;
+    padding-top: 3em;
     input#q {
       border: 1px solid $uofi-orange;
+      width: 100%;
+    }
+    #advanced-search-link {
+      background-color: rgba(0,0,0,0.4);
+      color: white;
+      padding: 0.5em;
     }
   }
   .page-content {

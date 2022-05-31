@@ -11,9 +11,11 @@ const ItemsView = function() {
     const advSearchTab     = $("#advanced-search-tab");
     const advSearchContent = $("#advanced-search");
 
-    // Select a search-type tab depending on the URL query.
-    if (params.get("q")) {
-        $("#simple-search-tab").tab('show');
+    // Select a search-type tab.
+    if (params.get("tab") === "advanced-search") {
+        advSearchTab.tab("show");
+    } else if (params.get("q")) {
+        $("#simple-search-tab").tab("show");
     } else {
         let found = false;
         advSearchContent.find("input, select").each(function() {
