@@ -5,9 +5,10 @@
   %h1 410 Gone
   %hr
   %p This item has been withdrawn.
-  %p
-    Reason:
-    = @item.stage_reason
+  - if @item.stage_reason.present?
+    %p
+      Reason:
+      = @item.stage_reason
 
 = render partial: "show_button_group"
 
