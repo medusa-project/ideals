@@ -71,9 +71,9 @@ Rails.application.configure do
     app_config  = Rails.application.config
     mail_config = ::Configuration.instance.mail
     app_config.action_mailer.delivery_method       = :smtp
-    app_config.action_mailer.smtp_settings         = mail_config[:smtp].symbolize_keys
-    app_config.action_mailer.perform_deliveries    = !mail_config[:smtp][:address].nil?
-    app_config.action_mailer.raise_delivery_errors = !mail_config[:smtp][:address].nil?
+    app_config.action_mailer.smtp_settings         = mail_config.dig(:smtp)&.symbolize_keys
+    app_config.action_mailer.perform_deliveries    = !mail_config.dig(:smtp, :address).nil?
+    app_config.action_mailer.raise_delivery_errors = !mail_config.dig(:smtp, :address).nil?
     app_config.action_mailer.perform_caching       = false
     app_config.action_mailer.logger                = Rails.logger
     app_config.action_mailer.default_url_options   = {host: "localhost:3000"}
