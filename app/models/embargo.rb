@@ -26,7 +26,7 @@ class Embargo < ApplicationRecord
 
   scope :all_access, -> { where(kind: Kind::ALL_ACCESS) }
   scope :current, -> { where("perpetual = true OR expires_at > NOW()")}
-  belongs_to :item
+  belongs_to :item, touch: true
   has_and_belongs_to_many :user_groups, -> { order(:name) }
 
   validates_inclusion_of :kind, in: -> (value) { Kind.all }
