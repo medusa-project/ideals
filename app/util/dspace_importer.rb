@@ -459,48 +459,48 @@ class DspaceImporter
     @running = true
     count    = Item.count
     progress = Progress.new(count)
-    Item.transaction do
-      Embargo.delete_all
-      Item.uncached do
-        Item.find_each.with_index do |item, index|
-          kind   = nil
-          groups = []
-          terms  = item.element("dc:description:terms")&.string&.strip&.gsub("\"", "")
-          if terms.present?
-            case terms
-            when "Embargoed"
-              kind    = Embargo::Kind::ALL_ACCESS
-            when "U of I Only"
-              kind    = Embargo::Kind::DOWNLOAD
-              groups << UserGroup.find_by_key("uiuc")
-            when "Limited"
-              kind    = Embargo::Kind::DOWNLOAD
-              groups << UserGroup.sysadmin
-            when "Open"
-              # not embargoed, skip
-            else
-              raise ArgumentError, "Unrecognized embargo terms: #{terms}"
-            end
+    Embargo.delete_all
+    Item.uncached do
+      Item.find_each.with_index do |item, index|
+        kind   = nil
+        groups = []
+        terms  = item.element("dc:description:terms")&.string&.strip&.gsub("\"", "")
+        if terms.present?
+          case terms
+          when "Embargoed"
+            kind    = Embargo::Kind::ALL_ACCESS
+          when "U of I Only"
+            kind    = Embargo::Kind::DOWNLOAD
+            groups << UserGroup.find_by_key("uiuc")
+          when "Limited"
+            kind    = Embargo::Kind::DOWNLOAD
+            groups << UserGroup.sysadmin
+          when "Open"
+            # not embargoed, skip -- EXCEPT for the items below that have
+            # malformed embargoes
+            kind = Embargo::Kind::ALL_ACCESS if item.id == 77171
+          else
+            raise ArgumentError, "Unrecognized embargo terms: #{terms}"
           end
-          if kind
-            perpetual  = false
-            expires_at = item.element("dc:date:embargo")&.string&.strip&.gsub("\"", "")
-            if expires_at.present?
-              expires_at = Time.parse(expires_at)
-              if expires_at.year > 3000
-                expires_at = nil
-                perpetual  = true
-              end
-            end
-            reason = item.element("dc:description:reason")&.string
-            item.embargoes.build(kind:        kind,
-                                 perpetual:   perpetual,
-                                 expires_at:  expires_at,
-                                 user_groups: groups,
-                                 reason:      reason).save!
-          end
-          progress.report(index, "Processing item embargoes")
         end
+        if kind
+          perpetual  = false
+          expires_at = item.element("dc:date:embargo")&.string&.strip&.gsub("\"", "")
+          if expires_at.present?
+            expires_at = Time.parse(expires_at)
+            if expires_at.year > 2100
+              expires_at = nil
+              perpetual  = true
+            end
+          end
+          reason = item.element("dc:description:reason")&.string
+          item.embargoes.build(kind:        kind,
+                               perpetual:   perpetual,
+                               expires_at:  expires_at,
+                               user_groups: groups,
+                               reason:      reason).save!
+        end
+        progress.report(index, "Processing item embargoes")
       end
     end
   ensure
