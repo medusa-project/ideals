@@ -127,7 +127,13 @@ class ApplicationController < ActionController::Base
   protected
 
   def ensure_logged_in
-    redirect_to login_path unless logged_in?
+    unless logged_in?
+      if request.xhr?
+        render plain: "403 Forbidden", status: :forbidden
+      else
+        redirect_to login_path
+      end
+    end
   end
 
   def ensure_logged_out
