@@ -25,7 +25,7 @@ class ItemPolicy < ApplicationPolicy
       else
         relation.
           filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
-          must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::EXPIRES_AT}",
+          must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
                          :gt,
                          Time.now.strftime("%Y-%m-%d"))
       end

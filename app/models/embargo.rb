@@ -34,8 +34,9 @@ class Embargo < ApplicationRecord
   validate :validate_expiration
 
   class IndexFields
-    EXPIRES_AT  = "d_expires_at"
-    KIND        = "i_kind"
+    ALL_ACCESS_EXPIRES_AT = "d_all_access_expires_at"
+    DOWNLOAD_EXPIRES_AT   = "d_download_expires_at"
+    KIND                  = "i_kind"
   end
 
   class Kind
@@ -62,11 +63,20 @@ class Embargo < ApplicationRecord
   # @return [Hash]
   #
   def as_indexed_json
-    expires_at = self.expires_at
-    expires_at = Time.now + 1000.years if self.perpetual || !expires_at
+    all_access_expires_at = nil
+    download_expires_at   = nil
+    case self.kind
+    when Kind::ALL_ACCESS
+      all_access_expires_at = (self.perpetual || !self.expires_at) ?
+                                Time.now + 1000.years : self.expires_at
+    when Kind::DOWNLOAD
+      download_expires_at = (self.perpetual || !self.expires_at) ?
+                              Time.now + 1000.years : self.expires_at
+    end
     {
-      IndexFields::EXPIRES_AT => expires_at.iso8601,
-      IndexFields::KIND       => self.kind
+      IndexFields::ALL_ACCESS_EXPIRES_AT => all_access_expires_at&.iso8601,
+      IndexFields::DOWNLOAD_EXPIRES_AT   => download_expires_at&.iso8601,
+      IndexFields::KIND                  => self.kind
     }
   end
 

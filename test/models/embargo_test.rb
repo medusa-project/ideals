@@ -24,9 +24,9 @@ class EmbargoTest < ActiveSupport::TestCase
     expires = Time.now.utc + 1.hour
     actual  = @instance.as_indexed_json
     assert_equal Embargo::Kind::ALL_ACCESS, actual['i_kind']
-    assert_equal expires.year, Time.parse(actual['d_expires_at']).year
-    assert_equal expires.month, Time.parse(actual['d_expires_at']).month
-    assert_equal expires.day, Time.parse(actual['d_expires_at']).day
+    assert_equal expires.year, Time.parse(actual['d_all_access_expires_at']).year
+    assert_equal expires.month, Time.parse(actual['d_all_access_expires_at']).month
+    assert_equal expires.day, Time.parse(actual['d_all_access_expires_at']).day
   end
 
   # exempt?()

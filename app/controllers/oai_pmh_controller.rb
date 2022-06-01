@@ -195,7 +195,7 @@ class OaiPmhController < ApplicationController
       filter(Item::IndexFields::STAGE, [Item::Stages::APPROVED,
                                         Item::Stages::WITHDRAWN,
                                         Item::Stages::BURIED]).
-      must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::EXPIRES_AT}",
+      must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
                      :gt,
                      Time.now.strftime("%Y-%m-%d")).
       order(Item::IndexFields::LAST_MODIFIED)
