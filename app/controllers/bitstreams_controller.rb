@@ -203,7 +203,7 @@ class BitstreamsController < ApplicationController
     LOGGER.debug('show(): requesting %s', s3_request)
 
     client      = S3Client.instance
-    s3_response = client.head_object(s3_request)
+    s3_response = client.head_object(s3_request.except(:range))
 
     response.status                         = status
     response.headers['Content-Type']        = @bitstream.media_type
