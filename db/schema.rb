@@ -33,8 +33,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_01_214453) do
   create_table "administrators", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "unit_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.boolean "primary", default: false, null: false
     t.index ["unit_id", "user_id"], name: "index_administrators_on_unit_id_and_user_id", unique: true
     t.index ["user_id", "unit_id", "primary"], name: "index_administrators_on_user_id_and_unit_id_and_primary"
@@ -115,8 +115,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_01_214453) do
   end
 
   create_table "collections", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.bigint "metadata_profile_id"
     t.bigint "submission_profile_id"
     t.bigint "parent_id"
@@ -152,7 +152,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_01_214453) do
   end
 
   create_table "embargoes", force: :cascade do |t|
-    t.datetime "expires_at"
+    t.datetime "expires_at", precision: nil
     t.bigint "item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -181,7 +181,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_01_214453) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "bitstream_id"
-    t.datetime "happened_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "happened_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["bitstream_id"], name: "index_events_on_bitstream_id"
     t.index ["event_type"], name: "index_events_on_event_type"
     t.index ["happened_at"], name: "index_events_on_happened_at"
@@ -243,9 +243,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_01_214453) do
 
   create_table "invitees", force: :cascade do |t|
     t.string "email", null: false
-    t.datetime "expires_at", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "expires_at", precision: nil, null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.text "note", null: false
     t.string "approval_state", default: "pending", null: false
     t.bigint "inviting_user_id"
@@ -254,14 +254,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_01_214453) do
   end
 
   create_table "items", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.bigint "submitter_id"
     t.integer "stage", default: 0, null: false
     t.text "stage_reason"
+    t.string "temp_embargo_type"
     t.string "temp_embargo_expires_at"
     t.text "temp_embargo_reason"
-    t.string "temp_embargo_type"
     t.integer "temp_embargo_kind"
     t.index ["stage"], name: "index_items_on_stage"
     t.index ["submitter_id"], name: "index_items_on_submitter_id"
@@ -272,12 +272,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_01_214453) do
     t.string "password_digest"
     t.string "activation_digest"
     t.boolean "activated", default: false
+    t.datetime "activated_at", precision: nil
     t.string "reset_digest"
     t.bigint "invitee_id"
-    t.datetime "reset_sent_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "activated_at"
+    t.datetime "reset_sent_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "registration_digest"
     t.string "name", null: false
     t.index ["email"], name: "index_local_identities_on_email", unique: true
@@ -295,8 +295,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_01_214453) do
   create_table "managers", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "collection_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["collection_id", "user_id"], name: "index_managers_on_collection_id_and_user_id", unique: true
   end
 
@@ -306,7 +306,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_01_214453) do
     t.string "status"
     t.string "medusa_key"
     t.string "medusa_uuid"
-    t.datetime "response_time"
+    t.datetime "response_time", precision: nil
     t.string "error_text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -443,8 +443,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_01_214453) do
   create_table "units", force: :cascade do |t|
     t.string "title"
     t.bigint "parent_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.bigint "institution_id"
     t.text "short_description"
     t.text "introduction"
@@ -473,8 +473,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_01_214453) do
     t.string "uid", null: false
     t.string "name", null: false
     t.string "email", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "type", null: false
     t.string "phone"
     t.bigint "local_identity_id"

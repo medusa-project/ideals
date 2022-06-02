@@ -53,8 +53,10 @@ class Configuration
 
   def read_unencrypted_config
     unless @config
+      filename   = (ENV['DOCKER'] == "1") ?
+                     "#{Rails.env}-docker.yml" : "#{Rails.env}.yml"
       raw_config = File.read(File.join(
-          Rails.root, 'config', 'credentials', "#{Rails.env}.yml"))
+          Rails.root, 'config', 'credentials', filename))
       @config = YAML.load(raw_config).with_indifferent_access
     end
   end

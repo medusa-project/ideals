@@ -13,7 +13,7 @@
 #############################################################################
 
 <%
-path        = File.join(Rails.root, "config", "credentials", "development.yml")
+path        = File.join(Rails.root, "config", "credentials", "development#{ENV['DOCKER'] == "1" ? "-docker" : ""}.yml")
 dev_config  = File.exist?(path) ? YAML.load(File.read(path)) : {}
 path        = File.join(Rails.root, "config", "credentials", "test.yml")
 test_config = File.exist?(path) ? YAML.load(File.read(path)) : {}

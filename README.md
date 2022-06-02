@@ -26,10 +26,25 @@ This is a getting-started guide for developers.
   [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally)
   for setup instructions)
 
-(All of this stuff is up and running in `docker compose`; see the testing
-section.)
+The following sections explain how to get the application working alongside all
+of these dependencies, with and without Docker.
 
-# Installation
+# Installation (with Docker)
+
+This will start the application in development mode in Docker. The app
+directory is mounted in the app container, so changes to application files will
+be reflected without restarting.
+
+```sh
+$ ./docker-run.sh
+```
+
+Now you can skip to the "migrate content" section. The `bin/rails` commands
+must be altered to something like:
+
+`docker compose -f docker-compose.yml -f docker-compose.development.yml exec ideals-development /bin/bash -c "bin/rails ..."`
+
+# Installation (without Docker)
 
 ## Install everything
 
@@ -123,7 +138,7 @@ $ brew services restart rabbitmq
 Refer to the instructions in the
 [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally).
 
-## Migrate content from DSpace into the application
+# Migrate content from DSpace into the application
 
 See [README_MIGRATION.md](README_MIGRATION.md) for detailed information about
 the migration process.
@@ -142,7 +157,7 @@ rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]" # optional
 rails "bitstreams:read_full_text[2]" # optional
 ```
 
-## Create a user account
+# Create a user account
 
 There are two main categories of accounts: local identity, where account
 information is stored locally in the database, and Shibboleth, where account
@@ -154,7 +169,7 @@ rails "users:create_local_sysadmin[email,password]"
 rails "users:create_shib_sysadmin[netid]"
 ```
 
-## Run the web app
+# Run the web app
 
 ```sh
 $ rails server
@@ -188,12 +203,13 @@ order to play around with multi-tenancy.
 
 # Branches & Environments
 
-| Rails Environment | Git Branch            | Machine                | Configuration File                       |
-|-------------------|-----------------------|------------------------|------------------------------------------|
-| `development`     | any (often `develop`) | Local                  | `config/credentials/development.yml`     |
-| `test`            | any                   | Local & GitHub Actions | `config/credentials/test.yml` & `ci.yml` |
-| `demo`            | `demo`                | aws-ideals-demo        | `config/credentials/demo.yml.enc`        |
-| `production`      | `production`          | aws-ideals-production  | `config/credentials/production.yml.enc`  |
+| Rails Environment      | Git Branch              | Machine                | Configuration File                          |
+|------------------------|-------------------------|------------------------|---------------------------------------------|
+| `development`          | any (usually `develop`) | Local                  | `config/credentials/development.yml`        |
+| `development` (Docker) | any (usually `develop`) | Local                  | `config/credentials/development-docker.yml` |
+| `test`                 | any                     | Local & GitHub Actions | `config/credentials/test.yml` & `ci.yml`    |
+| `demo`                 | `demo`                  | aws-ideals-demo        | `config/credentials/demo.yml.enc`           |
+| `production`           | `production`            | aws-ideals-production  | `config/credentials/production.yml.enc`     |
 
 Files that end in `.enc` are encrypted. Obtain the encryption key from a team
 member and then use `rails credentials:edit -e <environment>` to edit it.
@@ -223,7 +239,7 @@ will initialize a container, copy the code base into it, spin up all of the
 service containers, and run the tests:
 
 ```sh
-$ docker compose up --build --exit-code-from ideals
+$ docker compose -f docker-compose.test.yml up --build --exit-code-from ideals
 ```
 
 This is how tests are run in continuous integration, which uses
