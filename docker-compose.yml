@@ -3,43 +3,43 @@
 #
 version: '3'
 services:
-  ideals:
+  ideals-test:
     build:
       context: .
       dockerfile: docker/ideals/Dockerfile
     depends_on: # N.B: docker-compose will NOT actually wait for these to start, hence the `sleep` in the command
-      - postgres
-      - elasticsearch
-      - handle
-      - minio
-      - rabbitmq
-    command: bash -c "sleep 30 && bin/rails db:prepare && bin/rails \"elasticsearch:indexes:create[ideals_test]\" && bin/rails test && bin/rails zeitwerk:check"
-  postgres:
+      - postgres-test
+      - elasticsearch-test
+      - handle-test
+      - minio-test
+      - rabbitmq-test
+    command: bash -c "sleep 30 && bin/rails db:prepare && bin/rails \"elasticsearch:indexes:create[ideals]\" && bin/rails test && bin/rails zeitwerk:check"
+  postgres-test:
     image: postgres:12-alpine
     environment:
       POSTGRES_DB: ideals
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    hostname: postgres
-  elasticsearch:
+    hostname: ideals-postgres-test
+  elasticsearch-test:
     build:
       context: .
       dockerfile: docker/elasticsearch/Dockerfile
-    hostname: elasticsearch
-  handle:
+    hostname: ideals-elasticsearch-test
+  handle-test:
     build:
       context: .
       dockerfile: docker/handle/Dockerfile
-    hostname: handle
-  minio:
+    hostname: ideals-handle-test
+  minio-test:
     image: minio/minio
     environment:
       MINIO_ACCESS_KEY: MinioUser
       MINIO_SECRET_KEY: OpenSesame
-    hostname: minio
+    hostname: ideals-minio-test
     command: server /data
-  rabbitmq:
+  rabbitmq-test:
     build:
       context: .
       dockerfile: docker/rabbitmq/Dockerfile
-    hostname: rabbitmq
+    hostname: ideals-rabbitmq-test
