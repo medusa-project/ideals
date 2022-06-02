@@ -10,11 +10,25 @@
           %li= link_to(item[:message], item[:url])
 
 %h1 Welcome to IDEALS
-%p IDEALS, the Illinois Digital Environment for Access to Learning and Scholarship, publishes research and scholarship from the University of Illinois at Urbana-Champaign.
+%p
+  IDEALS, the Illinois Digital Environment for Access to Learning and
+  Scholarship, collects, disseminates, and in some cases publishes research and
+  scholarship from the University of Illinois at Urbana-Champaign.
+
 %ul
   %li
-    Faculty, staff, and graduate students can deposit their research and scholarship&mdash;unpublished and, in many cases, published&mdash;directly into IDEALS.
+    Faculty, staff, and graduate students can deposit their research and
+    scholarship&mdash;unpublished and, in many cases, published&mdash;directly
+    into IDEALS. Faculty may use IDEALS to fulfill the University of Illinois
+    faculty open access policy, and in many cases may use it to fulfill open
+    access requirements from grant funding agencies.
   %li
-    Departments can use IDEALS to distribute their working papers, technical reports, or other research material.
+    Departments can use IDEALS to publish or distribute their working papers,
+    technical reports, or other research material.
   %li
-    IDEALS also includes all electronic theses and dissertations deposited from Fall 2010 onward.
+    IDEALS also includes all
+    = link_to("electronic theses and dissertations", collection_path(204))
+    deposited from Fall 2010 onward. Many theses and dissertations prior to
+    that date have been added to IDEALS but are limited to members of the
+    University of Illinois community unless the author has permitted public
+    access.
