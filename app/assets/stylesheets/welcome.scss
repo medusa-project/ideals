@@ -14,14 +14,18 @@ body#welcome {
     justify-content: center;
     align-items: center;
     padding-top: 3em;
-    input#q {
-      border: 1px solid $uofi-orange;
-      width: 100%;
+    form {
+      width: 25em;
+      input#q {
+        border: 1px solid $uofi-orange;
+        width: 100%;
+      }
     }
     #advanced-search-link {
-      background-color: rgba(0,0,0,0.4);
+      background-color: rgba(0,0,0,0.3);
       color: white;
-      padding: 0.5em;
+      font-size: 0.9em;
+      padding: 0.3em 0.5em;
     }
   }
   .page-content {
