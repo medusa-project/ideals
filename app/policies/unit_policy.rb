@@ -96,6 +96,20 @@ class UnitPolicy < ApplicationPolicy
     create
   end
 
+  def new_collection
+    if !user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(user, role)
+      return AUTHORIZED_RESULT
+    elsif role >= Role::UNIT_ADMINISTRATOR && user.effective_unit_admin?(unit)
+      return AUTHORIZED_RESULT
+    end
+    {
+      authorized: false,
+      reason: "You must be an administrator of this unit."
+    }
+  end
+
   def show
     AUTHORIZED_RESULT
   end

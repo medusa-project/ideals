@@ -373,6 +373,48 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
+  # new_collection?()
+
+  test "new_collection?() returns false with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.new_collection?
+  end
+
+  test "new_collection?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.new_collection?
+  end
+
+  test "new_collection?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UnitPolicy.new(context, @unit)
+    assert policy.new_collection?
+  end
+
+  test "new_collection?() authorizes unit admins" do
+    user    = users(:norights)
+    @unit.administering_users << user
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UnitPolicy.new(context, @unit)
+    assert policy.new_collection?
+  end
+
+  test "new_collection?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.new_collection?
+  end
+
   # show?()
 
   test "show?() returns true with a nil user" do
