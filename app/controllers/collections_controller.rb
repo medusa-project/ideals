@@ -37,11 +37,11 @@ class CollectionsController < ApplicationController
   # Responds to `POST /collections`.
   #
   def create
-    @collection = Collection.new(collection_params)
+    @collection              = Collection.new(collection_params)
+    @collection.primary_unit = Unit.find(params[:primary_unit_id])
     authorize @collection
     begin
       ActiveRecord::Base.transaction do
-        @collection.primary_unit = Unit.find(params[:primary_unit_id])
         # Save now in order to obtain an ID with which to associate
         # AscribedElements in the next step.
         @collection.save!
