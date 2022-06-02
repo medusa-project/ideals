@@ -38,10 +38,10 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   # edit_password()
 
-  test "edit_password() redirects to login URL for logged-out users" do
+  test "edit_password() returns HTTP 403 for logged-out users" do
     identity = local_identities(:local_sysadmin)
     get local_identity_edit_password_path(identity), xhr: true
-    assert_redirected_to login_url
+    assert_response :forbidden
   end
 
   test "edit_password() returns HTTP 403 for unauthorized users" do
@@ -356,10 +356,10 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   # update_password()
 
-  test "update_password() redirects to login page for logged-out users" do
+  test "update_password() returns HTTP 403 for logged-out users" do
     identity = local_identities(:local_sysadmin)
     patch local_identity_update_password_path(identity), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "update_password() returns HTTP 403 for unauthorized users" do

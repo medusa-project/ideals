@@ -102,10 +102,10 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
-  test "edit() redirects to login page for logged-out users" do
+  test "edit() returns HTTP 403 for logged-out users" do
     group = user_groups(:temp)
     get edit_user_group_path(group), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -124,10 +124,10 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_ad_groups()
 
-  test "edit_ad_groups() redirects to login page for logged-out users" do
+  test "edit_ad_groups() returns HTTP 403 for logged-out users" do
     group = user_groups(:temp)
     get user_group_edit_ad_groups_path(group), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_ad_groups() returns HTTP 403 for unauthorized users" do
@@ -153,10 +153,10 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_affiliations()
 
-  test "edit_affiliations() redirects to login page for logged-out users" do
+  test "edit_affiliations() returns HTTP 403 for logged-out users" do
     group = user_groups(:temp)
     get user_group_edit_affiliations_path(group), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_affiliations() returns HTTP 403 for unauthorized users" do
@@ -182,10 +182,10 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_departments()
 
-  test "edit_departments() redirects to login page for logged-out users" do
+  test "edit_departments() returns HTTP 403 for logged-out users" do
     group = user_groups(:temp)
     get user_group_edit_departments_path(group), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_departments() returns HTTP 403 for unauthorized users" do
@@ -211,10 +211,10 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_email_patterns()
 
-  test "edit_email_patterns() redirects to login page for logged-out users" do
+  test "edit_email_patterns() returns HTTP 403 for logged-out users" do
     group = user_groups(:temp)
     get user_group_edit_email_patterns_path(group), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_email_patterns() returns HTTP 403 for unauthorized users" do
@@ -240,10 +240,10 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_hosts()
 
-  test "edit_hosts() redirects to login page for logged-out users" do
+  test "edit_hosts() returns HTTP 403 for logged-out users" do
     group = user_groups(:temp)
     get user_group_edit_hosts_path(group), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_hosts() returns HTTP 403 for unauthorized users" do
@@ -269,10 +269,10 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_local_users()
 
-  test "edit_local_users() redirects to login page for logged-out users" do
+  test "edit_local_users() returns HTTP 403 for logged-out users" do
     group = user_groups(:temp)
     get user_group_edit_local_users_path(group), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_local_users() returns HTTP 403 for unauthorized users" do
@@ -298,10 +298,10 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_netid_users()
 
-  test "edit_netid_users() redirects to login page for logged-out users" do
+  test "edit_netid_users() returns HTTP 403 for logged-out users" do
     group = user_groups(:temp)
     get user_group_edit_netid_users_path(group), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_netid_users() returns HTTP 403 for unauthorized users" do

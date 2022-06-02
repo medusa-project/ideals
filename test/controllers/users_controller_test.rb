@@ -12,9 +12,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
-  test "edit_properties() redirects to login page for logged-out users" do
+  test "edit_properties() returns HTTP 403 for logged-out users" do
     get user_edit_properties_path(users(:local_sysadmin)), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
@@ -103,9 +103,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # show_properties()
 
-  test "show_properties() redirects to login page for logged-out users" do
+  test "show_properties() returns HTTP 403 for logged-out users" do
     get user_properties_path(users(:local_sysadmin)), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show_properties() returns HTTP 403 for unauthorized users" do
@@ -137,9 +137,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # show_submittable_collections()
 
-  test "show_submittable_collections() redirects to login page for logged-out users" do
+  test "show_submittable_collections() returns HTTP 403 for logged-out users" do
     get user_submittable_collections_path(users(:local_sysadmin)), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show_submittable_collections() returns HTTP 403 for unauthorized users" do
@@ -171,9 +171,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # show_submitted_items()
 
-  test "show_submitted_items() redirects to login page for logged-out users" do
+  test "show_submitted_items() returns HTTP 403 for logged-out users" do
     get user_submitted_items_path(users(:local_sysadmin)), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show_submitted_items() returns HTTP 403 for unauthorized users" do
@@ -205,9 +205,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # show_submissions_in_progress()
 
-  test "show_submissions_in_progress() redirects to login page for logged-out users" do
+  test "show_submissions_in_progress() returns HTTP 403 for logged-out users" do
     get user_submissions_in_progress_path(users(:local_sysadmin)), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show_submissions_in_progress() returns HTTP 403 for unauthorized users" do
@@ -239,9 +239,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # submitted_item_results()
 
-  test "submitted_item_results() redirects to login page for logged-out users" do
+  test "submitted_item_results() returns HTTP 403 for logged-out users" do
     get user_submitted_item_results_path(users(:local_sysadmin)), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "submitted_item_results() returns HTTP 403 for unauthorized users" do
@@ -273,10 +273,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # update_properties()
 
-  test "update_properties() redirects to login page for logged-out users" do
+  test "update_properties() returns HTTP 403 for logged-out users" do
     user = users(:local_sysadmin)
     patch user_update_properties_path(user), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "update_properties() returns HTTP 403 for unauthorized users" do

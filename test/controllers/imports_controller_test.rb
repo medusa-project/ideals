@@ -14,9 +14,9 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() redirects to login page for logged-out users" do
+  test "create() returns HTTP 403 for logged-out users" do
     post imports_path, xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "create() returns HTTP 403 for unauthorized users" do

@@ -76,11 +76,11 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
-  test "edit() redirects to login page for logged-out users" do
+  test "edit() returns HTTP 403 for logged-out users" do
     item      = items(:item1)
     bitstream = item.bitstreams.first
     get edit_item_bitstream_path(item, bitstream), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do

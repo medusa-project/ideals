@@ -170,10 +170,10 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_administrators()
 
-  test "edit_administrators() redirects to login page for logged-out users" do
+  test "edit_administrators() returns HTTP 403 for logged-out users" do
     unit = units(:unit1)
     get unit_edit_administrators_path(unit), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_administrators() returns HTTP 403 for unauthorized users" do
@@ -206,10 +206,10 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_membership()
 
-  test "edit_membership() redirects to login page for logged-out users" do
+  test "edit_membership() returns HTTP 403 for logged-out users" do
     unit = units(:unit1)
     get unit_edit_membership_path(unit), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_membership() returns HTTP 403 for unauthorized users" do
@@ -242,10 +242,10 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
-  test "edit_properties() redirects to login page for logged-out users" do
+  test "edit_properties() returns HTTP 403 for logged-out users" do
     unit = units(:unit1)
     get unit_edit_properties_path(unit), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
@@ -352,10 +352,10 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # show_access()
 
-  test "show_access() redirects to login page for logged-out users" do
+  test "show_access() returns HTTP 403 for logged-out users" do
     unit = units(:unit1)
     get unit_access_path(unit), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show_access() returns HTTP 403 for unauthorized users" do
@@ -437,10 +437,10 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # show_properties()
 
-  test "show_properties() redirects to login page for logged-out users" do
+  test "show_properties() returns HTTP 403 for logged-out users" do
     unit = units(:unit1)
     get unit_properties_path(unit), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show_properties() returns HTTP 403 for unauthorized users" do

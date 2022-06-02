@@ -115,10 +115,10 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
-  test "edit redirects to login page for logged-out users" do
+  test "edit() returns HTTP 403 for logged-out users" do
     institution = institutions(:somewhere)
     get edit_institution_path(institution), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -213,9 +213,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_properties()
 
-  test "show_properties() redirects to login page for logged-out users" do
+  test "show_properties() returns HTTP 403 for logged-out users" do
     get institution_properties_path(institutions(:somewhere)), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show_properties() returns HTTP 403 for unauthorized users" do
@@ -232,9 +232,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_statistics()
 
-  test "show_statistics() redirects to login page for logged-out users" do
+  test "show_statistics() returns HTTP 403 for logged-out users" do
     get institution_statistics_path(institutions(:somewhere)), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show_statistics() returns HTTP 403 for unauthorized users" do
@@ -251,9 +251,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_users()
 
-  test "show_users() redirects to login page for logged-out users" do
+  test "show_users() returns HTTP 403 for logged-out users" do
     get institution_users_path(institutions(:somewhere)), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show_users() returns HTTP 403 for unauthorized users" do

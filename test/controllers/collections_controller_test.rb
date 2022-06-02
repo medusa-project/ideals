@@ -153,10 +153,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_collection_membership()
 
-  test "edit_collection_membership() redirects to login page for logged-out users" do
+  test "edit_collection_membership() returns HTTP 403 for logged-out users" do
     collection = collections(:collection1)
     get collection_edit_collection_membership_path(collection), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_collection_membership() returns HTTP 403 for unauthorized users" do
@@ -189,10 +189,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_managers()
 
-  test "edit_managers() redirects to login page for logged-out users" do
+  test "edit_managers() returns HTTP 403 for logged-out users" do
     collection = collections(:collection1)
     get collection_edit_managers_path(collection), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_managers() returns HTTP 403 for unauthorized users" do
@@ -225,10 +225,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
-  test "edit_properties() redirects to login page for logged-out users" do
+  test "edit_properties() returns HTTP 403 for logged-out users" do
     collection = collections(:collection1)
     get collection_edit_properties_path(collection), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
@@ -261,10 +261,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_submitters()
 
-  test "edit_submitters() redirects to login page for logged-out users" do
+  test "edit_submitters() returns HTTP 403 for logged-out users" do
     collection = collections(:collection1)
     get collection_edit_submitters_path(collection), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_submitters() returns HTTP 403 for unauthorized users" do
@@ -297,10 +297,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_unit_membership()
 
-  test "edit_unit_membership() redirects to login page for logged-out users" do
+  test "edit_unit_membership() returns HTTP 403 for logged-out users" do
     collection = collections(:collection1)
     get collection_edit_unit_membership_path(collection), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_unit_membership() returns HTTP 200 for XHR requests" do
@@ -408,10 +408,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_access()
 
-  test "show_access() redirects to login page for logged-out users" do
+  test "show_access() returns HTTP 403 for logged-out users" do
     collection = collections(:collection1)
     get collection_access_path(collection), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show_access() returns HTTP 403 for unauthorized users" do
@@ -493,10 +493,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_properties()
 
-  test "show_properties() redirects to login page for logged-out users" do
+  test "show_properties() returns HTTP 403 for logged-out users" do
     collection = collections(:collection1)
     get collection_properties_path(collection), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show_properties() returns HTTP 403 for unauthorized users" do

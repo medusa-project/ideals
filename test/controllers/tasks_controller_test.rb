@@ -36,9 +36,9 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() redirects to login page for logged-out users" do
+  test "show() returns HTTP 403 for logged-out users" do
     get task_path(tasks(:running)), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "show() returns HTTP 403 for unauthorized users" do

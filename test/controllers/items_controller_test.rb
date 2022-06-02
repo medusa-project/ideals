@@ -111,10 +111,10 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_embargoes()
 
-  test "edit_embargoes() redirects to login page for logged-out users" do
+  test "edit_embargoes() returns HTTP 403 for logged-out users" do
     item = items(:item1)
     get item_edit_embargoes_path(item), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_embargoes() returns HTTP 403 for unauthorized users" do
@@ -140,10 +140,10 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_membership()
 
-  test "edit_membership() redirects to login page for logged-out users" do
+  test "edit_membership() returns HTTP 403 for logged-out users" do
     item = items(:item1)
     get item_edit_membership_path(item), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_membership() returns HTTP 403 for unauthorized users" do
@@ -169,10 +169,10 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_metadata()
 
-  test "edit_metadata() redirects to login page for logged-out users" do
+  test "edit_metadata() returns HTTP 403 for logged-out users" do
     item = items(:item1)
     get item_edit_metadata_path(item), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_metadata() returns HTTP 403 for unauthorized users" do
@@ -198,10 +198,10 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
-  test "edit_properties() redirects to login page for logged-out users" do
+  test "edit_properties() returns HTTP 403 for logged-out users" do
     item = items(:item1)
     get item_edit_properties_path(item), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
@@ -227,10 +227,10 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_withdrawal()
 
-  test "edit_withdrawal() redirects to login page for logged-out users" do
+  test "edit_withdrawal() returns HTTP 403 for logged-out users" do
     item = items(:item1)
     get item_edit_withdrawal_path(item), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "edit_withdrawal() returns HTTP 403 for unauthorized users" do
@@ -494,10 +494,10 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # statistics()
 
-  test "statistics() redirects to login page for logged-out users" do
+  test "statistics() returns HTTP 403 for logged-out users" do
     item = items(:item1)
     get item_statistics_path(item), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "statistics() returns HTTP 404 for non-XHR requests" do
@@ -552,10 +552,10 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # upload_bitstreams()
 
-  test "upload_bitstreams() redirects to login page for logged-out users" do
+  test "upload_bitstreams() returns HTTP 403 for logged-out users" do
     item = items(:item1)
     get item_upload_bitstreams_path(item), xhr: true
-    assert_redirected_to login_path
+    assert_response :forbidden
   end
 
   test "upload_bitstreams() returns HTTP 403 for unauthorized users" do
