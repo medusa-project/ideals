@@ -3,8 +3,7 @@
     .card-header
       = icon_for(:info)
       Action required on
-      = to_do_list.total_items
-      items
+      = pluralize(to_do_list.total_items, "item")
     .card-body.pl-2.pb-2
       %ul
         - to_do_list.items.each do |item|
