@@ -275,7 +275,8 @@ class BitstreamsController < ApplicationController
   end
 
   def bitstream_params
-    params.require(:bitstream).permit(:bundle, :description, :primary, :role)
+    params.require(:bitstream).permit(:bundle, :bundle_position, :description,
+                                      :primary, :role)
   end
 
   def download_content_disposition

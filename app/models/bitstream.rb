@@ -45,6 +45,9 @@
 # # Attributes
 #
 # * `bundle`                One of the [Bundle] constant values.
+# * `bundle_position`       Zero-based position (order) of the bitstream
+#                           relative to other bitstreams in the same bundle and
+#                           attached to the same [Item].
 # * `created_at`:           Managed by ActiveRecord.
 # * `description`:          Description.
 # * `dspace_id`:            `bitstream.internal_id` column value from

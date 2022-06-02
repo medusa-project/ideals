@@ -15,6 +15,7 @@ item1_in_staging:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
   description:          Sample description
 
 submitting_in_staging:
@@ -28,6 +29,7 @@ submitting_in_staging:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
   description:          Sample description
 
 submitted_in_staging:
@@ -41,6 +43,7 @@ submitted_in_staging:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
   description:          Sample description
 
 awaiting_ingest_into_medusa:
@@ -54,6 +57,7 @@ awaiting_ingest_into_medusa:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
   description:          Sample description
 
 approved_in_permanent:
@@ -67,6 +71,7 @@ approved_in_permanent:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
   description:          Sample description
 
 item2_in_medusa:
@@ -80,6 +85,7 @@ item2_in_medusa:
   medusa_uuid:          3d2a99d5-2f5b-401e-80c1-864a95e3acf7
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
   description:          Sample description
 
 license_bundle:
@@ -93,6 +99,7 @@ license_bundle:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::LICENSE %>
+  bundle_position:      0
   description:          Sample description
 
 role_limited:
@@ -106,6 +113,7 @@ role_limited:
   medusa_uuid:
   role:                 <%= Role::SYSTEM_ADMINISTRATOR %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
   description:          Sample description
 
 embargoed_in_staging:
@@ -119,6 +127,7 @@ embargoed_in_staging:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
   description:          Sample description
 
 withdrawn_in_staging:
@@ -132,6 +141,7 @@ withdrawn_in_staging:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
   description:          Sample description
 
 collection1_collection1_item1_in_staging:
@@ -145,4 +155,5 @@ collection1_collection1_item1_in_staging:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
   description:          Sample description

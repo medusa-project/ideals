@@ -35,8 +35,14 @@
       will automatically be made non-primary.
 
   .form-group
+    = f.label :bundle_position, "Bundle Position"
+    = f.number_field :bundle_position, min: 0, class: "form-control"
+    %p.text-secondary
+      This is the sort order, starting at 0, among all other files in the same bundle.
+
+  .form-group
     = f.label :description
-    = f.text_area(:description, class: "form-control")
+    = f.text_area :description, class: "form-control"
 
   .clearfix
     .float-right

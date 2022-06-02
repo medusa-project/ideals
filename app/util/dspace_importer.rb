@@ -43,10 +43,11 @@ class DspaceImporter
       progress.report(row_num, "Importing bitstreams")
       begin
         Bitstream.where(id: row_arr[1].to_i).first_or_create!(
-          item_id:   row_arr[0].to_i,
-          dspace_id: row_arr[2],
-          length:    row_arr[3].to_i,
-          primary:   row_arr[4].present?)
+          item_id:         row_arr[0].to_i,
+          dspace_id:       row_arr[2],
+          length:          row_arr[3].to_i,
+          primary:         row_arr[4].present?,
+          bundle_position: row_arr[5].to_i)
       rescue ActiveRecord::RecordInvalid
         $stderr.puts "import_bitstreams(): invalid: #{row_arr}"
       end
