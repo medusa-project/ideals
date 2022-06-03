@@ -77,6 +77,7 @@ class Item < ApplicationRecord
     COLLECTIONS        = "i_collection_ids"
     CREATED            = ElasticsearchIndex::StandardFields::CREATED
     EMBARGOES          = "o_embargoes"
+    FILENAMES          = "k_filenames"
     FULL_TEXT          = ElasticsearchIndex::StandardFields::FULL_TEXT
     GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY = "k_unit_collection_sort_key"
     ID                 = ElasticsearchIndex::StandardFields::ID
@@ -326,11 +327,12 @@ class Item < ApplicationRecord
     doc[IndexFields::EMBARGOES]          = self.current_embargoes.
         select{ |e| e.kind == Embargo::Kind::ALL_ACCESS }.
         map(&:as_indexed_json)
+    doc[IndexFields::FILENAMES]          = self.bitstreams.map(&:original_filename)
     # N.B.: on AWS, the maximum document size depends on ES instance size, but
     # for our purposes is likely 10485760 bytes (10 MB). Full text can
     # sometimes exceed this (I'm looking at you, item 102652), so we must
     # truncate it.
-    doc[IndexFields::FULL_TEXT]          = self.bitstreams.pluck(:full_text).join("\n").strip[0..9500000]
+    doc[IndexFields::FULL_TEXT]          = self.bitstreams.map(&:full_text).join("\n").strip[0..9500000]
     doc[IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY] =
         self.unit_and_collection_sort_key
     units                                = self.all_units

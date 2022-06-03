@@ -333,8 +333,9 @@ class AbstractRelation
   def query_searchable_fields(query)
     fields = @metadata_profile.elements.
       select{ |e| e.searchable && e.indexed }.
-      map { |e| e.indexed_field }
+      map(&:indexed_field)
     fields << ElasticsearchIndex::StandardFields::FULL_TEXT
+    fields << Item::IndexFields::FILENAMES if self.kind_of?(ItemRelation)
     query(fields, query)
     self
   end
@@ -697,7 +698,8 @@ class AbstractRelation
   end
 
   def weighted_field(field)
-    if field == ElasticsearchIndex::StandardFields::FULL_TEXT
+    if [ElasticsearchIndex::StandardFields::FULL_TEXT,
+        Item::IndexFields::FILENAMES].include?(field)
       weight = MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT
     else
       weight = @metadata_profile.elements.
