@@ -31,18 +31,14 @@ of these dependencies, with and without Docker.
 
 # Installation (with Docker)
 
-This will start the application in development mode in Docker. The app
-directory is mounted in the app container, so changes to application files will
-be reflected without restarting.
+`./docker-run.sh` will start the application stack in development mode in
+Docker. The working copy is mounted in the app container, so changes to
+application files will be reflected without restarting.
 
-```sh
-$ ./docker-run.sh
-```
-
-Now you can skip to the "migrate content" section. The `bin/rails` commands
-must be altered to something like:
-
-`docker compose -f docker-compose.yml -f docker-compose.development.yml exec ideals-development /bin/bash -c "bin/rails ..."`
+With that running, you can skip to the
+[Migrate Content](#Migrate-content-from-DSpace) section. The `rails` in the
+commands must be changed to `./docker-run.sh`, so `rails <task>` becomes
+`./docker-run.sh <task>`.
 
 # Installation (without Docker)
 
@@ -138,7 +134,7 @@ $ brew services restart rabbitmq
 Refer to the instructions in the
 [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally).
 
-# Migrate content from DSpace into the application
+# Migrate content from DSpace
 
 See [README_MIGRATION.md](README_MIGRATION.md) for detailed information about
 the migration process.
@@ -167,12 +163,6 @@ of both types:
 ```sh
 rails "users:create_local_sysadmin[email,password]"
 rails "users:create_shib_sysadmin[netid]"
-```
-
-# Run the web app
-
-```sh
-$ rails server
 ```
 
 # Multi-Tenancy
@@ -239,7 +229,7 @@ will initialize a container, copy the code base into it, spin up all of the
 service containers, and run the tests:
 
 ```sh
-$ docker compose -f docker-compose.test.yml up --build --exit-code-from ideals
+$ ./docker-test.sh
 ```
 
 This is how tests are run in continuous integration, which uses
