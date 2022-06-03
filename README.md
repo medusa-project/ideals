@@ -16,7 +16,7 @@ This is a getting-started guide for developers.
 # Dependencies
 
 * PostgreSQL >= 9.x
-* Elasticsearch >= 7.x with the
+* Elasticsearch 7.x with the
   [ICU analysis plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html)
   installed
 * An S3 storage service, such as AWS S3 or [Minio Server](https://min.io)
@@ -35,10 +35,9 @@ of these dependencies, with and without Docker.
 Docker. The working copy is mounted in the app container, so changes to
 application files will be reflected without restarting.
 
-With that running, you can skip to the
-[Migrate Content](#Migrate-content-from-DSpace) section. The `rails` in the
-commands must be changed to `./docker-run.sh`, so `rails <task>` becomes
-`./docker-run.sh <task>`.
+With that running, skip to the [Migrate Content](#Migrate-content-from-DSpace)
+section. The `rails` in the commands must be changed to `./docker-run.sh`, so
+`rails <task>` becomes `./docker-run.sh <task>`.
 
 # Installation (without Docker)
 
@@ -76,8 +75,8 @@ configuration format.
 ## Create the Elasticsearch indexes
 
 ```sh
-rails "elasticsearch:indexes:create[ideals_development]"
-rails "elasticsearch:indexes:create[ideals_test]"
+rails elasticsearch:indexes:create[ideals_development]
+rails elasticsearch:indexes:create[ideals_test]
 ```
 Note: the index schema may change from time to time. Index schemas can't
 generally be changed in place, so a new index has to be created with the new
@@ -88,17 +87,17 @@ separate "blue" and "green" indexes and to switch back-and-forth between them
 as needed:
 
 ```sh
-rails "elasticsearch:indexes:create[ideals_blue_development]"
-rails "elasticsearch:indexes:create_alias[ideals_blue_development,ideals_development]"
+rails elasticsearch:indexes:create[ideals_blue_development]
+rails elasticsearch:indexes:create_alias[ideals_blue_development,ideals_development]
 ```
 
 Then when you need to create a new index, you can switch to the other color:
 
 ```sh
-rails "elasticsearch:indexes:create[ideals_green_development]"
-rails "elasticsearch:indexes:copy[ideals_blue_development,ideals_green_development]"
-rails "elasticsearch:indexes:delete_alias[ideals_blue_development,ideals_development]"
-rails "elasticsearch:indexes:create_alias[ideals_green_development,ideals_development]"
+rails elasticsearch:indexes:create[ideals_green_development]
+rails elasticsearch:indexes:copy[ideals_blue_development,ideals_green_development]
+rails elasticsearch:indexes:delete_alias[ideals_blue_development,ideals_development]
+rails elasticsearch:indexes:create_alias[ideals_green_development,ideals_development]
 ```
 (Instead of using aliases, you could also change the `elasticsearch/index` key
 in your `development.yml`.)
@@ -145,12 +144,12 @@ Below is a basic summary that will work in development:
 rails elasticsearch:purge
 rails storage:purge
 rails db:reset
-rails "dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]"
+rails dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]
 rails ideals:seed_database
 rails elasticsearch:reindex[2] # thread count
-rails "dspace:bitstreams:copy[dspace_ssh_user]"
-rails "dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass]" # optional
-rails "bitstreams:read_full_text[2]" # optional
+rails dspace:bitstreams:copy[dspace_ssh_user]
+rails dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass] # optional
+rails bitstreams:read_full_text[2] # optional
 ```
 
 # Create a user account
@@ -161,8 +160,8 @@ info is provided by a Shibboleth SP. There are rake tasks to create sysadmins
 of both types:
 
 ```sh
-rails "users:create_local_sysadmin[email,password]"
-rails "users:create_shib_sysadmin[netid]"
+rails users:create_local_sysadmin[email,password]
+rails users:create_shib_sysadmin[netid]
 ```
 
 # Multi-Tenancy
@@ -196,13 +195,15 @@ order to play around with multi-tenancy.
 | Rails Environment      | Git Branch              | Machine                | Configuration File                          |
 |------------------------|-------------------------|------------------------|---------------------------------------------|
 | `development`          | any (usually `develop`) | Local                  | `config/credentials/development.yml`        |
-| `development` (Docker) | any (usually `develop`) | Local                  | `config/credentials/development-docker.yml` |
+| `development` (Docker) | any (usually `develop`) | Docker                 | `config/credentials/development-docker.yml` |
 | `test`                 | any                     | Local & GitHub Actions | `config/credentials/test.yml` & `ci.yml`    |
+| `test` (Docker)        | any                     | Docker                 | `config/credentials/test-docker.yml`        |
 | `demo`                 | `demo`                  | aws-ideals-demo        | `config/credentials/demo.yml.enc`           |
 | `production`           | `production`            | aws-ideals-production  | `config/credentials/production.yml.enc`     |
 
-Files that end in `.enc` are encrypted. Obtain the encryption key from a team
-member and then use `rails credentials:edit -e <environment>` to edit it.
+Files that end in `.enc` are encrypted. Obtain the encryption key from a
+project team member and then use `rails credentials:edit -e <environment>`
+to edit it.
 
 `config/credentials/template.yml` contains the canonical configuration
 structure that all config files must use.
