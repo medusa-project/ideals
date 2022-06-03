@@ -431,9 +431,10 @@ class DspaceImporter
       elem_name  = "#{row_arr[0]}:#{row_arr[1]}"
       elem_name += ":#{row_arr[2]}" if row_arr[2].present?
       reg_elem   = RegisteredElement.find_by_name(elem_name)
-      string     = row_arr[3]&.strip&.gsub("@@@@", "\n")
+      string     = row_arr[3]&.gsub("@@@@", "\n")&.strip
       place      = row_arr[5].to_i
       next unless string.present?
+      next if string == '""'
 
       progress.report(row_num, "Importing item metadata (1/2)")
       begin
