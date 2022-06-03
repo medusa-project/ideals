@@ -4,6 +4,7 @@ class TasksController < ApplicationController
   before_action :authorize_index, only: :index
   before_action :set_task, only: :show
   before_action :authorize_task, only: :show
+  before_action :store_location, only: [:index]
 
   ##
   # Responds to `GET /tasks`

@@ -9,6 +9,7 @@ class ItemsController < ApplicationController
   before_action :set_item, except: [:export, :index, :process_review, :review]
   before_action :authorize_item, except: [:export, :index, :process_review,
                                           :review]
+  before_action :store_location, only: [:index, :review, :show]
 
   ##
   # Approves an item.

@@ -12,6 +12,7 @@ class UnitsController < ApplicationController
   before_action :set_unit, except: [:create, :index, :new]
   before_action :check_buried, except: [:create, :index, :new, :show, :undelete]
   before_action :authorize_unit, except: [:create, :index]
+  before_action :store_location, only: [:index, :show]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the

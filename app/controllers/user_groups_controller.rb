@@ -3,6 +3,7 @@ class UserGroupsController < ApplicationController
   before_action :ensure_logged_in
   before_action :set_user_group, except: [:create, :index]
   before_action :authorize_user_group, except: [:create, :index]
+  before_action :store_location, only: [:index, :show]
 
   ##
   # Responds to `POST /user-groups` (XHR only)

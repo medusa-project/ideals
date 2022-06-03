@@ -12,6 +12,7 @@ class InviteesController < ApplicationController
                                      :show]
   before_action :authorize_invitee, only: [:approve, :destroy, :reject,
                                            :resend_email, :show]
+  before_action :store_location, only: [:index, :show]
 
   ##
   # Performs the opposite action as {reject}. Sysadmin-only.

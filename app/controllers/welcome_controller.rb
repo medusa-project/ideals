@@ -2,6 +2,8 @@
 
 class WelcomeController < ApplicationController
 
+  before_action :store_location, only: :index
+
   ##
   # Responds to `GET /`
   #

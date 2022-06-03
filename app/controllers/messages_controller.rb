@@ -6,6 +6,7 @@ class MessagesController < ApplicationController
   before_action :authorize_index, only: :index
   before_action :load_message, only: :show
   before_action :authorize_message, only: :show
+  before_action :store_location, only: [:index, :show]
 
   ##
   # Responds to `GET /messages`.

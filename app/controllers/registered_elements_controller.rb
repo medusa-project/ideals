@@ -3,6 +3,7 @@ class RegisteredElementsController < ApplicationController
   before_action :ensure_logged_in
   before_action :set_element, only: [:edit, :update, :destroy]
   before_action :authorize_element, only: [:edit, :update, :destroy]
+  before_action :store_location, only: :index
 
   ##
   # Responds to `POST /elements` (XHR only)

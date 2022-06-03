@@ -3,6 +3,7 @@ class ImportsController < ApplicationController
   before_action :ensure_logged_in
   before_action :set_import, except: [:create, :index, :new]
   before_action :authorize_import, except: [:create, :index, :new]
+  before_action :store_location, only: :index
 
   ##
   # Responds to `POST /imports`

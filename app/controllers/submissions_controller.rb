@@ -13,6 +13,7 @@ class SubmissionsController < ApplicationController
   before_action :authorize_item, only: [:destroy, :update]
   before_action :check_submitting, only: [:complete, :destroy, :edit, :update]
   before_action :check_submitted, only: :status
+  before_action :store_location, only: [:edit, :new]
 
   ##
   # Handles the final submit button in the submission form, completing a

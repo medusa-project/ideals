@@ -14,7 +14,6 @@ class ApplicationController < ActionController::Base
   rescue_from GoneError, with: :rescue_gone
   rescue_from NotAuthorizedError, with: :rescue_unauthorized
 
-  before_action :store_location
   after_action :copy_flash_to_response_headers
 
   ##
@@ -108,15 +107,8 @@ class ApplicationController < ActionController::Base
   end
 
   def store_location
-    if request.get? && !request.xhr?
-      ignored_paths = ["/auth/failure", "/auth/shibboleth/callback",
-                       "/Shibboleth.sso/Login", login_path, logout_path,
-                       netid_login_path]
-      unless ignored_paths.include?(request.path)
-        session[:previous_url]     = request.fullpath
-        session[:login_return_url] = request.env["REQUEST_URI"]
-      end
-    end
+    session[:previous_url]     = request.fullpath
+    session[:login_return_url] = request.env["REQUEST_URI"]
   end
 
   def redirect_path

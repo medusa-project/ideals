@@ -16,6 +16,7 @@ class CollectionsController < ApplicationController
   before_action :set_collection, except: [:create, :index]
   before_action :check_buried, except: [:create, :index, :show, :undelete]
   before_action :authorize_collection, except: [:create, :index]
+  before_action :store_location, only: [:index, :show]
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the

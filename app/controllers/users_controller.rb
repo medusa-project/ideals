@@ -4,6 +4,7 @@ class UsersController < ApplicationController
   before_action :ensure_logged_in
   before_action :set_user, except: :index
   before_action :authorize_user, except: :index
+  before_action :store_location, only: [:index, :show]
 
   ##
   # Responds to `GET /users/:id/edit-properties`

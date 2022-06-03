@@ -3,6 +3,7 @@
 class FileFormatsController < ApplicationController
 
   before_action :ensure_logged_in, :authorize_sysadmin
+  before_action :store_location, only: :index
 
   ##
   # Responds to `GET /file-formats`.
