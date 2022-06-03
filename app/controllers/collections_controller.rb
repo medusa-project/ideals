@@ -38,7 +38,7 @@ class CollectionsController < ApplicationController
   #
   def create
     @collection              = Collection.new(collection_params)
-    @collection.primary_unit = Unit.find(params[:primary_unit_id])
+    @collection.primary_unit = Unit.find_by_id(params[:primary_unit_id])
     authorize @collection
     begin
       ActiveRecord::Base.transaction do
