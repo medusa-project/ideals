@@ -268,6 +268,10 @@ const IDEALS = {
                 // Clone the last unit/collection group.
                 const lastCombo = $(".unit-collection-combo:last");
                 const clone     = lastCombo.clone();
+                clone.find("input[type=radio]").prop("checked", false);
+                const clonedUnitMenu = clone.find("select:first");
+                clonedUnitMenu.find("option:first").prop("selected", true);
+                fetchCollectionsForUnit(clonedUnitMenu, function() {});
                 // Insert the clone into the DOM.
                 lastCombo.after(clone);
                 lastCombo.after("<hr>");

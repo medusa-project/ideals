@@ -30,17 +30,19 @@
                          class: "custom-select collection-menu",
                          data: { "unit-id": membership.collection.primary_unit.id })
       .col-sm-1.col-primary
-        .form-check
+        .form-check{style: "white-space: nowrap"}
           = radio_button_tag('collection_item_memberships[][primary]', "true",
                              checked: membership.primary,
                              class: 'form-check-input primary')
           = label_tag('collection_item_memberships[][primary]', "Primary")
       .col-sm-2.col-buttons
-        .btn-group
-          %button.btn.btn-outline-success.add-collection
-            %i.fa.fa-plus
-          %button.btn.btn-outline-danger.remove-collection
-            %i.fa.fa-minus
+        %button.btn.btn-sm.btn-outline-danger.remove-collection
+          %i.fa.fa-minus
+          Remove
+
+  %button.btn.btn-sm.btn-outline-success.add-collection
+    %i.fa.fa-plus
+    Add Collection
 
   .clearfix
     .float-right
