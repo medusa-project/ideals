@@ -341,7 +341,7 @@ class UnitsController < ApplicationController
   # Responds to `PATCH/PUT /units/:id`
   #
   def update
-    if params[:unit][:parent_id] &&
+    if params[:unit][:parent_id].present? &&
         !policy(@unit).change_parent?(params[:unit][:parent_id])
       raise NotAuthorizedError,"Cannot move a unit into a unit of "\
             "which you are not an effective administrator."
