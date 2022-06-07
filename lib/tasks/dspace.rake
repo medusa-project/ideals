@@ -571,8 +571,6 @@ namespace :dspace do
     Rake::Task["dspace:bitstreams:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["dspace:user_groups:migrate_joins"].invoke(dbname, dbhost, dbuser, dbpass)
     Rake::Task["dspace:handles:migrate"].invoke(dbname, dbhost, dbuser, dbpass)
-    puts "WARNING: This is the last step, but it takes a long time. "\
-        "You can ctrl+c if you don't need full item metadata."
     Rake::Task["dspace:metadata:migrate_item_values"].invoke(dbname, dbhost, dbuser, dbpass)
   end
 
