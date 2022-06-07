@@ -143,10 +143,19 @@ const FileNavigator = function() {
         }
     });
 
-    navigator.find("#file-navigator-thumbnail-column .thumbnail").on("click", function() {
+    const thumbs = navigator.find("#file-navigator-thumbnail-column .thumbnail");
+    thumbs.on("click", function() {
         const thumb = $(this);
         focus(thumb);
-    }).filter(":first").trigger("click");
+    });
+
+    // Select the primary bitstream, if one is set. Otherwise, select the
+    // first one.
+    let thumbToSelect = thumbs.filter("[data-primary=true]");
+    if (thumbToSelect.length < 1) {
+        thumbToSelect = thumbs.filter(":first");
+    }
+    thumbToSelect.trigger("click");
 };
 
 /**
