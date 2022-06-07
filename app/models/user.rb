@@ -131,7 +131,7 @@ class User < ApplicationRecord
   def effective_submittable_collections
     return Collection.all if sysadmin?
     collections = Set.new
-    collections += self.administering_units.map(&:collections)
+    collections += self.administering_units.map(&:collections).flatten
     collections += self.managing_collections
     collections += self.submitting_collections
     collections
