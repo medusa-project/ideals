@@ -16,6 +16,12 @@ unit1_collection1_collection1_collection1:
   primary:      true
   unit_default: false
 
+unit1_unit2_unit1_collection1:
+  unit:         unit1_unit2_unit1
+  collection:   unit1_unit2_unit1_collection1
+  primary:      true
+  unit_default: true
+
 unit2_collection1:
   unit:         unit2
   collection:   collection1
