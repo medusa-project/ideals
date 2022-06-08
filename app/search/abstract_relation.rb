@@ -50,11 +50,13 @@ class AbstractRelation
     # Note to subclass implementations: the raw term should not be passed to
     # Elasticsearch. Use {sanitize}.
     @query            = nil # Hash<Symbol,String> Hash with :fields and :term keys
+    @search_after     = nil
     @shoulds          = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @start            = 0
 
     @loaded = false
 
+    @last_sort_value  = nil
     @request_json     = {}
     @response_json    = {}
     @result_count     = 0
@@ -341,6 +343,16 @@ class AbstractRelation
   end
 
   ##
+  # @param sort_value [Array] Sort value of the last result.
+  # @return [self]
+  #
+  def search_after(sort_value)
+    @search_after = sort_value
+    @loaded = false
+    self
+  end
+
+  ##
   # @param start [Integer]
   # @return [self]
   #
@@ -371,6 +383,25 @@ class AbstractRelation
   end
 
   ##
+  # Used to iterate over a large result set using Elasticsearch's
+  # `search_after` API. This works around the
+  # {ElasticsearchClient#MAX_RESULT_WINDOW} constraint inherent in using
+  # {start}/{limit}.
+  #
+  def each_id_in_batches(&block)
+    @start = nil
+    @limit = nil
+    order(ElasticsearchIndex::StandardFields::ID)
+    to_id_a.each(&block)
+    loop do
+      lsv = last_sort_value
+      break unless lsv
+      search_after(lsv)
+      to_id_a.each(&block)
+    end
+  end
+
+  ##
   # @return [Enumerable<Facet>] Result facets.
   #
   def facets
@@ -378,6 +409,11 @@ class AbstractRelation
         "the query." unless @aggregations
     load
     @result_facets
+  end
+
+  def last_sort_value
+    load
+    @last_sort_value
   end
 
   def method_missing(m, *args, &block)
@@ -470,6 +506,9 @@ class AbstractRelation
 
     if @response_json['hits']
       @result_count = @response_json['hits']['total']['value']
+
+      last_hit = @response_json['hits']['hits'].last
+      @last_sort_value = last_hit ? last_hit['sort'] : nil
     else
       @result_count = 0
       raise IOError, "#{@response_json['error']['type']}: "\
@@ -636,6 +675,11 @@ class AbstractRelation
           end
         end
       elsif @orders
+      end
+
+      # search_after
+      if @search_after
+        j.search_after @search_after
       end
 
       # Start

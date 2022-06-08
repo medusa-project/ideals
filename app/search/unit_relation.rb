@@ -121,6 +121,11 @@ class UnitRelation < AbstractRelation
       elsif @orders
       end
 
+      # search_after
+      if @search_after
+        j.search_after @search_after
+      end
+
       # Start
       if @start.present?
         j.from @start
