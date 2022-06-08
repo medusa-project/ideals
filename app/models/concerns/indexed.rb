@@ -89,24 +89,19 @@ module Indexed
       class_ = name.constantize
 
       # Get the document count.
-      relation = search.limit(0)
-      count    = relation.count
-      progress = Progress.new(count)
+      relation    = search
+      count       = relation.count
+      progress    = Progress.new(count)
+      index       = 0
+      num_deleted = 0
 
-      # Retrieve document IDs in batches.
-      index = start = num_deleted = 0
-      limit = 1000
-      while start < count do
-        ids = relation.start(start).limit(limit).to_id_a
-        ids.each do |id|
-          unless class_.exists?(id: to_model_id(id))
-            class_.delete_document(id)
-            num_deleted += 1
-          end
-          index += 1
-          progress.report(index, "Deleting orphaned documents")
+      relation.each_id_in_batches do |id|
+        unless class_.exists?(id: to_model_id(id))
+          class_.delete_document(id)
+          num_deleted += 1
         end
-        start += limit
+        index += 1
+        progress.report(index, "Deleting orphaned documents")
       end
       puts "\nDeleted #{num_deleted} documents"
     end
