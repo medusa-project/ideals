@@ -58,12 +58,19 @@ namespace :elasticsearch do
 
   end
 
-  desc 'Purge all documents from the current index'
+  desc 'Purge all documents from the index'
   task :purge => :environment do
     ElasticsearchClient.instance.purge
   end
 
-  desc 'Execute an arbitrary query against the default index'
+  desc "Purge all documents that have no database counterparts"
+  task :purge_orphaned_docs => :environment do
+    Unit.delete_orphaned_documents
+    Collection.delete_orphaned_documents
+    Item.delete_orphaned_documents
+  end
+
+  desc 'Execute an arbitrary query'
   task :query, [:file] => :environment do |task, args|
     file_path = File.expand_path(args[:file])
     json      = File.read(file_path)
