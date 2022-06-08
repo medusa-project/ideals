@@ -443,8 +443,6 @@ class AbstractRelation
   def load
     return if @loaded
 
-    validate
-
     @response_json = get_response
 
     # Assemble the response aggregations into Facets. The order of the facets
@@ -650,11 +648,6 @@ class AbstractRelation
         j.size @limit
       end
     end
-  end
-
-  def validate
-    raise "Must add an institution filter!" unless
-      @filters.map{ |f| f[0] }.include?(ElasticsearchIndex::StandardFields::INSTITUTION_KEY)
   end
 
 
