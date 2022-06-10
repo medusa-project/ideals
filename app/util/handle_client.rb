@@ -134,7 +134,7 @@ class HandleClient
 
   def handle_response(method, url, response)
     if response.status >= 400 && response.status != 404
-      raise IOError, "Got HTTP #{response.status} for #{method} #{url}"
+      raise IOError, "Got HTTP #{response.status} for #{method} #{url}: #{response.body}"
     end
     nil
   end
