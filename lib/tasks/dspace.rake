@@ -66,7 +66,7 @@ namespace :dspace do
           bitstreams = Bitstream.
             where(permanent_key: [nil, ""]).
             where.not(dspace_id: [nil, ""]).
-            order(:length)
+            order(:id)
           puts "#{bitstreams.count} bitstreams to copy"
           puts "Temp directory: #{tmpdir}"
           ThreadUtils.process_in_parallel(bitstreams,
@@ -104,7 +104,7 @@ namespace :dspace do
           where("m.collection_id": args[:collection_id]).
           where(permanent_key: [nil, ""]).
           where.not(dspace_id: [nil, ""]).
-          order(:length)
+          order(:id)
         bitstream_count = bitstreams.count
         progress        = Progress.new(bitstream_count)
         bitstreams.find_each.with_index do |bitstream, index|
