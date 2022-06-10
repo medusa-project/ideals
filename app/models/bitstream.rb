@@ -101,7 +101,9 @@ class Bitstream < ApplicationRecord
   validates_inclusion_of :role, in: -> (value) { Role.all }
 
   before_save :ensure_primary_uniqueness
-  after_save :ingest_into_medusa, if: -> { item.handle.present? && permanent_key.present? && saved_change_to_permanent_key? && !submitted_for_ingest }
+  after_save :ingest_into_medusa, if: -> {
+    item.handle.present? && permanent_key.present? &&
+      saved_change_to_permanent_key? && !submitted_for_ingest }
   after_save :read_full_text_async, if: -> {
     can_read_full_text? &&
     full_text_checked_at.blank? &&
@@ -111,6 +113,10 @@ class Bitstream < ApplicationRecord
   before_destroy :delete_derivatives, :delete_from_staging,
                  :delete_from_permanent_storage
   before_destroy :delete_from_medusa, if: -> { medusa_uuid.present? }
+
+  before_create :shift_bundle_positions_before_create, unless: -> { DspaceImporter.instance.running? }
+  before_update :shift_bundle_positions_before_update, unless: -> { DspaceImporter.instance.running? }
+  after_destroy :shift_bundle_positions_after_destroy, unless: -> { DspaceImporter.instance.running? }
 
   LOGGER = CustomLogger.new(Bitstream)
 
@@ -643,6 +649,63 @@ class Bitstream < ApplicationRecord
     ensure
       source_tempfile&.unlink
       FileUtils.rm(deriv_path) rescue nil
+    end
+  end
+
+  ##
+  # Increments the bundle positions of all bitstreams attached to the owning
+  # [Item] that are greater than or equal to the position of this instance, in
+  # order to make room for it.
+  #
+  def shift_bundle_positions_before_create
+    transaction do
+      self.item.bitstreams.
+        where(bundle: self.bundle).
+        where("bundle_position >= ?", self.bundle_position).each do |b|
+        # update_column skips callbacks, which would cause this method to be
+        # called recursively.
+        b.update_column(:bundle_position, b.bundle_position + 1)
+      end
+    end
+  end
+
+  ##
+  # Updates the bundle positions of all bitstreams attached to the owning
+  # [Item] to ensure that they are sequential.
+  #
+  def shift_bundle_positions_before_update
+    if self.bundle_position_changed? && self.item
+      position = 0
+      transaction do
+        self.item.bitstreams.
+          where(bundle: self.bundle).
+          where.not(id: self.id).
+          order(:bundle_position).each do |b|
+          position += 1 if position == self.bundle_position
+          # update_column skips callbacks, which would cause this method to
+          # be called recursively.
+          b.update_column(:bundle_position, position)
+          position += 1
+        end
+      end
+    end
+  end
+
+  ##
+  # Updates the bundle positions of all bitstreams attached to the owning
+  # [Item] to ensure that they are sequential and zero-based.
+  #
+  def shift_bundle_positions_after_destroy
+    if self.item && self.destroyed?
+      transaction do
+        self.item.bitstreams.
+          where(bundle: self.bundle).
+          order(:bundle_position).each_with_index do |bitstream, position|
+          # update_column skips callbacks, which would cause this method to be
+          # called recursively.
+          bitstream.update_column(:bundle_position, position) if bitstream.bundle_position != position
+        end
+      end
     end
   end
 

@@ -58,6 +58,11 @@ buried:
   stage:        <%= Item::Stages::BURIED %>
   stage_reason:
 
+multiple_bitstreams:
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::APPROVED %>
+  stage_reason:
+
 # collection1_collection1 items
 
 collection1_collection1_item1:

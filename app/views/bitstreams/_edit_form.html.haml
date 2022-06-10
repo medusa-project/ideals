@@ -34,11 +34,13 @@
       If checked, all other files attached to the same item
       will automatically be made non-primary.
 
-  .form-group
-    = f.label :bundle_position, "Bundle Position"
-    = f.number_field :bundle_position, min: 0, class: "form-control"
-    %p.text-secondary
-      This is the sort order, starting at 0, among all other files in the same bundle.
+  - if f.object.item.bitstreams.select{ |b| b.bundle == f.object.bundle }.length > 1
+    .form-group
+      = f.label :bundle_position, "Position After (Within Bundle)"
+      = f.select(:bundle_position,
+        [["Nothing (First)", 0]] + f.object.item.bitstreams.reject{ |b| b.id == f.object.id }.map.with_index { |b, i| [b.original_filename, i + 1] },
+        { selected: f.object.bundle_position },
+        class: "custom-select")
 
   .form-group
     = f.label :description

@@ -55,6 +55,11 @@ collection1_buried:
   item:       buried
   primary:    true
 
+collection1_multiple_bitstreams:
+  collection: collection1
+  item:       multiple_bitstreams
+  primary:    true
+
 # collection1_collection1 items
 
 collection1_collection1_item1:

@@ -156,6 +156,29 @@ class BitstreamTest < ActiveSupport::TestCase
     assert !@instance.can_read_full_text?
   end
 
+  test "create() updates bundle positions in the owning item" do
+    item = items(:multiple_bitstreams)
+    Bitstream.create!(bundle_position:   1,
+                      item:              item,
+                      original_filename: "cats.jpg")
+    # Assert that the positions are sequential and zero-based.
+    item.bitstreams.order(:bundle_position).each_with_index do |b, i|
+      assert_equal i, b.bundle_position
+    end
+  end
+
+  # destroy()
+
+  test "destroy() updates bundle positions in the owning item" do
+    @instance = bitstreams(:multiple_bitstreams_1)
+    item = @instance.item
+    @instance.destroy!
+    # Assert that the positions are sequential and zero-based.
+    item.bitstreams.order(:bundle_position).each_with_index do |b, i|
+      assert_equal i, b.bundle_position
+    end
+  end
+
   # data()
 
   test "data() raises an error when an object does not exist in either the
@@ -901,6 +924,30 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::RecordNotUnique do
       Bitstream.create!(staging_key: "cats",
                         item:        items(:item1))
+    end
+  end
+
+  # update()
+
+  test "update() update bundle positions in the owning item when increasing a
+  bundle position" do
+    @instance = bitstreams(:multiple_bitstreams_1)
+    assert_equal 0, @instance.bundle_position
+    @instance.update!(bundle_position: 2)
+    # Assert that the positions are sequential and zero-based.
+    @instance.item.bitstreams.order(:bundle_position).each_with_index do |b, i|
+      assert_equal i, b.bundle_position
+    end
+  end
+
+  test "update() updates bundle positions in the owning item when decreasing a
+  bundle position" do
+    @instance = bitstreams(:multiple_bitstreams_1)
+    @instance = @instance.item.bitstreams.where(bundle_position: 2).first
+    @instance.update!(bundle_position: 0)
+    # Assert that the positions are sequential and zero-based.
+    @instance.item.bitstreams.order(:bundle_position).each_with_index do |b, i|
+      assert_equal i, b.bundle_position
     end
   end
 

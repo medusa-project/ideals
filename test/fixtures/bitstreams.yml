@@ -144,6 +144,48 @@ withdrawn_in_staging:
   bundle_position:      0
   description:          Sample description
 
+multiple_bitstreams_1:
+  item:                 multiple_bitstreams
+  submitted_for_ingest: false
+  staging_key:          <%= SecureRandom.hex %>
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
+  original_filename:    escher_lego.jpg
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
+  description:          Sample description
+
+multiple_bitstreams_2:
+  item:                 multiple_bitstreams
+  submitted_for_ingest: false
+  staging_key:          <%= SecureRandom.hex %>
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pooh.jpg")) %>
+  original_filename:    pooh.jpg
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      1
+  description:          Sample description
+
+multiple_bitstreams_3:
+  item:                 multiple_bitstreams
+  submitted_for_ingest: false
+  staging_key:          <%= SecureRandom.hex %>
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "crane.jpg")) %>
+  original_filename:    crane.jpg
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      2
+  description:          Sample description
+
 collection1_collection1_item1_in_staging:
   item:                 collection1_collection1_item1
   submitted_for_ingest: false
