@@ -409,6 +409,7 @@ class DspaceImporter
       end
     end
     Handle.set_suffix_start(Handle.order(suffix: :desc).limit(1).first.suffix + 1)
+    update_pkey_sequence("handles")
   ensure
     @running = false
   end
@@ -676,6 +677,7 @@ class DspaceImporter
       end
       progress.report(row_num, "Importing user groups")
     end
+    update_pkey_sequence("user_groups")
   ensure
     @running = false
   end
