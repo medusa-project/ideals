@@ -108,6 +108,7 @@ class BitstreamTest < ActiveSupport::TestCase
     event = Event.all.order(happened_at: :desc).first
     assert_equal @instance, event.bitstream
     assert_equal "Download", event.description
+    assert Time.now - event.happened_at < 10.seconds
     assert_equal user, event.user
   end
 

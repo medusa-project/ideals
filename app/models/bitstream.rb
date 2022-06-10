@@ -235,6 +235,7 @@ class Bitstream < ApplicationRecord
   def add_download(user: nil)
     self.events.build(event_type:  Event::Type::DOWNLOAD,
                       description: "Download",
+                      happened_at: Time.now,
                       user:        user).save!
   end
 
