@@ -608,26 +608,37 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "submitted_item_count_by_month() returns a correct count" do
     Event.destroy_all
+    expected = 0
     @instance.items.each do |item|
       item.events.build(event_type: Event::Type::CREATE).save!
+      expected += 1
     end
-    assert_equal 1, @instance.submitted_item_count_by_month.length
+    actual = @instance.submitted_item_count_by_month
+    assert_equal 1, actual.length
+    assert_kind_of Time, actual[0]['month']
+    assert_equal expected, actual[0]['count']
   end
 
   test "submitted_item_count_by_month() returns a correct count when supplying
   start and end times" do
     Event.destroy_all
+
+    expected = 0
+    @instance.items.each do |item|
+      item.events.build(event_type: Event::Type::CREATE).save!
+      expected += 1
+    end
+
+    # Shift all of the events that were just created 3 months into the past.
+    Event.update_all(happened_at: 3.months.ago)
+
     @instance.items.each do |item|
       item.events.build(event_type: Event::Type::CREATE).save!
     end
-    # Adjust the happened_at property of one of the just-created events to fit
-    # inside the time window.
-    Event.where(event_type: Event::Type::CREATE).all.first.
-      update!(happened_at: 90.minutes.ago)
 
-    actual = @instance.submitted_item_count_by_month(start_time: 2.hours.ago,
-                                                     end_time:   1.hour.ago)
-    assert_equal 1, actual.length
+    actual = @instance.submitted_item_count_by_month(start_time: 4.months.ago,
+                                                     end_time:   2.months.ago)
+    assert_equal 3, actual.length
     assert_kind_of Time, actual[0]['month']
     assert_equal 0, actual[0]['count']
   end
