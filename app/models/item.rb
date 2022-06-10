@@ -452,6 +452,7 @@ class Item < ApplicationRecord
   def download_count_by_month(start_time: nil, end_time: nil)
     start_time = Event.all.order(:happened_at).limit(1).pluck(:happened_at).first unless start_time
     end_time   = Time.now unless end_time
+    raise ArgumentError, "start_time > end_time" if start_time > end_time
 
     sql = "SELECT mon.month, coalesce(e.count, 0) AS dl_count
         FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,

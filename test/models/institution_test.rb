@@ -9,6 +9,13 @@ class InstitutionTest < ActiveSupport::TestCase
 
   # download_count_by_month()
 
+  test "download_count_by_month() raises an error if start_time > end_time" do
+    assert_raises ArgumentError do
+      @instance.download_count_by_month(start_time: Time.now,
+                                        end_time:   Time.now - 1.day)
+    end
+  end
+
   test "download_count_by_month() returns a correct count" do
     @instance = institutions(:uiuc)
     @instance.units.each do |unit|

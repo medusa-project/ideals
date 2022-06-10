@@ -243,6 +243,7 @@ class Unit < ApplicationRecord
   def download_count_by_month(start_time: nil, end_time: nil)
     start_time = Event.all.order(:happened_at).limit(1).pluck(:happened_at).first unless start_time
     end_time   = Time.now unless end_time
+    raise ArgumentError, "start_time > end_time" if start_time > end_time
 
     sql = "WITH RECURSIVE q AS (
         SELECT u
