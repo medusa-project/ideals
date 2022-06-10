@@ -97,23 +97,21 @@ module BitstreamsHelper
     # viewer. One or the other will be shown via JS depending on whether the
     # browser already supports PDF.
 
-    # Stream the PDF instead of providing a presigned S3 URL. The presigned URL
-    # does not support ranges, which the PDF viewer may require.
+    # Add a ViewerJS viewer
     bitstream_path = item_bitstream_stream_path(bitstream,
                                                 'response-content-disposition': "inline")
-
-    # Add a ViewerJS viewer
     viewer_url     = asset_path("/ViewerJS/#" + bitstream_path)
-    html <<   "<iframe id=\"viewerjs-pdf-viewer\" "\
-                  "src=\"#{viewer_url}\" frameborder=\"0\" "\
-                  "height=\"100%\" width=\"100%\" "\
-                  "allowfullscreen webkitallowfullscreen></iframe>"
+    html          <<   "<iframe id=\"viewerjs-pdf-viewer\" "\
+                           "src=\"#{viewer_url}\" frameborder=\"0\" "\
+                           "height=\"100%\" width=\"100%\" "\
+                           "allowfullscreen webkitallowfullscreen></iframe>"
 
     # Add a generic embedded viewer; this is preferable to PDF.js when
     # the browser supports embedded PDFs
-    html      << raw("<object id=\"native-pdf-viewer\" "\
+    bitstream_path = bitstream.presigned_url(content_disposition: "inline")
+    html          << "<object id=\"native-pdf-viewer\" "\
                          "data=\"#{bitstream_path}\" "\
-                         "type=\"#{bitstream.media_type}\"></object>")
+                         "type=\"#{bitstream.media_type}\"></object>"
 
     raw(html.string)
   end
