@@ -107,7 +107,7 @@ class InstitutionTest < ActiveSupport::TestCase
       end
     end
     result = @instance.item_download_counts
-    assert_equal 9, result.length
+    assert_equal 10, result.length
     assert_equal 24, result[0]['dl_count']
   end
 
@@ -129,7 +129,7 @@ class InstitutionTest < ActiveSupport::TestCase
     end
     result = @instance.item_download_counts(offset: 1, limit: 2)
     assert_equal 2, result.length
-    assert_equal 8, result[0]['dl_count']
+    assert_equal 24, result[0]['dl_count']
   end
 
   test "item_download_counts() returns correct results when supplying start
