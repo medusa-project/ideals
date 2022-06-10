@@ -242,24 +242,26 @@ class Unit < ApplicationRecord
   #
   def download_count_by_month(start_time: nil, end_time: nil)
     start_time = Event.all.order(:happened_at).limit(1).pluck(:happened_at).first unless start_time
-    end_time   = Time.now unless end_time
+    end_time   = Time.now.utc unless end_time
     raise ArgumentError, "start_time > end_time" if start_time > end_time
+    start_series = "#{start_time.year}-#{start_time.month}-01"
+    end_series   = Date.civil(end_time.year, end_time.month, -1) # last day of month
 
     sql = "WITH RECURSIVE q AS (
-        SELECT u
-        FROM units u
-        WHERE id = $1
-        UNION ALL
-        SELECT ui
-        FROM q
-        JOIN units ui ON ui.parent_id = (q.u).id
-    )
-    SELECT mon.month, coalesce(e.count, 0) AS dl_count
-    FROM generate_series('#{start_time.strftime("%Y-%m-%d")}'::timestamp,
-                         '#{end_time.strftime("%Y-%m-%d")}'::timestamp, interval '1 month') AS mon(month)
+            SELECT u
+            FROM units u
+            WHERE id = $1
+            UNION ALL
+            SELECT ui
+            FROM q
+            JOIN units ui ON ui.parent_id = (q.u).id
+        )
+        SELECT mon.month, coalesce(e.count, 0) AS dl_count
+        FROM generate_series('#{start_series}'::timestamp,
+                             '#{end_series}'::timestamp, interval '1 month') AS mon(month)
         LEFT JOIN (
             SELECT date_trunc('Month', e.happened_at) as month,
-                   COUNT(e.id) AS count
+                   COUNT(DISTINCT e.id) AS count
             FROM events e
                 LEFT JOIN bitstreams b on e.bitstream_id = b.id
                 LEFT JOIN items i ON b.item_id = i.id
@@ -270,8 +272,9 @@ class Unit < ApplicationRecord
                 AND e.event_type = $2
                 AND e.happened_at >= $3
                 AND e.happened_at <= $4
-            GROUP BY month) e ON mon.month = e.month
-    ORDER BY mon.month;"
+            GROUP BY month
+        ) e ON mon.month = e.month
+        ORDER BY mon.month;"
     values = [self.id, Event::Type::DOWNLOAD, start_time, end_time]
     self.class.connection.exec_query(sql, "SQL", values)
   end

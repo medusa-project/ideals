@@ -389,26 +389,38 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "download_count_by_month() returns correct counts" do
+    Event.destroy_all
+    expected = 0
     @instance.bitstreams.each do |bitstream|
       bitstream.add_download
+      expected += 1
     end
-    assert_equal 1, @instance.download_count_by_month.length
+    actual = @instance.download_count_by_month
+    assert_equal 1, actual.length
+    assert_kind_of Time, actual[0]['month']
+    assert_equal expected, actual[0]['dl_count']
   end
 
   test "download_count_by_month() returns correct counts when supplying start
   and end times" do
+    expected = 0
+    @instance.bitstreams.each do |bitstream|
+      bitstream.add_download
+      expected += 1
+    end
+
+    # Shift all of the events that were just created 3 months into the past.
+    Event.update_all(happened_at: 3.months.ago)
+
     @instance.bitstreams.each do |bitstream|
       bitstream.add_download
     end
 
-    Event.where(event_type: Event::Type::DOWNLOAD).first.
-      update!(created_at: 90.minutes.ago)
-
-    actual = @instance.download_count_by_month(start_time: 2.hours.ago,
-                                               end_time:   1.hour.ago)
-    assert_equal 1, actual.length
+    actual = @instance.download_count_by_month(start_time: 4.months.ago,
+                                               end_time:   2.months.ago)
+    assert_equal 3, actual.length
     assert_kind_of Time, actual[0]['month']
-    assert_equal 0, actual[0]['dl_count']
+    assert_equal expected, actual[1]['dl_count']
   end
 
   # effective_metadata_profile()
