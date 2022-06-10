@@ -489,6 +489,7 @@ class Bitstream < ApplicationRecord
     signer.presigned_url(:get_object,
                          bucket:                       bucket,
                          key:                          key,
+                         response_content_type:        format.media_types.first,
                          response_content_disposition: content_disposition,
                          expires_in:                   900)
   end
