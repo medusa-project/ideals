@@ -437,6 +437,16 @@ class DspaceImporter
       next unless string.present?
       next if string == '""'
 
+      if reg_elem.name == "dc:date:submitted"
+        # Convert dates in "Month YYYY" format to "YYYY-MM"
+        result = string.match(/(January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})/)
+        if result
+          months = %w(January February March April May June July August
+                      September October November December)
+          string = "#{result[2]}-#{months.index(result[1]) + 1}"
+        end
+      end
+
       progress.report(row_num, "Importing item metadata (1/2)")
       begin
         AscribedElement.create!(registered_element: reg_elem,
