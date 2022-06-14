@@ -44,8 +44,6 @@ gem "netaddr"
 gem "omniauth-identity"
 # Enables Shibboleth logins.
 gem "omniauth-shibboleth"
-# Extracts text from PDFs
-gem "pdf-reader"
 # Our database
 gem "pg"
 # Our application server

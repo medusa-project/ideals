@@ -21,6 +21,7 @@ This is a getting-started guide for developers.
   installed
 * An S3 storage service, such as AWS S3 or [Minio Server](https://min.io)
 * VIPS
+* Poppler
 * RabbitMQ
 * A Handle.net server (see the
   [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally)

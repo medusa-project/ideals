@@ -24,7 +24,6 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    Ascii85 (1.1.0)
     actioncable (7.0.3)
       actionpack (= 7.0.3)
       activesupport (= 7.0.3)
@@ -90,7 +89,6 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    afm (0.2.2)
     airbrussh (1.4.0)
       sshkit (>= 1.6.1, != 1.7.0)
     amq-protocol (2.3.2)
@@ -154,7 +152,6 @@ GEM
       haml (>= 4.0.6, < 6.0)
       html2haml (>= 1.0.1)
       railties (>= 5.1)
-    hashery (2.1.2)
     hashie (5.0.0)
     html2haml (2.2.0)
       erubis (~> 2.7.0)
@@ -233,12 +230,6 @@ GEM
     parallel (1.21.0)
     parser (3.1.0.0)
       ast (~> 2.4.1)
-    pdf-reader (2.9.2)
-      Ascii85 (~> 1.0)
-      afm (~> 0.2.1)
-      hashery (~> 2.0)
-      ruby-rc4
-      ttfunk
     pg (1.2.3)
     puma (5.6.4)
       nio4r (~> 2.0)
@@ -300,7 +291,6 @@ GEM
       rack (>= 1.1)
       rubocop (>= 1.7.0, < 2.0)
     ruby-progressbar (1.11.0)
-    ruby-rc4 (0.1.5)
     ruby_parser (3.18.1)
       sexp_processor (~> 4.16)
     sassc (2.4.0)
@@ -325,7 +315,6 @@ GEM
     thor (1.2.1)
     tilt (2.0.10)
     timeout (0.2.0)
-    ttfunk (1.7.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     uglifier (4.2.0)
@@ -371,7 +360,6 @@ DEPENDENCIES
   omniauth-identity
   omniauth-rails_csrf_protection
   omniauth-shibboleth
-  pdf-reader
   pg
   puma
   rails (~> 7.0)

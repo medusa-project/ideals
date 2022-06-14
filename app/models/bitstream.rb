@@ -515,20 +515,17 @@ class Bitstream < ApplicationRecord
     #noinspection RubyRedundantSafeNavigation,RubyCaseWithoutElseBlockInspection
     case self.format&.short_name
     when "PDF"
+      infile  = download_to_temp_file
+      outfile = Tempfile.new("full_text")
       begin
-        reader = PDF::Reader.new(self.data)
-        pages  = []
-        reader.pages.each do |page|
-          begin
-            pages << page.text
-          rescue PDF::Reader::MalformedPDFError, RangeError
-            # Nothing we can do about this page, but catch the error just in
-            # case we are successful at processing other pages.
-          end
-        end
-        text = pages.join("\n")
-      rescue PDF::Reader::MalformedPDFError
-        # nothing we can do
+        # pdftotext is part of the poppler or xpdf package.
+        `pdftotext #{infile.path} #{outfile.path}`
+        text = File.read(outfile.path)
+      ensure
+        infile.close
+        outfile.close
+        infile.unlink
+        outfile.unlink
       end
     when "Text"
       text = self.data.read

@@ -10,14 +10,15 @@ ENV SECRET_KEY_BASE=whateverdoesntmatter
 
 RUN apt-get update && apt-get install -y \
     build-essential \
+    curl \
+    git \
     libmagic-dev \
     libpq-dev \
     libssl-dev \
-    zlib1g-dev \
     libvips-tools \
-    curl \
-    git \
-    shared-mime-info
+    poppler-utils \
+    shared-mime-info \
+    zlib1g-dev
 
 # Install Ruby
 RUN git clone https://github.com/rbenv/ruby-build.git \
