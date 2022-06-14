@@ -22,6 +22,7 @@
       = render partial: 'layouts/header'
       .page-content
         - unless request.path == "/"
+          = banner_message
           = render partial: "shared/flashes"
         - if @breadcrumbable
           = breadcrumbs(@breadcrumbable)

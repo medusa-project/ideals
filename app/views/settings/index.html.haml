@@ -1,0 +1,29 @@
+- provide :title, "Settings"
+- provide :body_id, "settings"
+
+%h1 Settings
+
+= form_tag(settings_path, method: :patch) do
+
+  .form-group.row
+    = label_tag("settings[#{Setting::Key::BANNER_MESSAGE}]",
+                "Banner Message",
+                class: "col-sm-3 col-form-label")
+    .col-sm-9
+      = text_area_tag("settings[#{Setting::Key::BANNER_MESSAGE}]",
+                       Setting::string(Setting::Key::BANNER_MESSAGE),
+                       class: "form-control")
+  .form-group.row
+    = label_tag("settings[#{Setting::Key::BANNER_MESSAGE_TYPE}]",
+                "Banner Message Type",
+                class: "col-sm-3 col-form-label")
+    .col-sm-9
+      = select_tag("settings[#{Setting::Key::BANNER_MESSAGE_TYPE}]",
+                   options_for_select([%w(Blue/Info info), %w(Yellow/Warning warning), %w(Red/Danger danger)],
+                                      Setting.string(Setting::Key::BANNER_MESSAGE_TYPE)),
+                   class: "custom-select")
+
+  .form-group.row
+    .col-sm-3
+    .col-sm-9
+      = submit_tag 'Save Changes', class: 'btn btn-primary'

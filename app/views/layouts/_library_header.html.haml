@@ -109,6 +109,9 @@
                       My Institution
                   - if msg
                     .dropdown-divider
+                    = link_to(settings_path, class: "dropdown-item") do
+                      = icon_for(Setting)
+                      Settings
                     = link_to(tasks_path, class: "dropdown-item") do
                       = icon_for(Task)
                       Tasks

@@ -127,6 +127,8 @@ Rails.application.routes.draw do
   match "/reset-password", to: "password_resets#get", via: :get
   match "/reset-password", to: "password_resets#post", via: :post
   resources :registered_elements, param: :name, path: "elements"
+  match "/settings", to: "settings#index", via: :get
+  match "/settings", to: "settings#update", via: :patch
   resources :submission_profiles, path: "submission-profiles" do
     match "/clone", to: "submission_profiles#clone", via: :post
     resources :submission_profile_elements, path: "elements", except: [:new, :index, :show]

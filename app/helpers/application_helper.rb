@@ -3,6 +3,27 @@ module ApplicationHelper
   MAX_PAGINATION_LINKS = 5
 
   ##
+  # @return [String] The sitewide banner message, in a `div`.
+  #
+  def banner_message
+    html    = StringIO.new
+    message = Setting.string(Setting::Key::BANNER_MESSAGE)
+    if message.present?
+      case Setting.string(Setting::Key::BANNER_MESSAGE_TYPE)
+      when "info"
+        icon = "fa fa-info-circle"
+      else
+        icon = "fa fa-exclamation-triangle"
+      end
+      html << "<div class=\"alert alert-#{Setting.string(Setting::Key::BANNER_MESSAGE_TYPE)}\">"
+      html <<   "<i class=\"#{icon}\"></i> "
+      html <<   h(message)
+      html << "</div>"
+    end
+    raw(html.string)
+  end
+
+  ##
   # Formats a boolean for display.
   #
   # @param boolean [Boolean]
@@ -276,6 +297,8 @@ module ApplicationHelper
     when "RegisteredElement", "AscribedElement", "MetadataProfileElement",
         "SubmissionProfileElement"
       icon = "fa fa-tags"
+    when "Setting"
+      icon = "fa fa-cog"
     when "Symbol"
       case entity
       when :info
