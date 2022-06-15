@@ -38,15 +38,15 @@ class CollectionsController < ApplicationController
   # Responds to `POST /collections`.
   #
   def create
-    @collection              = Collection.new(collection_params)
-    @collection.primary_unit = Unit.find_by_id(params[:primary_unit_id])
-    authorize @collection
     begin
       ActiveRecord::Base.transaction do
-        # Save now in order to obtain an ID with which to associate
-        # AscribedElements in the next step.
+        @collection              = Collection.new(collection_params)
+        @collection.primary_unit = Unit.find_by_id(params[:primary_unit_id])
+        # We need to save now in order to assign the collection an ID which
+        # many of the authorization methods will need. If authorization fails,
+        # the transaction will roll back.
         @collection.save!
-        assign_users
+        authorize @collection
         @collection.save!
       end
     rescue => e
