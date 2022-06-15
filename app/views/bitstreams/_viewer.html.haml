@@ -6,7 +6,7 @@
     - if policy(@bitstream).download?
       -# Download button
       = link_to(item_bitstream_object_path(@bitstream.item, @bitstream, dl: 1),
-                class: "btn btn-sm btn-dark text-success") do
+                class: "btn btn-sm btn-success") do
         %i.fa.fa-download
         Download
     - if policy(@bitstream).edit?
