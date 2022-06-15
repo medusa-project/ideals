@@ -2,6 +2,13 @@ require 'rake'
 
 namespace :users do
 
+  desc "Create a local-identity user"
+  task :create_local, [:email, :password] => :environment do |task, args|
+    user = LocalUser.create_manually(email:    args[:email],
+                                     password: args[:password])
+    user.save!
+  end
+
   desc "Create a local-identity sysadmin user"
   task :create_local_sysadmin, [:email, :password] => :environment do |task, args|
     user = LocalUser.create_manually(email:    args[:email],
@@ -26,6 +33,14 @@ namespace :users do
       Invitee.destroy_by(email: email)
       User.destroy_by(email: email)
     end
+  end
+
+  desc "Make a user a unit administrator"
+  task :make_unit_admin, [:email, :unit_id] => :environment do |task, args|
+    user = User.find_by_email(args[:email])
+    unit = Unit.find(args[:unit_id])
+    unit.administering_users << user
+    unit.save!
   end
 
 end
