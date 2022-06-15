@@ -47,7 +47,7 @@ body#show_item {
           font-size: 0.75em;
           overflow: hidden;
           text-align: center;
-          text-overflow: ellipsis;
+          word-break: break-word;
           img {
             margin-bottom: 2px;
             max-height: 76%;
