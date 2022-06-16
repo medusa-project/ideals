@@ -75,13 +75,14 @@ module BitstreamsHelper
     representative_image_tag(bitstream, size: 2048)
   end
 
-  def no_viewer_for(bitstream)
+  def no_viewer_for(bitstream, message: nil)
+    message ||= "No preview is available for this file type."
     html = StringIO.new
     html << "<div class=\"unsupported-format\">"
     html <<   "<p class=\"format-name\">"
     html <<     bitstream.format&.long_name || "Unknown File Format"
     html <<   "</p>"
-    html <<   "<p>No preview is available for this file type.</p>"
+    html <<   "<p>#{message}</p>"
     html << "</div>"
     raw(html.string)
   end
@@ -120,6 +121,13 @@ module BitstreamsHelper
   # @param bitstream [Bitstream,String]
   #
   def text_viewer_for(bitstream)
+    # Some huge text files cause web browsers to hang. So we will set a cutoff
+    # size.
+    if bitstream.kind_of?(Bitstream) && bitstream.length > 2.pow(22) # 4 MB
+      return no_viewer_for(bitstream,
+                           message: "This file is too large to preview, but "\
+                                    "you may download it using the button above.")
+    end
     # Downloading the text and putting it in a <pre> makes it easier to style
     # than putting it in an <object>.
     text = bitstream.kind_of?(Bitstream) ? bitstream.data.read : bitstream
