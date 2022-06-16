@@ -11,10 +11,10 @@ const CollectionView = function() {
         const url = ROOT_URL + "/collections/" + collectionID + "/about";
         $.get(url, function (data) {
             $("#about-tab-content").html(data);
-            $('.edit-collection-about').on("click", function() {
-                const url = ROOT_URL + "/collections/" + collectionID + "/edit-about";
+            $('.edit-collection-properties').on("click", function() {
+                const url = ROOT_URL + "/collections/" + collectionID + "/edit-properties";
                 $.get(url, function(data) {
-                    $("#edit-collection-about-modal .modal-body").html(data);
+                    $("#edit-collection-properties-modal .modal-body").html(data);
                 });
             });
             $('.edit-unit-membership').on("click", function() {

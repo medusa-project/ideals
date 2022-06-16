@@ -7,6 +7,8 @@
       %i.fas.fa-pencil-alt
       Edit Properties
 
+.clearfix.mb-3
+
 %dl
   - if @unit.introduction.present?
     %dt Introduction
@@ -38,9 +40,7 @@
                                                "data-toggle": "modal",
                                                role: "button"}
       %i.fas.fa-pencil-alt
-      Edit Unit Membership
-
-%h2 Units
+      Change Unit Membership
 
 - if @unit.parent
   %h2 Parent Unit
@@ -51,6 +51,7 @@
   = resource_list(@subunits)
 
 - if !@unit.parent && @subunits.empty?
+  %h2 Units
   %p This unit has no parent or sub-units.
 
 %hr

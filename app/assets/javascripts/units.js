@@ -30,10 +30,10 @@ const UnitView = function() {
         const url = ROOT_URL + "/units/" + unitID + "/about";
         $.get(url, function(data) {
             $("#about-tab-content").html(data);
-            $('.edit-unit-about').on("click", function() {
-                const url = ROOT_URL + "/units/" + unitID + "/edit-about";
+            $('.edit-unit-properties').on("click", function() {
+                const url = ROOT_URL + "/units/" + unitID + "/edit-properties";
                 $.get(url, function(data) {
-                    $("#edit-unit-about-modal .modal-body").html(data);
+                    $("#edit-unit-properties-modal .modal-body").html(data);
                 });
             });
             $('.edit-unit-membership').on("click", function () {

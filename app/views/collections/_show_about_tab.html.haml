@@ -7,6 +7,8 @@
       %i.fas.fa-pencil-alt
       Edit Properties
 
+.clearfix.mb-3
+
 %dl
   - if @collection.introduction.present?
     %dt Introduction
@@ -65,7 +67,7 @@
                                                "data-toggle":        "modal",
                                                role:                 "button"}
       %i.fas.fa-pencil-alt
-      Edit Unit Membership
+      Change Unit Membership
 
 %h2 Units
 
@@ -81,7 +83,7 @@
                                                      "data-toggle":        "modal",
                                                      role:                 "button"}
       %i.fas.fa-pencil-alt
-      Edit Collection Membership
+      Change Collection Membership
     %button.btn.btn-light.add-sub-collection{"data-collection-id": @collection.id,
                                              "data-target":        "#add-collection-modal",
                                              "data-toggle":        "modal",
