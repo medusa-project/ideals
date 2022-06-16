@@ -9,6 +9,7 @@ namespace :bitstreams do
 
     bitstreams = Bitstream.
       where(full_text_checked_at: nil).
+      where("(LOWER(original_filename) LIKE '%.pdf' OR LOWER(original_filename) LIKE '%.txt')").
       where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").
       order(:id)
     count = bitstreams.count
