@@ -36,7 +36,12 @@ class ThreadUtils
                            items.offset(q_offset).limit(q_limit) :
                            items[q_offset..(q_offset + q_limit)]
           batch.each do |item|
-            block.call(item)
+            begin
+              block.call(item)
+            rescue => e
+              puts "ThreadUtils.process_in_parallel(): unrescued error for ID: #{item.id}"
+              raise e
+            end
             mutex.synchronize do
               item_index += 1
               progress.report(item_index, "Processing") if print_progress
