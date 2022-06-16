@@ -114,6 +114,10 @@ class UnitPolicy < ApplicationPolicy
     AUTHORIZED_RESULT
   end
 
+  def show_about
+    effective_admin
+  end
+
   def show_access
     update
   end
@@ -122,12 +126,12 @@ class UnitPolicy < ApplicationPolicy
     show
   end
 
-  def show_items
-    show
+  def show_extended_about
+    effective_admin
   end
 
-  def show_properties
-    effective_admin
+  def show_items
+    show
   end
 
   def show_statistics

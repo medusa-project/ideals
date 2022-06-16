@@ -350,6 +350,51 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_select("#access-tab", false)
   end
 
+  # show_about()
+
+  test "show_about() returns HTTP 403 for logged-out users" do
+    unit = units(:unit1)
+    get unit_about_path(unit), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_about() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    unit = units(:unit1)
+    get unit_about_path(unit), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_about() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:unit1)
+    get unit_about_path(unit)
+    assert_response :not_found
+  end
+
+  test "show_about() returns HTTP 410 for a buried unit" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:buried)
+    get unit_about_path(unit), xhr: true
+    assert_response :gone
+  end
+
+  test "show_about() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    unit = units(:unit1)
+    get unit_about_path(unit), xhr: true
+    assert_response :ok
+  end
+
+  test "show_about() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get unit_about_path(units(:unit1)), xhr: true
+    assert_select(".edit-unit-properties")
+
+    get unit_about_path(units(:unit1), role: Role::LOGGED_OUT), xhr: true
+    assert_select(".edit-unit-properties", false)
+  end
+
   # show_access()
 
   test "show_access() returns HTTP 403 for logged-out users" do
@@ -395,23 +440,6 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_select(".edit-administrators", false)
   end
 
-  # show_collections()
-
-  test "show_collections() returns HTTP 200" do
-    get unit_collections_path(units(:unit1)), xhr: true
-    assert_response :ok
-  end
-
-  test "show_collections() returns HTTP 404 for non-XHR requests" do
-    get unit_collections_path(units(:unit1))
-    assert_response :not_found
-  end
-
-  test "show_collections() returns HTTP 410 for a buried unit" do
-    get unit_collections_path(units(:buried)), xhr: true
-    assert_response :gone
-  end
-
   # show_items()
 
   test "show_items() returns HTTP 200 for HTML" do
@@ -435,51 +463,6 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :gone
   end
 
-  # show_properties()
-
-  test "show_properties() returns HTTP 403 for logged-out users" do
-    unit = units(:unit1)
-    get unit_properties_path(unit), xhr: true
-    assert_response :forbidden
-  end
-
-  test "show_properties() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    unit = units(:unit1)
-    get unit_properties_path(unit), xhr: true
-    assert_response :forbidden
-  end
-
-  test "show_properties() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
-    unit = units(:unit1)
-    get unit_properties_path(unit)
-    assert_response :not_found
-  end
-
-  test "show_properties() returns HTTP 410 for a buried unit" do
-    log_in_as(users(:local_sysadmin))
-    unit = units(:buried)
-    get unit_properties_path(unit), xhr: true
-    assert_response :gone
-  end
-
-  test "show_properties() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
-    unit = units(:unit1)
-    get unit_properties_path(unit), xhr: true
-    assert_response :ok
-  end
-
-  test "show_properties() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    get unit_properties_path(units(:unit1)), xhr: true
-    assert_select(".edit-unit-properties")
-
-    get unit_properties_path(units(:unit1), role: Role::LOGGED_OUT), xhr: true
-    assert_select(".edit-unit-properties", false)
-  end
-
   # show_statistics()
 
   test "show_statistics() returns HTTP 404 for non-XHR requests" do
@@ -496,23 +479,6 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     get unit_statistics_path(units(:unit1)), xhr: true
     assert_response :ok
-  end
-
-  # show_units()
-
-  test "show_units() returns HTTP 200" do
-    get unit_units_path(units(:unit1)), xhr: true
-    assert_response :ok
-  end
-
-  test "show_units() returns HTTP 410" do
-    get unit_units_path(units(:buried)), xhr: true
-    assert_response :gone
-  end
-
-  test "show_units() returns HTTP 404 for non-XHR requests" do
-    get unit_units_path(units(:unit1))
-    assert_response :not_found
   end
 
   # statistics_by_range()

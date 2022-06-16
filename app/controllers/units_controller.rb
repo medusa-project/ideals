@@ -7,8 +7,7 @@ class UnitsController < ApplicationController
   before_action :ensure_logged_in, only: [:create, :delete,
                                           :edit_administrators,
                                           :edit_membership, :edit_properties,
-                                          :show_access, :show_properties,
-                                          :undelete, :update]
+                                          :show_access, :undelete, :update]
   before_action :set_unit, except: [:create, :index, :new]
   before_action :check_buried, except: [:create, :index, :new, :show, :undelete]
   before_action :authorize_unit, except: [:create, :index]
@@ -197,26 +196,33 @@ class UnitsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the properties tab in show-unit view.
+  #
+  # Responds to `GET /units/:id/about`
+  #
+  def show_about
+    @num_downloads        = @unit.download_count
+    @num_submitting_items = @unit.submitting_item_count
+    @collections = Collection.search.
+      institution(current_institution).
+      filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
+      order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+      limit(999)
+    @subunits = Unit.search.
+      institution(current_institution).
+      parent_unit(@unit).
+      order("#{Unit::IndexFields::TITLE}.sort").
+      limit(999)
+    render partial: "show_about_tab"
+  end
+
+  ##
   # Renders HTML for the access tab in show-unit view.
   #
   # Responds to `GET /units/:id/access`
   #
   def show_access
     render partial: "show_access_tab"
-  end
-
-  ##
-  # Renders HTML for the collections tab in show-unit view.
-  #
-  # Responds to `GET /units/:id/collections`
-  #
-  def show_collections
-    @collections = Collection.search.
-      institution(current_institution).
-      filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
-      order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
-      limit(999)
-    render partial: "show_collections_tab"
   end
 
   ##
@@ -241,37 +247,12 @@ class UnitsController < ApplicationController
   end
 
   ##
-  # Renders HTML for the properties tab in show-unit view.
-  #
-  # Responds to `GET /units/:id/properties`
-  #
-  def show_properties
-    @num_downloads        = @unit.download_count
-    @num_submitting_items = @unit.submitting_item_count
-    render partial: "show_properties_tab"
-  end
-
-  ##
   # Renders HTML for the statistics tab in show-unit view.
   #
   # Responds to `GET /units/:id/statistics`
   #
   def show_statistics
     render partial: "show_statistics_tab"
-  end
-
-  ##
-  # Renders HTML for the unit membership tab in show-unit view.
-  #
-  # Responds to `GET /units/:id/units`
-  #
-  def show_unit_membership
-    @subunits = Unit.search.
-      institution(current_institution).
-      parent_unit(@unit).
-      order("#{Unit::IndexFields::TITLE}.sort").
-      limit(999)
-    render partial: "show_unit_membership_tab"
   end
 
   ##

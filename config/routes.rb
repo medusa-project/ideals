@@ -140,18 +140,14 @@ Rails.application.routes.draw do
   match "/submit", to: "submissions#new", via: :get
   resources :tasks, only: [:index, :show]
   resources :units, except: [:destroy, :edit] do
+    match "/about", to: "units#show_about", via: :get,
+          constraints: lambda { |request| request.xhr? }
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/access", to: "units#show_access", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/collections", to: "units#show_collections", via: :get,
-          constraints: lambda { |request| request.xhr? }
     match "/delete", to: "units#delete", via: :post # different from destroy--see method doc
     match "/items", to: "units#show_items", via: :get
-    match "/properties", to: "units#show_properties", via: :get,
-          constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "units#show_statistics", via: :get,
-          constraints: lambda { |request| request.xhr? }
-    match "/units", to: "units#show_unit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
 
     match "/children", to: "units#children", via: :get,

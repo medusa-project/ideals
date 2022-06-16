@@ -430,6 +430,39 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  # show_about?()
+
+  test "show_about?() returns false with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.show_about?
+  end
+
+  test "show_about?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_about?
+  end
+
+  test "show_about?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UnitPolicy.new(context, @unit)
+    assert policy.show_about?
+  end
+
+  test "show_about?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_about?
+  end
+
   # show_access?()
 
   test "show_access?() returns false with a nil user" do
@@ -478,6 +511,39 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.show_collections?
   end
 
+  # show_extended_about?()
+
+  test "show_extended_about?() returns false with a nil user" do
+    policy = UnitPolicy.new(nil, @unit)
+    assert !policy.show_extended_about?
+  end
+
+  test "show_extended_about?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_extended_about?
+  end
+
+  test "show_extended_about?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UnitPolicy.new(context, @unit)
+    assert policy.show_extended_about?
+  end
+
+  test "show_extended_about?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_extended_about?
+  end
+
   # show_items?()
 
   test "show_items?() returns true with a nil user" do
@@ -491,39 +557,6 @@ class UnitPolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.show_items?
-  end
-
-  # show_properties?()
-
-  test "show_properties?() returns false with a nil user" do
-    policy = UnitPolicy.new(nil, @unit)
-    assert !policy.show_properties?
-  end
-
-  test "show_properties?() is restrictive by default" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = UnitPolicy.new(context, @unit)
-    assert !policy.show_properties?
-  end
-
-  test "show_properties?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy = UnitPolicy.new(context, @unit)
-    assert policy.show_properties?
-  end
-
-  test "show_properties?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = UnitPolicy.new(context, @unit)
-    assert !policy.show_properties?
   end
 
   # show_statistics?()

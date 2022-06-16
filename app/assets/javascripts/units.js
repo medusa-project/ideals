@@ -26,36 +26,22 @@ const UnitView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
     const unitID   = $("[name=unit_id]").val();
 
-    $("#properties-tab").on("show.bs.tab", function() {
-        const url = ROOT_URL + "/units/" + unitID + "/properties";
+    $("#about-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/units/" + unitID + "/about";
         $.get(url, function(data) {
-            $("#properties-tab-content").html(data);
-            $('.edit-unit-properties').on("click", function() {
-                const url = ROOT_URL + "/units/" + unitID + "/edit-properties";
+            $("#about-tab-content").html(data);
+            $('.edit-unit-about').on("click", function() {
+                const url = ROOT_URL + "/units/" + unitID + "/edit-about";
                 $.get(url, function(data) {
-                    $("#edit-unit-properties-modal .modal-body").html(data);
+                    $("#edit-unit-about-modal .modal-body").html(data);
                 });
             });
-        });
-    });
-
-    $("#units-tab").on("show.bs.tab", function() {
-        const url = ROOT_URL + "/units/" + unitID + "/units";
-        $.get(url, function(data) {
-            $("#units-tab-content").html(data);
             $('.edit-unit-membership').on("click", function () {
                 const url = ROOT_URL + "/units/" + unitID + "/edit-membership";
                 $.get(url, function (data) {
                     $("#edit-unit-membership-modal .modal-body").html(data);
                 });
             });
-        });
-    });
-
-    $("#collections-tab").on("show.bs.tab", function() {
-        const url = ROOT_URL + "/units/" + unitID + "/collections";
-        $.get(url, function(data) {
-            $("#collections-tab-content").html(data);
         });
     });
 
