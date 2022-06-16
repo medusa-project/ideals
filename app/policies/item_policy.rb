@@ -217,10 +217,23 @@ class ItemPolicy < ApplicationPolicy
           reason = "This item's files can only be accessed by the "\
                    "following groups: " + embargo.user_groups.map(&:name).join(", ")
         elsif embargo.user_groups.length == 1
-          reason = "This item's files can only be accessed by the "\
+          if embargo.user_groups.first.key == "uiuc"
+            # This is a special UIUC exception from IR-242
+            reason = "This item is only available for download by members of "\
+                     "the University of Illinois community. Students, "\
+                     "faculty, and staff at the U of I may log in with your "\
+                     "NetID and password to view the item. If you are trying "\
+                     "to access an Illinois-restricted dissertation or "\
+                     "thesis, you can request a copy through your library's "\
+                     "Inter-Library Loan office or purchase a copy directly "\
+                     "from ProQuest."
+          else
+            reason = "This item's files can only be accessed by the "\
                    "#{embargo.user_groups.first.name} group."
+          end
         else
-          reason = "This item's files are restricted."
+          # Verbiage also from IR-242
+          reason = "This item is closed and only viewable by specific users."
         end
         return { authorized: false, reason: reason }
       end
