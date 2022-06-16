@@ -100,20 +100,20 @@ class CollectionPolicy < ApplicationPolicy
     AUTHORIZED_RESULT
   end
 
+  def show_about
+    effective_manager
+  end
+
   def show_access
     update
   end
 
-  def show_collections
-    show
+  def show_extended_about
+    effective_manager
   end
 
   def show_items
     show
-  end
-
-  def show_properties
-    effective_manager
   end
 
   def show_review_submissions
@@ -121,10 +121,6 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def show_statistics
-    show
-  end
-
-  def show_units
     show
   end
 

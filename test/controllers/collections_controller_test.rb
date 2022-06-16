@@ -406,6 +406,51 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_select("#access-tab", false)
   end
 
+  # show_about()
+
+  test "show_about() returns HTTP 403 for logged-out users" do
+    collection = collections(:collection1)
+    get collection_about_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_about() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    collection = collections(:collection1)
+    get collection_about_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_about() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    get collection_about_path(collection)
+    assert_response :not_found
+  end
+
+  test "show_about() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:local_sysadmin))
+    get collection_about_path(collections(:buried)), xhr: true
+    assert_response :gone
+  end
+
+  test "show_about() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    get collection_about_path(collection), xhr: true
+    assert_response :ok
+  end
+
+  test "show_about() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:collection1)
+    get collection_about_path(collection), xhr: true
+    assert_select(".edit-collection-properties")
+
+    get collection_about_path(collection, role: Role::LOGGED_OUT), xhr: true
+    assert_select(".edit-collection-properties", false)
+  end
+
   # show_access()
 
   test "show_access() returns HTTP 403 for logged-out users" do
@@ -451,23 +496,6 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_select(".edit-collection-managers", false)
   end
 
-  # show_collections()
-
-  test "show_collections() returns HTTP 200" do
-    get collection_collections_path(collections(:collection1)), xhr: true
-    assert_response :ok
-  end
-
-  test "show_collections() returns HTTP 404 for non-XHR requests" do
-    get collection_collections_path(collections(:collection1))
-    assert_response :not_found
-  end
-
-  test "show_collection() returns HTTP 410 for a buried collection" do
-    get collection_collections_path(collections(:buried)), xhr: true
-    assert_response :gone
-  end
-
   # show_items()
 
   test "show_items() returns HTTP 200 for HTML" do
@@ -491,51 +519,6 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :gone
   end
 
-  # show_properties()
-
-  test "show_properties() returns HTTP 403 for logged-out users" do
-    collection = collections(:collection1)
-    get collection_properties_path(collection), xhr: true
-    assert_response :forbidden
-  end
-
-  test "show_properties() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    collection = collections(:collection1)
-    get collection_properties_path(collection), xhr: true
-    assert_response :forbidden
-  end
-
-  test "show_properties() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
-    get collection_properties_path(collection)
-    assert_response :not_found
-  end
-
-  test "show_properties() returns HTTP 410 for a buried collection" do
-    log_in_as(users(:local_sysadmin))
-    get collection_properties_path(collections(:buried)), xhr: true
-    assert_response :gone
-  end
-
-  test "show_properties() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
-    get collection_properties_path(collection), xhr: true
-    assert_response :ok
-  end
-
-  test "show_properties() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
-    get collection_properties_path(collection), xhr: true
-    assert_select(".edit-collection-properties")
-
-    get collection_properties_path(collection, role: Role::LOGGED_OUT), xhr: true
-    assert_select(".edit-collection-properties", false)
-  end
-
   # show_statistics()
 
   test "show_statistics() returns HTTP 200" do
@@ -550,23 +533,6 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "show_statistics() returns HTTP 410 for a buried collection" do
     get collection_statistics_path(collections(:buried)), xhr: true
-    assert_response :gone
-  end
-
-  # show_units()
-
-  test "show_units() returns HTTP 200 for HTML" do
-    get collection_units_path(collections(:collection1)), xhr: true
-    assert_response :ok
-  end
-
-  test "show_units() returns HTTP 404 for non-XHR requests" do
-    get collection_units_path(collections(:collection1))
-    assert_response :not_found
-  end
-
-  test "show_units() returns HTTP 410 for a buried collection" do
-    get collection_units_path(collections(:buried)), xhr: true
     assert_response :gone
   end
 

@@ -11,19 +11,15 @@ Rails.application.routes.draw do
 
   resources :collections, except: [:destroy, :edit, :new] do
     # These all render content for the main tab panes in show-unit view via XHR.
-    match "/access", to: "collections#show_access", via: :get,
+    match "/about", to: "collections#show_about", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/collections", to: "collections#show_collections", via: :get,
+    match "/access", to: "collections#show_access", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/delete", to: "collections#delete", via: :post # different from destroy--see method doc
     match "/items", to: "collections#show_items", via: :get
-    match "/properties", to: "collections#show_properties", via: :get,
-          constraints: lambda { |request| request.xhr? }
     match "/review-submissions", to: "collections#show_review_submissions", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "collections#show_statistics", via: :get,
-          constraints: lambda { |request| request.xhr? }
-    match "/units", to: "collections#show_units", via: :get,
           constraints: lambda { |request| request.xhr? }
 
     match "/children", to: "collections#children", via: :get,
@@ -149,7 +145,6 @@ Rails.application.routes.draw do
     match "/items", to: "units#show_items", via: :get
     match "/statistics", to: "units#show_statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
-
     match "/children", to: "units#children", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/collections-tree-fragment", to: "units#collections_tree_fragment", via: :get,

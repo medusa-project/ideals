@@ -20,20 +20,6 @@
                                    "aria-selected": "true"}
         = icon_for(Item)
         Items
-      %a#collections-tab.nav-link{href: "#collections-tab-content",
-                                  "data-toggle": "pill",
-                                  role: "tab",
-                                  "aria-controls": "collections-tab-content",
-                                  "aria-selected": "false"}
-        = icon_for(Collection)
-        Collection Membership
-      %a#units-tab.nav-link{href: "#units-tab-content",
-                            "data-toggle": "pill",
-                            role: "tab",
-                            "aria-controls": "units-tab-content",
-                            "aria-selected": "false"}
-        = icon_for(Unit)
-        Unit Membership
       - if policy(@collection).show_review_submissions?
         %a#review-submissions-tab.nav-link{href: "#review-submissions-tab-content",
                                            "data-toggle": "tab",
@@ -44,14 +30,14 @@
           Review Submissions
           - if @review_count > 0
             %small.badge-pill.badge-danger= @review_count
-      - if policy(@collection).show_properties?
-        %a#properties-tab.nav-link{href: "#properties-tab-content",
-                                   "data-toggle": "pill",
-                                   role: "tab",
-                                   "aria-controls": "properties-tab-content",
-                                   "aria-selected": "false"}
+      - if policy(@collection).show_about?
+        %a#about-tab.nav-link{href: "#about-tab-content",
+                              "data-toggle": "pill",
+                              role: "tab",
+                              "aria-controls": "about-tab-content",
+                              "aria-selected": "false"}
           = icon_for(:info)
-          Properties
+          About This Collection
       - if policy(@collection).show_statistics?
         %a#statistics-tab.nav-link{href: "#statistics-tab-content",
                                   "data-toggle": "tab",
@@ -74,15 +60,9 @@
     #items-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                  "aria-labelledby": "items-tab"}
       = spinner
-    #collections-tab-content.tab-pane.fade{role: "tabpanel",
-                                           "aria-labelledby": "collections-tab"}
-      = spinner
-    #units-tab-content.tab-pane.fade{role: "tabpanel",
-                                     "aria-labelledby": "units-tab"}
-      = spinner
-    - if policy(@collection).show_properties?
-      #properties-tab-content.tab-pane.fade{role: "tabpanel",
-                                            "aria-labelledby": "properties-tab"}
+    - if policy(@collection).show_about?
+      #about-tab-content.tab-pane.fade{role: "tabpanel",
+                                       "aria-labelledby": "about-tab"}
         = spinner
     - if policy(@collection).show_statistics?
       #statistics-tab-content.tab-pane.fade{role: "tabpanel",

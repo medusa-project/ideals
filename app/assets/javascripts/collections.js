@@ -7,23 +7,16 @@ const CollectionView = function() {
     const ROOT_URL     = $('input[name="root_url"]').val();
     const collectionID = $("[name=collection_id]").val();
 
-    $("#properties-tab").on("show.bs.tab", function() {
-        const url = ROOT_URL + "/collections/" + collectionID + "/properties";
+    $("#about-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/collections/" + collectionID + "/about";
         $.get(url, function (data) {
-            $("#properties-tab-content").html(data);
-            $('.edit-collection-properties').on("click", function() {
-                const url = ROOT_URL + "/collections/" + collectionID + "/edit-properties";
+            $("#about-tab-content").html(data);
+            $('.edit-collection-about').on("click", function() {
+                const url = ROOT_URL + "/collections/" + collectionID + "/edit-about";
                 $.get(url, function(data) {
-                    $("#edit-collection-properties-modal .modal-body").html(data);
+                    $("#edit-collection-about-modal .modal-body").html(data);
                 });
             });
-        });
-    });
-
-    $("#units-tab").on("show.bs.tab", function() {
-        const url = ROOT_URL + "/collections/" + collectionID + "/units";
-        $.get(url, function(data) {
-            $("#units-tab-content").html(data);
             $('.edit-unit-membership').on("click", function() {
                 const url = ROOT_URL + "/collections/" + collectionID + "/edit-unit-membership";
                 $.get(url, function(data) {
@@ -31,13 +24,6 @@ const CollectionView = function() {
                     new IDEALS.MultiElementList(0);
                 });
             });
-        });
-    });
-
-    $("#collections-tab").on("show.bs.tab", function() {
-        const url = ROOT_URL + "/collections/" + collectionID + "/collections";
-        $.get(url, function (data) {
-            $("#collections-tab-content").html(data);
             $('.edit-collection-membership').on("click", function() {
                 const url = ROOT_URL + "/collections/" + collectionID + "/edit-collection-membership";
                 $.get(url, function(data) {

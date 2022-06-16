@@ -1,0 +1,103 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@collection).edit_properties?
+    %button.btn.btn-light.edit-collection-properties{"data-collection-id": @collection.id,
+                                                     "data-target":        "#edit-collection-properties-modal",
+                                                     "data-toggle":        "modal",
+                                                     role:                 "button"}
+      %i.fas.fa-pencil-alt
+      Edit Properties
+
+%dl
+  - if @collection.introduction.present?
+    %dt Introduction
+    %dd= raw(@collection.introduction)
+  - if @collection.description.present?
+    %dt Description
+    %dd= @collection.description
+  - if @collection.short_description.present? && policy(@collection).show_access?
+    %dt Short Description
+    %dd= @collection.short_description
+  - if @collection.rights.present?
+    %dt Rights
+    %dd= @collection.rights
+  - if @collection.provenance.present? && policy(@collection).show_access?
+    %dt Provenance
+    %dd= @collection.provenance
+  %dt Handle URI
+  %dd= @collection.handle&.url
+  - if policy(@collection).show_extended_about?
+    %dt Metadata Profile
+    %dd
+      - if @collection.metadata_profile
+        - if policy(@metadata_profile).show?
+          = link_to(@metadata_profile.name, @metadata_profile)
+        - else
+          = @metadata_profile.name
+      - else
+        = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
+    %dt Submission Profile
+    %dd
+      - if @collection.submission_profile
+        - if policy(@submission_profile).show?
+          = link_to(@submission_profile.name, @submission_profile)
+        - else
+          = @submission_profile.name
+      - else
+        = raw("Not assigned (falling back to #{link_to(@submission_profile.name, @submission_profile)})")
+    %dt Submissions Reviewed
+    %dd= boolean(@collection.submissions_reviewed, style: :word, invert_color: true)
+    %dt File Downloads
+    %dd= number_with_delimiter(@num_downloads)
+    %dt Items Awaiting Review
+    %dd= number_with_delimiter(@num_submitting_items)
+%dl
+  %dt Created
+  %dd= local_time @collection.created_at
+  %dt Last Updated
+  %dd= local_time @collection.updated_at
+
+%hr
+
+.btn-group.float-right{role: "group"}
+  - if policy(@collection).edit_unit_membership?
+    %button.btn.btn-light.edit-unit-membership{"data-collection-id": @collection.id,
+                                               "data-target":        "#edit-unit-membership-modal",
+                                               "data-toggle":        "modal",
+                                               role:                 "button"}
+      %i.fas.fa-pencil-alt
+      Edit Unit Membership
+
+%h2 Units
+
+= resource_list(@collection.units.sort_by(&:title),
+                primary_id: @collection.primary_unit.id)
+
+%hr
+
+.btn-group.float-right{role: "group"}
+  - if policy(@collection).edit_collection_membership?
+    %button.btn.btn-light.edit-collection-membership{"data-collection-id": @collection.id,
+                                                     "data-target":        "#edit-collection-membership-modal",
+                                                     "data-toggle":        "modal",
+                                                     role:                 "button"}
+      %i.fas.fa-pencil-alt
+      Edit Collection Membership
+    %button.btn.btn-light.add-sub-collection{"data-collection-id": @collection.id,
+                                             "data-target":        "#add-collection-modal",
+                                             "data-toggle":        "modal",
+                                             role:                 "button"}
+      %i.fa.fa-plus
+      Add Child Collection
+
+%h2 Collections
+
+- if @collection.parent
+  %h2 Parent Collection
+  = resource_list([@collection.parent])
+
+- if @subcollections.any?
+  %h2 Child Collections
+  = resource_list(@subcollections)
+
+- if !@collection.parent && @subcollections.empty?
+  %p This collection has no parent or sub-collections.

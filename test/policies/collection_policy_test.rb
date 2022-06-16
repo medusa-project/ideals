@@ -476,6 +476,50 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  # show_about?()
+
+  test "show_about?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.show_about?
+  end
+
+  test "show_about?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.show_about?
+  end
+
+  test "show_about?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.show_about?
+  end
+
+  test "show_about?() authorizes collection managers" do
+    user = users(:norights)
+    user.managing_collections << @collection
+    user.save!
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.show_about?
+  end
+
+  test "show_about?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.show_about?
+  end
+
   # show_access?()
 
   test "show_access?() returns false with a nil user" do
@@ -509,19 +553,48 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_access?
   end
 
-  # show_collections?()
+  # show_extended_about?()
 
-  test "show_collections?() returns true with a nil user" do
+  test "show_extended_about?() returns false with a nil user" do
     policy = CollectionPolicy.new(nil, @collection)
-    assert policy.show_collections?
+    assert !policy.show_extended_about?
   end
 
-  test "show_collections?() authorizes everyone" do
+  test "show_extended_about?() is restrictive by default" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = CollectionPolicy.new(context, @collection)
-    assert policy.show_collections?
+    assert !policy.show_extended_about?
+  end
+
+  test "show_extended_about?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.show_extended_about?
+  end
+
+  test "show_extended_about?() authorizes collection managers" do
+    user = users(:norights)
+    user.managing_collections << @collection
+    user.save!
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.show_extended_about?
+  end
+
+  test "show_extended_about?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.show_extended_about?
   end
 
   # show_items?()
@@ -537,50 +610,6 @@ class CollectionPolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.show_items?
-  end
-
-  # show_properties?()
-
-  test "show_properties?() returns false with a nil user" do
-    policy = CollectionPolicy.new(nil, @collection)
-    assert !policy.show_properties?
-  end
-
-  test "show_properties?() is restrictive by default" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.show_properties?
-  end
-
-  test "show_properties?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = CollectionPolicy.new(context, @collection)
-    assert policy.show_properties?
-  end
-
-  test "show_properties?() authorizes collection managers" do
-    user = users(:norights)
-    user.managing_collections << @collection
-    user.save!
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = CollectionPolicy.new(context, @collection)
-    assert policy.show_properties?
-  end
-
-  test "show_properties?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.show_properties?
   end
 
   # show_review_submissions?()
@@ -640,21 +669,6 @@ class CollectionPolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy  = CollectionPolicy.new(context, @collection)
     assert policy.show_statistics?
-  end
-
-  # show_units?()
-
-  test "show_units?() returns true with a nil user" do
-    policy = CollectionPolicy.new(nil, @collection)
-    assert policy.show_units?
-  end
-
-  test "show_units?() authorizes everyone" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = CollectionPolicy.new(context, @collection)
-    assert policy.show_units?
   end
 
   # statistics_by_range?()

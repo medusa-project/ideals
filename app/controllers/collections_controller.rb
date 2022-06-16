@@ -10,7 +10,6 @@ class CollectionsController < ApplicationController
                                           :edit_submitters,
                                           :edit_unit_membership,
                                           :edit_user_access, :show_access,
-                                          :show_properties,
                                           :show_review_submissions, :undelete,
                                           :update]
   before_action :set_collection, except: [:create, :index]
@@ -218,27 +217,31 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Renders HTML for the access tab in show-collection view.
+  # Renders HTML for the properties tab in show-collection view.
   #
-  # Responds to `GET /collections/:id/access` (XHR only)
+  # Responds to `GET /collections/:id/about`
   #
-  def show_access
-    render partial: "show_access_tab"
-  end
-
-  ##
-  # Renders HTML for the collection membership tab in show-collection view.
-  #
-  # Responds to `GET /collections/:id/collections` (XHR only)
-  #
-  def show_collections
+  def show_about
+    @metadata_profile     = @collection.effective_metadata_profile
+    @submission_profile   = @collection.effective_submission_profile
+    @num_downloads        = @collection.download_count
+    @num_submitting_items = @collection.submitting_item_count
     @subcollections = Collection.search.
       institution(current_institution).
       parent_collection(@collection).
       include_children(true).
       order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
       limit(999)
-    render partial: "show_collections_tab"
+    render partial: "show_about_tab"
+  end
+
+  ##
+  # Renders HTML for the access tab in show-collection view.
+  #
+  # Responds to `GET /collections/:id/access` (XHR only)
+  #
+  def show_access
+    render partial: "show_access_tab"
   end
 
   ##
@@ -263,19 +266,6 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Renders HTML for the properties tab in show-collection view.
-  #
-  # Responds to `GET /collections/:id/properties`
-  #
-  def show_properties
-    @metadata_profile     = @collection.effective_metadata_profile
-    @submission_profile   = @collection.effective_submission_profile
-    @num_downloads        = @collection.download_count
-    @num_submitting_items = @collection.submitting_item_count
-    render partial: "show_properties_tab"
-  end
-
-  ##
   # Renders HTML for the review submissions tab in show-collection view.
   #
   # Responds to `GET /collections/:id/review-submissions`
@@ -297,15 +287,6 @@ class CollectionsController < ApplicationController
   #
   def show_statistics
     render partial: "show_statistics_tab"
-  end
-
-  ##
-  # Renders HTML for the unit membership tab in show-collection view.
-  #
-  # Responds to `GET /collections/:id/units` (XHR only)
-  #
-  def show_units
-    render partial: "show_units_tab"
   end
 
   ##
