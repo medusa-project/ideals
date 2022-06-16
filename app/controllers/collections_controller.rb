@@ -49,6 +49,8 @@ class CollectionsController < ApplicationController
         authorize @collection
         @collection.save!
       end
+    rescue NotAuthorizedError => e
+      raise e
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @collection.errors.any? ? @collection : e },
