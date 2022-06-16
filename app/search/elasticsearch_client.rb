@@ -215,7 +215,7 @@ class ElasticsearchClient
                                 JSON.generate(doc),
                                 'Content-Type': CONTENT_TYPE)
     if response.status >= 400
-      raise IOError, response.body
+      raise IOError, "#{response.body} [doc ID: #{id}]"
     end
   end
 
