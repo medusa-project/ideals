@@ -31,7 +31,7 @@ class PasswordResetsController < ApplicationController
               "NetID Center."
           redirect_to root_path
         else
-          @identity = LocalIdentity.find_by(email: email)
+          @identity = LocalIdentity.where("LOWER(email) = ?", email).limit(1).first
           if @identity
             @identity.create_reset_digest
             @identity.send_password_reset_email
