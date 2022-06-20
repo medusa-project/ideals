@@ -16,8 +16,8 @@ set :ssh_options, {
     keys: ["#{Dir.home}/.ssh/medusa_prod.pem"]
 }
 
-# Ask which branch to deploy
-ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
+#ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
+set :branch, "production"
 
 # Default deploy_to directory is /var/www/my_app_name
 set :deploy_to, '/home/ideals'
