@@ -53,10 +53,13 @@ class LocalUser < User
     return nil unless invitee&.expires_at
     return nil unless invitee.expires_at >= Time.current
 
-    create! do |user|
-      user.uid   = email
-      user.email = email
-      user.name  = auth[:info][:name]
+    user = LocalUser.find_by_uid(email)
+    unless user
+      create! do |user|
+        user.uid   = email
+        user.email = email
+        user.name  = auth[:info][:name]
+      end
     end
   end
 
