@@ -109,7 +109,7 @@ class InviteesController < ApplicationController
     @start            = @permitted_params[:start].to_i
     @window           = window_size
     @invitees         = Invitee.
-        where("email LIKE ?", "%#{@permitted_params[:q]}%").
+        where("LOWER(email) LIKE ?", "%#{@permitted_params[:q]&.downcase}%").
         where("approval_state LIKE ?", "%#{@permitted_params[:approval_state]}%").
         order(:created_at).
         limit(@window).
