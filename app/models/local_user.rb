@@ -75,7 +75,7 @@ class LocalUser < User
 
     return nil unless identity&.activated
 
-    user = LocalUser.find_by(email: email)
+    user = LocalUser.find_by(uid: email)
     if user
       user.update_with_omniauth(auth)
     else
