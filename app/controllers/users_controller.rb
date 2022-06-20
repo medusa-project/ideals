@@ -25,8 +25,9 @@ class UsersController < ApplicationController
     @start            = @permitted_params[:start].to_i
     @window           = window_size
     q                 = "%#{@permitted_params[:q]}%"
-    @users            = User.where("LOWER(name) LIKE ? OR LOWER(uid) LIKE ?", q, q).
         where(org_dn: current_institution.org_dn).
+    @users            = User.
+        where("LOWER(name) LIKE ? OR LOWER(uid) LIKE ? OR LOWER(email) LIKE ?", q, q, q).
         where("type LIKE ?", "%#{@permitted_params[:class]}").
         order(:name)
     @count            = @users.count
