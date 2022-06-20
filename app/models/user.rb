@@ -60,8 +60,6 @@ class User < ApplicationRecord
   validates :uid, presence: true
   validates_uniqueness_of :uid, case_sensitive: true
 
-  before_save -> { email.downcase! }
-
   serialize :auth_hash
 
   breadcrumbs label: :name
