@@ -135,7 +135,7 @@ class ApplicationController < ActionController::Base
   def rescue_gone(e)
     respond_to do |format|
       format.html { render "errors/error410", status: :gone }
-      format.json { render nothing: true, status: :gone }
+      format.json { head status: :gone }
       format.xml { render xml: {status: 410}.to_xml, status: :gone }
     end
   end
@@ -184,7 +184,7 @@ class ApplicationController < ActionController::Base
     if exception.class == ActiveRecord::RecordNotFound
       respond_to do |format|
         format.html { render "errors/error404", status: :not_found }
-        format.json { render nothing: true, status: :not_found }
+        format.json { head status: :not_found }
         format.all { render "errors/error404", status: :not_found }
       end
 
