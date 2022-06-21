@@ -330,9 +330,19 @@ class Item < ApplicationRecord
     doc[IndexFields::FILENAMES]          = self.bitstreams.map(&:original_filename)
     # N.B.: on AWS, the maximum document size depends on ES instance size, but
     # for our purposes is likely 10485760 bytes (10 MB). Full text can
-    # sometimes exceed this (I'm looking at you, item 102652), so we must
-    # truncate it.
-    doc[IndexFields::FULL_TEXT]          = self.bitstreams.map(&:full_text).join("\n").strip[0..8500000]
+    # sometimes exceed this, so we must truncate it. The length may be exceeded
+    # either by one large bitstream, or many smaller bitstreams, and we have to
+    # be careful in the latter case not to try to buffer them all in memory, as
+    # we may not have enough.
+    full_text  = StringIO.new
+    max_length = 8500000
+    Bitstream.uncached do
+      self.bitstreams.find_each(batch_size: 1) do |bs|
+        break unless full_text.length < max_length
+        full_text << bs.full_text
+      end
+    end
+    doc[IndexFields::FULL_TEXT]          = full_text.string[0..max_length]
     doc[IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY] =
         self.unit_and_collection_sort_key
     units                                = self.all_units
