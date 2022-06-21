@@ -122,7 +122,7 @@ namespace :dspace do
           bitstream.save!
           # Delete it from the temp directory
           File.delete(local_path)
-          progress.report(index, "Copying files from DSpace into Medusa")
+          progress.report(index, "Copying files from DSpace")
         end
       end
     end
@@ -154,7 +154,7 @@ namespace :dspace do
           end
           # Delete it from the temp directory
           File.delete(local_path)
-          progress.report(index, "Copying files from DSpace into Medusa")
+          progress.report(index, "Copying files from DSpace")
         end
       end
     end
