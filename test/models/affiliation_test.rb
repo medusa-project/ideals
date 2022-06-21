@@ -73,7 +73,7 @@ class AffiliationTest < ActiveSupport::TestCase
     assert_equal Affiliation::FACULTY_STAFF_KEY, affiliation.key
   end
 
-  test "from_shibboleth() raises an error for an unrecognized affiliation" do
+  test "from_shibboleth() returns nil for an unrecognized affiliation" do
     info = {
       extra: {
         raw_info: {
@@ -83,12 +83,10 @@ class AffiliationTest < ActiveSupport::TestCase
         }
       }
     }.deep_stringify_keys
-    assert_raises ArgumentError do
-      Affiliation.from_shibboleth(info)
-    end
+    assert_nil Affiliation.from_shibboleth(info)
   end
 
-  test "from_shibboleth() raises an error for an unrecognized level code" do
+  test "from_shibboleth() returns nil for an unrecognized level code" do
     info = {
       extra: {
         raw_info: {
@@ -98,9 +96,7 @@ class AffiliationTest < ActiveSupport::TestCase
         }
       }
     }.deep_stringify_keys
-    assert_raises ArgumentError do
-      Affiliation.from_shibboleth(info)
-    end
+    assert_nil Affiliation.from_shibboleth(info)
   end
 
 end

@@ -41,11 +41,7 @@ class Affiliation < ApplicationRecord
         key = MASTERS_STUDENT_KEY
       end
     end
-    raise ArgumentError, "Unrecognized info: "\
-        "[iTrustAffiliation: #{info[:iTrustAffiliation]}] "\
-        "[levelCode: #{info[:levelCode]}] "\
-        "[programCode: #{info[:programCode]}]"if key.nil?
-    Affiliation.find_by_key(key)
+    key ? Affiliation.find_by_key(key) : nil
   end
 
 end
