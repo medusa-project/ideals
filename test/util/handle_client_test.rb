@@ -124,4 +124,22 @@ class HandleClientTest < ActiveSupport::TestCase
     end
   end
 
+  # list_prefixes()
+
+  test "list_prefixes() returns the expected prefixes" do
+    config = ::Configuration.instance
+    prefix = config.handles[:prefix]
+    handle = "#{prefix}/#{SUBPREFIX}/test-#{SecureRandom.hex}"
+    begin
+      # create a handle
+      url = "http://example.org/test"
+      @client.create_url_handle(handle: handle, url: url)
+
+      assert_equal 1, @client.list_prefixes.length
+    ensure
+      # clean up
+      @client.delete_handle(handle)
+    end
+  end
+
 end

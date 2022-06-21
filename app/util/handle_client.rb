@@ -97,6 +97,17 @@ class HandleClient
     struct['handles']
   end
 
+  ##
+  # @return [String]
+  #
+  def list_prefixes
+    url      = "#{api_endpoint}/prefixes"
+    response = client.get(url)
+    struct   = JSON.parse(response.body)
+    struct['prefixes']
+  end
+
+
   private
 
   def api_endpoint
