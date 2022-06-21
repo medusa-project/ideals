@@ -115,7 +115,7 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def show_about
-    effective_admin
+    show
   end
 
   def show_access

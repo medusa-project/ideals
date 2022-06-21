@@ -432,35 +432,17 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   # show_about?()
 
-  test "show_about?() returns false with a nil user" do
+  test "show_about?() returns true with a nil user" do
     policy = UnitPolicy.new(nil, @unit)
-    assert !policy.show_about?
+    assert policy.show_about?
   end
 
-  test "show_about?() is restrictive by default" do
+  test "show_about?() authorizes everyone" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
-    assert !policy.show_about?
-  end
-
-  test "show_about?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy = UnitPolicy.new(context, @unit)
     assert policy.show_about?
-  end
-
-  test "show_about?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = UnitPolicy.new(context, @unit)
-    assert !policy.show_about?
   end
 
   # show_access?()

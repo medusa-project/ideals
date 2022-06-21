@@ -101,7 +101,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def show_about
-    effective_manager
+    show
   end
 
   def show_access
