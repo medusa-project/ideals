@@ -26,18 +26,24 @@ class LocalUser < User
   #
   def self.create_manually(email:, password:, name: nil)
     ActiveRecord::Base.transaction do
-      invitee = Invitee.create!(email:          email,
-                                approval_state: ApprovalState::APPROVED,
-                                note:           "Created as a sysadmin on the "\
-                                                "command line, bypassing the "\
-                                                "invitation process")
-      identity = LocalIdentity.create!(email:                 email,
-                                       name:                  name || email,
-                                       password:              password,
-                                       password_confirmation: password,
-                                       invitee:               invitee,
-                                       activated:             true,
-                                       activated_at:          Time.zone.now)
+      invitee = Invitee.find_by_email(email)
+      unless invitee
+        invitee = Invitee.create!(email:          email,
+                                  approval_state: ApprovalState::APPROVED,
+                                  note:           "Created as a sysadmin on the "\
+                                                  "command line, bypassing the "\
+                                                  "invitation process")
+      end
+      identity = LocalIdentity.find_by_email(email)
+      unless identity
+        identity = LocalIdentity.create!(email:                 email,
+                                         name:                  name || email,
+                                         password:              password,
+                                         password_confirmation: password,
+                                         invitee:               invitee,
+                                         activated:             true,
+                                         activated_at:          Time.zone.now)
+      end
       identity.build_user(email: email,
                           uid:   email,
                           name:  name || email,
