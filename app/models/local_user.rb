@@ -21,24 +21,27 @@ class LocalUser < User
   #
   # @param email [String]
   # @param password [String]
+  # @param name [String] If not provided, the email is used.
+  # @return [LocalUser]
   #
-  def self.create_manually(email:, password:)
+  def self.create_manually(email:, password:, name: nil)
     ActiveRecord::Base.transaction do
-      invitee = Invitee.create!(email: email,
+      invitee = Invitee.create!(email:          email,
                                 approval_state: ApprovalState::APPROVED,
-                                note: "Created as a sysadmin on the command "\
-                                      "line, bypassing the invitation process")
+                                note:           "Created as a sysadmin on the "\
+                                                "command line, bypassing the "\
+                                                "invitation process")
       identity = LocalIdentity.create!(email:                 email,
-                                       name:                  email,
+                                       name:                  name || email,
                                        password:              password,
                                        password_confirmation: password,
                                        invitee:               invitee,
                                        activated:             true,
                                        activated_at:          Time.zone.now)
-      identity.build_user(email:    email,
-                          uid:      email,
-                          name:     email,
-                          type:     LocalUser.to_s)
+      identity.build_user(email: email,
+                          uid:   email,
+                          name:  name || email,
+                          type:  LocalUser.to_s)
     end
   end
 

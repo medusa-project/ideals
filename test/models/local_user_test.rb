@@ -10,8 +10,11 @@ class LocalUserTest < ActiveSupport::TestCase
 
   test "create_manually() creates a correct instance" do
     email    = "test@example.org"
+    name     = "Testy Test"
     password = "password"
-    user     = LocalUser.create_manually(email: email, password: password)
+    user     = LocalUser.create_manually(email:    email,
+                                         name:     name,
+                                         password: password)
 
     # check the Invitee
     invitee  = Invitee.find_by_email(email)
@@ -20,12 +23,13 @@ class LocalUserTest < ActiveSupport::TestCase
     # check the LocalIdentity
     identity = invitee.identity
     assert_equal email, identity.email
+    assert_equal name, identity.name
     assert identity.activated
 
     # check the LocalUser
     assert_equal identity, user.identity
     assert_equal email, user.email
-    assert_equal email, user.name
+    assert_equal name, user.name
     assert_equal email, user.uid
     assert !user.sysadmin?
     assert_nil user.phone
