@@ -77,7 +77,7 @@ class Item < ApplicationRecord
     COLLECTIONS        = "i_collection_ids"
     CREATED            = ElasticsearchIndex::StandardFields::CREATED
     EMBARGOES          = "o_embargoes"
-    FILENAMES          = "k_filenames"
+    FILENAMES          = "t_filenames"
     FULL_TEXT          = ElasticsearchIndex::StandardFields::FULL_TEXT
     GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY = "k_unit_collection_sort_key"
     ID                 = ElasticsearchIndex::StandardFields::ID
