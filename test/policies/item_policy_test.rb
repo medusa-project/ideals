@@ -596,6 +596,92 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.export?
   end
 
+  # file_navigator?()
+
+  test "file_navigator?() returns true with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert policy.file_navigator?
+  end
+
+  test "file_navigator?() restricts submitting items by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, items(:submitting))
+    assert !policy.file_navigator?
+  end
+
+  test "file_navigator?() restricts access to embargoed items" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    item    = items(:item1)
+    policy  = ItemPolicy.new(context, item)
+    assert policy.file_navigator?
+    item.embargoes.build(expires_at: Time.now + 1.hour,
+                         kind:       Embargo::Kind::ALL_ACCESS).save!
+    assert !policy.file_navigator?
+  end
+
+  test "file_navigator?() does not restrict access to embargoed items when the
+  current user is exempt from the embargo" do
+    user         = users(:norights)
+    group        = user_groups(:temp)
+    group.users << user
+    context      = RequestContext.new(user:        user,
+                                      institution: user.institution)
+    item         = items(:item1)
+    policy       = ItemPolicy.new(context, item)
+    assert policy.file_navigator?
+
+    item.embargoes.build(expires_at:  Time.now + 1.hour,
+                         kind:        Embargo::Kind::ALL_ACCESS,
+                         user_groups: [group]).save!
+    assert policy.file_navigator?
+  end
+
+  test "file_navigator?() authorizes sysadmins to embargoed items" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, items(:embargoed))
+    assert policy.file_navigator?
+  end
+
+  test "file_navigator?() authorizes sysadmins to submitting items" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, items(:submitting))
+    assert policy.file_navigator?
+  end
+
+  test "file_navigator?() authorizes sysadmins to withdrawn items" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, items(:withdrawn))
+    assert policy.file_navigator?
+  end
+
+  test "file_navigator?() authorizes sysadmins to buried items" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, items(:buried))
+    assert policy.file_navigator?
+  end
+
+  test "file_navigator?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, items(:embargoed))
+    assert !policy.file_navigator?
+  end
+
   # index?()
 
   test "index?() returns true with a nil user" do

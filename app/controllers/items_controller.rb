@@ -168,6 +168,9 @@ class ItemsController < ApplicationController
   # Responds to `GET /items/:id/file_navigator` (XHR only)
   #
   def file_navigator
+    if [Item::Stages::BURIED, Item::Stages::WITHDRAWN].include?(@item.stage)
+      render plain: "410 Gone", status: :gone and return
+    end
     @content_bitstreams  = @item.bitstreams.
       where(bundle: Bitstream::Bundle::CONTENT).
       order("bitstreams.bundle_position", "LOWER(original_filename)").

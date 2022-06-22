@@ -297,8 +297,39 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
       handles: handles(:collection1_handle).to_s,
       elements: ["dc:title"]
     }
-    s = response.body
     assert response.body.start_with?("id,")
+  end
+
+  # file_navigator()
+
+  test "file_navigator() returns HTTP 200 for XHR requests" do
+    get item_file_navigator_path(items(:item1)), xhr: true
+    assert_response :ok
+  end
+
+  test "file_navigator() returns HTTP 404 for non-XHR requests" do
+    get item_file_navigator_path(items(:item1))
+    assert_response :not_found
+  end
+
+  test "file_navigator() returns HTTP 403 for submitting items" do
+    get item_file_navigator_path(items(:submitting)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "file_navigator() returns HTTP 403 for embargoed items" do
+    get item_file_navigator_path(items(:embargoed)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "file_navigator() returns HTTP 410 for withdrawn items" do
+    get item_file_navigator_path(items(:withdrawn)), xhr: true
+    assert_response :gone
+  end
+
+  test "file_navigator() returns HTTP 410 for buried items" do
+    get item_file_navigator_path(items(:buried)), xhr: true
+    assert_response :gone
   end
 
   # index()
