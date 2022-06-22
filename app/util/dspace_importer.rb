@@ -479,16 +479,15 @@ class DspaceImporter
         groups = []
         terms  = item.element("dc:description:terms")&.string&.strip&.gsub("\"", "")
         if terms.present?
-          case terms
-          when "Embargoed"
+          if terms == "Embargoed"
             kind    = Embargo::Kind::ALL_ACCESS
-          when "U of I Only"
+          elsif terms == "U of I Only"
             kind    = Embargo::Kind::DOWNLOAD
             groups << UserGroup.find_by_key("uiuc")
-          when "Limited"
+          elsif terms == "Limited"
             kind    = Embargo::Kind::DOWNLOAD
             groups << UserGroup.sysadmin
-          when "Open"
+          elsif terms.match?(/Open/)
             # not embargoed, skip -- EXCEPT for the items below that have
             # malformed embargoes
             kind = Embargo::Kind::ALL_ACCESS if item.id == 77171
