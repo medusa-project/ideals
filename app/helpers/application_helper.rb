@@ -283,11 +283,14 @@ module ApplicationHelper
       if entity.kind_of?(Item)
         bs = entity.representative_bitstream
         if bs
-          icon = bs.format.icon
-          # TODO: this is an ugly hack because the FA SVGs referenced in
-          # formats.yml are from an earlier version of FA
-          icon = "file-alt" if icon == "file-text-o"
-          icon = "far fa-#{icon.gsub(/-o$/, "")}"
+          format = bs.format
+          if format
+            icon = format.icon
+            # TODO: this is an ugly hack because the FA SVGs referenced in
+            # formats.yml are from an earlier version of FA
+            icon = "file-alt" if icon == "file-text-o"
+            icon = "far fa-#{icon.gsub(/-o$/, "")}"
+          end
         end
       end
     when "Message"
