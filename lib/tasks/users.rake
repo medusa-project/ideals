@@ -3,9 +3,10 @@ require 'rake'
 namespace :users do
 
   desc "Create a local-identity user"
-  task :create_local, [:email, :password] => :environment do |task, args|
+  task :create_local, [:email, :password, :name] => :environment do |task, args|
     user = LocalUser.create_manually(email:    args[:email],
-                                     password: args[:password])
+                                     password: args[:password],
+                                     name:     args[:name])
     user.save!
   end
 
