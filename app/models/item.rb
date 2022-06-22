@@ -331,17 +331,18 @@ class Item < ApplicationRecord
     # for our purposes is likely 10485760 bytes (10 MB). Full text can
     # sometimes exceed this, so we must truncate it. The length may be exceeded
     # either by one large bitstream, or many smaller bitstreams, and we have to
-    # be careful in the latter case not to try to buffer them all in memory, as
+    # be careful in the latter case not to try to load them all into memory, as
     # we may not have enough.
     full_text  = StringIO.new
-    max_length = 8500000
+    max_length = 8000000 # leave some room for the rest of the document
     Bitstream.uncached do
       self.bitstreams.find_each(batch_size: 1) do |bs|
-        break unless full_text.length < max_length
+        break if full_text.length > max_length
         full_text << bs.full_text
       end
     end
-    doc[IndexFields::FULL_TEXT]          = full_text.string[0..max_length]
+    full_text.truncate(max_length) # this is bytes not chars
+    doc[IndexFields::FULL_TEXT]          = full_text.string
     doc[IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY] =
         self.unit_and_collection_sort_key
     units                                = self.all_units
