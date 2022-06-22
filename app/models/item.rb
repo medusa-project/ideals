@@ -342,7 +342,7 @@ class Item < ApplicationRecord
       end
     end
     full_text.truncate(max_length) # this is bytes not chars
-    doc[IndexFields::FULL_TEXT]          = full_text.string
+    doc[IndexFields::FULL_TEXT]          = full_text.string.delete("\000") # strip null bytes
     doc[IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY] =
         self.unit_and_collection_sort_key
     units                                = self.all_units
