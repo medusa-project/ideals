@@ -5,11 +5,13 @@ class ThreadUtils
   #              applied.
   # @param num_threads [Integer]
   # @param print_progress [Boolean] Whether to print progress to stdout.
+  # @param rescue_errors [Boolean] Whether to rescue errors.
   # @param block [Block] Block to invoke on each item.
   #
   def self.process_in_parallel(items,
                                num_threads:    2,
                                print_progress: false,
+                               rescue_errors:  false,
                                &block)
     # Divide the total number of items into num_threads segments, and have
     # each thread work on a segment.
@@ -38,11 +40,15 @@ class ThreadUtils
                            items[q_offset..(q_offset + q_limit)]
           batch.each do |item|
             break unless proceed
-            begin
-              block.call(item)
-            rescue => e
-              mutex.synchronize { proceed = false }
-              raise e
+            if rescue_errors
+              block.call(item) rescue nil
+            else
+              begin
+                block.call(item)
+              rescue => e
+                mutex.synchronize { proceed = false }
+                raise e
+              end
             end
             mutex.synchronize do
               item_index += 1
