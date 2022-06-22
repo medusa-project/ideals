@@ -98,7 +98,7 @@ class ShibbolethUser < User
     # N.B.: we must access the auth hash carefully because not all properties
     # will be present in all environments; in particular, in development, we
     # are using omniauth's developer strategy which doesn't supply much.
-    self.uid         = auth["uid"]
+    self.uid         = auth["uid"] || auth["info"]["email"]
     self.email       = auth["info"]["email"]
     self.name        = "#{auth.dig("extra", "raw_info", "givenName")} "\
                        "#{auth.dig("extra", "raw_info", "sn")}"
