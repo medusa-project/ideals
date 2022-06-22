@@ -20,15 +20,16 @@ class ThreadUtils
     progress         = Progress.new(total_count)
     item_index       = 0
     num_threads      = [num_threads, total_count].min
-    num_errors       = 0
     items_per_thread = (total_count / num_threads.to_f).ceil
     return if items_per_thread < 1
+    proceed          = true # if one thread errors, stop all other threads
 
     num_threads.times do |thread_num|
       threads << Thread.new do
         batch_size  = [1000, items_per_thread].min
         num_batches = (items_per_thread / batch_size.to_f).ceil
         num_batches.times do |batch_index|
+          break unless proceed
           batch_offset = batch_index * batch_size
           q_offset     = thread_num * items_per_thread + batch_offset
           q_limit      = [batch_size, items_per_thread - batch_offset].min
@@ -36,10 +37,11 @@ class ThreadUtils
                            items.offset(q_offset).limit(q_limit) :
                            items[q_offset..(q_offset + q_limit)]
           batch.each do |item|
+            break unless proceed
             begin
               block.call(item)
             rescue => e
-              puts "ThreadUtils.process_in_parallel(): unrescued error for ID: #{item.id}"
+              mutex.synchronize { proceed = false }
               raise e
             end
             mutex.synchronize do
