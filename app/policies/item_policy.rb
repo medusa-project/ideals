@@ -123,6 +123,10 @@ class ItemPolicy < ApplicationPolicy
       reason:     "You must be a system or institution administrator." }
   end
 
+  def file_navigator
+    show
+  end
+
   def index
     AUTHORIZED_RESULT
   end

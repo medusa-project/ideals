@@ -1,6 +1,8 @@
 - provide :body_id, "show_item"
 - provide :title, @item.title
 
+= hidden_field_tag(:item_id, @item.id)
+
 = render partial: "show_button_group"
 
 - if @item.stage == Item::Stages::REJECTED
@@ -16,7 +18,15 @@
 
 .mb-3
 
-= render partial: "file_navigator"
+- result = policy(@item).show_file_navigator
+- if !result[:authorized]
+  .alert.alert-secondary
+    %i.fa.fa-lock
+    = result[:reason]
+- else
+  #file-navigator
+    = spinner
+    -# items/_file_navigator is inserted here via XHR
 
 - if @item.handle
   %h2.mt-5 Permalink

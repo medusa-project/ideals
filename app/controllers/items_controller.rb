@@ -5,7 +5,7 @@ class ItemsController < ApplicationController
   include MetadataSubmission
   include Search
 
-  before_action :ensure_logged_in, except: [:index, :show]
+  before_action :ensure_logged_in, except: [:file_navigator, :index, :show]
   before_action :set_item, except: [:export, :index, :process_review, :review]
   before_action :authorize_item, except: [:export, :index, :process_review,
                                           :review]
@@ -165,6 +165,21 @@ class ItemsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /items/:id/file_navigator` (XHR only)
+  #
+  def file_navigator
+    @content_bitstreams  = @item.bitstreams.
+      where(bundle: Bitstream::Bundle::CONTENT).
+      order("bitstreams.bundle_position", "LOWER(original_filename)").
+      select{ |b| policy(b).show? }
+    @other_bitstreams    = @item.bitstreams.
+      where("bundle != ?", Bitstream::Bundle::CONTENT).
+      order("bitstreams.bundle_position", "LOWER(original_filename)").
+      select{ |b| policy(b).show? }
+    render partial: "items/file_navigator"
+  end
+
+  ##
   # Responds to `GET /items`
   #
   def index
@@ -261,28 +276,6 @@ class ItemsController < ApplicationController
       render "show_buried", status: :gone
     when Item::Stages::WITHDRAWN
       render "show_withdrawn", status: :gone
-    else
-      show_approved
-    end
-  end
-
-  def show_approved
-    @content_bitstreams  = @item.bitstreams.
-      where(bundle: Bitstream::Bundle::CONTENT).
-      order("bitstreams.bundle_position", "LOWER(original_filename)").
-      select{ |b| policy(b).show? }
-    @other_bitstreams    = @item.bitstreams.
-      where("bundle != ?", Bitstream::Bundle::CONTENT).
-      order("bitstreams.bundle_position", "LOWER(original_filename)").
-      select{ |b| policy(b).show? }
-
-    respond_to do |format|
-      format.html do
-        render "show"
-      end
-      format.json do
-        render "show"
-      end
     end
   end
 

@@ -54,108 +54,127 @@ const ItemsView = function() {
 /**
  * Controls the file navigator in item view.
  *
- * Events:
- *
- * * `IDEALS.FileNavigator.fileChanged`
- *
  * @constructor
  */
 const FileNavigator = function() {
     const HEADER_HEIGHT = 50;
     const FOOTER_HEIGHT = 50;
-    const ROOT_URL      = $('input[name="root_url"]').val();
+    const ROOT_URL      = $('input[name=root_url]').val();
+    const ITEM_ID       = $("input[name=item_id]").val();
     const navigator     = $("#file-navigator");
-    const thumbsColumn  = $("#file-navigator-thumbnail-column");
-    const viewerColumn  = $("#file-navigator-viewer-column");
 
-    var currentBitstreamID;
+    // Set the initial height of the viewer container.
+    const navigatorHeight = window.innerHeight - 100;
+    navigator.css("height", navigatorHeight + "px");
 
-    const attachEventListeners = function() {
-        $("button#more-info").on("click", function() {
-            const infoDiv = $("#file-navigator-viewer-info");
-            if (infoDiv.is(":visible")) {
-                $(this).html("<i class=\"fa fa-info-circle\"></i> More Info");
-                infoDiv.hide();
-            } else {
-                $(this).html("<i class=\"fa fa-times\"></i> Hide Info");
-                infoDiv.css("display", "flex");
-            }
-        });
-    };
-
-    const focus = function(thumb) {
-        const item_id      = thumb.data("item-id");
-        const bitstream_id = thumb.data("bitstream-id");
-        if (bitstream_id === currentBitstreamID) {
-            return;
+    // Load the navigator HTML.
+    $.ajax({
+        method: "GET",
+        url:    ROOT_URL + "/items/" + ITEM_ID + "/file-navigator",
+        success: function(data) {
+            navigator.css("display", "grid");
+            navigator.css("grid-template-columns", "30% 70%");
+            navigator.html(data);
+            navigator.trigger("IDEALS.FileNavigator.thumbsLoaded");
+        },
+        error: function(data, status, xhr) {
         }
-        currentBitstreamID = bitstream_id;
-        viewerColumn.html(IDEALS.Spinner());
-        thumb.siblings().removeClass("selected");
-        thumb.addClass("selected");
-        thumb.focus();
+    });
 
-        const url = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
-            bitstream_id + "/viewer";
-        $.ajax({
-            method: "GET",
-            url: url,
-            success: function(data) {
-                viewerColumn.html(data);
-                updateHeight();
-                attachEventListeners();
-                navigator.trigger("IDEALS.FileNavigator.fileChanged");
-            },
-            error: function(data, status, xhr) {
-                $("#file-navigator-viewer-column .spinner-border").hide();
-                viewerColumn.html("<div id='file-navigator-viewer-error'><p>There was an error retrieving this file.</p></div>");
-            }
-        });
-    };
+    navigator.on("IDEALS.FileNavigator.thumbsLoaded", function() {
+        const thumbsColumn  = $("#file-navigator-thumbnail-column");
+        const viewerColumn  = $("#file-navigator-viewer-column");
 
-    const updateHeight = function() {
-        const navigatorHeight = window.innerHeight - 100;
-        navigator.css("height", navigatorHeight + "px");
-        const isFooterExisting = thumbsColumn.find("#file-navigator-thumbnail-column-footer").length > 0;
-        const footerHeight     = FOOTER_HEIGHT - (isFooterExisting ? 0 : FOOTER_HEIGHT);
-        thumbsColumn.find("#file-navigator-thumbnail-content").css("height", (navigatorHeight - footerHeight) + "px");
-        thumbsColumn.find("#file-navigator-thumbnail-column-footer").css("height", footerHeight + "px");
-        viewerColumn.find("#file-navigator-viewer-header").css("height", HEADER_HEIGHT + "px");
-        viewerColumn.find("#file-navigator-viewer-content").css("height", (navigatorHeight - HEADER_HEIGHT) + "px");
-        viewerColumn.find("#file-navigator-viewer-content img").css("max-height", (navigatorHeight - HEADER_HEIGHT) + "px");
-    };
+        const updateHeight = function() {
+            const navigatorHeight = window.innerHeight - 100;
+            navigator.css("height", navigatorHeight + "px");
+            const isFooterExisting = thumbsColumn.find("#file-navigator-thumbnail-column-footer").length > 0;
+            const footerHeight     = FOOTER_HEIGHT - (isFooterExisting ? 0 : FOOTER_HEIGHT);
+            thumbsColumn.find("#file-navigator-thumbnail-content").css("height", (navigatorHeight - footerHeight) + "px");
+            thumbsColumn.find("#file-navigator-thumbnail-column-footer").css("height", footerHeight + "px");
+            viewerColumn.find("#file-navigator-viewer-header").css("height", HEADER_HEIGHT + "px");
+            viewerColumn.find("#file-navigator-viewer-content").css("height", (navigatorHeight - HEADER_HEIGHT) + "px");
+            viewerColumn.find("#file-navigator-viewer-content img").css("max-height", (navigatorHeight - HEADER_HEIGHT) + "px");
+        };
 
-    updateHeight();
-
-    $(window).on("resize", function() {
         updateHeight();
-    });
 
-    navigator.find("#file-navigator-thumbnail-column .thumbnail").on("keydown", function(e) {
-        const thumb = $(this);
-        switch (e.keyCode) {
-            case 37: // left arrow
-                focus(thumb.prev());
-                break;
-            case 39: // right arrow
-                focus(thumb.next());
-                break;
+        $(window).on("resize", function() {
+            updateHeight();
+        });
+
+        var currentBitstreamID;
+        const attachEventListeners = function() {
+            $("button#more-info").on("click", function() {
+                const infoDiv = $("#file-navigator-viewer-info");
+                if (infoDiv.is(":visible")) {
+                    $(this).html("<i class=\"fa fa-info-circle\"></i> More Info");
+                    infoDiv.hide();
+                } else {
+                    $(this).html("<i class=\"fa fa-times\"></i> Hide Info");
+                    infoDiv.css("display", "flex");
+                }
+            });
+        };
+
+        const focus = function(thumb) {
+            const item_id      = thumb.data("item-id");
+            const bitstream_id = thumb.data("bitstream-id");
+            if (bitstream_id === currentBitstreamID) {
+                return;
+            }
+            currentBitstreamID = bitstream_id;
+            viewerColumn.html(IDEALS.Spinner());
+            thumb.siblings().removeClass("selected");
+            thumb.addClass("selected");
+            thumb.focus();
+
+            const url = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
+                bitstream_id + "/viewer";
+            $.ajax({
+                method: "GET",
+                url: url,
+                success: function(data) {
+                    viewerColumn.html(data);
+                    attachEventListeners();
+                    updateHeight();
+                    navigator.trigger("IDEALS.FileNavigator.fileChanged");
+                },
+                error: function(data, status, xhr) {
+                    $("#file-navigator-viewer-column .spinner-border").hide();
+                    viewerColumn.html("<div id='file-navigator-viewer-error'>" +
+                        "<p>There was an error retrieving this file.</p></div>");
+                }
+            });
+        };
+
+        navigator.find("#file-navigator-thumbnail-column .thumbnail").on("keydown", function(e) {
+            const thumb = $(this);
+            switch (e.keyCode) {
+                case 37: // left arrow
+                    focus(thumb.prev());
+                    break;
+                case 39: // right arrow
+                    focus(thumb.next());
+                    break;
+            }
+        });
+
+        const thumbs = navigator.find("#file-navigator-thumbnail-column .thumbnail");
+        thumbs.on("click", function() {
+            const thumb = $(this);
+            focus(thumb);
+        });
+
+        // Select the primary bitstream, if one is set. Otherwise, select the
+        // first one.
+        let thumbToSelect = thumbs.filter("[data-primary=true]");
+        if (thumbToSelect.length < 1) {
+            thumbToSelect = thumbs.filter(":first");
         }
+        thumbToSelect.trigger("click");
     });
 
-    const thumbs = navigator.find("#file-navigator-thumbnail-column .thumbnail");
-    thumbs.on("click", function() {
-        const thumb = $(this);
-        focus(thumb);
-    });
-
-    // Select the primary bitstream, if one is set. Otherwise, select the
-    // first one.
-    let thumbToSelect = thumbs.filter("[data-primary=true]");
-    if (thumbToSelect.length < 1) {
-        thumbToSelect = thumbs.filter(":first");
-    }
-    thumbToSelect.trigger("click");
 };
 
 /**

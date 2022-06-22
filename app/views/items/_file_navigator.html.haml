@@ -1,76 +1,68 @@
-- result = policy(@item).show_file_navigator
-- if !result[:authorized]
-  .alert.alert-secondary
-    %i.fa.fa-lock
-    = result[:reason]
+#file-navigator-thumbnail-column
+  #file-navigator-thumbnail-content
+    - tabindex = 0
+    - if @content_bitstreams.any?
+      .section-heading
+        Content Files
+      - @content_bitstreams.each do |bitstream|
+        .thumbnail{title:               bitstream.original_filename,
+                   "data-item-id":      bitstream.item_id,
+                   "data-bitstream-id": bitstream.id,
+                   "data-primary":      bitstream.primary ? "true" : "false",
+                   tabindex:            tabindex}
+          = representative_image_tag(bitstream,
+                                     region:         :square,
+                                     size:           512,
+                                     generate_async: true,
+                                     title:          bitstream.original_filename)
+          = bitstream.original_filename
+          - tabindex += 1
+    - if @other_bitstreams.any?
+      .section-heading
+        Other Files
+      - @other_bitstreams.each do |bitstream|
+        .thumbnail{title:               bitstream.original_filename,
+                   "data-item-id":      bitstream.item_id,
+                   "data-bitstream-id": bitstream.id,
+                   "data-primary":      bitstream.primary ? "true" : "false",
+                   tabindex:            tabindex}
+          = representative_image_tag(bitstream,
+                                     region:         :square,
+                                     size:           512,
+                                     generate_async: true,
+                                     title:          bitstream.original_filename)
+          = bitstream.original_filename
+          - tabindex += 1
+  - if @item.approved?
+    #file-navigator-thumbnail-column-footer
+      .btn-group.dropup{role: "group"}
+        %button#download-options{type:            "button",
+                                 class:           "btn btn-dark btn-sm dropdown-toggle",
+                                 "data-toggle":   "dropdown",
+                                 "aria-haspopup": "true",
+                                 "aria-expanded": "false"}
+          %i.fa.fa-download
+          Download Options
+        .dropdown-menu{"aria-labelledby": "download-options"}
+          %a.dropdown-item{href: item_bitstreams_path(@item, format: :zip)}
+            %i.fa.fa-download
+            Download All Files
+          - if policy(@item).download_counts?
+            %button.dropdown-item.download-counts{"data-item-id": @item.id,
+                                                  "data-target":  "#download-counts-modal",
+                                                  "data-toggle":  "modal",
+                                                  role:           "button"}
+              %i.fa.fa-chart-bar
+              Download Counts&hellip;
 
-- elsif @content_bitstreams.length + @other_bitstreams.length > 0
-  #file-navigator
-    #file-navigator-thumbnail-column
-      #file-navigator-thumbnail-content
-        - tabindex = 0
-        - if @content_bitstreams.any?
-          .section-heading
-            Content Files
-          - @content_bitstreams.each do |bitstream|
-            .thumbnail{title:               bitstream.original_filename,
-                       "data-item-id":      bitstream.item_id,
-                       "data-bitstream-id": bitstream.id,
-                       "data-primary":      bitstream.primary ? "true" : "false",
-                       tabindex:            tabindex}
-              = representative_image_tag(bitstream,
-                                         region:         :square,
-                                         size:           512,
-                                         generate_async: true,
-                                         title:          bitstream.original_filename)
-              = bitstream.original_filename
-              - tabindex += 1
-        - if @other_bitstreams.any?
-          .section-heading
-            Other Files
-          - @other_bitstreams.each do |bitstream|
-            .thumbnail{title:               bitstream.original_filename,
-                       "data-item-id":      bitstream.item_id,
-                       "data-bitstream-id": bitstream.id,
-                       "data-primary":      bitstream.primary ? "true" : "false",
-                       tabindex:            tabindex}
-              = representative_image_tag(bitstream,
-                                         region:         :square,
-                                         size:           512,
-                                         generate_async: true,
-                                         title:          bitstream.original_filename)
-              = bitstream.original_filename
-              - tabindex += 1
-      - if @item.approved?
-        #file-navigator-thumbnail-column-footer
-          .btn-group.dropup{role: "group"}
-            %button#download-options{type:            "button",
-                                     class:           "btn btn-dark btn-sm dropdown-toggle",
-                                     "data-toggle":   "dropdown",
-                                     "aria-haspopup": "true",
-                                     "aria-expanded": "false"}
-              %i.fa.fa-download
-              Download Options
-            .dropdown-menu{"aria-labelledby": "download-options"}
-              %a.dropdown-item{href: item_bitstreams_path(@item, format: :zip)}
-                %i.fa.fa-download
-                Download All Files
-              - if policy(@item).download_counts?
-                %button.dropdown-item.download-counts{"data-item-id": @item.id,
-                                                      "data-target":  "#download-counts-modal",
-                                                      "data-toggle":  "modal",
-                                                      role:           "button"}
-                  %i.fa.fa-chart-bar
-                  Download Counts&hellip;
+#file-navigator-viewer-column
+  -# bitstreams/_viewer.html is inserted here via XHR
+  = spinner
 
-    #file-navigator-viewer-column
-      -# bitstreams/_viewer.html is inserted here via XHR
-      = spinner
-
-  = render partial: "shared/ajax_modal",
-           locals: { id:    "download-counts-modal",
-                     title: "Download Counts (All Files)",
-                     size:  "lg" }
-  = render partial: "shared/ajax_modal",
-           locals: { id:    "edit-bitstream-modal",
-                     title: "Edit File" }
+= render partial: "shared/ajax_modal",
+         locals: { id:    "download-counts-modal",
+                   title: "Download Counts (All Files)",
+                   size:  "lg" }
+= render partial: "shared/ajax_modal",
+         locals: { id:    "edit-bitstream-modal",
+                   title: "Edit File" }
