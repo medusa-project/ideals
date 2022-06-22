@@ -24,9 +24,8 @@ namespace :users do
   end
 
   desc "Create a Shibboleth identity sysadmin user"
-  task :create_shib_sysadmin, [:netid] => :environment do |task, args|
-    email = "#{args[:netid]}@illinois.edu"
-    user  = ShibbolethUser.no_omniauth(email)
+  task :create_shib_sysadmin, [:email] => :environment do |task, args|
+    user = ShibbolethUser.no_omniauth(args[:email])
     user.ad_groups << UserGroup.sysadmin.ad_groups.first
     user.save!
   end
