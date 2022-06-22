@@ -22,7 +22,7 @@ class ShibbolethUserTest < ActiveSupport::TestCase
                 "unscoped-affiliation": "member;staff;employee",
                 uid: "example",
                 sn: "Boleth",
-                "org-dn": ShibbolethUser::UIUC_ORG_DN,
+                "org-dn": "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
                 nickname: "",
                 givenName: "Shib",
                 telephoneNumber: "(888) 555-5555",
@@ -54,7 +54,7 @@ class ShibbolethUserTest < ActiveSupport::TestCase
           "unscoped-affiliation": "member;staff;employee",
           uid: "shib@illinois.edu",
           sn: "Example",
-          "org-dn": ShibbolethUser::UIUC_ORG_DN,
+          "org-dn": "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
           nickname: "",
           givenName: "Example",
           member: "urn:mace:uiuc.edu:urbana:library:units:ideals:library ideals admin",
@@ -82,7 +82,8 @@ class ShibbolethUserTest < ActiveSupport::TestCase
     assert_equal "Shib Boleth", user.name
     assert_equal "example@illinois.edu", user.email
     assert_equal "(888) 555-5555", user.phone
-    assert_equal ShibbolethUser::UIUC_ORG_DN, user.org_dn
+    assert_equal "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
+                 user.org_dn
     assert_equal "Example Department", user.department.name
     assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
                  user.affiliation

@@ -4,12 +4,9 @@
 # Concrete implementation of {User}. This type of user comes from the
 # Shibboleth authentication strategy. All Shibboleth users have NetIDs and
 # whether they are a {sysadmin? sysadmin} is determined by their membership in
-# an AD group ascribed to the {UserGroup#sysadmin sysadmin user group}.
+# the {UserGroup#sysadmin sysadmin user group}.
 #
 class ShibbolethUser < User
-
-  # TODO: move this and/or make it configurable/get rid of it
-  UIUC_ORG_DN = "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu"
 
   ##
   # @return [ShibbolethUser]

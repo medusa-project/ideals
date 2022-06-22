@@ -25,6 +25,8 @@ class DspaceImporter
 
   LOGGER = CustomLogger.new(DspaceImporter)
 
+  UIUC_ORG_DN = "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu"
+
   include Singleton
 
   ##
@@ -306,7 +308,7 @@ class DspaceImporter
     institution = Institution.find_by_key("uiuc") ||
       Institution.where(name:   "Will get overwritten",
                         key:    "Will get overwritten",
-                        org_dn: ShibbolethUser::UIUC_ORG_DN).first_or_create!
+                        org_dn: UIUC_ORG_DN).first_or_create!
 
     LOGGER.debug("import_communities(): importing %s", csv_pathname)
 
@@ -819,7 +821,7 @@ class DspaceImporter
             uid:    email,
             email:  email,
             name:   username,
-            org_dn: ShibbolethUser::UIUC_ORG_DN)
+            org_dn: UIUC_ORG_DN)
         elsif !LocalUser.find_by_email(email)
           user = LocalUser.create_manually(email:    email,
                                            password: SecureRandom.hex)
