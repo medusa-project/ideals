@@ -269,9 +269,11 @@ class ItemsController < ApplicationController
   def show_approved
     @content_bitstreams  = @item.bitstreams.
       where(bundle: Bitstream::Bundle::CONTENT).
+      order("bitstreams.bundle_position", "LOWER(original_filename)").
       select{ |b| policy(b).show? }
     @other_bitstreams    = @item.bitstreams.
       where("bundle != ?", Bitstream::Bundle::CONTENT).
+      order("bitstreams.bundle_position", "LOWER(original_filename)").
       select{ |b| policy(b).show? }
 
     respond_to do |format|

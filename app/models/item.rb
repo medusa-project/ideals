@@ -149,8 +149,7 @@ class Item < ApplicationRecord
   end
 
   has_many :all_access_embargoes, -> { current && all_access }, class_name: "Embargo"
-  has_many :bitstreams, -> { order("bitstreams.bundle_position",
-                                   "LOWER(original_filename)") }
+  has_many :bitstreams
   has_many :bitstream_authorizations
   has_many :collection_item_memberships
   has_many :collections, through: :collection_item_memberships
