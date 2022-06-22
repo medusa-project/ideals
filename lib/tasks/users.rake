@@ -19,7 +19,7 @@ namespace :users do
   end
 
   desc "Create a Shibboleth identity user"
-  task :create_shib_user, [:email] => :environment do |task, args|
+  task :create_shib, [:email] => :environment do |task, args|
     user = ShibbolethUser.no_omniauth(args[:email])
     user.save!
   end
