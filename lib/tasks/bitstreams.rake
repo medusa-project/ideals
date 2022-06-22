@@ -7,18 +7,23 @@ namespace :bitstreams do
     num_threads = args[:thread_count].to_i
     num_threads = 1 if num_threads < 1
 
-    bitstreams = Bitstream.
+    # We don't want to load a bunch of Bitstream instances because any number
+    # of them may have a very large full_text field which could consume a lot
+    # of memory. So instead, we will load them one-by-one.
+    bitstream_ids = Bitstream.
       where(full_text_checked_at: nil).
       where("(LOWER(original_filename) LIKE '%.pdf' OR LOWER(original_filename) LIKE '%.txt')").
       where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").
-      order(:id)
-    count = bitstreams.count
+      order(:id).
+      pluck(:id)
+    count = bitstream_ids.length
     puts "#{count} bitstreams for which full text has not yet been checked."
     puts "This command can be canceled and resumed without losing progress."
 
-    ThreadUtils.process_in_parallel(bitstreams,
+    ThreadUtils.process_in_parallel(bitstream_ids,
                                     num_threads: num_threads,
-                                    print_progress: true) do |bs|
+                                    print_progress: true) do |id|
+      bs = Bitstream.find(id)
       bs.read_full_text
     end
   end
