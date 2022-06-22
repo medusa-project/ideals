@@ -121,11 +121,13 @@ module Indexed
     # @param es_index [String] Index name. If omitted, the default index is
     #                          used.
     # @param num_threads [Integer]
+    # @param rescue_errors [Boolean]
     # @return [void]
     #
-    def reindex_all(es_index: nil, num_threads: 1)
+    def reindex_all(es_index: nil, num_threads: 1, rescue_errors: false)
       ThreadUtils.process_in_parallel(all.order(:id),
                                       num_threads:    num_threads,
+                                      rescue_errors:  rescue_errors,
                                       print_progress: true) do |model|
         model.reindex(es_index)
       end
