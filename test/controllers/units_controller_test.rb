@@ -352,47 +352,19 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # show_about()
 
-  test "show_about() returns HTTP 403 for logged-out users" do
-    unit = units(:unit1)
-    get unit_about_path(unit), xhr: true
-    assert_response :forbidden
-  end
-
-  test "show_about() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    unit = units(:unit1)
-    get unit_about_path(unit), xhr: true
-    assert_response :forbidden
-  end
-
   test "show_about() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
-    unit = units(:unit1)
-    get unit_about_path(unit)
+    get unit_about_path(units(:unit1))
     assert_response :not_found
   end
 
-  test "show_about() returns HTTP 410 for a buried unit" do
-    log_in_as(users(:local_sysadmin))
-    unit = units(:buried)
-    get unit_about_path(unit), xhr: true
-    assert_response :gone
-  end
-
   test "show_about() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
-    unit = units(:unit1)
-    get unit_about_path(unit), xhr: true
+    get unit_about_path(units(:unit1)), xhr: true
     assert_response :ok
   end
 
-  test "show_about() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    get unit_about_path(units(:unit1)), xhr: true
-    assert_select(".edit-unit-properties")
-
-    get unit_about_path(units(:unit1), role: Role::LOGGED_OUT), xhr: true
-    assert_select(".edit-unit-properties", false)
+  test "show_about() returns HTTP 410 for a buried unit" do
+    get unit_about_path(units(:buried)), xhr: true
+    assert_response :gone
   end
 
   # show_access()
