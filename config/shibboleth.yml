@@ -66,7 +66,7 @@ demo:
     email: mail
 
 production:
-  host: ideals.illinois.edu
+  host: www.ideals.illinois.edu
   uid_field: eppn
   extra_fields:
     - eppn
