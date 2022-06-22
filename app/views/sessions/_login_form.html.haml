@@ -14,7 +14,12 @@
     .card
       %h5.card-header I don't have a NetID
       .card-body
-        .alert.alert-danger
+        .alert.alert-light
+          = icon_for(:info)
+          IDEALS migrated to a new platform on June 23, 2022. If you created
+          your account prior to this date, you will have to reset your password
+          using the forgot-password link below.
+        .alert.alert-danger.login-status
         = form_tag "/auth/identity/callback" do
           .form-group.row
             .col-sm-4
