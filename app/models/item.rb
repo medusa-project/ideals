@@ -611,6 +611,28 @@ class Item < ApplicationRecord
   end
 
   ##
+  # Sets the primary collection, ensuring that any other collections are made
+  # non-primary. If the item does not already belong to the collection, it is
+  # added.
+  #
+  # @param collection [Collection]
+  # @return [void]
+  #
+  def set_primary_collection(collection)
+    memberships = self.collection_item_memberships
+    memberships.select{ |m| m.primary == true && m.collection_id != collection.id }.
+      each{ |m| m.update!(primary: false) }
+    primary_membership = memberships.find{ |m| m.collection_id == collection.id }
+    if primary_membership
+      primary_membership.update!(primary: true)
+    else
+      self.collection_item_memberships.build(collection: collection,
+                                             primary:    true)
+      self.save!
+    end
+  end
+
+  ##
   # @return [Boolean] Whether {stage} is set to {Stages#SUBMITTED}.
   #
   def submitted?

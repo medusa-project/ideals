@@ -664,6 +664,23 @@ class ItemTest < ActiveSupport::TestCase
     end
   end
 
+  # set_primary_collection()
+
+  test "set_primary_collection() sets an existing collection as primary" do
+    col = @instance.collections.first
+    @instance.set_primary_collection(col)
+    @instance.reload
+    assert_equal col, @instance.primary_collection
+  end
+
+  test "set_primary_collection() sets a new collection as primary" do
+    col = collections(:collection2)
+    assert_not_equal col, @instance.primary_collection
+    @instance.set_primary_collection(col)
+    @instance.reload
+    assert_equal col, @instance.primary_collection
+  end
+
   # stage
 
   test "stage must be set to an available Stages constant value" do
