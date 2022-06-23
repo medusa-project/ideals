@@ -344,13 +344,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "index() omits submitting, embargoed, withdrawn, and buried items
-  by default" do
+  test "index() omits submitting, submitted, embargoed, withdrawn, and buried
+  items by default" do
     Item.reindex_all
     ElasticsearchClient.instance.refresh
 
     expected_count = Item.non_embargoed.
         where.not(stage: [Item::Stages::SUBMITTING,
+                          Item::Stages::SUBMITTED,
                           Item::Stages::WITHDRAWN,
                           Item::Stages::BURIED]).
         count

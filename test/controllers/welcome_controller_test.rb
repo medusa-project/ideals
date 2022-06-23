@@ -28,7 +28,7 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
     refresh_elasticsearch
 
     get root_path
-    assert_equal "Search across 9 items",
+    assert_equal "Search across 8 items",
                  response.body.match(/Search across \d+ items/)[0]
   end
 
