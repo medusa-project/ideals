@@ -93,6 +93,7 @@ class Handle < ApplicationRecord
   #
   def put_to_server
     config   = ::Configuration.instance
+    base_url = config.website[:base_url]
     # This "if" branch contains a temporary hack for migration out of DSpace.
     # It should be removed after the production launch, leaving only the "else"
     # branch.
