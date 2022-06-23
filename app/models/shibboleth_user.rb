@@ -102,6 +102,7 @@ class ShibbolethUser < User
     self.email       = auth["info"]["email"]
     self.name        = "#{auth.dig("extra", "raw_info", "givenName")} "\
                        "#{auth.dig("extra", "raw_info", "sn")}"
+    self.name        = self.uid if self.name.blank?
     self.org_dn      = auth.dig("extra", "raw_info", "org-dn")
     self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
     self.affiliation = Affiliation.from_shibboleth(auth)
