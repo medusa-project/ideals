@@ -512,7 +512,7 @@ class Item < ApplicationRecord
   #
   def effective_primary_unit
     #noinspection RubyMismatchedReturnType
-    self.effective_primary_collection&.primary_unit || self.collections.first.primary_unit
+    self.effective_primary_collection&.primary_unit || self.collections.first&.primary_unit
   end
 
   ##
