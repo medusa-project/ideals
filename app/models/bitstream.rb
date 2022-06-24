@@ -540,7 +540,7 @@ class Bitstream < ApplicationRecord
     changed = (text != self.full_text&.text)
     transaction do
       self.full_text&.destroy!
-      self.create_full_text!(text: text)
+      self.create_full_text!(text: text) if text.present?
       self.update!(full_text_checked_at: Time.now)
     end
     self.item.reindex if changed
