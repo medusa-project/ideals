@@ -45,7 +45,7 @@ namespace :dspace do
 
   namespace :bitstreams do
 
-    DSPACE_HOSTNAME         = "ideals.illinois.edu"
+    DSPACE_HOSTNAME         = "vanaheim.cites.illinois.edu" # TODO: move this into config
     DSPACE_ASSET_STORE_PATH = "/services/ideals-dspace/data/dspace/assetstore"
 
     ##
