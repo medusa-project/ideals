@@ -131,6 +131,25 @@ class ElasticsearchClientTest < ActiveSupport::TestCase
     assert !@instance.index_exists?(@test_index)
   end
 
+  # index_info()
+
+  test "index_info() with no argument returns info of the default index" do
+    @instance.create_index(@test_index)
+    assert_not_nil @instance.index_info
+  end
+
+  test "index_info() with an argument returns info of that index" do
+    @instance.create_index(@test_index)
+    assert_not_nil @instance.index_info(@test_index)
+  end
+
+  test "index_info() with a nonexistent index raises an error" do
+    @instance.delete_index(@test_index) rescue nil
+    assert_raises IOError do
+      @instance.index_info(@test_index)
+    end
+  end
+
   # indexes()
 
   test "indexes() works" do

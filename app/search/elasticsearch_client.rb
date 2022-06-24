@@ -232,6 +232,24 @@ class ElasticsearchClient
   end
 
   ##
+  # @param name [String] Index or index alias name.
+  # @return [String]
+  #
+  def index_info(name = nil)
+    config = Configuration.instance
+    name ||= config.elasticsearch[:index]
+    url    = sprintf("%s/%s?pretty",
+                     config.elasticsearch[:endpoint],
+                     name)
+    response = @http_client.get(url, nil, 'Content-Type': CONTENT_TYPE)
+    if response.status == 200
+      return response.body
+    else
+      raise IOError, response.body
+    end
+  end
+
+  ##
   # @return [String] Summary of all indexes in the node, as reported by
   #                  Elasticsearch.
   #
