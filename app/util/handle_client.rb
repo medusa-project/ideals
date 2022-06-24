@@ -90,10 +90,10 @@ class HandleClient
   # @return [Enumerable<String>]
   #
   def get_handles
-    url = "#{api_endpoint}/handles?prefix=#{prefix}"
+    url      = "#{api_endpoint}/handles?prefix=#{prefix}"
     response = client.get(url)
     handle_response("GET", url, response)
-    struct = JSON.parse(response.body)
+    struct   = JSON.parse(response.body)
     struct['handles']
   end
 
@@ -103,6 +103,7 @@ class HandleClient
   def list_prefixes
     url      = "#{api_endpoint}/prefixes"
     response = client.get(url)
+    handle_response("GET", url, response)
     struct   = JSON.parse(response.body)
     struct['prefixes']
   end
