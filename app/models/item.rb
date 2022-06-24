@@ -332,17 +332,18 @@ class Item < ApplicationRecord
     # sometimes exceed this, so we must truncate it. The length may be exceeded
     # either by one large bitstream's FullText, or many smaller bitstreams'
     # FullText.
-    full_text  = StringIO.new
-    max_length = 8000000 # leave some room for the rest of the document
+    io         = StringIO.new
+    max_length = 7000000 # leave some room for the rest of the document
     Bitstream.uncached do
       self.bitstreams.select{ |bs| bs.full_text_checked_at.present? }.each do |bs|
         text_obj = bs.full_text
-        full_text << text_obj.text if text_obj
-        break if full_text.length > max_length
+        io      << text_obj.text.delete("\000") if text_obj
+        puts io.length
+        break if io.length > max_length
       end
     end
-    full_text.truncate(max_length) # this is bytes not chars
-    doc[IndexFields::FULL_TEXT]          = full_text.string.delete("\000") # strip null bytes
+    io.truncate(max_length) # this is bytes not chars
+    doc[IndexFields::FULL_TEXT]          = io.string
     doc[IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY] =
         self.unit_and_collection_sort_key
     units                                = self.all_units
