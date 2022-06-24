@@ -94,32 +94,15 @@ class Handle < ApplicationRecord
   def put_to_server
     config   = ::Configuration.instance
     base_url = config.website[:base_url]
-    # This "if" branch contains a temporary hack for migration out of DSpace.
-    # It should be removed after the production launch, leaving only the "else"
-    # branch.
-    if Rails.env.production?
-      if self.unit
-        handle = self.unit.handle
-      elsif self.collection
-        handle = self.collection.handle
-      elsif self.item
-        handle = self.item.handle
-      else
-        raise "No entity association"
-      end
-      entity_url = "#{base_url}/handle/#{config.handles[:prefix]}/#{handle.suffix}"
+    helpers  = Rails.application.routes.url_helpers
+    if self.unit
+      entity_url = helpers.unit_url(self.unit, host: base_url)
+    elsif self.collection
+      entity_url = helpers.collection_url(self.collection, host: base_url)
+    elsif self.item
+      entity_url = helpers.item_url(self.item, host: base_url)
     else
-      base_url = config.website[:base_url]
-      helpers  = Rails.application.routes.url_helpers
-      if self.unit
-        entity_url = helpers.unit_url(self.unit, host: base_url)
-      elsif self.collection
-        entity_url = helpers.collection_url(self.collection, host: base_url)
-      elsif self.item
-        entity_url = helpers.item_url(self.item, host: base_url)
-      else
-        raise "No entity association"
-      end
+      raise "No entity association"
     end
     HandleClient.new.create_url_handle(handle: self.handle, url: entity_url)
   end
