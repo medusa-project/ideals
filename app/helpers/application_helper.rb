@@ -349,12 +349,12 @@ module ApplicationHelper
         html << "<ul>"
         matching_ascribed_elements.each do |asc_e|
           html << "<li>"
-          html <<   sanitize(asc_e.string)
+          html <<   sanitize(asc_e.string, tags: [])
           html << "</li>"
         end
         html << "</ul>"
       else
-        html << sanitize(matching_ascribed_elements.first.string)
+        html << sanitize(matching_ascribed_elements.first.string, tags: [])
       end
       html << "</dd>"
     end

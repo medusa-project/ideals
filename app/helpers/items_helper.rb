@@ -35,7 +35,7 @@ module ItemsHelper
         html << '</div>'
       else
         html << text_field_tag("elements[#{mp_e.name}]",
-                               sanitize(params["elements[#{mp_e.name}]"]),
+                               sanitize(params["elements[#{mp_e.name}]"], tags: []),
                                class: "form-control")
       end
       html <<   '</div>'
