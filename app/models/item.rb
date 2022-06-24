@@ -334,7 +334,7 @@ class Item < ApplicationRecord
     # FullText.
     full_text  = StringIO.new
     max_length = 8000000 # leave some room for the rest of the document
-    uncached do
+    Bitstream.uncached do
       self.bitstreams.select{ |bs| bs.full_text_checked_at.present? }.each do |bs|
         text_obj = bs.full_text
         full_text << text_obj.text if text_obj
