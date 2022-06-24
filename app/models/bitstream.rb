@@ -38,6 +38,10 @@
 # URL points to an image in the application S3 bucket, which is generated
 # on-the-fly and cached.
 #
+# # Full text
+#
+# See [FullText].
+#
 # # Download statistics
 #
 # See [BitstreamsController] documentation.
@@ -54,13 +58,12 @@
 #                           DSpace. This is only relevant during migration out
 #                           of DSpace and can be removed once migration is
 #                           complete.
-# * `full_text`             Full text, generally extracted from the contents of
-#                           e.g. PDF- or text-type bitstreams. See also
-#                           {checked_full_text}.
 # * `full_text_checked_at`  Date/time that the bitstream's content was last
 #                           checked for full text. When this is set,
 #                           {full_text} may or may not contain anything, but
-#                           when it's not set, it certainly doesn't.
+#                           when it's not set, it certainly doesn't. Only
+#                           bitstreams in the {Bundle#CONTENT content bundle}
+#                           in a supported format typically get checked.
 # * `item_id`:              Foreign key to [Item].
 # * `length`:               Size in bytes.
 # * `medusa_key`:           Full object key within the Medusa S3 bucket. Set
@@ -89,6 +92,7 @@ class Bitstream < ApplicationRecord
   include Auditable
 
   belongs_to :item
+  has_one :full_text
   has_many :events
   has_many :messages
 
@@ -502,8 +506,7 @@ class Bitstream < ApplicationRecord
 
   ##
   # Scans the bitstream content for full text, assigns it to {full_text},
-  # updates {full_text_checked_at}, saves the instance, and reindexes the
-  # owning [Item].
+  # updates {full_text_checked_at}, and reindexes the owning [Item].
   #
   # @param force [Boolean] Whether to read full text even if it has already
   #                        been checked for.
@@ -534,9 +537,12 @@ class Bitstream < ApplicationRecord
     end
     text = StringUtils.utf8(text) # convert to UTF-8
     text.delete!("\u0000")        # strip null bytes
-    changed = (text != self.full_text)
-    self.update!(full_text_checked_at: Time.now,
-                 full_text:            text)
+    changed = (text != self.full_text&.text)
+    transaction do
+      self.full_text&.destroy!
+      self.create_full_text!(text: text)
+      self.update!(full_text_checked_at: Time.now)
+    end
     self.item.reindex if changed
   end
 

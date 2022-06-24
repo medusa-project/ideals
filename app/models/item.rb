@@ -330,15 +330,15 @@ class Item < ApplicationRecord
     # N.B.: on AWS, the maximum document size depends on ES instance size, but
     # for our purposes is likely 10485760 bytes (10 MB). Full text can
     # sometimes exceed this, so we must truncate it. The length may be exceeded
-    # either by one large bitstream, or many smaller bitstreams, and we have to
-    # be careful in the latter case not to try to load them all into memory, as
-    # we may not have enough.
+    # either by one large bitstream's FullText, or many smaller bitstreams'
+    # FullText.
     full_text  = StringIO.new
     max_length = 8000000 # leave some room for the rest of the document
-    Bitstream.uncached do
-      self.bitstreams.find_each(batch_size: 1) do |bs|
+    uncached do
+      self.bitstreams.select{ |bs| bs.full_text_checked_at.present? }.each do |bs|
+        text_obj = bs.full_text
+        full_text << text_obj.text if text_obj
         break if full_text.length > max_length
-        full_text << bs.full_text
       end
     end
     full_text.truncate(max_length) # this is bytes not chars

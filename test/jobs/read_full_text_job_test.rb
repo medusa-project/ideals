@@ -13,7 +13,7 @@ class ReadFullTextJobTest < ActiveSupport::TestCase
 
     ReadFullTextJob.new.perform(bs)
     assert_not_nil bs.full_text_checked_at
-    assert_not_nil bs.full_text
+    assert_not_nil bs.full_text.text
   end
 
 end

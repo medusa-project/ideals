@@ -7,9 +7,6 @@ namespace :bitstreams do
     num_threads = args[:thread_count].to_i
     num_threads = 1 if num_threads < 1
 
-    # We don't want to load a bunch of Bitstream instances because any number
-    # of them may have a very large full_text field which could consume a lot
-    # of memory. So instead, we will load them one-by-one.
     bitstream_ids = Bitstream.
       where(full_text_checked_at: nil).
       where("(LOWER(original_filename) LIKE '%.pdf' OR LOWER(original_filename) LIKE '%.txt')").

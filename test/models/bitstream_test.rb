@@ -763,12 +763,12 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance = bitstreams(:approved_in_permanent)
     checked_at = Time.now.utc
     text       = "cats"
-    @instance.update!(full_text_checked_at: checked_at,
-                      full_text:            text)
+    @instance.update!(full_text_checked_at: checked_at)
+    @instance.create_full_text!(text: text)
     @instance.read_full_text(force: false)
 
     assert_equal checked_at.to_i, @instance.full_text_checked_at.to_i
-    assert_equal text, @instance.full_text
+    assert_equal text, @instance.full_text.text
   end
 
   test "read_full_text() works when full_text_checked_at is set and
@@ -778,8 +778,8 @@ class BitstreamTest < ActiveSupport::TestCase
                                                       @instance.original_filename)
     checked_at = Time.now
     text       = "cats"
-    @instance.full_text_checked_at = checked_at
-    @instance.full_text            = text
+    @instance.update!(full_text_checked_at: checked_at)
+    @instance.create_full_text!(text: text)
     @instance.read_full_text(force: true)
 
     assert checked_at < @instance.full_text_checked_at
@@ -817,14 +817,14 @@ class BitstreamTest < ActiveSupport::TestCase
     checked_at = Time.now.utc
     text       = "cats"
     @instance.update!(full_text_checked_at: checked_at,
-                      full_text:            text)
+                      full_text:            FullText.new(text: text))
     @instance.read_full_text_async
 
     sleep 2
 
     @instance.reload
     assert_equal checked_at.to_i, @instance.full_text_checked_at.to_i
-    assert_equal text, @instance.full_text
+    assert_equal text, @instance.full_text.text
   end
 
   # role
@@ -889,19 +889,19 @@ class BitstreamTest < ActiveSupport::TestCase
 
     @instance.reload
     assert_not_nil @instance.full_text_checked_at
-    assert_equal "This is a PDF", @instance.full_text
+    assert_equal "This is a PDF", @instance.full_text.text
   end
 
   test "save() does not read full text when full_text_is_checked_at is set" do
     @instance = bitstreams(:approved_in_permanent)
     time      = Time.now.utc
     @instance.update!(full_text_checked_at: time,
-                      full_text:            "cats")
+                      full_text:            FullText.new(text: "cats"))
     sleep 2
 
     @instance.reload
     assert_equal time.to_i, @instance.full_text_checked_at.to_i
-    assert_equal "cats", @instance.full_text
+    assert_equal "cats", @instance.full_text.text
   end
 
   test "save() does not read full text when an effective key does not exist" do

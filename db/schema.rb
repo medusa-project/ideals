@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_13_200514) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_24_020522) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -91,7 +91,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_13_200514) do
     t.string "permanent_key"
     t.text "description"
     t.boolean "primary", default: false, null: false
-    t.text "full_text"
     t.datetime "full_text_checked_at"
     t.integer "bundle_position", default: 0, null: false
     t.index ["bundle"], name: "index_bitstreams_on_bundle"
@@ -187,6 +186,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_13_200514) do
     t.index ["happened_at"], name: "index_events_on_happened_at"
     t.index ["item_id"], name: "index_events_on_item_id"
     t.index ["user_id"], name: "index_events_on_user_id"
+  end
+
+  create_table "full_texts", force: :cascade do |t|
+    t.bigint "bitstream_id", null: false
+    t.text "text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bitstream_id"], name: "index_full_texts_on_bitstream_id", unique: true
   end
 
   create_table "handles", force: :cascade do |t|
@@ -523,6 +530,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_13_200514) do
   add_foreign_key "events", "bitstreams", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "full_texts", "bitstreams", on_update: :cascade, on_delete: :cascade
   add_foreign_key "handles", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "handles", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "handles", "units", on_update: :cascade, on_delete: :cascade
