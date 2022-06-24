@@ -333,16 +333,17 @@ class Item < ApplicationRecord
     # either by one large bitstream's FullText, or many smaller bitstreams'
     # FullText.
     io         = StringIO.new
-    max_length = 7000000 # leave some room for the rest of the document
+    max_length = 7000000 # bytes; leave some room for the rest of the document
     Bitstream.uncached do
       self.bitstreams.select{ |bs| bs.full_text_checked_at.present? }.each do |bs|
         text_obj = bs.full_text
         io      << text_obj.text.delete("\000") if text_obj
-        puts io.length
         break if io.length > max_length
       end
     end
-    io.truncate(max_length) # this is bytes not chars
+    # N.B.: truncate() will actually pad the string if it is shorter than
+    # max_length.
+    io.truncate(max_length) if io.length > max_length
     doc[IndexFields::FULL_TEXT]          = io.string
     doc[IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY] =
         self.unit_and_collection_sort_key
