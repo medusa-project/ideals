@@ -4,7 +4,7 @@ copy (SELECT i2b.item_id, b.bitstream_id, b.internal_id, b.size_bytes, bu.primar
       LEFT JOIN bitstream b ON b2b.bitstream_id = b.bitstream_id
       LEFT JOIN bundle bu ON bu.primary_bitstream_id = b.bitstream_id
       LEFT JOIN bitstreamformatregistry reg ON reg.bitstream_format_id = b.bitstream_format_id
-      WHERE i2b.item_id NOT IN (####)
+      WHERE b.bitstream_id NOT IN (####)
       ORDER BY i2b.item_id)
     TO STDOUT
     WITH DELIMITER '|' CSV HEADER;
