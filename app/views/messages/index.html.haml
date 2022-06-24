@@ -5,6 +5,8 @@
 
 - @messages.each do |message|
   .card.mb-3
+    %h5.card-header
+      = message.id
     .card-body
       = render partial: "show", locals: { message: message }
 
