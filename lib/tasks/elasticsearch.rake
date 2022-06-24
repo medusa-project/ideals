@@ -37,6 +37,11 @@ namespace :elasticsearch do
           delete_index_alias(args[:index_name], args[:alias_name])
     end
 
+    desc 'Get information about an index'
+    task :info => :environment do
+      puts ElasticsearchClient.instance.index_info
+    end
+
     desc 'List indexes'
     task :list => :environment do
       puts ElasticsearchClient.instance.indexes
