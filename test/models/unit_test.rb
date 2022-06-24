@@ -317,6 +317,21 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal expected, actual[1]['dl_count']
   end
 
+  # effective_metadata_profile()
+
+  test "effective_metadata_profile() returns the assigned metadata profile" do
+    profile = metadata_profiles(:unused)
+    @instance.metadata_profile = profile
+    assert_equal profile, @instance.effective_metadata_profile
+  end
+
+  test "effective_metadata_profile() falls back to the default profile if no
+  profile is assigned" do
+    @instance.metadata_profile = nil
+    assert_equal metadata_profiles(:default),
+                 @instance.effective_metadata_profile
+  end
+
   # exhume!()
 
   test "exhume!() exhumes a buried unit" do

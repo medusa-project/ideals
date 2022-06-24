@@ -25,10 +25,11 @@
 # * `description`           Full description string. See {short_description}.
 # * `introduction`          Introduction string. May contain HTML.
 # * `metadata_profile_id`   Foreign key to {MetadataProfile}. Instances without
-#                           this set should use the {MetadataProfile#default
-#                           default profile}. In most cases,
-#                           {effective_metadata_profile} should be used instead
-#                           of accessing this directly.
+#                           this set will fall back to the primary unit's
+#                           [MetadataProfile] and then to the
+#                           {MetadataProfile#default default profile}. In most
+#                           cases, {effective_metadata_profile} should be used
+#                           instead of accessing this directly.
 # * `parent_id`             Foreign key to the parent [Collection].
 # * `provenance`            Provenance string.
 # * `rights`                Rights string.
@@ -361,11 +362,12 @@ class Collection < ApplicationRecord
 
   ##
   # @return [MetadataProfile] The metadata profile assigned to the instance, or
-  #         the default profile if no profile is assigned.
+  #         the profile assigned to the primary unit, or the default profile as
+  #         a last resort.
   #
   def effective_metadata_profile
-    #noinspection RubyYardReturnMatch
-    self.metadata_profile || MetadataProfile.default
+    #noinspection RubyMismatchedReturnType
+    self.metadata_profile || self.primary_unit&.effective_metadata_profile
   end
 
   ##
@@ -373,7 +375,7 @@ class Collection < ApplicationRecord
   #         instance, or the default profile if no profile is assigned.
   #
   def effective_submission_profile
-    #noinspection RubyYardReturnMatch
+    #noinspection RubyMismatchedReturnType
     self.submission_profile || SubmissionProfile.default
   end
 

@@ -201,6 +201,7 @@ class UnitsController < ApplicationController
   # Responds to `GET /units/:id/about`
   #
   def show_about
+    @metadata_profile     = @unit.effective_metadata_profile
     @num_downloads        = @unit.download_count
     @num_submitting_items = @unit.submitting_item_count
     @collections = Collection.search.
@@ -403,8 +404,9 @@ class UnitsController < ApplicationController
   end
 
   def unit_params
-    params.require(:unit).permit(:institution_id, :introduction, :parent_id,
-                                 :rights, :short_description, :title)
+    params.require(:unit).permit(:institution_id, :introduction,
+                                 :metadata_profile_id, :parent_id, :rights,
+                                 :short_description, :title)
   end
 
 end

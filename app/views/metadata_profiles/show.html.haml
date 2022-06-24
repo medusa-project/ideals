@@ -45,16 +45,24 @@
       = icon_for(MetadataProfileElement)
       Elements
       %span.badge.badge-pill.badge-secondary= @profile.elements.count
-  - unless @profile.default
-    %li.nav-item
-      %a#collections-tab.nav-link{href:            "#collections",
-                                  "data-toggle":   "tab",
-                                  role:            "tab",
-                                  "aria-controls": "collections",
-                                  "aria-selected": "false"}
-        = icon_for(Collection)
-        Collections
-        %span.badge.badge-pill.badge-secondary= @collections.count
+  %li.nav-item
+    %a#units-tab.nav-link{href:            "#units",
+                          "data-toggle":   "tab",
+                          role:            "tab",
+                          "aria-controls": "units",
+                          "aria-selected": "false"}
+      = icon_for(Unit)
+      Directly Assigned Units
+      %span.badge.badge-pill.badge-secondary= @units.count
+  %li.nav-item
+    %a#collections-tab.nav-link{href:            "#collections",
+                                "data-toggle":   "tab",
+                                role:            "tab",
+                                "aria-controls": "collections",
+                                "aria-selected": "false"}
+      = icon_for(Collection)
+      Directly Assigned Collections
+      %span.badge.badge-pill.badge-secondary= @collections.count
 
 .tab-content
   #elements.tab-pane.fade.show.active{role: "tabpanel",
@@ -126,20 +134,25 @@
             %td.boolean= boolean(element.indexed)
             %td
               .progress
-                .progress-bar{role: "progressbar",
-                              style: "width: #{element.relevance_weight * 10}%",
+                .progress-bar{role:            "progressbar",
+                              style:           "width: #{element.relevance_weight * 10}%",
                               "aria-valuenow": element.relevance_weight,
                               "aria-valuemin": MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
                               "aria-valuemax": MetadataProfileElement::MAX_RELEVANCE_WEIGHT}
                   = element.relevance_weight
 
-  - unless @profile.default
-    #collections.tab-pane.fade{role: "tabpanel",
-                               "aria-labelledby": "collections-tab"}
-      - if @collections.count > 0
-        = resource_list(@collections)
-      - else
-        This metadata profile is not in use by any collections.
+  #units.tab-pane.fade{role:              "tabpanel",
+                       "aria-labelledby": "units-tab"}
+    - if @units.count > 0
+      = resource_list(@units)
+    - else
+      This metadata profile is not directly assigned to any units.
+  #collections.tab-pane.fade{role:              "tabpanel",
+                             "aria-labelledby": "collections-tab"}
+    - if @collections.count > 0
+      = resource_list(@collections)
+    - else
+      This metadata profile is not directly assigned to any collections.
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-profile-modal", title: "Edit Profile" }

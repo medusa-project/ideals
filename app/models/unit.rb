@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 ##
-# See the documentation of {Indexed} for a detailed explanation of how indexing
+# High-level container for [Collection]s, analogous to a "community" in DSpace.
+#
+# # Indexing
+#
+# See the documentation of [Indexed] for a detailed explanation of how indexing
 # works.
 #
 # # Deletion
@@ -12,17 +16,23 @@
 #
 # # Attributes
 #
-# * `buried`            Indicates a "near-deletion" which leaves behind only a
-#                       row in the units table that facilitates display of a
-#                       tombstone record. The burial is not reversible.
-# * `created_at`        Managed by ActiveRecord.
-# * `institution_id`    Foreign key to {Institution}.
-# * `introduction`      Introduction string. May contain HTML.
-# * `parent_id`         Foreign key to a parent {Unit}.
-# * `rights`            Rights string.
-# * `short_description` Short description string.
-# * `title`             Unit title.
-# * `updated_at`        Managed by ActiveRecord.
+# * `buried`              Indicates a "near-deletion" which leaves behind only
+#                         a row in the units table that facilitates display of
+#                         a tombstone record. The burial is not reversible.
+# * `created_at`          Managed by ActiveRecord.
+# * `institution_id`      Foreign key to {Institution}.
+# * `introduction`        Introduction string. May contain HTML.
+# * `metadata_profile_id` Foreign key to [MetadataProfile]. Instances without
+#                         this set will use the {MetadataProfile#default
+#                         default profile}. Child collections may override it
+#                         with their own {metadata_profile} property. In most
+#                         cases, {effective_metadata_profile} should be used
+#                         instead of accessing this directly.
+# * `parent_id`           Foreign key to a parent {Unit}.
+# * `rights`              Rights string.
+# * `short_description`   Short description string.
+# * `title`               Unit title.
+# * `updated_at`          Managed by ActiveRecord.
 #
 class Unit < ApplicationRecord
   include Breadcrumb
@@ -46,6 +56,7 @@ class Unit < ApplicationRecord
   end
 
   belongs_to :institution
+  belongs_to :metadata_profile, inverse_of: :units, optional: true
   belongs_to :parent, class_name: "Unit", foreign_key: "parent_id", optional: true
 
   has_many :administrators
@@ -277,6 +288,15 @@ class Unit < ApplicationRecord
         ORDER BY mon.month;"
     values = [self.id, Event::Type::DOWNLOAD, start_time, end_time]
     self.class.connection.exec_query(sql, "SQL", values)
+  end
+
+  ##
+  # @return [MetadataProfile] The metadata profile assigned to the instance, or
+  #         the {MetadataProfile#default default profile} as a last resort.
+  #
+  def effective_metadata_profile
+    #noinspection RubyMismatchedReturnType
+    self.metadata_profile || MetadataProfile.default
   end
 
   ##

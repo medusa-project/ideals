@@ -1,13 +1,14 @@
 ##
-# Defines an ordered list of {RegisteredElement metadata elements}, their
+# Defines an ordered list of [RegisteredElement metadata elements], their
 # labels, and whether they are searchable, sortable, etc. A metadata profile
-# can be assigned to a {Collection}. Collections without an assigned profile
-# will use the default profile--the single profile whose `default` property
-# is set to `true`.
+# can be assigned to a [Collection] and a [Unit]. Collections without an
+# assigned profile will fall back to the parent unit's profile, and then to the
+# global default profile--the single profile whose `default` property is set to
+# `true`.
 #
 # A metadata profile is like a template or view. Instead of enumerating an
-# {Item}'s metadata elements for public display, for example, we enumerate the
-# elements in its {Collection}'s metadata profile, and display each of the ones
+# [Item]'s metadata elements for public display, for example, we enumerate the
+# elements in its [Collection]'s metadata profile, and display each of the ones
 # that match in profile order.
 #
 # N.B.: the idea for a "metadata profile" comes from
@@ -40,6 +41,8 @@ class MetadataProfile < ApplicationRecord
   has_many :elements, -> { order(:position) },
            class_name: "MetadataProfileElement", inverse_of: :metadata_profile,
            dependent: :destroy
+  has_many :units, inverse_of: :metadata_profile,
+           dependent: :restrict_with_exception
 
   validates :full_text_relevance_weight, numericality: { only_integer: true,
                                                          greater_than_or_equal_to: MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
