@@ -522,7 +522,7 @@ class Bitstream < ApplicationRecord
       outfile = Tempfile.new("full_text")
       begin
         # pdftotext is part of the poppler or xpdf package.
-        `pdftotext #{infile.path} #{outfile.path}`
+        `pdftotext -q #{infile.path} #{outfile.path}`
         text = File.read(outfile.path)
       ensure
         infile.close
