@@ -240,7 +240,7 @@ module ApplicationHelper
           select{ |e| e.name == reg_e.name }.
           sort_by(&:position).
           each do |asc_e|
-        value = sanitize(asc_e.string)
+        value = sanitize(asc_e.string, tags: [])
         # To avoid adding multiple same-named meta tags, separate values with
         # semicolons.
         if name_value_map.key?(reg_e.highwire_mapping)
@@ -379,7 +379,7 @@ module ApplicationHelper
         sort_by(&:position).
         each do |asc_e|
         html << "<meta name=\"#{reg_element.name.gsub(":", ".")}\" "\
-                "value=\"#{sanitize(asc_e.string)}\">"
+                "value=\"#{sanitize(asc_e.string, tags: [])}\">"
       end
     end
     raw(html.string)
