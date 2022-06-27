@@ -189,15 +189,17 @@ const ItemView = function() {
 
     new FileNavigator();
     $("#file-navigator").on("IDEALS.FileNavigator.fileChanged", function() {
-        const viewerjsViewer  = $("#viewerjs-pdf-viewer");
+        /* See BitstreamsHelper.pdf_object_viewer_for() for why this is commented out
+        const pdfjsViewer     = $("#pdfjs-pdf-viewer");
         const nativePDFViewer = $("#native-pdf-viewer");
         if (IDEALS.Util.isPDFSupportedNatively()) {
-            viewerjsViewer.hide();
+            pdfjsViewer.hide();
             nativePDFViewer.show();
         } else {
-            viewerjsViewer.show();
+            pdfjsViewer.show();
             nativePDFViewer.hide();
         }
+        */
         $(this).find(".edit-bitstream").on("click", function() {
             const item_id      = $(this).data("item-id");
             const bitstream_id = $(this).data("bitstream-id");

@@ -92,20 +92,22 @@ module BitstreamsHelper
       "type=\"#{bitstream.media_type}\"></object>")
   end
 
-  def pdf_viewer_for(bitstream)
+  ##
+  # Renders a PDF in an `<object>` tag if the browser natively supports PDFs,
+  # falling back PDF.js otherwise. This is currently not used because testing
+  # has revealed weird behavior in several browsers (including Firefox and
+  # Safari but not Chrome) where PDFs sometimes load and sometimes don't, or in
+  # Safari's case, the first page appears but the rest of the pages appear
+  # blank.
+  #
+  def pdf_object_viewer_for(bitstream)
     html = StringIO.new
-    # This container will contain two different viewers: ViewerJS and a native
+    # This container will contain two different viewers: PDF.js and a native
     # viewer. One or the other will be shown via JS depending on whether the
     # browser already supports PDF.
 
-    # Add a ViewerJS viewer
-    bitstream_path = item_bitstream_stream_path(bitstream,
-                                                'response-content-disposition': "inline")
-    viewer_url     = asset_path("/ViewerJS/#" + bitstream_path)
-    html          <<   "<iframe id=\"viewerjs-pdf-viewer\" "\
-                           "src=\"#{viewer_url}\" frameborder=\"0\" "\
-                           "height=\"100%\" width=\"100%\" "\
-                           "allowfullscreen webkitallowfullscreen></iframe>"
+    # Add a PDF.js viewer
+    html << pdfjs_viewer_for(bitstream)
 
     # Add a generic embedded viewer; this is preferable to PDF.js when
     # the browser supports embedded PDFs
@@ -115,6 +117,21 @@ module BitstreamsHelper
                          "type=\"#{bitstream.media_type}\"></object>"
 
     raw(html.string)
+  end
+
+  ##
+  # @see pdf_object_viewer_for
+  #
+  def pdfjs_viewer_for(bitstream)
+    # N.B.: the PDF.js source code must be modified to allow it to use
+    # cross-domain requests. See: https://stackoverflow.com/a/69342595
+    # The commit history of public/pdfjs/web/viewer.js should reveal the
+    # change.
+    bitstream_url = bitstream.presigned_url(content_disposition: "inline")
+    viewer_url    = asset_path("/pdfjs/web/viewer.html?file=" + CGI.escape(bitstream_url))
+    html          = "<iframe src=\"#{viewer_url}\" id=\"pdfjs-pdf-viewer\" "\
+                            "height=\"100%\" width=\"100%\"></iframe>"
+    raw(html)
   end
 
   ##
