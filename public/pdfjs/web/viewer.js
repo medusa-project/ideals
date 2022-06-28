@@ -145,7 +145,7 @@ const defaultOptions = {
     kind: OptionKind.VIEWER + OptionKind.PREFERENCE
   },
   spreadModeOnLoad: {
-    value: -1,
+    value: 0,
     kind: OptionKind.VIEWER + OptionKind.PREFERENCE
   },
   textLayerMode: {
@@ -13961,7 +13961,7 @@ class BasePreferences {
         "renderer": "canvas",
         "sidebarViewOnLoad": -1,
         "scrollModeOnLoad": -1,
-        "spreadModeOnLoad": -1,
+        "spreadModeOnLoad": 0,
         "textLayerMode": 1,
         "useOnlyCssZoom": false,
         "viewerCssTheme": 0,

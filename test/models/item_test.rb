@@ -229,7 +229,7 @@ class ItemTest < ActiveSupport::TestCase
   test "assign_handle() creates an identifier element" do
     item = items(:described)
     item.assign_handle
-    assert_equal item.handle.url, item.element("dcterms:identifier").uri
+    assert_equal item.handle.handle_net_url, item.element("dcterms:identifier").uri
   end
 
   # buried?()
@@ -262,9 +262,16 @@ class ItemTest < ActiveSupport::TestCase
 
   # complete_submission()
 
+  test "complete_submission() creates an associated dc:date:submitted element" do
+    item = items(:described)
+    item.complete_submission
+    assert_not_nil item.element("dc:date:submitted").string
+  end
+
   test "complete_submission() sets the stage to submitted if the collection is
   reviewing submissions" do
     item = items(:described)
+    item.primary_collection.submissions_reviewed = true
     item.complete_submission
     assert_equal Item::Stages::SUBMITTED, item.stage
   end
@@ -277,6 +284,14 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal Item::Stages::APPROVED, item.stage
   end
 
+  test "complete_submission() does not create an associated dcterms:available
+  element if the collection is reviewing submissions" do
+    item = items(:submitting)
+    item.primary_collection.submissions_reviewed = true
+    item.complete_submission
+    assert_nil item.element("dcterms:available")
+  end
+
   test "complete_submission() creates an associated dcterms:available element
   if the collection is not reviewing submissions" do
     item = items(:submitting)
@@ -285,17 +300,54 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_nil item.element("dcterms:available").string
   end
 
-  test "complete_submission() creates an associated dc:date:submitted element" do
+  test "complete_submission() does not assign a handle if the collection is
+  reviewing submissions" do
     item = items(:described)
+    item.primary_collection.submissions_reviewed = true
     item.complete_submission
-    assert_not_nil item.element("dc:date:submitted").string
+    assert_nil item.handle
   end
 
-  test "complete_submission() assigns a handle" do
+  test "complete_submission() assigns a handle if the collection is not
+  reviewing submissions" do
     item = items(:described)
+    item.primary_collection.submissions_reviewed = false
     item.complete_submission
     assert_not_nil item.handle.suffix
-    assert_equal item.handle.url, item.element("dcterms:identifier").uri
+    assert_equal item.handle.handle_net_url, item.element("dcterms:identifier").uri
+  end
+
+  test "complete_submission() does not move any associated Bitstreams into
+  permanent storage if the collection is reviewing submissions" do
+    item    = items(:described)
+    item.primary_collection.submissions_reviewed = true
+    fixture = file_fixture("escher_lego.jpg")
+    @instance.bitstreams.each do |bs|
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+    end
+
+    item.complete_submission
+
+    assert_equal item.bitstreams.count,
+                 item.bitstreams.where(permanent_key: nil).count
+  end
+
+  test "complete_submission() moves all associated Bitstreams into
+  permanent storage if the collection is not reviewing submissions" do
+    item    = items(:described)
+    fixture = file_fixture("escher_lego.jpg")
+    @instance.bitstreams.each do |bs|
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+    end
+
+    item.complete_submission
+
+    assert_equal item.bitstreams.count,
+                 item.bitstreams.where.not(permanent_key: nil).count
   end
 
   # delete_from_permanent_storage()

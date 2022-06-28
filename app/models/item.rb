@@ -389,8 +389,8 @@ class Item < ApplicationRecord
     self.handle.reload
     # Assign a dcterms:identifier element with a URI value of the handle URI.
     self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:identifier"),
-                        string:             self.handle.url,
-                        uri:                self.handle.url)
+                        string:             self.handle.handle_net_url,
+                        uri:                self.handle.handle_net_url)
   end
 
   ##
@@ -421,16 +421,17 @@ class Item < ApplicationRecord
   # @return [void]
   #
   def complete_submission
-    if self.primary_collection&.submissions_reviewed
-      self.update!(stage: Stages::SUBMITTED)
-    else
-      self.approve
-    end
     # Assign a dcterms:date:submitted element with a string value of the
     # current ISO-8601 timestamp.
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:submitted"),
                         string:             Time.now.iso8601)
-    assign_handle
+    if self.primary_collection&.submissions_reviewed
+      self.update!(stage: Stages::SUBMITTED)
+    else
+      self.approve
+      self.assign_handle
+      self.move_into_permanent_storage
+    end
   end
 
   ##
