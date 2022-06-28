@@ -229,7 +229,7 @@ class ItemTest < ActiveSupport::TestCase
   test "assign_handle() creates an identifier element" do
     item = items(:described)
     item.assign_handle
-    assert_equal item.handle.url, item.element("dcterms:identifier").uri
+    assert_equal item.handle.handle_net_url, item.element("dcterms:identifier").uri
   end
 
   # buried?()

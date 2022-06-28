@@ -389,8 +389,8 @@ class Item < ApplicationRecord
     self.handle.reload
     # Assign a dcterms:identifier element with a URI value of the handle URI.
     self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:identifier"),
-                        string:             self.handle.url,
-                        uri:                self.handle.url)
+                        string:             self.handle.handle_net_url,
+                        uri:                self.handle.handle_net_url)
   end
 
   ##
