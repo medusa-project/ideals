@@ -226,6 +226,12 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_nil item.handle.suffix
   end
 
+  test "assign_handle() puts the created handle to the server" do
+    item = items(:described)
+    item.assign_handle
+    assert item.handle.exists_on_server?
+  end
+
   test "assign_handle() creates an identifier element" do
     item = items(:described)
     item.assign_handle

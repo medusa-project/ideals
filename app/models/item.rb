@@ -384,9 +384,7 @@ class Item < ApplicationRecord
   #
   def assign_handle
     return if self.handle
-    self.handle = Handle.create!(item: self)
-    # Reload it in order to read the suffix, which is auto-incrementing.
-    self.handle.reload
+    self.create_handle!
     # Assign a dcterms:identifier element with a URI value of the handle URI.
     self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:identifier"),
                         string:             self.handle.handle_net_url,
