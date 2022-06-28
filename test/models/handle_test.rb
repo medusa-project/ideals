@@ -24,6 +24,18 @@ class HandleTest < ActiveSupport::TestCase
     assert_equal 54, handle.suffix
   end
 
+  # create()
+
+  test "create() puts the handle to the handle server" do
+    client = HandleClient.new
+    handle = Handle.create!(item: items(:described))
+    begin
+      assert client.exists?(handle)
+    ensure
+      client.delete_handle(handle)
+    end
+  end
+
   # delete_from_server()
 
   test "delete_from_server() deletes the handle from the handle server" do
@@ -70,19 +82,6 @@ class HandleTest < ActiveSupport::TestCase
     begin
       assert !client.exists?(@instance.handle)
       @instance.put_to_server
-      assert client.exists?(@instance.handle)
-    ensure
-      client.delete_handle(@instance)
-    end
-  end
-
-  # save()
-
-  test "save() saves the handle to the handle server" do
-    client = HandleClient.new
-    begin
-      assert !client.exists?(@instance.handle)
-      @instance.save
       assert client.exists?(@instance.handle)
     ensure
       client.delete_handle(@instance)
