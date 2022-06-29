@@ -55,7 +55,7 @@ class User < ApplicationRecord
 
   validates :email, presence: true, length: {maximum: 255},
             format: {with: StringUtils::EMAIL_REGEX}
-  validates_uniqueness_of :email, scope: :type
+  validates_uniqueness_of :email, case_sensitive: false
   validates :name, presence: true
   validates :uid, presence: true
   validates_uniqueness_of :uid, case_sensitive: true
