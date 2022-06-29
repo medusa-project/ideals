@@ -9,16 +9,18 @@ class IdealsMailer < ApplicationMailer
 
   ##
   # @param exception [Exception]
-  # @param url [String] Request URL.
-  # @param user [User] Current user.
+  # @param message [String, nil] Additional message text.
+  # @param url [String]          Request URL.
+  # @param user [User]           Current user.
   # @return [String]
   #
-  def self.error_body(exception, url_path: nil, user: nil)
+  def self.error_body(exception, message: nil, url_path: nil, user: nil)
     io = StringIO.new
     io << "Error"
     io << " on #{url_path}" if url_path
     io << ":\nClass: #{exception.class}\n"
     io << "Message: #{exception.message}\n"
+    io << "#{message}\n" if message.present?
     io << "Time: #{Time.now.iso8601}\n"
     io << "User: #{user.name}\n" if user
     io << "Stack Trace:\n"
