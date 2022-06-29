@@ -46,7 +46,7 @@ class UnitsController < ApplicationController
         filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
         filter(Collection::IndexFields::UNIT_DEFAULT, false).
         include_children(false).
-        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+        order("#{Collection::IndexFields::TITLE}.sort").
         limit(999)
     if params[:'for-select'] == "true"
       render partial: "collections_for_select"
