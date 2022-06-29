@@ -163,6 +163,8 @@ class DspaceImporter
     line_count = count_lines(csv_pathname)
     progress   = Progress.new(line_count)
 
+    puts "#{line_count} rows left"
+
     File.open(csv_pathname, "r").each_line.with_index do |line, row_num|
       next if row_num == 0 # skip header row
 
@@ -170,15 +172,21 @@ class DspaceImporter
       bs_id   = row_arr[0].to_i
       month   = Time.parse(row_arr[1])
       count   = row_arr[2].to_i
+      stat_id = row_arr[3].to_i
 
       progress.report(row_num, "Importing bitstream statistics")
-      if Bitstream.exists?(bs_id)
-        count.times do
-          Event.create!(bitstream_id: bs_id,
-                        happened_at:  month,
-                        event_type:   Event::Type::DOWNLOAD,
-                        description:  "Imported download from DSpace")
+      begin
+        Event.transaction do
+          count.times do
+            Event.create!(bitstream_id: bs_id,
+                          happened_at:  month,
+                          temp_stat_id: stat_id,
+                          event_type:   Event::Type::DOWNLOAD,
+                          description:  "Imported download from DSpace")
+          end
         end
+      rescue ActiveRecord::RecordNotUnique
+        puts "not unique"
       end
     end
   ensure

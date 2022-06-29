@@ -218,12 +218,14 @@ namespace :dspace do
                                :source_db_host,
                                :source_db_user,
                                :source_db_password] => :environment do |task, args|
+      max_stat_id = Event.order("temp_stat_id DESC NULLS LAST").limit(1).first.temp_stat_id || 0
       do_migrate(args[:source_db_name],
                  args[:source_db_host],
                  args[:source_db_user],
                  args[:source_db_password],
                  "export_bitstream_statistics.sql",
-                 :import_bitstream_statistics)
+                 :import_bitstream_statistics,
+                 "#{max_stat_id}")
     end
   end
 
