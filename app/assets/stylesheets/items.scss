@@ -11,10 +11,10 @@ body#show_item {
   /* N.B.: main pane heights are controlled in ItemViewer (items.js) */
   #file-navigator {
     background-color: black;
-    color: white;
     margin: 0 auto;
     width: 96%;
     #file-navigator-thumbnail-column {
+      color: white;
       #file-navigator-thumbnail-content {
         display: flex;
         flex-flow: row wrap;
@@ -68,6 +68,7 @@ body#show_item {
       }
     }
     #file-navigator-viewer-column {
+      color: white;
       height: 100%;
       #file-navigator-viewer-header {
         display: flex;

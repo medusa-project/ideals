@@ -173,6 +173,41 @@ const FileNavigator = function() {
             thumbToSelect = thumbs.filter(":first");
         }
         thumbToSelect.trigger("click");
+
+        // Wire up the download counts button.
+        $(".download-counts").on("click", function() {
+            const id  = $(this).data("item-id");
+            const url = ROOT_URL + "/items/" + id + "/statistics";
+            $.get(url, function(data) {
+                const dl_counts_modal = $("#download-counts-modal");
+                dl_counts_modal.find(".modal-body").html(data);
+
+                const panel_content = $("#download-counts-xhr-content");
+                const form          = $("#download-counts-form");
+
+                const refreshContent = function() {
+                    const url = ROOT_URL + "/items/" + id + "/download-counts?" +
+                        form.serialize();
+                    $.get(url, function(data) {
+                        panel_content.prev().hide(); // hide the spinner
+                        panel_content.html(data);
+                        const canvas    = $("#download-chart");
+                        const chartData = $.parseJSON($("#chart-data").val());
+                        new IDEALS.Chart(canvas, chartData);
+                    });
+                };
+
+                refreshContent();
+
+                form.find("input[type=submit]").on("click", function() {
+                    // Remove existing content and show the spinner
+                    panel_content.empty();
+                    panel_content.prev().show(); // show the spinner
+                    refreshContent();
+                    return false;
+                });
+            });
+        });
     });
 
 };
@@ -307,40 +342,6 @@ const ItemView = function() {
         const url = ROOT_URL + "/items/" + id + "/edit-properties";
         $.get(url, function(data) {
             $("#edit-item-properties-modal .modal-body").html(data);
-        });
-    });
-    // Loads content into the Download Counts panel
-    $(".download-counts").on("click", function() {
-        const id  = $(this).data("item-id");
-        const url = ROOT_URL + "/items/" + id + "/statistics";
-        $.get(url, function(data) {
-            const dl_counts_modal = $("#download-counts-modal");
-            dl_counts_modal.find(".modal-body").html(data);
-
-            const panel_content = $("#download-counts-xhr-content");
-            const form          = $("#download-counts-form");
-
-            const refreshContent = function() {
-                const url = ROOT_URL + "/items/" + id + "/download-counts?" +
-                    form.serialize();
-                $.get(url, function(data) {
-                    panel_content.prev().hide(); // hide the spinner
-                    panel_content.html(data);
-                    const canvas    = $("#download-chart");
-                    const chartData = $.parseJSON($("#chart-data").val());
-                    new IDEALS.Chart(canvas, chartData);
-                });
-            };
-
-            refreshContent();
-
-            form.find("input[type=submit]").on("click", function() {
-                // Remove existing content and show the spinner
-                panel_content.empty();
-                panel_content.prev().show(); // show the spinner
-                refreshContent();
-                return false;
-            });
         });
     });
     $(".upload-item-files").on("click", function() {
