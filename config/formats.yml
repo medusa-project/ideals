@@ -368,6 +368,16 @@ js:
   category: code
   icon: file-code-o
   readable_by_vips: false
+key:
+  short_name: Keynote
+  long_name: Apple Keynote Presentation
+  extensions:
+    - key
+  media_types:
+    - application/vnd.apple.keynote
+  category: document
+  icon: file-powerpoint-o
+  readable_by_vips: false
 latex:
   short_name: LaTeX
   long_name: LaTeX
@@ -710,6 +720,16 @@ oxt:
     - application/vnd.openofficeorg.extension
   category: document
   icon: file-o
+  readable_by_vips: false
+pages:
+  short_name: Pages
+  long_name: Apple Pages Document
+  extensions:
+    - pages
+  media_types:
+    - application/vnd.apple.pages
+  category: document
+  icon: file-text-o
   readable_by_vips: false
 pcd:
   short_name: PCD
