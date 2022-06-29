@@ -185,6 +185,8 @@ class DspaceImporter
                           description:  "Imported download from DSpace")
           end
         end
+      rescue ActiveRecord::InvalidForeignKey
+        # nothing we can do
       rescue ActiveRecord::RecordNotUnique
         puts "not unique"
       end
