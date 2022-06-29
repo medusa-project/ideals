@@ -108,7 +108,15 @@ class ShibbolethUser < User
     self.affiliation = Affiliation.from_shibboleth(auth)
     dept             = auth.dig("extra", "raw_info", "departmentCode")
     self.department  = Department.create!(name: dept) if dept
-    self.save!
+    begin
+      self.save!
+    rescue => e
+      @message = IdealsMailer.error_body(e,
+                                         message: "[user: #{self.as_json}]\n[auth hash: #{auth.as_json}]",
+                                         user:    self)
+      Rails.logger.error(@message)
+      IdealsMailer.error(@message).deliver_now unless Rails.env.development?
+    end
   end
 
 end
