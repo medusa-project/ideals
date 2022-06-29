@@ -13,7 +13,8 @@ class ShibbolethUser < User
   #
   def self.from_omniauth(auth)
     auth = auth.deep_stringify_keys
-    user = ShibbolethUser.find_by(uid: auth["uid"])
+    user = ShibbolethUser.find_by(uid: auth["uid"]) ||
+           ShibbolethUser.find_by(email: auth.dig("info", "email"))
     if user
       user.update_with_omniauth(auth)
     else
