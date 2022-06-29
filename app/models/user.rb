@@ -58,7 +58,7 @@ class User < ApplicationRecord
   validates_uniqueness_of :email, case_sensitive: false
   validates :name, presence: true
   validates :uid, presence: true
-  validates_uniqueness_of :uid, case_sensitive: true
+  validates_uniqueness_of :uid, case_sensitive: false
 
   serialize :auth_hash
 
