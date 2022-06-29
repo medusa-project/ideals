@@ -377,7 +377,12 @@ const IDEALS = {
                 html += "</li>";
             });
             html += "</ul>";
-            container.append(html);
+            // Ensure that units always appear before collections.
+            if (data[0].class === "Unit") {
+                container.find("a:first").after(html);
+            } else {
+                container.append(html);
+            }
             attachExpandButtonListeners();
         };
 
