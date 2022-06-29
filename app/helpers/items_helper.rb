@@ -90,7 +90,7 @@ module ItemsHelper
     html <<         '</label>'
     html <<       '</div>'
 
-    if embargo && embargo.expires_at.year > latest_year
+    if embargo&.expires_at && embargo.expires_at.year > latest_year
       selected_year = latest_year
     end
     html <<       date_picker(month_select_name: "embargoes[0][expires_at_month]",
