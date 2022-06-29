@@ -130,7 +130,8 @@ module BitstreamsHelper
     bitstream_url = bitstream.presigned_url(content_disposition: "inline")
     viewer_url    = asset_path("/pdfjs/web/viewer.html?file=" + CGI.escape(bitstream_url))
     html          = "<iframe src=\"#{viewer_url}\" id=\"pdfjs-pdf-viewer\" "\
-                            "height=\"100%\" width=\"100%\"></iframe>"
+                            "height=\"100%\" width=\"100%\" "\
+                            "frameborder=\"0\"></iframe>"
     raw(html)
   end
 
