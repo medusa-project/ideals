@@ -6,6 +6,14 @@
 = form_tag(settings_path, method: :patch) do
 
   .form-group.row
+    = label_tag("settings[#{Setting::Key::EARLIEST_SEARCH_YEAR}]",
+                "Earliest Search Year",
+                class: "col-sm-3 col-form-label")
+    .col-sm-9
+      = number_field_tag("settings[#{Setting::Key::EARLIEST_SEARCH_YEAR}]",
+                         Setting::integer(Setting::Key::EARLIEST_SEARCH_YEAR),
+                         class: "form-control")
+  .form-group.row
     = label_tag("settings[#{Setting::Key::BANNER_MESSAGE}]",
                 "Banner Message",
                 class: "col-sm-3 col-form-label")

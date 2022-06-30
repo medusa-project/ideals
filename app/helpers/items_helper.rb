@@ -29,7 +29,7 @@ module ItemsHelper
                               selected_month:    0,
                               selected_day:      0,
                               selected_year:     0,
-                              earliest_year:     1850, # TODO: make this configurable
+                              earliest_year:     Setting.integer(Setting::Key::EARLIEST_SEARCH_YEAR),
                               latest_year:       Time.now.year,
                               include_blanks:    true)
         html << '</div>'

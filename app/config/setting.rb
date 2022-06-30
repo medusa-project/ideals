@@ -14,9 +14,10 @@ class Setting < ApplicationRecord
 
   class Key
     # String
-    BANNER_MESSAGE      = "banner_message"
+    BANNER_MESSAGE       = "banner_message"
     # Allowed values: info, warning, danger
-    BANNER_MESSAGE_TYPE = "banner_message.type"
+    BANNER_MESSAGE_TYPE  = "banner_message.type"
+    EARLIEST_SEARCH_YEAR = "earliest_search_year"
   end
 
   validates :key, presence: true, uniqueness: { case_sensitive: false }
