@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_30_153519) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_30_160112) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -336,10 +336,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_30_153519) do
     t.boolean "sortable", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "indexed", default: true, null: false
     t.integer "relevance_weight", default: 5, null: false
     t.index ["faceted"], name: "index_metadata_profile_elements_on_faceted"
-    t.index ["indexed"], name: "index_metadata_profile_elements_on_indexed"
     t.index ["metadata_profile_id"], name: "index_metadata_profile_elements_on_metadata_profile_id"
     t.index ["position"], name: "index_metadata_profile_elements_on_position"
     t.index ["registered_element_id"], name: "index_metadata_profile_elements_on_registered_element_id"

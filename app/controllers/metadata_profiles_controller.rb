@@ -74,19 +74,6 @@ class MetadataProfilesController < ApplicationController
   end
 
   ##
-  # Asynchronously reindexes all items in all collections associated with a
-  # given metadata profile.
-  #
-  # Responds to `POST /metadata-profiles/:id/reindex-items`
-  #
-  def reindex_items
-    ReindexItemsJob.perform_later(@profile.collections.to_a)
-    flash['success'] = "Items are being reindexed in the background. "\
-                       "This will take a while."
-    redirect_back fallback_location: metadata_profile_path(@profile)
-  end
-
-  ##
   # Responds to `GET /metadata-profiles/:id`
   #
   def show

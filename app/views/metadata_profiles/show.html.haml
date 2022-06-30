@@ -17,13 +17,6 @@
                                                      class:  "btn btn-light") do
       %i.fa.fa-copy
       Clone
-  - if policy(@profile).reindex_items?
-    -# Reindex Items button
-    = link_to(metadata_profile_reindex_items_path(@profile), method: "post",
-                                                             role:   "button",
-                                                             class:  "btn btn-light") do
-      %i.fa.fa-sync
-      Reindex Items
   - if policy(@profile).destroy?
     -# Delete button
     = link_to(metadata_profile_path(@profile), class:  "btn btn-danger",
@@ -83,7 +76,6 @@
         %th Searchable
         %th Sortable
         %th Faceted
-        %th Indexed
         %th Relevance Weight
       %tbody
         %tr
@@ -100,7 +92,6 @@
           %td.boolean= boolean(true)
           %td.boolean= boolean(false)
           %td.boolean= boolean(false)
-          %td.boolean= boolean(true)
           %td
             .progress
               .progress-bar{role: "progressbar",
@@ -131,7 +122,6 @@
             %td.boolean= boolean(element.searchable)
             %td.boolean= boolean(element.sortable)
             %td.boolean= boolean(element.faceted)
-            %td.boolean= boolean(element.indexed)
             %td
               .progress
                 .progress-bar{role:            "progressbar",

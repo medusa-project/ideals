@@ -358,17 +358,11 @@ class Item < ApplicationRecord
     doc[IndexFields::UNIT_TITLES]        = units.map(&:title)
     doc[IndexFields::UNITS]              = units.map(&:id)
 
-    # Index ascribed metadata elements into dynamic fields, consulting the
-    # equivalent element in the metadata profile to check whether it should be
-    # indexed or not.
-    profile = self.effective_metadata_profile
+    # Index ascribed metadata elements into dynamic fields.
     self.elements.each do |element|
-      pe = profile.elements.find{ |pe| pe.name == element.name }
-      if !pe || pe.indexed
-        field = element.registered_element.indexed_field
-        doc[field] = [] unless doc[field]&.respond_to?(:each)
-        doc[field] << element.string[0..ElasticsearchClient::MAX_KEYWORD_FIELD_LENGTH]
-      end
+      field = element.registered_element.indexed_field
+      doc[field] = [] unless doc[field]&.respond_to?(:each)
+      doc[field] << element.string[0..ElasticsearchClient::MAX_KEYWORD_FIELD_LENGTH]
     end
 
     doc

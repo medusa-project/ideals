@@ -72,59 +72,51 @@ class MetadataProfile < ApplicationRecord
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
-                        faceted:            false,
-                        indexed:            true)
+                        faceted:            false)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
                         position:           1,
                         relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
-                        faceted:            true,
-                        indexed:            true)
+                        faceted:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
                         position:           2,
                         relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
-                        faceted:            true,
-                        indexed:            true)
+                        faceted:            true)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor"),
                         position:           3,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
-                        faceted:            false,
-                        indexed:            true)
+                        faceted:            false)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:abstract"),
                         position:           4,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
-                        faceted:            false,
-                        indexed:            true)
+                        faceted:            false)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:issued"),
                         position:           5,
                         visible:            true,
                         searchable:         true,
                         sortable:           true,
-                        faceted:            false,
-                        indexed:            true)
+                        faceted:            false)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:uri"),
                         position:           6,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
-                        faceted:            false,
-                        indexed:            true)
+                        faceted:            false)
     self.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
                         position:           7,
                         visible:            true,
                         searchable:         true,
                         sortable:           false,
-                        faceted:            true,
-                        indexed:            true)
+                        faceted:            true)
     self.save!
   end
 

@@ -334,7 +334,7 @@ class AbstractRelation
   #
   def query_searchable_fields(query)
     fields = @metadata_profile.elements.
-      select{ |e| e.searchable && e.indexed }.
+      select(&:searchable).
       map(&:indexed_field)
     fields << ElasticsearchIndex::StandardFields::FULL_TEXT
     fields << Item::IndexFields::FILENAMES if self.kind_of?(ItemRelation)

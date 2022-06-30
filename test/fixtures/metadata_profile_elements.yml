@@ -8,7 +8,6 @@ default_title:
   faceted:            false
   searchable:         true
   sortable:           true
-  indexed:            true
   relevance_weight:   <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 default_description:
@@ -19,7 +18,6 @@ default_description:
   faceted:            false
   searchable:         true
   sortable:           false
-  indexed:            true
   relevance_weight:   <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 default_subject:
@@ -30,5 +28,4 @@ default_subject:
   faceted:            true
   searchable:         true
   sortable:           false
-  indexed:            true
   relevance_weight:   <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>

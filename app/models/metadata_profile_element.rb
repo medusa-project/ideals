@@ -7,8 +7,6 @@
 # * `created_at`            Managed by ActiveRecord.
 # * `faceted`               Whether the element is used to provide facets in
 #                           results views.
-# * `indexed`               Whether the element is indexed in searchable
-#                           documents.
 # * `metadata_profile_id`   ID of the associated metadata profile. Foreign key.
 # * `position`              Zero-based position relative to other elements in
 #                           the owning [MetadataProfile].

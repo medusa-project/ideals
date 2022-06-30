@@ -29,66 +29,57 @@ class IdealsSeeder
                            visible:            true,
                            searchable:         true,
                            sortable:           true,
-                           faceted:            false,
-                           indexed:            true)
+                           faceted:            false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
                            position:           1,
                            relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                            visible:            true,
                            searchable:         true,
                            sortable:           true,
-                           faceted:            true,
-                           indexed:            true)
+                           faceted:            true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:submitted"),
                            position:           2,
                            visible:            true,
                            searchable:         true,
                            sortable:           true,
-                           faceted:            false,
-                           indexed:            true)
+                           faceted:            false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:advisor"),
                            position:           3,
                            visible:            true,
                            searchable:         true,
                            sortable:           true,
-                           faceted:            true,
-                           indexed:            true)
+                           faceted:            true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeChair"),
                            position:           4,
                            visible:            true,
                            searchable:         true,
                            sortable:           true,
-                           faceted:            true,
-                           indexed:            true)
+                           faceted:            true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeMember"),
                            position:           5,
                            visible:            true,
                            searchable:         true,
                            sortable:           true,
-                           faceted:            true,
-                           indexed:            true)
+                           faceted:            true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
                            position:           6,
                            relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                            visible:            true,
                            searchable:         true,
                            sortable:           false,
-                           faceted:            true,
-                           indexed:            true)
+                           faceted:            true)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:uri"),
                            position:           7,
                            visible:            true,
                            searchable:         true,
                            sortable:           false,
-                           faceted:            false,
-                           indexed:            true)
+                           faceted:            false)
     profile.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
                            position:           8,
                            visible:            true,
                            searchable:         true,
                            sortable:           false,
-                           faceted:            true,
-                           indexed:            true)
+                           faceted:            true)
     profile.save!
   end
 
