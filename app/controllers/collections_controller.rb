@@ -478,7 +478,10 @@ class CollectionsController < ApplicationController
       aggregations(false).
       metadata_profile(@collection.effective_metadata_profile).
       filter(Item::IndexFields::COLLECTIONS, @permitted_params[:collection_id]).
-      order(@permitted_params[:sort] => (@permitted_params[:direction] == "desc") ? :desc : :asc).
+      # A blank sort means sort by relevance, which is always descending,
+      # unlike all other sorts, which default to ascending.
+      order(@permitted_params[:sort] =>
+              @permitted_params[:sort].blank? ? :desc : @permitted_params[:direction].to_sym).
       start(@start).
       limit(@window)
     process_search_input(@items)
