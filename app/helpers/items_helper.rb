@@ -224,7 +224,9 @@ module ItemsHelper
                   "style=\"#{group ? "" : "display: none"}\">"
     html <<   select_tag("embargoes[#{index}][user_group_ids][]",
                          options_for_select(UserGroup.all.order(:name).pluck(:name, :id), group&.id),
-                         class: "custom-select", style: "width: 90%")
+                         disabled: group.blank?,
+                         class:    "custom-select",
+                         style:    "width: 90%")
     html <<   '<button class="btn btn-outline-danger btn-sm ml-2 remove-user-group" type="button">'
     html <<     '<i class="fa fa-minus"></i>'
     html <<   '</button>'

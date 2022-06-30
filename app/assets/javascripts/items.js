@@ -293,6 +293,7 @@ const ItemView = function() {
                     });
                 });
             };
+            updateEmbargoIndices();
             const onAddEmbargoClicked = function() {
                 const lastEmbargo = modalBody.find(".card:last");
                 const newEmbargo  = lastEmbargo.clone();
@@ -321,7 +322,7 @@ const ItemView = function() {
                 const newUserGroup  = lastUserGroup.clone();
                 lastUserGroup.after(newUserGroup);
                 newUserGroup.show();
-                newUserGroup.find("select").attr("disabled", false);
+                newUserGroup.find("select").prop("disabled", false);
                 newUserGroup.find(".remove-user-group").on("click", onRemoveUserGroupClicked);
             };
             const onRemoveUserGroupClicked = function() {
@@ -330,7 +331,7 @@ const ItemView = function() {
                     containersToRemove.remove();
                 } else {
                     containersToRemove.hide();
-                    containersToRemove.find("select").attr("disabled", true);
+                    containersToRemove.find("select").prop("disabled", true);
                 }
             };
             modalBody.find(".remove-user-group").on("click", onRemoveUserGroupClicked);
