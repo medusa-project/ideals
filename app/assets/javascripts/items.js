@@ -6,16 +6,25 @@
 const ItemsView = function() {
     new IDEALS.FacetSet().init();
 
-    const params           = new URLSearchParams(window.location.search);
-    const allItemsTab      = $("#all-items-tab");
-    const advSearchTab     = $("#advanced-search-tab");
-    const advSearchContent = $("#advanced-search");
+    const params              = new URLSearchParams(window.location.search);
+    const allItemsTab         = $("#all-items-tab");
+    const simpleSearchTab     = $("#simple-search-tab");
+    const simpleSearchContent = $("#simple-search");
+    const advSearchTab        = $("#advanced-search-tab");
+    const advSearchContent    = $("#advanced-search");
+    // Since all of tabs are in the same <form>, we will need to clear all of
+    // the fields in the other tab(s) when the form is submitted. Keeping track
+    // of the current tab enables us to infer the non-current tabs.
+    var currentTab;
+    allItemsTab.on("shown.bs.tab", function() { currentTab = allItemsTab; });
+    simpleSearchTab.on("shown.bs.tab", function() { currentTab = simpleSearchTab; });
+    advSearchTab.on("shown.bs.tab", function() { currentTab = advSearchTab; });
 
-    // Select a search-type tab.
+    // Select a search-type tab based on the URL query arguments.
     if (params.get("tab") === "advanced-search") {
         advSearchTab.tab("show");
     } else if (params.get("q")) {
-        $("#simple-search-tab").tab("show");
+        simpleSearchTab.tab("show");
     } else {
         let found = false;
         advSearchContent.find("input, select").each(function() {
@@ -29,7 +38,8 @@ const ItemsView = function() {
         }
     }
 
-    // Fill in advanced search fields from the URL query.
+    // Fill in advanced search fields from the URL query, which the browser
+    // won't do automatically.
     advSearchContent.find("input[type=text], input[type=number], select").each(function() {
         $(this).val(params.get($(this).attr("name")));
     });
@@ -43,11 +53,17 @@ const ItemsView = function() {
     // clear all form fields in the other tab pane, so they don't get sent
     // along as well.
     $("input[type=submit]").on("click", function() {
-        const tabPane       = $(this).parents(".tab-pane");
-        const tabPaneID     = tabPane.attr("id");
-        const otherTabPanes = tabPane.parent().find(".tab-pane:not([id=" + tabPaneID + "])");
-        otherTabPanes.find("input[type=text], input[type=search], textarea").val("");
-        otherTabPanes.find("option:first-child").prop("selected", "selected");
+        let otherTabContent;
+        switch (currentTab.attr("id")) {
+            case "simple-search-tab":
+                otherTabContent = advSearchContent;
+                break;
+            case "advanced-search-tab":
+                otherTabContent = simpleSearchContent;
+                break;
+        }
+        otherTabContent.find("input[type=text], input[type=search], textarea").val("");
+        otherTabContent.find("option:first-child").prop("selected", "selected");
     });
 };
 
