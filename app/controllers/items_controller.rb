@@ -52,22 +52,19 @@ class ItemsController < ApplicationController
   # Responds to `GET /items/:id/download-counts`
   #
   def download_counts
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
+    results = MonthlyItemDownloadCount.for_item(item:        @item,
+                                                start_year:  params[:from_year].to_i,
+                                                start_month: params[:from_month].to_i,
+                                                end_year:    params[:to_year].to_i,
+                                                end_month:   params[:to_month].to_i)
     respond_to do |format|
       format.html do
-        @counts_by_month = @item.download_count_by_month(start_time: from_time,
-                                                         end_time:   to_time)
+        @counts_by_month = results
         render partial: "show_download_counts_panel_content"
       end
       format.csv do
         csv = CSV.generate do |csv|
-          @item.download_count_by_month(start_time: from_time,
-                                        end_time:   to_time).each do |row|
+          results.each do |row|
             csv << row.values
           end
         end

@@ -74,5 +74,8 @@ migrated, so we move on to the non-critical content.
 
 DSpace can now be fully decommissioned.
 
-12. `rails bitstreams:read_full_text[4]` is run. This will take several more
+12. `rails downloads:compile_monthly_counts` processes the download events
+    imported in the previous step into a reporting table. This will take about
+    a day.
+13. `rails bitstreams:read_full_text[4]` is run. This will take several more
     days.

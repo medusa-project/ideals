@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_30_160112) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_01_032950) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -358,6 +358,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_30_160112) do
     t.index ["name"], name: "index_metadata_profiles_on_name", unique: true
   end
 
+  create_table "monthly_item_download_counts", force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.integer "year", null: false
+    t.integer "month", null: false
+    t.integer "count", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id", "year", "month"], name: "index_monthly_item_download_counts_on_item_id_year_month", unique: true
+  end
+
   create_table "registered_elements", force: :cascade do |t|
     t.string "name", null: false
     t.text "scope_note"
@@ -549,6 +559,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_30_160112) do
   add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :nullify
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "monthly_item_download_counts", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submission_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitter_groups", "collections", on_update: :cascade, on_delete: :cascade

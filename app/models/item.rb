@@ -157,6 +157,7 @@ class Item < ApplicationRecord
   has_many :embargoes
   has_many :current_embargoes, -> { current }, class_name: "Embargo"
   has_many :events
+  has_many :monthly_item_download_counts
   has_one :handle
   has_one :primary_collection_membership, -> { where(primary: true) },
           class_name: "CollectionItemMembership"
@@ -449,6 +450,13 @@ class Item < ApplicationRecord
   end
 
   ##
+  # Compiles monthly download counts for a given time span by querying the
+  # `events` table.
+  #
+  # Note that {MonthlyItemDownloadCount#for_item} uses a different technique--
+  # querying the monthly item download count reporting table--that is much
+  # faster.
+  #
   # @param start_time [Time]   Optional beginning of a time range.
   # @param end_time [Time]     Optional end of a time range.
   # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`

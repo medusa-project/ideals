@@ -103,9 +103,20 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "download_counts() returns HTTP 200" do
+  test "download_counts() returns HTTP 200 for HTML" do
     log_in_as(users(:local_sysadmin))
-    get item_download_counts_path(items(:item1))
+    get item_download_counts_path(items(:item1),
+                                  from_year: 2022, from_month: 1,
+                                  to_year: 2022, to_month: 2)
+    assert_response :ok
+  end
+
+  test "download_counts() returns HTTP 200 for CSV" do
+    log_in_as(users(:local_sysadmin))
+    get item_download_counts_path(items(:item1),
+                                  from_year: 2022, from_month: 1,
+                                  to_year: 2022, to_month: 2,
+                                  format: :csv)
     assert_response :ok
   end
 

@@ -150,6 +150,7 @@ rails ideals:seed_database
 rails elasticsearch:reindex[2] # thread count
 rails dspace:bitstreams:copy[dspace_ssh_user]
 rails dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass] # optional
+rails downloads:compile_monthly_counts # optional
 rails bitstreams:read_full_text[2] # optional
 ```
 
