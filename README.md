@@ -150,7 +150,7 @@ rails ideals:seed_database
 rails elasticsearch:reindex[2] # thread count
 rails dspace:bitstreams:copy[dspace_ssh_user]
 rails dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass] # optional
-rails downloads:compile_monthly_counts # optional
+rails downloads:compile_monthly_counts # optional, see "Download Statistics" below
 rails bitstreams:read_full_text[2] # optional
 ```
 
@@ -165,6 +165,20 @@ of both types:
 rails users:create_local_sysadmin[email,password]
 rails users:create_shib_sysadmin[netid]
 ```
+
+# Download Statistics
+
+When a file is downloaded from the web UI, a row is inserted in the `events`
+table. Download statistics can be viewed in table and chart form at item,
+collection, unit, and institution levels in the UI. Each of these, in
+succession, would require a more and more expensive database query. At the
+collection level, the query would probably already be too slow.
+
+To remedy this, the statistics table and chart query the
+`monthly_item_download_counts` reporting table instead of the `events` table.
+This table is populated monthly by the `downloads:compile_monthly_counts` rake
+task, run via cron. This task takes a couple of days to run against all of the
+UIUC Library's content.
 
 # Multi-Tenancy
 

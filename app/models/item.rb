@@ -157,7 +157,6 @@ class Item < ApplicationRecord
   has_many :embargoes
   has_many :current_embargoes, -> { current }, class_name: "Embargo"
   has_many :events
-  has_many :monthly_item_download_counts
   has_one :handle
   has_one :primary_collection_membership, -> { where(primary: true) },
           class_name: "CollectionItemMembership"
@@ -574,6 +573,30 @@ class Item < ApplicationRecord
   #
   def move_into_permanent_storage
     self.bitstreams.each(&:move_into_permanent_storage)
+  end
+
+  ##
+  # Efficiently (without using ActiveRecord) obtains the owning entity IDs in
+  # the model hierarchy.
+  #
+  # @return [Enumerable<Hash>] Enumerable of hashes with `collection_id`,
+  #                            `unit_id`, and `institution_id` keys.
+  #
+  def owning_ids
+    sql = "SELECT cim.collection_id, ucm.unit_id, u.institution_id
+          FROM collection_item_memberships cim
+          LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
+          LEFT JOIN units u ON u.id = ucm.unit_id
+          WHERE cim.item_id = $1
+          ORDER BY cim.primary DESC, ucm.primary DESC;"
+    values = [self.id]
+    result = ActiveRecord::Base.connection.exec_query(sql, "SQL", values)
+    # This will be nil for items not in a collection.
+    result[0] ? result[0] : {
+      'collection_id'  => nil,
+      'unit_id'        => nil,
+      'institution_id' => nil
+    }
   end
 
   ##

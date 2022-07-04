@@ -15,18 +15,27 @@
 #
 # Attributes
 #
-# * `count`      Download count.
-# * `created_at` Managed by ActiveRecord.
-# * `item_id`    Foreign key to [Item].
-# * `month`      Month number from 1 to 12.
-# * `updated_at` Managed by ActiveRecord.
-# * `year`       Year.
+# N.B.: the "soft" foreign keys are not real foreign keys because a row
+# represents a month in the past. If `item_id` were a real foreign key, then
+# deleting an item would delete all of its historical counts, and reduce those
+# of its owning collection, unit, and institution.
+#
+# * `collection_id`  Soft foreign key to the primary collection of the
+#                    [Item].
+# * `count`          Download count.
+# * `created_at`     Managed by ActiveRecord.
+# * `institution_id` Soft foreign key to the institution of the primary
+#                    unit of the primary collection of the [Item].
+# * `item_id`        Soft foreign key to [Item].
+# * `month`          Month number from 1 to 12.
+# * `unit_id`        Soft foreign key to the primary unit of the primary
+#                    collection of the [Item].
+# * `updated_at`     Managed by ActiveRecord.
+# * `year`           Year.
 #
 class MonthlyItemDownloadCount < ApplicationRecord
 
   EARLIEST_YEAR = 2006
-
-  belongs_to :item
 
   ##
   # Populates the table with download counts for all items and all months going
@@ -36,36 +45,118 @@ class MonthlyItemDownloadCount < ApplicationRecord
   # runs will be much faster.
   #
   def self.compile_counts
+    MonthlyItemDownloadCount.delete_all
     now           = Time.now
     current_year  = now.year
     current_month = now.month
-    count         = Item.count
-    progress      = Progress.new(count)
+    items         = Item.where(stage: Item::Stages::APPROVED)
     Item.uncached do
-      Item.find_each.with_index do |item, index|
-        dirty = false
-        count_structs = MonthlyItemDownloadCount.where(item: item).pluck(:year, :month)
+      ThreadUtils.process_in_parallel(items,
+                                      num_threads:    2,
+                                      print_progress: true) do |item|
+        owning_ids     = item.owning_ids
+        institution_id = owning_ids['institution_id']
+        unit_id        = owning_ids['unit_id']
+        collection_id  = owning_ids['collection_id']
+        next unless institution_id && unit_id && collection_id
+        count_structs  = MonthlyItemDownloadCount.where(item_id: item.id).pluck(:year, :month)
         (EARLIEST_YEAR..current_year).each do |year|
           (1..12).each do |month|
             # Skip the current month, as it's not over yet.
             break if year == current_year && month == current_month
+            # Skip the current item-year-month combo if it already exists.
             count_obj = count_structs.find{ |o| o[0] == year && o[1] == month }
             unless count_obj
               start_time = Time.new(year, month, 1)
               end_time   = start_time + 1.month - 1.second
               struct     = item.download_count_by_month(start_time: start_time,
                                                         end_time:   end_time)
-              item.monthly_item_download_counts.build(year:  year,
-                                                      month: month,
-                                                      count: struct[0]['dl_count'].to_i)
-              dirty = true
+              MonthlyItemDownloadCount.create!(institution_id: institution_id,
+                                               unit_id:        unit_id,
+                                               collection_id:  collection_id,
+                                               item_id:        item.id,
+                                               year:           year,
+                                               month:          month,
+                                               count:          struct[0]['dl_count'].to_i)
             end
           end
         end
-        item.save! if dirty
-        progress.report(index, "Compiling item download counts")
       end
     end
+  end
+
+  def self.for_collection(collection:,
+                          start_year:, start_month:,
+                          end_year:, end_month:)
+    start_time = Time.new(start_year, start_month)
+    end_time   = Time.new(end_year, end_month)
+    raise ArgumentError, "Start year/month is equal to or later than end year/month" if start_time >= end_time
+
+    sql = "SELECT year, month, SUM(count) AS count
+          FROM monthly_item_download_counts
+          WHERE collection_id = $1
+            AND ((year = $2 AND month >= $3) OR (year > $4))
+            AND ((year = $5 AND month <= $6) OR (year < $7))
+          GROUP BY year, month
+          ORDER BY year, month;"
+    values = [collection.id, start_year, start_month, start_year,
+              end_year, end_month, end_year]
+    result = self.connection.exec_query(sql, "SQL", values)
+    arr    = group_results(result, start_year, start_month, end_year, end_month)
+
+    # This table does not include a value for the current month. If needed, we
+    # will add one for the client as a convenience.
+    now = Time.now
+    if end_year == now.year && end_month >= now.month
+      count = collection.download_count_by_month(start_time: Time.new(now.year, now.month),
+                                                 end_time:   now)[0]
+      arr  << count
+    end
+    arr
+  end
+
+  ##
+  # N.B.: the backing table does not include a count for the current month,
+  # but if included in the time span of the arguments, this count is obtained
+  # from the `events` table instead and included.
+  #
+  # @param institution [Institution]
+  # @param start_year [Integer]
+  # @param start_month [Integer]
+  # @param end_year [Integer]    Inclusive.
+  # @param end_month [Integer]   Inclusive.
+  # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`
+  #                            keys. The length is equal to the month span
+  #                            provided in the arguments. # TODO: dl_count should be count
+  #
+  def self.for_institution(institution:,
+                           start_year:, start_month:,
+                           end_year:, end_month:)
+    start_time = Time.new(start_year, start_month)
+    end_time   = Time.new(end_year, end_month)
+    raise ArgumentError, "Start year/month is equal to or later than end year/month" if start_time >= end_time
+
+    sql = "SELECT year, month, SUM(count) AS count
+          FROM monthly_item_download_counts
+          WHERE institution_id = $1
+            AND ((year = $2 AND month >= $3) OR (year > $4))
+            AND ((year = $5 AND month <= $6) OR (year < $7))
+          GROUP BY year, month
+          ORDER BY year, month;"
+    values = [institution.id, start_year, start_month, start_year,
+              end_year, end_month, end_year]
+    result = self.connection.exec_query(sql, "SQL", values)
+    arr    = group_results(result, start_year, start_month, end_year, end_month)
+
+    # This table does not include a value for the current month. If needed, we
+    # will add one for the client as a convenience.
+    now = Time.now
+    if end_year == now.year && end_month >= now.month
+      count = institution.download_count_by_month(start_time: Time.new(now.year, now.month),
+                                                  end_time:   now)[0]
+      arr  << count
+    end
+    arr
   end
 
   ##
@@ -96,7 +187,68 @@ class MonthlyItemDownloadCount < ApplicationRecord
     values = [item.id, start_year, start_month, start_year,
               end_year, end_month, end_year]
     result = self.connection.exec_query(sql, "SQL", values)
+    arr    = group_results(result, start_year, start_month, end_year, end_month)
 
+    # This table does not include a value for the current month. If needed, we
+    # will add one for the client as a convenience.
+    now = Time.now
+    if end_year == now.year && end_month >= now.month
+      count = item.download_count_by_month(start_time: Time.new(now.year, now.month),
+                                           end_time:   now)[0]
+      arr  << count
+    end
+    arr
+  end
+
+  ##
+  # N.B.: the backing table does not include a count for the current month,
+  # but if included in the time span of the arguments, this count is obtained
+  # from the `events` table instead and included.
+  #
+  # @param unit [Unit]
+  # @param start_year [Integer]
+  # @param start_month [Integer]
+  # @param end_year [Integer]    Inclusive.
+  # @param end_month [Integer]   Inclusive.
+  # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`
+  #                            keys. The length is equal to the month span
+  #                            provided in the arguments. # TODO: dl_count should be count
+  #
+  def self.for_unit(unit:, start_year:, start_month:, end_year:, end_month:)
+    start_time = Time.new(start_year, start_month)
+    end_time   = Time.new(end_year, end_month)
+    raise ArgumentError, "Start year/month is equal to or later than end year/month" if start_time >= end_time
+
+    sql = "SELECT year, month, SUM(count) AS count
+          FROM monthly_item_download_counts
+          WHERE unit_id = $1
+            AND ((year = $2 AND month >= $3) OR (year > $4))
+            AND ((year = $5 AND month <= $6) OR (year < $7))
+          GROUP BY year, month
+          ORDER BY year, month;"
+    values = [unit.id, start_year, start_month, start_year,
+              end_year, end_month, end_year]
+    result = self.connection.exec_query(sql, "SQL", values)
+    arr    = group_results(result, start_year, start_month, end_year, end_month)
+
+    # This table does not include a value for the current month. If needed, we
+    # will add one for the client as a convenience.
+    now = Time.now
+    if end_year == now.year && end_month >= now.month
+      count = unit.download_count_by_month(start_time: Time.new(now.year, now.month),
+                                           end_time:   now)[0]
+      arr  << count
+    end
+    arr
+  end
+
+
+
+
+  ##
+  # Private.
+  #
+  def self.group_results(result_rows, start_year, start_month, end_year, end_month)
     # The result rows are already close to being in the correct format, but
     # they may be missing the edges of the time span in the arguments. So here
     # we will transform them to make sure the whole time span is included (with
@@ -108,21 +260,14 @@ class MonthlyItemDownloadCount < ApplicationRecord
         break if year == end_year && month > end_month
         # This count won't be in the database. We will fetch it in the next step.
         unless year == Time.now.year && month == Time.now.month
-          row   = result.find{ |row| row['year'] == year && row['month'] == month }
+          row   = result_rows.find{ |row| row['year'] == year && row['month'] == month }
           count = row ? row['count'] : 0
-          arr  << { 'month'    => Time.new(year, month),
-                    'dl_count' => count }
+          arr << {
+            'month'    => Time.new(year, month),
+            'dl_count' => count
+          }
         end
       end
-    end
-
-    # This table does not include a value for the current month. If needed, we
-    # will add one for the client as a convenience.
-    now = Time.now
-    if end_year == now.year && end_month >= now.month
-      count = item.download_count_by_month(start_time: Time.new(now.year, now.month),
-                                           end_time:   now)[0]
-      arr  << count
     end
     arr
   end

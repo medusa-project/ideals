@@ -48,6 +48,13 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # Compiles monthly download counts for a given time span by querying the
+  # `events` table.
+  #
+  # Note that {MonthlyItemDownloadCount#for_institution} uses a different
+  # technique--querying the monthly item download count reporting table--that
+  # is much faster.
+  #
   # @param start_time [Time]   Optional beginning of a time range, which will
   #                            get rounded down to the first of the month.
   # @param end_time [Time]     Optional end of a time range, which will get

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_01_032950) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_02_201451) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -365,7 +365,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_01_032950) do
     t.integer "count", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["item_id", "year", "month"], name: "index_monthly_item_download_counts_on_item_id_year_month", unique: true
+    t.bigint "collection_id", null: false
+    t.bigint "unit_id", null: false
+    t.bigint "institution_id", null: false
+    t.index ["collection_id"], name: "index_monthly_item_download_counts_on_collection_id"
+    t.index ["institution_id", "unit_id", "collection_id", "item_id", "year", "month"], name: "index_monthly_item_download_counts_on_model_fks", unique: true
+    t.index ["institution_id"], name: "index_monthly_item_download_counts_on_institution_id"
+    t.index ["item_id"], name: "index_monthly_item_download_counts_on_item_id"
+    t.index ["unit_id"], name: "index_monthly_item_download_counts_on_unit_id"
   end
 
   create_table "registered_elements", force: :cascade do |t|
@@ -559,7 +566,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_01_032950) do
   add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :nullify
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "monthly_item_download_counts", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submission_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitter_groups", "collections", on_update: :cascade, on_delete: :cascade

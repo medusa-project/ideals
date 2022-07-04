@@ -585,6 +585,20 @@ class ItemTest < ActiveSupport::TestCase
                  @instance.bitstreams.where.not(permanent_key: nil).count
   end
 
+  # owning_ids()
+
+  test "owning_ids() returns the correct IDs" do
+    collection  = @instance.primary_collection
+    unit        = collection.primary_unit
+    institution = unit.institution
+    expected    = {
+      "collection_id"  => collection.id,
+      "unit_id"        => unit.id,
+      "institution_id" => institution.id
+    }
+    assert_equal expected, @instance.owning_ids
+  end
+
   # primary_unit()
 
   test "primary_unit() returns the primary unit" do

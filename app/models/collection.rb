@@ -297,6 +297,13 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # Compiles monthly download counts for a given time span by querying the
+  # `events` table.
+  #
+  # Note that {MonthlyItemDownloadCount#for_collection} uses a different
+  # technique--querying the monthly collection download count reporting table--
+  # that is much faster.
+  #
   # @param start_time [Time]   Optional beginning of a time range.
   # @param end_time [Time]     Optional end of a time range.
   # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`
