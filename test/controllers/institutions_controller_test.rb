@@ -283,7 +283,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   test "statistics_by_range() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
-    get institution_statistics_by_range_path(institutions(:somewhere))
+    get institution_statistics_by_range_path(institutions(:somewhere)), params: {
+      from_year:  2008,
+      from_month: 1,
+      to_year:    2008,
+      to_month:   12
+    }
     assert_response :ok
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_02_201451) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_05_013929) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -358,6 +358,32 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_02_201451) do
     t.index ["name"], name: "index_metadata_profiles_on_name", unique: true
   end
 
+  create_table "monthly_collection_item_download_counts", force: :cascade do |t|
+    t.bigint "collection_id", null: false
+    t.integer "year", null: false
+    t.integer "month", null: false
+    t.integer "count", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id", "year", "month"], name: "index_monthly_collection_item_download_counts_unique", unique: true
+    t.index ["collection_id"], name: "index_monthly_collection_item_download_counts_on_collection_id"
+    t.index ["month"], name: "index_monthly_collection_item_download_counts_on_month"
+    t.index ["year"], name: "index_monthly_collection_item_download_counts_on_year"
+  end
+
+  create_table "monthly_institution_item_download_counts", force: :cascade do |t|
+    t.bigint "institution_id", null: false
+    t.integer "year", null: false
+    t.integer "month", null: false
+    t.integer "count", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution_id", "year", "month"], name: "index_monthly_ins_item_download_counts_unique", unique: true
+    t.index ["institution_id"], name: "index_monthly_ins_item_download_counts_on_ins_id"
+    t.index ["month"], name: "index_monthly_institution_item_download_counts_on_month"
+    t.index ["year"], name: "index_monthly_institution_item_download_counts_on_year"
+  end
+
   create_table "monthly_item_download_counts", force: :cascade do |t|
     t.bigint "item_id", null: false
     t.integer "year", null: false
@@ -373,6 +399,19 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_02_201451) do
     t.index ["institution_id"], name: "index_monthly_item_download_counts_on_institution_id"
     t.index ["item_id"], name: "index_monthly_item_download_counts_on_item_id"
     t.index ["unit_id"], name: "index_monthly_item_download_counts_on_unit_id"
+  end
+
+  create_table "monthly_unit_item_download_counts", force: :cascade do |t|
+    t.bigint "unit_id", null: false
+    t.integer "year", null: false
+    t.integer "month", null: false
+    t.integer "count", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["month"], name: "index_monthly_unit_item_download_counts_on_month"
+    t.index ["unit_id", "year", "month"], name: "index_monthly_unit_item_download_counts_unique", unique: true
+    t.index ["unit_id"], name: "index_monthly_unit_item_download_counts_on_unit_id"
+    t.index ["year"], name: "index_monthly_unit_item_download_counts_on_year"
   end
 
   create_table "registered_elements", force: :cascade do |t|

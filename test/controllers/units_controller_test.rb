@@ -457,13 +457,23 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "statistics_by_range() returns HTTP 200 for HTML" do
     log_in_as(users(:local_sysadmin))
-    get unit_statistics_by_range_path(units(:unit1))
+    get unit_statistics_by_range_path(units(:unit1)), params: {
+      from_year:  2008,
+      from_month: 1,
+      to_year:    2008,
+      to_month:   12
+    }
     assert_response :ok
   end
 
   test "statistics_by_range() returns HTTP 200 for CSV" do
     log_in_as(users(:local_sysadmin))
-    get unit_statistics_by_range_path(units(:unit1), format: :csv)
+    get unit_statistics_by_range_path(units(:unit1), format: :csv), params: {
+      from_year:  2008,
+      from_month: 1,
+      to_year:    2008,
+      to_month:   12
+    }
     assert_response :ok
   end
 

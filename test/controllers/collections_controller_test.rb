@@ -515,13 +515,23 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "statistics_by_range() returns HTTP 200 for HTML" do
     collection = collections(:collection1)
-    get collection_statistics_by_range_path(collection)
+    get collection_statistics_by_range_path(collection), params: {
+      from_year:  2008,
+      from_month: 1,
+      to_year:    2008,
+      to_month:   12
+    }
     assert_response :ok
   end
 
   test "statistics_by_range() returns HTTP 200 for CSV" do
     collection = collections(:collection1)
-    get collection_statistics_by_range_path(collection, format: :csv)
+    get collection_statistics_by_range_path(collection, format: :csv), params: {
+      from_year:  2008,
+      from_month: 1,
+      to_year:    2008,
+      to_month:   12
+    }
     assert_response :ok
   end
 

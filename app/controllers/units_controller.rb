@@ -272,11 +272,12 @@ class UnitsController < ApplicationController
     # now.
     @counts_by_month = @unit.submitted_item_count_by_month(start_time: from_time,
                                                            end_time:   to_time)
-    downloads_by_month = MonthlyItemDownloadCount.for_unit(unit:        @unit,
-                                                           start_year:  params[:from_year].to_i,
-                                                           start_month: params[:from_month].to_i,
-                                                           end_year:    params[:to_year].to_i,
-                                                           end_month:   params[:to_month].to_i)
+    downloads_by_month = MonthlyUnitItemDownloadCount.for_unit(
+      unit:        @unit,
+      start_year:  params[:from_year].to_i,
+      start_month: params[:from_month].to_i,
+      end_year:    params[:to_year].to_i,
+      end_month:   params[:to_month].to_i)
     @counts_by_month.each_with_index do |m, i|
       m['item_count'] = m['count']
       m['dl_count']   = downloads_by_month[i]['dl_count']

@@ -105,10 +105,43 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance.add_download
     now = Time.now
     # This is tested more thoroughly in the tests of
-    # MonthlyItemDownloadCount.increment_for_item().
-    assert_equal 2, MonthlyItemDownloadCount.find_by(item_id: @instance.item_id,
-                                                     year:    now.year,
-                                                     month:   now.month).count
+    # MonthlyItemDownloadCount.increment().
+    assert_equal 2, MonthlyItemDownloadCount.find_by(item_id:  @instance.item_id,
+                                                     year:  now.year,
+                                                     month: now.month).count
+  end
+
+  test "add_download() creates a MonthlyCollectionItemDownloadCount" do
+    @instance.add_download
+    @instance.add_download
+    now = Time.now
+    # This is tested more thoroughly in the tests of
+    # MonthlyCollectionItemDownloadCount.increment().
+    assert_equal 2, MonthlyCollectionItemDownloadCount.find_by(collection_id: @instance.item.primary_collection.id,
+                                                               year:          now.year,
+                                                               month:         now.month).count
+  end
+
+  test "add_download() creates a MonthlyUnitItemDownloadCount" do
+    @instance.add_download
+    @instance.add_download
+    now = Time.now
+    # This is tested more thoroughly in the tests of
+    # MonthlyUnitItemDownloadCount.increment().
+    assert_equal 2, MonthlyUnitItemDownloadCount.find_by(unit_id: @instance.item.primary_collection.primary_unit.id,
+                                                         year:    now.year,
+                                                         month:   now.month).count
+  end
+
+  test "add_download() creates a MonthlyInstitutionItemDownloadCount" do
+    @instance.add_download
+    @instance.add_download
+    now = Time.now
+    # This is tested more thoroughly in the tests of
+    # MonthlyInstitutionItemDownloadCount.increment().
+    assert_equal 2, MonthlyInstitutionItemDownloadCount.find_by(institution_id: @instance.item.primary_collection.primary_unit.institution_id,
+                                                                year:           now.year,
+                                                                month:          now.month).count
   end
 
   test "add_download() creates an associated Event" do

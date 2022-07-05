@@ -238,18 +238,25 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # Creates an associated [Event] representing a download.
+  # Creates an associated [Event] representing a download, and increments the
+  # relevant count values in the download reporting tables.
   #
   # @param user [User] Optional.
   #
   def add_download(user: nil)
-    transaction do
-      self.events.build(event_type:  Event::Type::DOWNLOAD,
-                        description: "Download",
-                        happened_at: Time.now,
-                        user:        user).save!
-      MonthlyItemDownloadCount.increment_for_item(self.item)
-    end
+    self.events.build(event_type:  Event::Type::DOWNLOAD,
+                      description: "Download",
+                      happened_at: Time.now,
+                      user:        user).save!
+    owning_ids     = self.item.owning_ids
+    institution_id = owning_ids['institution_id']
+    unit_id        = owning_ids['unit_id']
+    collection_id  = owning_ids['collection_id']
+    return unless institution_id && unit_id && collection_id
+    MonthlyItemDownloadCount.increment(self.item)
+    MonthlyCollectionItemDownloadCount.increment(collection_id)
+    MonthlyUnitItemDownloadCount.increment(unit_id)
+    MonthlyInstitutionItemDownloadCount.increment(institution_id)
   end
 
   ##
