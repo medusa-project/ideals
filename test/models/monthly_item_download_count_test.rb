@@ -347,4 +347,32 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
       r['month'].month == end_month }['dl_count']
   end
 
+  # increment_for_item()
+
+  test "increment_for_item() increments the count of an existing row" do
+    item  = items(:described)
+    now   = Time.now
+    year  = now.year
+    month = now.month
+    MonthlyItemDownloadCount.increment_for_item(item)
+    MonthlyItemDownloadCount.increment_for_item(item)
+    assert_equal 2, MonthlyItemDownloadCount.find_by(item_id: item.id,
+                                                     year:    year,
+                                                     month:   month).count
+  end
+
+  test "increment_for_item() adds a new row if necessary" do
+    item  = items(:described)
+    now   = Time.now
+    year  = now.year
+    month = now.month
+    assert !MonthlyItemDownloadCount.exists?(item_id: item.id,
+                                             year: year,
+                                             month: month)
+    MonthlyItemDownloadCount.increment_for_item(item)
+    assert_equal 1, MonthlyItemDownloadCount.find_by(item_id: item.id,
+                                                     year: year,
+                                                     month: month).count
+  end
+
 end

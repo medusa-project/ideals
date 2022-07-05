@@ -242,7 +242,38 @@ class MonthlyItemDownloadCount < ApplicationRecord
     arr
   end
 
-
+  ##
+  # @param item [Item]
+  # @return [void]
+  #
+  def self.increment_for_item(item)
+    owning_ids     = item.owning_ids
+    institution_id = owning_ids['institution_id']
+    unit_id        = owning_ids['unit_id']
+    collection_id  = owning_ids['collection_id']
+    if institution_id && unit_id && collection_id
+      now = Time.now
+      transaction do
+        count_obj = MonthlyItemDownloadCount.find_by(item_id:        item.id,
+                                                     collection_id:  collection_id,
+                                                     unit_id:        unit_id,
+                                                     institution_id: institution_id,
+                                                     year:           now.year,
+                                                     month:          now.month)
+        if count_obj
+          count_obj.update!(count: count_obj.count + 1)
+        else
+          MonthlyItemDownloadCount.create!(item_id:        item.id,
+                                           collection_id:  collection_id,
+                                           unit_id:        unit_id,
+                                           institution_id: institution_id,
+                                           year:           now.year,
+                                           month:          now.month,
+                                           count:          1)
+        end
+      end
+    end
+  end
 
 
   ##

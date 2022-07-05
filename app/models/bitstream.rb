@@ -243,10 +243,13 @@ class Bitstream < ApplicationRecord
   # @param user [User] Optional.
   #
   def add_download(user: nil)
-    self.events.build(event_type:  Event::Type::DOWNLOAD,
-                      description: "Download",
-                      happened_at: Time.now,
-                      user:        user).save!
+    transaction do
+      self.events.build(event_type:  Event::Type::DOWNLOAD,
+                        description: "Download",
+                        happened_at: Time.now,
+                        user:        user).save!
+      MonthlyItemDownloadCount.increment_for_item(self.item)
+    end
   end
 
   ##

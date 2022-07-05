@@ -100,6 +100,17 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_equal initial_count + 1, @instance.download_count
   end
 
+  test "add_download() creates a MonthlyItemDownloadCount" do
+    @instance.add_download
+    @instance.add_download
+    now = Time.now
+    # This is tested more thoroughly in the tests of
+    # MonthlyItemDownloadCount.increment_for_item().
+    assert_equal 2, MonthlyItemDownloadCount.find_by(item_id: @instance.item_id,
+                                                     year:    now.year,
+                                                     month:   now.month).count
+  end
+
   test "add_download() creates an associated Event" do
     user = users(:local_sysadmin)
     assert_difference "Event.count" do
