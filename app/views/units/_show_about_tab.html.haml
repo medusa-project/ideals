@@ -31,8 +31,8 @@
           = @metadata_profile.name
       - else
         = raw("Not assigned (falling back to global #{link_to(@metadata_profile.name, @metadata_profile)})")
-    %dt File Downloads
-    %dd= number_with_delimiter(@num_downloads)
+    -#%dt File Downloads
+    -#%dd= number_with_delimiter(@num_downloads)
     %dt Items Awaiting Review
     %dd= number_with_delimiter(@num_submitting_items)
     %dt Created

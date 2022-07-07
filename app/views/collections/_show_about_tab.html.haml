@@ -50,8 +50,8 @@
         = raw("Not assigned (falling back to #{link_to(@submission_profile.name, @submission_profile)})")
     %dt Submissions Reviewed
     %dd= boolean(@collection.submissions_reviewed, style: :word, invert_color: true)
-    %dt File Downloads
-    %dd= number_with_delimiter(@num_downloads)
+    -#%dt File Downloads
+    -#%dd= number_with_delimiter(@num_downloads)
     %dt Items Awaiting Review
     %dd= number_with_delimiter(@num_submitting_items)
 %dl

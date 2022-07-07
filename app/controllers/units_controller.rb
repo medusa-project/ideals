@@ -202,7 +202,7 @@ class UnitsController < ApplicationController
   #
   def show_about
     @metadata_profile     = @unit.effective_metadata_profile
-    @num_downloads        = @unit.download_count
+    #@num_downloads        = @unit.download_count
     @num_submitting_items = @unit.submitting_item_count
     @collections = Collection.search.
       institution(current_institution).
