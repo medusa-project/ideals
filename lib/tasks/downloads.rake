@@ -11,9 +11,9 @@ namespace :downloads do
   desc "Compile monthly download counts"
   task compile_monthly_counts: :environment do
     MonthlyItemDownloadCount.compile_counts # this must be called first!
-    MonthlyCollectionDownloadCount.compile_counts
-    MonthlyUnitDownloadCount.compile_counts
-    MonthlyInstitutionDownloadCount.compile_counts
+    MonthlyCollectionItemDownloadCount.compile_counts
+    MonthlyUnitItemDownloadCount.compile_counts
+    MonthlyInstitutionItemDownloadCount.compile_counts
   end
 
 end
