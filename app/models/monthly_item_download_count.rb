@@ -67,13 +67,16 @@ class MonthlyItemDownloadCount < ApplicationRecord
               end_time   = start_time + 1.month - 1.second
               struct     = item.download_count_by_month(start_time: start_time,
                                                         end_time:   end_time)
-              MonthlyItemDownloadCount.create!(institution_id: institution_id,
-                                               unit_id:        unit_id,
-                                               collection_id:  collection_id,
-                                               item_id:        item.id,
-                                               year:           year,
-                                               month:          month,
-                                               count:          struct[0]['dl_count'].to_i)
+              begin
+                MonthlyItemDownloadCount.create!(institution_id: institution_id,
+                                                 unit_id:        unit_id,
+                                                 collection_id:  collection_id,
+                                                 item_id:        item.id,
+                                                 year:           year,
+                                                 month:          month,
+                                                 count:          struct[0]['dl_count'].to_i)
+              rescue ActiveRecord::RecordNotUnique
+              end
             end
           end
         end
