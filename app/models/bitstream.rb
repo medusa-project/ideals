@@ -494,12 +494,13 @@ class Bitstream < ApplicationRecord
     unless key
       raise IOError, "This bitstream has no corresponding storage object."
     end
-    client = S3Client.instance.send(:get_client)
-    signer = Aws::S3::Presigner.new(client: client)
+    client       = S3Client.instance.send(:get_client)
+    signer       = Aws::S3::Presigner.new(client: client)
+    content_type = self.format&.media_types&.first || "application/octet-stream"
     signer.presigned_url(:get_object,
                          bucket:                       bucket,
                          key:                          key,
-                         response_content_type:        format.media_types.first,
+                         response_content_type:        content_type,
                          response_content_disposition: content_disposition,
                          expires_in:                   900)
   end
