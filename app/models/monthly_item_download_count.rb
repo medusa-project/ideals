@@ -34,6 +34,38 @@ class MonthlyItemDownloadCount < ApplicationRecord
   EARLIEST_YEAR = 2006
 
   ##
+  # Returns a list of item IDs with their corresponding download counts,
+  # ordered by download count descending.
+  #
+  # @param collection [Collection]
+  # @param start_year [Integer]
+  # @param start_month [Integer]
+  # @param end_year [Integer]  Inclusive.
+  # @param end_month [Integer] Inclusive.
+  # @return [Enumerable<Hash>] Enumerable of hashes with `item_id` and
+  #                            `dl_count` keys.
+  #
+  def self.collection_download_counts_by_item(collection:,
+                                              start_year:  nil,
+                                              start_month: nil,
+                                              end_year:    nil,
+                                              end_month:   nil,
+                                              limit:       100)
+    sql = StringIO.new
+    sql << "SELECT item_id AS id, SUM(count) AS dl_count
+            FROM monthly_item_download_counts
+            WHERE collection_id = $1
+            AND count > 0 "
+    sql << "AND ((year = #{start_year} AND month >= #{start_month}) OR (year > #{start_year})) " if start_year
+    sql << "AND ((year = #{end_year} AND month <= #{end_month}) OR (year < #{end_year})) " if end_year
+    sql << "GROUP BY item_id
+            ORDER BY dl_count DESC
+            LIMIT #{limit};"
+    values = [collection.id]
+    self.connection.exec_query(sql.string, 'SQL', values)
+  end
+
+  ##
   # Populates the table with download counts for all items and all months going
   # back to {EARLIEST_YEAR}.
   #
@@ -133,6 +165,38 @@ class MonthlyItemDownloadCount < ApplicationRecord
   end
 
   ##
+  # Returns a list of item IDs with their corresponding download counts,
+  # ordered by download count descending.
+  #
+  # @param institution [Institution]
+  # @param start_year [Integer]
+  # @param start_month [Integer]
+  # @param end_year [Integer]  Inclusive.
+  # @param end_month [Integer] Inclusive.
+  # @return [Enumerable<Hash>] Enumerable of hashes with `item_id` and
+  #                            `dl_count` keys.
+  #
+  def self.institution_download_counts_by_item(institution:,
+                                               start_year:  nil,
+                                               start_month: nil,
+                                               end_year:    nil,
+                                               end_month:   nil,
+                                               limit:       100)
+    sql = StringIO.new
+    sql << "SELECT item_id AS id, SUM(count) AS dl_count
+            FROM monthly_item_download_counts
+            WHERE institution_id = $1
+            AND count > 0 "
+    sql << "AND ((year = #{start_year} AND month >= #{start_month}) OR (year > #{start_year})) " if start_year
+    sql << "AND ((year = #{end_year} AND month <= #{end_month}) OR (year < #{end_year})) " if end_year
+    sql << "GROUP BY item_id
+            ORDER BY dl_count DESC
+            LIMIT #{limit};"
+    values = [institution.id]
+    self.connection.exec_query(sql.string, 'SQL', values)
+  end
+
+  ##
   # The result rows from {for_item} are already close to being in the correct
   # format, but they may be missing the edges of the time span in the
   # arguments. This method transforms them to make sure the whole time span is
@@ -153,6 +217,38 @@ class MonthlyItemDownloadCount < ApplicationRecord
       end
     end
     arr
+  end
+
+  ##
+  # Returns a list of item IDs with their corresponding download counts,
+  # ordered by download count descending.
+  #
+  # @param unit [Unit]
+  # @param start_year [Integer]
+  # @param start_month [Integer]
+  # @param end_year [Integer]  Inclusive.
+  # @param end_month [Integer] Inclusive.
+  # @return [Enumerable<Hash>] Enumerable of hashes with `item_id` and
+  #                            `dl_count` keys.
+  #
+  def self.unit_download_counts_by_item(unit:,
+                                        start_year:  nil,
+                                        start_month: nil,
+                                        end_year:    nil,
+                                        end_month:   nil,
+                                        limit:       100)
+    sql = StringIO.new
+    sql << "SELECT item_id AS id, SUM(count) AS dl_count
+            FROM monthly_item_download_counts
+            WHERE unit_id = $1
+            AND count > 0 "
+    sql << "AND ((year = #{start_year} AND month >= #{start_month}) OR (year > #{start_year})) " if start_year
+    sql << "AND ((year = #{end_year} AND month <= #{end_month}) OR (year < #{end_year})) " if end_year
+    sql << "GROUP BY item_id
+            ORDER BY dl_count DESC
+            LIMIT #{limit};"
+    values = [unit.id]
+    self.connection.exec_query(sql.string, 'SQL', values)
   end
 
 end

@@ -64,14 +64,21 @@ class InstitutionsController < ApplicationController
   # Responds to `GET /institutions/:key/item-download-counts`
   #
   def item_download_counts
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-    @items = @institution.item_download_counts(start_time: from_time,
-                                               end_time:   to_time)
+    @items = MonthlyItemDownloadCount.institution_download_counts_by_item(
+      institution: @institution,
+      start_year:  params[:from_year].to_i,
+      start_month: params[:from_month].to_i,
+      end_year:    params[:to_year].to_i,
+      end_month:   params[:to_month].to_i)
+
+    # The items array contains item IDs and download counts but not titles.
+    # So here we will insert them.
+    AscribedElement.
+      where(registered_element: RegisteredElement.find_by_name("dc:title")).
+      where(item_id: @items.map{ |row| row['id'] }).pluck(:item_id, :string).each do |asc_e|
+      row = @items.find{ |r| r['id'] == asc_e[0] }
+      row['title'] = asc_e[1] if row
+    end
 
     respond_to do |format|
       format.html do

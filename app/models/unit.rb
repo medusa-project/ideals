@@ -294,62 +294,6 @@ class Unit < ApplicationRecord
   end
 
   ##
-  # N.B.: Only items with ascribed titles are included in results.
-  #
-  # @param offset [Integer]    SQL OFFSET clause.
-  # @param limit [Integer]     SQL LIMIT clause.
-  # @param start_time [Time]   Optional beginning of a time range.
-  # @param end_time [Time]     Optional end of a time range.
-  # @return [Enumerable<Hash>] Enumerable of hashes representing items and
-  #                            their corresponding download counts.
-  #
-  def item_download_counts(offset: 0, limit: 0,
-                           start_time: nil, end_time: nil)
-    sql = StringIO.new
-    sql << "WITH RECURSIVE q AS (
-        SELECT u
-        FROM units u
-        WHERE id = $1
-        UNION ALL
-        SELECT ui
-        FROM q
-        JOIN units ui ON ui.parent_id = (q.u).id
-    )
-    SELECT *
-        FROM (
-            SELECT DISTINCT ON (i.id) i.id AS id,
-                ae.string AS title,
-                COUNT(e.id) AS dl_count
-            FROM items i
-                LEFT JOIN ascribed_elements ae ON ae.item_id = i.id
-                LEFT JOIN registered_elements re ON re.id = ae.registered_element_id
-                LEFT JOIN bitstreams b ON b.item_id = i.id
-                LEFT JOIN events e ON e.bitstream_id = b.id
-                LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
-                LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
-             LEFT JOIN q ON ucm.unit_id IN (SELECT (q.u).id FROM q)
-             WHERE (q.u).id = $1
-                AND re.name = $2
-                AND e.event_type = $3 "
-    sql <<      "AND e.happened_at >= $4 " if start_time
-    sql <<      "AND e.happened_at <= #{start_time ? "$5" : "$4"} " if end_time
-    sql <<  "GROUP BY i.id, ae.string"
-    sql << ") items_with_dl_count "
-    sql << "ORDER BY items_with_dl_count.dl_count DESC "
-    sql << "OFFSET #{offset} " if offset > 0
-    sql << "LIMIT #{limit} " if limit > 0
-
-    values = [
-      self.id,
-      ::Configuration.instance.elements[:title],
-      Event::Type::DOWNLOAD
-    ]
-    values << start_time if start_time
-    values << end_time if end_time
-    self.class.connection.exec_query(sql.string, 'SQL', values)
-  end
-
-  ##
   # Sets the primary administrator. The previous primary administrator is not
   # removed from {administrators}.
   #

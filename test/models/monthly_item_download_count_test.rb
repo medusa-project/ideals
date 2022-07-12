@@ -2,6 +2,59 @@ require "test_helper"
 
 class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
 
+  # collection_download_counts_by_item()
+
+  test "collection_download_counts_by_item() returns correct results with no
+  arguments" do
+    collection = collections(:collection1)
+    MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
+                                     unit_id:        99999, # fake but doesn't matter
+                                     collection_id:  collection.id,
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          5,
+                                     count:          10)
+    MonthlyItemDownloadCount.create!(institution_id: 99999,
+                                     unit_id:        99999, # fake but doesn't matter
+                                     collection_id:  collection.id,
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          8,
+                                     count:          5)
+
+    result = MonthlyItemDownloadCount.collection_download_counts_by_item(collection: collection)
+    assert_equal 1, result.length
+    assert_equal 15, result[0]['dl_count']
+  end
+
+  test "collection_download_counts_by_item() returns correct results when
+  supplying start and end times" do
+    collection = collections(:collection1)
+    MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
+                                     unit_id:        99999, # fake but doesn't matter
+                                     collection_id:  collection.id,
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          5,
+                                     count:          10)
+    MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
+                                     unit_id:        99999, # fake but doesn't matter
+                                     collection_id:  collection.id,
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          8,
+                                     count:          5)
+
+    result = MonthlyItemDownloadCount.collection_download_counts_by_item(
+      collection: collection,
+      start_year:  2022,
+      start_month: 7,
+      end_year:    2022,
+      end_month:   12)
+    assert_equal 1, result.length
+    assert_equal 5, result[0]['dl_count']
+  end
+
   # compile_counts()
 
   test "compile_counts() compiles correct counts" do
@@ -103,6 +156,112 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
     assert_equal 1, MonthlyItemDownloadCount.find_by(item_id: item.id,
                                                      year: year,
                                                      month: month).count
+  end
+
+  # institution_download_counts_by_item()
+
+  test "institution_download_counts_by_item() returns correct results with no
+  arguments" do
+    institution = institutions(:uiuc)
+    MonthlyItemDownloadCount.create!(institution_id: institution.id,
+                                     unit_id:        99999, # fake but doesn't matter
+                                     collection_id:  99999, # fake but doesn't matter
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          5,
+                                     count:          10)
+    MonthlyItemDownloadCount.create!(institution_id: institution.id,
+                                     unit_id:        99999, # fake but doesn't matter
+                                     collection_id:  99999, # fake but doesn't matter
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          8,
+                                     count:          5)
+
+    result = MonthlyItemDownloadCount.institution_download_counts_by_item(institution: institution)
+    assert_equal 1, result.length
+    assert_equal 15, result[0]['dl_count']
+  end
+
+  test "institution_download_counts_by_item() returns correct results when
+  supplying start and end times" do
+    institution = institutions(:uiuc)
+    MonthlyItemDownloadCount.create!(institution_id: institution.id,
+                                     unit_id:        99999, # fake but doesn't matter
+                                     collection_id:  99999, # fake but doesn't matter
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          5,
+                                     count:          10)
+    MonthlyItemDownloadCount.create!(institution_id: institution.id,
+                                     unit_id:        99999, # fake but doesn't matter
+                                     collection_id:  99999, # fake but doesn't matter
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          8,
+                                     count:          5)
+
+    result = MonthlyItemDownloadCount.institution_download_counts_by_item(
+      institution: institution,
+      start_year:  2022,
+      start_month: 7,
+      end_year:    2022,
+      end_month:   12)
+    assert_equal 1, result.length
+    assert_equal 5, result[0]['dl_count']
+  end
+
+  # unit_download_counts_by_item()
+
+  test "unit_download_counts_by_item() returns correct results with no
+  arguments" do
+    unit = units(:unit1)
+    MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
+                                     unit_id:        unit.id,
+                                     collection_id:  99999, # fake but doesn't matter
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          5,
+                                     count:          10)
+    MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
+                                     unit_id:        unit.id,
+                                     collection_id:  99999, # fake but doesn't matter
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          8,
+                                     count:          5)
+
+    result = MonthlyItemDownloadCount.unit_download_counts_by_item(unit: unit)
+    assert_equal 1, result.length
+    assert_equal 15, result[0]['dl_count']
+  end
+
+  test "unit_download_counts_by_item() returns correct results when
+  supplying start and end times" do
+    unit = units(:unit1)
+    MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
+                                     unit_id:        unit.id,
+                                     collection_id:  99999, # fake but doesn't matter
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          5,
+                                     count:          10)
+    MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
+                                     unit_id:        unit.id,
+                                     collection_id:  99999, # fake but doesn't matter
+                                     item_id:        99999, # fake but doesn't matter
+                                     year:           2022,
+                                     month:          8,
+                                     count:          5)
+
+    result = MonthlyItemDownloadCount.unit_download_counts_by_item(
+      unit:        unit,
+      start_year:  2022,
+      start_month: 7,
+      end_year:    2022,
+      end_month:   12)
+    assert_equal 1, result.length
+    assert_equal 5, result[0]['dl_count']
   end
 
 end
