@@ -44,7 +44,6 @@ class MonthlyItemDownloadCount < ApplicationRecord
     MonthlyItemDownloadCount.delete_all
     now           = Time.now
     current_year  = now.year
-    current_month = now.month
     items         = Item.where(stage: Item::Stages::APPROVED)
     Item.uncached do
       ThreadUtils.process_in_parallel(items,
@@ -58,8 +57,6 @@ class MonthlyItemDownloadCount < ApplicationRecord
         count_structs  = MonthlyItemDownloadCount.where(item_id: item.id).pluck(:year, :month)
         (EARLIEST_YEAR..current_year).each do |year|
           (1..12).each do |month|
-            # Skip the current month, as it's not over yet.
-            break if year == current_year && month == current_month
             # Skip the current item-year-month combo if it already exists.
             count_obj = count_structs.find{ |o| o[0] == year && o[1] == month }
             unless count_obj
