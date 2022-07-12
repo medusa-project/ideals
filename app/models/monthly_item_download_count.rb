@@ -147,15 +147,12 @@ class MonthlyItemDownloadCount < ApplicationRecord
       (1..12).each do |month|
         next if year == start_year && month < start_month
         break if year == end_year && month > end_month
-        # This count won't be in the database. We will fetch it in the next step.
-        unless year == Time.now.year && month == Time.now.month
-          row   = result_rows.find{ |row| row['year'] == year && row['month'] == month }
-          count = row ? row['count'] : 0
-          arr << {
-            'month'    => Time.new(year, month),
-            'dl_count' => count
-          }
-        end
+        row   = result_rows.find{ |row| row['year'] == year && row['month'] == month }
+        count = row ? row['count'] : 0
+        arr << {
+          'month'    => Time.new(year, month),
+          'dl_count' => count
+        }
       end
     end
     arr
