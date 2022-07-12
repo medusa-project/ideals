@@ -5,15 +5,19 @@
 #
 # # Creating, updating, and deleting
 #
-# Most creates and updates should be done through [CreateItemCommand]. This
-# will ensure that an appropriate [Event] is created and associated with the
-# instance. Deleting can still be done directly on the instance without use of
-# a [Command].
+# Creates generally happen via [CreateItemCommand], updates via
+# [UpdateItemCommand]. This will ensure that an appropriate [Event] is created
+# and associated with the instance. Deleting can still be done directly on the
+# instance without use of a [Command]--although {Stages::BURIED burial} is
+# often used instead.
 #
 # # Lifecycle
 #
-# An item proceeds through several "life stages", indicated by the {stage}
-# attribute and documented in the [Stages] class.
+# An item may proceed through several "life stages", indicated by the {stage}
+# attribute and documented in the [Stages] class. {Stages::APPROVED} is where
+# most items spend most of their lives, but note that an approved item may
+# still be embargoed. (An embargo is basically an access limit, which may be
+# perpetual or timed.)
 #
 # # Indexing
 #
@@ -135,8 +139,9 @@ class Item < ApplicationRecord
 
     ##
     # An item that has been "functionally deleted" at any point in its life
-    # cycle, leaving behind only a row in the items table that facilitates display of
-    # a tombstone record. The burial is reversible via {Item#exhume!}.
+    # cycle, leaving behind only a row in the items table that facilitates
+    # display of a tombstone record. The burial is reversible via
+    # {Item#exhume!}.
     BURIED = 500
 
     def self.all
