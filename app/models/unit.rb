@@ -224,34 +224,12 @@ class Unit < ApplicationRecord
   end
 
   ##
-  # @param start_time [Time]          Optional beginning of a time range.
-  # @param end_time [Time]            Optional end of a time range.
-  # @param include_children [Boolean] Whether to include child units in the
-  #                                   count.
-  # @return [Integer] Total download count of all bitstreams attached to all
-  #                   items in all of the unit's collections.
-  #
-  def download_count(start_time: nil, end_time: nil, include_children: true)
-    count = 0
-    if include_children
-      self.all_children.each do |child|
-        count += child.download_count(start_time:       start_time,
-                                      end_time:         end_time,
-                                      include_children: false)
-      end
-    end
-    self.collections.map{ |c| c.download_count(start_time:       start_time,
-                                               end_time:         end_time,
-                                               include_children: false) }.sum + count
-  end
-
-  ##
   # Compiles monthly download counts for a given time span by querying the
   # `events` table.
   #
-  # Note that {MonthlyItemDownloadCount#for_unit} uses a different technique--
-  # querying the monthly item download count reporting table--that is much
-  # faster.
+  # Note that {MonthlyUnitItemDownloadCount#for_unit} uses a different
+  # technique--querying the monthly unit item download count reporting table--
+  # that is much faster.
   #
   # @param start_time [Time]   Optional beginning of a time range.
   # @param end_time [Time]     Optional end of a time range.

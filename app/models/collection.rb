@@ -271,38 +271,12 @@ class Collection < ApplicationRecord
   end
 
   ##
-  # @param start_time [Time]          Optional beginning of a time range.
-  # @param end_time [Time]            Optional end of a time range.
-  # @param include_children [Boolean] Whether to include child collections in
-  #                                   the count.
-  # @return [Integer] Total download count of all bitstreams attached to all
-  #                   items in the collection.
-  #
-  def download_count(start_time: nil, end_time: nil, include_children: true)
-    count = 0
-    if include_children
-      self.all_children.each do |child|
-        count += child.download_count(start_time:       start_time,
-                                      end_time:         end_time,
-                                      include_children: false)
-      end
-    end
-    items = self.items.
-      joins("LEFT JOIN bitstreams ON bitstreams.item_id = items.id").
-      joins("LEFT JOIN events ON bitstreams.id = events.bitstream_id").
-      where("events.event_type": Event::Type::DOWNLOAD)
-    items = items.where("events.happened_at >= ?", start_time) if start_time
-    items = items.where("events.happened_at <= ?", end_time) if end_time
-    count + items.count
-  end
-
-  ##
   # Compiles monthly download counts for a given time span by querying the
   # `events` table.
   #
-  # Note that {MonthlyItemDownloadCount#for_collection} uses a different
-  # technique--querying the monthly collection download count reporting table--
-  # that is much faster.
+  # Note that {MonthlyCollectionItemDownloadCount#for_collection} uses a
+  # different technique--querying the monthly collection download count
+  # reporting table--that is much faster.
   #
   # @param start_time [Time]   Optional beginning of a time range.
   # @param end_time [Time]     Optional end of a time range.

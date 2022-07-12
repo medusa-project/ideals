@@ -435,20 +435,6 @@ class Item < ApplicationRecord
   end
 
   ##
-  # @param start_time [Time] Optional beginning of a time range.
-  # @param end_time [Time]   Optional end of a time range.
-  # @return [Integer]        Total download count of all attached bitstreams.
-  #
-  def download_count(start_time: nil, end_time: nil)
-    items = self.bitstreams.
-      joins(:events).
-      where("events.event_type": Event::Type::DOWNLOAD)
-    items = items.where("events.happened_at >= ?", start_time) if start_time
-    items = items.where("events.happened_at <= ?", end_time) if end_time
-    items.count
-  end
-
-  ##
   # Compiles monthly download counts for a given time span by querying the
   # `events` table.
   #

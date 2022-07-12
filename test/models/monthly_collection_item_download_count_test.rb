@@ -111,4 +111,86 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
                                                                month:         month).count
   end
 
+  # sum_for_collection()
+
+  test "sum_for_collection() raises an error when start year/month is later
+  than end year/month" do
+    assert_raises ArgumentError do
+      MonthlyCollectionItemDownloadCount.sum_for_collection(collection:  nil,
+                                                            start_year:  2022,
+                                                            start_month: 1,
+                                                            end_year:    2021,
+                                                            end_month:   12)
+    end
+  end
+
+  test "sum_for_unit() returns a correct count when including children" do
+    unit          = units(:unit1)
+    collection    = Collection.create!(title:        "Root Collection",
+                                       primary_unit: unit)
+    subcollection = collection.collections.build(primary_unit: unit)
+    subcollection.save!
+    year        = 2022
+    start_month = 1
+    end_month   = 2
+    expected    = 0
+
+    (start_month..end_month).each do |month|
+      count = 1
+      MonthlyCollectionItemDownloadCount.create!(collection_id: collection.id,
+                                                 year:          year,
+                                                 month:         month,
+                                                 count:         count)
+      expected += count
+      MonthlyCollectionItemDownloadCount.create!(collection_id: subcollection.id,
+                                                 year:          year,
+                                                 month:         month,
+                                                 count:         count)
+      expected += count
+    end
+
+    actual = MonthlyCollectionItemDownloadCount.sum_for_collection(
+      collection:       collection,
+      start_year:       year,
+      start_month:      start_month,
+      end_year:         year,
+      end_month:        end_month,
+      include_children: true)
+    assert_equal expected, actual
+  end
+
+  test "sum_for_unit() returns a correct count when not including children" do
+    unit          = units(:unit1)
+    collection    = Collection.create!(title:        "Root Collection",
+                                       primary_unit: unit)
+    subcollection = collection.collections.build(primary_unit: unit)
+    subcollection.save!
+    year        = 2022
+    start_month = 1
+    end_month   = 2
+    expected    = 0
+
+    (start_month..end_month).each do |month|
+      count = 1
+      MonthlyCollectionItemDownloadCount.create!(collection_id: collection.id,
+                                                 year:          year,
+                                                 month:         month,
+                                                 count:         count)
+      expected += count
+      MonthlyCollectionItemDownloadCount.create!(collection_id: subcollection.id,
+                                                 year:          year,
+                                                 month:         month,
+                                                 count:         count)
+    end
+
+    actual = MonthlyCollectionItemDownloadCount.sum_for_collection(
+      collection:       collection,
+      start_year:       year,
+      start_month:      start_month,
+      end_year:         year,
+      end_month:        end_month,
+      include_children: false)
+    assert_equal expected, actual
+  end
+
 end

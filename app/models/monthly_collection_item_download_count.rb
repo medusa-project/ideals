@@ -21,7 +21,7 @@ class MonthlyCollectionItemDownloadCount < ApplicationRecord
 
   ##
   # This only has to be run once, during the migration process out of DSpace.
-  # {MonthlyItemDownloadCount#compile_counts} must be run first.
+  # And {MonthlyItemDownloadCount#compile_counts} must be run first.
   #
   def self.compile_counts
     MonthlyCollectionItemDownloadCount.delete_all
@@ -80,6 +80,46 @@ class MonthlyCollectionItemDownloadCount < ApplicationRecord
           ON CONFLICT (collection_id, year, month) DO
           UPDATE SET count = monthly_collection_item_download_counts.count + 1;"
     self.connection.execute(sql, "SQL")
+  end
+
+  ##
+  # Similar to {for_unit}, but returns a summed count of all months included in
+  # the range, instead of monthly counts.
+  #
+  # @param collection [Collection]
+  # @param start_year [Integer]
+  # @param start_month [Integer]
+  # @param end_year [Integer]         Inclusive.
+  # @param end_month [Integer]        Inclusive.
+  # @param include_children [Boolean] Whether to include child collections in
+  #                                   the count.
+  # @return [Integer]                 The count.
+  #
+  def self.sum_for_collection(collection:,
+                              start_year:       nil,
+                              start_month:      nil,
+                              end_year:         nil,
+                              end_month:        nil,
+                              include_children: true)
+    start_year  ||= MonthlyItemDownloadCount::EARLIEST_YEAR
+    start_month ||= 1
+    end_year    ||= Time.now.year
+    end_month   ||= 12
+    start_time    = Time.new(start_year, start_month)
+    end_time      = Time.new(end_year, end_month)
+    raise ArgumentError, "Start year/month is equal to or later than end year/month" if start_time >= end_time
+
+    ids = [collection.id]
+    ids += collection.all_children.map(&:id) if include_children
+    sql = "SELECT SUM(count) AS count
+          FROM monthly_collection_item_download_counts
+          WHERE collection_id IN (#{ids.join(",")})
+            AND ((year = $1 AND month >= $2) OR (year > $3))
+            AND ((year = $4 AND month <= $5) OR (year < $6));"
+    values = [start_year, start_month, start_year,
+              end_year, end_month, end_year]
+    result = self.connection.exec_query(sql, "SQL", values)
+    result[0]['count'].to_i
   end
 
 end

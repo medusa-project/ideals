@@ -399,32 +399,6 @@ class ItemTest < ActiveSupport::TestCase
     end
   end
 
-  # download_count()
-
-  test "download_count() returns a correct count" do
-    bitstream_count = @instance.bitstreams.count
-    @instance.bitstreams.each do |bitstream|
-      bitstream.add_download
-    end
-    assert bitstream_count > 0
-    assert_equal bitstream_count, @instance.download_count
-  end
-
-  test "download_count() returns a correct count when supplying start and end
-  times" do
-    bitstream_count = @instance.bitstreams.count
-    @instance.bitstreams.each do |bitstream|
-      bitstream.add_download
-    end
-
-    Event.where(event_type: Event::Type::DOWNLOAD).first.
-      update!(happened_at: 90.minutes.ago)
-
-    assert bitstream_count > 0
-    assert_equal 1, @instance.download_count(start_time: 2.hours.ago,
-                                             end_time:   1.hour.ago)
-  end
-
   # download_count_by_month()
 
   test "download_count_by_month() raises an error if start_time > end_time" do

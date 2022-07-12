@@ -221,60 +221,6 @@ class CollectionTest < ActiveSupport::TestCase
     assert collections(:empty).destroy
   end
 
-  # download_count()
-
-  test "download_count() returns a correct count when not including children" do
-    bitstream_count = 0
-    @instance.items.each do |item|
-      item.bitstreams.each do |bitstream|
-        bitstream.add_download
-        bitstream_count += 1
-      end
-    end
-    assert bitstream_count > 0
-    assert_equal bitstream_count,
-                 @instance.download_count(include_children: false)
-  end
-
-  test "download_count() returns a correct count when including children" do
-    Event.destroy_all
-    bitstream_count = 0
-    all_children = @instance.all_children
-    assert all_children.length > 1
-    all_children.each do |child_collection|
-      child_collection.items.each do |item|
-        item.bitstreams.each do |bitstream|
-          bitstream.add_download
-          bitstream_count += 1
-        end
-      end
-    end
-    assert bitstream_count > 0
-    assert_equal bitstream_count,
-                 @instance.download_count(include_children: true)
-  end
-
-  test "download_count() returns a correct count when supplying start and end times" do
-    Event.destroy_all
-    all_children = @instance.all_children
-    assert all_children.length > 1
-    all_children.each do |child_collection|
-      child_collection.items.each do |item|
-        item.bitstreams.each do |bitstream|
-          bitstream.add_download
-        end
-      end
-    end
-
-    # Adjust the happened_at property of one of the just-created bitstream
-    # download events to fit inside the time window.
-    Event.where(event_type: Event::Type::DOWNLOAD).all.first.
-      update!(happened_at: 90.minutes.ago)
-
-    assert_equal 1, @instance.download_count(start_time: 2.hours.ago,
-                                             end_time:   1.hour.ago)
-  end
-
   # download_count_by_month()
 
   test "download_count_by_month() raises an error if start_time > end_time" do

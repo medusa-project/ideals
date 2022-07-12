@@ -112,4 +112,84 @@ class MonthlyUnitItemDownloadCountTest < ActiveSupport::TestCase
                                                          month:   month).count
   end
 
+  # sum_for_unit()
+
+  test "sum_for_unit() raises an error when start year/month is later than end
+  year/month" do
+    assert_raises ArgumentError do
+      MonthlyUnitItemDownloadCount.sum_for_unit(unit:        nil,
+                                                start_year:  2022,
+                                                start_month: 1,
+                                                end_year:    2021,
+                                                end_month:   12)
+    end
+  end
+
+  test "sum_for_unit() returns a correct count when including children" do
+    institution = institutions(:empty)
+    unit        = Unit.create!(title: "Root Unit", institution: institution)
+    subunit     = unit.units.build(title: "Subunit", institution: institution)
+    subunit.save!
+    year        = 2022
+    start_month = 1
+    end_month   = 2
+    expected    = 0
+
+    (start_month..end_month).each do |month|
+      count = 1
+      MonthlyUnitItemDownloadCount.create!(unit_id: unit.id,
+                                           year:    year,
+                                           month:   month,
+                                           count:   count)
+      expected += count
+      MonthlyUnitItemDownloadCount.create!(unit_id: subunit.id,
+                                           year:    year,
+                                           month:   month,
+                                           count:   count)
+      expected += count
+    end
+
+    actual = MonthlyUnitItemDownloadCount.sum_for_unit(
+      unit:             unit,
+      start_year:       year,
+      start_month:      start_month,
+      end_year:         year,
+      end_month:        end_month,
+      include_children: true)
+    assert_equal expected, actual
+  end
+
+  test "sum_for_unit() returns a correct count when not including children" do
+    institution = institutions(:empty)
+    unit        = Unit.create!(title: "Root Unit", institution: institution)
+    subunit     = unit.units.build(title: "Subunit", institution: institution)
+    subunit.save!
+    year        = 2022
+    start_month = 1
+    end_month   = 2
+    expected    = 0
+
+    (start_month..end_month).each do |month|
+      count = 1
+      MonthlyUnitItemDownloadCount.create!(unit_id: unit.id,
+                                           year:    year,
+                                           month:   month,
+                                           count:   count)
+      expected += count
+      MonthlyUnitItemDownloadCount.create!(unit_id: subunit.id,
+                                           year:    year,
+                                           month:   month,
+                                           count:   count)
+    end
+
+    actual = MonthlyUnitItemDownloadCount.sum_for_unit(
+      unit:             unit,
+      start_year:       year,
+      start_month:      start_month,
+      end_year:         year,
+      end_month:        end_month,
+      include_children: false)
+    assert_equal expected, actual
+  end
+
 end
