@@ -27,6 +27,14 @@
 # transaction, you must {reindex reindex} or {delete_document delete} the
 # document manually.
 #
+# This behavior has implications for batch processing. When updating large
+# numbers of indexed models, it is common to use a technique like
+# {ActiveRecord::Base#find_each} to iterate over them in batches, wrapping that
+# in an {ActiveRecord::Base#uncached} block. Transactions will disable the
+# latter block and defeat the memory efficiency of the former block by causing
+# all loaded instances to get cached in memory. Transactions, therefore, tend
+# to be a bad idea when batch-processing.
+#
 # # How Elasticsearch interaction works in the application
 #
 # There are two layers of Elasticsearch interaction:

@@ -87,6 +87,7 @@ class MessageHandler
       message.update!(status:        message_hash['status'],
                       medusa_key:    message_hash['medusa_key'],
                       medusa_uuid:   message_hash['uuid'],
+                      error_text:    nil,
                       response_time: Time.now,
                       raw_response:  message_json)
     else

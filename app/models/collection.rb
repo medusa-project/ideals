@@ -18,9 +18,8 @@
 # # Attributes
 #
 # * `buried`                Indicates a "near-deletion" which leaves behind
-#                           only a row in the units table that facilitates
-#                           display of a tombstone record. The burial is not
-#                           reversible.
+#                           only a row in the table to facilitate display of a
+#                           tombstone record. The burial is not reversible.
 # * `created_at`            Managed by ActiveRecord.
 # * `description`           Full description string. See {short_description}.
 # * `introduction`          Introduction string. May contain HTML.
@@ -34,7 +33,7 @@
 # * `provenance`            Provenance string.
 # * `rights`                Rights string.
 # * `short_description`     Short description string. See {description}.
-# * `submission_profile_id` Foreign key to {SubmissionProfile}. Instances
+# * `submission_profile_id` Foreign key to [SubmissionProfile]. Instances
 #                           without this set should use the
 #                           {SubmissionProfile#default default profile}. In
 #                           most cases, {effective_submission_profile} should
@@ -47,29 +46,29 @@
 #
 # # Relationships
 #
-# * `collections`         References zero-to-many sub-{Collection}s.
-# * `elements`            References zero-to-many {AscribedElement}s used to
+# * `collections`         References zero-to-many sub-[Collection]s.
+# * `elements`            References zero-to-many [AscribedElement]s used to
 #                         describe an instance.
-# * `items`               References all {Items} contained within the instance.
-# * `managers`            References the {Manager}s that are allowed to manage
+# * `items`               References all [Items] contained within the instance.
+# * `managers`            References the [Manager]s that are allowed to manage
 #                         the instance. This does not include all "effective"
 #                         managers, such as administrators of owning units or
 #                         system administrators; see
 #                         {User#effective_manager()?}.
 # * `managing_users`      More useful alternative to {managers} that returns
-#                         {User}s instead.
-# * `metadata_profile`    References the {MetadataProfile} directly assigned
+#                         [User]s instead.
+# * `metadata_profile`    References the [MetadataProfile] directly assigned
 #                         to the instance, if any (see the documentation of the
 #                         `metadata_profile_id` attribute).
-# * `parent`              References a parent {Collection}.
-# * `submission_profile`  References the {SubmissionProfile} directly assigned
+# * `parent`              References a parent [Collection].
+# * `submission_profile`  References the [SubmissionProfile] directly assigned
 #                         to the instance, if any (see the documentation of the
 #                         `submission_profile_id` attribute).
-# * `submissions`         References all {Submissions} into the instance.
-# * `submitters`          References all {Submitter}s who are allowed to submit
-#                         {Item}s to the instance.
+# * `submissions`         References all [Submissions] into the instance.
+# * `submitters`          References all [Submitter]s who are allowed to submit
+#                         [Item]s to the instance.
 # * `submitting_users`    More useful alternative to {submitters} that returns
-#                         {User}s instead.
+#                         [User]s instead.
 # * `units`               References all units to which the instance directly
 #                         belongs.
 #

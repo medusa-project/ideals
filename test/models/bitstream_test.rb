@@ -769,6 +769,18 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_not_nil @instance.presigned_url
   end
 
+  test "presigned_url() returns a presigned URL with a correct
+  response-content-type for an instance with a known format" do
+    @instance.original_filename = "image.jpg"
+    assert @instance.presigned_url.include?("response-content-type=image%2Fjpeg")
+  end
+
+  test "presigned_url() returns a presigned URL with a correct
+  response-content-type for an instance with an unknown format" do
+    @instance.original_filename = "image.whatsthis"
+    assert @instance.presigned_url.include?("response-content-type=application%2Foctet-stream")
+  end
+
   test "presigned_url() raises an IOError if the instance has no corresponding
   object" do
     @instance.staging_key   = nil
