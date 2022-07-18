@@ -12,7 +12,20 @@ class MessagesController < ApplicationController
   # Responds to `GET /messages`.
   #
   def index
-    @messages = Message.order(updated_at: :desc).limit(100)
+    @permitted_params = results_params
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    @messages         = Message.all.order(updated_at: :desc)
+    if @permitted_params[:key].present?
+      @messages = @messages.where("LOWER(staging_key) LIKE ?",
+                                  "%#{@permitted_params[:key].downcase}%")
+    end
+    if @permitted_params[:status].present?
+      @messages = @messages.where(status: @permitted_params[:status])
+    end
+    @count            = @messages.count
+    @messages         = @messages.limit(@window).offset(@start)
+    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
   end
 
   def show
@@ -32,6 +45,10 @@ class MessagesController < ApplicationController
 
   def authorize_message
     @message ? authorize(@message) : skip_authorization
+  end
+
+  def results_params
+    params.permit(:key, :start, :status)
   end
 
 end

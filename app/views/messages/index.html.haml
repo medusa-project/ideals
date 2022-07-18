@@ -1,7 +1,38 @@
 - provide(:body_id, "messages")
 - provide(:title, "Messages")
 
+- pagination = paginate(count:            @count,
+                        page:             @current_page,
+                        per_page:         @window,
+                        permitted_params: @permitted_params)
+
 %h1 Messages
+
+.card.mb-3
+  .card-body
+    = form_tag messages_path, method: :get, class: "form-inline" do
+      = label_tag nil, "Key", class: "mr-1"
+      = filter_field(name: "key")
+
+      = label_tag nil, "Status", class: "ml-3 mr-1"
+      = select_tag "status", options_for_select([["Any", ""],
+                                                ["OK", Message::Status::OK],
+                                                ["Error", Message::Status::ERROR]]),
+                   class: "custom-select"
+      .btn-group
+        = submit_tag "Filter", name: "", class: "btn btn-primary ml-2"
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
+
+.card.mb-3
+  .card-body
+    Showing
+    = "#{@start + 1}-#{[@start + @window].min}"
+    of
+    = number_with_delimiter(@count)
+    messages
 
 - @messages.each do |message|
   .card.mb-3
@@ -10,3 +41,6 @@
     .card-body
       = render partial: "show", locals: { message: message }
 
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
