@@ -86,26 +86,22 @@ class MonthlyItemDownloadCount < ApplicationRecord
         unit_id        = owning_ids['unit_id']
         collection_id  = owning_ids['collection_id']
         next unless institution_id && unit_id && collection_id
-        count_structs  = MonthlyItemDownloadCount.where(item_id: item.id).pluck(:year, :month)
+
         (EARLIEST_YEAR..current_year).each do |year|
           (1..12).each do |month|
-            # Skip the current item-year-month combo if it already exists.
-            count_obj = count_structs.find{ |o| o[0] == year && o[1] == month }
-            unless count_obj
-              start_time = Time.new(year, month, 1)
-              end_time   = start_time + 1.month - 1.second
-              struct     = item.download_count_by_month(start_time: start_time,
-                                                        end_time:   end_time)
-              begin
-                MonthlyItemDownloadCount.create!(institution_id: institution_id,
-                                                 unit_id:        unit_id,
-                                                 collection_id:  collection_id,
-                                                 item_id:        item.id,
-                                                 year:           year,
-                                                 month:          month,
-                                                 count:          struct[0]['dl_count'].to_i)
-              rescue ActiveRecord::RecordNotUnique
-              end
+            start_time = Time.new(year, month, 1)
+            end_time   = start_time + 1.month - 1.second
+            struct     = item.download_count_by_month(start_time: start_time,
+                                                      end_time:   end_time)
+            begin
+              MonthlyItemDownloadCount.create!(institution_id: institution_id,
+                                               unit_id:        unit_id,
+                                               collection_id:  collection_id,
+                                               item_id:        item.id,
+                                               year:           year,
+                                               month:          month,
+                                               count:          struct[0]['dl_count'].to_i)
+            rescue ActiveRecord::RecordNotUnique
             end
           end
         end
