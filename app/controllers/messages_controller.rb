@@ -21,7 +21,11 @@ class MessagesController < ApplicationController
                                   "%#{@permitted_params[:key].downcase}%")
     end
     if @permitted_params[:status].present?
-      @messages = @messages.where(status: @permitted_params[:status])
+      if @permitted_params[:status] == "no_response"
+        @messages = @messages.where(response_time: nil)
+      else
+        @messages = @messages.where(status: @permitted_params[:status])
+      end
     end
     @count            = @messages.count
     @messages         = @messages.limit(@window).offset(@start)

@@ -11,16 +11,20 @@
 .card.mb-3
   .card-body
     = form_tag messages_path, method: :get, class: "form-inline" do
-      = label_tag nil, "Key", class: "mr-1"
-      = filter_field(name: "key")
+      .form-group
+        = label_tag nil, "Key:", class: "mr-1"
+        = filter_field(name: "key")
 
-      = label_tag nil, "Status", class: "ml-3 mr-1"
-      = select_tag "status", options_for_select([["Any", ""],
-                                                ["OK", Message::Status::OK],
-                                                ["Error", Message::Status::ERROR]]),
-                   class: "custom-select"
+      .form-group
+        = label_tag nil, "Status:", class: "ml-3 mr-1"
+        = select_tag "status", options_for_select([["Any", ""],
+                                                  ["No Response", "no_response"],
+                                                  ["OK", Message::Status::OK],
+                                                  ["Error", Message::Status::ERROR]], params[:status]),
+                     class: "custom-select"
+
       .btn-group
-        = submit_tag "Filter", name: "", class: "btn btn-primary ml-2"
+        = submit_tag "Filter", name: "", class: "btn btn-primary ml-3"
 
 .row.justify-content-md-center
   .col-md-auto
@@ -29,7 +33,7 @@
 .card.mb-3
   .card-body
     Showing
-    = "#{@start + 1}-#{[@start + @window].min}"
+    = "#{@start + 1}-#{([@start + @window, @count].min)}"
     of
     = number_with_delimiter(@count)
     messages
