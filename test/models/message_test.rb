@@ -24,6 +24,13 @@ class MessageTest < ActiveSupport::TestCase
                  Message.outgoing_queue
   end
 
+  # as_console()
+
+  test "as_console() returns a correct value" do
+    message = messages(:successful_ingest)
+    assert_not_nil message.as_console
+  end
+
   # label()
 
   test "label() returns a correct value" do

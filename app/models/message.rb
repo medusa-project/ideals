@@ -58,6 +58,25 @@ class Message < ApplicationRecord
     ::Configuration.instance.medusa[:outgoing_queue]
   end
 
+  ##
+  # @return [String] Console representation of the instance.
+  #
+  def as_console
+    lines = ["#{self.id}----------------------------------"]
+    lines << "CREATED:       #{self.created_at.localtime}"
+    lines << "UPDATED:       #{self.updated_at.localtime}"
+    lines << "OPERATION:     #{self.operation}"
+    lines << "ITEM:          #{self.bitstream.item_id}"
+    lines << "BITSTREAM:     #{self.bitstream_id}"
+    lines << "STAGING KEY:   #{self.staging_key}"
+    lines << "TARGET KEY:    #{self.target_key}"
+    lines << "STATUS:        #{self.status}"
+    lines << "RESPONSE TIME: #{self.response_time}"
+    lines << "MEDUSA UUID:   #{self.medusa_uuid}"
+    lines << "ERROR:         #{self.error_text}" if self.error_text.present?
+    lines.join("\n")
+  end
+
   def label
     "#{self.operation} @ #{self.created_at}"
   end
