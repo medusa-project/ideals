@@ -25,6 +25,30 @@ namespace :bitstreams do
     end
   end
 
+  desc "Ingest bitstreams into Medusa that have not already been ingested"
+  task :ingest_into_medusa, [:limit] => :environment do |task, args|
+    bitstreams = Bitstream.
+      where(submitted_for_ingest: false, medusa_uuid: nil).
+      where("permanent_key IS NOT NULL")
+    puts "#{bitstreams.count} bitstreams left to ingest"
+    limit      = args[:limit].to_i
+    bitstreams = bitstreams.limit(limit)
+    count      = bitstreams.count
+    progress   = Progress.new(count)
+
+    Bitstream.uncached do
+      bitstreams.find_each.with_index do |bs, index|
+        begin
+          bs.ingest_into_medusa
+          progress.report(index, "Ingesting bitstreams into Medusa")
+        rescue => e
+          puts "#{e} [bitstream ID: #{bs.id}]"
+        end
+      end
+    end
+    puts ""
+  end
+
   desc "Handle bitstreams for which ingest messages have been sent but no
     response messages have been received"
   task sync_with_medusa: :environment do
