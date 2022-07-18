@@ -79,3 +79,5 @@ DSpace can now be fully decommissioned.
     a day.
 13. `rails bitstreams:read_full_text[4]` is run. This will take several more
     days.
+14. `rails bitstreams:ingest_into_medusa` ingests bitstreams into Medusa. This
+    is something that only we at UIUC Library need to do.
