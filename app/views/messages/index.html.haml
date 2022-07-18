@@ -6,7 +6,7 @@
                         per_page:         @window,
                         permitted_params: @permitted_params)
 
-%h1 Messages
+%h1 Medusa Messages
 
 .card.mb-3
   .card-body
@@ -26,10 +26,6 @@
       .btn-group
         = submit_tag "Filter", name: "", class: "btn btn-primary ml-3"
 
-.row.justify-content-md-center
-  .col-md-auto
-    = pagination
-
 .card.mb-3
   .card-body
     Showing
@@ -37,6 +33,10 @@
     of
     = number_with_delimiter(@count)
     messages
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
 
 - @messages.each do |message|
   .card.mb-3
