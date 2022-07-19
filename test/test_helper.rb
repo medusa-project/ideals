@@ -92,6 +92,7 @@ class ActiveSupport::TestCase
     client = S3Client.instance
     bucket = ::Configuration.instance.storage[:bucket]
     client.create_bucket(bucket: bucket) unless client.bucket_exists?(bucket)
+    client.delete_objects(bucket: bucket)
 
     @@seeding = true
     Bitstream.where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").each do |bs|
