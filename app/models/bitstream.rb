@@ -385,6 +385,20 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # @return [Tempfile]
+  #
+  def download_to_temp_file
+    config        = Configuration.instance
+    source_bucket = config.storage[:bucket]
+    source_key    = self.effective_key
+    tempfile      = Tempfile.new("#{self.class}-#{self.id}")
+    S3Client.instance.get_object(bucket:          source_bucket,
+                                 key:             source_key,
+                                 response_target: tempfile.path)
+    tempfile
+  end
+
+  ##
   # This method is only used during migration out of DSpace.
   #
   # @return [String,nil] Path on the DSpace file system relative to the asset
@@ -607,20 +621,6 @@ class Bitstream < ApplicationRecord
 
   def derivative_key_prefix
     "derivatives/#{self.id}"
-  end
-
-  ##
-  # @return [Tempfile]
-  #
-  def download_to_temp_file
-    config        = Configuration.instance
-    source_bucket = config.storage[:bucket]
-    source_key    = self.effective_key
-    tempfile      = Tempfile.new("#{self.class}-#{self.id}")
-    S3Client.instance.get_object(bucket:          source_bucket,
-                                 key:             source_key,
-                                 response_target: tempfile.path)
-    tempfile
   end
 
   def ensure_primary_uniqueness

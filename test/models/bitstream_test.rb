@@ -504,6 +504,14 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_equal 1, @instance.download_count
   end
 
+  # download_to_temp_file()
+
+  test "download_to_temp_file() works" do
+    file = @instance.download_to_temp_file
+    assert File.exist?(file.path)
+    File.delete(file)
+  end
+
   # dspace_relative_path()
 
   test "dspace_relative_path() returns nil when dspace_id is not set" do
