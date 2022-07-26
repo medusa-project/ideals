@@ -10,8 +10,8 @@ class BitstreamPolicy < ApplicationPolicy
     # @param relation [ActiveRecord::Relation<Bitstream>]
     # @param owning_item [Item] Item owning the bitstreams in {relation}.
     #
-    def initialize(request_context, relation, owning_item)
-      @owning_item     = owning_item
+    def initialize(request_context, relation, options = {})
+      @owning_item     = options[:owning_item]
       @request_context = request_context
       @user            = request_context&.user
       @role            = request_context&.role_limit || Role::NO_LIMIT
