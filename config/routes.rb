@@ -49,6 +49,7 @@ Rails.application.routes.draw do
   end
   resources :file_formats, path: "file-formats", only: :index
   match "/handle/:prefix/:suffix", to: "handles#redirect", via: :get, as: "redirect_handle"
+  match "/health", to: "health#index", via: :get, as: "health"
   resources :imports do
     match "/delete-all-files", to: "imports#delete_all_files", via: :post
     match "/upload-file", to: "imports#upload_file", via: :post
