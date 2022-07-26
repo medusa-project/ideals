@@ -197,4 +197,19 @@ class ElasticsearchClientTest < ActiveSupport::TestCase
     @instance.refresh
   end
 
+  # set_refresh_interval()
+
+  test "set_refresh_interval() updates the refresh interval" do
+    @instance.create_index(@test_index)
+    @instance.set_refresh_interval(7)
+    assert_equal 7, @instance.settings['index']['refresh_interval']
+  end
+
+  # settings()
+
+  test "settings() returns the index settings" do
+    @instance.create_index(@test_index)
+    assert_kind_of Hash, @instance.settings
+  end
+
 end

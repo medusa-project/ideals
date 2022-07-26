@@ -330,4 +330,40 @@ class ElasticsearchClient
                  url, response.body)
   end
 
+  ##
+  # @param seconds [Integer] Refresh interval.
+  #
+  def set_refresh_interval(seconds)
+    config = Configuration.instance
+    index  = config.elasticsearch[:index]
+    url    = sprintf("%s/%s/_settings",
+                     config.elasticsearch[:endpoint],
+                     index)
+    body   = JSON.generate({
+      index: {
+        refresh_interval: "#{seconds}s"
+      }
+    })
+    response = @http_client.put(url, body, 'Content-Type': CONTENT_TYPE)
+
+    LOGGER.debug("set_refresh_interval(): URL: %s\n"\
+                 "  Response: %s",
+                 url, response.body)
+  end
+
+  ##
+  # @return [Hash] Index settings.
+  #
+  def settings
+    config = Configuration.instance
+    url = sprintf("%s/%s/_settings",
+                  config.elasticsearch[:endpoint],
+                  config.elasticsearch[:index])
+    response = @http_client.get(url, nil, 'Content-Type': CONTENT_TYPE)
+
+    LOGGER.debug("settings(): %s\n    Response: %s",
+                 url, response.body.force_encoding('UTF-8'))
+    JSON.parse(response.body)
+  end
+
 end

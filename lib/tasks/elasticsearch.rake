@@ -47,6 +47,11 @@ namespace :elasticsearch do
       puts ElasticsearchClient.instance.indexes
     end
 
+    desc 'Set the refresh interval'
+    task :set_refresh_interval, [:interval] => :environment do |task, args|
+      ElasticsearchClient.instance.set_refresh_interval(args[:interval])
+    end
+
   end
 
   namespace :tasks do
