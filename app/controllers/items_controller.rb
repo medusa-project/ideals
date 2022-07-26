@@ -407,6 +407,7 @@ class ItemsController < ApplicationController
     if params[:embargoes].respond_to?(:each)
       @item.embargoes.destroy_all
       params[:embargoes].each_value do |embargo|
+        next unless embargo[:kind].present?
         @item.embargoes.build(kind:           embargo[:kind].to_i,
                               user_group_ids: embargo[:user_group_ids]&.uniq,
                               reason:         embargo[:reason],

@@ -349,6 +349,7 @@ const ItemView = function() {
                     updateEmbargoIndices();
                 } else {
                     cardToRemove.hide();
+                    cardToRemove.find("input, select, textarea").prop("disabled", true);
                     cardToRemove.find("input[type=checkbox]").prop("checked", false);
                 }
             };

@@ -11,6 +11,9 @@
 
   -# Include this only because `item` is required in the params.
   = f.hidden_field :id, value: f.object.id
+  -# Tells the controller we are updating embargoes even if none are present,
+  -# i.e. we are deleting all of them.
+  = hidden_field_tag "embargoes[0][kind]", nil
 
   - embargoes = item.current_embargoes.order(:expires_at)
   - if embargoes.any?
