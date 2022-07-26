@@ -202,7 +202,8 @@ class ElasticsearchClientTest < ActiveSupport::TestCase
   test "set_refresh_interval() updates the refresh interval" do
     @instance.create_index(@test_index)
     @instance.set_refresh_interval(7)
-    assert_equal 7, @instance.settings['index']['refresh_interval']
+    index_name = ::Configuration.instance.elasticsearch[:index]
+    assert_equal "7s", @instance.settings[index_name]['settings']['index']['refresh_interval']
   end
 
   # settings()
