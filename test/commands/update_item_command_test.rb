@@ -21,6 +21,7 @@ class UpdateItemCommandTest < ActiveSupport::TestCase
     assert_equal user, event.user
     assert_not_nil event.before_changes
     assert_not_nil event.after_changes
+    assert_not_equal event.before_changes, event.after_changes
   end
 
 end

@@ -17,7 +17,7 @@ class UpdateItemCommand < Command
     @item           = item
     @user           = user
     @description    = description
-    @before_changes = before_changes
+    @before_changes = before_changes || @item.as_change_hash
   end
 
   ##
@@ -29,7 +29,7 @@ class UpdateItemCommand < Command
       Event.create!(event_type:     Event::Type::UPDATE,
                     item:           @item,
                     user:           @user,
-                    before_changes: @before_changes || @item.as_change_hash,
+                    before_changes: @before_changes,
                     after_changes:  @item.as_change_hash,
                     description:    @description)
     end
