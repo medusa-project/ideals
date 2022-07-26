@@ -109,10 +109,11 @@ class Bitstream < ApplicationRecord
     item.handle.present? && permanent_key.present? &&
       saved_change_to_permanent_key? && !submitted_for_ingest }
   after_save :read_full_text_async, if: -> {
+    bundle == Bundle::CONTENT &&
     can_read_full_text? &&
     full_text_checked_at.blank? &&
     effective_key.present? &&
-    (!ActiveSupport::TestCase.method_defined?(:seeding?) || !ActiveSupport::TestCase.seeding?) &&
+    (defined?(ActiveSupport::TestCase) != "constant" || !ActiveSupport::TestCase.seeding?) &&
     !DspaceImporter.instance.running? }
   before_destroy :delete_derivatives, :delete_from_staging,
                  :delete_from_permanent_storage

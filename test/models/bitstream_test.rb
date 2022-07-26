@@ -969,6 +969,18 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_equal "This is a PDF", @instance.full_text.text
   end
 
+  test "save() does not read full text when the bundle is not CONTENT" do
+    @instance = bitstreams(:approved_in_permanent)
+    @instance.update!(bundle:               Bitstream::Bundle::LICENSE,
+                      full_text_checked_at: nil,
+                      full_text:            nil)
+    sleep 2
+
+    @instance.reload
+    assert_nil @instance.full_text_checked_at
+    assert_nil @instance.full_text
+  end
+
   test "save() does not read full text when full_text_is_checked_at is set" do
     @instance = bitstreams(:approved_in_permanent)
     time      = Time.now.utc
