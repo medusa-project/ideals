@@ -48,11 +48,6 @@ class Download < ApplicationRecord
   before_create :assign_key
   after_destroy :delete_object
 
-  # Instances may be updated from inside transaction blocks, outside of which
-  # updates would not be visible. So, we use a different database connection to
-  # "break out" of the block. (See config/database.yml.)
-  #establish_connection "#{Rails.env}_2".to_sym unless Rails.env.test?
-
   ##
   # @param max_age_seconds [Integer]
   # @return [void]

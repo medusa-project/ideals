@@ -19,6 +19,11 @@
 # end
 # ```
 #
+# N.B.: it's important to use the custom mutator methods (e.g. {progress}
+# rather than {update}) in the context of a transaction. These will update the
+# instance via a separate database connection--otherwise the update would not
+# be visible from outside of the transaction.
+#
 # # Attributes
 #
 # * `backtrace`        Backtrace of a task that failed due to an exception.
@@ -75,11 +80,6 @@ class Task < ApplicationRecord
   has_one :download
   belongs_to :user, optional: true
 
-  # Instances will often be updated from inside transactions, outside of which
-  # any updates would not be visible. So, we use a different database
-  # connection. (See config/database.yml.)
-  #establish_connection "#{Rails.env}_2".to_sym unless Rails.env.test?
-
   before_save :constrain_progress
 
   ##
@@ -87,7 +87,7 @@ class Task < ApplicationRecord
   #
   def estimated_completion
     if self.percent_complete < 0.000001 || self.percent_complete > 0.999999 ||
-      self.started_at.blank? || self.stopped_at.present?
+        self.started_at.blank? || self.stopped_at.present?
       nil
     else
       TimeUtils.eta(self.started_at, self.percent_complete)
@@ -98,10 +98,12 @@ class Task < ApplicationRecord
   # Fails the instance by setting its status to {Status::FAILED}.
   #
   def fail(detail: nil, backtrace: nil)
-    self.update!(status:     Status::FAILED,
-                 stopped_at: Time.now,
-                 detail:     detail,
-                 backtrace:  backtrace)
+    self.class.connection_pool.with_connection do
+      self.update!(status:     Status::FAILED,
+                   stopped_at: Time.now,
+                   detail:     detail,
+                   backtrace:  backtrace)
+    end
   end
 
   def failed?
@@ -112,7 +114,9 @@ class Task < ApplicationRecord
   # Pauses the instance by setting its status to {Status::PAUSED}.
   #
   def pause
-    self.update!(status: Status::PAUSED)
+    self.class.connection_pool.with_connection do
+      self.update!(status: Status::PAUSED)
+    end
   end
 
   def paused?
@@ -120,6 +124,14 @@ class Task < ApplicationRecord
   end
 
   ##
+  # Updates the progress of the instance, as well as perhaps some other
+  # properties for convenience.
+  #
+  # N.B.: it's important to use this rather than {update} in the context
+  # of a transaction. This method will update the progress via a separate
+  # database connection--otherwise the update would not be visible from outside
+  # of the transaction.
+  #
   # @param progress [Float]
   # @param status_text [String] Optional shortcut to updating this attribute
   #                             directly.
@@ -132,7 +144,7 @@ class Task < ApplicationRecord
       self.started_at       = Time.now if self.started_at.blank?
       self.status           = Status::RUNNING if progress < 1
       self.status_text      = status_text if status_text.present?
-      self.save!
+      self.class.connection_pool.with_connection { self.save! }
     end
   end
 
@@ -144,8 +156,10 @@ class Task < ApplicationRecord
   # Stops the instance by setting its status to {Status::STOPPED}.
   #
   def stop
-    self.update!(status:     Status::STOPPED,
-                 stopped_at: Time.now)
+    self.class.connection_pool.with_connection do
+      self.update!(status:     Status::STOPPED,
+                   stopped_at: Time.now)
+    end
   end
 
   ##
@@ -167,7 +181,7 @@ class Task < ApplicationRecord
     self.stopped_at       = Time.now
     self.backtrace        = nil
     self.status_text      = status_text if status_text.present?
-    self.save!
+    self.class.connection_pool.with_connection { self.save! }
   end
 
   def succeeded?

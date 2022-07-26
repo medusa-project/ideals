@@ -105,6 +105,16 @@ class ImportTest < ActiveSupport::TestCase
     assert_equal @instance.object_key("item1/escher_lego2.jpg"), keys[1]
   end
 
+  # progress()
+
+  test "progress() updates percent_complete and imported_items" do
+    percent_complete = 0.35
+    imported_items   = [{ 'item_id' => 9999, 'handle' => "handle" }]
+    @instance.progress(percent_complete, imported_items)
+    assert_equal percent_complete, @instance.percent_complete
+    assert_equal imported_items, @instance.imported_items
+  end
+
   # status
 
   test "status must be set to one of the Status constants" do

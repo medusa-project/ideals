@@ -61,11 +61,6 @@ class Import < ApplicationRecord
 
   validates :status, inclusion: { in: Status.all }
 
-  # Instances will often be updated from inside transactions, outside of which
-  # any updates would not be visible. So, we use a different database
-  # connection. (See config/database.yml.)
-  establish_connection "#{Rails.env}_2".to_sym
-
   def delete_all_files
     config = ::Configuration.instance
     S3Client.instance.delete_objects(bucket:     config.storage[:bucket],
@@ -100,6 +95,21 @@ class Import < ApplicationRecord
     config = ::Configuration.instance
     S3Client.instance.objects(bucket:     config.storage[:bucket],
                               key_prefix: root_key_prefix).map(&:key)
+  end
+
+  ##
+  # Updates the progress using a separate database connection, making it usable
+  # from inside a transaction block.
+  #
+  # @param progress [Float]
+  # @param imported_items [Array<Hash>] Array of hashes with `:item_id` and
+  #                                     `:handle` keys.
+  #
+  def progress(progress, imported_items = [])
+    self.class.connection_pool.with_connection do
+      self.update!(percent_complete: progress,
+                   imported_items:   imported_items)
+    end
   end
 
   ##

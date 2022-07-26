@@ -216,8 +216,8 @@ class SafImporter
           item_id: item_dir.split("/").last,
           handle:  item.handle.handle
         }
-        import.update!(percent_complete: index / item_key_prefixes.length.to_f,
-                       imported_items:   imported_items)
+        import.progress(index / item_key_prefixes.length.to_f,
+                        imported_items)
         task&.progress(index / item_key_prefixes.length.to_f,
                        status_text: "Importing #{item_key_prefixes.length} items from SAF package")
       end
