@@ -239,7 +239,45 @@ const ItemView = function() {
     new IDEALS.CopyButton($(".copy"), $(".permalink"));
 
     new FileNavigator();
-    $("#file-navigator").on("IDEALS.FileNavigator.fileChanged", function() {
+    const file_navigator = $("#file-navigator");
+
+    file_navigator.on("IDEALS.FileNavigator.thumbsLoaded", function() {
+        const modal      = $("#download-all-files-modal");
+        const modal_body = modal.find(".modal-body");
+        // Clear any previous modal content when the modal is opened.
+        modal_body.on("show.bs.modal", function() {
+            $(this).html("");
+        });
+        $(".download-all-files").on("click", function() {
+            const item_id = $(this).data("item-id");
+            // Initiate the download on the server. This will redirect to a
+            // download status page which will get inserted into the modal body.
+            const url = ROOT_URL + "/items/" + item_id + "/bitstreams.zip";
+            $.get(url, function(data) {
+                modal_body.html(data);
+                // Repeatedly check the download status, updating the modal
+                // body HTML. Stop checking when the HTML contains a
+                // `download_ready` input value of `true` or when the modal is
+                // closed.
+                const status_check_interval = setInterval(function() {
+                    const download_ready = modal_body.find("[name=download_ready]").val();
+                    if (download_ready !== "true") {
+                        const download_key = modal_body.find("[name=download_key]").val();
+                        const url          = ROOT_URL + "/downloads/" + download_key;
+                        $.get(url, function(data) {
+                            modal_body.html(data);
+                        });
+                    } else {
+                        clearInterval(status_check_interval);
+                    }
+                }, 4000);
+                modal_body.on("hide.bs.modal", function() {
+                    clearInterval(status_check_interval);
+                });
+            });
+        });
+    });
+    file_navigator.on("IDEALS.FileNavigator.fileChanged", function() {
         /* See BitstreamsHelper.pdf_object_viewer_for() for why this is commented out
         const pdfjsViewer     = $("#pdfjs-pdf-viewer");
         const nativePDFViewer = $("#native-pdf-viewer");

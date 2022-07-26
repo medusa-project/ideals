@@ -44,7 +44,10 @@
           %i.fa.fa-download
           Download Options
         .dropdown-menu{"aria-labelledby": "download-options"}
-          %a.dropdown-item{href: item_bitstreams_path(@item, format: :zip)}
+          %button.dropdown-item.download-all-files{"data-item-id": @item.id,
+                                                   "data-target":  "#download-all-files-modal",
+                                                   "data-toggle":  "modal",
+                                                   role:           "button"}
             %i.fa.fa-download
             Download All Files
           - if policy(@item).download_counts?
@@ -59,6 +62,9 @@
   -# bitstreams/_viewer.html is inserted here via XHR
   = spinner
 
+= render partial: "shared/ajax_modal",
+         locals: { id: "download-all-files-modal",
+                   title: "Download Files" }
 = render partial: "shared/ajax_modal",
          locals: { id:    "download-counts-modal",
                    title: "Download Counts (All Files)",

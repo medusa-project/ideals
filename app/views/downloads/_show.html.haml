@@ -1,0 +1,7 @@
+= hidden_field_tag(:download_key, @download.key)
+= hidden_field_tag(:download_ready, @download.ready?)
+
+- if @download.ready?
+  = render partial: 'ready'
+- else
+  = render partial: 'progress'

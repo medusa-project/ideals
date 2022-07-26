@@ -1,4 +1,4 @@
-FROM ubuntu:21.10
+FROM ubuntu:22.04
 
 ENV CI=1
 ENV DOCKER=0
@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     libvips-tools \
     poppler-utils \
     shared-mime-info \
+    zip \
     zlib1g-dev
 
 # Install Ruby

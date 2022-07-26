@@ -122,18 +122,10 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :no_content
   end
 
-  test "index() returns HTTP 200" do
+  test "index() redirects to a Download" do
     item = items(:approved)
     get item_bitstreams_path(item, format: :zip)
-    assert_response :ok
-  end
-
-  test "index() returns correct headers" do
-    item = items(:approved)
-    get item_bitstreams_path(item, format: :zip)
-    assert_equal "application/zip", response.header['Content-Type']
-    assert_equal "attachment; filename=\"item-#{item.id}.zip\"",
-                 response.header['Content-Disposition']
+    assert_response 302
   end
 
   test "index() ascribes a download event to all downloaded bitstreams" do

@@ -44,6 +44,19 @@ class BitstreamTest < ActiveSupport::TestCase
     teardown_s3
   end
 
+  # create_zip_file()
+
+  test "create_zip_file() creates a zip of bitstreams" do
+    bitstreams = [bitstreams(:approved_in_permanent),
+                  bitstreams(:license_bundle)]
+    dest_key   = "#{Download::DOWNLOADS_KEY_PREFIX}file.zip"
+    Bitstream.create_zip_file(bitstreams: bitstreams, dest_key: dest_key)
+
+    bucket = ::Configuration.instance.storage[:bucket]
+    assert S3Client.instance.head_object(bucket: bucket,
+                                         key:    dest_key).content_length > 0
+  end
+
   # medusa_key()
 
   test "medusa_key() raises an error if the handle argument is blank" do

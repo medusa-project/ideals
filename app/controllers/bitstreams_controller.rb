@@ -19,8 +19,6 @@
 #
 class BitstreamsController < ApplicationController
 
-  include ZipTricks::RailsStreaming
-
   LOGGER = CustomLogger.new(BitstreamsController)
 
   before_action :ensure_logged_in, except: [:index, :object, :show, :stream,
@@ -93,16 +91,12 @@ class BitstreamsController < ApplicationController
                                   owning_item:        @item,
                                   policy_scope_class: BitstreamPolicy::Scope)
         if bitstreams.any?
-          response.headers["Content-Disposition"] =
-            "attachment; filename=\"item-#{@item.id}.zip\""
-          zip_tricks_stream(auto_rename_duplicate_filenames: true) do |zip|
-            bitstreams.each do |bs|
-              bs.add_download(user: current_user)
-              zip.write_deflated_file(bs.original_filename.to_s) do |sink|
-                sink << bs.data.read
-              end
-            end
+          bitstreams.each do |bs|
+            bs.add_download(user: current_user)
           end
+          download = Download.create!(ip_address: request.remote_ip)
+          ZipBitstreamsJob.perform_later(bitstreams.to_a, download, @item.id)
+          redirect_to download_url(download)
         else
           head :no_content
         end

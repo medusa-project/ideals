@@ -317,6 +317,8 @@ GEM
     timeout (0.2.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
+    tzinfo-data (1.2022.1)
+      tzinfo (>= 1.0.0)
     uglifier (4.2.0)
       execjs (>= 0.3.0, < 3)
     unicode-display_width (2.1.0)
@@ -327,7 +329,6 @@ GEM
     yard (0.9.27)
       webrick (~> 1.7.0)
     zeitwerk (2.5.4)
-    zip_tricks (5.6.0)
 
 PLATFORMS
   ruby
@@ -370,9 +371,9 @@ DEPENDENCIES
   sassc
   scars-bootstrap-theme!
   sprockets-rails
+  tzinfo-data
   uglifier (>= 2.7.2)
   yard
-  zip_tricks
 
 RUBY VERSION
    ruby 3.1.2p20

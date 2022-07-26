@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_05_013929) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_19_135108) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -140,6 +140,19 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_05_013929) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_group_id", "user_id"], name: "index_departments_on_user_group_id_and_user_id", unique: true
+  end
+
+  create_table "downloads", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename"
+    t.string "url"
+    t.bigint "task_id"
+    t.boolean "expired", default: false, null: false
+    t.string "ip_address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_downloads_on_key", unique: true
+    t.index ["task_id"], name: "index_downloads_on_task_id"
   end
 
   create_table "email_patterns", force: :cascade do |t|
@@ -581,6 +594,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_05_013929) do
   add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "departments", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "departments", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "downloads", "tasks", on_update: :cascade, on_delete: :nullify
   add_foreign_key "email_patterns", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "embargoes", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "embargoes_user_groups", "embargoes", on_update: :cascade, on_delete: :cascade

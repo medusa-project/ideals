@@ -186,6 +186,50 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # Creates a zip file containing the given bitstreams and places it in the
+  # application bucket under the given key.
+  #
+  # @param bitstreams [Enumerable<Bitstream>] Bitstreams to include in the zip
+  #                                           file.
+  # @param dest_key [String] Destination key within the application bucket.
+  # @param item_id [Integer] Optional.
+  # @param task [Task] Optional.
+  #
+  def self.create_zip_file(bitstreams:,
+                           dest_key:,
+                           item_id:    nil,
+                           task:       nil)
+    status_text  = "Generating #{bitstreams.length}-item zip file"
+    status_text += " for item #{item_id}" if item_id
+    task&.update!(indeterminate: false,
+                  started_at:    Time.now,
+                  status_text:   status_text)
+    Dir.mktmpdir do |tmpdir|
+      bitstreams.each_with_index do |bs, index|
+        tmpfile = bs.download_to_temp_file
+        FileUtils.mv(tmpfile.path, File.join(tmpdir, bs.original_filename))
+        task&.progress(index / bitstreams.length.to_f)
+      end
+      zip_filename = "files.zip"
+      zip_pathname = File.join(tmpdir, zip_filename)
+      # -j: don't record directory names
+      # -r: recurse into directories
+      `zip -jr "#{zip_pathname}" #{tmpdir}`
+
+      # Upload the zip file into the application S3 bucket.
+      File.open(zip_pathname, "r") do |file|
+        # upload_file will automatically use the multipart API for files larger
+        # than 15 MB. (S3 has a 5 GB limit when not using the multipart API,
+        # which we are unlikely to reach, but you never know.)
+        s3 = Aws::S3::Resource.new(S3Client.client_options)
+        s3.bucket(::Configuration.instance.storage[:bucket]).
+          object(dest_key).
+          upload_file(file)
+      end
+    end
+  end
+
+  ##
   # Computes a destination Medusa key based on the given arguments. The key is
   # relative to the file group key prefix, which is known only by Medusa, so
   # the return value will be different than the value of {medusa_key}, which

@@ -57,10 +57,9 @@ gem "sassc"
 gem "scars-bootstrap-theme", github: "medusa-project/scars-bootstrap-theme", branch: "release/bootstrap-4.4"
 #gem "scars-bootstrap-theme", path: "../scars-bootstrap-theme"
 gem "sprockets-rails"
+gem "tzinfo-data"
 # Use Uglifier as compressor for JavaScript assets
 gem "uglifier", ">= 2.7.2"
-# Generates bitstream zip downloads
-gem "zip_tricks"
 
 group :development do
   # Reduces boot times through caching; required in config/boot.rb

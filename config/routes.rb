@@ -44,6 +44,9 @@ Rails.application.routes.draw do
   end
   # This is an old DSpace route.
   match "/dspace-oai/request", to: redirect('/oai-pmh', status: 301), via: :all
+  resources :downloads, only: :show, param: :key do
+    match "/file", to: "downloads#file", via: :get, as: "file"
+  end
   resources :file_formats, path: "file-formats", only: :index
   match "/handle/:prefix/:suffix", to: "handles#redirect", via: :get, as: "redirect_handle"
   resources :imports do

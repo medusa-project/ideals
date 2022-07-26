@@ -72,12 +72,13 @@ class Task < ApplicationRecord
     end
   end
 
+  has_one :download
   belongs_to :user, optional: true
 
   # Instances will often be updated from inside transactions, outside of which
   # any updates would not be visible. So, we use a different database
   # connection. (See config/database.yml.)
-  establish_connection "#{Rails.env}_2".to_sym
+  #establish_connection "#{Rails.env}_2".to_sym unless Rails.env.test?
 
   before_save :constrain_progress
 
