@@ -28,7 +28,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
       # collection managers and above are allowed to access.
       relation.first.update!(bundle: Bitstream::Bundle::LICENSE)
       relation = owning_item.bitstreams
-      scope    = BitstreamPolicy::Scope.new(context, relation, owning_item)
+      scope    = BitstreamPolicy::Scope.new(context, relation,
+                                            owning_item: owning_item)
       assert_equal count - 1, scope.resolve.count
     end
 
@@ -45,7 +46,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
       # make one of the bitstreams inaccessible to all but sysadmins
       relation.first.update!(role: Role::SYSTEM_ADMINISTRATOR)
       relation = owning_item.bitstreams
-      scope    = BitstreamPolicy::Scope.new(context, relation, owning_item)
+      scope    = BitstreamPolicy::Scope.new(context, relation,
+                                            owning_item: owning_item)
       assert_equal count - 1, scope.resolve.count
     end
 
