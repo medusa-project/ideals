@@ -73,7 +73,12 @@ class ShibbolethUser < User
     if Rails.env.development? || Rails.env.test?
       return self.netid.include?("admin") && group.include?("admin")
     end
-    LdapQuery.new.is_member_of?(self.netid, group)
+    user = UiucLibAd::Entity.new(entity_cn: self.netid)
+    begin
+      return user.is_member_of?(group_cn: group)
+    rescue UiucLibAd::NoDNFound
+      return false
+    end
   end
 
   def netid
