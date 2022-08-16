@@ -227,7 +227,7 @@ module ApplicationHelper
   def highwire_meta_tags(entity)
     html = StringIO.new
     html << "<meta name=\"citation_public_url\" "\
-              "value=\"#{entity.handle&.handle_net_url || polymorphic_url(entity)}\">"
+              "content=\"#{entity.handle&.handle_net_url || polymorphic_url(entity)}\">"
     # Find all registered elements that have Highwire mappings.
     reg_elements = entity.effective_metadata_profile.elements.
       where(visible: true).
@@ -252,7 +252,7 @@ module ApplicationHelper
       end
     end
     name_value_map.each do |name, value|
-      html << "<meta name=\"#{name}\" value=\"#{value}\">"
+      html << "<meta name=\"#{name}\" content=\"#{value}\">"
     end
     raw(html.string)
   end
@@ -379,7 +379,7 @@ module ApplicationHelper
         sort_by(&:position).
         each do |asc_e|
         html << "<meta name=\"#{reg_element.name.gsub(":", ".")}\" "\
-                "value=\"#{sanitize(asc_e.string, tags: [])}\">"
+                  "content=\"#{sanitize(asc_e.string, tags: [])}\">"
       end
     end
     raw(html.string)
