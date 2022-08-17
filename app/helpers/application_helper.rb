@@ -228,7 +228,16 @@ module ApplicationHelper
   def highwire_meta_tags(entity)
     html = StringIO.new
     html << "<meta name=\"citation_public_url\" "\
-              "content=\"#{entity.handle&.handle_net_url || polymorphic_url(entity)}\">"
+              "content=\"#{entity.handle&.handle_net_url || polymorphic_url(entity)}\">\n"
+    if entity.kind_of?(Item)
+      entity.bitstreams.
+        select{ |b| b.bundle == Bitstream::Bundle::CONTENT }.
+        select{ |b| b.format && b.format.media_types.include?("application/pdf") }.
+        each do |bs|
+        html << "<meta name=\"citation_pdf_url\" "\
+                  "content=\"#{item_bitstream_stream_url(entity, bs)}\">\n"
+      end
+    end
     # Find all registered elements that have Highwire mappings.
     reg_elements = entity.effective_metadata_profile.elements.
       where(visible: true).
