@@ -223,36 +223,35 @@ module ApplicationHelper
   ##
   # @param entity [Object]
   # @return [String] Series of Highwire Press meta tags.
+  # @see https://scholar.google.no/intl/en/scholar/inclusion.html#indexing
   #
   def highwire_meta_tags(entity)
     html = StringIO.new
     html << "<meta name=\"citation_public_url\" "\
-              "value=\"#{entity.handle&.handle_net_url || polymorphic_url(entity)}\">"
+              "content=\"#{entity.handle&.handle_net_url || polymorphic_url(entity)}\">\n"
+    if entity.kind_of?(Item)
+      entity.bitstreams.
+        select{ |b| b.bundle == Bitstream::Bundle::CONTENT }.
+        select{ |b| b.format && b.format.media_types.include?("application/pdf") }.
+        each do |bs|
+        html << "<meta name=\"citation_pdf_url\" "\
+                  "content=\"#{item_bitstream_stream_url(entity, bs)}\">\n"
+      end
+    end
     # Find all registered elements that have Highwire mappings.
     reg_elements = entity.effective_metadata_profile.elements.
       where(visible: true).
       order(:position).
       map(&:registered_element).
       select{ |e| e.highwire_mapping.present? }
-    name_value_map = {} # hash of Highwire name keys -> sanitized values
     reg_elements.each do |reg_e|
       entity.elements.
           select{ |e| e.name == reg_e.name }.
           sort_by(&:position).
           each do |asc_e|
         value = sanitize(asc_e.string, tags: [])
-        # To avoid adding multiple same-named meta tags, separate values with
-        # semicolons.
-        if name_value_map.key?(reg_e.highwire_mapping)
-          name_value_map[reg_e.highwire_mapping] =
-            "#{name_value_map[reg_e.highwire_mapping]}; #{value}"
-        else
-          name_value_map[reg_e.highwire_mapping] = value
-        end
+        html << "<meta name=\"#{reg_e.highwire_mapping}\" content=\"#{value}\">\n"
       end
-    end
-    name_value_map.each do |name, value|
-      html << "<meta name=\"#{name}\" value=\"#{value}\">"
     end
     raw(html.string)
   end
@@ -379,7 +378,7 @@ module ApplicationHelper
         sort_by(&:position).
         each do |asc_e|
         html << "<meta name=\"#{reg_element.name.gsub(":", ".")}\" "\
-                "value=\"#{sanitize(asc_e.string, tags: [])}\">"
+                  "content=\"#{sanitize(asc_e.string, tags: [])}\">"
       end
     end
     raw(html.string)
