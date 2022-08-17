@@ -223,6 +223,7 @@ module ApplicationHelper
   ##
   # @param entity [Object]
   # @return [String] Series of Highwire Press meta tags.
+  # @see https://scholar.google.no/intl/en/scholar/inclusion.html#indexing
   #
   def highwire_meta_tags(entity)
     html = StringIO.new
@@ -234,25 +235,14 @@ module ApplicationHelper
       order(:position).
       map(&:registered_element).
       select{ |e| e.highwire_mapping.present? }
-    name_value_map = {} # hash of Highwire name keys -> sanitized values
     reg_elements.each do |reg_e|
       entity.elements.
           select{ |e| e.name == reg_e.name }.
           sort_by(&:position).
           each do |asc_e|
         value = sanitize(asc_e.string, tags: [])
-        # To avoid adding multiple same-named meta tags, separate values with
-        # semicolons.
-        if name_value_map.key?(reg_e.highwire_mapping)
-          name_value_map[reg_e.highwire_mapping] =
-            "#{name_value_map[reg_e.highwire_mapping]}; #{value}"
-        else
-          name_value_map[reg_e.highwire_mapping] = value
-        end
+        html << "<meta name=\"#{reg_e.highwire_mapping}\" content=\"#{value}\">\n"
       end
-    end
-    name_value_map.each do |name, value|
-      html << "<meta name=\"#{name}\" content=\"#{value}\">"
     end
     raw(html.string)
   end
