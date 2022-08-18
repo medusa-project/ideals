@@ -153,6 +153,64 @@ module ItemsHelper
   end
 
   ##
+  # Renders a list of recently added items.
+  #
+  # N.B.: This produces markup similar to {ApplicationHelper#resource_list}, so
+  # if the markup is changed here, it should be changed there too.
+  #
+  # @param items [Enumerable<Item>]
+  # @return [String] HTML listing.
+  #
+  def recent_list(items)
+    html = StringIO.new
+    year = month = day = 0
+    items.each do |item|
+      item_year  = item.created_at.year
+      item_month = item.created_at.month
+      item_day   = item.created_at.day
+      if item_year != year || item_month != month || item_day != day
+        html << "<hr>" if year > 0
+        html << "<h3>"
+        html <<   item.created_at.strftime("%A, %B %-d")
+        html << "</h3>"
+      end
+      year  = item_year
+      month = item_month
+      day   = item_day
+      html << "<div class=\"media resource-list mb-3\">"
+      html <<   "<div class=\"icon-thumbnail\">"
+      html <<     link_to(item) do
+        icon_for(item)
+      end
+      html <<   "</div>"
+      html <<   "<div class=\"media-body\">"
+      html <<     "<h5 class=\"mt-0 mb-0\">"
+      html <<       link_to(item.title, item)
+      html <<     "</h5>"
+
+      config  = ::Configuration.instance
+      creator = item.elements.
+        select{ |e| e.name == config.elements[:creator] }.
+        map(&:string).
+        join("; ")
+      date    = item.elements.
+        select{ |e| e.name == config.elements[:date] }.
+        map{ |e| e.string.to_i.to_s }.
+        reject{ |e| e == "0" }.
+        join("; ")
+      info_parts  = []
+      info_parts << creator if creator.present?
+      info_parts << date if date.present?
+      html       << info_parts.join(" &bull; ")
+      html       << "<br><br>"
+
+      html <<   "</div>"
+      html << "</div>"
+    end
+    raw(html.string)
+  end
+
+  ##
   # Renders a list of reviewable {Item}s.
   #
   # @param items [Enumerable<Item>] Items grouped by unit and subgrouped by

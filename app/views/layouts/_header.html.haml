@@ -15,10 +15,18 @@
           = link_to submit_path, class: "nav-link" do
             %i.fa.fa-plus
             Submit an Item
-        %li#browse-nav.nav-item
-          = link_to units_path, class: "nav-link" do
-            = icon_for(Unit)
+        %li#browse-nav.nav-item.dropdown
+          %a.nav-link.dropdown-toggle{href:            "#",
+                                      role:            "button",
+                                      "data-toggle":   "dropdown",
+                                      "aria-expanded": false}
+            %i.fa.fa-cubes
             Browse
+          .dropdown-menu
+            = link_to units_path, class: "dropdown-item" do
+              Academic Units and Collections
+            = link_to recent_items_path, class: "dropdown-item" do
+              Most Recent Items
         %li#policies-nav.nav-item
           = link_to "https://wiki.illinois.edu//wiki/display/IDEALS/IDEALS+Resources+and+Information", class: 'nav-link' do
             = icon_for(:info)

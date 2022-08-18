@@ -446,6 +446,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_equal Item::Stages::REJECTED, item.stage
   end
 
+  # index()
+
+  test "recent() returns HTTP 200" do
+    get recent_items_path
+    assert_response :ok
+  end
+
   # reject()
 
   test "reject() redirects to login page for logged-out users" do

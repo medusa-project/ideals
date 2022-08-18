@@ -1,0 +1,13 @@
+- provide :body_id, "recent_items"
+- provide :title, "Most Recent Items"
+
+%h1
+  Most Recent Items
+  %small
+    (submitted in the last two weeks)
+
+- if @items.any?
+  #listing
+    = render partial: "recent_listing"
+- else
+  %p No items have been submitted in the last two weeks.

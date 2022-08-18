@@ -482,6 +482,9 @@ module ApplicationHelper
   ##
   # Renders a resource/results list.
   #
+  # N.B.: This produces markup similar to {ItemsHelper#recent_list}, so if the
+  # markup is changed here, it should be changed there too.
+  #
   # @param resources [Enumerable<Describable,Unit,Collection>]
   # @param primary_id [Integer] ID of a resource in `resources` to indicate as
   #                             "primary."
