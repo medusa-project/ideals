@@ -27,6 +27,9 @@
               Academic Units and Collections
             = link_to recent_items_path, class: "dropdown-item" do
               Most Recent Items
+            = link_to items_path(sort: RegisteredElement.find_by_name("dc:date:issued").indexed_sort_field,
+                                 direction: "desc"), class: "dropdown-item" do
+              Items By Publication Date
         %li#policies-nav.nav-item
           = link_to "https://wiki.illinois.edu//wiki/display/IDEALS/IDEALS+Resources+and+Information", class: 'nav-link' do
             = icon_for(:info)
