@@ -198,7 +198,8 @@ class OaiPmhController < ApplicationController
       must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
                      :gt,
                      Time.now.strftime("%Y-%m-%d")).
-      order(Item::IndexFields::LAST_MODIFIED)
+      order(Item::IndexFields::LAST_MODIFIED).
+      limit(MAX_RESULT_WINDOW)
 
     from = get_from
     if from
@@ -241,7 +242,6 @@ class OaiPmhController < ApplicationController
     @resumption_token    = resumption_token(set, from, until_, @results_offset,
                                             @metadata_format)
     @expiration_date     = resumption_token_expiration_time
-    @results             = @results.limit(MAX_RESULT_WINDOW)
   end
 
   ##
