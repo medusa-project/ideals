@@ -482,59 +482,85 @@ module ApplicationHelper
   ##
   # Renders a resource/results list.
   #
-  # N.B.: This produces markup similar to {ItemsHelper#recent_list}, so if the
-  # markup is changed here, it should be changed there too.
-  #
   # @param resources [Enumerable<Describable,Unit,Collection>]
   # @param primary_id [Integer] ID of a resource in `resources` to indicate as
-  #                             "primary."
+  #                             primary.
   # @param default_id [Integer] ID of a resource in `resources` to indicate as
-  #                             "default."
+  #                             default.
   # @return [String] HTML listing.
   #
   def resource_list(resources, primary_id: nil, default_id: nil)
     html = StringIO.new
     resources.each do |resource|
-      html << "<div class=\"media resource-list mb-3\">"
-      html <<   "<div class=\"icon-thumbnail\">"
-      html <<     link_to(resource) do
-        icon_for(resource)
-      end
-      html <<   "</div>"
-      html <<   "<div class=\"media-body\">"
-      html <<     "<h5 class=\"mt-0 mb-0\">"
-      html <<       link_to(resource.title, resource)
-      if primary_id == resource.id
-        html <<     " <span class=\"badge badge-primary\">PRIMARY</span>"
-      elsif default_id == resource.id
-        html <<     " <span class=\"badge badge-primary\">DEFAULT</span>"
-      end
-      html <<     "</h5>"
-
-      if resource.kind_of?(Item)
-        config  = ::Configuration.instance
-        creator = resource.elements.
-            select{ |e| e.name == config.elements[:creator] }.
-            map(&:string).
-            join("; ")
-        date    = resource.elements.
-            select{ |e| e.name == config.elements[:date] }.
-            map{ |e| e.string.to_i.to_s }.
-            reject{ |e| e == "0" }.
-            join("; ")
-        info_parts  = []
-        info_parts << creator if creator.present?
-        info_parts << date if date.present?
-        html       << info_parts.join(" &bull; ")
-        html << "<br><br>"
-      elsif resource.kind_of?(Collection) || resource.kind_of?(Unit)
-        html << resource.short_description
-      end
-
-      html <<   "</div>"
-      html << "</div>"
+      html << resource_list_row(resource,
+                                primary: (primary_id == resource.id),
+                                default: (default_id == resource.id))
     end
     raw(html.string)
+  end
+
+  ##
+  #
+  # @param resource [Describable]
+  # @param primary [Boolean] Whether to mark the resource as primary.
+  # @param default [Boolean] Whether to mark the resource as default.
+  # @return [String] HTML string.
+  #
+  def resource_list_row(resource, primary: false, default: false)
+    embargoed_item = resource.kind_of?(Item) &&
+      resource.embargoed_for?(current_user)
+    html = StringIO.new
+    html << "<div class=\"media resource-list mb-3\">"
+    html <<   "<div class=\"icon-thumbnail\">"
+    if embargoed_item
+      html <<   '<i class="fa fa-lock"></i>'
+    else
+      html <<   link_to(resource) do
+        icon_for(resource)
+      end
+    end
+    html <<   "</div>"
+    html <<   "<div class=\"media-body\">"
+    html <<     "<h5 class=\"mt-0 mb-0\">"
+    if embargoed_item
+      html <<     resource.title
+    else
+      html <<     link_to(resource.title, resource)
+    end
+
+    if primary
+      html <<     " <span class=\"badge badge-primary\">PRIMARY</span>"
+    elsif default
+      html <<     " <span class=\"badge badge-primary\">DEFAULT</span>"
+    end
+    if embargoed_item
+      html <<     " <span class=\"badge badge-danger\">EMBARGOED</span>"
+    end
+    html <<     "</h5>"
+
+    if resource.kind_of?(Item)
+      config  = ::Configuration.instance
+      creator = resource.elements.
+        select{ |e| e.name == config.elements[:creator] }.
+        map(&:string).
+        join("; ")
+      date    = resource.elements.
+        select{ |e| e.name == config.elements[:date] }.
+        map{ |e| e.string.to_i.to_s }.
+        reject{ |e| e == "0" }.
+        join("; ")
+      info_parts  = []
+      info_parts << creator if creator.present?
+      info_parts << date if date.present?
+      html       << info_parts.join(" &bull; ")
+      html << "<br><br>"
+    elsif resource.kind_of?(Collection) || resource.kind_of?(Unit)
+      html << resource.short_description
+    end
+
+    html <<   "</div>"
+    html << "</div>"
+    html.string
   end
 
   ##

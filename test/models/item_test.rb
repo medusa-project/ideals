@@ -510,6 +510,39 @@ class ItemTest < ActiveSupport::TestCase
     assert_nil @instance.element("bogus")
   end
 
+  # embargoed_for?()
+
+  test "embargoed_for?() returns false for an item with no embargoes" do
+    assert !@instance.embargoed_for?(users(:norights))
+  end
+
+  test "embargoed_for?() returns false for an item with only a download embargo" do
+    @instance.embargoes.build(kind:       Embargo::Kind::DOWNLOAD,
+                              expires_at: Time.now + 1.year).save!
+    assert !@instance.embargoed_for?(users(:norights))
+  end
+
+  test "embargoed_for?() returns false for an item with an all-access embargo to
+  which the given user is exempt" do
+    user    = users(:norights)
+    group   = user_groups(:temp)
+    embargo = @instance.embargoes.build(kind:       Embargo::Kind::ALL_ACCESS,
+                                        expires_at: Time.now + 1.year)
+    group.users         << user
+    embargo.user_groups << group
+    embargo.save!
+    group.save!
+
+    assert !@instance.embargoed_for?(user)
+  end
+
+  test "embargoed_for?() returns true for an item with an all-access embargo to
+  which the given user is not exempt" do
+    @instance.embargoes.build(kind:       Embargo::Kind::ALL_ACCESS,
+                              expires_at: Time.now + 1.year).save!
+    assert @instance.embargoed_for?(users(:norights))
+  end
+
   # exhume!()
 
   test "exhume!() sets the stage to APPROVED" do

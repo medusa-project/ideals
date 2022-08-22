@@ -518,6 +518,17 @@ class Item < ApplicationRecord
   end
 
   ##
+  # @param user [User]
+  # @return [Boolean]
+  #
+  def embargoed_for?(user)
+    self.current_embargoes.where(kind: Embargo::Kind::ALL_ACCESS).each do |embargo|
+      return true if !user || !embargo.exempt?(user)
+    end
+    false
+  end
+
+  ##
   # @see bury!
   #
   def exhume!

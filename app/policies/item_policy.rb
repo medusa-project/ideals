@@ -154,12 +154,8 @@ class ItemPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif !@item.approved?
       return { authorized: false, reason: "This item is not approved." }
-    else
-      @item.current_embargoes.where(kind: Embargo::Kind::ALL_ACCESS).each do |embargo|
-        unless user && embargo.exempt?(user)
-          return { authorized: false, reason: "This item is embargoed." }
-        end
-      end
+    elsif @item.embargoed_for?(user)
+      return { authorized: false, reason: "This item is embargoed." }
     end
     AUTHORIZED_RESULT
   end
