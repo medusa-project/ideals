@@ -22,10 +22,14 @@
 # which will hopefully discourage clients from changing them, even though if
 # they do, it's not a big deal. The decoded format is:
 #
-# `set:n|from:n|until:n|start:n|metadataPrefix:n`
+# `set:string|from:date|until:date|lsv:string|metadataPrefix:string`
 #
-# Components can be in any order, but the separators (colons and bars) are
-# important.
+# N.B. 1: components can be in any order, but the separators (colons and bars)
+# are important.
+#
+# N.B. 2: Elasticsearch does not cope well when using offset/limit with large
+# offsets. Instead, `lsv` (last sort value) uses its `search_after` feature for
+# efficient deep paging.
 #
 # @see http://www.openarchives.org/OAI/openarchivesprotocol.html
 # @see http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm
@@ -65,7 +69,7 @@ class OaiPmhController < ApplicationController
   MAX_RESULT_WINDOW                    = 100
   RESUMPTION_TOKEN_COMPONENT_SEPARATOR = "|"
   RESUMPTION_TOKEN_KEY_VALUE_SEPARATOR = ":"
-  RESUMPTION_TOKEN_TTL                 = 20.minutes
+  RESUMPTION_TOKEN_TTL                 = 10.minutes
 
   def initialize
     super
@@ -80,7 +84,7 @@ class OaiPmhController < ApplicationController
       render "error", formats: :xml, handlers: :builder and return
     end
 
-    @metadata_format      = get_metadata_prefix
+    @metadata_format      = get_token_metadata_prefix
     @host                 = request.host_with_port
     response.content_type = "text/xml"
 
@@ -153,7 +157,7 @@ class OaiPmhController < ApplicationController
   end
 
   def do_list_sets
-    @results_offset = get_start
+    @results_offset = get_token_start
     # This endpoint considers both collections and units to be sets.
     sql = "SELECT h.suffix AS handle_suffix,
             h.collection_id AS collection_id, h.unit_id AS unit_id,
@@ -191,21 +195,21 @@ class OaiPmhController < ApplicationController
       order(Item::IndexFields::LAST_MODIFIED).
       limit(MAX_RESULT_WINDOW)
 
-    from = get_from
+    from = get_token_from
     if from
       from_time = Time.parse(from).utc.iso8601
       @results  = @results.filter_range(Item::IndexFields::LAST_MODIFIED,
                                         :gte, from_time)
     end
 
-    until_ = get_until
+    until_ = get_token_until
     if until_
       until_time = Time.parse(until_).utc.iso8601
       @results   = @results.filter_range(Item::IndexFields::LAST_MODIFIED,
                                          :lte, until_time)
     end
 
-    set = get_set
+    set = get_token_set
     if set.present?
       # See "identifier syntaxes" in class doc
       parts = set.split("_")
@@ -226,11 +230,14 @@ class OaiPmhController < ApplicationController
     @errors << { code:        "noRecordsMatch",
                  description: "No matching records." } if @total_num_results < 1
 
-    @results_offset      = get_start
-    @results             = @results.start(@results_offset)
-    @next_page_available = (@results_offset + MAX_RESULT_WINDOW < @total_num_results)
-    @resumption_token    = resumption_token(set, from, until_, @results_offset,
-                                            @metadata_format)
+    @last_sort_value     = get_token_last_sort_value
+    @results             = @results.search_after([@last_sort_value]) if @last_sort_value
+    @resumption_token    = new_resumption_token(set:             set,
+                                                from:            from,
+                                                until_:          until_,
+                                                last_sort_value: @results.last_sort_value,
+                                                metadata_prefix: @metadata_format)
+    @next_page_available = @results.last_sort_value.present?
     @expiration_date     = resumption_token_expiration_time
   end
 
@@ -238,15 +245,22 @@ class OaiPmhController < ApplicationController
   # @return [String, nil] "From" from the resumptionToken, if present, or else
   #                       from the `from` argument.
   #
-  def get_from
+  def get_token_from
     parse_resumption_token("from") || params[:from]
+  end
+
+  ##
+  # @return [String, nil] Last sort value from the resumptionToken.
+  #
+  def get_token_last_sort_value
+    parse_resumption_token("lsv")
   end
 
   ##
   # @return [String, nil] metadataPrefix from the resumptionToken, if present,
   #                       or else from the `metadataPrefix` argument.
   #
-  def get_metadata_prefix
+  def get_token_metadata_prefix
     parse_resumption_token("metadataPrefix") || params[:metadataPrefix]
   end
 
@@ -254,7 +268,7 @@ class OaiPmhController < ApplicationController
   # @return [String, nil] Set from the resumptionToken, if present, or else
   #                       from the `set` argument.
   #
-  def get_set
+  def get_token_set
     parse_resumption_token("set") || params[:set]
   end
 
@@ -262,7 +276,7 @@ class OaiPmhController < ApplicationController
   # @return [Integer] Start (a.k.a. offset) from the resumptionToken, or `0` if
   #                   the resumptionToken is not present.
   #
-  def get_start
+  def get_token_start
     parse_resumption_token("start")&.to_i || 0
   end
 
@@ -270,7 +284,7 @@ class OaiPmhController < ApplicationController
   # @return [String, nil] "Until" from the resumptionToken, if present, or else
   #                       from the `until` argument.
   #
-  def get_until
+  def get_token_until
     parse_resumption_token("until") || params[:until]
   end
 
@@ -299,15 +313,15 @@ class OaiPmhController < ApplicationController
            status:   :internal_server_error
   end
 
-  def resumption_token(set, from, until_, current_start, metadata_prefix)
+  def new_resumption_token(set:, from:, until_:, last_sort_value:,
+                           metadata_prefix:)
     token = [
       ["set", set],
       ["from", from],
       ["until", until_],
-      ["start", current_start + MAX_RESULT_WINDOW],
+      ["lsv", last_sort_value],
       ["metadataPrefix", metadata_prefix]
-    ].
-      select{ |a| a[1].present? }.
+    ].select{ |a| a[1].present? }.
       map{ |a| a.join(RESUMPTION_TOKEN_KEY_VALUE_SEPARATOR) }.
       join(RESUMPTION_TOKEN_COMPONENT_SEPARATOR)
     StringUtils.rot18(token)
