@@ -129,13 +129,6 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     "or illegal in this repository."
   end
 
-  test "GetRecord supports dim" do
-    get "/oai-pmh", params: { verb: "GetRecord",
-                              identifier: @valid_identifier,
-                              metadataPrefix: "dim" }
-    assert_select "GetRecord > record > header > identifier", @valid_identifier
-  end
-
   test "GetRecord supports etdms" do
     get "/oai-pmh", params: { verb: "GetRecord",
                               identifier: @valid_identifier,
@@ -247,8 +240,6 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     assert_select "ListMetadataFormats > metadataFormat > metadataPrefix",
                   "oai_dc"
     assert_select "ListMetadataFormats > metadataFormat > metadataPrefix",
-                  "dim"
-    assert_select "ListMetadataFormats > metadataFormat > metadataPrefix",
                   "native"
     assert_select "ListMetadataFormats > metadataFormat > metadataPrefix",
                   "qdc"
@@ -327,12 +318,6 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
                               resumptionToken: "offset:10",
                               set:             "col_#{handle.prefix}_#{handle.suffix}" }
     assert_select "error", "resumptionToken is an exclusive argument."
-  end
-
-  test "ListRecords supports dim" do
-    get "/oai-pmh", params: { verb: "ListRecords", metadataPrefix: "dim" }
-    assert_select "ListRecords > record > header > identifier",
-                  @valid_identifier
   end
 
   test "ListRecords supports native" do

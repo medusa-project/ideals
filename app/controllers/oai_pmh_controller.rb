@@ -13,13 +13,8 @@
 #
 # * `oai_dc`: Dublin Core; exposes `dc:` elements; required by OAI-PMH
 # * `qdc`:    Qualified Dublin Core; exposes `dc:` and `dcterms:` elements.
-# * `dim`:    DSpace format that exposes all elements. This is a legacy format
-#             carried over from DSpace, as it is used by the
-#             [Search Gateway](https://digital.library.illinois.edu). Once that
-#             application has been migrated to use the `native` format, it can
-#             be removed.
-# * `native`: Native format that exposes all elements. This is similar to `dim`
-#             and will eventually replace it.
+# * `native`: Native format that exposes all elements. This is similar to the
+#             `dim` format used in DSpace.
 #
 # # Resumption tokens
 #
@@ -46,11 +41,6 @@ class OaiPmhController < ApplicationController
   rescue_from ActionView::Template::Error, with: :rescue_template_error
 
   METADATA_FORMATS = [
-    {
-      prefix: "dim",
-      uri:    "http://www.dspace.org/xmlns/dspace/dim",
-      schema: "http://www.dspace.org/schema/dim.xsd"
-    },
     {
       prefix: "etdms",
       uri:    "http://www.ndltd.org/standards/metadata/etdms/1.0/",
