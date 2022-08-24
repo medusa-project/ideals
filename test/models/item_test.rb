@@ -178,6 +178,7 @@ class ItemTest < ActiveSupport::TestCase
     assert_empty doc[Item::IndexFields::FULL_TEXT]
     assert_match /\w+ \w* \w+/,
                  doc[Item::IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY]
+    assert_equal @instance.handle.handle, doc[Item::IndexFields::HANDLE]
     assert_equal @instance.institution.key,
                  doc[Item::IndexFields::INSTITUTION_KEY]
     assert_not_empty doc[Item::IndexFields::LAST_INDEXED]

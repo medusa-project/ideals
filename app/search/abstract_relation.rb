@@ -39,6 +39,7 @@ class AbstractRelation
 
     @aggregations     = false
     @bucket_limit     = DEFAULT_BUCKET_LIMIT
+    @exists_field     = nil
     @filter_ranges    = [] # Array<Hash<Symbol,String>> with :field, :op, and :value keys
     @filters          = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @limit            = ElasticsearchClient::MAX_RESULT_WINDOW
@@ -210,6 +211,16 @@ class AbstractRelation
     end
     @multi_queries << { field: field, term: term }
     @loaded = false
+    self
+  end
+
+  ##
+  # @param field [String] Name of a field that must exist (have a non-empty
+  #                       value) in a document.
+  # @return [self]
+  #
+  def must_exist(field)
+    @exists_field = field
     self
   end
 
@@ -578,6 +589,13 @@ class AbstractRelation
                 j.child! do
                   j.term do
                     j.set! ElasticsearchIndex::StandardFields::CLASS, get_class.to_s
+                  end
+                end
+                if @exists_field
+                  j.child! do
+                    j.exists do
+                      j.field @exists_field
+                    end
                   end
                 end
                 @filters.each do |key_value|

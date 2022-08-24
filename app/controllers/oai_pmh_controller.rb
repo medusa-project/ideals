@@ -186,9 +186,16 @@ class OaiPmhController < ApplicationController
     @results.instance_variable_set("@must_nots", [])
     @results.aggregations(false).
       institution(Institution.find_by_key(:uiuc)).
+      # Withdrawn and buried items are exposed as (what OAI-PMH calls) deleted
+      # records.
       filter(Item::IndexFields::STAGE, [Item::Stages::APPROVED,
                                         Item::Stages::WITHDRAWN,
                                         Item::Stages::BURIED]).
+      # Include only items that have handles. The handle is inserted into a
+      # dc:identifier:uri element, without which an item would not be
+      # identifiable within the oai_dc representation.
+      must_exist(Item::IndexFields::HANDLE).
+      # Exclude items with current all-access embargoes.
       must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
                      :gt,
                      Time.now.strftime("%Y-%m-%d")).
