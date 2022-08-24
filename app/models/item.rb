@@ -84,6 +84,7 @@ class Item < ApplicationRecord
     FILENAMES          = "t_filenames"
     FULL_TEXT          = ElasticsearchIndex::StandardFields::FULL_TEXT
     GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY = "k_unit_collection_sort_key"
+    HANDLE             = "t_handle"
     ID                 = ElasticsearchIndex::StandardFields::ID
     INSTITUTION_KEY    = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
     LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
@@ -352,6 +353,7 @@ class Item < ApplicationRecord
     doc[IndexFields::FULL_TEXT]          = io.string
     doc[IndexFields::GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY] =
         self.unit_and_collection_sort_key
+    doc[IndexFields::HANDLE]             = self.handle&.handle
     units                                = self.all_units
     doc[IndexFields::INSTITUTION_KEY]    = units.first&.institution&.key
     doc[IndexFields::LAST_INDEXED]       = Time.now.utc.iso8601
