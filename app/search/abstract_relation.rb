@@ -191,12 +191,12 @@ class AbstractRelation
   # This uses an Elasticsearch `match` query which does not support Field
   # weights.
   #
-  # `term` may be a string or, for date-type fields, a hash containing `:year`,
-  # `:month`, and/or `:day` keys pointing to integer values.
-  #
   # @param field [String, Symbol] Field name, which may have a weight suffix,
   #                               e.g. `title^5`.
-  # @param term [String] Search term.
+  # @param term [String, Hash] Generally a string. For date-type fields, it may
+  #             be a hash containing: `:year`, `:month`, and/or `:day` keys
+  #             pointing to integer values. It may also contain `:from_year`,
+  #             `:to_year`, etc. keys to indicate a date range.
   # @return [self]
   # @see query
   # @see query_all
@@ -290,12 +290,12 @@ class AbstractRelation
   # only searchable fields in the current {metadata_profile metadata profile},
   # use {query_searchable_fields}.
   #
-  # `term` may be a string or, for date-type fields, a hash containing
-  # `:year`, `:month`, and/or `:day` keys pointing to integer values.
-  #
   # @param fields [String, Symbol, Enumerable<String>, Enumerable<Symbol>]
   #               Field name or names.
-  # @param term [String, Hash] See above.
+  # @param term [String, Hash] Generally a string. For date-type fields, it may
+  #             be a hash containing: `:year`, `:month`, and/or `:day` keys
+  #             pointing to integer values. It may also contain `:from_year`,
+  #             `:to_year`, etc. keys to indicate a date range.
   # @return [self]
   # @see query_all
   # @see query_searchable_fields
@@ -554,12 +554,22 @@ class AbstractRelation
                   else
                     j.range do
                       j.set! query[:field] do
-                        term = query[:term]
-                        date  = term[:year]
-                        date += "-#{term[:month]}" if term[:month].present?
-                        date += "-#{term[:day]}" if term[:day].present?
-                        j.gte date
-                        j.lte date
+                        term       = query[:term]
+                        if term[:from_year].present?
+                          from_date  = term[:from_year]
+                          from_date += "-#{term[:from_month]}" if term[:from_month].present?
+                          from_date += "-#{term[:from_day]}" if term[:from_day].present?
+                          to_date    = term[:to_year]
+                          to_date   += "-#{term[:to_month]}" if term[:to_month].present?
+                          to_date   += "-#{term[:to_day]}" if term[:to_day].present?
+                        else
+                          from_date  = term[:year]
+                          from_date += "-#{term[:month]}" if term[:month].present?
+                          from_date += "-#{term[:day]}" if term[:day].present?
+                          to_date    = from_date
+                        end
+                        j.gte from_date
+                        j.lte to_date
                       end
                     end
                   end
@@ -577,7 +587,7 @@ class AbstractRelation
                   j.lenient          true
                   j.fields           @query[:fields]
                 end
-              elsif @query[:term].respond_to?(:keys) && @query[:term][:year]
+              elsif @query[:term].respond_to?(:keys) && (@query[:term][:year] || @query[:term][:from_year])
                 date_range_from_query(j, @query)
               end
             end
@@ -718,18 +728,37 @@ class AbstractRelation
   def date_range_from_query(j, query)
     j.range do
       j.set! query[:field] do
-        begin_date  = query[:term][:year]
-        end_date    = "#{query[:term][:year]}+1y"
-        if query[:term][:month].present?
-          begin_date += "-#{query[:term][:month]}"
-          end_date    = "#{query[:term][:year]}-#{query[:term][:month]}+1m"
+        if query[:term][:year]
+          from_date  = query[:term][:year]
+          to_date    = "#{query[:term][:year]}+1y"
+          if query[:term][:month].present?
+            from_date += "-#{query[:term][:month]}"
+            to_date    = "#{query[:term][:year]}-#{query[:term][:month]}+1m"
+          end
+          if query[:term][:day].present?
+            from_date += "-#{query[:term][:day]}"
+            to_date    = "#{query[:term][:year]}-#{query[:term][:month]}-#{query[:term][:day]}+1d"
+          end
+          j.gte from_date
+          j.lt to_date
+        elsif query[:term][:from_year]
+          from_date  = query[:term][:from_year]
+          to_date    = query[:term][:to_year]
+          if query[:term][:from_month].present?
+            from_date += "-#{query[:term][:from_month]}"
+          end
+          if query[:term][:from_day].present?
+            from_date += "-#{query[:term][:from_day]}"
+          end
+          if query[:term][:to_month].present?
+            to_date    = "#{query[:term][:to_year]}-#{query[:term][:to_month]}"
+          end
+          if query[:term][:to_day].present?
+            to_date    = "#{query[:term][:to_year]}-#{query[:term][:to_month]}-#{query[:term][:to_day]}"
+          end
+          j.gte from_date
+          j.lt to_date
         end
-        if query[:term][:day].present?
-          begin_date += "-#{query[:term][:day]}"
-          end_date    = "#{query[:term][:year]}-#{query[:term][:month]}-#{query[:term][:day]}+1d"
-        end
-        j.gte begin_date
-        j.lt end_date
       end
     end
   end

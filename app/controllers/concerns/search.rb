@@ -34,7 +34,15 @@ module Search
     #       month: integer,
     #       day:   integer,
     #       year:  integer
-    #     }
+    #     }, (OR)
+    #     element_name => {
+    #       from_month: integer,
+    #       from_day:   integer,
+    #       from_year:  integer,
+    #       to_month:   integer,
+    #       to_day:     integer,
+    #       to_year:    integer
+    #     },
     #   ],
     #   full_text: string
     # }
@@ -47,7 +55,8 @@ module Search
       if permitted_params[:elements]&.respond_to?(:each)
         all_elements = RegisteredElement.all
         permitted_params[:elements].each do |e_name, term|
-          term = nil if term.respond_to?(:keys) && term[:year].blank?
+          term = nil if term.respond_to?(:keys) && term[:year].blank? &&
+            term[:from_year].blank? && term[:to_year].blank?
           if term.present?
             field = all_elements.find{ |e| e.name == e_name}.indexed_field
             relation.multi_query(field, term)
