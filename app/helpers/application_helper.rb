@@ -105,6 +105,7 @@ module ApplicationHelper
   # @param latest_year [Integer]
   # @param include_blanks [Boolean] Whether to include a blank year, month, &
   #                                 day.
+  # @param extra_attrs [Hash] Extra attributes to insert into the outer tag.
   # @return [String]
   #
   def date_picker(month_select_name: "month",
@@ -115,13 +116,22 @@ module ApplicationHelper
                   selected_year:     Time.now.year,
                   earliest_year:     Time.now.year,
                   latest_year:       Time.now.year,
-                  include_blanks:    false)
+                  include_blanks:    false,
+                  extra_attrs:       {})
     m_options = (1..12).map{ |m| [Date::MONTHNAMES[m], m] }
     d_options = (1..31)
     y_options = (earliest_year..latest_year)
 
     html = StringIO.new
-    html << "<div class='form-group date-picker'>"
+    attrs = { class: "form-group date-picker" }
+    extra_attrs.each do |k, v|
+      if attrs[k].present?
+        attrs[k] = "#{attrs[k]} #{v}"
+      else
+        attrs[k] = v
+      end
+    end
+    html << "<div #{attrs.map{ |k,v| "#{k}='#{v}'" }.join(" ")}>"
     html <<   select_tag(month_select_name,
                          options_for_select(m_options, selected_month),
                          include_blank: include_blanks,
