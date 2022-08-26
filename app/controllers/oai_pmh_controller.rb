@@ -242,13 +242,14 @@ class OaiPmhController < ApplicationController
         end
       end
     end
-    @total_num_results = @results.count
 
-    @errors << { code:        "noRecordsMatch",
-                 description: "No matching records." } if @total_num_results < 1
 
     @last_sort_value     = get_token_last_sort_value
     @results             = @results.search_after([@last_sort_value]) if @last_sort_value
+    @total_num_results   = @results.count
+    @errors << { code:        "noRecordsMatch",
+                 description: "No matching records." } if @total_num_results < 1
+
     @resumption_token    = new_resumption_token(set:             set,
                                                 from:            from,
                                                 until_:          until_,
