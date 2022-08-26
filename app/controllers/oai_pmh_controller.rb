@@ -209,7 +209,7 @@ class OaiPmhController < ApplicationController
       must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
                      :gt,
                      Time.now.strftime("%Y-%m-%d")).
-      order(Item::IndexFields::LAST_MODIFIED).
+      order(Item::IndexFields::ID).
       limit(MAX_RESULT_WINDOW)
 
     from = get_token_from
