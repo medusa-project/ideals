@@ -310,7 +310,7 @@ class OaiPmhController < ApplicationController
       decoded = StringUtils.rot18(params[:resumptionToken])
       decoded.split(RESUMPTION_TOKEN_COMPONENT_SEPARATOR).each do |component|
         kv = component.split(RESUMPTION_TOKEN_KEY_VALUE_SEPARATOR)
-        return kv[1] if kv.length == 2 && kv[0] == key
+        return kv[1..].join(":") if kv.length >= 2 && kv[0] == key
       end
     end
     nil
