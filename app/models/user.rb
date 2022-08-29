@@ -36,9 +36,6 @@ class User < ApplicationRecord
   belongs_to :identity, class_name: "LocalIdentity",
              foreign_key: "local_identity_id", inverse_of: :user, optional: true
   has_one :department
-  # ShibbolethUsers only!
-  has_many :administrators
-  has_many :administering_units, through: :administrators, source: :unit
   has_many :events
   has_many :invitees, inverse_of: :inviting_user, foreign_key: :inviting_user_id
   has_many :managers
@@ -50,6 +47,9 @@ class User < ApplicationRecord
   has_many :submitters
   has_many :submitting_collections, through: :submitters, source: :collection
   has_many :tasks
+  # ShibbolethUsers only!
+  has_many :unit_administrators
+  has_many :administering_units, through: :unit_administrators, source: :unit
   # This includes only directly assigned user groups. See `belongs_to_user_group?()`
   has_and_belongs_to_many :user_groups
 

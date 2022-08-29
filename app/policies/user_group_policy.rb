@@ -17,7 +17,7 @@ class UserGroupPolicy < ApplicationPolicy
     if !user
       return LOGGED_OUT_RESULT
     elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?) ||
-        (role >= Role::UNIT_ADMINISTRATOR && user.administrators.count > 0) ||
+        (role >= Role::UNIT_ADMINISTRATOR && user.unit_administrators.count > 0) ||
         (role >= Role::COLLECTION_MANAGER && user.managers.count > 0) # IR-67
       return AUTHORIZED_RESULT
     end

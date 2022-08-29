@@ -25,7 +25,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "create?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     subject_user = users(:norights)
     context      = RequestContext.new(user:        subject_user,
@@ -79,7 +79,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -140,7 +140,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -193,7 +193,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_ad_groups?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -246,7 +246,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_affiliations?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -299,7 +299,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_departments?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -352,7 +352,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_email_patterns?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -405,7 +405,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_hosts?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -458,7 +458,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_local_users?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -511,7 +511,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_netid_users?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -564,7 +564,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "index?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -617,7 +617,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "new?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -670,7 +670,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "show?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -723,7 +723,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "update?() authorizes administrators of any unit" do
     subject_user = users(:norights)
-    subject_user.administrators.build(unit: units(:unit1))
+    subject_user.unit_administrators.build(unit: units(:unit1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)

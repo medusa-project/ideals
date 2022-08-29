@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_19_135108) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_29_141518) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -28,16 +28,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_19_135108) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_group_id", "unit_id"], name: "index_administrator_groups_on_user_group_id_and_unit_id", unique: true
-  end
-
-  create_table "administrators", force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "unit_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "primary", default: false, null: false
-    t.index ["unit_id", "user_id"], name: "index_administrators_on_unit_id_and_user_id", unique: true
-    t.index ["user_id", "unit_id", "primary"], name: "index_administrators_on_user_id_and_unit_id_and_primary"
   end
 
   create_table "affiliations", force: :cascade do |t|
@@ -514,6 +504,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_19_135108) do
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
+  create_table "unit_administrators", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "unit_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "primary", default: false, null: false
+    t.index ["unit_id", "user_id"], name: "index_unit_administrators_on_unit_id_and_user_id", unique: true
+    t.index ["user_id", "unit_id", "primary"], name: "index_unit_administrators_on_user_id_and_unit_id_and_primary"
+  end
+
   create_table "unit_collection_memberships", force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "unit_id", null: false
@@ -578,8 +578,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_19_135108) do
   add_foreign_key "ad_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrator_groups", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "administrator_groups", "user_groups", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "administrators", "units", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "administrators", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "affiliations_user_groups", "affiliations", on_update: :cascade, on_delete: :cascade
   add_foreign_key "affiliations_user_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "ascribed_elements", "items", on_update: :cascade, on_delete: :cascade
@@ -626,6 +624,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_19_135108) do
   add_foreign_key "submitters", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "tasks", "users", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "unit_administrators", "units", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "unit_administrators", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "unit_collection_memberships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "unit_collection_memberships", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "units", "institutions", on_update: :cascade, on_delete: :restrict
