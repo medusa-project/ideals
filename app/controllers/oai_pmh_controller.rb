@@ -66,7 +66,7 @@ class OaiPmhController < ApplicationController
       schema: "http://dublincore.org/schemas/xmls/qdc/2006/01/06/dcterms.xsd"
     }
   ]
-  MAX_RESULT_WINDOW                    = 100
+  MAX_RESULT_WINDOW                    = 200
   RESUMPTION_TOKEN_COMPONENT_SEPARATOR = "|"
   RESUMPTION_TOKEN_KEY_VALUE_SEPARATOR = ":"
   RESUMPTION_TOKEN_TTL                 = 10.minutes
@@ -199,7 +199,7 @@ class OaiPmhController < ApplicationController
       must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
                      :gt,
                      Time.now.strftime("%Y-%m-%d")).
-      order(Item::IndexFields::LAST_MODIFIED).
+      order(Item::IndexFields::ID).
       limit(MAX_RESULT_WINDOW)
 
     from = get_token_from
@@ -232,13 +232,14 @@ class OaiPmhController < ApplicationController
         end
       end
     end
-    @total_num_results = @results.count
 
-    @errors << { code:        "noRecordsMatch",
-                 description: "No matching records." } if @total_num_results < 1
 
     @last_sort_value     = get_token_last_sort_value
     @results             = @results.search_after([@last_sort_value]) if @last_sort_value
+    @total_num_results   = @results.count
+    @errors << { code:        "noRecordsMatch",
+                 description: "No matching records." } if @total_num_results < 1
+
     @resumption_token    = new_resumption_token(set:             set,
                                                 from:            from,
                                                 until_:          until_,
@@ -300,7 +301,7 @@ class OaiPmhController < ApplicationController
       decoded = StringUtils.rot18(params[:resumptionToken])
       decoded.split(RESUMPTION_TOKEN_COMPONENT_SEPARATOR).each do |component|
         kv = component.split(RESUMPTION_TOKEN_KEY_VALUE_SEPARATOR)
-        return kv[1] if kv.length == 2 && kv[0] == key
+        return kv[1..].join(":") if kv.length >= 2 && kv[0] == key
       end
     end
     nil
