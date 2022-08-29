@@ -187,9 +187,9 @@
           .card-body
             %h4.card-title Units
             %h5 Allowed to administer
-            - if @user_group.administrator_groups.any?
+            - if @user_group.unit_administrator_groups.any?
               %ul
-                - @user_group.administrator_groups.each do |group|
+                - @user_group.unit_administrator_groups.each do |group|
                   %li= link_to(group.unit.title, group.unit)
             - else
               None

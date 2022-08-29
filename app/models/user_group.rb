@@ -15,13 +15,13 @@ class UserGroup < ApplicationRecord
   SYSTEM_REQUIRED_GROUPS = %w(sysadmin)
 
   has_many :ad_groups
-  has_many :administrator_groups
   has_many :bitstream_authorizations
   has_many :departments
   has_many :email_patterns
   has_many :hosts
   has_many :manager_groups
   has_many :submitter_groups
+  has_many :unit_administrator_groups
 
   has_and_belongs_to_many :affiliations
   has_and_belongs_to_many :embargoes

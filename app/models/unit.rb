@@ -62,7 +62,7 @@ class Unit < ApplicationRecord
   has_many :administrators, class_name: "UnitAdministrator"
   has_many :administering_users, through: :administrators,
            class_name: "User", source: :user
-  has_many :administrator_groups
+  has_many :administrator_groups, class_name: "UnitAdministratorGroup"
   has_many :administering_groups, through: :administrator_groups,
            class_name: "UserGroup", source: :user_group
   has_many :unit_collection_memberships
