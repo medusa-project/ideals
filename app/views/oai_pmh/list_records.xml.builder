@@ -35,7 +35,7 @@ xml.tag!('OAI-PMH',
           xml.tag!('header', status) do
             xml.tag!('identifier', oai_pmh_identifier(item: item, host: @host))
             xml.tag!('datestamp', datestamp.strftime('%Y-%m-%d'))
-            xml.tag!('setSpec', oai_pmh_identifier(collection: item.primary_collection,
+            xml.tag!('setSpec', oai_pmh_identifier(collection: item.effective_primary_collection,
                                                    host:       @host))
           end
           unless deleted
