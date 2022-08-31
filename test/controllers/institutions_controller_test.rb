@@ -135,6 +135,35 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_administrators()
+
+  test "edit_administrators() returns HTTP 403 for logged-out users" do
+    institution = institutions(:uiuc)
+    get institution_edit_administrators_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_administrators() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    institution = institutions(:uiuc)
+    get institution_edit_administrators_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_administrators() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:uiuc)
+    get institution_edit_administrators_path(institution)
+    assert_response :not_found
+  end
+
+  test "edit_administrators() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:uiuc)
+    get institution_edit_administrators_path(institution), xhr: true
+    assert_response :ok
+  end
+
   # index()
 
   test "index() redirects to login page for logged-out users" do
@@ -209,6 +238,45 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:uiuc_admin))
     get institution_path(institutions(:somewhere))
     assert_response :ok
+  end
+
+  # show_access()
+
+  test "show_access() returns HTTP 403 for logged-out users" do
+    institution = institutions(:uiuc)
+    get institution_access_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_access() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    institution = institutions(:uiuc)
+    get institution_access_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_access() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:uiuc)
+    get institution_access_path(institution)
+    assert_response :not_found
+  end
+
+  test "show_access() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:uiuc)
+    get institution_access_path(institution), xhr: true
+    assert_response :ok
+  end
+
+  test "show_access() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:uiuc)
+    get institution_access_path(institution), xhr: true
+    assert_select(".edit-administrators")
+
+    get institution_access_path(institution, role: Role::LOGGED_OUT), xhr: true
+    assert_select(".edit-administrators", false)
   end
 
   # show_properties()

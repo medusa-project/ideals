@@ -109,6 +109,7 @@ class ShibbolethUser < User
                        "#{auth.dig("extra", "raw_info", "sn")}"
     self.name        = self.uid if self.name.blank?
     self.org_dn      = auth.dig("extra", "raw_info", "org-dn")
+    self.institution = Institution.find_by_org_dn(self.org_dn)
     self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
     self.affiliation = Affiliation.from_shibboleth(auth)
     dept             = auth.dig("extra", "raw_info", "departmentCode")

@@ -56,6 +56,10 @@ Rails.application.routes.draw do
   end
   resources :institutions, param: :key do
     # These all render content for the main tab panes in show-unit view via XHR.
+    match "/access", to: "institutions#show_access", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-administrators", to: "institutions#edit_administrators", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "institutions#show_statistics", via: :get,

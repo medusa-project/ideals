@@ -3,7 +3,42 @@ require 'test_helper'
 class UserPolicyTest < ActiveSupport::TestCase
 
   setup do
+    # as in "subject-object" (the user on which operations are performed, not
+    # the user performing the operations)
     @object_user = users(:norights)
+  end
+
+  # change_institution?()
+
+  test "change_institution?() returns false with a nil user" do
+    policy = UserPolicy.new(nil, @object_user)
+    assert !policy.change_institution?
+  end
+
+  test "change_institution?() does not authorize non-sysadmins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserPolicy.new(context, @object_user)
+    assert !policy.change_institution?
+  end
+
+  test "change_institution?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserPolicy.new(context, @object_user)
+    assert policy.change_institution?
+  end
+
+  test "change_institution?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UserPolicy.new(context, @item)
+    assert !policy.change_institution?
   end
 
   # edit_properties?()

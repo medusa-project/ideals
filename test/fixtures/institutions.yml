@@ -7,12 +7,21 @@ empty:
   org_dn: empty
   default: false
 
+example:
+  key: example
+  fqdn: example.edu
+  name: Example University
+  org_dn: o=Example University,dc=example,dc=edu
+  default: false
+
 somewhere:
   key: somewhere
   fqdn: somewhere.edu
   name: University of Somewhere
   org_dn: o=University of Somewhere,dc=somewhere,dc=edu
   default: false
+  administering_groups:
+    - somewhere_admins
 
 uiuc:
   key: uiuc
@@ -20,3 +29,5 @@ uiuc:
   name: University of Illinois at Urbana-Champaign
   org_dn: <%= DspaceImporter::UIUC_ORG_DN %>
   default: true
+  administering_groups:
+    - uiuc_admins

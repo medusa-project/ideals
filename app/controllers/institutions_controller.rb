@@ -49,6 +49,15 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Used for editing administrators.
+  #
+  # Responds to `GET /institutions/:key/edit-administrators` (XHR only)
+  #
+  def edit_administrators
+    render partial: "administrators_form", locals: { institution: @institution }
+  end
+
+  ##
   # Responds to `GET /institutions`
   #
   def index
@@ -116,9 +125,18 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the access tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/access`
+  #
+  def show_access
+    render partial: "show_access_tab"
+  end
+
+  ##
   # Renders HTML for the properties tab in show-institution view.
   #
-  # Responds to `GET /institutions/:id/properties` (XHR only)
+  # Responds to `GET /institutions/:key/properties` (XHR only)
   #
   def show_properties
     render partial: "show_properties_tab"
@@ -127,7 +145,7 @@ class InstitutionsController < ApplicationController
   ##
   # Renders HTML for the statistics tab in show-institution view.
   #
-  # Responds to `GET /institutions/:id/statistics` (XHR only)
+  # Responds to `GET /institutions/:key/statistics` (XHR only)
   #
   def show_statistics
     render partial: "show_statistics_tab"
@@ -136,7 +154,7 @@ class InstitutionsController < ApplicationController
   ##
   # Renders HTML for the users tab in show-institution view.
   #
-  # Responds to `GET /institutions/:id/users` (XHR only)
+  # Responds to `GET /institutions/:key/users` (XHR only)
   #
   def show_users
     render partial: "show_users_tab"
@@ -145,7 +163,7 @@ class InstitutionsController < ApplicationController
   ##
   # Provides statistics within a date range as CSV.
   #
-  # Responds to `GET /institutions/:id/statistics-by-range`
+  # Responds to `GET /institutions/:key/statistics-by-range`
   #
   def statistics_by_range
     from_time = TimeUtils.ymd_to_time(params[:from_year],
@@ -195,7 +213,10 @@ class InstitutionsController < ApplicationController
   #
   def update
     begin
-      @institution.update!(institution_params)
+      ActiveRecord::Base.transaction do
+        assign_administrators
+        @institution.update!(institution_params)
+      end
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @institution.errors.any? ? @institution : e },
@@ -208,6 +229,26 @@ class InstitutionsController < ApplicationController
 
 
   private
+
+  def assign_administrators
+    # Group administrators
+    if params[:user_group_ids]
+      @institution.administrator_groups.destroy_all
+      params[:user_group_ids].select(&:present?).each do |user_group_id|
+        @institution.administrator_groups.build(user_group_id: user_group_id).save!
+      end
+    end
+    # User administrators
+    if params[:administering_users]
+      @institution.administrators.destroy_all
+      params[:administering_users].select(&:present?).each do |user_str|
+        user = User.from_autocomplete_string(user_str)
+        @institution.errors.add(:administrators,
+                                "includes a user that does not exist") unless user
+        @institution.administering_users << user
+      end
+    end
+  end
 
   def set_institution
     @institution = Institution.find_by_key(params[:key] || params[:institution_key])

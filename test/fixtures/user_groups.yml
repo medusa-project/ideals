@@ -1,22 +1,30 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 hostname:
-  key: hostname
+  key:  hostname
   name: Hostname-Based Group
 
+somewhere_admins:
+  key:  somewhere_admins
+  name: University of Somewhere Administrators
+
 sysadmin:
-  key: sysadmin
+  key:  sysadmin
   name: System Administrators
 
 temp:
-  key: temp
+  key:  temp
   name: Temporary Group
   users:
 
 uiuc:
-  key: uiuc
+  key:  uiuc
   name: U of I Users
 
+uiuc_admins:
+  key:  uiuc_admins
+  name: U of I Administrators
+
 unused:
-  key: unused
+  key:  unused
   name: Unused Group

@@ -10,6 +10,7 @@ local_sysadmin:
   email: admin@example.edu
   phone: (888) 555-1234
   identity: local_sysadmin
+  institution: example
   user_groups:
     - sysadmin
 
@@ -20,6 +21,7 @@ collection1_collection1_manager:
   email: collection1_collection1_manager@example.edu
   phone: (888) 555-1234
   identity: collection1_collection1_manager
+  institution: example
 
 collection1_collection1_submitter:
   type: LocalUser
@@ -28,6 +30,7 @@ collection1_collection1_submitter:
   email: phil@example.edu
   phone: (888) 555-1234
   identity: collection1_collection1_submitter
+  institution: example
 
 norights:
   type: LocalUser
@@ -36,6 +39,7 @@ norights:
   name: I have no rights
   email: norights@example.edu
   phone: (888) 555-1234
+  institution: example
 
 norights2:
   type: LocalUser
@@ -44,6 +48,7 @@ norights2:
   name: I have no rights
   email: norights2@example.edu
   phone: (888) 555-1234
+  institution: example
 
 uiuc:
   type: ShibbolethUser
@@ -52,6 +57,7 @@ uiuc:
   email: shib@illinois.edu
   phone: (888) 555-1234
   org_dn: <%= DspaceImporter::UIUC_ORG_DN %>
+  institution: uiuc
 
 uiuc_admin:
   type: ShibbolethUser
@@ -60,6 +66,7 @@ uiuc_admin:
   email: shibadmin@illinois.edu
   phone: (888) 555-1235
   org_dn: <%= DspaceImporter::UIUC_ORG_DN %>
+  institution: uiuc
 
 somewhere:
   type: ShibbolethUser
@@ -68,6 +75,7 @@ somewhere:
   email: name@somewhere.edu
   phone: (888) 555-1234
   org_dn: o=University of Somewhere,dc=somewhere,dc=edu
+  institution: somewhere
 
 somewhere_admin:
   type: ShibbolethUser
@@ -76,6 +84,9 @@ somewhere_admin:
   email: admin@somewhere.edu
   phone: (888) 555-1235
   org_dn: o=University of Somewhere,dc=somewhere,dc=edu
+  institution: somewhere
+  user_groups:
+    - somewhere_admins
 
 unit1_admin:
   type: LocalUser
@@ -85,6 +96,7 @@ unit1_admin:
   phone: (888) 555-1234
   identity: unit1_admin
   org_dn: o=Example University,dc=example,dc=edu
+  institution: example
 
 unit1_unit2_unit1_admin:
   type: LocalUser
@@ -94,3 +106,4 @@ unit1_unit2_unit1_admin:
   phone: (888) 555-1234
   identity: unit1_unit2_unit1_admin
   org_dn: o=Example University,dc=example,dc=edu
+  institution: example

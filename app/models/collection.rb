@@ -103,6 +103,7 @@ class Collection < ApplicationRecord
            dependent: :restrict_with_exception
   has_one :handle
   has_many :collection_item_memberships
+  has_one :institution, through: :units
   has_many :items, through: :collection_item_memberships
   belongs_to :metadata_profile, inverse_of: :collections, optional: true
   has_many :manager_groups

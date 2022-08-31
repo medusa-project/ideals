@@ -73,6 +73,22 @@ const InstitutionView = function() {
             });
         });
     });
+
+    $("#access-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/access";
+        $.get(url, function(data) {
+            $("#access-tab-content").html(data);
+            $('.edit-administrators').on("click", function () {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-administrators";
+                $.get(url, function (data) {
+                    $("#edit-administrators-modal .modal-body").html(data);
+                    new IDEALS.LocalUserAutocompleter(
+                        $("input[name=primary_administrator], input[name='administering_users[]']"));
+                    new IDEALS.MultiElementList();
+                });
+            });
+        });
+    });
 };
 
 $(document).ready(function() {

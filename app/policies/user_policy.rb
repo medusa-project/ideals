@@ -22,6 +22,13 @@ class UserPolicy < ApplicationPolicy
     @object_user  = object_user
   end
 
+  ##
+  # N.B. this does not correspond to a controller method.
+  #
+  def change_institution
+    effective_sysadmin(subject_user, role)
+  end
+
   def edit_properties
     sysadmin_or_same_user
   end

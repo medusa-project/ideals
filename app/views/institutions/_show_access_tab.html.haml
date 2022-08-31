@@ -1,0 +1,37 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@institution).edit_administrators?
+    %button.btn.btn-light.edit-administrators{"data-institution-key": @institution.key,
+                                              "data-target": "#edit-administrators-modal",
+                                              "data-toggle": "modal",
+                                              role: "button"}
+      %i.fas.fa-pencil-alt
+      Edit Administrators
+
+.clearfix.mb-3
+
+.row
+  .col-md-6
+    .card.mb-3
+      .card-body
+        %h5.card-title Direct Group Administrators
+        - if @institution.administering_groups.any?
+          %ul
+            - @institution.administering_groups.each do |group|
+              %li= link_to(group.name, group)
+        - else
+          None
+
+  .col-md-6
+    .card.mb-3
+      .card-body
+        %h5.card-title Direct User Administrators
+        - if @institution.administering_users.any?
+          %ul
+            - @institution.administering_users.each do |user|
+              %li= link_to(user.name, "mailto:#{user.email}")
+        - else
+          None
+
+= render partial: "shared/ajax_modal",
+       locals: { id: "edit-administrators-modal",
+                 title: "Edit Administrators" }

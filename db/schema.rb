@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_29_180616) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_30_141025) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -229,6 +229,26 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_29_180616) do
     t.index ["kind"], name: "index_imports_on_kind"
     t.index ["status"], name: "index_imports_on_status"
     t.index ["user_id"], name: "index_imports_on_user_id"
+  end
+
+  create_table "institution_administrator_groups", force: :cascade do |t|
+    t.bigint "institution_id"
+    t.bigint "user_group_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution_id", "user_group_id"], name: "index_ins_admin_groups_on_ins_id_and_user_group_id", unique: true
+    t.index ["institution_id"], name: "index_institution_administrator_groups_on_institution_id"
+    t.index ["user_group_id"], name: "index_institution_administrator_groups_on_user_group_id"
+  end
+
+  create_table "institution_administrators", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "institution_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution_id"], name: "index_institution_administrators_on_institution_id"
+    t.index ["user_id", "institution_id"], name: "index_institution_administrators_on_user_id_and_institution_id", unique: true
+    t.index ["user_id"], name: "index_institution_administrators_on_user_id"
   end
 
   create_table "institutions", force: :cascade do |t|
@@ -568,8 +588,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_29_180616) do
     t.bigint "affiliation_id"
     t.datetime "last_logged_in_at"
     t.text "auth_hash"
+    t.bigint "institution_id"
     t.index ["affiliation_id"], name: "index_users_on_affiliation_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["institution_id"], name: "index_users_on_institution_id"
     t.index ["local_identity_id"], name: "index_users_on_local_identity_id"
     t.index ["name"], name: "index_users_on_name"
     t.index ["uid"], name: "index_users_on_uid", unique: true
@@ -605,6 +627,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_29_180616) do
   add_foreign_key "hosts", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "imports", "collections", on_update: :cascade, on_delete: :nullify
   add_foreign_key "imports", "users", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "institution_administrators", "institutions", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "institution_administrators", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
@@ -634,5 +658,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_29_180616) do
   add_foreign_key "user_groups_users", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "user_groups_users", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "users", "affiliations", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "users", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "users", "local_identities", on_update: :cascade, on_delete: :cascade
 end

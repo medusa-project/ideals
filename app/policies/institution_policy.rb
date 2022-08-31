@@ -25,6 +25,10 @@ class InstitutionPolicy < ApplicationPolicy
     update
   end
 
+  def edit_administrators
+    show_access
+  end
+
   def index
     effective_sysadmin(user, role)
   end
@@ -39,6 +43,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def show
     institution_admin
+  end
+
+  def show_access
+    update
   end
 
   def show_statistics

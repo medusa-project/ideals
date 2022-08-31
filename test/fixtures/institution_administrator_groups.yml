@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  institution_id: 
+  user_group_id: 
+
+two:
+  institution_id: 
+  user_group_id: 

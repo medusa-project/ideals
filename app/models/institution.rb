@@ -17,10 +17,17 @@ class Institution < ApplicationRecord
 
   include Breadcrumb
 
+  has_many :administrators, class_name: "InstitutionAdministrator"
+  has_many :administering_users, through: :administrators,
+           class_name: "User", source: :user
+  has_many :administrator_groups, class_name: "InstitutionAdministratorGroup"
+  has_many :administering_groups, through: :administrator_groups,
+           class_name: "UserGroup", source: :user_group
   has_many :metadata_profiles
   has_many :registered_elements
   has_many :submission_profiles
   has_many :units
+  has_many :users
 
   # uniqueness enforced by database constraints
   validates :fqdn, presence: true

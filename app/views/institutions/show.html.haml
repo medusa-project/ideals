@@ -43,6 +43,14 @@
                                  "data-institution-key": @institution.key}
         %i.fa.fa-chart-bar
         Statistics
+      %a#access-tab.nav-link{href: "#access-tab-content",
+                             "data-toggle": "pill",
+                             role: "tab",
+                             "aria-controls": "access-tab-content",
+                             "aria-selected": "true",
+                             "data-institution-key": @institution.key}
+        %i.fa.fa-users
+        Access
 
   .tab-content.col-sm-7.col-md-8.col-lg-9
     #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
@@ -55,6 +63,10 @@
 
     #statistics-tab-content.tab-pane.fade{role: "tabpanel",
                                           "aria-labelledby": "statistics-tab"}
+      = spinner
+
+    #access-tab-content.tab-pane.fade{role: "tabpanel",
+                                      "aria-labelledby": "access-tab"}
       = spinner
 
 = render partial: "shared/ajax_modal",

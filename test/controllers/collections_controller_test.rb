@@ -39,6 +39,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     post collections_path,
          xhr: true,
          params: {
+             primary_unit_id: units(:unit1).id,
              collection: {
                  metadata_profile_id: metadata_profiles(:empty).id
              },

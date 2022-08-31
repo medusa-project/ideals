@@ -122,6 +122,39 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit?
   end
 
+  # edit_administrators?()
+
+  test "edit_administrators?() returns false with a nil user" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.edit_administrators?
+  end
+
+  test "edit_administrators?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_administrators?
+  end
+
+  test "edit_administrators?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_administrators?
+  end
+
+  test "edit_administrators?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_administrators?
+  end
+
   # index?()
 
   test "index?() returns false with a nil request context" do
@@ -288,6 +321,39 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.show?
+  end
+
+  # show_access?()
+
+  test "show_access?() returns false with a nil user" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.show_access?
+  end
+
+  test "show_access?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_access?
+  end
+
+  test "show_access?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert policy.show_access?
+  end
+
+  test "show_access?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_access?
   end
 
   # show_properties?()
