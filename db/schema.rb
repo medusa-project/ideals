@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_30_141025) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_31_152433) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -273,7 +273,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_30_141025) do
     t.text "note", null: false
     t.string "approval_state", default: "pending", null: false
     t.bigint "inviting_user_id"
+    t.bigint "institution_id"
     t.index ["email"], name: "index_invitees_on_email", unique: true
+    t.index ["institution_id"], name: "index_invitees_on_institution_id"
     t.index ["inviting_user_id"], name: "index_invitees_on_inviting_user_id"
   end
 
@@ -629,6 +631,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_30_141025) do
   add_foreign_key "imports", "users", on_update: :cascade, on_delete: :nullify
   add_foreign_key "institution_administrators", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "institution_administrators", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "invitees", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade

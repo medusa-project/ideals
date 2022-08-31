@@ -23,6 +23,10 @@
     .col-sm-9.col-form-label
       = f.object.email
   .row.form-group
+    = f.label :institution_id, "Institution", class: "col-sm-3 col-form-label"
+    .col-sm-9.col-form-label
+      = f.object.invitee.institution ? f.object.invitee.institution.name : "None"
+  .row.form-group
     = f.label :password, class: "col-sm-3 col-form-label"
     .col-sm-9
       = f.password_field :password, class: "form-control", required: true

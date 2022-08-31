@@ -174,7 +174,8 @@ class InviteesController < ApplicationController
   end
 
   def invitee_params
-    params.require(:invitee).permit(:email, :note)
+    params.require(:invitee).permit(:email, :institution_id, :inviting_user_id,
+                                    :note)
   end
 
   def set_invitee

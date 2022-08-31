@@ -25,6 +25,11 @@
     .col-sm-10
       = f.text_field :email, class: "form-control", required: true
   .row.form-group
+    = f.label :institution_id, "Institution (optional)", class: "col-sm-2 col-form-label"
+    .col-sm-10
+      = f.select :institution_id, options_for_select(Institution.all.order(:name).map{ |i| [i.name, i.id] }),
+                   { include_blank: true }, { class: "custom-select" }
+  .row.form-group
     = f.label :note, "Purpose", class: "col-sm-2 col-form-label"
     .col-sm-10
       = f.text_area :note, class: "form-control", required: true

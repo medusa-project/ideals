@@ -5,6 +5,17 @@
 # using Rails single-table inheritance. (Basically this just means that their
 # class name is stored in the `type` column.)
 #
+# # Institution Membership
+#
+# The process by which a user is made a member of an institution varies
+# depending on the subclass:
+#
+# * For [LocalUser]s, the user either requests to join a particular
+#   institution, or is invited into a particular institution by a sysadmin at
+#   the time they are invited to register.
+# * For [ShibbolethUser]s, the user's "org DN" provided by the IdP is matched
+#   against an [Institution]'s {Institution#org_dn} property at login.
+#
 # # Attributes
 #
 # * `auth_hash`         Serialized OmniAuth hash that was supplied at last
