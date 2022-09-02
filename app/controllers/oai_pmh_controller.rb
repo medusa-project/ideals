@@ -66,7 +66,7 @@ class OaiPmhController < ApplicationController
       schema: "http://dublincore.org/schemas/xmls/qdc/2006/01/06/dcterms.xsd"
     }
   ]
-  MAX_RESULT_WINDOW                    = 200
+  MAX_RESULT_WINDOW                    = 100
   RESUMPTION_TOKEN_COMPONENT_SEPARATOR = "|"
   RESUMPTION_TOKEN_KEY_VALUE_SEPARATOR = ":"
   RESUMPTION_TOKEN_TTL                 = 10.minutes
