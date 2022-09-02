@@ -130,7 +130,7 @@ class OaiPmhController < ApplicationController
       order(:updated_at).
       limit(1).
       first
-    @earliest_datestamp = @sample_item.updated_at.utc.iso8601
+    @earliest_datestamp = @sample_item&.updated_at&.utc&.iso8601
     @base_url           = oai_pmh_url
     "identify"
   end
