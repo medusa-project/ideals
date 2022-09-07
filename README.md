@@ -187,24 +187,25 @@ always expected to be the case in the demo and production environments), the
 proxy supplies an `X-Forwarded-Host` header that conveys the fully-qualified
 domain name (FQDN) via which the app was accessed. The `current_institution()`
 method of `ApplicationController` (and `ApplicationHelper`) returns the
-Institution model associated with this FQDN in order to tailor the
-functionality to a particular institution.
+`Institution` model associated with this FQDN in order to scope the content
+(and customize some functionality) to a particular institution.
 
-In other environments, multi-tenancy can be tested by adding some lines to
-`/etc/hosts`:
+To get this working in development, first add a couple of institutions through
+the UI, giving them FQDNs of `ideals-ins1.local` and `ideals-ins2.local`. Then
+add these to `/etc/hosts`:
 
 ```
-127.0.0.1 ideals-host1.local
-127.0.0.1 ideals-host2.local
-# this is only used for testing data imported from DSpace
-127.0.0.1 ideals-uiuc.local
+127.0.0.1 ideals-ins1.local
+127.0.0.1 ideals-ins2.local
 ```
 
-(See also the `config.hosts` key in the `config/environments/*.rb` files.)
+(These hosts also need to be present in the `config.hosts` key in the
+`config/environments/*.rb` files.)
 
-Then, you can access http://ideals-host1:3000 and http://ideals-host2:3000 in
-order to play around with multi-tenancy.
-
+Then, you can access
+[http://ideals-ins1.local:3000](http://ideals-ins1.local:3000) and
+[http://ideals-ins2.local:3000](http://ideals-ins2.local:3000) in order to play
+around with multi-tenancy.
 
 # Branches & Environments
 

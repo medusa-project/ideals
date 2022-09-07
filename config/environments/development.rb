@@ -64,7 +64,7 @@ Rails.application.configure do
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 
-  config.hosts += %w(ideals-host1.local ideals-host2.local ideals-uiuc.local)
+  config.hosts += %w(ideals-ins1.local ideals-ins2.local ideals-uiuc.local)
 
   # ActionMailer configuration
   Rails.application.reloader.to_prepare do
