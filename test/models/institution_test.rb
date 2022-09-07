@@ -7,6 +7,12 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # default()
+
+  test "default() returns the default institution" do
+    assert_equal institutions(:uiuc), Institution.default
+  end
+
   # download_count_by_month()
 
   test "download_count_by_month() raises an error if start_time > end_time" do

@@ -51,6 +51,13 @@ class Institution < ApplicationRecord
 
   before_save :set_properties, :ensure_default_uniqueness
 
+  ##
+  # @return [Institution] The default institution.
+  #
+  def self.default
+    Institution.find_by_default(true)
+  end
+
   def breadcrumb_label
     name
   end
