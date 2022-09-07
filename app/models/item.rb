@@ -561,7 +561,7 @@ class Item < ApplicationRecord
   # @return [Institution]
   #
   def institution
-    primary_collection.primary_unit.institution
+    effective_primary_collection.institution
   end
 
   ##
