@@ -13,6 +13,38 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal institutions(:uiuc), Institution.default
   end
 
+  # create()
+
+  test "create() adds default elements" do
+    institution = Institution.create!(name:   "New Institution",
+                                      key:    "new",
+                                      fqdn:   "example.net",
+                                      org_dn: "example")
+    assert_equal 27, institution.registered_elements.count
+  end
+
+  test "create() adds a default metadata profile" do
+    institution = Institution.create!(name:   "New Institution",
+                                      key:    "new",
+                                      fqdn:   "example.net",
+                                      org_dn: "example")
+    assert_equal 1, institution.metadata_profiles.count
+    profile = institution.metadata_profiles.first
+    assert profile.default
+    assert profile.elements.count > 0
+  end
+
+  test "create() adds a default submission profile" do
+    institution = Institution.create!(name:   "New Institution",
+                                      key:    "new",
+                                      fqdn:   "example.net",
+                                      org_dn: "example")
+    assert_equal 1, institution.submission_profiles.count
+    profile = institution.submission_profiles.first
+    assert profile.default
+    assert profile.elements.count > 0
+  end
+
   # download_count_by_month()
 
   test "download_count_by_month() raises an error if start_time > end_time" do
@@ -139,12 +171,6 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "url() returns a correct URL" do
     assert_equal "https://#{@instance.fqdn}", @instance.url
-  end
-
-  # users()
-
-  test "users() returns all users" do
-    assert @instance.users.count > 0
   end
 
 end
