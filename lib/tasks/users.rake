@@ -3,17 +3,19 @@ require 'rake'
 namespace :users do
 
   desc "Create a local-identity user"
-  task :create_local, [:email, :password, :name] => :environment do |task, args|
-    user = LocalUser.create_manually(email:    args[:email],
-                                     password: args[:password],
-                                     name:     args[:name])
+  task :create_local, [:email, :password, :name, :institution_key] => :environment do |task, args|
+    user = LocalUser.create_manually(email:       args[:email],
+                                     password:    args[:password],
+                                     name:        args[:name],
+                                     institution: Institution.find_by_key(args[:institution_key]))
     user.save!
   end
 
   desc "Create a local-identity sysadmin user"
-  task :create_local_sysadmin, [:email, :password] => :environment do |task, args|
-    user = LocalUser.create_manually(email:    args[:email],
-                                     password: args[:password])
+  task :create_local_sysadmin, [:email, :password, :institution_key] => :environment do |task, args|
+    user = LocalUser.create_manually(email:       args[:email],
+                                     password:    args[:password],
+                                     institution: Institution.find_by_key(args[:institution_key]))
     user.user_groups << UserGroup.sysadmin
     user.save!
   end
