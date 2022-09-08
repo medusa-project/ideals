@@ -17,27 +17,7 @@
 
 = user_filter_form
 
-- pagination = paginate(count: @count, page: @current_page, per_page: @window, permitted_params: @permitted_params)
-
-.row.justify-content-md-center
-  .col-md-auto
-    = pagination
-
-%table.table
-  %thead
-    %tr
-      %th Name
-      %th Email
-      %th Authentication Type
-  %tbody
-    - @users.each do |user|
-      %tr
-        %td= link_to(user.name, user.becomes(User))
-        %td= link_to(user.email, "mailto:#{user.email}")
-        %td= user.type.chomp("User")
-
-.row.justify-content-md-center
-  .col-md-auto
-    = pagination
+#users-list
+  = render partial: "users", locals: { institution_column: false }
 
 = render partial: "invitees/add_modal", locals: { invitee: @new_invitee }

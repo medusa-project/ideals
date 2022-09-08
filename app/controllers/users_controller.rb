@@ -20,6 +20,16 @@ class UsersController < ApplicationController
   #
   def index
     setup_index(current_institution)
+    respond_to do |format|
+      format.html {
+        if request.xhr?
+          render partial: "users", locals: { institution_column: false }
+        else
+          render "index"
+        end
+      }
+      format.json { render "index" }
+    end
   end
 
   ##
@@ -32,7 +42,13 @@ class UsersController < ApplicationController
   def index_all
     setup_index(nil)
     respond_to do |format|
-      format.html
+      format.html {
+        if request.xhr?
+          render partial: "users", locals: { institution_column: true }
+        else
+          render "index_all"
+        end
+      }
       format.json { render "index" }
     end
   end
@@ -170,14 +186,17 @@ class UsersController < ApplicationController
     authorize(User)
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS +
-                                        [:class])
+                                        [:class, :institution_id])
     @start            = @permitted_params[:start].to_i
     @window           = window_size
-    q                 = "%#{@permitted_params[:q]}%"
+    q                 = "%#{@permitted_params[:q]&.downcase}%"
     @users            = User.
       where("LOWER(name) LIKE ? OR LOWER(uid) LIKE ? OR LOWER(email) LIKE ?", q, q, q).
       where("type LIKE ?", "%#{@permitted_params[:class]}").
       order(:name)
+    if @permitted_params[:institution_id].present?
+      @users          = @users.where(institution_id: @permitted_params[:institution_id])
+    end
     @users            = @users.where(institution_id: institution.id) if institution
     @count            = @users.count
     @users            = @users.limit(@window).offset(@start)

@@ -4,17 +4,32 @@
  * @constructor
  */
 const UsersView = function() {
-    // Select the authentication type based on the URL "class" argument, as the
-    // browser won't do this automatically.
-    const queryArgs = new URLSearchParams(location.search);
-    if (queryArgs.has("class")) {
-        $("select[name=class]").val(queryArgs.get("class"));
-    }
-    // Submit the form after the "clear" button is clicked.
-    $("button[type=reset]").on("click", function() {
-        const form = $(this).parents("form");
-        form.trigger("reset");
-        form.submit();
+    const filterDiv = $("#user-filter");
+
+    const refreshUsers = function() {
+        const form = filterDiv.find("form");
+        $.ajax({
+            method: "GET",
+            url:    form.attr("action"),
+            data:   form.serialize(),
+            success: function(data) {
+                $("#users-list").html(data);
+            },
+            error: function(data, status, xhr) {
+            }
+        });
+    };
+
+    let timeout = null;
+    filterDiv.find("input").on("keyup", function() {
+        clearTimeout(timeout);
+        timeout = setTimeout(function() {
+            refreshUsers();
+        }, IDEALS.KEY_DELAY);
+    });
+
+    filterDiv.find("select").on("change", function() {
+        refreshUsers();
     });
 };
 

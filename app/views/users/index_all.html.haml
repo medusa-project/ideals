@@ -1,34 +1,11 @@
 - provide :body_id, "list_users"
-- provide :title, "Users"
+- provide :title, "All Users"
 
 %h1 All Users
 
-= user_filter_form
+= user_filter_form(show_institution: true)
 
-- pagination = paginate(count: @count, page: @current_page, per_page: @window, permitted_params: @permitted_params)
-
-.row.justify-content-md-center
-  .col-md-auto
-    = pagination
-
-%table.table
-  %thead
-    %tr
-      %th Name
-      %th Email
-      %th Institution
-      %th Authentication Type
-  %tbody
-    - @users.each do |user|
-      %tr
-        %td= link_to(user.name, user.becomes(User))
-        %td= link_to(user.email, "mailto:#{user.email}")
-        %td= user.institution ? link_to(user.institution.name, user.institution) : "None"
-        %td= user.type.chomp("User")
-
-.row.justify-content-md-center
-  .col-md-auto
-    = pagination
-
+#users-list
+  = render partial: "users", locals: { institution_column: true }
 
 = render partial: "invitees/add_modal", locals: { invitee: @new_invitee }
