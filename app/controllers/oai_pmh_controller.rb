@@ -142,10 +142,7 @@ class OaiPmhController < ApplicationController
       aggregations(false).
       institution(current_institution).
       filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
-      # Exclude items with current all-access embargoes.
-      must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
-                     :gt,
-                     Time.now.strftime("%Y-%m-%d")).
+      non_embargoed.
       order(Item::IndexFields::LAST_MODIFIED).
       limit(1).
       first
@@ -233,10 +230,7 @@ class OaiPmhController < ApplicationController
       # dc:identifier:uri element, without which an item would not be
       # identifiable within the oai_dc representation.
       must_exist(Item::IndexFields::HANDLE).
-      # Exclude items with current all-access embargoes.
-      must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
-                     :gt,
-                     Time.now.strftime("%Y-%m-%d")).
+      non_embargoed.
       order(Item::IndexFields::ID).
       limit(MAX_RESULT_WINDOW)
 
