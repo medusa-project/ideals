@@ -17,6 +17,13 @@
   .form-group
     = f.label :fqdn, "Fully Qualified Domain Name (FQDN)"
     = f.text_field :fqdn, class: 'form-control'
+    %p.text-muted
+      %i.fa.fa-info-circle
+      This must be present in the
+      %code config.hosts
+      key in the
+      %code= "config/environments/#{Rails.env}.rb"
+      file.
   .form-group
     = f.label :org_dn, "Organization DN"
     = f.text_field :org_dn, class: 'form-control'
