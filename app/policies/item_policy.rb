@@ -32,16 +32,17 @@ class ItemPolicy < ApplicationPolicy
     end
   end
 
-  attr_reader :user, :role, :item
+  attr_reader :user, :institution, :role, :item
 
   ##
   # @param request_context [RequestContext]
   # @param item [Item]
   #
   def initialize(request_context, item)
-    @user = request_context&.user
-    @role = request_context&.role_limit
-    @item = item
+    @user        = request_context&.user
+    @institution = request_context&.institution
+    @role        = request_context&.role_limit
+    @item        = item
   end
 
   def approve
@@ -116,7 +117,7 @@ class ItemPolicy < ApplicationPolicy
     elsif effective_sysadmin?(user, role)
       return AUTHORIZED_RESULT
     elsif (!role || role >= Role::INSTITUTION_ADMINISTRATOR) &&
-      user.any_institution_admin?
+      effective_institution_admin?(user, user.institution, role)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
@@ -144,7 +145,7 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def review
-    effective_sysadmin(user, role)
+    effective_institution_admin(user, institution, role)
   end
 
   def show

@@ -29,6 +29,23 @@ class InviteePolicyTest < ActiveSupport::TestCase
     assert policy.approve?
   end
 
+  test "approve?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @element)
+    assert policy.approve?
+  end
+
+  test "approve?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @element)
+    assert !policy.approve?
+  end
+
   test "approve?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
@@ -60,6 +77,23 @@ class InviteePolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
     assert policy.create?
+  end
+
+  test "create?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @element)
+    assert policy.create?
+  end
+
+  test "create?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @element)
+    assert !policy.create?
   end
 
   test "create?() respects role limits" do
@@ -117,6 +151,23 @@ class InviteePolicyTest < ActiveSupport::TestCase
     assert policy.destroy?
   end
 
+  test "destroy?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @element)
+    assert policy.destroy?
+  end
+
+  test "destroy?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @element)
+    assert !policy.destroy?
+  end
+
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
@@ -148,6 +199,23 @@ class InviteePolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy = InviteePolicy.new(context, @invitee)
     assert policy.index?
+  end
+
+  test "index?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @element)
+    assert policy.index?
+  end
+
+  test "index?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @element)
+    assert !policy.index?
   end
 
   test "index?() respects role limits" do
@@ -205,6 +273,23 @@ class InviteePolicyTest < ActiveSupport::TestCase
     assert policy.reject?
   end
 
+  test "reject?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @element)
+    assert policy.reject?
+  end
+
+  test "reject?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @element)
+    assert !policy.reject?
+  end
+
   test "reject?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
@@ -238,6 +323,23 @@ class InviteePolicyTest < ActiveSupport::TestCase
     assert policy.resend_email?
   end
 
+  test "resend_email?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @element)
+    assert policy.resend_email?
+  end
+
+  test "resend_email?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @element)
+    assert !policy.resend_email?
+  end
+
   test "resend_email?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
@@ -269,6 +371,23 @@ class InviteePolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy = InviteePolicy.new(context, @invitee)
     assert policy.show?
+  end
+
+  test "show?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @element)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @element)
+    assert !policy.show?
   end
 
   test "show?() respects role limits" do

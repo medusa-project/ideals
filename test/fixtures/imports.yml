@@ -2,6 +2,7 @@
 
 csv_new:
   user:               uiuc_admin
+  institution:        uiuc
   collection:         collection1
   kind:               <%= Import::Kind::CSV %>
   status:             <%= Import::Status::NEW %>
@@ -12,6 +13,7 @@ csv_new:
 
 saf_new:
   user:               uiuc_admin
+  institution:        uiuc
   collection:         collection1
   kind:               <%= Import::Kind::SAF %>
   status:             <%= Import::Status::NEW %>
@@ -22,6 +24,7 @@ saf_new:
 
 saf_running:
   user:               uiuc_admin
+  institution:        uiuc
   collection:         collection1
   kind:               <%= Import::Kind::SAF %>
   status:             <%= Import::Status::RUNNING %>
@@ -32,6 +35,7 @@ saf_running:
 
 saf_succeeded:
   user:               uiuc_admin
+  institution:        uiuc
   collection:         collection1
   kind:               <%= Import::Kind::SAF %>
   status:             <%= Import::Status::SUCCEEDED %>
@@ -42,6 +46,7 @@ saf_succeeded:
 
 saf_failed:
   user:               uiuc_admin
+  institution:        uiuc
   collection:         collection1
   kind:               <%= Import::Kind::SAF %>
   status:             <%= Import::Status::FAILED %>

@@ -1,7 +1,6 @@
-# frozen_string_literal: true
-
 class SubmissionProfilePolicy < ApplicationPolicy
-  attr_reader :user, :role, :submission_profile
+
+  attr_reader :user, :institution, :role, :submission_profile
 
   ##
   # @param request_context [RequestContext]
@@ -9,6 +8,7 @@ class SubmissionProfilePolicy < ApplicationPolicy
   #
   def initialize(request_context, submission_profile)
     @user               = request_context&.user
+    @institution        = request_context&.institution
     @role               = request_context&.role_limit
     @submission_profile = submission_profile
   end
@@ -18,7 +18,7 @@ class SubmissionProfilePolicy < ApplicationPolicy
   end
 
   def create
-    effective_sysadmin(user, role)
+    effective_institution_admin(user, institution, role)
   end
 
   def destroy

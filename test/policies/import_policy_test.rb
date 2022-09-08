@@ -22,11 +22,32 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    user    = users(:uiuc_admin)
+    user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
     assert policy.create?
+  end
+
+  test "create?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    import  = Import.new(user:        user,
+                         institution: user.institution,
+                         collection:  collections(:collection1),
+                         kind:        Import::Kind::CSV)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, import)
+    assert policy.create?
+  end
+
+  test "create?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.create?
   end
 
   test "create?() works with class objects" do
@@ -63,11 +84,32 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "delete_all_files?() authorizes sysadmins" do
-    user    = users(:uiuc_admin)
+    user    = make_sysadmin(@import.user)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
     assert policy.delete_all_files?
+  end
+
+  test "delete_all_files?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    import  = Import.new(user:        user,
+                         institution: user.institution,
+                         collection:  collections(:collection1),
+                         kind:        Import::Kind::CSV)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, import)
+    assert policy.delete_all_files?
+  end
+
+  test "delete_all_files?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.delete_all_files?
   end
 
   test "delete_all_files?() respects role limits" do
@@ -105,11 +147,32 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() authorizes sysadmins" do
-    user    = users(:uiuc_admin)
+    user    = make_sysadmin(@import.user)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
     assert policy.edit?
+  end
+
+  test "edit?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    import  = Import.new(user:        user,
+                         institution: user.institution,
+                         collection:  collections(:collection1),
+                         kind:        Import::Kind::CSV)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, import)
+    assert policy.edit?
+  end
+
+  test "edit?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.edit?
   end
 
   test "edit?() respects role limits" do
@@ -138,11 +201,32 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:uiuc_admin)
+    user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
     assert policy.index?
+  end
+
+  test "index?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    import  = Import.new(user:        user,
+                         institution: user.institution,
+                         collection:  collections(:collection1),
+                         kind:        Import::Kind::CSV)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, import)
+    assert policy.index?
+  end
+
+  test "index?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.index?
   end
 
   test "index?() respects role limits" do
@@ -171,11 +255,32 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() authorizes sysadmins" do
-    user    = users(:uiuc_admin)
+    user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
     assert policy.new?
+  end
+
+  test "new?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    import  = Import.new(user:        user,
+                         institution: user.institution,
+                         collection:  collections(:collection1),
+                         kind:        Import::Kind::CSV)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, import)
+    assert policy.new?
+  end
+
+  test "new?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.new?
   end
 
   test "new?() works with class objects" do
@@ -212,18 +317,31 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    user    = users(:uiuc_admin)
+    user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
     assert policy.show?
   end
 
-  test "show?() works with class objects" do
-    user    = users(:norights)
+  test "show?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    import  = Import.new(user:        user,
+                         institution: user.institution,
+                         collection:  collections(:collection1),
+                         kind:        Import::Kind::CSV)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ImportPolicy.new(context, Collection)
+    policy  = ImportPolicy.new(context, import)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
     assert !policy.show?
   end
 
@@ -262,11 +380,32 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes sysadmins" do
-    user    = users(:uiuc_admin)
+    user    = make_sysadmin(@import.user)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
     assert policy.update?
+  end
+
+  test "update?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    import  = Import.new(user:        user,
+                         institution: user.institution,
+                         collection:  collections(:collection1),
+                         kind:        Import::Kind::CSV)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, import)
+    assert policy.update?
+  end
+
+  test "update?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.update?
   end
 
   test "update?() respects role limits" do
@@ -294,9 +433,9 @@ class ImportPolicyTest < ActiveSupport::TestCase
     assert !policy.upload_file?
   end
 
-  test "upload_file?() does not authorize users other than the one who created the
+  test "upload_file?() does not authorize users other than the creator of the
   instance" do
-    user    = users(:local_sysadmin) # instance was created by uiuc_admin
+    user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -304,11 +443,32 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "upload_file?() authorizes sysadmins" do
-    user    = users(:uiuc_admin)
+    user    = make_sysadmin(@import.user)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
     assert policy.upload_file?
+  end
+
+  test "upload_file?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    import  = Import.new(user:        user,
+                         institution: user.institution,
+                         collection:  collections(:collection1),
+                         kind:        Import::Kind::CSV)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, import)
+    assert policy.upload_file?
+  end
+
+  test "upload_file?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.upload_file?
   end
 
   test "upload_file?() respects role limits" do

@@ -104,7 +104,7 @@ class ShibbolethUserTest < ActiveSupport::TestCase
 
   test "sysadmin?() returns true when the user is a member of an LDAP group
   included in the sysadmin user group" do
-    @instance = users(:uiuc_admin)
+    @instance = users(:local_sysadmin)
     assert @instance.sysadmin?
   end
 

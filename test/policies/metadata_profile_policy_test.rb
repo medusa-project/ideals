@@ -30,6 +30,23 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert policy.clone?
   end
 
+  test "clone?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert policy.clone?
+  end
+
+  test "clone?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert !policy.clone?
+  end
+
   test "clone?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
@@ -61,6 +78,23 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.create?
+  end
+
+  test "create?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert policy.create?
+  end
+
+  test "create?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert !policy.create?
   end
 
   test "create?() respects role limits" do
@@ -96,6 +130,23 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert policy.destroy?
   end
 
+  test "destroy?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert policy.destroy?
+  end
+
+  test "destroy?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert !policy.destroy?
+  end
+
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
@@ -127,6 +178,23 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.edit?
+  end
+
+  test "edit?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert policy.edit?
+  end
+
+  test "edit?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert !policy.edit?
   end
 
   test "edit?() respects role limits" do
@@ -162,6 +230,23 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert policy.index?
   end
 
+  test "index?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert policy.index?
+  end
+
+  test "index?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert !policy.index?
+  end
+
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
@@ -193,6 +278,23 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy = MetadataProfilePolicy.new(context, @profile)
     assert policy.new?
+  end
+
+  test "new?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert policy.new?
+  end
+
+  test "new?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert !policy.new?
   end
 
   test "new?() respects role limits" do
@@ -228,6 +330,23 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  test "show?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert !policy.show?
+  end
+
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
@@ -259,6 +378,23 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy = MetadataProfilePolicy.new(context, @profile)
     assert policy.update?
+  end
+
+  test "update?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert policy.update?
+  end
+
+  test "update?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @element)
+    assert !policy.update?
   end
 
   test "update?() respects role limits" do

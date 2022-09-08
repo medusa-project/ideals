@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_31_152433) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_08_145248) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -225,7 +225,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_31_152433) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "kind"
+    t.bigint "institution_id", null: false
     t.index ["collection_id"], name: "index_imports_on_collection_id"
+    t.index ["institution_id"], name: "index_imports_on_institution_id"
     t.index ["kind"], name: "index_imports_on_kind"
     t.index ["status"], name: "index_imports_on_status"
     t.index ["user_id"], name: "index_imports_on_user_id"
@@ -371,8 +373,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_31_152433) do
     t.bigint "institution_id", null: false
     t.integer "full_text_relevance_weight", default: 5, null: false
     t.index ["default"], name: "index_metadata_profiles_on_default"
+    t.index ["institution_id", "name"], name: "index_metadata_profiles_on_institution_id_and_name", unique: true
     t.index ["institution_id"], name: "index_metadata_profiles_on_institution_id"
-    t.index ["name"], name: "index_metadata_profiles_on_name", unique: true
   end
 
   create_table "monthly_collection_item_download_counts", force: :cascade do |t|
@@ -443,8 +445,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_31_152433) do
     t.string "input_type"
     t.string "highwire_mapping"
     t.index ["institution_id"], name: "index_registered_elements_on_institution_id"
-    t.index ["name"], name: "index_registered_elements_on_name", unique: true
-    t.index ["uri"], name: "index_registered_elements_on_uri", unique: true
+    t.index ["name", "institution_id"], name: "index_registered_elements_on_name_and_institution_id", unique: true
+    t.index ["uri", "institution_id"], name: "index_registered_elements_on_uri_and_institution_id", unique: true
   end
 
   create_table "settings", force: :cascade do |t|
@@ -479,8 +481,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_31_152433) do
     t.datetime "updated_at", null: false
     t.bigint "institution_id", null: false
     t.index ["default"], name: "index_submission_profiles_on_default"
+    t.index ["institution_id", "name"], name: "index_submission_profiles_on_institution_id_and_name", unique: true
     t.index ["institution_id"], name: "index_submission_profiles_on_institution_id"
-    t.index ["name"], name: "index_submission_profiles_on_name", unique: true
   end
 
   create_table "submitter_groups", force: :cascade do |t|
@@ -512,6 +514,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_31_152433) do
     t.text "backtrace"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "institution_id"
+    t.index ["institution_id"], name: "index_tasks_on_institution_id"
     t.index ["started_at"], name: "index_tasks_on_started_at"
     t.index ["status"], name: "index_tasks_on_status"
     t.index ["stopped_at"], name: "index_tasks_on_stopped_at"
@@ -567,8 +571,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_31_152433) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "key", null: false
-    t.index ["key"], name: "index_user_groups_on_key", unique: true
-    t.index ["name"], name: "index_user_groups_on_name", unique: true
+    t.bigint "institution_id"
+    t.index ["institution_id", "key"], name: "index_user_groups_on_institution_id_and_key", unique: true
+    t.index ["institution_id", "name"], name: "index_user_groups_on_institution_id_and_name", unique: true
+    t.index ["institution_id"], name: "index_user_groups_on_institution_id"
   end
 
   create_table "user_groups_users", force: :cascade do |t|
@@ -628,6 +634,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_31_152433) do
   add_foreign_key "handles", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "hosts", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "imports", "collections", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "imports", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "imports", "users", on_update: :cascade, on_delete: :nullify
   add_foreign_key "institution_administrators", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "institution_administrators", "users", on_update: :cascade, on_delete: :cascade
@@ -648,6 +655,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_31_152433) do
   add_foreign_key "submitter_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitters", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "tasks", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "tasks", "users", on_update: :cascade, on_delete: :nullify
   add_foreign_key "unit_administrator_groups", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "unit_administrator_groups", "user_groups", on_update: :cascade, on_delete: :cascade
@@ -658,6 +666,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_31_152433) do
   add_foreign_key "units", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "units", "metadata_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "units", "units", column: "parent_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "user_groups", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "user_groups_users", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "user_groups_users", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "users", "affiliations", on_update: :cascade, on_delete: :nullify

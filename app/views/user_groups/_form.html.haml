@@ -4,6 +4,9 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
+  -# This value will be cleared via JS if we are on /global-user-groups.
+  = f.hidden_field(:institution_id, value: current_institution.id)
+
   .form-group
     = f.label :key
     = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?

@@ -33,7 +33,7 @@ class UserGroupTest < ActiveSupport::TestCase
   end
 
   test "all_users() returns ShibbolethUsers belonging to an associated AD group" do
-    assert @instance.all_users.include?(users(:uiuc_admin))
+    assert @instance.all_users.include?(users(:uiuc_sysadmin))
   end
 
   # destroy()
@@ -74,10 +74,10 @@ class UserGroupTest < ActiveSupport::TestCase
   test "includes?() returns true for a user belonging to an AD group associated
   with the instance" do
     # In the test environment, a user is considered to be in a group if both
-    # the NetID contains "admin" and the user group contains an AD group with
-    # the string "admin" in it.
-    @instance.ad_groups.build(name: "test admin group")
-    user = users(:uiuc_admin)
+    # the NetID contains "sysadmin" and the user group contains an AD group with
+    # the string "sysadmin" in it.
+    @instance.ad_groups.build(name: "test sysadmin group")
+    user = users(:local_sysadmin)
     assert @instance.includes?(user)
   end
 
@@ -109,10 +109,15 @@ class UserGroupTest < ActiveSupport::TestCase
     end
   end
 
-  test "key must be unique" do
+  test "key must be unique within the same institution" do
+    institution = institutions(:example)
+    UserGroup.create!(key:         "test",
+                      name:        SecureRandom.hex,
+                      institution: institution)
     assert_raises ActiveRecord::RecordNotUnique do
-      UserGroup.create!(key: @instance.key,
-                        name: SecureRandom.hex)
+      UserGroup.create!(key:         "test",
+                        name:        SecureRandom.hex,
+                        institution: institution)
     end
   end
 
@@ -124,10 +129,15 @@ class UserGroupTest < ActiveSupport::TestCase
     end
   end
 
-  test "name must be unique" do
+  test "name must be unique within the same institution" do
+    institution = institutions(:example)
+    UserGroup.create!(key:         SecureRandom.hex,
+                      name:        "Test",
+                      institution: institution)
     assert_raises ActiveRecord::RecordNotUnique do
-      UserGroup.create!(key: SecureRandom.hex,
-                        name: @instance.name)
+      UserGroup.create!(key:         SecureRandom.hex,
+                        name:        "Test",
+                        institution: institution)
     end
   end
 

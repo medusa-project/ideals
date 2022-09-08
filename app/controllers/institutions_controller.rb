@@ -215,7 +215,9 @@ class InstitutionsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         assign_administrators
-        @institution.update!(institution_params)
+        if policy(@institution).update_properties?
+          @institution.update!(institution_params)
+        end
       end
     rescue => e
       render partial: "shared/validation_messages",

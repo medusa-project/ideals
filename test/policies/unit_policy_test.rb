@@ -97,7 +97,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes institution admins" do
-    user    = users(:somewhere_admin)
+    user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)

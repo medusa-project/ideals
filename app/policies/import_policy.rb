@@ -1,20 +1,20 @@
-# frozen_string_literal: true
-
 class ImportPolicy < ApplicationPolicy
-  attr_reader :user, :role, :import
+
+  attr_reader :user, :institution, :role, :import
 
   ##
   # @param request_context [RequestContext]
   # @param import [Import]
   #
   def initialize(request_context, import)
-    @user   = request_context&.user
-    @role   = request_context&.role_limit
-    @import = import
+    @user        = request_context&.user
+    @institution = request_context&.institution
+    @role        = request_context&.role_limit
+    @import      = import
   end
 
   def create
-    effective_sysadmin(user, role)
+    index
   end
 
   def delete_all_files
@@ -26,7 +26,7 @@ class ImportPolicy < ApplicationPolicy
   end
 
   def index
-    effective_sysadmin(user, role)
+    effective_institution_admin(user, institution, role)
   end
 
   def new
@@ -34,18 +34,18 @@ class ImportPolicy < ApplicationPolicy
   end
 
   def show
-    index
+    effective_institution_admin(user, import.institution, role)
   end
 
   def update
-    result = create
-    return result unless result[:authorized]
     if user != import.user
       return {
         authorized: false,
         reason:     "Imports can only be modified by the user who created them."
       }
     end
+    result = create
+    return result unless result[:authorized]
     AUTHORIZED_RESULT
   end
 

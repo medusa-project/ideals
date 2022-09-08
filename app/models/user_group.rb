@@ -4,15 +4,21 @@
 #
 # # Attributes
 #
-# * `created_at` Managed by ActiveRecord.
-# * `key`        Short unique identifying key.
-# * `name`       Arbitrary but unique group name.
-# * `updated_at` Managed by ActiveRecord.
+# * `created_at`     Managed by ActiveRecord.
+# * `institution_id` Foreign key to [Institution] indicating that the group is
+#                    exclusive to that institution. May also be `nil`,
+#                    indicating that the group is global, available to all
+#                    institutions.
+# * `key`            Short unique identifying key.
+# * `name`           Arbitrary but unique group name.
+# * `updated_at`     Managed by ActiveRecord.
 #
 class UserGroup < ApplicationRecord
   include Breadcrumb
 
   SYSTEM_REQUIRED_GROUPS = %w(sysadmin)
+
+  belongs_to :institution, optional: true
 
   has_many :ad_groups
   has_many :bitstream_authorizations

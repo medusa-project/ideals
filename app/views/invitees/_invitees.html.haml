@@ -18,7 +18,6 @@
   %thead
     %tr
       %th Email
-      %th Institution
       %th Invited By
       %th Approval State
       %th
@@ -26,7 +25,6 @@
     - invitees.each do |invitee|
       %tr
         %td= link_to(invitee.email, invitee)
-        %td= invitee.institution ? link_to(invitee.institution.name, invitee.institution) : "None"
         %td= invitee.inviting_user ? link_to(invitee.inviting_user.name, invitee.inviting_user.becomes(User)) : "Self-Invited"
         %td
           - case invitee.approval_state

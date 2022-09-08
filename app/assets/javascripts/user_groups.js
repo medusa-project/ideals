@@ -21,13 +21,23 @@ const UserGroupForm = {
 }
 
 /**
- * Handles list-user-groups view (/user-groups).
+ * Handles list-user-groups views (/user-groups and /global-user-groups).
  *
  * @constructor
  */
 const UserGroupsView = function() {
+    const ROOT_URL = $('input[name="root_url"]').val();
+
     $("#add-user-group-modal").on("show.bs.modal", function() {
-        UserGroupForm.attachEventListeners();
+        const url = ROOT_URL + "/user-groups/new";
+        $.get(url, function(data) {
+            const modalBody = $("#add-user-group-modal .modal-body");
+            modalBody.html(data);
+            if (window.location.href.match(/global-user-groups/)) {
+                modalBody.find("input[name='user_group[institution_id]']").val("");
+            }
+            UserGroupForm.attachEventListeners();
+        });
     });
 };
 

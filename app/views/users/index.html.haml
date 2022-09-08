@@ -3,29 +3,41 @@
 
 -if policy(User).invite?
   .btn-group.float-right{role: "group"}
-    / Invite button
+    -# Invite button
     %button.btn.btn-light{"data-target": "#invite-user-modal",
                           "data-toggle": "modal", type: "button"}
       %i.fa.fa-plus
       Invite User
 
-%h1 Users
+%h1
+  Users
+  %small
+    in
+    = current_institution.name
 
-.card.mb-3
-  .card-body
-    = form_tag users_path, method: :get, class: "form-inline" do
-      = label_tag nil, "Name or Email", class: "mr-1"
-      = filter_field
+= user_filter_form
 
-      = label_tag nil, "Authentication Type", class: "ml-3 mr-1"
-      = select_tag "class", options_for_select([["Any", ""],
-                                                ["Shiboleth", ShibbolethUser.to_s],
-                                                ["Local", LocalUser.to_s]]),
-                   class: "custom-select"
-      .btn-group
-        = button_tag "Clear", type: "reset", class: "btn btn-outline-secondary ml-3"
-        = submit_tag "Filter", name: "", class: "btn btn-primary"
+- pagination = paginate(count: @count, page: @current_page, per_page: @window, permitted_params: @permitted_params)
 
-= render partial: "users"
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
+
+%table.table
+  %thead
+    %tr
+      %th Name
+      %th Email
+      %th Authentication Type
+  %tbody
+    - @users.each do |user|
+      %tr
+        %td= link_to(user.name, user.becomes(User))
+        %td= link_to(user.email, "mailto:#{user.email}")
+        %td= user.type.chomp("User")
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
 
 = render partial: "invitees/add_modal", locals: { invitee: @new_invitee }

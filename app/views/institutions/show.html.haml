@@ -21,53 +21,61 @@
   .col-sm-5.col-md-4.col-lg-3
     .nav.flex-column.nav-pills{role: "tablist",
                                "aria-orientation": "vertical"}
-      %a#properties-tab.nav-link.active{href: "#properties-tab-content",
-                                        "data-toggle": "pill",
-                                        role: "tab",
-                                        "aria-controls": "properties-tab-content",
-                                        "aria-selected": "true"}
-        = icon_for(:info)
-        Properties
-      %a#users-tab.nav-link{href: "#users-tab-content",
-                            "data-toggle": "pill",
-                            role: "tab",
-                            "aria-controls": "users-tab-content",
-                            "aria-selected": "true"}
-        = icon_for(User)
-        Users
-      %a#statistics-tab.nav-link{href: "#statistics-tab-content",
-                                 "data-toggle": "pill",
-                                 role: "tab",
-                                 "aria-controls": "statistics-tab-content",
-                                 "aria-selected": "true",
-                                 "data-institution-key": @institution.key}
-        %i.fa.fa-chart-bar
-        Statistics
-      %a#access-tab.nav-link{href: "#access-tab-content",
-                             "data-toggle": "pill",
-                             role: "tab",
-                             "aria-controls": "access-tab-content",
-                             "aria-selected": "true",
-                             "data-institution-key": @institution.key}
-        %i.fa.fa-users
-        Access
+      - if policy(@institution).show_properties?
+        %a#properties-tab.nav-link.active{href: "#properties-tab-content",
+                                          "data-toggle": "pill",
+                                          role: "tab",
+                                          "aria-controls": "properties-tab-content",
+                                          "aria-selected": "true"}
+          = icon_for(:info)
+          Properties
+      - if policy(@institution).show_users?
+        %a#users-tab.nav-link{href: "#users-tab-content",
+                              "data-toggle": "pill",
+                              role: "tab",
+                              "aria-controls": "users-tab-content",
+                              "aria-selected": "true"}
+          = icon_for(User)
+          Users
+      - if policy(@institution).show_statistics?
+        %a#statistics-tab.nav-link{href: "#statistics-tab-content",
+                                   "data-toggle": "pill",
+                                   role: "tab",
+                                   "aria-controls": "statistics-tab-content",
+                                   "aria-selected": "true",
+                                   "data-institution-key": @institution.key}
+          %i.fa.fa-chart-bar
+          Statistics
+      - if policy(@institution).show_access?
+        %a#access-tab.nav-link{href: "#access-tab-content",
+                               "data-toggle": "pill",
+                               role: "tab",
+                               "aria-controls": "access-tab-content",
+                               "aria-selected": "true",
+                               "data-institution-key": @institution.key}
+          %i.fa.fa-users
+          Access
 
   .tab-content.col-sm-7.col-md-8.col-lg-9
-    #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
-                                                      "aria-labelledby": "properties-tab"}
-      = spinner
+    - if policy(@institution).show_properties?
+      #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
+                                                        "aria-labelledby": "properties-tab"}
+        = spinner
 
-    #users-tab-content.tab-pane.fade{role: "tabpanel",
-                                     "aria-labelledby": "users-tab"}
-      = spinner
+    - if policy(@institution).show_users?
+      #users-tab-content.tab-pane.fade{role: "tabpanel",
+                                       "aria-labelledby": "users-tab"}
+        = spinner
 
-    #statistics-tab-content.tab-pane.fade{role: "tabpanel",
-                                          "aria-labelledby": "statistics-tab"}
-      = spinner
+    - if policy(@institution).show_statistics?
+      #statistics-tab-content.tab-pane.fade{role: "tabpanel",
+                                            "aria-labelledby": "statistics-tab"}
+        = spinner
 
-    #access-tab-content.tab-pane.fade{role: "tabpanel",
-                                      "aria-labelledby": "access-tab"}
-      = spinner
+    - if policy(@institution).show_access?
+      #access-tab-content.tab-pane.fade{role: "tabpanel",
+                                        "aria-labelledby": "access-tab"}
+        = spinner
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-institution-modal", title: "Edit Institution" }

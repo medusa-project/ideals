@@ -61,32 +61,65 @@ uiuc:
 
 uiuc_admin:
   type: ShibbolethUser
-  uid: shibadmin@illinois.edu
-  name: Shibboleth Admin
-  email: shibadmin@illinois.edu
+  uid: instadmin@illinois.edu
+  name: UIUC Institution Admin
+  email: instadmin@illinois.edu
   phone: (888) 555-1235
   org_dn: <%= DspaceImporter::UIUC_ORG_DN %>
   institution: uiuc
-
-somewhere:
-  type: ShibbolethUser
-  uid: user@somewhere.edu
-  name: Somewhere.edu Normal User
-  email: name@somewhere.edu
-  phone: (888) 555-1234
-  org_dn: o=University of Somewhere,dc=somewhere,dc=edu
-  institution: somewhere
-
-somewhere_admin:
-  type: ShibbolethUser
-  uid: admin@somewhere.edu
-  name: Somewhere.edu Institution Administrator
-  email: admin@somewhere.edu
-  phone: (888) 555-1235
-  org_dn: o=University of Somewhere,dc=somewhere,dc=edu
-  institution: somewhere
   user_groups:
-    - somewhere_admins
+    - uiuc_admins
+
+uiuc_sysadmin:
+  type: ShibbolethUser
+  uid: sysadmin@illinois.edu
+  name: UIUC Sysadmin
+  email: sysadmin@illinois.edu
+  phone: (888) 555-1235
+  org_dn: <%= DspaceImporter::UIUC_ORG_DN %>
+  institution: uiuc
+  user_groups:
+    - sysadmin
+
+northeast:
+  type: LocalUser
+  uid: user@northeast.edu
+  name: Northeast University Normal User
+  email: name@northeast.edu
+  phone: (888) 555-1234
+  org_dn: o=Northeast University,dc=southwest,dc=edu
+  institution: northeast
+
+northeast_admin:
+  type: LocalUser
+  uid: admin@northeast.edu
+  name: Northeast.edu Institution Administrator
+  email: admin@northeast.edu
+  phone: (888) 555-1235
+  org_dn: o=Northeast University,dc=northeast,dc=edu
+  institution: northeast
+  user_groups:
+    - northeast_admins
+
+southwest:
+  type: LocalUser
+  uid: user@southwest.edu
+  name: Southwest University Normal User
+  email: name@southwest.edu
+  phone: (888) 555-1234
+  org_dn: o=Southwest University,dc=southwest,dc=edu
+  institution: southwest
+
+southwest_admin:
+  type: LocalUser
+  uid: admin@southwest.edu
+  name: Southwest University Institution Administrator
+  email: admin@southwest.edu
+  phone: (888) 555-1235
+  org_dn: o=Southwest University,dc=southwest,dc=edu
+  institution: southwest
+  user_groups:
+    - southwest_admins
 
 unit1_admin:
   type: LocalUser

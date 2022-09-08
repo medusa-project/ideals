@@ -5,7 +5,7 @@
     -# populated via ajax by shared/_validation_messages.js.erb
 
   = hidden_field_tag "user_group[user_ids][]"
-  - LocalUser.all.order(:name).each do |user|
+  - LocalUser.where(institution: current_institution).order(:name).each do |user|
     .form-check
       = check_box_tag "user_group[user_ids][]", user.id,
                         f.object.users.include?(user),

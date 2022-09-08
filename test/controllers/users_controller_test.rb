@@ -73,6 +73,40 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  # index_all()
+
+  test "index_all() redirects to login page for logged-out users" do
+    get all_users_path
+    assert_redirected_to login_path
+  end
+
+  test "index_all() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get all_users_path
+    assert_response :forbidden
+  end
+
+  test "index_all() returns HTTP 200 for authorized users for HTML" do
+    log_in_as(users(:local_sysadmin))
+    get all_users_path
+    assert_response :ok
+  end
+
+  test "index_all() returns HTTP 200 for authorized users for JSON" do
+    log_in_as(users(:local_sysadmin))
+    get all_users_path(format: :json)
+    assert_response :ok
+  end
+
+  test "index_all() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get all_users_path
+    assert_response :ok
+
+    get all_users_path(role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # show()
 
   test "show() redirects to login page for logged-out users" do

@@ -4,9 +4,13 @@ hostname:
   key:  hostname
   name: Hostname-Based Group
 
-somewhere_admins:
-  key:  somewhere_admins
-  name: University of Somewhere Administrators
+northeast_admins:
+  key:  northeast_admins
+  name: Northeast University Administrators
+
+southwest_admins:
+  key:  southwest_admins
+  name: Southwest University Administrators
 
 sysadmin:
   key:  sysadmin

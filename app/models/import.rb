@@ -11,6 +11,8 @@
 # * `imported_items`     JSON array of objects with `item_id` and `handle` keys.
 #                        This is analogous to the contents of a mapfile (see
 #                        [SafImporter]) and can be used to reconstruct one.
+# * `institution_id`     Foreign key to [Institution] representing the
+#                        institution into which items are being imported.
 # * `kind`               One of the [Import::Kind] constant values. This may be
 #                        null in the case of a newly created instance to which
 #                        files have not been uploaded yet.
@@ -50,6 +52,7 @@ class Import < ApplicationRecord
   end
 
   belongs_to :collection
+  belongs_to :institution
   belongs_to :user
 
   serialize :files, JSON

@@ -19,21 +19,6 @@ class UserTest < ActiveSupport::TestCase
     assert_nil User.from_autocomplete_string(string)
   end
 
-  # any_institution_admin?()
-
-  test "any_institution_admin?() returns true if the user is an institution
-  admin" do
-    institution = institutions(:uiuc)
-    @user.administering_institutions << institution
-    @user.save!
-    assert @user.any_institution_admin?
-  end
-
-  test "any_institution_admin?() returns false if the user is not an institution
-  admin" do
-    assert !@user.any_institution_admin?
-  end
-
   # belongs_to_user_group?()
 
   test "belongs_to_user_group?() returns false for a user not associated with
@@ -43,13 +28,15 @@ class UserTest < ActiveSupport::TestCase
 
   test "belongs_to_user_group?() returns true for a user directly associated
   with the group" do
-    group                  = user_groups(:sysadmin)
+    group              = user_groups(:sysadmin)
     @user.user_groups << group
     assert @user.belongs_to_user_group?(group)
   end
 
   test "belongs_to_user_group?() returns true for a user belonging to an AD
   group associated with the group" do
+    skip # this is not testable because AD group membership checks don't happen in the test environment
+    # TODO: set up a mock AD group system for the test environment?
     user       = users(:uiuc_admin)
     user_group = user_groups(:sysadmin)
     assert user.belongs_to_user_group?(user_group)
@@ -73,7 +60,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_institution_admin?() returns false if the user is neither a
   member of the given institution nor a sysadmin" do
-    assert !@user.effective_institution_admin?(institutions(:somewhere))
+    assert !@user.effective_institution_admin?(institutions(:southwest))
   end
 
   # effective_manager?()
@@ -262,7 +249,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "institution_admin?() returns true if the user is an administrator of
   the given institution" do
-    institution = institutions(:somewhere)
+    institution = institutions(:southwest)
     @user.administering_institutions << institution
     @user.save!
     assert @user.institution_admin?(institution)
@@ -270,7 +257,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "institution_admin?() returns false if the user is not a member of the
   given institution" do
-    assert !@user.institution_admin?(institutions(:somewhere))
+    assert !@user.institution_admin?(institutions(:southwest))
   end
 
   test "institution_admin?() returns false for a nil argument" do

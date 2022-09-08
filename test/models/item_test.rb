@@ -142,7 +142,7 @@ class ItemTest < ActiveSupport::TestCase
   test "as_change_hash() returns the correct structure" do
     @instance = items(:described)
     # add another title to test handling of multiple same-named elements
-    @instance.elements.build(registered_element: registered_elements(:dc_title),
+    @instance.elements.build(registered_element: registered_elements(:uiuc_dc_title),
                              string: "Alternate title")
     # add an embargo
     @instance.embargoes.build(kind:       Embargo::Kind::ALL_ACCESS,
@@ -681,7 +681,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "required_elements_present?() returns true if all required elements are
   present" do
-    @instance.elements.build(registered_element: registered_elements(:dc_title),
+    @instance.elements.build(registered_element: registered_elements(:uiuc_dc_title),
                              string:             "Title").save
     assert @instance.required_elements_present?
   end
@@ -689,7 +689,7 @@ class ItemTest < ActiveSupport::TestCase
   # save()
 
   test "save() prunes duplicate AscribedElements" do
-    re = registered_elements(:dc_title)
+    re = registered_elements(:uiuc_dc_title)
     @instance.elements.destroy_all
     @instance.elements.build(registered_element: re,
                              string:             "cats",
@@ -871,7 +871,7 @@ class ItemTest < ActiveSupport::TestCase
   test "validate() ensures that a submission includes all required elements" do
     item = items(:submitting)
     assert item.validate
-    item.elements.where(registered_element: registered_elements(:dc_title)).destroy_all
+    item.elements.where(registered_element: registered_elements(:uiuc_dc_title)).destroy_all
     item.stage = Item::Stages::SUBMITTED
     assert !item.validate
   end

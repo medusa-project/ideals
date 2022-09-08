@@ -146,7 +146,7 @@ class ApplicationController < ActionController::Base
   end
 
   ##
-  # By default, Rails logs {ActionController::InvalidAuthenticityToken}s at
+  # By default, Rails logs [ActionController::InvalidAuthenticityToken]s at
   # error level. This only bloats the logs, so we handle it differently.
   #
   def rescue_invalid_auth_token
@@ -154,7 +154,7 @@ class ApplicationController < ActionController::Base
   end
 
   ##
-  # By default, Rails logs {ActionController::InvalidCrossOriginRequest}s at
+  # By default, Rails logs [ActionController::InvalidCrossOriginRequest]s at
   # error level. This only bloats the logs, so we handle it differently.
   #
   def rescue_invalid_cross_origin_request
@@ -239,11 +239,12 @@ class ApplicationController < ActionController::Base
       @list = ToDoList.new
       # Pending Invitees (if the user is allowed to act on them)
       if policy(Invitee).approve?
-        count = Invitee.where(approval_state: ApprovalState::PENDING).count
+        count = Invitee.where(institution:    current_institution,
+                              approval_state: ApprovalState::PENDING).count
         if count > 0
           @list.items << {
               message: "Act on #{count} #{"invitee".pluralize(count)}",
-              url: invitees_path(approval_state: ApprovalState::PENDING)
+              url:     invitees_path(approval_state: ApprovalState::PENDING)
           }
           @list.total_items += count
         end
@@ -251,11 +252,15 @@ class ApplicationController < ActionController::Base
 
       # Items pending review
       if policy(Item).review?
-        count = Item.where(stage: Item::Stages::SUBMITTED).count
+        count = Item.
+          joins(collections: :units).
+          where("units.institution_id": current_institution.id,
+                stage:                  Item::Stages::SUBMITTED).
+          count
         if count > 0
           @list.items << {
               message: "Review #{count} #{"item".pluralize(count)}",
-              url: items_review_path
+              url:     items_review_path
           }
           @list.total_items += count
         end

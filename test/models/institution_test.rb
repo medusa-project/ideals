@@ -3,7 +3,7 @@ require 'test_helper'
 class InstitutionTest < ActiveSupport::TestCase
 
   setup do
-    @instance = institutions(:somewhere)
+    @instance = institutions(:southwest)
     assert @instance.valid?
   end
 

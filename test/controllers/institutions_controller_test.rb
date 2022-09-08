@@ -32,8 +32,8 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "create() returns HTTP 200 for authorized users" do
-    log_in_as(users(:uiuc_admin))
+  test "create() returns HTTP 200 for sysadmins" do
+    log_in_as(users(:local_sysadmin))
     post institutions_path,
          xhr: true,
          params: {
@@ -48,7 +48,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates an institution" do
-    user = users(:uiuc_admin)
+    user = users(:local_sysadmin)
     log_in_as(user)
     assert_difference "Institution.count" do
       post institutions_path,
@@ -79,14 +79,14 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   # destroy()
 
   test "destroy() redirects to login page for logged-out users" do
-    institution = institutions(:somewhere)
+    institution = institutions(:southwest)
     delete institution_path(institution)
     assert_redirected_to login_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    institution = institutions(:somewhere)
+    institution = institutions(:southwest)
     delete institution_path(institution)
     assert_response :forbidden
   end
@@ -102,7 +102,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() returns HTTP 302 for an existing institution" do
     log_in_as(users(:local_sysadmin))
-    institution = institutions(:somewhere)
+    institution = institutions(:southwest)
     delete institution_path(institution)
     assert_redirected_to institutions_path
   end
@@ -116,21 +116,21 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   # edit()
 
   test "edit() returns HTTP 403 for logged-out users" do
-    institution = institutions(:somewhere)
+    institution = institutions(:southwest)
     get edit_institution_path(institution), xhr: true
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    institution = institutions(:somewhere)
+    institution = institutions(:southwest)
     get edit_institution_path(institution), xhr: true
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
-    institution = institutions(:somewhere)
+    institution = institutions(:southwest)
     get edit_institution_path(institution), xhr: true
     assert_response :ok
   end
@@ -177,8 +177,8 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:uiuc_admin))
+  test "index() returns HTTP 200 for sysadmins" do
+    log_in_as(users(:local_sysadmin))
     get institutions_path
     assert_response :ok
   end
@@ -186,19 +186,19 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   # item_download_counts()
 
   test "item_download_counts() redirects to login page for logged-out users" do
-    get institution_item_download_counts_path(institutions(:somewhere))
+    get institution_item_download_counts_path(institutions(:southwest))
     assert_redirected_to login_path
   end
 
   test "item_download_counts() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get institution_item_download_counts_path(institutions(:somewhere))
+    get institution_item_download_counts_path(institutions(:southwest))
     assert_response :forbidden
   end
 
   test "item_download_counts() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
-    get institution_item_download_counts_path(institutions(:somewhere))
+    get institution_item_download_counts_path(institutions(:southwest))
     assert_response :ok
   end
 
@@ -216,7 +216,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "new() returns HTTP 200 for authorized users" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:local_sysadmin))
     get new_institution_path
     assert_response :ok
   end
@@ -224,19 +224,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   # show()
 
   test "show() redirects to login page for logged-out users" do
-    get institution_path(institutions(:somewhere))
+    get institution_path(institutions(:southwest))
     assert_redirected_to login_path
   end
 
-  test "show() returns HTTP 403 for unauthorized users" do
+  test "show() returns HTTP 403 for non-administrators of the same institution" do
     log_in_as(users(:uiuc))
-    get institution_path(institutions(:somewhere))
+    get institution_path(institutions(:uiuc))
     assert_response :forbidden
   end
 
-  test "show() returns HTTP 200 for authorized users" do
+  test "show() returns HTTP 403 for users of a different institution" do
+    log_in_as(users(:uiuc))
+    get institution_path(institutions(:southwest))
+    assert_response :forbidden
+  end
+
+  test "show() returns HTTP 200 for administrators of the same institution" do
     log_in_as(users(:uiuc_admin))
-    get institution_path(institutions(:somewhere))
+    get institution_path(institutions(:uiuc))
+    assert_response :ok
+  end
+
+  test "show() returns HTTP 200 for sysadmins of a different institution" do
+    log_in_as(users(:uiuc_sysadmin))
+    get institution_path(institutions(:southwest))
     assert_response :ok
   end
 
@@ -282,76 +294,76 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   # show_properties()
 
   test "show_properties() returns HTTP 403 for logged-out users" do
-    get institution_properties_path(institutions(:somewhere)), xhr: true
+    get institution_properties_path(institutions(:southwest)), xhr: true
     assert_response :forbidden
   end
 
   test "show_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get institution_properties_path(institutions(:somewhere)), xhr: true
+    get institution_properties_path(institutions(:southwest)), xhr: true
     assert_response :forbidden
   end
 
   test "show_properties() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
-    get institution_properties_path(institutions(:somewhere)), xhr: true
+    get institution_properties_path(institutions(:southwest)), xhr: true
     assert_response :ok
   end
 
   # show_statistics()
 
   test "show_statistics() returns HTTP 403 for logged-out users" do
-    get institution_statistics_path(institutions(:somewhere)), xhr: true
+    get institution_statistics_path(institutions(:southwest)), xhr: true
     assert_response :forbidden
   end
 
   test "show_statistics() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get institution_statistics_path(institutions(:somewhere)), xhr: true
+    get institution_statistics_path(institutions(:southwest)), xhr: true
     assert_response :forbidden
   end
 
   test "show_statistics() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
-    get institution_statistics_path(institutions(:somewhere)), xhr: true
+    get institution_statistics_path(institutions(:southwest)), xhr: true
     assert_response :ok
   end
 
   # show_users()
 
   test "show_users() returns HTTP 403 for logged-out users" do
-    get institution_users_path(institutions(:somewhere)), xhr: true
+    get institution_users_path(institutions(:southwest)), xhr: true
     assert_response :forbidden
   end
 
   test "show_users() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get institution_users_path(institutions(:somewhere)), xhr: true
+    get institution_users_path(institutions(:southwest)), xhr: true
     assert_response :forbidden
   end
 
   test "show_users() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
-    get institution_users_path(institutions(:somewhere)), xhr: true
+    get institution_users_path(institutions(:southwest)), xhr: true
     assert_response :ok
   end
 
   # statistics_by_range()
 
   test "statistics_by_range() redirects to login page for logged-out users" do
-    get institution_statistics_by_range_path(institutions(:somewhere))
+    get institution_statistics_by_range_path(institutions(:southwest))
     assert_redirected_to login_path
   end
 
   test "statistics_by_range() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get institution_statistics_by_range_path(institutions(:somewhere))
+    get institution_statistics_by_range_path(institutions(:southwest))
     assert_response :forbidden
   end
 
   test "statistics_by_range() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
-    get institution_statistics_by_range_path(institutions(:somewhere)), params: {
+    get institution_statistics_by_range_path(institutions(:southwest)), params: {
       from_year:  2008,
       from_month: 1,
       to_year:    2008,
@@ -363,33 +375,53 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to login page for logged-out users" do
-    institution = institutions(:somewhere)
+    institution = institutions(:southwest)
     patch institution_path(institution)
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    institution = institutions(:somewhere)
+    institution = institutions(:southwest)
     patch institution_path(institution)
     assert_response :forbidden
   end
 
-  test "update() updates an institution" do
-    user = users(:uiuc_admin)
+  test "update() updates an institution's properties when invoked by a
+  sysadmin" do
+    user = users(:uiuc_sysadmin)
     log_in_as(user)
     institution = user.institution
     patch institution_path(institution),
           xhr: true,
           params: {
             institution: {
-              name: "New Institution",
-              fqdn: "new.org",
+              name:   "New Institution",
+              fqdn:   "new.org",
               org_dn: "new"
             }
           }
     institution.reload
     assert_equal "New Institution", institution.name
+  end
+
+  test "update() does not update an institution's properties when invoked by an
+  institution admin" do
+    user = users(:uiuc_admin)
+    log_in_as(user)
+    institution      = user.institution
+    institution_name = institution.name
+    patch institution_path(institution),
+          xhr: true,
+          params: {
+            institution: {
+              name:   "New Institution",
+              fqdn:   "new.org",
+              org_dn: "new"
+            }
+          }
+    institution.reload
+    assert_equal institution_name, institution.name
   end
 
   test "update() returns HTTP 200" do
@@ -410,7 +442,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:local_sysadmin))
-    institution = institutions(:somewhere)
+    institution = institutions(:southwest)
     patch institution_path(institution),
           xhr: true,
           params: {

@@ -14,14 +14,23 @@ example:
   org_dn: o=Example University,dc=example,dc=edu
   default: false
 
-somewhere:
-  key: somewhere
-  fqdn: somewhere.edu
-  name: University of Somewhere
-  org_dn: o=University of Somewhere,dc=somewhere,dc=edu
+northeast:
+  key: northeast
+  fqdn: northeast.edu
+  name: Northeast University
+  org_dn: o=Northeast University,dc=northeast,dc=edu
   default: false
   administering_groups:
-    - somewhere_admins
+    - northeast_admins
+
+southwest:
+  key: southwest
+  fqdn: southwest.edu
+  name: Southwest University
+  org_dn: o=Southwest University,dc=southwest,dc=edu
+  default: false
+  administering_groups:
+    - southwest_admins
 
 uiuc:
   key: uiuc

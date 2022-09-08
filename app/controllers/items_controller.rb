@@ -130,10 +130,13 @@ class ItemsController < ApplicationController
 
   ##
   # Responds to `GET/POST /items/export`. GET returns the form HTML and POST
-  # processes the form data.
+  # processes the form data. TODO: split off the GET handler into show_export
   #
   def export
     authorize Item
+    @registered_elements = RegisteredElement.
+      where(institution: current_institution).
+      order(:label)
     if request.post?
       # Process elements input into an array of element names.
       elements = params[:elements].reject(&:blank?)
@@ -151,15 +154,19 @@ class ItemsController < ApplicationController
       handles         = handles_str.split(",")
       handle_suffixes = handles.map{ |h| h.split("/").last.strip }
       handles         = Handle.where(suffix: handle_suffixes)
-      collections     = handles.select{ |h| h.collection_id.present? }.map(&:collection)
-      units           = handles.select{ |h| h.unit_id.present? }.map(&:unit)
+      collections     = handles.select{ |h| h.collection_id.present? }.
+        map(&:collection).
+        select{ |c| c.institution == current_institution }
+      units           = handles.select{ |h| h.unit_id.present? }.
+        map(&:unit).
+        select{ |c| c.institution == current_institution }
       csv             = CsvExporter.new.export(units:       units,
                                                collections: collections,
                                                elements:    elements)
       send_data csv,
-                type: "text/csv",
+                type:        "text/csv",
                 disposition: "attachment",
-                filename: "export.csv"
+                filename:    "exported_items.csv"
     end
   end
 

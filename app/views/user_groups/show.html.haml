@@ -1,7 +1,8 @@
 - provide :body_id, "show_user_group"
 - provide :title, @user_group.name
 
-- can_edit = policy(@user_group).edit?
+- can_edit             = policy(@user_group).edit?
+- show_uiuc_dimensions = !@user_group.institution || @user_group.institution&.key == "uiuc"
 
 .btn-group.float-right{role: "group"}
   - if can_edit
@@ -38,7 +39,7 @@
                           "aria-selected": true} Usage
 
 .tab-content
-  #membership.tab-pane.fade.show.active{role: "tabpanel",
+  #membership.tab-pane.fade.show.active{role:              "tabpanel",
                                         "aria-labelledby": "membership-tab"}
     .row.mb-3
       .col-sm-6
@@ -46,28 +47,29 @@
           .card-body
             - if can_edit
               .float-right
-                %button.btn.btn-light.btn-sm.edit-ad-groups{"data-target": "#edit-ad-groups-modal",
-                                                            "data-toggle": "modal",
-                                                            "data-user-group-id": @user_group.id,
-                                                            type: "button"}
+                %button.btn.btn-light.btn-sm.edit-local-users{"data-target":        "#edit-local-users-modal",
+                                                              "data-toggle":        "modal",
+                                                              "data-user-group-id": @user_group.id,
+                                                              type:                 "button"}
                   %i.fa.fa-pencil-alt
                   Edit
-            %h4.card-title AD Groups
-            - if @ad_groups.any?
+            %h4.card-title Local Users
+            - if @local_users.any?
               %ul
-                - @ad_groups.each do |group|
-                  %li= group.name
+                - @local_users.each do |user|
+                  %li= link_to(user.name, user.becomes(User))
             - else
               %p None
+
       .col-sm-6
         .card
           .card-body
             - if can_edit
               .float-right
-                %button.btn.btn-light.btn-sm.edit-hosts{"data-target": "#edit-hosts-modal",
-                                                        "data-toggle": "modal",
+                %button.btn.btn-light.btn-sm.edit-hosts{"data-target":        "#edit-hosts-modal",
+                                                        "data-toggle":        "modal",
                                                         "data-user-group-id": @user_group.id,
-                                                        type: "button"}
+                                                        type:                 "button"}
                   %i.fa.fa-pencil-alt
                   Edit
             %h4.card-title Hosts
@@ -79,85 +81,6 @@
             - else
               %p None
 
-    .row.mb-3
-      .col-sm-6
-        .card
-          .card-body
-            - if can_edit
-              .float-right
-                %button.btn.btn-light.btn-sm.edit-local-users{"data-target": "#edit-local-users-modal",
-                                                              "data-toggle": "modal",
-                                                              "data-user-group-id": @user_group.id,
-                                                              type: "button"}
-                  %i.fa.fa-pencil-alt
-                  Edit
-            %h4.card-title Local Users
-            - if @local_users.any?
-              %ul
-                - @local_users.each do |user|
-                  %li= link_to(user.name, user.becomes(User))
-            - else
-              %p None
-      .col-sm-6
-        .card
-          .card-body
-            - if can_edit
-              .float-right
-                %button.btn.btn-light.btn-sm.edit-netid-users{"data-target": "#edit-netid-users-modal",
-                                                              "data-toggle": "modal",
-                                                              "data-user-group-id": @user_group.id,
-                                                              type: "button"}
-                  %i.fa.fa-pencil-alt
-                  Edit
-            %h4.card-title NetID Users
-            - if @netid_users.any?
-              %ul
-                - @netid_users.each do |user|
-                  %li
-                    - if user.name != user.netid
-                      = link_to("#{user.name} (#{user.netid})", user.becomes(User))
-                    - else
-                      = link_to(user.netid, user.becomes(User))
-            - else
-              %p None
-
-    .row.mb-3
-      .col-sm-6
-        .card
-          .card-body
-            - if can_edit
-              .float-right
-                %button.btn.btn-light.btn-sm.edit-departments{"data-target": "#edit-departments-modal",
-                                                              "data-toggle": "modal",
-                                                              "data-user-group-id": @user_group.id,
-                                                              type: "button"}
-                  %i.fa.fa-pencil-alt
-                  Edit
-            %h4.card-title Departments
-            - if @departments.any?
-              %ul
-                - @departments.each do |department|
-                  %li= department.name
-            - else
-              %p None
-      .col-sm-6
-        .card
-          .card-body
-            - if can_edit
-              .float-right
-                %button.btn.btn-light.btn-sm.edit-affiliations{"data-target": "#edit-affiliations-modal",
-                                                               "data-toggle": "modal",
-                                                               "data-user-group-id": @user_group.id,
-                                                               type: "button"}
-                  %i.fa.fa-pencil-alt
-                  Edit
-            %h4.card-title Affiliations
-            - if @affiliations.any?
-              %ul
-                - @affiliations.each do |affiliation|
-                  %li= affiliation.name
-            - else
-              %p None
     .row.mb-3
       .col-sm-6
         .card
@@ -178,6 +101,90 @@
                     %code= pattern.pattern
             - else
               %p None
+
+      .col-sm-6
+        - if show_uiuc_dimensions
+          .card
+            .card-body
+              - if can_edit
+                .float-right
+                  %button.btn.btn-light.btn-sm.edit-netid-users{"data-target": "#edit-netid-users-modal",
+                                                                "data-toggle": "modal",
+                                                                "data-user-group-id": @user_group.id,
+                                                                type: "button"}
+                    %i.fa.fa-pencil-alt
+                    Edit
+              %h4.card-title NetID Users
+              - if @netid_users.any?
+                %ul
+                  - @netid_users.each do |user|
+                    %li
+                      - if user.name != user.netid
+                        = link_to("#{user.name} (#{user.netid})", user.becomes(User))
+                      - else
+                        = link_to(user.netid, user.becomes(User))
+              - else
+                %p None
+
+    .row.mb-3
+      .col-sm-6
+        - if show_uiuc_dimensions
+          .card
+            .card-body
+              - if can_edit
+                .float-right
+                  %button.btn.btn-light.btn-sm.edit-departments{"data-target": "#edit-departments-modal",
+                                                                "data-toggle": "modal",
+                                                                "data-user-group-id": @user_group.id,
+                                                                type: "button"}
+                    %i.fa.fa-pencil-alt
+                    Edit
+              %h4.card-title Departments
+              - if @departments.any?
+                %ul
+                  - @departments.each do |department|
+                    %li= department.name
+              - else
+                %p None
+      .col-sm-6
+        - if show_uiuc_dimensions
+          .card
+            .card-body
+              - if can_edit
+                .float-right
+                  %button.btn.btn-light.btn-sm.edit-affiliations{"data-target": "#edit-affiliations-modal",
+                                                                 "data-toggle": "modal",
+                                                                 "data-user-group-id": @user_group.id,
+                                                                 type: "button"}
+                    %i.fa.fa-pencil-alt
+                    Edit
+              %h4.card-title Affiliations
+              - if @affiliations.any?
+                %ul
+                  - @affiliations.each do |affiliation|
+                    %li= affiliation.name
+              - else
+                %p None
+    .row.mb-3
+      .col-sm-6
+        - if show_uiuc_dimensions
+          .card
+            .card-body
+              - if can_edit
+                .float-right
+                  %button.btn.btn-light.btn-sm.edit-ad-groups{"data-target": "#edit-ad-groups-modal",
+                                                              "data-toggle": "modal",
+                                                              "data-user-group-id": @user_group.id,
+                                                              type: "button"}
+                    %i.fa.fa-pencil-alt
+                    Edit
+              %h4.card-title AD Groups
+              - if @ad_groups.any?
+                %ul
+                  - @ad_groups.each do |group|
+                    %li= group.name
+              - else
+                %p None
 
   #usage.tab-pane.fade{role: "tabpanel",
                        "aria-labelledby": "usage-tab"}

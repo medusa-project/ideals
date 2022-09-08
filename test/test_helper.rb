@@ -68,6 +68,12 @@ class ActiveSupport::TestCase
     delete logout_path
   end
 
+  def make_sysadmin(user)
+    user.user_groups << user_groups(:sysadmin)
+    user.save!
+    user
+  end
+
   def clear_message_queue
     AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
   end

@@ -1,3 +1,10 @@
+- provide :body_id, "list_users"
+- provide :title, "Users"
+
+%h1 All Users
+
+= user_filter_form
+
 - pagination = paginate(count: @count, page: @current_page, per_page: @window, permitted_params: @permitted_params)
 
 .row.justify-content-md-center
@@ -22,3 +29,6 @@
 .row.justify-content-md-center
   .col-md-auto
     = pagination
+
+
+= render partial: "invitees/add_modal", locals: { invitee: @new_invitee }

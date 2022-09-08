@@ -12,9 +12,9 @@
 # * `input_type`       One of the [InputType] constant values.
 # * `label`            Element label. Often overrides {name} for end-user
 #                      display.
-# * `name`             Element name.
+# * `name`             Element name. Must be unique within an institution.
 # * `updated_at`       Managed by ActiveRecord.
-# * `uri`              Linked Data URI.
+# * `uri`              Linked Data URI. Must be unique within an institution.
 # * `vocabulary_key`   One of the vocabulary key constant values in
 #                      [Vocabulary].
 #
@@ -50,11 +50,9 @@ class RegisteredElement < ApplicationRecord
 
   # label
   validates_presence_of :label
-  validates_uniqueness_of :label
 
   # name
   validates_format_of :name, with: /\A[A-Za-z0-9_\-:]+\z/, allow_blank: false
-  validates_uniqueness_of :name
 
   ##
   # @param name [String] Element name.

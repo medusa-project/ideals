@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class MetadataProfilePolicy < ApplicationPolicy
-  attr_reader :user, :role, :metadata_profile
+  attr_reader :user, :institution, :role, :metadata_profile
 
   ##
   # @param request_context [RequestContext]
@@ -9,6 +9,7 @@ class MetadataProfilePolicy < ApplicationPolicy
   #
   def initialize(request_context, metadata_profile)
     @user             = request_context&.user
+    @institution      = request_context&.institution
     @role             = request_context&.role_limit
     @metadata_profile = metadata_profile
   end
@@ -18,7 +19,7 @@ class MetadataProfilePolicy < ApplicationPolicy
   end
 
   def create
-    effective_sysadmin(user, role)
+    effective_institution_admin(user, institution, role)
   end
 
   def destroy

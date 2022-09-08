@@ -311,6 +311,10 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert response.body.start_with?("id,")
   end
 
+  test "export() via POST does not include content from other institutions" do
+    # TODO: write this
+  end
+
   # file_navigator()
 
   test "file_navigator() returns HTTP 200 for XHR requests" do

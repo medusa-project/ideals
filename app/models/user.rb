@@ -96,16 +96,6 @@ class User < ApplicationRecord
   end
 
   ##
-  # @return [Boolean] Whether the instance is an administrator of any
-  #                   [Institution].
-  # @see institution_admin?
-  # @see effective_institution_admin?
-  #
-  def any_institution_admin?
-    self.administering_institutions.count > 0
-  end
-
-  ##
   # @param user_group [UserGroup]
   # @return [Boolean]
   #
@@ -202,7 +192,6 @@ class User < ApplicationRecord
   # @param institution [Institution]
   # @return [Boolean] Whether the instance is a direct administrator of the
   #                   given institution.
-  # @see any_institution_admin?
   #
   def institution_admin?(institution)
     return false unless institution
