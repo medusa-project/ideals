@@ -168,7 +168,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   # 4.2 Identify
   test "Identify returns correct information" do
     get "/oai-pmh", params: { verb: "Identify" }
-    assert_select "Identify > repositoryName", "IDEALS @ Illinois"
+    assert_select "Identify > repositoryName", "IDEALS @ #{institutions(:uiuc).name}"
     assert_select "Identify > baseURL", "http://www.example.com/oai-pmh"
     assert_select "Identify > protocolVersion", "2.0"
     items = Item.non_embargoed.order(created_at: :desc).limit(1)
