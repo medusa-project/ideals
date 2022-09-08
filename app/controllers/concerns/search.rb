@@ -58,8 +58,8 @@ module Search
           term = nil if term.respond_to?(:keys) && term[:year].blank? &&
             term[:from_year].blank? && term[:to_year].blank?
           if term.present?
-            field = all_elements.find{ |e| e.name == e_name}.indexed_field
-            relation.multi_query(field, term)
+            field = all_elements.find{ |e| e.name == e_name}&.indexed_field
+            relation.multi_query(field, term) if field
           end
         end
         # Full text
