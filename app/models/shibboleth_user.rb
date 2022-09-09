@@ -71,7 +71,8 @@ class ShibbolethUser < User
   def belongs_to_ad_group?(group)
     group = group.to_s
     if Rails.env.development? || Rails.env.test?
-      return self.netid.include?("sysadmin") && group.include?("sysadmin") # TODO: redesign how this works
+      groups = Configuration.instance.ad.dig(:groups, self.uid)
+      return groups&.include?(group)
     end
     user = UiucLibAd::Entity.new(entity_cn: self.netid)
     begin
