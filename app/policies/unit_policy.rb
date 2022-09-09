@@ -39,8 +39,7 @@ class UnitPolicy < ApplicationPolicy
   def create
     if user
       return AUTHORIZED_RESULT if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
-      return AUTHORIZED_RESULT if unit != Unit &&
-        role >= Role::INSTITUTION_ADMINISTRATOR &&
+      return AUTHORIZED_RESULT if role >= Role::INSTITUTION_ADMINISTRATOR &&
         user.institution_admin?(user.institution)
     end
     { authorized: false,
