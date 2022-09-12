@@ -517,13 +517,13 @@ class AbstractRelation
 
     if @response_json['hits']
       @result_count = @response_json['hits']['total']['value']
-
       last_hit = @response_json['hits']['hits'].last
       @last_sort_value = last_hit ? last_hit['sort'] : nil
     else
       @result_count = 0
       raise IOError, "#{@response_json['error']['type']}: "\
-          "#{@response_json['error']['reason']}"
+          "#{@response_json['error']['reason']}\n"\
+          "Request: #{JSON.generate(@request_json)}"
     end
 
     @loaded = true
