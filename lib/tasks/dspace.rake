@@ -80,8 +80,10 @@ namespace :dspace do
             `scp #{args[:dspace_ssh_user]}@#{DSPACE_HOSTNAME}:#{remote_path} #{local_path}`
 
             # Upload it to the application S3 bucket
-            bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
-                                                              bitstream.original_filename)
+            bitstream.permanent_key = Bitstream.permanent_key(
+              institution_key: bitstream.institution.key,
+              item_id:         bitstream.item.id,
+              filename:        bitstream.original_filename)
             bitstream.upload_to_permanent(local_path)
             begin
               bitstream.save!
@@ -116,8 +118,10 @@ namespace :dspace do
           `scp #{args[:dspace_ssh_user]}@#{DSPACE_HOSTNAME}:#{remote_path} #{local_path}`
 
           # Upload it to the application S3 bucket
-          bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
-                                                            bitstream.original_filename)
+          bitstream.permanent_key = Bitstream.permanent_key(
+            institution_key: bitstream.item.institution.key,
+            item_id:         bitstream.item.id,
+            filename:        bitstream.original_filename)
           bitstream.upload_to_permanent(local_path)
           bitstream.save!
           # Delete it from the temp directory
@@ -144,8 +148,10 @@ namespace :dspace do
           `scp #{args[:dspace_ssh_user]}@#{DSPACE_HOSTNAME}:#{remote_path} #{local_path}`
 
           # Upload it to the application S3 bucket
-          bitstream.permanent_key = Bitstream.permanent_key(bitstream.item.id,
-                                                            bitstream.original_filename)
+          bitstream.permanent_key = Bitstream.permanent_key(
+            institution_key: item.institution.key,
+            item_id:         item.id,
+            filename:        bitstream.original_filename)
           bitstream.upload_to_permanent(local_path)
           bitstream.save!
           unless item.handle

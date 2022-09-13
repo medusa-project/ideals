@@ -275,8 +275,11 @@ class SafImporter
                        "#{content_file_path} does not exist: #{file_path}"
       end
 
+      permanent_key = Bitstream.permanent_key(institution_key: item.institution.key,
+                                              item_id:         item.id,
+                                              filename:        filename)
       bs = Bitstream.create(item:              item,
-                            permanent_key:     Bitstream.permanent_key(item.id, filename),
+                            permanent_key:     permanent_key,
                             original_filename: filename,
                             bundle:            bundle,
                             primary:           primary,
@@ -331,9 +334,13 @@ class SafImporter
                        "#{file_key}"
       end
 
-      length = client.head_object(bucket: bucket, key: file_key).content_length
+      length        = client.head_object(bucket: bucket,
+                                         key: file_key).content_length
+      permanent_key = Bitstream.permanent_key(institution_key: item.institution.key,
+                                              item_id:         item.id,
+                                              filename:        filename)
       bs = Bitstream.create(item:              item,
-                            permanent_key:     Bitstream.permanent_key(item.id, filename),
+                            permanent_key:     permanent_key,
                             original_filename: filename,
                             bundle:            bundle,
                             primary:           primary,

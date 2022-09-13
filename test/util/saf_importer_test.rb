@@ -91,7 +91,9 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_equal File.size(File.join(PACKAGES_PATH, "valid_item", "item_1", "hello.txt")),
                  bs.length
     assert_equal Bitstream::Bundle::CONTENT, bs.bundle
-    assert_equal Bitstream.permanent_key(bs.item_id, bs.original_filename),
+    assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,
+                                         item_id:         bs.item_id,
+                                         filename:        bs.original_filename),
                  bs.permanent_key
     assert_equal "Hello world", bs.description
     assert bs.primary
@@ -101,7 +103,9 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_equal File.size(File.join(PACKAGES_PATH, "valid_item", "item_1", "license.txt")),
                  bs.length
     assert_equal Bitstream::Bundle::LICENSE, bs.bundle
-    assert_equal Bitstream.permanent_key(bs.item_id, bs.original_filename),
+    assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,
+                                         item_id:         bs.item_id,
+                                         filename:        bs.original_filename),
                  bs.permanent_key
     assert_equal "License file", bs.description
     assert !bs.primary
@@ -255,7 +259,9 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_equal File.size(File.join(PACKAGES_PATH, "valid_item", "item_1", "hello.txt")),
                  bs.length
     assert_equal Bitstream::Bundle::CONTENT, bs.bundle
-    assert_equal Bitstream.permanent_key(bs.item_id, bs.original_filename),
+    assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,
+                                         item_id:         bs.item_id,
+                                         filename:        bs.original_filename),
                  bs.permanent_key
     assert_equal "Hello world", bs.description
     assert bs.primary
@@ -265,7 +271,9 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_equal File.size(File.join(PACKAGES_PATH, "valid_item", "item_1", "license.txt")),
                  bs.length
     assert_equal Bitstream::Bundle::LICENSE, bs.bundle
-    assert_equal Bitstream.permanent_key(bs.item_id, bs.original_filename),
+    assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,
+                                         item_id:         bs.item_id,
+                                         filename:        bs.original_filename),
                  bs.permanent_key
     assert_equal "License file", bs.description
     assert !bs.primary

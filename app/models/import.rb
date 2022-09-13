@@ -120,7 +120,10 @@ class Import < ApplicationRecord
   #
   def root_key_prefix
     raise "Instance is not persisted" if self.id.blank?
-    "imports/#{self.id}/"
+    [Bitstream::INSTITUTION_KEY_PREFIX,
+     self.institution.key,
+     "imports",
+     self.id].join("/")
   end
 
   ##

@@ -352,7 +352,9 @@ class ItemTest < ActiveSupport::TestCase
     filename = "escher_lego.jpg"
     fixture  = file_fixture(filename)
     @instance.bitstreams.each do |bs|
-      bs.update!(permanent_key: Bitstream.permanent_key(@instance.id, filename))
+      bs.update!(permanent_key: Bitstream.permanent_key(institution_key: @instance.institution.key,
+                                                        item_id:         @instance.id,
+                                                        filename:        filename))
       bs.upload_to_permanent(fixture)
     end
 

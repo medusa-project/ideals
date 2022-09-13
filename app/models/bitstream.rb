@@ -8,9 +8,9 @@
 # # Storage locations
 #
 # When a file is first uploaded, it is stored in the application S3 bucket
-# under {STAGING_KEY_PREFIX}, and {staging_key} is set on its corresponding
-# instance. When it is approved, it is moved to a location under
-# {PERMANENT_KEY_PREFIX}, and {permanent_key} is set on its corresponding
+# under `institutions/:key/staging/`, and {staging_key} is set on its
+# corresponding instance. When it is approved, it is moved to a location under
+# `institutions/:key/storage/`, and {permanent_key} is set on its corresponding
 # instance. Also, a message is sent to Medusa to ingest it into the IDEALS file
 # group. Upon receipt of a success message, {medusa_key} and {medusa_uuid} are
 # set on its corresponding instance.
@@ -125,16 +125,7 @@ class Bitstream < ApplicationRecord
 
   LOGGER = CustomLogger.new(Bitstream)
 
-  ##
-  # Bitstreams are initially uploaded to a location under this key prefix.
-  #
-  STAGING_KEY_PREFIX = "uploads"
-
-  ##
-  # Bitstreams are moved under this key prefix when they are approved.
-  # Medusa must be configured to monitor this location.
-  #
-  PERMANENT_KEY_PREFIX = "storage"
+  INSTITUTION_KEY_PREFIX = "institutions"
 
   ##
   # Contains constants corresponding to the allowed values of {bundle}.
@@ -259,27 +250,33 @@ class Bitstream < ApplicationRecord
   #
   def self.new_in_staging(item:, filename:, length:)
     Bitstream.new(item:              item,
-                  staging_key:       staging_key(item.id, filename),
+                  staging_key:       staging_key(institution_key: item.institution.key,
+                                                 item_id:         item.id,
+                                                 filename:        filename),
                   original_filename: filename,
                   length:            length)
   end
 
   ##
+  # @param institution_key [String]
   # @param item_id [Integer]
   # @param filename [String]
   # @return [String]
   #
-  def self.permanent_key(item_id, filename)
-    [PERMANENT_KEY_PREFIX, item_id, filename].join("/")
+  def self.permanent_key(institution_key:, item_id:, filename:)
+    [INSTITUTION_KEY_PREFIX, institution_key, "storage", item_id,
+     filename].join("/")
   end
 
   ##
+  # @param institution_key [String]
   # @param item_id [Integer]
   # @param filename [String]
   # @return [String]
   #
-  def self.staging_key(item_id, filename)
-    [STAGING_KEY_PREFIX, item_id, filename].join("/")
+  def self.staging_key(institution_key:, item_id:, filename:)
+    [INSTITUTION_KEY_PREFIX, institution_key, "uploads", item_id,
+     filename].join("/")
   end
 
   ##
@@ -517,6 +514,13 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # @return [Institution] The institution to which the instance belongs.
+  #
+  def institution
+    self.item.institution
+  end
+
+  ##
   # Shortcut to accessing the first media type of the {format}.
   #
   # @return [String, nil]
@@ -540,8 +544,9 @@ class Bitstream < ApplicationRecord
   def move_into_permanent_storage
     client        = S3Client.instance
     bucket        = ::Configuration.instance.storage[:bucket]
-    permanent_key = self.class.permanent_key(self.item_id,
-                                             self.original_filename)
+    permanent_key = self.class.permanent_key(institution_key: self.institution.key,
+                                             item_id:         self.item_id,
+                                             filename:        self.original_filename)
     transaction do
       client.copy_object(copy_source: "/#{bucket}/#{self.staging_key}", # source bucket+key
                          bucket:      bucket,                           # destination bucket
@@ -665,7 +670,7 @@ class Bitstream < ApplicationRecord
   end
 
   def derivative_key_prefix
-    "derivatives/#{self.id}"
+    [INSTITUTION_KEY_PREFIX, self.institution.key, "derivatives", self.id].join("/")
   end
 
   def ensure_primary_uniqueness

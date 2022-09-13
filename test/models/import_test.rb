@@ -76,14 +76,16 @@ class ImportTest < ActiveSupport::TestCase
     end
     prefixes = @instance.item_key_prefixes
     assert_equal 2, prefixes.count
-    assert_equal "imports/#{@instance.id}/item1", prefixes[0]
-    assert_equal "imports/#{@instance.id}/item2", prefixes[1]
+    assert_equal "institutions/#{@instance.institution.key}/imports/#{@instance.id}/item1",
+                 prefixes[0]
+    assert_equal "institutions/#{@instance.institution.key}/imports/#{@instance.id}/item2",
+                 prefixes[1]
   end
 
   # object_key()
 
   test "object_key() returns a correct value" do
-    assert_equal "imports/#{@instance.id}/item1/cats.jpg",
+    assert_equal "institutions/#{@instance.institution.key}/imports/#{@instance.id}/item1/cats.jpg",
                  @instance.object_key("/item1/cats.jpg")
   end
 
@@ -127,7 +129,8 @@ class ImportTest < ActiveSupport::TestCase
   # root_key_prefix()
 
   test "root_key_prefix() returns a correct value" do
-    assert_equal "imports/#{@instance.id}/", @instance.root_key_prefix
+    assert_equal "institutions/#{@instance.institution.key}/imports/#{@instance.id}/",
+                 @instance.root_key_prefix
   end
 
   # save()
