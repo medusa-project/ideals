@@ -182,6 +182,15 @@ module Indexed
     end
 
     ##
+    # @return [Hash] The currently indexed document.
+    #
+    def indexed_document
+      index ||= Configuration.instance.elasticsearch[:index]
+      ElasticsearchClient.instance.get_document(index,
+                                                self.index_id)
+    end
+
+    ##
     # @param index [String] Index name. If omitted, the default index is used.
     # @return [void]
     #

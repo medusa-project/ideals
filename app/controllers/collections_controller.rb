@@ -458,7 +458,7 @@ class CollectionsController < ApplicationController
       institution(current_institution).
       aggregations(false).
       filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
-      filter(Item::IndexFields::COLLECTIONS, params[:id]).
+      filter(Item::IndexFields::COLLECTIONS, params[:id].gsub(/[^\d]/, "")). # TODO: why does this id sometimes arrive with a comma suffix?
       order(Item::IndexFields::CREATED).
       start(start).
       limit(limit)

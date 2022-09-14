@@ -55,6 +55,7 @@ dc_date_issued:
   name:             dc:date:issued
   label:            Date Issued
   uri:              http://purl.org/dc/dateIssued
+  input_type:       <%= RegisteredElement::InputType::DATE %>
   highwire_mapping:
   scope_note:
 
@@ -63,6 +64,7 @@ dc_date_submitted:
   name:             dc:date:submitted
   label:            Date Submitted
   uri:              http://purl.org/dc/dateSubmitted
+  input_type:       <%= RegisteredElement::InputType::DATE %>
   highwire_mapping:
   scope_note:
 

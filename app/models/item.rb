@@ -366,10 +366,18 @@ class Item < ApplicationRecord
     doc[IndexFields::UNITS]              = units.map(&:id)
 
     # Index ascribed metadata elements into dynamic fields.
-    self.elements.each do |element|
-      field = element.registered_element.indexed_field
-      doc[field] = [] unless doc[field]&.respond_to?(:each)
-      doc[field] << element.string[0..ElasticsearchClient::MAX_KEYWORD_FIELD_LENGTH]
+    self.elements.each do |asc_e|
+      reg_e       = asc_e.registered_element
+      field       = reg_e.indexed_field
+      # The fields are all arrays in order to support multiple values.
+      doc[field]  = [] unless doc[field]&.respond_to?(:each)
+      # Most element values are indexed as-is. But values of date-type
+      # registered elements need to get normalized as ISO 8601.
+      if reg_e.input_type == RegisteredElement::InputType::DATE
+        doc[field] << asc_e.date&.iso8601 || asc_e.string
+      else
+        doc[field] << asc_e.string[0..ElasticsearchClient::MAX_KEYWORD_FIELD_LENGTH]
+      end
     end
 
     doc
