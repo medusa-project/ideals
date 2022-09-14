@@ -202,6 +202,14 @@ class ItemTest < ActiveSupport::TestCase
                  doc[title.registered_element.indexed_field]
   end
 
+  test "as_indexed_json() converts date-type element strings to ISO 8601" do
+    reg_e = registered_elements(:dc_date_issued)
+    @instance.elements.build(registered_element: reg_e,
+                             string:             "October 2015").save
+    doc = @instance.as_indexed_json
+    assert_equal [Date.parse("October 2015").iso8601], doc[reg_e.indexed_field]
+  end
+
   # assign_handle()
 
   test "assign_handle() does nothing if the instance already has a handle" do
