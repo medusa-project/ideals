@@ -8,6 +8,12 @@ class CsvExporterTest < ActiveSupport::TestCase
 
   # export()
 
+  test "export() raises an error when no units or collections are provided" do
+    assert_raises ArgumentError do
+      @instance.export
+    end
+  end
+
   test "export() respects the units argument" do
     unit       = units(:unit1)
     all_units  = [unit]

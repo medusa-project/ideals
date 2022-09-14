@@ -17,6 +17,9 @@ class CsvExporter
   # @return [String] CSV string.
   #
   def export(units: [], collections: [], elements: [])
+    if units.empty? && collections.empty?
+      raise ArgumentError, "No units or collections specified."
+    end
     if elements.empty?
       elements = MetadataProfile.default.elements.map(&:name)
     end
