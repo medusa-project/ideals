@@ -2,10 +2,8 @@ shib_opts = YAML.load_file(File.join(Rails.root, 'config', 'shibboleth.yml'))[Ra
 
 OmniAuth.config.logger = Rails.logger
 
-Rails.application.config.active_record.yaml_column_permitted_classes = [
-  OmniAuth::AuthHash,
-  OmniAuth::AuthHash::InfoHash
-]
+# N.B.: it may be necessary to add OmniAuth::AuthHash and perhaps other classes
+# to Rails.application.config.active_record.yaml_column_permitted_classes.
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   # The identity provider is available in all environments.
