@@ -27,11 +27,19 @@ namespace :storage do
     end
 
     Bitstream.uncached do
-      Bitstream.where("staging_key IS NOT NULL AND staging_key NOT LIKE ?", "institutions/%").find_each do |bs|
+      staging_bitstreams   = Bitstream.where("staging_key IS NOT NULL AND staging_key NOT LIKE ?", "institutions/%")
+      permanent_bitstreams = Bitstream.where("permanent_key IS NOT NULL AND permanent_key NOT LIKE ?", "institutions/%")
+      progress             = Progress.new(staging_bitstreams.count + permanent_bitstreams.count)
+      i                    = 0
+      staging_bitstreams.find_each do |bs|
         bs.update!(staging_key: "#{Bitstream::INSTITUTION_KEY_PREFIX}/uiuc/#{bs.staging_key}")
+        i += 1
+        progress.report(i, "Updating database bitstreams")
       end
-      Bitstream.where("permanent_key IS NOT NULL AND permanent_key NOT LIKE ?", "institutions/%").find_each do |bs|
-        bs.update!(staging_key: "#{Bitstream::INSTITUTION_KEY_PREFIX}/uiuc/#{bs.permanent_key}")
+      permanent_bitstreams.find_each do |bs|
+        bs.update!(permanent_key: "#{Bitstream::INSTITUTION_KEY_PREFIX}/uiuc/#{bs.permanent_key}")
+        i += 1
+        progress.report(i, "Updating database bitstreams")
       end
     end
   end
