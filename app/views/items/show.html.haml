@@ -10,9 +10,7 @@
     %i.fa.fa-exclamation-triangle
     This item has been rejected.
 
-%h1
-  = icon_for(@item)
-  = @item.title
+%h1= @item.title
 
 %h4.creators= @item.elements.select{ |e| e.name == "dc:creator" }.map(&:string).join("; ")
 
