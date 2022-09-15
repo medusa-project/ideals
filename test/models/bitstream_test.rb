@@ -96,8 +96,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # permanent_key()
 
   test "permanent_key() returns a correct key" do
-    expected = ["institutions", "test", Bitstream::PERMANENT_KEY_PREFIX, 30,
-                "cats.jpg"].join("/")
+    expected = ["institutions", "test", "storage", 30, "cats.jpg"].join("/")
     assert_equal expected,
                  Bitstream.permanent_key(institution_key: "test",
                                          item_id:         30,
@@ -107,8 +106,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # staging_key()
 
   test "staging_key() returns a correct key" do
-    expected = ["institutions", "test", Bitstream::STAGING_KEY_PREFIX, 30,
-                "cats.jpg"].join("/")
+    expected = ["institutions", "test", "uploads", 30, "cats.jpg"].join("/")
     assert_equal expected,
                  Bitstream.staging_key(institution_key: "test",
                                        item_id:         30,
@@ -972,7 +970,7 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance.item.assign_handle
     @instance.update!(permanent_key: ["institutions",
                                       @instance.institution.key,
-                                      Bitstream::PERMANENT_KEY_PREFIX,
+                                      "storage",
                                       "new_key"].join("/"))
     AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
       assert_not_nil message
@@ -1070,7 +1068,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "upload_to_permanent() uploads a file to the application bucket" do
     begin
       fixture = file_fixture("escher_lego.jpg")
-      key     = ["institutions", "uiuc", Bitstream::PERMANENT_KEY_PREFIX, "file"].join("/")
+      key     = %w[institutions uiuc storage file].join("/")
       @instance.update!(permanent_key: key)
       @instance.upload_to_permanent(fixture)
 

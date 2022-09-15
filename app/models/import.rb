@@ -123,7 +123,7 @@ class Import < ApplicationRecord
     [Bitstream::INSTITUTION_KEY_PREFIX,
      self.institution.key,
      "imports",
-     self.id].join("/")
+     self.id].join("/") + "/"
   end
 
   ##
