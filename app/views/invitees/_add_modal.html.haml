@@ -30,9 +30,4 @@
             = f.text_field :email, class: "form-control"
 
           .form-group
-            = f.label :institution_id, "Institution (optional)"
-            = f.select :institution_id, options_for_select(Institution.all.order(:name).map{ |i| [i.name, i.id] }),
-                       { include_blank: true }, { class: "custom-select" }
-
-          .form-group
             = f.submit "Send Invite", class: "btn btn-primary"

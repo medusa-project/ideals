@@ -40,7 +40,8 @@ class InviteesController < ApplicationController
   # @see create_unsolicited
   #
   def create
-    @invitee = Invitee.new(invitee_params)
+    @invitee             = Invitee.new(invitee_params)
+    @invitee.institution = current_institution
     authorize(@invitee)
     begin
       ActiveRecord::Base.transaction do
@@ -67,7 +68,8 @@ class InviteesController < ApplicationController
   # @see create
   #
   def create_unsolicited
-    @invitee = Invitee.new(invitee_params)
+    @invitee             = Invitee.new(invitee_params)
+    @invitee.institution = current_institution
     authorize(@invitee)
     begin
       ActiveRecord::Base.transaction do
@@ -175,8 +177,7 @@ class InviteesController < ApplicationController
   end
 
   def invitee_params
-    params.require(:invitee).permit(:email, :institution_id, :inviting_user_id,
-                                    :note)
+    params.require(:invitee).permit(:email, :inviting_user_id, :note)
   end
 
   def set_invitee
