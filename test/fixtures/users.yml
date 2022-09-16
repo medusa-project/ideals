@@ -7,139 +7,139 @@
 #
 
 local_sysadmin:
-  type: LocalUser
-  uid: admin@example.edu
-  name: admin
-  email: admin@example.edu
-  phone: (888) 555-1234
-  identity: local_sysadmin
+  type:        LocalUser
+  uid:         admin@example.edu
+  name:        admin
+  email:       admin@example.edu
+  phone:       (888) 555-1234
+  identity:    local_sysadmin
   institution: example
   user_groups:
     - sysadmin
 
 collection1_collection1_manager:
-  type: LocalUser
-  uid: collection1_collection1_manager@example.edu
-  name: Collection1 Collection1 Manager
-  email: collection1_collection1_manager@example.edu
-  phone: (888) 555-1234
-  identity: collection1_collection1_manager
+  type:        LocalUser
+  uid:         collection1_collection1_manager@example.edu
+  name:        Collection1 Collection1 Manager
+  email:       collection1_collection1_manager@example.edu
+  phone:       (888) 555-1234
+  identity:    collection1_collection1_manager
   institution: example
 
 collection1_collection1_submitter:
-  type: LocalUser
-  uid: phil@example.edu
-  name: phil
-  email: phil@example.edu
-  phone: (888) 555-1234
-  identity: collection1_collection1_submitter
+  type:        LocalUser
+  uid:         phil@example.edu
+  name:        phil
+  email:       phil@example.edu
+  phone:       (888) 555-1234
+  identity:    collection1_collection1_submitter
   institution: example
 
 norights:
-  type: LocalUser
-  identity: norights
-  uid: norights@example.edu
-  name: I have no rights
-  email: norights@example.edu
-  phone: (888) 555-1234
+  type:        LocalUser
+  identity:    norights
+  uid:         norights@example.edu
+  name:        I have no rights
+  email:       norights@example.edu
+  phone:       (888) 555-1234
   institution: example
 
 norights2:
-  type: LocalUser
-  identity: norights2
-  uid: norights2@example.edu
-  name: I have no rights
-  email: norights2@example.edu
-  phone: (888) 555-1234
+  type:        LocalUser
+  identity:    norights2
+  uid:         norights2@example.edu
+  name:        I have no rights
+  email:       norights2@example.edu
+  phone:       (888) 555-1234
   institution: example
 
 uiuc:
-  type: ShibbolethUser
-  uid: shib@illinois.edu
-  name: Shib Boleth, Esq.
-  email: shib@illinois.edu
-  phone: (888) 555-1234
-  org_dn: <%= DspaceImporter::UIUC_ORG_DN %>
+  type:        ShibbolethUser
+  uid:         shib@illinois.edu
+  name:        Shib Boleth, Esq.
+  email:       shib@illinois.edu
+  phone:       (888) 555-1234
+  org_dn:      <%= DspaceImporter::UIUC_ORG_DN %>
   institution: uiuc
 
 uiuc_admin:
-  type: ShibbolethUser
-  uid: instadmin@illinois.edu
-  name: UIUC Institution Admin
-  email: instadmin@illinois.edu
-  phone: (888) 555-1235
-  org_dn: <%= DspaceImporter::UIUC_ORG_DN %>
+  type:        ShibbolethUser
+  uid:         instadmin@illinois.edu
+  name:        UIUC Institution Admin
+  email:       instadmin@illinois.edu
+  phone:       (888) 555-1235
+  org_dn:      <%= DspaceImporter::UIUC_ORG_DN %>
   institution: uiuc
   user_groups:
     - uiuc_admins
 
 uiuc_sysadmin:
-  type: ShibbolethUser
-  uid: sysadmin@illinois.edu
-  name: UIUC Sysadmin
-  email: sysadmin@illinois.edu
-  phone: (888) 555-1235
-  org_dn: <%= DspaceImporter::UIUC_ORG_DN %>
+  type:        ShibbolethUser
+  uid:         sysadmin@illinois.edu
+  name:        UIUC Sysadmin
+  email:       sysadmin@illinois.edu
+  phone:       (888) 555-1235
+  org_dn:      <%= DspaceImporter::UIUC_ORG_DN %>
   institution: uiuc
   user_groups:
     - sysadmin
 
 northeast:
-  type: LocalUser
-  uid: user@northeast.edu
-  name: Northeast University Normal User
-  email: name@northeast.edu
-  phone: (888) 555-1234
-  org_dn: o=Northeast University,dc=southwest,dc=edu
+  type:        LocalUser
+  uid:         user@northeast.edu
+  name:        Northeast University Normal User
+  email:       user@northeast.edu
+  phone:       (888) 555-1234
+  org_dn:      o=Northeast University,dc=southwest,dc=edu
   institution: northeast
 
 northeast_admin:
-  type: LocalUser
-  uid: admin@northeast.edu
-  name: Northeast.edu Institution Administrator
-  email: admin@northeast.edu
-  phone: (888) 555-1235
-  org_dn: o=Northeast University,dc=northeast,dc=edu
+  type:        LocalUser
+  uid:         admin@northeast.edu
+  name:        Northeast.edu Institution Administrator
+  email:       admin@northeast.edu
+  phone:       (888) 555-1235
+  org_dn:      o=Northeast University,dc=northeast,dc=edu
   institution: northeast
   user_groups:
     - northeast_admins
 
 southwest:
-  type: LocalUser
-  uid: user@southwest.edu
-  name: Southwest University Normal User
-  email: name@southwest.edu
-  phone: (888) 555-1234
-  org_dn: o=Southwest University,dc=southwest,dc=edu
+  type:        LocalUser
+  uid:         user@southwest.edu
+  name:        Southwest University Normal User
+  email:       name@southwest.edu
+  phone:       (888) 555-1234
+  org_dn:      o=Southwest University,dc=southwest,dc=edu
   institution: southwest
 
 southwest_admin:
-  type: LocalUser
-  uid: admin@southwest.edu
-  name: Southwest University Institution Administrator
-  email: admin@southwest.edu
-  phone: (888) 555-1235
-  org_dn: o=Southwest University,dc=southwest,dc=edu
+  type:        LocalUser
+  uid:         admin@southwest.edu
+  name:        Southwest University Institution Administrator
+  email:       admin@southwest.edu
+  phone:       (888) 555-1235
+  org_dn:      o=Southwest University,dc=southwest,dc=edu
   institution: southwest
   user_groups:
     - southwest_admins
 
 unit1_admin:
-  type: LocalUser
-  uid: unit1_admin@example.edu
-  name: Unit1 Admin
-  email: unit1_admin@example.edu
-  phone: (888) 555-1234
-  identity: unit1_admin
-  org_dn: o=Example University,dc=example,dc=edu
+  type:        LocalUser
+  uid:         unit1_admin@example.edu
+  name:        Unit1 Admin
+  email:       unit1_admin@example.edu
+  phone:       (888) 555-1234
+  identity:    unit1_admin
+  org_dn:      o=Example University,dc=example,dc=edu
   institution: example
 
 unit1_unit2_unit1_admin:
-  type: LocalUser
-  uid: unit1_unit2_unit1_admin@example.edu
-  name: Unit1 Unit2 Unit1 Admin
-  email: unit1_unit2_unit1_admin@example.edu
-  phone: (888) 555-1234
-  identity: unit1_unit2_unit1_admin
-  org_dn: o=Example University,dc=example,dc=edu
+  type:        LocalUser
+  uid:         unit1_unit2_unit1_admin@example.edu
+  name:        Unit1 Unit2 Unit1 Admin
+  email:       unit1_unit2_unit1_admin@example.edu
+  phone:       (888) 555-1234
+  identity:    unit1_unit2_unit1_admin
+  org_dn:      o=Example University,dc=example,dc=edu
   institution: example
