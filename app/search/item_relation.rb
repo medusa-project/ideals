@@ -6,6 +6,17 @@ class ItemRelation < AbstractRelation
   end
 
   ##
+  # Buried items are excluded from results by default--this method removes that
+  # exclusion.
+  #
+  # @return [self]
+  #
+  def include_buried
+    @must_nots.delete([Item::IndexFields::STAGE, Item::Stages::BURIED])
+    self
+  end
+
+  ##
   # Filters out items with current all-access embargoes.
   #
   # @return [self]

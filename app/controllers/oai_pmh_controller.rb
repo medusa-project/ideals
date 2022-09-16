@@ -216,11 +216,10 @@ class OaiPmhController < ApplicationController
   private
 
   def fetch_results_for_list_identifiers_or_records
-    @results = Item.search
-    # brutal hack because ItemRelation adds a default "must not" in its initializer
-    @results.instance_variable_set("@must_nots", [])
-    @results.aggregations(false).
+    @results = Item.search.
+      aggregations(false).
       institution(current_institution).
+      include_buried.
       # Withdrawn and buried items are exposed as (what OAI-PMH calls) deleted
       # records.
       filter(Item::IndexFields::STAGE, [Item::Stages::APPROVED,
