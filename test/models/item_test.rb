@@ -203,7 +203,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "as_indexed_json() converts date-type element strings to ISO 8601" do
-    reg_e = registered_elements(:dc_date_issued)
+    reg_e = registered_elements(:uiuc_dc_date_issued)
     @instance.elements.build(registered_element: reg_e,
                              string:             "October 2015").save
     doc = @instance.as_indexed_json
