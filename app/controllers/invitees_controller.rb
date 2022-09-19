@@ -182,6 +182,7 @@ class InviteesController < ApplicationController
 
   def set_invitee
     @invitee = Invitee.find(params[:id] || params[:invitee_id])
+    @breadcrumbable = @invitee
   end
 
 end

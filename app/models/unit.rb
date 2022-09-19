@@ -85,8 +85,6 @@ class Unit < ApplicationRecord
   after_create :create_default_collection, unless: -> { DspaceImporter.instance.running? }
   before_destroy :validate_empty
 
-  breadcrumbs parent: :parent, label: :title
-
   ##
   # @return [Enumerable<User>]
   #
@@ -170,6 +168,14 @@ class Unit < ApplicationRecord
     doc[IndexFields::SHORT_DESCRIPTION]     = self.short_description
     doc[IndexFields::TITLE]                 = self.title
     doc
+  end
+
+  def breadcrumb_label
+    self.title
+  end
+
+  def breadcrumb_parent
+    self.parent
   end
 
   ##

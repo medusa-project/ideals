@@ -187,8 +187,6 @@ class Item < ApplicationRecord
            :validate_submission_includes_required_elements
   validate :validate_primary_bitstream
 
-  breadcrumbs parent: :primary_collection, label: :title
-
   ##
   # Convenience method that returns all non-embargoed [Item]s, excluding
   # download embargoes.
@@ -398,6 +396,14 @@ class Item < ApplicationRecord
     self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:identifier"),
                         string:             self.handle.handle_net_url,
                         uri:                self.handle.handle_net_url)
+  end
+
+  def breadcrumb_label
+    self.title
+  end
+
+  def breadcrumb_parent
+    self.primary_collection
   end
 
   ##

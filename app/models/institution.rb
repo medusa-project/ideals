@@ -67,6 +67,10 @@ class Institution < ApplicationRecord
     name
   end
 
+  def breadcrumb_parent
+    Institution
+  end
+
   ##
   # Compiles monthly download counts for a given time span by querying the
   # `events` table.

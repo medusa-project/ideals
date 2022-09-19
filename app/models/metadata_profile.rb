@@ -124,6 +124,10 @@ class MetadataProfile < ApplicationRecord
     name
   end
 
+  def breadcrumb_parent
+    MetadataProfile
+  end
+
   ##
   # Overrides parent to intelligently clone an instance including all of its
   # elements.

@@ -52,6 +52,8 @@
 #
 class Invitee < ApplicationRecord
 
+  include Breadcrumb
+
   EXPIRATION = 1.year
 
   has_one :identity, class_name: "LocalIdentity", inverse_of: :invitee
@@ -78,6 +80,14 @@ class Invitee < ApplicationRecord
 
   def approved?
     approval_state == ApprovalState::APPROVED
+  end
+
+  def breadcrumb_label
+    self.email
+  end
+
+  def breadcrumb_parent
+    Invitee
   end
 
   def expired?

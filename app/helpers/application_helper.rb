@@ -56,27 +56,47 @@ module ApplicationHelper
   # @return [String] HTML string.
   #
   def breadcrumbs(object)
-    breadcrumbs = object.breadcrumbs
-    if breadcrumbs.any?
-      html = StringIO.new
-      html << "<nav aria-label=\"breadcrumb\">"
-      html <<   "<ol class=\"breadcrumb\">"
-      breadcrumbs.each do |crumb|
-        html << "<li class=\"breadcrumb-item\">"
-        if crumb.kind_of?(Item)
-          html <<   "Item"
-        elsif crumb == breadcrumbs.last
-          html <<   crumb.breadcrumb_label
+    crumbs = []
+    loop do
+      break unless object
+      if crumbs.any?
+        if object.to_s == "Institution"
+          crumbs.unshift({label: "All Institutions", url: institutions_path})
+        elsif object.to_s == "Invitee"
+          crumbs.unshift({label: "Invitees", url: invitees_path})
+        elsif object.to_s == "MetadataProfile"
+          crumbs.unshift({label: "Metadata Profiles", url: metadata_profiles_path})
+        elsif object.to_s == "SubmissionProfile"
+          crumbs.unshift({label: "Submission Profiles", url: submission_profiles_path})
+        elsif object.to_s == "User"
+          crumbs.unshift({label: "Users", url: users_path})
+        elsif object.to_s == "UserGroup"
+          crumbs.unshift({label: "User Groups", url: user_groups_path})
         else
-          html <<   link_to(crumb.breadcrumb_label, crumb)
+          crumbs.unshift({label: object.breadcrumb_label, url: url_for(object)})
         end
-        html << "</li>"
+      else # the last crumb is never hyperlinked
+        crumbs << {label: object.breadcrumb_label}
       end
-      html <<   "</ol>"
-      html << "</nav>"
-      return raw(html.string)
+      object = object.respond_to?(:breadcrumb_parent) ?
+                 object.breadcrumb_parent : nil
     end
-    nil
+
+    html = StringIO.new
+    html << "<nav aria-label=\"breadcrumb\">"
+    html <<   "<ol class=\"breadcrumb\">"
+    crumbs.each do |crumb|
+      html << "<li class=\"breadcrumb-item\">"
+      if crumb[:url]
+        html <<   link_to(crumb[:label], crumb[:url])
+      else
+        html <<   crumb[:label]
+      end
+      html << "</li>"
+    end
+    html <<   "</ol>"
+    html << "</nav>"
+    raw(html.string)
   end
 
   ##

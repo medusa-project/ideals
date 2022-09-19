@@ -78,8 +78,6 @@ class User < ApplicationRecord
 
   serialize :auth_hash
 
-  breadcrumbs label: :name
-
   ##
   # @param string [String] Autocomplete text field string.
   # @return [User] Instance corresponding to the given string. May be `nil`.
@@ -101,6 +99,14 @@ class User < ApplicationRecord
   #
   def belongs_to_user_group?(user_group)
     user_group.includes?(self)
+  end
+
+  def breadcrumb_label
+    self.name
+  end
+
+  def breadcrumb_parent
+    User
   end
 
   ##

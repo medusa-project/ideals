@@ -20,8 +20,6 @@
 #
 class RegisteredElement < ApplicationRecord
 
-  include Breadcrumb
-
   class InputType
     DATE       = "date"
     PERSON     = "person"

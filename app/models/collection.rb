@@ -136,8 +136,6 @@ class Collection < ApplicationRecord
   after_save :assign_handle, if: -> { handle.nil? && !DspaceImporter.instance.running? }
   before_destroy :validate_empty
 
-  breadcrumbs parent: :breadcrumb_parent, label: :title
-
   ##
   # @return [Enumerable<Collection>] All collections that are children of the
   #                                  instance, at any level in the tree.
@@ -252,6 +250,10 @@ class Collection < ApplicationRecord
     doc[IndexFields::UNIT_TITLES]       = units.map(&:title)
     doc[IndexFields::UNITS]             = self.unit_ids
     doc
+  end
+
+  def breadcrumb_label
+    self.title
   end
 
   def breadcrumb_parent

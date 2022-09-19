@@ -68,6 +68,10 @@ class UserGroup < ApplicationRecord
     name
   end
 
+  def breadcrumb_parent
+    UserGroup
+  end
+
   ##
   # Returns whether the given user is considered to be a member of the
   # instance. Membership is determined by the following logic:
