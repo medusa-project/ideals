@@ -20,8 +20,10 @@ namespace :storage do
     # in since the first run.
     2.times do
       Bitstream.uncached do
-        staging_bitstreams   = Bitstream.where("staging_key IS NOT NULL AND staging_key NOT LIKE ?", "institutions/%")
-        permanent_bitstreams = Bitstream.where("permanent_key IS NOT NULL AND permanent_key NOT LIKE ?", "institutions/%")
+        staging_bitstreams   = Bitstream.where("staging_key IS NOT NULL AND staging_key NOT LIKE ?",
+                                               "institutions/%")
+        permanent_bitstreams = Bitstream.where("permanent_key IS NOT NULL AND permanent_key NOT LIKE ?",
+                                               "institutions/%")
         progress             = Progress.new(staging_bitstreams.count + permanent_bitstreams.count)
         i                    = 0
         staging_bitstreams.find_each do |bs|
@@ -31,6 +33,8 @@ namespace :storage do
             obj.move_to(bucket: bucket, key: target_key)
             bs.update!(staging_key: "#{Bitstream::INSTITUTION_KEY_PREFIX}/uiuc/#{bs.staging_key}")
           rescue Aws::S3::Errors::NoSuchKey
+          rescue => e
+            puts "#{obj.key}: #{e}"
           end
           i += 1
           progress.report(i, "Reorganizing storage")
@@ -42,6 +46,8 @@ namespace :storage do
             obj.move_to(bucket: bucket, key: target_key)
             bs.update!(permanent_key: "#{Bitstream::INSTITUTION_KEY_PREFIX}/uiuc/#{bs.permanent_key}")
           rescue Aws::S3::Errors::NoSuchKey
+          rescue => e
+            puts "#{obj.key}: #{e}"
           end
           i += 1
           progress.report(i, "Reorganizing storage")
