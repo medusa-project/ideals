@@ -87,7 +87,6 @@ class RegisteredElementsController < ApplicationController
   def set_element
     @element = RegisteredElement.find_by_name(params[:name])
     raise ActiveRecord::RecordNotFound unless @element
-    @breadcrumbable = @element
   end
 
   def authorize_element
