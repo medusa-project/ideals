@@ -184,10 +184,9 @@ class User < ApplicationRecord
   # @see unit_admin?
   #
   def effective_unit_admin?(unit)
-    # Sysadmins can do anything.
-    return true if sysadmin?
-    # Check to see whether the user is an administrator of the unit's institution.
-    return true if institution_admin?(unit.institution)
+    # Check to see whether the user is an administrator of the unit's
+    # institution.
+    return true if effective_institution_admin?(unit.institution)
     # Check to see whether the user is an administrator of the unit itself.
     return true if unit_admin?(unit)
     # Check all of its parent units.
