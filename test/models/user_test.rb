@@ -159,10 +159,12 @@ class UserTest < ActiveSupport::TestCase
 
   # effective_submittable_collections()
 
-  test "effective_submittable_collections() returns all collections for
-  sysadmins" do
-    assert_equal Collection.count,
-                 users(:local_sysadmin).effective_submittable_collections.count
+  test "effective_submittable_collections() returns all collections in the same
+  institution for sysadmins" do
+    user = users(:local_sysadmin)
+    assert_equal Collection.joins(:units).where("units.institution_id = ?",
+                                                user.institution_id).count,
+                 user.effective_submittable_collections.count
   end
 
   test "effective_submittable_collections() returns all unit collections for

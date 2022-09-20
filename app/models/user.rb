@@ -148,8 +148,11 @@ class User < ApplicationRecord
   #         authorized to submit an item.
   #
   def effective_submittable_collections
-    return Collection.all if sysadmin?
-    collections = Set.new
+    if effective_institution_admin?(self.institution)
+      return Collection.joins(:units).where("units.institution_id = ?",
+                                            self.institution_id)
+    end
+    collections  = Set.new
     collections += self.administering_units.map(&:collections).flatten
     collections += self.managing_collections
     collections += self.submitting_collections
