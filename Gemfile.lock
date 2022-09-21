@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/UIUCLibrary/uiuc_lib_ad.git
-  revision: 163093592b01ee79158b7a8669111f11ba48c841
+  revision: fc8f2e429a6c315acb3151ab164f1d4aa9876f70
+  branch: fix-7
   specs:
     uiuc_lib_ad (0.2.1)
       net-ldap
