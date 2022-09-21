@@ -74,11 +74,15 @@ class ShibbolethUser < User
       groups = Configuration.instance.ad.dig(:groups, self.uid)
       return groups&.include?(group)
     end
-    user = UiucLibAd::Entity.new(entity_cn: self.netid)
-    begin
-      return user.is_member_of?(group_cn: group)
-    rescue UiucLibAd::NoDNFound
-      return false
+
+    Rails.cache.fetch("#{self.netid}_ismemberof_#{group}",
+                      expires_in: 12.hours) do
+      user = UiucLibAd::Entity.new(entity_cn: self.netid)
+      begin
+        return user.is_member_of?(group_cn: group)
+      rescue UiucLibAd::NoDNFound
+        return false
+      end
     end
   end
 
