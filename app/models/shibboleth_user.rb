@@ -77,8 +77,8 @@ class ShibbolethUser < User
 
     Rails.cache.fetch("#{self.netid}_ismemberof_#{group}",
                       expires_in: 12.hours) do
-      user = UiucLibAd::Entity.new(entity_cn: self.netid)
       begin
+        user = UiucLibAd::Entity.new(entity_cn: self.netid)
         return user.is_member_of?(group_cn: group)
       rescue UiucLibAd::NoDNFound
         return false
