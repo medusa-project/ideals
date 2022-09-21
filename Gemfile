@@ -60,7 +60,7 @@ gem "sprockets-rails"
 gem "tzinfo-data"
 # Use Uglifier as compressor for JavaScript assets
 gem "uglifier", ">= 2.7.2"
-gem 'uiuc_lib_ad', git: 'https://github.com/UIUCLibrary/uiuc_lib_ad.git', branch: "fix-7"
+gem 'uiuc_lib_ad', git: 'https://github.com/UIUCLibrary/uiuc_lib_ad.git'
 
 group :development do
   # Reduces boot times through caching; required in config/boot.rb
