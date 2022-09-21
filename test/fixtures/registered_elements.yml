@@ -1,6 +1,8 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-unused:
+################################### uiuc ####################################
+
+uiuc_unused:
   institution:      uiuc
   name:             unused
   label:            Unused
@@ -8,9 +10,7 @@ unused:
   highwire_mapping:
   scope_note:       This element is not attached to any resources.
 
-#################################### dc #####################################
-
-dc_contributor:
+uiuc_dc_contributor:
   institution:      uiuc
   name:             dc:contributor
   label:            Contributor
@@ -18,7 +18,7 @@ dc_contributor:
   highwire_mapping:
   scope_note:
 
-dc_contributor_advisor:
+uiuc_dc_contributor_advisor:
   institution:      uiuc
   name:             dc:contributor:advisor
   label:            Advisor
@@ -26,7 +26,7 @@ dc_contributor_advisor:
   highwire_mapping:
   scope_note:
 
-dc_contributor_committeeChair:
+uiuc_dc_contributor_committeeChair:
   institution:      uiuc
   name:             dc:contributor:committeeChair
   label:            Committee Chair
@@ -34,7 +34,7 @@ dc_contributor_committeeChair:
   highwire_mapping:
   scope_note:
 
-dc_coverage_spatial:
+uiuc_dc_coverage_spatial:
   institution:      uiuc
   name:             dc:coverage:spatial
   label:            Spatial Coverage
@@ -42,7 +42,7 @@ dc_coverage_spatial:
   highwire_mapping:
   scope_note:
 
-dc_creator:
+uiuc_dc_creator:
   institution:      uiuc
   name:             dc:creator
   label:            Creator
@@ -50,7 +50,7 @@ dc_creator:
   highwire_mapping:
   scope_note:
 
-dc_date_issued:
+uiuc_dc_date_issued:
   institution:      uiuc
   name:             dc:date:issued
   label:            Date Issued
@@ -59,7 +59,7 @@ dc_date_issued:
   highwire_mapping:
   scope_note:
 
-dc_date_submitted:
+uiuc_dc_date_submitted:
   institution:      uiuc
   name:             dc:date:submitted
   label:            Date Submitted
@@ -68,7 +68,7 @@ dc_date_submitted:
   highwire_mapping:
   scope_note:
 
-dc_description:
+uiuc_dc_description:
   institution:      uiuc
   name:             dc:description
   label:            Description
@@ -77,7 +77,7 @@ dc_description:
   highwire_mapping:
   scope_note:
 
-dc_description_abstract:
+uiuc_dc_description_abstract:
   institution:      uiuc
   name:             dc:description:abstract
   label:            Abstract
@@ -85,7 +85,7 @@ dc_description_abstract:
   highwire_mapping:
   scope_note:
 
-dc_description_sponsorship:
+uiuc_dc_description_sponsorship:
   institution:      uiuc
   name:             dc:description:sponsorship
   label:            Sponsorship
@@ -93,7 +93,7 @@ dc_description_sponsorship:
   highwire_mapping:
   scope_note:
 
-dc_identifier:
+uiuc_dc_identifier:
   institution:      uiuc
   name:             dc:identifier
   label:            Identifier
@@ -101,7 +101,7 @@ dc_identifier:
   highwire_mapping:
   scope_note:
 
-dc_identifier_bibliographicCitation:
+uiuc_dc_identifier_bibliographicCitation:
   institution:      uiuc
   name:             dc:identifier:bibliographicCitation
   label:            Bibliographic Citation
@@ -109,7 +109,7 @@ dc_identifier_bibliographicCitation:
   highwire_mapping:
   scope_note:
 
-dc_identifier_uri:
+uiuc_dc_identifier_uri:
   institution:      uiuc
   name:             dc:identifier:uri
   label:            URI
@@ -117,7 +117,7 @@ dc_identifier_uri:
   highwire_mapping:
   scope_note:
 
-dc_language:
+uiuc_dc_language:
   institution:      uiuc
   name:             dc:language
   label:            Language
@@ -125,7 +125,7 @@ dc_language:
   highwire_mapping:
   scope_note:
 
-dc_publisher:
+uiuc_dc_publisher:
   institution:      uiuc
   name:             dc:publisher
   label:            Publisher
@@ -133,7 +133,7 @@ dc_publisher:
   highwire_mapping:
   scope_note:
 
-dc_relation_ispartof:
+uiuc_dc_relation_ispartof:
   institution:      uiuc
   name:             dc:relation:ispartof
   label:            Is Part Of
@@ -141,7 +141,7 @@ dc_relation_ispartof:
   highwire_mapping:
   scope_note:
 
-dc_rights:
+uiuc_dc_rights:
   institution:      uiuc
   name:             dc:rights
   label:            Rights
@@ -149,7 +149,7 @@ dc_rights:
   highwire_mapping:
   scope_note:
 
-dc_subject:
+uiuc_dc_subject:
   institution:      uiuc
   name:             dc:subject
   label:            Subject
@@ -158,7 +158,7 @@ dc_subject:
   highwire_mapping:
   scope_note:
 
-dc_title:
+uiuc_dc_title:
   institution:      uiuc
   name:             dc:title
   label:            Title
@@ -167,7 +167,7 @@ dc_title:
   highwire_mapping:
   scope_note:
 
-dc_type:
+uiuc_dc_type:
   institution:      uiuc
   name:             dc:type
   label:            Type
@@ -175,7 +175,7 @@ dc_type:
   highwire_mapping:
   scope_note:
 
-dc_type_genre:
+uiuc_dc_type_genre:
   institution:      uiuc
   name:             dc:type:genre
   label:            Genre
@@ -183,9 +183,7 @@ dc_type_genre:
   highwire_mapping:
   scope_note:
 
-################################# dcterms ###################################
-
-dcterms_available:
+uiuc_dcterms_available:
   institution:      uiuc
   name:             dcterms:available
   label:            Date Available
@@ -193,7 +191,7 @@ dcterms_available:
   highwire_mapping:
   scope_note:
 
-dcterms_identifier:
+uiuc_dcterms_identifier:
   institution:      uiuc
   name:             dcterms:identifier
   label:            Identifier
@@ -201,9 +199,7 @@ dcterms_identifier:
   highwire_mapping:
   scope_note:
 
-############################### etd ###############################
-
-thesis_degree_department:
+uiuc_thesis_degree_department:
   institution:      uiuc
   name:             thesis:degree:department
   label:            Degree Department
@@ -211,7 +207,7 @@ thesis_degree_department:
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
-thesis_degree_discipline:
+uiuc_thesis_degree_discipline:
   institution:      uiuc
   name:             thesis:degree:discipline
   label:            Degree Discipline
@@ -219,7 +215,7 @@ thesis_degree_discipline:
   highwire_mapping:
   scope_note:
 
-thesis_degree_grantor:
+uiuc_thesis_degree_grantor:
   institution:      uiuc
   name:             thesis:degree:grantor
   label:            Degree Grantor
@@ -227,7 +223,7 @@ thesis_degree_grantor:
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
-thesis_degree_level:
+uiuc_thesis_degree_level:
   institution:      uiuc
   name:             thesis:degree:level
   label:            Degree Level
@@ -235,7 +231,7 @@ thesis_degree_level:
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
-thesis_degree_name:
+uiuc_thesis_degree_name:
   institution:      uiuc
   name:             thesis:degree:name
   label:            Degree Name
@@ -243,7 +239,7 @@ thesis_degree_name:
   highwire_mapping:
   scope_note:
 
-thesis_degree_program:
+uiuc_thesis_degree_program:
   institution:      uiuc
   name:             thesis:degree:program
   label:            Degree Program

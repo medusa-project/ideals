@@ -1,37 +1,28 @@
-# frozen_string_literal: true
-
-require "active_support/concern"
-
+##
+# Module to be included by models that are included in UI breadcrumbs.
+#
+# {ApplicationHelper#breadcrumbs} is responsible for the actual breadcrumb
+# rendering.
+#
 module Breadcrumb
   extend ActiveSupport::Concern
 
-  module ClassMethods
-    def breadcrumbs(opts = {})
-      @breadcrumb_parent_method = opts[:parent]
-      @breadcrumb_label_method  = opts[:label]
-    end
-
-    def breadcrumb_parent_method
-      @breadcrumb_parent_method || superclass.try(:breadcrumb_parent_method)
-    end
-
-    def breadcrumb_label_method
-      @breadcrumb_label_method || superclass.try(:breadcrumb_label_method) || :label
-    end
-  end
-
-  def breadcrumbs
-    method = self.class.breadcrumb_parent_method
-    # doing something fancy here, yes, that is supposed to be a single equals for assignment
-    parents = if method && (direct_parent = send(method))
-                direct_parent.breadcrumbs
-              else
-                []
-              end
-    parents << self
-  end
-
+  ##
+  # @return [String]
+  #
   def breadcrumb_label
-    send(self.class.breadcrumb_label_method)
+    raise "Implementers must override breadcrumb_label()"
   end
+
+  ##
+  # Includers can override to provide a breadcrumb parent object. They can also
+  # provide a Class representing a "first breadcrumb."
+  # {ApplicationHelper#breadcrumbs} must recognize this class in order to
+  # label and hyperlink it properly.
+  #
+  # @return [Breadcrumb, Class]
+  #
+  def breadcrumb_parent
+  end
+
 end

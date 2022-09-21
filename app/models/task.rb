@@ -4,7 +4,8 @@
 #
 # Usage example:
 # ```
-# task = Task.create!(name:        "MyTask",
+# task = Task.create!(institution: my_institution,
+#                     name:        "MyTask",
 #                     status_text: "Doing something")
 # begin
 #   # do stuff...
@@ -31,6 +32,10 @@
 # * `detail`           Detailed results of the task.
 # * `indeterminate`    If true, the task's progress cannot be computed and
 #                      {percent_complete} is irrelevant.
+# * `institution_id`   Foreign key to [Institution] representing the
+#                      institution under which the task is executing. Used for
+#                      scoped tasks view and not always relevant, so may be
+#                      null.
 # * `name`             Consistent name for the task, common across all tasks
 #                      that do the same thing. The name of an [ApplicationJob]
 #                      subclass would be an example of a good name.
@@ -78,6 +83,7 @@ class Task < ApplicationRecord
   end
 
   has_one :download
+  belongs_to :institution, optional: true
   belongs_to :user, optional: true
 
   before_save :constrain_progress

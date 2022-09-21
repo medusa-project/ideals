@@ -7,7 +7,7 @@ module ItemsHelper
   #
   def advanced_search_form(metadata_profile = MetadataProfile.default)
     mp_elements = metadata_profile.elements.select(&:searchable).sort_by(&:position)
-    html     = StringIO.new
+    html        = StringIO.new
 
     mp_elements.each do |mp_e|
       html << '<div class="form-group row">'
@@ -22,16 +22,66 @@ module ItemsHelper
                            options_for_select(options),
                            class: "custom-select") # TODO: selected
       elsif reg_e.input_type == RegisteredElement::InputType::DATE
-        html << '<div class="form-inline">'
-        html <<   date_picker(month_select_name: "elements[#{mp_e.name}][month]",
-                              day_select_name:   "elements[#{mp_e.name}][day]",
-                              year_select_name:  "elements[#{mp_e.name}][year]",
-                              selected_month:    0,
-                              selected_day:      0,
-                              selected_year:     0,
-                              earliest_year:     Setting.integer(Setting::Key::EARLIEST_SEARCH_YEAR),
-                              latest_year:       Time.now.year,
-                              include_blanks:    true)
+        html << '<ul class="nav nav-pills nav-justified date-search-type" role="tablist">'
+        html <<   '<li class="nav-item" role="presentation">'
+        html <<     '<a class="nav-link active" id="exact-date-tab" '\
+                             'data-toggle="pill" href="#exact-date" '\
+                             'role="tab" aria-controls="exact-date" '\
+                             'aria-selected="true">'
+        html <<       'Exact Date'
+        html <<     '</a>'
+        html <<   '</li>'
+        html <<   '<li class="nav-item" role="presentation">'
+        html <<     '<a class="nav-link" id="date-range-tab" '\
+                             'data-toggle="pill" href="#date-range" '\
+                             'role="tab" aria-controls="date-range" '\
+                             'aria-selected="false">'
+        html <<       'Date Range'
+        html <<     '</a>'
+        html <<   '</li>'
+        html << '</ul>'
+        html << '<div class="tab-content">'
+        html <<   '<div class="tab-pane fade show active" id="exact-date" '\
+                        'role="tabpanel" aria-labelledby="exact-date-tab">'
+        html <<     '<div class="form-inline">'
+        html <<       date_picker(month_select_name: "elements[#{mp_e.name}][month]",
+                                  day_select_name:   "elements[#{mp_e.name}][day]",
+                                  year_select_name:  "elements[#{mp_e.name}][year]",
+                                  selected_month:    0,
+                                  selected_day:      0,
+                                  selected_year:     0,
+                                  earliest_year:     Setting.integer(Setting::Key::EARLIEST_SEARCH_YEAR),
+                                  latest_year:       Time.now.year,
+                                  include_blanks:    true)
+        html <<     '</div>'
+        html <<   '</div>'
+        html <<   '<div class="tab-pane fade" id="date-range" role="tabpanel" '\
+                        'aria-labelledby="date-range-tab">'
+        html <<     '<div class="form-inline">From: '
+        html <<       date_picker(month_select_name: "elements[#{mp_e.name}][from_month]",
+                                  day_select_name:   "elements[#{mp_e.name}][from_day]",
+                                  year_select_name:  "elements[#{mp_e.name}][from_year]",
+                                  selected_month:    0,
+                                  selected_day:      0,
+                                  selected_year:     0,
+                                  earliest_year:     Setting.integer(Setting::Key::EARLIEST_SEARCH_YEAR),
+                                  latest_year:       Time.now.year,
+                                  include_blanks:    true,
+                                  extra_attrs:       { class: "ml-2 mb-2"})
+        html <<     '</div>'
+        html <<     '<div class="form-inline">To:'
+        html <<       date_picker(month_select_name: "elements[#{mp_e.name}][to_month]",
+                                  day_select_name:   "elements[#{mp_e.name}][to_day]",
+                                  year_select_name:  "elements[#{mp_e.name}][to_year]",
+                                  selected_month:    0,
+                                  selected_day:      0,
+                                  selected_year:     0,
+                                  earliest_year:     Setting.integer(Setting::Key::EARLIEST_SEARCH_YEAR),
+                                  latest_year:       Time.now.year,
+                                  include_blanks:    true,
+                                  extra_attrs:       { class: "ml-2 mb-2"})
+        html <<     '</div>'
+        html <<   '</div>'
         html << '</div>'
       else
         html << text_field_tag("elements[#{mp_e.name}]",
@@ -149,6 +199,33 @@ module ItemsHelper
     html <<     '</div>'
     html <<   '</div>'
     html << '</div>'
+    raw(html.string)
+  end
+
+  ##
+  # Renders a list of recently added items.
+  #
+  # @param items [Enumerable<Item>]
+  # @return [String] HTML listing.
+  #
+  def recent_list(items)
+    html = StringIO.new
+    year = month = day = 0
+    items.each do |item|
+      item_year  = item.created_at.year
+      item_month = item.created_at.month
+      item_day   = item.created_at.day
+      if item_year != year || item_month != month || item_day != day
+        html << "<hr>" if year > 0
+        html << "<h3>"
+        html <<   item.created_at.strftime("%A, %B %-d")
+        html << "</h3>"
+      end
+      year  = item_year
+      month = item_month
+      day   = item_day
+      html << resource_list_row(item) # ApplicationHelper
+    end
     raw(html.string)
   end
 

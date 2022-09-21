@@ -103,6 +103,7 @@ class Collection < ApplicationRecord
            dependent: :restrict_with_exception
   has_one :handle
   has_many :collection_item_memberships
+  has_one :institution, through: :units
   has_many :items, through: :collection_item_memberships
   belongs_to :metadata_profile, inverse_of: :collections, optional: true
   has_many :manager_groups
@@ -134,8 +135,6 @@ class Collection < ApplicationRecord
 
   after_save :assign_handle, if: -> { handle.nil? && !DspaceImporter.instance.running? }
   before_destroy :validate_empty
-
-  breadcrumbs parent: :breadcrumb_parent, label: :title
 
   ##
   # @return [Enumerable<Collection>] All collections that are children of the
@@ -251,6 +250,10 @@ class Collection < ApplicationRecord
     doc[IndexFields::UNIT_TITLES]       = units.map(&:title)
     doc[IndexFields::UNITS]             = self.unit_ids
     doc
+  end
+
+  def breadcrumb_label
+    self.title
   end
 
   def breadcrumb_parent

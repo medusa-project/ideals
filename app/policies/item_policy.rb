@@ -25,23 +25,22 @@ class ItemPolicy < ApplicationPolicy
       else
         relation.
           filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
-          must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
-                         :gt,
-                         Time.now.strftime("%Y-%m-%d"))
+          non_embargoed
       end
     end
   end
 
-  attr_reader :user, :role, :item
+  attr_reader :user, :institution, :role, :item
 
   ##
   # @param request_context [RequestContext]
   # @param item [Item]
   #
   def initialize(request_context, item)
-    @user = request_context&.user
-    @role = request_context&.role_limit
-    @item = item
+    @user        = request_context&.user
+    @institution = request_context&.institution
+    @role        = request_context&.role_limit
+    @item        = item
   end
 
   def approve
@@ -116,7 +115,7 @@ class ItemPolicy < ApplicationPolicy
     elsif effective_sysadmin?(user, role)
       return AUTHORIZED_RESULT
     elsif (!role || role >= Role::INSTITUTION_ADMINISTRATOR) &&
-      user.any_institution_admin?
+      effective_institution_admin?(user, user.institution, role)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
@@ -144,7 +143,7 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def review
-    effective_sysadmin(user, role)
+    effective_institution_admin(user, institution, role)
   end
 
   def show
@@ -154,12 +153,8 @@ class ItemPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif !@item.approved?
       return { authorized: false, reason: "This item is not approved." }
-    else
-      @item.current_embargoes.where(kind: Embargo::Kind::ALL_ACCESS).each do |embargo|
-        unless user && embargo.exempt?(user)
-          return { authorized: false, reason: "This item is embargoed." }
-        end
-      end
+    elsif @item.embargoed_for?(user)
+      return { authorized: false, reason: "This item is embargoed." }
     end
     AUTHORIZED_RESULT
   end

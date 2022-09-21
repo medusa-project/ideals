@@ -17,10 +17,21 @@ class Institution < ApplicationRecord
 
   include Breadcrumb
 
+  has_many :administrators, class_name: "InstitutionAdministrator"
+  has_many :administering_users, through: :administrators,
+           class_name: "User", source: :user
+  has_many :administrator_groups, class_name: "InstitutionAdministratorGroup"
+  has_many :administering_groups, through: :administrator_groups,
+           class_name: "UserGroup", source: :user_group
+  has_many :imports
+  has_many :invitees
   has_many :metadata_profiles
   has_many :registered_elements
   has_many :submission_profiles
+  has_many :tasks
   has_many :units
+  has_many :user_groups
+  has_many :users
 
   # uniqueness enforced by database constraints
   validates :fqdn, presence: true
@@ -42,9 +53,22 @@ class Institution < ApplicationRecord
   validate :disallow_key_changes
 
   before_save :set_properties, :ensure_default_uniqueness
+  after_create :add_default_elements, :add_default_metadata_profile,
+               :add_default_submission_profile
+
+  ##
+  # @return [Institution] The default institution.
+  #
+  def self.default
+    Institution.find_by_default(true)
+  end
 
   def breadcrumb_label
     name
+  end
+
+  def breadcrumb_parent
+    Institution
   end
 
   ##
@@ -134,15 +158,118 @@ class Institution < ApplicationRecord
     "https://#{fqdn}"
   end
 
-  ##
-  # @return [ActiveRecord::Relation<User>]
-  #
-  def users
-    User.where(org_dn: self.org_dn)
-  end
-
 
   private
+
+  def add_default_elements
+    # N.B.: when this app was first launched at UIUC, the elements with which
+    # it was launched were imported from DSpace. This list is, for now, a
+    # duplicate of those.
+    # See: https://uofi.app.box.com/notes/593479281190
+    # Also see: IdealsSeeder.update_registered_elements()
+    self.registered_elements.build(name:             "dc:contributor",
+                                   label:            "Contributor",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
+    self.registered_elements.build(name:             "dc:contributor:advisor",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Dissertation Director of Research or Thesis Advisor")
+    self.registered_elements.build(name:             "dc:contributor:committeeChair",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Dissertation Chair")
+    self.registered_elements.build(name:             "dc:contributor:committeeMember",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Dissertation Committee Member")
+    self.registered_elements.build(name:             "dc:coverage:spatial",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Geographic Coverage")
+    self.registered_elements.build(name:             "dc:creator",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Creator",
+                                   highwire_mapping: "citation_author")
+    self.registered_elements.build(name:             "dc:date:issued",
+                                   input_type:       RegisteredElement::InputType::DATE,
+                                   label:            "Date of Publication",
+                                   highwire_mapping: "citation_publication_date")
+    self.registered_elements.build(name:             "dc:date:submitted",
+                                   input_type:       RegisteredElement::InputType::DATE,
+                                   label:            "Date Deposited")
+    self.registered_elements.build(name:             "dc:description:abstract",
+                                   input_type:       RegisteredElement::InputType::TEXT_AREA,
+                                   label:            "Abstract")
+    self.registered_elements.build(name:             "dc:description:sponsorship",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Sponsor/Grant No.")
+    self.registered_elements.build(name:             "dc:identifier",
+                                   label:            "Identifier",
+                                   vocabulary_key:   Vocabulary::Key::DEGREE_NAMES,
+                                   highwire_mapping: "citation_id")
+    self.registered_elements.build(name:             "dc:identifier:bibliographicCitation",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Complete Citation For This Item")
+    self.registered_elements.build(name:             "dc:identifier:uri",
+                                   label:            "Identifiers: URI or URL")
+    self.registered_elements.build(name:             "dc:language",
+                                   label:            "Language",
+                                   vocabulary_key:   Vocabulary::Key::COMMON_ISO_LANGUAGES,
+                                   highwire_mapping: "citation_language")
+    self.registered_elements.build(name:             "dc:publisher",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Publisher",
+                                   highwire_mapping: "citation_publisher")
+    self.registered_elements.build(name:             "dc:relation:ispartof",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Series Name/Report No.")
+    self.registered_elements.build(name:             "dc:rights",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Copyright Statement")
+    self.registered_elements.build(name:             "dc:subject",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Keyword",
+                                   highwire_mapping: "citation_keywords")
+    self.registered_elements.build(name:             "dc:title",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Title",
+                                   highwire_mapping: "citation_title")
+    self.registered_elements.build(name:             "dc:type",
+                                   label:            "Type of Resource",
+                                   vocabulary_key:   Vocabulary::Key::COMMON_TYPES)
+    self.registered_elements.build(name:             "dc:type:genre",
+                                   label:            "Genre of Resource",
+                                   vocabulary_key:   Vocabulary::Key::COMMON_GENRES)
+    self.registered_elements.build(name:             "thesis:degree:department",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Dissertation/Thesis Degree Department")
+    self.registered_elements.build(name:             "thesis:degree:discipline",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Dissertation/Thesis Degree Discipline")
+    self.registered_elements.build(name:             "thesis:degree:grantor",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Degree Granting Institution")
+    self.registered_elements.build(name:             "thesis:degree:level",
+                                   label:            "Dissertation or Thesis",
+                                   vocabulary_key:   Vocabulary::Key::DISSERTATION_THESIS)
+    self.registered_elements.build(name:             "thesis:degree:name",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Degree")
+    self.registered_elements.build(name:             "thesis:degree:program",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Dissertation/Thesis Degree Program")
+    self.save!
+  end
+
+  def add_default_metadata_profile
+    profile = self.metadata_profiles.build(name:    "Default Metadata Profile",
+                                           default: true)
+    profile.save!
+    profile.add_default_elements
+  end
+
+  def add_default_submission_profile
+    profile = self.submission_profiles.build(name:    "Default Submission Profile",
+                                             default: true)
+    profile.save!
+    profile.add_default_elements
+  end
 
   def disallow_key_changes
     if !new_record? && key_changed?

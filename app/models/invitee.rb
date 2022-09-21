@@ -2,8 +2,8 @@
 
 ##
 # Non-NetID user who has either been invited to register, or has requested to
-# register, and may or may not yet have a corresponding {LocalIdentity
-# identity}.
+# register, and may or may not yet have a corresponding [LocalIdentity
+# identity].
 #
 # # Invitation/Registration Flow
 #
@@ -25,21 +25,23 @@
 #        to the registration form, as in (1). The {Invitee} instance is marked
 #        as {ApprovalState::APPROVED approved}.
 #     b. If rejected, the user receives an email telling them such and the
-#        {Invitee} instance is marked as {ApprovalState::REJECTED rejected}.
+#        [Invitee] instance is marked as {ApprovalState::REJECTED rejected}.
 # 3. At this point, assuming the user is approved, the "paths" merge. The user
 #    accesses the registration form, filling in their info.
 # 4. Upon form submission, the user receives a welcome email containing a link
 #    to the account-activation endpoint. This endpoint marks the user's
-#    {LocalIdentity} as {LocalIdentity#activated} and redirects to the login
+#    [LocalIdentity] as {LocalIdentity#activated} and redirects to the login
 #    page.
 #
 # # Attributes
 #
-# * `approval_state`:   One of the {ApprovalState} constant values.
+# * `approval_state`:   One of the [ApprovalState] constant values.
 # * `created_at`:       Managed by ActiveRecord.
 # * `email`:            Email address.
 # * `expires_at`:       Time after which invite is no longer valid.
-# * `inviting_user_id`: Foreign key to {User} indicating the user who invited
+# * `institution_id`:   Foreign key to [Institution] signifying the institution
+#                       into which the invitee is being invited.
+# * `inviting_user_id`: Foreign key to [User] indicating the user who invited
 #                       the invitee to register. This is null in the case of
 #                       "self-invited" invitees.
 # * `note`:             Contains the "purpose" that the user entered when
@@ -50,9 +52,12 @@
 #
 class Invitee < ApplicationRecord
 
+  include Breadcrumb
+
   EXPIRATION = 1.year
 
   has_one :identity, class_name: "LocalIdentity", inverse_of: :invitee
+  belongs_to :institution, optional: true
   belongs_to :inviting_user, class_name: "User", optional: true
 
   before_create -> { self.expires_at = EXPIRATION.from_now }
@@ -75,6 +80,14 @@ class Invitee < ApplicationRecord
 
   def approved?
     approval_state == ApprovalState::APPROVED
+  end
+
+  def breadcrumb_label
+    self.email
+  end
+
+  def breadcrumb_parent
+    Invitee
   end
 
   def expired?

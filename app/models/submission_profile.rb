@@ -15,7 +15,8 @@
 #
 # # Attributes
 #
-# * `name`                        The name of the submission profile.
+# * `name`                        The name of the submission profile. Must be
+#                                 unique within the same institution.
 # * `created_at`                  Managed by ActiveRecord.
 # * `default`                     Whether the submission profile is used by
 #                                 {Collection}s without a submission profile
@@ -36,8 +37,7 @@ class SubmissionProfile < ApplicationRecord
            class_name: "SubmissionProfileElement",
            inverse_of: :submission_profile,
            dependent: :destroy
-  validates :name, presence: true, length: { minimum: 2 },
-            uniqueness: { case_sensitive: false }
+  validates :name, presence: true, length: { minimum: 2 }
 
   after_save :ensure_default_uniqueness
 
@@ -182,7 +182,9 @@ class SubmissionProfile < ApplicationRecord
   #
   def ensure_default_uniqueness
     if self.default
-      self.class.all.where('id != ?', self.id).each do |instance|
+      self.class.all.
+        where(institution_id: self.institution_id).
+        where('id != ?', self.id).each do |instance|
         instance.update!(default: false)
       end
     end

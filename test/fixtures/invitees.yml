@@ -1,23 +1,55 @@
 approved:
-  email: approved-invitee@example.edu
+  email:          approved-invitee@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
-  note: Sample note
-  expires_at: <%= Time.now + Invitee::EXPIRATION %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    example
 
 norights:
-  email: norights@example.edu
+  email:          norights@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
-  note: Sample note
-  expires_at: <%= Time.now + Invitee::EXPIRATION %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    example
 
 norights2:
-  email: norights2@example.edu
+  email:          norights2@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
-  note: Sample note
-  expires_at: <%= Time.now + Invitee::EXPIRATION %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    example
+
+northeast:
+  email:          user@northeast.edu
+  approval_state: <%= ApprovalState::APPROVED %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    northeast
+
+northeast_admin:
+  email:          admin@northeast.edu
+  approval_state: <%= ApprovalState::APPROVED %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    northeast
 
 pending:
-  email: pending@example.edu
+  email:          pending@example.edu
   approval_state: <%= ApprovalState::PENDING %>
-  note: This invitee is pending.
-  expires_at: <%= Time.now + Invitee::EXPIRATION %>
+  note:           This invitee is pending.
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    example
+
+southwest:
+  email:          user@southwest.edu
+  approval_state: <%= ApprovalState::APPROVED %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    southwest
+
+southwest_admin:
+  email:          admin@southwest.edu
+  approval_state: <%= ApprovalState::APPROVED %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    southwest

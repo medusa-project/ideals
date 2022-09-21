@@ -2,7 +2,7 @@
 
 default_title:
   metadata_profile:   default
-  registered_element: dc_title
+  registered_element: uiuc_dc_title
   position:           0
   visible:            true
   faceted:            false
@@ -12,7 +12,7 @@ default_title:
 
 default_description:
   metadata_profile:   default
-  registered_element: dc_description
+  registered_element: uiuc_dc_description
   position:           1
   visible:            true
   faceted:            false
@@ -22,7 +22,7 @@ default_description:
 
 default_subject:
   metadata_profile:   default
-  registered_element: dc_subject
+  registered_element: uiuc_dc_subject
   position:           2
   visible:            true
   faceted:            true

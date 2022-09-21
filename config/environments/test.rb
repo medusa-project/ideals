@@ -54,6 +54,12 @@ Rails.application.configure do
   # Tell Active Support which deprecation messages to disallow.
   config.active_support.disallowed_deprecation_warnings = []
 
+  config.active_record.yaml_column_permitted_classes = [
+    OmniAuth::AuthHash,
+    OmniAuth::AuthHash::InfoHash,
+    Symbol
+  ]
+
   # Disable the log file in non-CI testing.
   #config.logger = ActiveSupport::Logger.new((ENV['CI'] == "1") ? nil : STDOUT)
 

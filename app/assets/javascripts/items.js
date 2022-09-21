@@ -65,6 +65,13 @@ const ItemsView = function() {
         otherTabContent.find("input[type=text], input[type=search], textarea").val("");
         otherTabContent.find("option:first-child").prop("selected", "selected");
     });
+
+    // When a date search type tab is changed, clear the input from
+    // the hidden tab.
+    advSearchContent.find('.date-search-type > li > a[data-toggle="pill"]').on('hidden.bs.tab', function(e) {
+        const hiddenPane = $($(e.target).attr("href"));
+        hiddenPane.find("select > option:first-child").prop("selected", "selected");
+    });
 };
 
 /**

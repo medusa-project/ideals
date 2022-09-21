@@ -56,27 +56,47 @@ module ApplicationHelper
   # @return [String] HTML string.
   #
   def breadcrumbs(object)
-    breadcrumbs = object.breadcrumbs
-    if breadcrumbs.any?
-      html = StringIO.new
-      html << "<nav aria-label=\"breadcrumb\">"
-      html <<   "<ol class=\"breadcrumb\">"
-      breadcrumbs.each do |crumb|
-        html << "<li class=\"breadcrumb-item\">"
-        if crumb.kind_of?(Item)
-          html <<   "Item"
-        elsif crumb == breadcrumbs.last
-          html <<   crumb.breadcrumb_label
+    crumbs = []
+    loop do
+      break unless object
+      if crumbs.any?
+        if object.to_s == "Institution"
+          crumbs.unshift({label: "All Institutions", url: institutions_path})
+        elsif object.to_s == "Invitee"
+          crumbs.unshift({label: "Invitees", url: invitees_path})
+        elsif object.to_s == "MetadataProfile"
+          crumbs.unshift({label: "Metadata Profiles", url: metadata_profiles_path})
+        elsif object.to_s == "SubmissionProfile"
+          crumbs.unshift({label: "Submission Profiles", url: submission_profiles_path})
+        elsif object.to_s == "User"
+          crumbs.unshift({label: "Users", url: users_path})
+        elsif object.to_s == "UserGroup"
+          crumbs.unshift({label: "User Groups", url: user_groups_path})
         else
-          html <<   link_to(crumb.breadcrumb_label, crumb)
+          crumbs.unshift({label: object.breadcrumb_label, url: url_for(object)})
         end
-        html << "</li>"
+      else # the last crumb is never hyperlinked
+        crumbs << {label: object.breadcrumb_label}
       end
-      html <<   "</ol>"
-      html << "</nav>"
-      return raw(html.string)
+      object = object.respond_to?(:breadcrumb_parent) ?
+                 object.breadcrumb_parent : nil
     end
-    nil
+
+    html = StringIO.new
+    html << "<nav aria-label=\"breadcrumb\">"
+    html <<   "<ol class=\"breadcrumb\">"
+    crumbs.each do |crumb|
+      html << "<li class=\"breadcrumb-item\">"
+      if crumb[:url]
+        html <<   link_to(crumb[:label], crumb[:url])
+      else
+        html <<   crumb[:label]
+      end
+      html << "</li>"
+    end
+    html <<   "</ol>"
+    html << "</nav>"
+    raw(html.string)
   end
 
   ##
@@ -105,6 +125,7 @@ module ApplicationHelper
   # @param latest_year [Integer]
   # @param include_blanks [Boolean] Whether to include a blank year, month, &
   #                                 day.
+  # @param extra_attrs [Hash] Extra attributes to insert into the outer tag.
   # @return [String]
   #
   def date_picker(month_select_name: "month",
@@ -115,13 +136,22 @@ module ApplicationHelper
                   selected_year:     Time.now.year,
                   earliest_year:     Time.now.year,
                   latest_year:       Time.now.year,
-                  include_blanks:    false)
+                  include_blanks:    false,
+                  extra_attrs:       {})
     m_options = (1..12).map{ |m| [Date::MONTHNAMES[m], m] }
     d_options = (1..31)
     y_options = (earliest_year..latest_year)
 
     html = StringIO.new
-    html << "<div class='form-group date-picker'>"
+    attrs = { class: "form-group date-picker" }
+    extra_attrs.each do |k, v|
+      if attrs[k].present?
+        attrs[k] = "#{attrs[k]} #{v}"
+      else
+        attrs[k] = v
+      end
+    end
+    html << "<div #{attrs.map{ |k,v| "#{k}='#{v}'" }.join(" ")}>"
     html <<   select_tag(month_select_name,
                          options_for_select(m_options, selected_month),
                          include_blank: include_blanks,
@@ -484,54 +514,83 @@ module ApplicationHelper
   #
   # @param resources [Enumerable<Describable,Unit,Collection>]
   # @param primary_id [Integer] ID of a resource in `resources` to indicate as
-  #                             "primary."
+  #                             primary.
   # @param default_id [Integer] ID of a resource in `resources` to indicate as
-  #                             "default."
+  #                             default.
   # @return [String] HTML listing.
   #
   def resource_list(resources, primary_id: nil, default_id: nil)
     html = StringIO.new
     resources.each do |resource|
-      html << "<div class=\"media resource-list mb-3\">"
-      html <<   "<div class=\"icon-thumbnail\">"
-      html <<     link_to(resource) do
-        icon_for(resource)
-      end
-      html <<   "</div>"
-      html <<   "<div class=\"media-body\">"
-      html <<     "<h5 class=\"mt-0 mb-0\">"
-      html <<       link_to(resource.title, resource)
-      if primary_id == resource.id
-        html <<     " <span class=\"badge badge-primary\">PRIMARY</span>"
-      elsif default_id == resource.id
-        html <<     " <span class=\"badge badge-primary\">DEFAULT</span>"
-      end
-      html <<     "</h5>"
-
-      if resource.kind_of?(Item)
-        config  = ::Configuration.instance
-        creator = resource.elements.
-            select{ |e| e.name == config.elements[:creator] }.
-            map(&:string).
-            join("; ")
-        date    = resource.elements.
-            select{ |e| e.name == config.elements[:date] }.
-            map{ |e| e.string.to_i.to_s }.
-            reject{ |e| e == "0" }.
-            join("; ")
-        info_parts  = []
-        info_parts << creator if creator.present?
-        info_parts << date if date.present?
-        html       << info_parts.join(" &bull; ")
-        html << "<br><br>"
-      elsif resource.kind_of?(Collection) || resource.kind_of?(Unit)
-        html << resource.short_description
-      end
-
-      html <<   "</div>"
-      html << "</div>"
+      html << resource_list_row(resource,
+                                primary: (primary_id == resource.id),
+                                default: (default_id == resource.id))
     end
     raw(html.string)
+  end
+
+  ##
+  #
+  # @param resource [Describable]
+  # @param primary [Boolean] Whether to mark the resource as primary.
+  # @param default [Boolean] Whether to mark the resource as default.
+  # @return [String] HTML string.
+  #
+  def resource_list_row(resource, primary: false, default: false)
+    embargoed_item = resource.kind_of?(Item) &&
+      resource.embargoed_for?(current_user)
+    html = StringIO.new
+    html << "<div class=\"media resource-list mb-3\">"
+    html <<   "<div class=\"icon-thumbnail\">"
+    if embargoed_item
+      html <<   '<i class="fa fa-lock"></i>'
+    else
+      html <<   link_to(resource) do
+        icon_for(resource)
+      end
+    end
+    html <<   "</div>"
+    html <<   "<div class=\"media-body\">"
+    html <<     "<h5 class=\"mt-0 mb-0\">"
+    if embargoed_item
+      html <<     resource.title
+    else
+      html <<     link_to(resource.title, resource)
+    end
+
+    if primary
+      html <<     " <span class=\"badge badge-primary\">PRIMARY</span>"
+    elsif default
+      html <<     " <span class=\"badge badge-primary\">DEFAULT</span>"
+    end
+    if embargoed_item
+      html <<     " <span class=\"badge badge-danger\">EMBARGOED</span>"
+    end
+    html <<     "</h5>"
+
+    if resource.kind_of?(Item)
+      config  = ::Configuration.instance
+      creator = resource.elements.
+        select{ |e| e.name == config.elements[:creator] }.
+        map(&:string).
+        join("; ")
+      date    = resource.elements.
+        select{ |e| e.name == config.elements[:date] }.
+        map{ |e| e.string.to_i.to_s }.
+        reject{ |e| e == "0" }.
+        join("; ")
+      info_parts  = []
+      info_parts << creator if creator.present?
+      info_parts << date if date.present?
+      html       << info_parts.join(" &bull; ")
+      html << "<br><br>"
+    elsif resource.kind_of?(Collection) || resource.kind_of?(Unit)
+      html << resource.short_description
+    end
+
+    html <<   "</div>"
+    html << "</div>"
+    html.string
   end
 
   ##

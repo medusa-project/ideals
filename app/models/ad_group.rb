@@ -11,15 +11,10 @@
 # * `updated_at` Managed by ActiveRecord.
 #
 class AdGroup < ApplicationRecord
-  include Breadcrumb
 
   belongs_to :user_group
 
   validates :name, presence: true
-
-  def breadcrumb_label
-    name
-  end
 
   def to_s
     name

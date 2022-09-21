@@ -18,10 +18,11 @@
 #
 # # Attributes
 #
-# * `name`                        The name of the metadata profile.
+# * `name`                        The name of the metadata profile. Must be
+#                                 unique within the same institution.
 # * `created_at`                  Managed by ActiveRecord.
 # * `default`                     Whether the metadata profile is used by
-#                                 {Collection}s without a metadata profile
+#                                 [Collection]s without a metadata profile
 #                                 assigned, or in cross-collection contexts.
 #                                 (Only one metadata profile can be marked
 #                                 default--this is enforced by an `after_save`
@@ -48,8 +49,7 @@ class MetadataProfile < ApplicationRecord
                                                          greater_than_or_equal_to: MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
                                                          less_than_or_equal_to: MetadataProfileElement::MAX_RELEVANCE_WEIGHT }
 
-  validates :name, presence: true, length: { minimum: 2 },
-            uniqueness: { case_sensitive: false }
+  validates :name, presence: true, length: { minimum: 2 }
 
   after_save :ensure_default_uniqueness
 
@@ -124,6 +124,10 @@ class MetadataProfile < ApplicationRecord
     name
   end
 
+  def breadcrumb_parent
+    MetadataProfile
+  end
+
   ##
   # Overrides parent to intelligently clone an instance including all of its
   # elements.
@@ -156,7 +160,9 @@ class MetadataProfile < ApplicationRecord
   #
   def ensure_default_uniqueness
     if self.default
-      self.class.all.where('id != ?', self.id).each do |instance|
+      self.class.all.
+        where(institution_id: self.institution_id).
+        where("id != ?", self.id).each do |instance|
         instance.update!(default: false)
       end
     end

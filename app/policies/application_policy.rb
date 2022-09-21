@@ -28,7 +28,25 @@ class ApplicationPolicy
 
   ##
   # @param user [User]
-  # @param role_limit [Role]
+  # @param target_institution [Institution]
+  # @param role_limit [Integer] One of the [Role] constant values.
+  #
+  def effective_institution_admin(user, target_institution, role_limit)
+    if (!role_limit || role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
+      user&.effective_institution_admin?(target_institution)
+      return AUTHORIZED_RESULT
+    end
+    {
+      authorized: false,
+      reason: target_institution ?
+                "You must be an administrator of #{target_institution.name}." :
+                "You must be an institution administrator."
+    }
+  end
+
+  ##
+  # @param user [User]
+  # @param role_limit [Integer] One of the [Role] constant values.
   # @return [Hash]
   #
   def effective_sysadmin(user, role_limit)

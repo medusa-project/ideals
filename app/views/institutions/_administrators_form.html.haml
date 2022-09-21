@@ -1,0 +1,62 @@
+-# Required locals:
+-#
+-# institution [Institution]
+-#
+= form_for(institution, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  -# Include a random property because `institution` is required in the params
+  = f.hidden_field :key, value: f.object.key
+
+  = hidden_field_tag "user_group_ids[]"
+
+  %h5 Global User Groups
+
+  - UserGroup.where(institution: nil).order(:name).each do |user_group|
+    .form-check
+      = check_box_tag "user_group_ids[]", user_group.id,
+                      f.object.administrator_groups.where(user_group: user_group).any?,
+                      { id: "user_group_ids_#{user_group.id}", class: "form-check-input" }
+      = label_tag "user_group_ids_#{user_group.id}",
+        user_group.name, class: "form-check-label"
+
+  %hr
+
+  %h5 Local User Groups
+
+  - UserGroup.where(institution: current_institution).order(:name).each do |user_group|
+    .form-check
+      = check_box_tag "user_group_ids[]", user_group.id,
+                      f.object.administrator_groups.where(user_group: user_group).any?,
+                      { id: "user_group_ids_#{user_group.id}", class: "form-check-input" }
+      = label_tag "user_group_ids_#{user_group.id}",
+        user_group.name, class: "form-check-label"
+
+  %hr
+
+  %h5 Users
+
+  .form-group
+    = hidden_field_tag "administering_users[]"
+    - user_strings = f.object.administering_users.each.map(&:to_autocomplete)
+    - user_strings << "" if user_strings.empty?
+    - user_strings.each do |user_str|
+      .input-group.mb-3.user
+        = text_field_tag "administering_users[]", user_str,
+                         autocomplete: "off",
+                         class: "form-control"
+        .input-group-append
+          %button.btn.btn-outline-danger.remove{type: "button"}
+            %i.fa.fa-minus
+            Remove
+        .dropdown-menu
+          -# populated by javascript
+    %button.btn.btn-sm.btn-outline-success.add
+      %i.fa.fa-plus
+      Add User
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Save Changes", class: "btn btn-primary")

@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 ##
-# N.B.: To use this policy, a {LocalUser} or {ShibbolethUser} instance must be
-# cast to its {User} superclass; for example:
+# N.B.: To use this policy, a [LocalUser] or [ShibbolethUser] instance must be
+# cast to its [User] superclass; for example:
 #
 # ```
 # authorize(user.becomes(User))
@@ -10,7 +8,7 @@
 # ```
 #
 class UserPolicy < ApplicationPolicy
-  attr_reader :subject_user, :role, :object_user
+  attr_reader :subject_user, :role, :institution, :object_user
 
   ##
   # @param request_context [RequestContext]
@@ -19,14 +17,26 @@ class UserPolicy < ApplicationPolicy
   def initialize(request_context, object_user)
     @subject_user = request_context&.user
     @role         = request_context&.role_limit
+    @institution  = request_context&.institution
     @object_user  = object_user
   end
 
+  ##
+  # N.B. this does not correspond to a controller method.
+  #
+  def change_institution
+    effective_sysadmin(subject_user, role)
+  end
+
   def edit_properties
-    sysadmin_or_same_user
+    institution_admin_or_same_user
   end
 
   def index
+    effective_institution_admin(subject_user, institution, role)
+  end
+
+  def index_all
     effective_sysadmin(subject_user, role)
   end
 
@@ -34,11 +44,11 @@ class UserPolicy < ApplicationPolicy
   # This does not correspond to a controller method.
   #
   def invite
-    effective_sysadmin(subject_user, role)
+    effective_institution_admin(subject_user, subject_user&.institution, role)
   end
 
   def show
-    sysadmin_or_same_user
+    institution_admin_or_same_user
   end
 
   def show_properties
@@ -62,16 +72,19 @@ class UserPolicy < ApplicationPolicy
   end
 
   def update_properties
-    sysadmin_or_same_user
+    institution_admin_or_same_user
   end
 
 
   private
 
-  def sysadmin_or_same_user
+  def institution_admin_or_same_user
     if subject_user
-      return AUTHORIZED_RESULT if (role >= Role::LOGGED_IN && subject_user.id == object_user.id) ||
-        effective_sysadmin?(subject_user, role)
+      if (role >= Role::LOGGED_IN && subject_user.id == object_user.id) ||
+        effective_sysadmin?(subject_user, role) ||
+        effective_institution_admin?(subject_user, object_user.institution, role)
+        return AUTHORIZED_RESULT
+      end
     end
     { authorized: false,
       reason:     "You don't have permission to edit this user account." }

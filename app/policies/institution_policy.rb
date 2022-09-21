@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class InstitutionPolicy < ApplicationPolicy
   attr_reader :user, :role, :institution
 
@@ -14,19 +12,30 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def create
-    index
+    effective_sysadmin(user, role)
   end
 
   def destroy
-    index
+    create
   end
 
   def edit
     update
   end
 
+  ##
+  # N.B.: this is not a controller method.
+  #
+  def edit_properties
+    update_properties
+  end
+
+  def edit_administrators
+    edit
+  end
+
   def index
-    effective_sysadmin(user, role)
+    create
   end
 
   def item_download_counts
@@ -38,14 +47,18 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show
-    institution_admin
+    update
   end
 
-  def show_statistics
+  def show_access
     show
   end
 
   def show_properties
+    show
+  end
+
+  def show_statistics
     show
   end
 
@@ -58,19 +71,17 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def update
-    institution_admin
+    # Institution admins can update access but not properties (see
+    # {update_properties}).
+    effective_institution_admin(user, institution, role)
   end
 
-
-  private
-
-  def institution_admin
-    if (!role || role >= Role::INSTITUTION_ADMINISTRATOR) &&
-        user&.effective_institution_admin?(institution)
-      return AUTHORIZED_RESULT
-    end
-    { authorized: false,
-      reason: "You must be an administrator of this institution." }
+  ##
+  # N.B.: this is not a controller method, but is called from within
+  # {InstitutionController#update}.
+  #
+  def update_properties
+    effective_sysadmin(user, role)
   end
 
 end

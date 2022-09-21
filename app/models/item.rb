@@ -187,8 +187,6 @@ class Item < ApplicationRecord
            :validate_submission_includes_required_elements
   validate :validate_primary_bitstream
 
-  breadcrumbs parent: :primary_collection, label: :title
-
   ##
   # Convenience method that returns all non-embargoed [Item]s, excluding
   # download embargoes.
@@ -400,6 +398,14 @@ class Item < ApplicationRecord
                         uri:                self.handle.handle_net_url)
   end
 
+  def breadcrumb_label
+    self.title
+  end
+
+  def breadcrumb_parent
+    self.primary_collection
+  end
+
   ##
   # @return [Boolean] Whether {stage} is set to {Stages#BURIED}.
   #
@@ -528,6 +534,17 @@ class Item < ApplicationRecord
   end
 
   ##
+  # @param user [User]
+  # @return [Boolean]
+  #
+  def embargoed_for?(user)
+    self.current_embargoes.where(kind: Embargo::Kind::ALL_ACCESS).each do |embargo|
+      return true if !user || !embargo.exempt?(user)
+    end
+    false
+  end
+
+  ##
   # @see bury!
   #
   def exhume!
@@ -558,7 +575,7 @@ class Item < ApplicationRecord
   # @return [Institution]
   #
   def institution
-    primary_collection.primary_unit.institution
+    effective_primary_collection.institution
   end
 
   ##

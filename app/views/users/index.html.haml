@@ -3,29 +3,21 @@
 
 -if policy(User).invite?
   .btn-group.float-right{role: "group"}
-    / Invite button
+    -# Invite button
     %button.btn.btn-light{"data-target": "#invite-user-modal",
                           "data-toggle": "modal", type: "button"}
       %i.fa.fa-plus
       Invite User
 
-%h1 Users
+%h1
+  Users
+  %small
+    in
+    = current_institution.name
 
-.card.mb-3
-  .card-body
-    = form_tag users_path, method: :get, class: "form-inline" do
-      = label_tag nil, "Name or Email", class: "mr-1"
-      = filter_field
+= user_filter_form
 
-      = label_tag nil, "Authentication Type", class: "ml-3 mr-1"
-      = select_tag "class", options_for_select([["Any", ""],
-                                                ["Shiboleth", ShibbolethUser.to_s],
-                                                ["Local", LocalUser.to_s]]),
-                   class: "custom-select"
-      .btn-group
-        = button_tag "Clear", type: "reset", class: "btn btn-outline-secondary ml-3"
-        = submit_tag "Filter", name: "", class: "btn btn-primary"
-
-= render partial: "users"
+#users-list
+  = render partial: "users", locals: { institution_column: false }
 
 = render partial: "invitees/add_modal", locals: { invitee: @new_invitee }

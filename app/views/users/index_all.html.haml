@@ -1,0 +1,11 @@
+- provide :body_id, "list_users"
+- provide :title, "All Users"
+
+%h1 All Users
+
+= user_filter_form(show_institution: true)
+
+#users-list
+  = render partial: "users", locals: { institution_column: true }
+
+= render partial: "invitees/add_modal", locals: { invitee: @new_invitee }

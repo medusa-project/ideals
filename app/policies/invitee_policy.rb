@@ -1,24 +1,24 @@
-# frozen_string_literal: true
-
 class InviteePolicy < ApplicationPolicy
-  attr_reader :user, :role, :invitee
+
+  attr_reader :user, :institution, :role, :invitee
 
   ##
   # @param request_context [RequestContext]
   # @param invitee [Invitee]
   #
   def initialize(request_context, invitee)
-    @user    = request_context&.user
-    @role    = request_context&.role_limit || Role::NO_LIMIT
-    @invitee = invitee
+    @user        = request_context&.user
+    @institution = request_context&.institution
+    @role        = request_context&.role_limit || Role::NO_LIMIT
+    @invitee     = invitee
   end
 
   def approve
-    effective_sysadmin(user, role)
+    create
   end
 
   def create
-    effective_sysadmin(user, role)
+    effective_institution_admin(user, institution, role)
   end
 
   def create_unsolicited
@@ -26,11 +26,11 @@ class InviteePolicy < ApplicationPolicy
   end
 
   def destroy
-    effective_sysadmin(user, role)
+    approve
   end
 
   def index
-    effective_sysadmin(user, role)
+    create
   end
 
   def new
@@ -38,15 +38,15 @@ class InviteePolicy < ApplicationPolicy
   end
 
   def reject
-    effective_sysadmin(user, role)
+    approve
   end
 
   def resend_email
-    effective_sysadmin(user, role)
+    approve
   end
 
   def show
-    effective_sysadmin(user, role)
+    index
   end
 
 

@@ -81,13 +81,13 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete registered_element_path(registered_elements(:unused))
+    delete registered_element_path(registered_elements(:uiuc_unused))
     assert_response :forbidden
   end
 
   test "destroy() destroys the element" do
     log_in_as(users(:local_sysadmin))
-    element = registered_elements(:unused)
+    element = registered_elements(:uiuc_unused)
     assert_difference "RegisteredElement.count", -1 do
       delete registered_element_path(element)
     end
@@ -95,7 +95,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() returns HTTP 302 for an existing element" do
     log_in_as(users(:local_sysadmin))
-    element = registered_elements(:dc_title)
+    element = registered_elements(:uiuc_dc_title)
     delete registered_element_path(element)
     assert_redirected_to registered_elements_path
   end
@@ -109,21 +109,21 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   # edit()
 
   test "edit() redirects to login page for logged-out users" do
-    element = registered_elements(:dc_title)
+    element = registered_elements(:uiuc_dc_title)
     get edit_registered_element_path(element)
     assert_redirected_to login_path
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    element = registered_elements(:dc_title)
+    element = registered_elements(:uiuc_dc_title)
     get edit_registered_element_path(element)
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
-    element = registered_elements(:dc_title)
+    element = registered_elements(:uiuc_dc_title)
     get edit_registered_element_path(element)
     assert_response :ok
   end
@@ -165,13 +165,13 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch registered_element_path(registered_elements(:dc_description))
+    patch registered_element_path(registered_elements(:uiuc_dc_description))
     assert_response :forbidden
   end
 
   test "update() updates an element" do
     log_in_as(users(:local_sysadmin))
-    element = registered_elements(:dc_title)
+    element = registered_elements(:uiuc_dc_title)
     patch "/elements/#{element.name}",
           xhr: true,
           params: {
@@ -188,7 +188,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
-    element = registered_elements(:dc_title)
+    element = registered_elements(:uiuc_dc_title)
     patch registered_element_path(element),
           xhr: true,
           params: {
@@ -202,7 +202,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:local_sysadmin))
-    element = registered_elements(:dc_title)
+    element = registered_elements(:uiuc_dc_title)
     patch registered_element_path(element),
           xhr: true,
           params: {

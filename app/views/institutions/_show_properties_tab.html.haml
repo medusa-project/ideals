@@ -1,5 +1,5 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@institution).edit?
+  - if policy(@institution).edit_properties?
     -# Edit button
     %button.btn.btn-light.edit-institution{"data-target": "#edit-institution-modal",
                                            "data-toggle": "modal", type: "button",

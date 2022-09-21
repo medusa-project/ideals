@@ -1,9 +1,10 @@
 class UserGroupsController < ApplicationController
 
   before_action :ensure_logged_in
-  before_action :set_user_group, except: [:create, :index]
-  before_action :authorize_user_group, except: [:create, :index]
-  before_action :store_location, only: [:index, :show]
+  before_action :set_user_group, except: [:create, :index, :index_global, :new]
+  before_action :authorize_user_group, except: [:create, :index, :index_global,
+                                                :new]
+  before_action :store_location, only: [:index, :index_global, :show]
 
   ##
   # Responds to `POST /user-groups` (XHR only)
@@ -103,12 +104,37 @@ class UserGroupsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /user-groups`
+  # Renders a list of institution-scoped user groups.
+  #
+  # Responds to `GET /user-groups`.
+  #
+  # @see index_global
   #
   def index
     authorize UserGroup
-    @user_groups    = UserGroup.all.order(:name)
+    @user_groups    = UserGroup.where(institution: current_institution).order(:name)
     @new_user_group = UserGroup.new
+  end
+
+  ##
+  # Renders a list of global user groups.
+  #
+  # Responds to `GET /global-user-groups`.
+  #
+  # @see index
+  #
+  def index_global
+    authorize UserGroup
+    @user_groups    = UserGroup.where(institution: nil).order(:name)
+    @new_user_group = UserGroup.new
+  end
+
+  ##
+  # Responds to `GET /user-groups/new` (XHR only)
+  #
+  def new
+    render partial: "user_groups/form",
+           locals: { user_group: UserGroup.new }
   end
 
   ##
@@ -202,7 +228,8 @@ class UserGroupsController < ApplicationController
   end
 
   def user_group_params
-    params.require(:user_group).permit(:key, :name, affiliation_ids: [],
+    params.require(:user_group).permit(:institution_id, :key, :name,
+                                       affiliation_ids: [],
                                        department_ids: [], user_ids: [])
   end
 

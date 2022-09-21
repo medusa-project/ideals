@@ -3,7 +3,7 @@ require 'test_helper'
 class RegisteredElementTest < ActiveSupport::TestCase
 
   setup do
-    @instance = registered_elements(:dc_title)
+    @instance = registered_elements(:uiuc_dc_title)
     assert @instance.valid?
   end
 
@@ -16,7 +16,7 @@ class RegisteredElementTest < ActiveSupport::TestCase
   end
 
   test "instances without attached AscribedElements can be destroyed" do
-    assert registered_elements(:unused).destroy
+    assert registered_elements(:uiuc_unused).destroy
   end
 
   # sortable_field()

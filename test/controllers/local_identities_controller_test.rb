@@ -329,6 +329,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
       user = identity.user
       assert_equal name, user.name
       assert_equal phone, user.phone
+      assert_equal institutions(:example), user.institution
     end
   end
 

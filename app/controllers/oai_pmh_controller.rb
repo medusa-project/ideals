@@ -1,6 +1,13 @@
 ##
 # Controller for the OAI-PMH endpoint.
 #
+# This endpoint delivers content scoped to the
+# {ApplicationHelper#current_institution current institution}. This means that
+# `ListRecords`, `ListIdentifiers`, and `ListSets` requests include only
+# content available within the current institution, and attempting to access
+# another institution's item via `GetRecord` results in an `idDoesNotExist`
+# error.
+#
 # # Identifier syntaxes
 #
 # * Items: `oai:{host}:{handle}`
@@ -13,19 +20,16 @@
 #
 # * `oai_dc`: Dublin Core; exposes `dc:` elements; required by OAI-PMH
 # * `qdc`:    Qualified Dublin Core; exposes `dc:` and `dcterms:` elements.
-# * `dim`:    DSpace format that exposes all elements. This is a legacy format
-#             carried over from DSpace, as it is used by the
-#             [Search Gateway](https://digital.library.illinois.edu). Once that
-#             application has been migrated to use the `native` format, it can
-#             be removed.
-# * `native`: Native format that exposes all elements. This is similar to `dim`
-#             and will eventually replace it.
+# * `native`: Native format that exposes all elements. This is similar to the
+#             `dim` format used in DSpace.
 #
 # # Resumption tokens
 #
 # Resumption tokens are ROT-18-encoded in order to make them appear opaque,
 # which will hopefully discourage clients from changing them, even though if
-# they do, it's not a big deal. The decoded format is:
+# they do, it's not a big deal.
+#
+# ## Decoded format for records
 #
 # `set:string|from:date|until:date|lsv:string|metadataPrefix:string`
 #
@@ -35,6 +39,10 @@
 # N.B. 2: Elasticsearch does not cope well when using offset/limit with large
 # offsets. Instead, `lsv` (last sort value) uses its `search_after` feature for
 # efficient deep paging.
+#
+# ## Decoded format for sets
+#
+# `start:integer`
 #
 # @see http://www.openarchives.org/OAI/openarchivesprotocol.html
 # @see http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm
@@ -50,11 +58,6 @@ class OaiPmhController < ApplicationController
   rescue_from ActionView::Template::Error, with: :rescue_template_error
 
   METADATA_FORMATS = [
-    {
-      prefix: "dim",
-      uri:    "http://www.dspace.org/xmlns/dspace/dim",
-      schema: "http://www.dspace.org/schema/dim.xsd"
-    },
     {
       prefix: "etdms",
       uri:    "http://www.ndltd.org/standards/metadata/etdms/1.0/",
@@ -76,7 +79,7 @@ class OaiPmhController < ApplicationController
       schema: "http://dublincore.org/schemas/xmls/qdc/2006/01/06/dcterms.xsd"
     }
   ]
-  MAX_RESULT_WINDOW                    = 200
+  MAX_RESULT_WINDOW                    = 100
   RESUMPTION_TOKEN_COMPONENT_SEPARATOR = "|"
   RESUMPTION_TOKEN_KEY_VALUE_SEPARATOR = ":"
   RESUMPTION_TOKEN_TTL                 = 10.minutes
@@ -124,7 +127,7 @@ class OaiPmhController < ApplicationController
 
   def do_get_record
     @item = item_for_oai_pmh_identifier(params[:identifier])
-    if @item
+    if @item && @item.institution == current_institution
       @identifier = oai_pmh_identifier(item: @item, host: @host)
     else
       @errors << { code: "idDoesNotExist",
@@ -135,12 +138,15 @@ class OaiPmhController < ApplicationController
   end
 
   def do_identify
-    @sample_item        = Item.non_embargoed.
-      where(stage: Item::Stages::APPROVED).
-      order(:updated_at).
+    @sample_item = Item.search.
+      aggregations(false).
+      institution(current_institution).
+      filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
+      non_embargoed.
+      order(Item::IndexFields::LAST_MODIFIED).
       limit(1).
       first
-    @earliest_datestamp = @sample_item.updated_at.utc.iso8601
+    @earliest_datestamp = @sample_item&.updated_at&.utc&.iso8601
     @base_url           = oai_pmh_url
     "identify"
   end
@@ -166,9 +172,24 @@ class OaiPmhController < ApplicationController
     "list_records"
   end
 
+  ##
+  # N.B.: This endpoint considers both collections and units to be sets.
+  #
   def do_list_sets
+    # Get the set count
+    institution_id = current_institution.id
+    sql = "SELECT COUNT(h.id) AS count
+        FROM handles h
+        LEFT JOIN collections c ON h.collection_id = c.id
+        LEFT JOIN units u ON h.unit_id = u.id
+        LEFT JOIN unit_collection_memberships ucm on c.id = ucm.collection_id
+        LEFT JOIN units u2 ON u2.id = ucm.unit_id
+        WHERE (h.collection_id IS NOT NULL OR h.unit_id IS NOT NULL)
+            AND (u.institution_id = #{institution_id}
+                OR u2.institution_id = #{institution_id});"
+    @total_num_results = ActiveRecord::Base.connection.exec_query(sql)[0]['count']
+
     @results_offset = get_token_start
-    # This endpoint considers both collections and units to be sets.
     sql = "SELECT h.suffix AS handle_suffix,
             h.collection_id AS collection_id, h.unit_id AS unit_id,
             c.title AS collection_title, c.description AS collection_description,
@@ -176,12 +197,16 @@ class OaiPmhController < ApplicationController
         FROM handles h
         LEFT JOIN collections c ON h.collection_id = c.id
         LEFT JOIN units u ON h.unit_id = u.id
-        WHERE h.collection_id IS NOT NULL OR h.unit_id IS NOT NULL
+        LEFT JOIN unit_collection_memberships ucm on c.id = ucm.collection_id
+        LEFT JOIN units u2 ON u2.id = ucm.unit_id
+        WHERE (h.collection_id IS NOT NULL OR h.unit_id IS NOT NULL)
+            AND (u.institution_id = #{institution_id}
+                OR u2.institution_id = #{institution_id})
         ORDER BY h.suffix
         LIMIT #{MAX_RESULT_WINDOW}
         OFFSET #{@results_offset};"
     @results             = ActiveRecord::Base.connection.exec_query(sql)
-    @total_num_results   = Handle.where("collection_id IS NOT NULL OR unit_id IS NOT NULL").count
+    @resumption_token    = new_sets_resumption_token(start: @results_offset + MAX_RESULT_WINDOW)
     @next_page_available = (@results_offset + MAX_RESULT_WINDOW < @total_num_results)
     @expiration_date     = resumption_token_expiration_time
     "list_sets"
@@ -191,11 +216,10 @@ class OaiPmhController < ApplicationController
   private
 
   def fetch_results_for_list_identifiers_or_records
-    @results = Item.search
-    # brutal hack because ItemRelation adds a default "must not" in its initializer
-    @results.instance_variable_set("@must_nots", [])
-    @results.aggregations(false).
-      institution(Institution.find_by_key(:uiuc)).
+    @results = Item.search.
+      aggregations(false).
+      institution(current_institution).
+      include_buried.
       # Withdrawn and buried items are exposed as (what OAI-PMH calls) deleted
       # records.
       filter(Item::IndexFields::STAGE, [Item::Stages::APPROVED,
@@ -205,10 +229,7 @@ class OaiPmhController < ApplicationController
       # dc:identifier:uri element, without which an item would not be
       # identifiable within the oai_dc representation.
       must_exist(Item::IndexFields::HANDLE).
-      # Exclude items with current all-access embargoes.
-      must_not_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
-                     :gt,
-                     Time.now.strftime("%Y-%m-%d")).
+      non_embargoed.
       order(Item::IndexFields::ID).
       limit(MAX_RESULT_WINDOW)
 
@@ -243,18 +264,17 @@ class OaiPmhController < ApplicationController
       end
     end
 
-
     @last_sort_value     = get_token_last_sort_value
     @results             = @results.search_after([@last_sort_value]) if @last_sort_value
     @total_num_results   = @results.count
     @errors << { code:        "noRecordsMatch",
                  description: "No matching records." } if @total_num_results < 1
 
-    @resumption_token    = new_resumption_token(set:             set,
-                                                from:            from,
-                                                until_:          until_,
-                                                last_sort_value: @results.last_sort_value,
-                                                metadata_prefix: @metadata_format)
+    @resumption_token    = new_records_resumption_token(set:             set,
+                                                        from:            from,
+                                                        until_:          until_,
+                                                        last_sort_value: @results.last_sort_value,
+                                                        metadata_prefix: @metadata_format)
     @next_page_available = @results.last_sort_value.present?
     @expiration_date     = resumption_token_expiration_time
   end
@@ -331,8 +351,8 @@ class OaiPmhController < ApplicationController
            status:   :internal_server_error
   end
 
-  def new_resumption_token(set:, from:, until_:, last_sort_value:,
-                           metadata_prefix:)
+  def new_records_resumption_token(set:, from:, until_:, last_sort_value:,
+                                   metadata_prefix:)
     token = [
       ["set", set],
       ["from", from],
@@ -341,6 +361,14 @@ class OaiPmhController < ApplicationController
       ["metadataPrefix", metadata_prefix]
     ].select{ |a| a[1].present? }.
       map{ |a| a.join(RESUMPTION_TOKEN_KEY_VALUE_SEPARATOR) }.
+      join(RESUMPTION_TOKEN_COMPONENT_SEPARATOR)
+    StringUtils.rot18(token)
+  end
+
+  def new_sets_resumption_token(start:)
+    token = [
+      ["start", start]
+    ].map{ |a| a.join(RESUMPTION_TOKEN_KEY_VALUE_SEPARATOR) }.
       join(RESUMPTION_TOKEN_COMPONENT_SEPARATOR)
     StringUtils.rot18(token)
   end

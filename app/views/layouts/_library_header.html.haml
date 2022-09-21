@@ -33,102 +33,97 @@
                 = link_to Role.label(role),
                           url_for(role: role),
                           class: "dropdown-item"
-
-          -# Administration menu
+          -# Global Administration menu
           .btn-group{role: "group"}
-            - im    = policy(Import).index?
-            - insts = policy(Institution).index?
-            - inst  = policy(Institution).show?
-            - ex    = policy(Item).export?
-            - ir    = policy(Item).review?
-            - re    = policy(RegisteredElement).index?
-            - mp    = policy(MetadataProfile).index?
-            - sp    = policy(SubmissionProfile).index?
-            - iv    = policy(Invitee).index?
-            - msg   = policy(Message).index?
-            - ta    = policy(Task).index?
-            - u     = policy(User).index?
-            - ug    = policy(UserGroup).index?
-            - if re || mp || sp || u || ug
-              %button#administration-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
-                                                                                     "aria-haspopup": "true",
-                                                                                     "data-toggle": "dropdown",
-                                                                                     type: "button"}
-                %i.fa.fa-lock-open
-                Administration
-              .dropdown-menu{"aria-labelledby": "administration-dropdown"}
-                - if ir
-                  = link_to(items_review_path, class: "dropdown-item") do
-                    %i.fa.fa-tasks
-                    Review Submissions
-                .dropdown-divider
-                - if re
-                  = link_to(registered_elements_path, class: "dropdown-item") do
-                    = icon_for(RegisteredElement)
-                    Element Registry
-                - if mp
-                  = link_to(metadata_profiles_path, class: "dropdown-item") do
-                    = icon_for(MetadataProfile)
-                    Metadata Profiles
-                - if sp
-                  = link_to(submission_profiles_path, class: "dropdown-item") do
-                    = icon_for(SubmissionProfile)
-                    Submission Profiles
-                - if im
-                  .dropdown-divider
-                  = link_to(imports_path, class: "dropdown-item") do
-                    = icon_for(Import)
-                    Import Items
-                - if ex
-                  = link_to(items_export_path, class: "dropdown-item") do
-                    %i.fa.fa-download
-                    Export Items
-                .dropdown-divider
-                - if iv
-                  = link_to(invitees_path, class: "dropdown-item") do
-                    %i.fa.fa-user-plus
-                    Invitees
-                - if u
-                  = link_to(users_path, class: "dropdown-item") do
-                    %i.fa.fa-user
-                    Users
-                - if ug
-                  = link_to(user_groups_path, class: "dropdown-item") do
-                    %i.fa.fa-users
-                    User Groups
-                - if insts || inst || msg
-                  .dropdown-divider
-                  - if insts
-                    = link_to(institutions_path, class: "dropdown-item") do
-                      = icon_for(Institution)
-                      Institutions
-                  - if inst && current_user&.institution
-                    = link_to(institution_path(current_user.institution),
-                              class: "dropdown-item") do
-                      = icon_for(Institution)
-                      My Institution
-                  - if msg
-                    .dropdown-divider
-                    = link_to(settings_path, class: "dropdown-item") do
-                      = icon_for(Setting)
-                      Settings
-                    = link_to(tasks_path, class: "dropdown-item") do
-                      = icon_for(Task)
-                      Tasks
-                    = link_to(file_formats_path, class: "dropdown-item") do
-                      = icon_for(FileFormat)
-                      File Formats
-                    = link_to(messages_path, class: "dropdown-item") do
-                      = icon_for(Message)
-                      Medusa Messages
-                    - config = ::Configuration.instance
-                    = link_to("#{config.medusa[:base_url]}/file_groups/#{config.medusa[:file_group_id]}",
-                              class: "dropdown-item", target: "_blank") do
-                      %i.fa.fa-database
-                      Medusa File Group
-                  = link_to(oai_pmh_path(verb: "Identify"), class: "dropdown-item", target: "_blank") do
-                    %i.fa.fa-exchange-alt
-                    OAI-PMH Endpoint
+            %button#administration-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
+                                                                                   "aria-haspopup": "true",
+                                                                                   "data-toggle": "dropdown",
+                                                                                   type: "button"}
+              %i.fa.fa-globe
+              Global Administration
+            .dropdown-menu{"aria-labelledby": "administration-dropdown"}
+              = link_to(institutions_path, class: "dropdown-item") do
+                = icon_for(Institution)
+                All Institutions
+              .dropdown-divider
+              = link_to(all_users_path, class: "dropdown-item") do
+                %i.fa.fa-user
+                All Users
+              = link_to(global_user_groups_path, class: "dropdown-item") do
+                %i.fa.fa-users
+                Global User Groups
+              .dropdown-divider
+              = link_to(settings_path, class: "dropdown-item") do
+                = icon_for(Setting)
+                Settings
+              = link_to(all_tasks_path, class: "dropdown-item") do
+                = icon_for(Task)
+                All Tasks
+              = link_to(file_formats_path, class: "dropdown-item") do
+                = icon_for(FileFormat)
+                File Formats
+              = link_to(messages_path, class: "dropdown-item") do
+                = icon_for(Message)
+                Medusa Messages
+              - config = ::Configuration.instance
+              = link_to("#{config.medusa[:base_url]}/file_groups/#{config.medusa[:file_group_id]}",
+                        class: "dropdown-item", target: "_blank") do
+                %i.fa.fa-database
+                Medusa File Group
+
+        - if current_user.effective_institution_admin?(current_institution)
+          -# Institution Administration menu
+          .btn-group{role: "group"}
+            %button#institution-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
+                                                                                "aria-haspopup": "true",
+                                                                                "data-toggle": "dropdown",
+                                                                                type: "button"}
+              = icon_for(Institution)
+              My Institution
+            .dropdown-menu{"aria-labelledby": "administration-dropdown"}
+              = link_to(institution_path(current_institution),
+                        class: "dropdown-item") do
+                = icon_for(Institution)
+                My Institution
+              .dropdown-divider
+              = link_to(items_review_path, class: "dropdown-item") do
+                %i.fa.fa-tasks
+                Review Submissions
+              .dropdown-divider
+              = link_to(registered_elements_path, class: "dropdown-item") do
+                = icon_for(RegisteredElement)
+                Element Registry
+              = link_to(metadata_profiles_path, class: "dropdown-item") do
+                = icon_for(MetadataProfile)
+                Metadata Profiles
+              = link_to(submission_profiles_path, class: "dropdown-item") do
+                = icon_for(SubmissionProfile)
+                Submission Profiles
+              .dropdown-divider
+              = link_to(imports_path, class: "dropdown-item") do
+                = icon_for(Import)
+                Import Items
+              = link_to(items_export_path, class: "dropdown-item") do
+                %i.fa.fa-download
+                Export Items
+              .dropdown-divider
+              = link_to(invitees_path, class: "dropdown-item") do
+                %i.fa.fa-user-plus
+                Invitees
+              = link_to(users_path, class: "dropdown-item") do
+                %i.fa.fa-user
+                Users
+              = link_to(user_groups_path, class: "dropdown-item") do
+                %i.fa.fa-users
+                User Groups
+              .dropdown-divider
+              = link_to(tasks_path, class: "dropdown-item") do
+                = icon_for(Task)
+                Tasks
+              .dropdown-divider
+              = link_to(oai_pmh_path(verb: "Identify"), class: "dropdown-item", target: "_blank") do
+                %i.fa.fa-exchange-alt
+                OAI-PMH Endpoint
 
         -# User menu
         .btn-group{role: "group"}
@@ -150,7 +145,7 @@
               %li.dropdown-divider
             = link_to(user_path(current_user), class: "dropdown-item") do
               = icon_for(:info)
-              Account Info
+              My Account
             = link_to(logout_path, method: :delete, class: "dropdown-item") do
               %i.fa.fa-sign-out-alt
               Log Out

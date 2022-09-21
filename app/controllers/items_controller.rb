@@ -5,11 +5,13 @@ class ItemsController < ApplicationController
   include MetadataSubmission
   include Search
 
-  before_action :ensure_logged_in, except: [:file_navigator, :index, :show]
-  before_action :set_item, except: [:export, :index, :process_review, :review]
+  before_action :ensure_logged_in, except: [:file_navigator, :index, :recent,
+                                            :show]
+  before_action :set_item, except: [:export, :index, :process_review, :recent,
+                                    :review]
   before_action :authorize_item, except: [:export, :index, :process_review,
-                                          :review]
-  before_action :store_location, only: [:index, :review, :show]
+                                          :recent, :review]
+  before_action :store_location, only: [:index, :recent, :review, :show]
 
   ##
   # Approves an item.
@@ -128,10 +130,13 @@ class ItemsController < ApplicationController
 
   ##
   # Responds to `GET/POST /items/export`. GET returns the form HTML and POST
-  # processes the form data.
+  # processes the form data. TODO: split off the GET handler into show_export
   #
   def export
     authorize Item
+    @registered_elements = RegisteredElement.
+      where(institution: current_institution).
+      order(:label)
     if request.post?
       # Process elements input into an array of element names.
       elements = params[:elements].reject(&:blank?)
@@ -149,15 +154,19 @@ class ItemsController < ApplicationController
       handles         = handles_str.split(",")
       handle_suffixes = handles.map{ |h| h.split("/").last.strip }
       handles         = Handle.where(suffix: handle_suffixes)
-      collections     = handles.select{ |h| h.collection_id.present? }.map(&:collection)
-      units           = handles.select{ |h| h.unit_id.present? }.map(&:unit)
+      collections     = handles.select{ |h| h.collection_id.present? }.
+        map(&:collection).
+        select{ |c| c.institution == current_institution }
+      units           = handles.select{ |h| h.unit_id.present? }.
+        map(&:unit).
+        select{ |c| c.institution == current_institution }
       csv             = CsvExporter.new.export(units:       units,
                                                collections: collections,
                                                elements:    elements)
       send_data csv,
-                type: "text/csv",
+                type:        "text/csv",
                 disposition: "attachment",
-                filename: "export.csv"
+                filename:    "exported_items.csv"
     end
   end
 
@@ -234,6 +243,28 @@ class ItemsController < ApplicationController
       ElasticsearchClient.instance.refresh
     end
     redirect_back fallback_location: items_review_path
+  end
+
+  ##
+  # Displays a list of recently added items, mainly for the benefit of the
+  # Google Scholar crawler.
+  #
+  # Responds to `GET /recent-items`.
+  #
+  def recent
+    @permitted_params = params.permit(:start)
+    @start            = @permitted_params[:start]
+    @window           = window_size
+    @items            = Item.search.
+      institution(current_institution).
+      aggregations(false).
+      filter_range(Item::IndexFields::CREATED, :gte, 2.weeks.ago).
+      order(Item::IndexFields::CREATED => :desc).
+      start(@start).
+      limit(@window)
+    @items            = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
+    @count            = @items.count
+    @current_page     = @items.page
   end
 
   ##

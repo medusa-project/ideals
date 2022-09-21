@@ -142,7 +142,7 @@ class ItemTest < ActiveSupport::TestCase
   test "as_change_hash() returns the correct structure" do
     @instance = items(:described)
     # add another title to test handling of multiple same-named elements
-    @instance.elements.build(registered_element: registered_elements(:dc_title),
+    @instance.elements.build(registered_element: registered_elements(:uiuc_dc_title),
                              string: "Alternate title")
     # add an embargo
     @instance.embargoes.build(kind:       Embargo::Kind::ALL_ACCESS,
@@ -203,7 +203,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "as_indexed_json() converts date-type element strings to ISO 8601" do
-    reg_e = registered_elements(:dc_date_issued)
+    reg_e = registered_elements(:uiuc_dc_date_issued)
     @instance.elements.build(registered_element: reg_e,
                              string:             "October 2015").save
     doc = @instance.as_indexed_json
@@ -360,7 +360,9 @@ class ItemTest < ActiveSupport::TestCase
     filename = "escher_lego.jpg"
     fixture  = file_fixture(filename)
     @instance.bitstreams.each do |bs|
-      bs.update!(permanent_key: Bitstream.permanent_key(@instance.id, filename))
+      bs.update!(permanent_key: Bitstream.permanent_key(institution_key: @instance.institution.key,
+                                                        item_id:         @instance.id,
+                                                        filename:        filename))
       bs.upload_to_permanent(fixture)
     end
 
@@ -519,6 +521,39 @@ class ItemTest < ActiveSupport::TestCase
     assert_nil @instance.element("bogus")
   end
 
+  # embargoed_for?()
+
+  test "embargoed_for?() returns false for an item with no embargoes" do
+    assert !@instance.embargoed_for?(users(:norights))
+  end
+
+  test "embargoed_for?() returns false for an item with only a download embargo" do
+    @instance.embargoes.build(kind:       Embargo::Kind::DOWNLOAD,
+                              expires_at: Time.now + 1.year).save!
+    assert !@instance.embargoed_for?(users(:norights))
+  end
+
+  test "embargoed_for?() returns false for an item with an all-access embargo to
+  which the given user is exempt" do
+    user    = users(:norights)
+    group   = user_groups(:temp)
+    embargo = @instance.embargoes.build(kind:       Embargo::Kind::ALL_ACCESS,
+                                        expires_at: Time.now + 1.year)
+    group.users         << user
+    embargo.user_groups << group
+    embargo.save!
+    group.save!
+
+    assert !@instance.embargoed_for?(user)
+  end
+
+  test "embargoed_for?() returns true for an item with an all-access embargo to
+  which the given user is not exempt" do
+    @instance.embargoes.build(kind:       Embargo::Kind::ALL_ACCESS,
+                              expires_at: Time.now + 1.year).save!
+    assert @instance.embargoed_for?(users(:norights))
+  end
+
   # exhume!()
 
   test "exhume!() sets the stage to APPROVED" do
@@ -656,7 +691,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "required_elements_present?() returns true if all required elements are
   present" do
-    @instance.elements.build(registered_element: registered_elements(:dc_title),
+    @instance.elements.build(registered_element: registered_elements(:uiuc_dc_title),
                              string:             "Title").save
     assert @instance.required_elements_present?
   end
@@ -664,7 +699,7 @@ class ItemTest < ActiveSupport::TestCase
   # save()
 
   test "save() prunes duplicate AscribedElements" do
-    re = registered_elements(:dc_title)
+    re = registered_elements(:uiuc_dc_title)
     @instance.elements.destroy_all
     @instance.elements.build(registered_element: re,
                              string:             "cats",
@@ -846,7 +881,7 @@ class ItemTest < ActiveSupport::TestCase
   test "validate() ensures that a submission includes all required elements" do
     item = items(:submitting)
     assert item.validate
-    item.elements.where(registered_element: registered_elements(:dc_title)).destroy_all
+    item.elements.where(registered_element: registered_elements(:uiuc_dc_title)).destroy_all
     item.stage = Item::Stages::SUBMITTED
     assert !item.validate
   end

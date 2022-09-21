@@ -10,8 +10,9 @@ class ImportsController < ApplicationController
   #
   def create
     authorize Import
-    @import      = Import.new(sanitized_params)
-    @import.user = current_user
+    @import             = Import.new(sanitized_params)
+    @import.user        = current_user
+    @import.institution = current_institution
     begin
       @import.save!
     rescue => e
@@ -50,6 +51,7 @@ class ImportsController < ApplicationController
   def index
     authorize Import
     @imports = Import.
+      where(institution: current_institution).
       where("created_at > ?", 6.months.ago).
       order(created_at: :desc)
     respond_to do |format|

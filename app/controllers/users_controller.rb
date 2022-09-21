@@ -1,10 +1,9 @@
-# frozen_string_literal: true
-
 class UsersController < ApplicationController
+
   before_action :ensure_logged_in
-  before_action :set_user, except: :index
-  before_action :authorize_user, except: :index
-  before_action :store_location, only: [:index, :show]
+  before_action :set_user, except: [:index, :index_all]
+  before_action :authorize_user, except: [:index, :index_all]
+  before_action :store_location, only: [:index, :index_all, :show]
 
   ##
   # Responds to `GET /users/:id/edit-properties`
@@ -17,22 +16,41 @@ class UsersController < ApplicationController
   ##
   # Responds to `GET /users`
   #
+  # @see index_all
+  #
   def index
-    authorize(User)
-    @permitted_params = params.permit(Search::RESULTS_PARAMS +
-                                        Search::SIMPLE_SEARCH_PARAMS +
-                                        [:class])
-    @start            = @permitted_params[:start].to_i
-    @window           = window_size
-    q                 = "%#{@permitted_params[:q]}%"
-    @users            = User.
-        where("LOWER(name) LIKE ? OR LOWER(uid) LIKE ? OR LOWER(email) LIKE ?", q, q, q).
-        where("type LIKE ?", "%#{@permitted_params[:class]}").
-        order(:name)
-    @count            = @users.count
-    @users            = @users.limit(@window).offset(@start)
-    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
-    @new_invitee      = Invitee.new
+    setup_index(current_institution)
+    respond_to do |format|
+      format.html {
+        if request.xhr?
+          render partial: "users", locals: { institution_column: false }
+        else
+          render "index"
+        end
+      }
+      format.json { render "index" }
+    end
+  end
+
+  ##
+  # Renders a list of all users in every institution.
+  #
+  # Responds to `GET /all-users`.
+  #
+  # @see index
+  #
+  def index_all
+    setup_index(nil)
+    respond_to do |format|
+      format.html {
+        if request.xhr?
+          render partial: "users", locals: { institution_column: true }
+        else
+          render "index_all"
+        end
+      }
+      format.json { render "index" }
+    end
   end
 
   ##
@@ -161,7 +179,29 @@ class UsersController < ApplicationController
   end
 
   def properties_params
-    params.require(:user).permit(:email, :name, :phone)
+    params.require(:user).permit(:email, :institution_id, :name, :phone)
+  end
+
+  def setup_index(institution)
+    authorize(User)
+    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+                                        Search::SIMPLE_SEARCH_PARAMS +
+                                        [:class, :institution_id])
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    q                 = "%#{@permitted_params[:q]&.downcase}%"
+    @users            = User.
+      where("LOWER(name) LIKE ? OR LOWER(uid) LIKE ? OR LOWER(email) LIKE ?", q, q, q).
+      where("type LIKE ?", "%#{@permitted_params[:class]}").
+      order(:name)
+    if @permitted_params[:institution_id].present?
+      @users          = @users.where(institution_id: @permitted_params[:institution_id])
+    end
+    @users            = @users.where(institution_id: institution.id) if institution
+    @count            = @users.count
+    @users            = @users.limit(@window).offset(@start)
+    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
+    @new_invitee      = Invitee.new
   end
 
 end

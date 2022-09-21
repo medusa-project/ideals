@@ -33,7 +33,6 @@ class MessagesController < ApplicationController
   end
 
   def show
-    @breadcrumbable = @message
   end
 
 

@@ -166,19 +166,15 @@ rails users:create_local_sysadmin[email,password]
 rails users:create_shib_sysadmin[netid]
 ```
 
-# Download Statistics
+# Content Storage
 
-When a file is downloaded from the web UI, a row is inserted in the `events`
-table. Download statistics can be viewed in table and chart form at item,
-collection, unit, and institution levels in the UI. Each of these, in
-succession, would require a more and more expensive database query. At the
-collection level, the query would probably already be too slow.
+Within the application S3 bucket, content is laid out in the following
+structure:
 
-To remedy this, the statistics table and chart query the
-`monthly_item_download_counts` reporting table instead of the `events` table.
-This table is populated monthly by the `downloads:compile_monthly_counts` rake
-task, run via cron. This task takes a couple of days to run against all of the
-UIUC Library's content.
+* `institutions/:institution_key/derivatives/:bitstream_id/:crop/:size/default.jpg`
+* `institutions/:institution_key/imports/:item_id/`
+* `institutions/:institution_key/storage/:item_id/`
+* `institutions/:institution_key/uploads/:item_id/`
 
 # Multi-Tenancy
 
@@ -187,24 +183,25 @@ always expected to be the case in the demo and production environments), the
 proxy supplies an `X-Forwarded-Host` header that conveys the fully-qualified
 domain name (FQDN) via which the app was accessed. The `current_institution()`
 method of `ApplicationController` (and `ApplicationHelper`) returns the
-Institution model associated with this FQDN in order to tailor the
-functionality to a particular institution.
+`Institution` model associated with this FQDN in order to scope the content
+(and customize some functionality) to a particular institution.
 
-In other environments, multi-tenancy can be tested by adding some lines to
-`/etc/hosts`:
+To get this working in development, first add a couple of institutions through
+the UI, giving them FQDNs of `ideals-ins1.local` and `ideals-ins2.local`. Then
+add these to `/etc/hosts`:
 
 ```
-127.0.0.1 ideals-host1.local
-127.0.0.1 ideals-host2.local
-# this is only used for testing data imported from DSpace
-127.0.0.1 ideals-uiuc.local
+127.0.0.1 ideals-ins1.local
+127.0.0.1 ideals-ins2.local
 ```
 
-(See also the `config.hosts` key in the `config/environments/*.rb` files.)
+(These hosts also need to be present in the `config.hosts` key in the
+`config/environments/*.rb` files.)
 
-Then, you can access http://ideals-host1:3000 and http://ideals-host2:3000 in
-order to play around with multi-tenancy.
-
+Then, you can access
+[http://ideals-ins1.local:3000](http://ideals-ins1.local:3000) and
+[http://ideals-ins2.local:3000](http://ideals-ins2.local:3000) in order to play
+around with multi-tenancy.
 
 # Branches & Environments
 

@@ -87,6 +87,12 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
+  config.active_record.yaml_column_permitted_classes = [
+    OmniAuth::AuthHash,
+    OmniAuth::AuthHash::InfoHash,
+    Symbol
+  ]
+
   # ActionMailer configuration
   Rails.application.reloader.to_prepare do
     app_config  = Rails.application.config

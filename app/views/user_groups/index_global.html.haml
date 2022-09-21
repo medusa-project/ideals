@@ -1,0 +1,22 @@
+- provide :body_id, "user_groups"
+- provide :title, "Global User Groups"
+
+.btn-group.float-right{role: "group"}
+  -# Add User Group button
+  %button.btn.btn-light.add-user-group{"data-target": "#add-user-group-modal",
+                                       "data-toggle": "modal",
+                                       type:          "button"}
+    %i.fa.fa-plus
+    Add Global User Group
+
+%h1 Global User Groups
+
+%ul
+  - @user_groups.each do |group|
+    %li= link_to(group.name, group)
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "add-user-group-modal", title: "Add Global User Group" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-user-group-modal", title: "Edit User Group" }
+

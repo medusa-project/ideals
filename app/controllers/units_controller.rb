@@ -59,7 +59,8 @@ class UnitsController < ApplicationController
   # Responds to `POST /units`
   #
   def create
-    @unit = Unit.new(unit_params)
+    @unit             = Unit.new(unit_params)
+    @unit.institution = current_institution
     authorize @unit
     begin
       ActiveRecord::Base.transaction do

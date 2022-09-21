@@ -16,8 +16,9 @@
         %button#check-all.btn.btn-light.btn-sm
           %i.far.fa-check-square
           Check All
+
     = hidden_field_tag "elements[]", ""
-    - RegisteredElement.order(:label).each do |element|
+    - @registered_elements.each do |element|
       .form-check
         = check_box_tag "elements[]",
                         element.name,

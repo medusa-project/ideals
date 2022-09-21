@@ -21,14 +21,18 @@ class LocalUser < User
   #
   # @param email [String]
   # @param password [String]
+  # @param institution [Institution] If not provided, the user will be placed
+  #        in the [Institution#default default institution].
   # @param name [String] If not provided, the email is used.
   # @return [LocalUser]
   #
-  def self.create_manually(email:, password:, name: nil)
+  def self.create_manually(email:, password:, institution: nil, name: nil)
+    institution ||= Institution.default
     ActiveRecord::Base.transaction do
       invitee = Invitee.find_by_email(email)
       unless invitee
         invitee = Invitee.create!(email:          email,
+                                  institution:    institution,
                                   approval_state: ApprovalState::APPROVED,
                                   note:           "Created as a sysadmin on the "\
                                                   "command line, bypassing the "\
@@ -44,10 +48,11 @@ class LocalUser < User
                                          activated:             true,
                                          activated_at:          Time.zone.now)
       end
-      identity.build_user(email: email,
-                          uid:   email,
-                          name:  name || email,
-                          type:  LocalUser.to_s)
+      identity.build_user(email:       email,
+                          uid:         email,
+                          institution: institution,
+                          name:        name || email,
+                          type:        LocalUser.to_s)
     end
   end
 

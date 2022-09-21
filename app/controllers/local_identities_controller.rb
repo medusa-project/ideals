@@ -1,7 +1,5 @@
-# frozen_string_literal: true
-
 ##
-# N.B.: see the documentation of {Invitee} for a detailed overview of the
+# N.B.: see the documentation of [Invitee] for a detailed overview of the
 # invitation & registration process.
 #
 class LocalIdentitiesController < ApplicationController
@@ -39,7 +37,7 @@ class LocalIdentitiesController < ApplicationController
   ##
   # Renders the "phase two" reset-password form, containing password and
   # password confirmation fields. (The "phase one" form is handled by
-  # {PasswordResetsController}.)
+  # [PasswordResetsController].)
   #
   # Responds to `GET /identities/:id/reset-password`. Requires a `token` query
   # argument.
@@ -80,16 +78,17 @@ class LocalIdentitiesController < ApplicationController
 
   ##
   # Handles {register registration form} submissions. Invoked only once per
-  # unique {LocalIdentity} instance.
+  # unique [LocalIdentity] instance.
   #
   # Responds to `PATCH/PUT /identities/:id`.
   #
   def update
     begin
-      @identity.build_user(email:    @identity.email,
-                           uid:      @identity.email,
-                           name:     @identity.email,
-                           type:     LocalUser.to_s) unless @identity.user
+      @identity.build_user(email:          @identity.email,
+                           uid:            @identity.email,
+                           name:           @identity.email,
+                           institution_id: @identity.invitee.institution_id,
+                           type:           LocalUser.to_s) unless @identity.user
       @identity.update!(identity_params)
       @identity.create_activation_digest
       @identity.send_post_registration_email
@@ -98,8 +97,8 @@ class LocalIdentitiesController < ApplicationController
       setup_registration_view
       render "register"
     else
-      flash['success'] = "Thanks for registering! Check your email for a link "\
-          "to log in and start using IDEALS."
+      flash['success'] = "Thanks for registering! Check your email for a "\
+                         "link to log in and start using IDEALS."
       redirect_to root_url
     end
   end

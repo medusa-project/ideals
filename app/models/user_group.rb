@@ -4,24 +4,30 @@
 #
 # # Attributes
 #
-# * `created_at` Managed by ActiveRecord.
-# * `key`        Short unique identifying key.
-# * `name`       Arbitrary but unique group name.
-# * `updated_at` Managed by ActiveRecord.
+# * `created_at`     Managed by ActiveRecord.
+# * `institution_id` Foreign key to [Institution] indicating that the group is
+#                    exclusive to that institution. May also be `nil`,
+#                    indicating that the group is global, available to all
+#                    institutions.
+# * `key`            Short unique identifying key.
+# * `name`           Arbitrary but unique group name.
+# * `updated_at`     Managed by ActiveRecord.
 #
 class UserGroup < ApplicationRecord
   include Breadcrumb
 
   SYSTEM_REQUIRED_GROUPS = %w(sysadmin)
 
+  belongs_to :institution, optional: true
+
   has_many :ad_groups
-  has_many :administrator_groups
   has_many :bitstream_authorizations
   has_many :departments
   has_many :email_patterns
   has_many :hosts
   has_many :manager_groups
   has_many :submitter_groups
+  has_many :unit_administrator_groups
 
   has_and_belongs_to_many :affiliations
   has_and_belongs_to_many :embargoes
@@ -60,6 +66,10 @@ class UserGroup < ApplicationRecord
 
   def breadcrumb_label
     name
+  end
+
+  def breadcrumb_parent
+    UserGroup
   end
 
   ##

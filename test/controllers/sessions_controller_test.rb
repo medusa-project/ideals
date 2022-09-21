@@ -26,8 +26,19 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
+  test "create() with user of different institution responds with HTTP 401" do
+    skip # this is not currently testable--see inline comment in create()
+    user = users(:northeast)
+    post "/auth/identity/callback", params: {
+      auth_key: user.email,
+      password: "password"
+    }
+    assert_response :unauthorized
+  end
+
   test "create() with valid credentials redirects to root URL" do
     user = users(:norights)
+    user.institution.update!(default: true)
     post "/auth/identity/callback", params: {
         auth_key: user.email,
         password: "password"
@@ -37,6 +48,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with valid credentials sets the user's auth hash" do
     user = users(:norights)
+    user.institution.update!(default: true)
     user.update!(auth_hash: nil)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
@@ -48,6 +60,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with valid credentials sets the user's last-logged-in time" do
     user = users(:norights)
+    user.institution.update!(default: true)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
       password: "password"

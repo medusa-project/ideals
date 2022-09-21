@@ -23,7 +23,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              submission_profile_element: {
-                 registered_element_id: registered_elements(:dc_title).id,
+                 registered_element_id: registered_elements(:uiuc_dc_title).id,
                  submission_profile_id: @profile.id,
                  position: 0
              }
@@ -37,7 +37,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              submission_profile_element: {
-                 registered_element_id: registered_elements(:dc_title).id,
+                 registered_element_id: registered_elements(:uiuc_dc_title).id,
                  submission_profile_id: @profile.id,
                  position: 0
              }
@@ -52,7 +52,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
                submission_profile_element: {
-                   registered_element_id: registered_elements(:dc_title).id,
+                   registered_element_id: registered_elements(:uiuc_dc_title).id,
                    submission_profile_id: @profile.id,
                    position: 0
                }
@@ -66,7 +66,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              submission_profile_element: {
-                 registered_element_id: registered_elements(:dc_title).id,
+                 registered_element_id: registered_elements(:uiuc_dc_title).id,
                  submission_profile_id: @profile.id,
                  position: -1 # invalid
              }
@@ -154,7 +154,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               submission_profile_element: {
-                  registered_element_id: registered_elements(:dc_title).id,
+                  registered_element_id: registered_elements(:uiuc_dc_title).id,
                   submission_profile_id: @profile.id,
                   position: 2
               }
@@ -170,7 +170,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               submission_profile_element: {
-                  registered_element_id: registered_elements(:dc_title).id,
+                  registered_element_id: registered_elements(:uiuc_dc_title).id,
                   submission_profile_id: @profile.id,
                   position: 0
               }
@@ -185,7 +185,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               submission_profile_element: {
-                  registered_element_id: registered_elements(:dc_title).id,
+                  registered_element_id: registered_elements(:uiuc_dc_title).id,
                   submission_profile_id: @profile.id,
                   position: -1 # invalid
               }

@@ -1,7 +1,11 @@
 - provide :title, 'Tasks'
 - provide :body_id, 'tasks'
 
-%h1 Tasks
+%h1
+  Tasks
+  %small
+    in
+    = current_institution.name
 
 #tasks-list
   = render partial: "tasks"

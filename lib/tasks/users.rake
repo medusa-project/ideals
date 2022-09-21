@@ -3,17 +3,19 @@ require 'rake'
 namespace :users do
 
   desc "Create a local-identity user"
-  task :create_local, [:email, :password, :name] => :environment do |task, args|
-    user = LocalUser.create_manually(email:    args[:email],
-                                     password: args[:password],
-                                     name:     args[:name])
+  task :create_local, [:email, :password, :name, :institution_key] => :environment do |task, args|
+    user = LocalUser.create_manually(email:       args[:email],
+                                     password:    args[:password],
+                                     name:        args[:name],
+                                     institution: Institution.find_by_key(args[:institution_key]))
     user.save!
   end
 
   desc "Create a local-identity sysadmin user"
-  task :create_local_sysadmin, [:email, :password] => :environment do |task, args|
-    user = LocalUser.create_manually(email:    args[:email],
-                                     password: args[:password])
+  task :create_local_sysadmin, [:email, :password, :institution_key] => :environment do |task, args|
+    user = LocalUser.create_manually(email:       args[:email],
+                                     password:    args[:password],
+                                     institution: Institution.find_by_key(args[:institution_key]))
     user.user_groups << UserGroup.sysadmin
     user.save!
   end
@@ -39,6 +41,14 @@ namespace :users do
       Invitee.destroy_by(email: email)
       User.destroy_by(email: email)
     end
+  end
+
+  desc "Make a user a unit administrator"
+  task :make_institution_admin, [:email, :institution_key] => :environment do |task, args|
+    user        = User.find_by_email(args[:email])
+    institution = Institution.find_by_key(args[:institution_key])
+    institution.administering_users << user
+    institution.save!
   end
 
   desc "Make a user a unit administrator"

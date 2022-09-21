@@ -7,12 +7,30 @@ empty:
   org_dn: empty
   default: false
 
-somewhere:
-  key: somewhere
-  fqdn: somewhere.edu
-  name: University of Somewhere
-  org_dn: o=University of Somewhere,dc=somewhere,dc=edu
+example:
+  key: example
+  fqdn: example.edu
+  name: Example University
+  org_dn: o=Example University,dc=example,dc=edu
   default: false
+
+northeast:
+  key: northeast
+  fqdn: northeast.edu
+  name: Northeast University
+  org_dn: o=Northeast University,dc=northeast,dc=edu
+  default: false
+  administering_groups:
+    - northeast_admins
+
+southwest:
+  key: southwest
+  fqdn: southwest.edu
+  name: Southwest University
+  org_dn: o=Southwest University,dc=southwest,dc=edu
+  default: false
+  administering_groups:
+    - southwest_admins
 
 uiuc:
   key: uiuc
@@ -20,3 +38,5 @@ uiuc:
   name: University of Illinois at Urbana-Champaign
   org_dn: <%= DspaceImporter::UIUC_ORG_DN %>
   default: true
+  administering_groups:
+    - uiuc_admins

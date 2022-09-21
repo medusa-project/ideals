@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   match "/logout", to: "sessions#destroy", as: :logout, via: :all
   match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: [:get, :post]
 
+  match '/all-tasks', to: "tasks#index_all", via: :get, as: "all_tasks"
+  match '/all-users', to: "users#index_all", via: :get, as: "all_users"
   resources :collections, except: [:destroy, :edit, :new] do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/about", to: "collections#show_about", via: :get,
@@ -48,6 +50,8 @@ Rails.application.routes.draw do
     match "/file", to: "downloads#file", via: :get, as: "file"
   end
   resources :file_formats, path: "file-formats", only: :index
+  match '/global-user-groups', to: "user_groups#index_global", via: :get,
+        as: "global_user_groups"
   match "/handle/:prefix/:suffix", to: "handles#redirect", via: :get, as: "redirect_handle"
   match "/health", to: "health#index", via: :get, as: "health"
   resources :imports do
@@ -56,6 +60,10 @@ Rails.application.routes.draw do
   end
   resources :institutions, param: :key do
     # These all render content for the main tab panes in show-unit view via XHR.
+    match "/access", to: "institutions#show_access", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-administrators", to: "institutions#edit_administrators", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "institutions#show_statistics", via: :get,
@@ -65,16 +73,6 @@ Rails.application.routes.draw do
 
     match "/item-download-counts", to: "institutions#item_download_counts", via: :get
     match "/statistics-by-range", to: "institutions#statistics_by_range", via: :get
-  end
-  resources :local_identities, only: [:update], path: "identities" do
-    match "/activate", to: "local_identities#activate", via: :get
-    match "/edit-password", to: "local_identities#edit_password", via: :get,
-          constraints: lambda { |request| request.xhr? }
-    match "/register", to: "local_identities#register", via: :get
-    match "/reset-password", to: "local_identities#new_password", via: :get
-    match "/reset-password", to: "local_identities#reset_password", via: [:patch, :post]
-    match "/update-password", to: "local_identities#update_password", via: [:patch, :post],
-          constraints: lambda { |request| request.xhr? }
   end
   resources :invitees, except: [:edit, :update] do
     collection do
@@ -119,12 +117,23 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/withdraw", to: "items#withdraw", via: :patch
   end
+  resources :local_identities, only: [:update], path: "identities" do
+    match "/activate", to: "local_identities#activate", via: :get
+    match "/edit-password", to: "local_identities#edit_password", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/register", to: "local_identities#register", via: :get
+    match "/reset-password", to: "local_identities#new_password", via: :get
+    match "/reset-password", to: "local_identities#reset_password", via: [:patch, :post]
+    match "/update-password", to: "local_identities#update_password", via: [:patch, :post],
+          constraints: lambda { |request| request.xhr? }
+  end
   resources :messages, only: [:index, :show]
   resources :metadata_profiles, path: "metadata-profiles" do
     match "/clone", to: "metadata_profiles#clone", via: :post
     resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]
   end
   match '/oai-pmh', to: 'oai_pmh#handle', via: %w(get post), as: 'oai_pmh'
+  match "/recent-items", to: "items#recent", via: :get, as: "recent_items"
   match "/reset-password", to: "password_resets#get", via: :get
   match "/reset-password", to: "password_resets#post", via: :post
   resources :registered_elements, param: :name, path: "elements"
@@ -166,7 +175,7 @@ Rails.application.routes.draw do
     match "/statistics-by-range", to: "units#statistics_by_range", via: :get
     match "/undelete", to: "units#undelete", via: :post
   end
-  resources :user_groups, path: "user-groups", except: :new do
+  resources :user_groups, path: "user-groups" do
     match "/edit-ad-groups", to: "user_groups#edit_ad_groups", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-affiliations", to: "user_groups#edit_affiliations", via: :get,

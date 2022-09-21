@@ -59,10 +59,10 @@ class Unit < ApplicationRecord
   belongs_to :metadata_profile, inverse_of: :units, optional: true
   belongs_to :parent, class_name: "Unit", foreign_key: "parent_id", optional: true
 
-  has_many :administrators
+  has_many :administrators, class_name: "UnitAdministrator"
   has_many :administering_users, through: :administrators,
            class_name: "User", source: :user
-  has_many :administrator_groups
+  has_many :administrator_groups, class_name: "UnitAdministratorGroup"
   has_many :administering_groups, through: :administrator_groups,
            class_name: "UserGroup", source: :user_group
   has_many :unit_collection_memberships
@@ -71,7 +71,7 @@ class Unit < ApplicationRecord
   has_many :units, foreign_key: "parent_id", dependent: :restrict_with_exception
   has_one :handle
   has_one :primary_administrator_relationship, -> { where(primary: true) },
-          class_name: "Administrator"
+          class_name: "UnitAdministrator"
   has_one :primary_administrator, through: :primary_administrator_relationship,
           source: :user
   scope :top, -> { where(parent_id: nil) }
@@ -84,8 +84,6 @@ class Unit < ApplicationRecord
   after_save :assign_handle, if: -> { handle.nil? && !DspaceImporter.instance.running? }
   after_create :create_default_collection, unless: -> { DspaceImporter.instance.running? }
   before_destroy :validate_empty
-
-  breadcrumbs parent: :parent, label: :title
 
   ##
   # @return [Enumerable<User>]
@@ -170,6 +168,14 @@ class Unit < ApplicationRecord
     doc[IndexFields::SHORT_DESCRIPTION]     = self.short_description
     doc[IndexFields::TITLE]                 = self.title
     doc
+  end
+
+  def breadcrumb_label
+    self.title
+  end
+
+  def breadcrumb_parent
+    self.parent
   end
 
   ##

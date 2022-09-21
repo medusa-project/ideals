@@ -841,6 +841,23 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.review?
   end
 
+  test "review?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @element)
+    assert policy.review?
+  end
+
+  test "review?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ItemPolicy.new(context, @element)
+    assert !policy.review?
+  end
+
   test "review?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)

@@ -85,7 +85,10 @@ class BitstreamTest < ActiveSupport::TestCase
     bs       = Bitstream.new_in_staging(item:     item,
                                         filename: filename,
                                         length:   length)
-    assert_equal Bitstream.staging_key(item.id, filename), bs.staging_key
+    assert_equal Bitstream.staging_key(institution_key: item.institution.key,
+                                       item_id:         item.id,
+                                       filename:        filename),
+                 bs.staging_key
     assert_equal length, bs.length
     assert_equal filename, bs.original_filename
   end
@@ -93,15 +96,21 @@ class BitstreamTest < ActiveSupport::TestCase
   # permanent_key()
 
   test "permanent_key() returns a correct key" do
-    assert_equal "#{Bitstream::PERMANENT_KEY_PREFIX}/30/cats.jpg",
-                 Bitstream.permanent_key(30, "cats.jpg")
+    expected = ["institutions", "test", "storage", 30, "cats.jpg"].join("/")
+    assert_equal expected,
+                 Bitstream.permanent_key(institution_key: "test",
+                                         item_id:         30,
+                                         filename:        "cats.jpg")
   end
 
   # staging_key()
 
   test "staging_key() returns a correct key" do
-    assert_equal "#{Bitstream::STAGING_KEY_PREFIX}/30/cats.jpg",
-                 Bitstream.staging_key(30, "cats.jpg")
+    expected = ["institutions", "test", "uploads", 30, "cats.jpg"].join("/")
+    assert_equal expected,
+                 Bitstream.staging_key(institution_key: "test",
+                                       item_id:         30,
+                                       filename:        "cats.jpg")
   end
 
   # add_download()
@@ -454,8 +463,9 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance = bitstreams(:submitted_in_staging)
     client = S3Client.instance
     bucket = ::Configuration.instance.storage[:bucket]
-    key    = Bitstream.staging_key(@instance.item_id,
-                                   @instance.original_filename)
+    key    = Bitstream.staging_key(institution_key: @instance.institution.key,
+                                   item_id:         @instance.item_id,
+                                   filename:        @instance.original_filename)
 
     assert client.object_exists?(bucket: bucket, key: key)
 
@@ -468,8 +478,9 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance = bitstreams(:approved_in_permanent)
     client    = S3Client.instance
     bucket    = ::Configuration.instance.storage[:bucket]
-    key       = Bitstream.permanent_key(@instance.item_id,
-                                        @instance.original_filename)
+    key       = Bitstream.permanent_key(institution_key: @instance.institution.key,
+                                        item_id:         @instance.item_id,
+                                        filename:        @instance.original_filename)
 
     assert client.object_exists?(bucket: bucket, key: key)
 
@@ -678,6 +689,12 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  # institution()
+
+  test "institution() returns the owning institution" do
+    assert_same @instance.item.institution, @instance.institution
+  end
+
   # length
 
   test "length must be greater than or equal to zero" do
@@ -745,7 +762,9 @@ class BitstreamTest < ActiveSupport::TestCase
       end
 
       assert_nil @instance.staging_key
-      assert_equal Bitstream.permanent_key(@instance.item_id, @instance.original_filename),
+      assert_equal Bitstream.permanent_key(institution_key: @instance.institution.key,
+                                           item_id:         @instance.item_id,
+                                           filename:        @instance.original_filename),
                    @instance.permanent_key
     ensure
       @instance.delete_from_staging
@@ -851,8 +870,9 @@ class BitstreamTest < ActiveSupport::TestCase
   test "read_full_text() works when full_text_checked_at is set and
   force argument is true" do
     @instance               = bitstreams(:approved_in_permanent)
-    @instance.permanent_key = Bitstream.permanent_key(@instance.item_id,
-                                                      @instance.original_filename)
+    @instance.permanent_key = Bitstream.permanent_key(institution_key: @instance.institution.key,
+                                                      item_id:         @instance.item_id,
+                                                      filename:        @instance.original_filename)
     checked_at = Time.now
     text       = "cats"
     @instance.update!(full_text_checked_at: checked_at)
@@ -948,7 +968,10 @@ class BitstreamTest < ActiveSupport::TestCase
   changed" do
     @instance = bitstreams(:submitted_in_staging)
     @instance.item.assign_handle
-    @instance.update!(permanent_key: Bitstream::PERMANENT_KEY_PREFIX + "/new_key")
+    @instance.update!(permanent_key: ["institutions",
+                                      @instance.institution.key,
+                                      "storage",
+                                      "new_key"].join("/"))
     AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
       assert_not_nil message
     end
@@ -1045,7 +1068,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "upload_to_permanent() uploads a file to the application bucket" do
     begin
       fixture = file_fixture("escher_lego.jpg")
-      key     = Bitstream::PERMANENT_KEY_PREFIX + "file"
+      key     = %w[institutions uiuc storage file].join("/")
       @instance.update!(permanent_key: key)
       @instance.upload_to_permanent(fixture)
 

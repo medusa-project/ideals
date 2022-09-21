@@ -1,7 +1,6 @@
-# frozen_string_literal: true
-
 class UserGroupPolicy < ApplicationPolicy
-  attr_reader :user, :role, :user_group
+
+  attr_reader :user, :institution, :role, :user_group
 
   ##
   # @param request_context [RequestContext]
@@ -9,6 +8,7 @@ class UserGroupPolicy < ApplicationPolicy
   #
   def initialize(request_context, user_group)
     @user        = request_context&.user
+    @institution = request_context&.institution
     @role        = request_context&.role_limit
     @user_group  = user_group
   end
@@ -17,12 +17,14 @@ class UserGroupPolicy < ApplicationPolicy
     if !user
       return LOGGED_OUT_RESULT
     elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?) ||
-        (role >= Role::UNIT_ADMINISTRATOR && user.administrators.count > 0) ||
+        (role >= Role::INSTITUTION_ADMINISTRATOR && user.institution_administrators.count > 0) ||
+        (role >= Role::UNIT_ADMINISTRATOR && user.unit_administrators.count > 0) ||
         (role >= Role::COLLECTION_MANAGER && user.managers.count > 0) # IR-67
       return AUTHORIZED_RESULT
     end
     { authorized: false,
-      reason: "You must be a unit administrator or collection manager." }
+      reason: "You must be an administrator of an institution or unit, or a "\
+              "manager of a collection." }
   end
 
   def destroy
@@ -30,7 +32,7 @@ class UserGroupPolicy < ApplicationPolicy
     if result[:authorized] &&
         UserGroup::SYSTEM_REQUIRED_GROUPS.include?(user_group.key)
       return { authorized: false,
-               reason: "This group cannot be deleted." }
+               reason:     "This group cannot be deleted." }
     end
     result
   end
@@ -71,12 +73,16 @@ class UserGroupPolicy < ApplicationPolicy
     create
   end
 
+  def index_global
+    effective_sysadmin(user, role)
+  end
+
   def new
     create
   end
 
   def show
-    index
+    user_group.institution ? index : index_global
   end
 
   def update

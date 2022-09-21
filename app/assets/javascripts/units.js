@@ -97,11 +97,18 @@ const UnitView = function() {
                 refreshResults();
             });
             // When the search-type tab is changed, clear the input from all
-            // other tabs.
-            tabContent.find('a[data-toggle="pill"]').on('hidden.bs.tab', function(e) {
+            // sibling tabs.
+            tabContent.find('#search-tabs > li > a[data-toggle="pill"]').on('hidden.bs.tab', function(e) {
                 const hiddenPane = $($(e.target).attr("href"));
                 hiddenPane.find("input[type=text], input[type=search], textarea").val("");
+                hiddenPane.find("select > option:first-child").prop("selected", "selected");
                 searchControls.trigger("change");
+            });
+            // When a date search type tab is changed, clear the input from
+            // the hidden tab.
+            tabContent.find('.date-search-type > li > a[data-toggle="pill"]').on('hidden.bs.tab', function(e) {
+                const hiddenPane = $($(e.target).attr("href"));
+                hiddenPane.find("select > option:first-child").prop("selected", "selected");
             });
 
             const showOrHideDirectionRadios = function() {

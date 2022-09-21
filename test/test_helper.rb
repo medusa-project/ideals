@@ -20,12 +20,15 @@ class ActiveSupport::TestCase
   def fix_bitstream_keys(bitstream)
     submitted_for_ingest = bitstream.submitted_for_ingest
     if bitstream.staging_key.present?
-      bitstream.staging_key = Bitstream.staging_key(bitstream.item_id,
-                                                    bitstream.original_filename)
+      bitstream.staging_key = Bitstream.staging_key(institution_key: bitstream.institution.key,
+                                                    item_id:         bitstream.item_id,
+                                                    filename:        bitstream.original_filename)
     end
     if bitstream.permanent_key.present?
-      bitstream.permanent_key = Bitstream.permanent_key(bitstream.item_id,
-                                                        bitstream.original_filename)
+      bitstream.permanent_key = Bitstream.permanent_key(
+        institution_key: bitstream.institution.key,
+        item_id:         bitstream.item_id,
+        filename:        bitstream.original_filename)
     end
     bitstream.save!
     # Restore submitted_for_ingest to its initial value
@@ -66,6 +69,12 @@ class ActiveSupport::TestCase
 
   def log_out
     delete logout_path
+  end
+
+  def make_sysadmin(user)
+    user.user_groups << user_groups(:sysadmin)
+    user.save!
+    user
   end
 
   def clear_message_queue

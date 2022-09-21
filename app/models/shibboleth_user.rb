@@ -71,9 +71,15 @@ class ShibbolethUser < User
   def belongs_to_ad_group?(group)
     group = group.to_s
     if Rails.env.development? || Rails.env.test?
-      return self.netid.include?("admin") && group.include?("admin")
+      groups = Configuration.instance.ad.dig(:groups, self.uid)
+      return groups&.include?(group)
     end
-    LdapQuery.new.is_member_of?(self.netid, group)
+    user = UiucLibAd::Entity.new(entity_cn: self.netid)
+    begin
+      return user.is_member_of?(group_cn: group)
+    rescue UiucLibAd::NoDNFound
+      return false
+    end
   end
 
   def netid
@@ -104,6 +110,7 @@ class ShibbolethUser < User
                        "#{auth.dig("extra", "raw_info", "sn")}"
     self.name        = self.uid if self.name.blank?
     self.org_dn      = auth.dig("extra", "raw_info", "org-dn")
+    self.institution = Institution.find_by_org_dn(self.org_dn)
     self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
     self.affiliation = Affiliation.from_shibboleth(auth)
     dept             = auth.dig("extra", "raw_info", "departmentCode")

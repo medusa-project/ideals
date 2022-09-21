@@ -25,8 +25,6 @@
 #
 class Message < ApplicationRecord
 
-  include Breadcrumb
-
   class Operation
     DELETE = "delete"
     INGEST = "ingest"

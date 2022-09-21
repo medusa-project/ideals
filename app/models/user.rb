@@ -5,12 +5,25 @@
 # using Rails single-table inheritance. (Basically this just means that their
 # class name is stored in the `type` column.)
 #
+# # Institution Membership
+#
+# The process by which a user is made a member of an institution varies
+# depending on the subclass:
+#
+# * For [LocalUser]s, the user either requests to join a particular
+#   institution, or is invited into a particular institution by a sysadmin at
+#   the time they are invited to register.
+# * For [ShibbolethUser]s, the user's "org DN" provided by the IdP is matched
+#   against an [Institution]'s {Institution#org_dn} property at login.
+#
 # # Attributes
 #
 # * `auth_hash`         Serialized OmniAuth hash that was supplied at last
 #                       login, composed of information from the Shibboleth IdP.
 # * `created_at`        Managed by ActiveRecord.
 # * `email`             Email address.
+# * `institution_id`    Foreign key to [Institution] representing the
+#                       institution of which the instance is a member.
 # * `last_logged_in_at` Date/time of last login.
 # * `local_identity_id` Foreign key to [LocalIdentity]. Used only by
 #                       [LocalUser]s; set during processing of the
@@ -18,8 +31,7 @@
 # * `name`              The user's name in whatever format they choose to
 #                       provide it.
 # * `org_dn`            `eduPersonOrgDN` property supplied by Shibboleth. Only
-#                       [ShibbolethUser]s have this. This is used as the
-#                       association column between [Institution].
+#                       [ShibbolethUser]s have this. TODO: this is probably not needed anymore now that we have institution_id
 # * `phone`             The user's phone number.
 # * `type`              Supports Rails single-table inheritance (STI).
 # * `uid`               For [ShibbolethUser]s, this is the UID provided by
@@ -35,11 +47,12 @@ class User < ApplicationRecord
   belongs_to :affiliation, optional: true
   belongs_to :identity, class_name: "LocalIdentity",
              foreign_key: "local_identity_id", inverse_of: :user, optional: true
+  belongs_to :institution, optional: true
   has_one :department
-  # ShibbolethUsers only!
-  has_many :administrators
-  has_many :administering_units, through: :administrators, source: :unit
   has_many :events
+  has_many :institution_administrators
+  has_many :administering_institutions, through: :institution_administrators,
+           source: :institution
   has_many :invitees, inverse_of: :inviting_user, foreign_key: :inviting_user_id
   has_many :managers
   has_many :managing_collections, through: :managers, source: :collection
@@ -50,6 +63,9 @@ class User < ApplicationRecord
   has_many :submitters
   has_many :submitting_collections, through: :submitters, source: :collection
   has_many :tasks
+  # ShibbolethUsers only!
+  has_many :unit_administrators
+  has_many :administering_units, through: :unit_administrators, source: :unit
   # This includes only directly assigned user groups. See `belongs_to_user_group?()`
   has_and_belongs_to_many :user_groups
 
@@ -61,8 +77,6 @@ class User < ApplicationRecord
   validates_uniqueness_of :uid, case_sensitive: false
 
   serialize :auth_hash
-
-  breadcrumbs label: :name
 
   ##
   # @param string [String] Autocomplete text field string.
@@ -80,21 +94,28 @@ class User < ApplicationRecord
   end
 
   ##
-  # @return [Boolean] Whether the instance is an administrator of any
-  # [Institution].
-  # @see institution_admin?
-  # @see effective_institution_admin?
-  #
-  def any_institution_admin?
-    Institution.where(org_dn: self.org_dn).count > 0
-  end
-
-  ##
   # @param user_group [UserGroup]
   # @return [Boolean]
   #
   def belongs_to_user_group?(user_group)
     user_group.includes?(self)
+  end
+
+  def breadcrumb_label
+    self.name
+  end
+
+  def breadcrumb_parent
+    User
+  end
+
+  ##
+  # @param institution [Institution]
+  # @return [Boolean] Whether the instance is effectively an administrator of
+  #                   the given institution.
+  #
+  def effective_institution_admin?(institution)
+    sysadmin? || institution_admin?(institution)
   end
 
   ##
@@ -104,9 +125,11 @@ class User < ApplicationRecord
   #                   administrator.
   # @see #manager?
   #
-  def effective_manager?(collection)
+  def effective_manager?(collection) # TODO: rename to effective_collection_manager?
     # Check for sysadmin.
     return true if sysadmin?
+    # Check for institution admin.
+    return true if institution_admin?(collection.institution)
     # Check for unit admin.
     collection.all_units.each do |unit|
       return true if effective_unit_admin?(unit)
@@ -125,8 +148,11 @@ class User < ApplicationRecord
   #         authorized to submit an item.
   #
   def effective_submittable_collections
-    return Collection.all if sysadmin?
-    collections = Set.new
+    if effective_institution_admin?(self.institution)
+      return Collection.joins(:units).where("units.institution_id = ?",
+                                            self.institution_id)
+    end
+    collections  = Set.new
     collections += self.administering_units.map(&:collections).flatten
     collections += self.managing_collections
     collections += self.submitting_collections
@@ -137,10 +163,10 @@ class User < ApplicationRecord
   # @param collection [Collection]
   # @return [Boolean] Whether the instance is an effective submitter in the
   #                   given collection, either directly or as a collection
-  #                   manager or unit or system administrator.
+  #                   manager or unit, institution, or system administrator.
   # @see #submitter?
   #
-  def effective_submitter?(collection)
+  def effective_submitter?(collection) # TODO: rename to effective_collection_submitter?
     return true if effective_manager?(collection)
     # Check the collection itself.
     return true if submitter?(collection)
@@ -152,23 +178,15 @@ class User < ApplicationRecord
   end
 
   ##
-  # @param institution [Institution]
-  # @return [Boolean] Whether the instance is effectively an administrator of
-  #                   the given institution.
-  #
-  def effective_institution_admin?(institution)
-    sysadmin? || institution_admin?(institution)
-  end
-
-  ##
   # @param unit [Unit]
   # @return [Boolean] Whether the instance is effectively an administrator of
   #                   the given unit.
   # @see unit_admin?
   #
   def effective_unit_admin?(unit)
-    # Sysadmins can do anything.
-    return true if sysadmin?
+    # Check to see whether the user is an administrator of the unit's
+    # institution.
+    return true if effective_institution_admin?(unit.institution)
     # Check to see whether the user is an administrator of the unit itself.
     return true if unit_admin?(unit)
     # Check all of its parent units.
@@ -179,22 +197,19 @@ class User < ApplicationRecord
   end
 
   ##
-  # @return [Institution,nil] Institution with a matching org DN.
-  #
-  def institution
-    self.org_dn ? Institution.find_by_org_dn(self.org_dn) : nil
-  end
-
-  ##
   # @param institution [Institution]
-  # @return [Boolean] Whether the instance is an administrator of their own
-  #                   institution.
-  # @see any_institution_admin?
+  # @return [Boolean] Whether the instance is a direct administrator of the
+  #                   given institution.
   #
   def institution_admin?(institution)
     return false unless institution
-    # TODO: We need an institution-admin AD group
-    self.org_dn == institution.org_dn
+    # Check for a directly assigned administrator.
+    return true if institution.administrators.where(user_id: self.id).count > 0
+    # Check for membership in an administering user group.
+    institution.administering_groups.each do |group|
+      return true if self.belongs_to_user_group?(group)
+    end
+    false
   end
 
   ##
@@ -203,7 +218,7 @@ class User < ApplicationRecord
   #                   collection.
   # @see #effective_manager?
   #
-  def manager?(collection)
+  def manager?(collection) # TODO: rename to collection_manager?
     return true if collection.managers.where(user_id: self.id).count > 0
     collection.managing_groups.each do |group|
       return true if self.belongs_to_user_group?(group)
@@ -217,7 +232,7 @@ class User < ApplicationRecord
   #                   collection.
   # @see #effective_submitter?
   #
-  def submitter?(collection)
+  def submitter?(collection) # TODO: rename to collection_submitter?
     return true if collection.submitters.where(user_id: self.id).count > 0
     collection.submitting_groups.each do |group|
       return true if self.belongs_to_user_group?(group)

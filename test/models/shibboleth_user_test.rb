@@ -84,6 +84,7 @@ class ShibbolethUserTest < ActiveSupport::TestCase
     assert_equal "(888) 555-5555", user.phone
     assert_equal "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
                  user.org_dn
+    assert_equal institutions(:uiuc), user.institution
     assert_equal "Example Department", user.department.name
     assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
                  user.affiliation
@@ -103,7 +104,7 @@ class ShibbolethUserTest < ActiveSupport::TestCase
 
   test "sysadmin?() returns true when the user is a member of an LDAP group
   included in the sysadmin user group" do
-    @instance = users(:uiuc_admin)
+    @instance = users(:local_sysadmin)
     assert @instance.sysadmin?
   end
 

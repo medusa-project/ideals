@@ -61,7 +61,7 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
   test "position is required" do
     assert_raises ActiveRecord::RecordInvalid do
       SubmissionProfileElement.create!(submission_profile: submission_profiles(:default),
-                                       registered_element: registered_elements(:dc_title))
+                                       registered_element: registered_elements(:uiuc_dc_title))
     end
   end
 
@@ -75,7 +75,7 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
   test "submission_profile is required" do
     assert_raises ActiveRecord::RecordInvalid do
       SubmissionProfileElement.create!(position: 0,
-                                       registered_element: registered_elements(:dc_title))
+                                       registered_element: registered_elements(:uiuc_dc_title))
     end
   end
 
@@ -91,9 +91,9 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
   test "registered_element must be unique within a submission profile" do
     profile = submission_profiles(:unused)
     profile.elements.build(position: 0,
-                           registered_element: registered_elements(:dc_title))
+                           registered_element: registered_elements(:uiuc_dc_title))
     profile.elements.build(position: 1,
-                           registered_element: registered_elements(:dc_title))
+                           registered_element: registered_elements(:uiuc_dc_title))
   end
 
   # update()

@@ -40,7 +40,8 @@ class InviteesController < ApplicationController
   # @see create_unsolicited
   #
   def create
-    @invitee = Invitee.new(invitee_params)
+    @invitee             = Invitee.new(invitee_params)
+    @invitee.institution = current_institution
     authorize(@invitee)
     begin
       ActiveRecord::Base.transaction do
@@ -67,7 +68,8 @@ class InviteesController < ApplicationController
   # @see create
   #
   def create_unsolicited
-    @invitee = Invitee.new(invitee_params)
+    @invitee             = Invitee.new(invitee_params)
+    @invitee.institution = current_institution
     authorize(@invitee)
     begin
       ActiveRecord::Base.transaction do
@@ -109,6 +111,7 @@ class InviteesController < ApplicationController
     @start            = @permitted_params[:start].to_i
     @window           = window_size
     @invitees         = Invitee.
+        where(institution: current_institution).
         where("LOWER(email) LIKE ?", "%#{@permitted_params[:q]&.downcase}%").
         where("approval_state LIKE ?", "%#{@permitted_params[:approval_state]}%").
         order(:created_at).
@@ -174,11 +177,12 @@ class InviteesController < ApplicationController
   end
 
   def invitee_params
-    params.require(:invitee).permit(:email, :note)
+    params.require(:invitee).permit(:email, :inviting_user_id, :note)
   end
 
   def set_invitee
     @invitee = Invitee.find(params[:id] || params[:invitee_id])
+    @breadcrumbable = @invitee
   end
 
 end

@@ -21,11 +21,11 @@ xml.tag!("OAI-PMH",
   else
     # 4.2
     xml.tag!("Identify") do
-      xml.tag!("repositoryName", "IDEALS @ Illinois")
+      xml.tag!("repositoryName", "IDEALS @ #{current_institution.name}")
       xml.tag!("baseURL", @base_url)
       xml.tag!("protocolVersion", "2.0")
       xml.tag!("adminEmail", Configuration.instance.mail[:reply_to])
-      xml.tag!("earliestDatestamp", @earliest_datestamp)
+      xml.tag!("earliestDatestamp", @earliest_datestamp) if @earliest_datestamp
       xml.tag!("deletedRecord", "persistent")
       xml.tag!("granularity", "YYYY-MM-DDThh:mm:ssZ")
     end

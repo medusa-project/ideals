@@ -15,13 +15,14 @@
       .modal-body
         .alert.alert-light
           = icon_for(:info)
-          A message containing a link to the registration form will be sent to
+          An email containing a link to the registration form will be sent to
           this address.
 
         = form_for(invitee, url: invitees_path, remote: true) do |f|
           .error-messages
-            - # populated via ajax by shared/_validation_messages.js.erb
+            -# populated via ajax by shared/_validation_messages.js.erb
 
+          = f.hidden_field :inviting_user_id, value: current_user.id
           = f.hidden_field :note, value: "Invited by #{current_user.name}"
 
           .form-group

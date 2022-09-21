@@ -1,4 +1,13 @@
-- pagination = paginate(count: @count, page: @current_page, per_page: @window, permitted_params: @permitted_params)
+-#
+-# Requires the following locals:
+-#
+-# institution_column [Boolean]
+-#
+
+- pagination = paginate(count:            @count,
+                        page:             @current_page,
+                        per_page:         @window,
+                        permitted_params: @permitted_params)
 
 .row.justify-content-md-center
   .col-md-auto
@@ -9,12 +18,16 @@
     %tr
       %th Name
       %th Email
+      - if institution_column
+        %th Institution
       %th Authentication Type
   %tbody
     - @users.each do |user|
       %tr
         %td= link_to(user.name, user.becomes(User))
         %td= link_to(user.email, "mailto:#{user.email}")
+        - if institution_column
+          %td= user.institution ? link_to(user.institution.name, user.institution) : "None"
         %td= user.type.chomp("User")
 
 .row.justify-content-md-center
