@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/UIUCLibrary/uiuc_lib_ad.git
-  revision: b7d2fb02785876e3f6bda579e0e52f8267d0abfe
+  revision: d56c7d0b496fb34ae1ff51fc9adc79e71199ae18
   specs:
-    uiuc_lib_ad (0.2.2)
+    uiuc_lib_ad (0.2.3)
       net-ldap
       rake (~> 13.0)
       standard (~> 1.3)
