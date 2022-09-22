@@ -21,18 +21,19 @@ class ZipBitstreamsJob < ApplicationJob
     else
       filename = "#{SecureRandom.hex[0..15]}.zip"
     end
-    dest_key   = "#{Download::DOWNLOADS_KEY_PREFIX}#{filename}"
     task       = Task.create!(name:          self.class.name,
                               download:      download,
                               indeterminate: false,
                               started_at:    Time.now,
                               status_text:   "Creating zip file")
     begin
-      Bitstream.create_zip_file(bitstreams: bitstreams,
-                                dest_key:   dest_key,
-                                item_id:    item_id,
-                                task:       task)
-      download.update!(filename: filename)
+      ActiveRecord::Base.transaction do
+        download.update!(filename: filename)
+        Bitstream.create_zip_file(bitstreams: bitstreams,
+                                  dest_key:   download.object_key,
+                                  item_id:    item_id,
+                                  task:       task)
+      end
     rescue => e
       task.fail(detail:    e.message,
                 backtrace: e.backtrace)

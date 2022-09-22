@@ -17,32 +17,36 @@
 #    user follows to download the file.
 #
 # Periodically, old [Download] records and their corresponding files should be
-# cleaned up using the `dls:downloads:cleanup` rake task. This will mark them
-# as expired and delete their corresponding files. Expired instances are kept
+# cleaned up using the `downloads:cleanup` rake task. This will mark them as
+# expired and delete their corresponding files. Expired instances are kept
 # around for record keeping.
+#
+# # Storage
+#
+# Downloads are stored in the application S3 bucket under the
+# `institutions/:key/downloads/` key prefix.
 #
 # # Attributes
 #
-# * `created_at` Managed by ActiveRecord.
-# * `expired`    When a download is expired, it is no longer usable and its
-#                associated file is no longer available. Client code should
-#                call {expire} rather than setting this directly.
-# * `filename`   Filename of the file to be downloaded. ({url} can be used
-#                instead.
-# * `key`        Random alphanumeric "public ID." Should be hard to guess so
-#                that someone can't access someone else's download.
-# * `task_id`    Foreign key to [Task].
-# * `updated_at` Managed by ActiveRecord.
-# * `url`        URL to redirect to rather than downloading a local file. Must
-#                be publicly accessible.
+# * `created_at`     Managed by ActiveRecord.
+# * `expired`        When a download is expired, it is no longer usable and its
+#                    associated file is no longer available. Client code should
+#                    call {expire} rather than setting this directly.
+# * `filename`       Filename of the file to be downloaded. ({url} can be used
+#                    instead.
+# * `key`            Random alphanumeric "public ID." Should be hard to guess
+#                    so that someone can't access someone else's download.
+# * `institution_id` Foreign key to [Institution].
+# * `task_id`        Foreign key to [Task].
+# * `updated_at`     Managed by ActiveRecord.
+# * `url`            URL to redirect to rather than downloading a local file.
+#                    Must be publicly accessible.
 #
 class Download < ApplicationRecord
 
   LOGGER = CustomLogger.new(Download)
 
-  # Key prefix of downloadable files within the application S3 bucket.
-  DOWNLOADS_KEY_PREFIX = "downloads/"
-
+  belongs_to :institution
   belongs_to :task, optional: true
 
   before_create :assign_key
@@ -84,7 +88,14 @@ class Download < ApplicationRecord
   # @return [String, nil]
   #
   def object_key
-    self.filename.present? ? DOWNLOADS_KEY_PREFIX + self.filename : nil
+    return nil unless self.institution
+    return nil if self.filename.blank?
+    [
+      Bitstream::INSTITUTION_KEY_PREFIX,
+      self.institution.key,
+      "downloads",
+      self.filename
+    ].join("/")
   end
 
   ##

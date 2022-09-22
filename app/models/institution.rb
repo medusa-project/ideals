@@ -23,6 +23,7 @@ class Institution < ApplicationRecord
   has_many :administrator_groups, class_name: "InstitutionAdministratorGroup"
   has_many :administering_groups, through: :administrator_groups,
            class_name: "UserGroup", source: :user_group
+  has_many :downloads
   has_many :imports
   has_many :invitees
   has_many :metadata_profiles

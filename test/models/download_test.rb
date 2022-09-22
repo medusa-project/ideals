@@ -8,12 +8,12 @@ class DownloadTest < ActiveSupport::TestCase
 
   # cleanup()
 
-  test 'cleanup() works properly' do
+  test "cleanup() works properly" do
     Download.destroy_all
 
-    d1 = Download.create
-    d2 = Download.create
-    d3 = Download.create
+    d1 = Download.create(institution: institutions(:uiuc))
+    d2 = Download.create(institution: institutions(:uiuc))
+    d3 = Download.create(institution: institutions(:uiuc))
 
     assert_equal 0, Download.where(expired: true).count
 
@@ -27,23 +27,24 @@ class DownloadTest < ActiveSupport::TestCase
   # create()
 
   test "key is assigned at creation" do
-    @download = Download.create!
+    @download = Download.create!(institution: institutions(:uiuc))
     assert @download.key.length > 20
   end
 
   # expire()
 
   test "expire() deletes the corresponding storage object" do
-    client = S3Client.instance
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = "#{Download::DOWNLOADS_KEY_PREFIX}file.jpg"
+    client      = S3Client.instance
+    bucket      = ::Configuration.instance.storage[:bucket]
+    institution = institutions(:uiuc)
     File.open(file_fixture("crane.jpg"), "r") do |file|
+      download = Download.create!(filename:    "file.jpg",
+                                  institution: institution)
       client.put_object(bucket: bucket,
-                        key:    key,
+                        key:    download.object_key,
                         body:   file)
-      download = Download.create!(filename: "file.jpg")
       download.expire
-      assert !client.object_exists?(bucket: bucket, key: key)
+      assert !client.object_exists?(bucket: bucket, key: download.object_key)
     end
   end
 
@@ -54,8 +55,18 @@ class DownloadTest < ActiveSupport::TestCase
 
   # object_key()
 
-  test 'object_key() returns a correct value' do
-    assert_equal Download::DOWNLOADS_KEY_PREFIX + @download.filename,
+  test "object_key() returns nil if there is no associated Institution" do
+    @download.institution = nil
+    assert_nil @download.object_key
+  end
+
+  test "object_key() returns nil if the filename is not set" do
+    @download.filename = nil
+    assert_nil @download.object_key
+  end
+
+  test "object_key() returns a correct value" do
+    assert_equal "institutions/#{@download.institution.key}/downloads/#{@download.filename}",
                  @download.object_key
   end
 

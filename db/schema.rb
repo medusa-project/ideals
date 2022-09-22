@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_08_145248) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_22_155258) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -133,6 +133,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_08_145248) do
     t.string "ip_address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "institution_id", null: false
+    t.index ["institution_id"], name: "index_downloads_on_institution_id"
     t.index ["key"], name: "index_downloads_on_key", unique: true
     t.index ["task_id"], name: "index_downloads_on_task_id"
   end
@@ -620,6 +622,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_08_145248) do
   add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "departments", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "departments", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "downloads", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "downloads", "tasks", on_update: :cascade, on_delete: :nullify
   add_foreign_key "email_patterns", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "embargoes", "items", on_update: :cascade, on_delete: :cascade

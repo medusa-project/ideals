@@ -33,12 +33,14 @@ class DownloadsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "file() redirects to a download URL" do
+    institution = institutions(:uiuc)
     File.open(file_fixture("crane.jpg"), "r") do |file|
+      download = Download.create!(filename:    "file.txt",
+                                  ip_address:  "127.0.0.1",
+                                  institution: institution)
       S3Client.instance.put_object(bucket: ::Configuration.instance.storage[:bucket],
-                                   key:    "#{Download::DOWNLOADS_KEY_PREFIX}file.txt",
+                                   key:    download.object_key,
                                    body:   file)
-      download = Download.create!(filename:   "file.txt",
-                                  ip_address: "127.0.0.1")
       get download_file_path(download)
       assert_response :see_other
     end

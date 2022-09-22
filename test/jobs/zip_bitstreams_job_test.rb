@@ -9,7 +9,7 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
   test "perform() creates a zip of bitstreams" do
     bitstreams = [bitstreams(:approved_in_permanent),
                   bitstreams(:license_bundle)]
-    download = Download.create
+    download = Download.create(institution: institutions(:uiuc))
 
     ZipBitstreamsJob.new.perform(bitstreams, download)
 
@@ -21,13 +21,13 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
 
   test "perform() assigns an existing zip file to the Download instance if
   available" do
-    bitstreams = [bitstreams(:approved_in_permanent),
-                  bitstreams(:license_bundle)]
-    download = Download.create
-
+    institution = institutions(:uiuc)
+    bitstreams  = [bitstreams(:approved_in_permanent),
+                   bitstreams(:license_bundle)]
+    download    = Download.create(institution: institution)
     ZipBitstreamsJob.new.perform(bitstreams, download)
 
-    download = Download.create
+    download = Download.create(institution: institution)
     ZipBitstreamsJob.new.perform(bitstreams, download)
 
     download.reload
@@ -38,21 +38,23 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
 
   test "perform() assigns a correct filename to the zip file when an item ID
   argument is provided" do
+    filename   = "item-1234.zip"
     bitstreams = [bitstreams(:approved_in_permanent),
                   bitstreams(:license_bundle)]
-    download = Download.create
+    download   = Download.create(institution: institutions(:uiuc),
+                                 filename: filename)
 
     ZipBitstreamsJob.new.perform(bitstreams, download, 1234)
 
     download.reload
-    assert_equal "item-1234.zip", download.filename
+    assert_equal filename, download.filename
   end
 
   test "perform() assigns a correct filename to the zip file when an item ID
   argument is not provided" do
     bitstreams = [bitstreams(:approved_in_permanent),
                   bitstreams(:license_bundle)]
-    download = Download.create
+    download = Download.create(institution: institutions(:uiuc))
 
     ZipBitstreamsJob.new.perform(bitstreams, download)
 

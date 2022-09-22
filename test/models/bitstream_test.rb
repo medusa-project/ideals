@@ -49,7 +49,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "create_zip_file() creates a zip of bitstreams" do
     bitstreams = [bitstreams(:approved_in_permanent),
                   bitstreams(:license_bundle)]
-    dest_key   = "#{Download::DOWNLOADS_KEY_PREFIX}file.zip"
+    dest_key   = "institutions/test/downloads/file.zip"
     Bitstream.create_zip_file(bitstreams: bitstreams, dest_key: dest_key)
 
     bucket = ::Configuration.instance.storage[:bucket]

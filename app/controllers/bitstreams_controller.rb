@@ -94,7 +94,8 @@ class BitstreamsController < ApplicationController
           bitstreams.each do |bs|
             bs.add_download(user: current_user)
           end
-          download = Download.create!(ip_address: request.remote_ip)
+          download = Download.create!(ip_address:  request.remote_ip,
+                                      institution: current_institution)
           ZipBitstreamsJob.perform_later(bitstreams.to_a, download, @item.id)
           redirect_to download_url(download)
         else
