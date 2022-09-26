@@ -346,7 +346,6 @@ class Bitstream < ApplicationRecord
   # Medusa instance shouldn't even honor delete messages.
   #
   def delete_from_medusa
-    raise "This is not supported in production" if Rails.env.production?
     return nil if self.medusa_uuid.blank?
     message = self.messages.build(operation:   Message::Operation::DELETE,
                                   medusa_uuid: self.medusa_uuid,

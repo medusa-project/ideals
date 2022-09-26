@@ -9,7 +9,6 @@ namespace :medusa do
 
   desc "Delete all files in the file group"
   task :delete_all_files => :environment do
-    raise "This task is not available in production." if Rails.env.production?
     config = ::Configuration.instance
     fg_id  = config.medusa[:file_group_id]
     fg     = ::Medusa::FileGroup.with_id(fg_id)

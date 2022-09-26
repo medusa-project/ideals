@@ -212,6 +212,7 @@ around with multi-tenancy.
 | `test`                 | any                     | Local & GitHub Actions | `config/credentials/test.yml` & `ci.yml`    |
 | `test` (Docker)        | any                     | Docker                 | `config/credentials/test-docker.yml`        |
 | `demo`                 | `demo`                  | aws-ideals-demo        | `config/credentials/demo.yml.enc`           |
+| `carli_demo`           | `carli_demo`            | aws-scholarship-demo   | `config/credentials/carli_demo.yml.enc`
 | `production`           | `production`            | aws-ideals-production  | `config/credentials/production.yml.enc`     |
 
 Files that end in `.enc` are encrypted. Obtain the encryption key from a

@@ -23,6 +23,7 @@ set :passenger_restart_with_touch, true
 
 # Default value for :linked_files is []
 set :linked_files, fetch(:linked_files, []).push(
+    'config/credentials/carli_demo.key',
     'config/credentials/demo.key',
     'config/credentials/production.key',
     'public/robots.txt')

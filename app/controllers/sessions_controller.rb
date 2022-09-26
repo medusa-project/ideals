@@ -15,10 +15,10 @@ class SessionsController < ApplicationController
   # `GET/POST /netid-login`.
   #
   def new_netid
-    if Rails.env.production? || Rails.env.demo?
-      redirect_to shibboleth_login_path(Ideals::Application.shibboleth_host)
-    else
+    if Rails.env.development? || Rails.env.test?
       redirect_to "/auth/developer"
+    else
+      redirect_to shibboleth_login_path(Ideals::Application.shibboleth_host)
     end
   end
 

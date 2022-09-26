@@ -13,10 +13,10 @@ Rails.application.config.middleware.use OmniAuth::Builder do
            on_failed_registration: WelcomeController.action(:on_failed_registration)
   # Shibboleth is only available in production & demo. In all other
   # environments, developer is used instead.
-  if Rails.env.production? || Rails.env.demo?
-    provider :shibboleth, shib_opts.symbolize_keys
-  else
+  if Rails.env.development? || Rails.env.test?
     provider :developer
+  else
+    provider :shibboleth, shib_opts.symbolize_keys
   end
 end
 

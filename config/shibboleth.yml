@@ -65,6 +65,28 @@ demo:
     name: displayName
     email: mail
 
+carli_demo:
+  host: demo.scholarship.illinois.edu
+  uid_field: eppn
+  extra_fields:
+    - eppn
+    - unscoped-affiliation
+    - uid
+    - sn
+    - org-dn
+    - nickname
+    - givenName
+    - member
+    - telephoneNumber
+    - iTrustAffiliation
+    - departmentName
+    - programCode
+    - levelCode
+  request_type: header
+  info_fields:
+    name: displayName
+    email: mail
+
 production:
   host: www.ideals.illinois.edu
   uid_field: eppn

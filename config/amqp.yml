@@ -49,6 +49,15 @@ demo:
   :vhost:    medusa
   :verify:   false
 
+carli_demo:
+  <<:        *default
+  :ssl:      true
+  :host:     <%= amqp ? amqp[:host] : nil %>
+  :user:     <%= amqp ? amqp[:user] : nil %>
+  :password: <%= amqp ? amqp[:password] : nil %>
+  :vhost:    medusa
+  :verify:   false
+
 production:
   <<:        *default
   :ssl:      true

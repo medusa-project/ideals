@@ -38,7 +38,7 @@ class Configuration
   # @return [Object]
   #
   def get(key)
-    if Rails.env.demo? or Rails.env.production?
+    unless Rails.env.development? || Rails.env.test?
       return Rails.application.credentials.dig(key)
     end
     read_unencrypted_config
