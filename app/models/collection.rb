@@ -389,7 +389,7 @@ class Collection < ApplicationRecord
   # @return [Institution]
   #
   def institution
-    primary_unit.institution
+    primary_unit&.institution || units.first&.institution
   end
 
   ##

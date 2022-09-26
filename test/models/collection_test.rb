@@ -69,7 +69,7 @@ class CollectionTest < ActiveSupport::TestCase
 
   # reindex_all() (Indexed concern)
 
-  test "reindex_all() reindexes all items" do
+  test "reindex_all() reindexes all collections" do
     setup_elasticsearch
     institution = institutions(:uiuc)
     assert_equal 0, Collection.search.institution(institution).count
@@ -86,7 +86,6 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
-    assert_equal 19, doc.length
     assert !doc[Collection::IndexFields::BURIED]
     assert_equal "Collection", doc[Collection::IndexFields::CLASS]
     assert_not_empty doc[Collection::IndexFields::CREATED]
