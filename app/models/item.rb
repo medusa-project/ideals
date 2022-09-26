@@ -382,7 +382,7 @@ class Item < ApplicationRecord
           doc[field] << asc_e.string
         end
       else
-        doc[field] << asc_e.string[0..ElasticsearchClient::MAX_KEYWORD_FIELD_LENGTH]
+        doc[field] << asc_e.string[0..ElasticsearchIndex::MAX_KEYWORD_FIELD_LENGTH]
       end
     end
 

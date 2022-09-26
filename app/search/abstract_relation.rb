@@ -42,7 +42,7 @@ class AbstractRelation
     @exists_field     = nil
     @filter_ranges    = [] # Array<Hash<Symbol,String>> with :field, :op, and :value keys
     @filters          = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
-    @limit            = ElasticsearchClient::MAX_RESULT_WINDOW
+    @limit            = ElasticsearchIndex::MAX_RESULT_WINDOW
     @metadata_profile = MetadataProfile.default
     @multi_queries    = [] # Array<Hash<Symbol,String>> with :field and :term keys
     @must_nots        = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
@@ -396,7 +396,7 @@ class AbstractRelation
   ##
   # Used to iterate over a large result set using Elasticsearch's
   # `search_after` API. This works around the
-  # {ElasticsearchClient#MAX_RESULT_WINDOW} constraint inherent in using
+  # {ElasticsearchIndex#MAX_RESULT_WINDOW} constraint inherent in using
   # {start}/{limit}.
   #
   def each_id_in_batches(&block)

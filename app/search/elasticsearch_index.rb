@@ -46,8 +46,21 @@ class ElasticsearchIndex
     SEARCH_ALL      = "search_all"
   end
 
+  ##
+  # Field values should be truncated to this length.
+  # (32766 total / 3 bytes per character)
+  #
+  MAX_KEYWORD_FIELD_LENGTH = 10922
+
+  ##
+  # Default is 10,000. This should remain in sync with the same value in the
+  # schema YAML.
+  #
+  MAX_RESULT_WINDOW = 10000
+
   # ES has trouble with far distant years.
   MAX_YEAR = 2500
+
   SCHEMA   = YAML.load_file(File.join(Rails.root, 'app', 'search', 'index_schema.yml'))
 
 end

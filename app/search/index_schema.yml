@@ -27,7 +27,7 @@ settings:
   index:
     query:
       default_field: search_all
-    max_result_window: 10000 # must match ElasticsearchClient::MAX_RESULT_WINDOW
+    max_result_window: 10000 # must match ElasticsearchIndex::MAX_RESULT_WINDOW
     refresh_interval: 30s
   analysis:
     filter:
