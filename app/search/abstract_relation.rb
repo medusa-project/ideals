@@ -554,22 +554,39 @@ class AbstractRelation
                   else
                     j.range do
                       j.set! query[:field] do
-                        term       = query[:term]
-                        if term[:from_year].present?
-                          from_date  = term[:from_year]
-                          from_date += "-#{term[:from_month]}" if term[:from_month].present?
-                          from_date += "-#{term[:from_day]}" if term[:from_day].present?
-                          to_date    = term[:to_year]
-                          to_date   += "-#{term[:to_month]}" if term[:to_month].present?
-                          to_date   += "-#{term[:to_day]}" if term[:to_day].present?
-                        else
-                          from_date  = term[:year]
-                          from_date += "-#{term[:month]}" if term[:month].present?
-                          from_date += "-#{term[:day]}" if term[:day].present?
-                          to_date    = from_date
+                        term = query[:term]
+                        if term[:from_year].present? || term[:to_year].present? # date range
+                          if term[:from_year].present? ||
+                            term[:from_month].present? ||
+                            term[:from_day].present?
+                            from_date = Time.new(term[:from_year].present? ? term[:from_year].to_i : nil,
+                                                 term[:from_month].present? ? term[:from_month].to_i : nil,
+                                                 term[:from_day].present? ? term[:from_day].to_i : nil)
+                            j.gte from_date.strftime("%Y-%m-%d")
+                          end
+                          if term[:to_year].present? ||
+                            term[:to_month].present? ||
+                            term[:to_day].present?
+                            to_date   = Time.new(term[:to_year].present? ? term[:to_year].to_i : nil,
+                                                 term[:to_month].present? ? term[:to_month].to_i : nil,
+                                                 term[:to_day].present? ? term[:to_day].to_i : nil)
+                            j.lte to_date.strftime("%Y-%m-%d")
+                          end
+                        else # exact date (maybe excluding month or day)
+                          from_date = Time.new(term[:year].present? ? term[:year].to_i : nil,
+                                               term[:month].present? ? term[:month].to_i : nil,
+                                               term[:day].present? ? term[:day].to_i : nil)
+                          to_date   = from_date.dup
+                          if term[:day].present?
+                            to_date = to_date + 1.day
+                          elsif term[:month].present?
+                            to_date = to_date + 1.month
+                          else
+                            to_date = to_date + 1.year
+                          end
+                          j.gte from_date.strftime("%Y-%m-%d")
+                          j.lt to_date.strftime("%Y-%m-%d")
                         end
-                        j.gte from_date
-                        j.lte to_date
                       end
                     end
                   end

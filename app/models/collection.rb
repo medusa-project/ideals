@@ -80,22 +80,22 @@ class Collection < ApplicationRecord
     BURIED            = "b_buried"
     CLASS             = ElasticsearchIndex::StandardFields::CLASS
     CREATED           = ElasticsearchIndex::StandardFields::CREATED
-    DESCRIPTION       = "metadata_description"
+    DESCRIPTION       = "t_description"
     ID                = ElasticsearchIndex::StandardFields::ID
     INSTITUTION_KEY   = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
-    INTRODUCTION      = "metadata_introduction"
+    INTRODUCTION      = "t_introduction"
     LAST_INDEXED      = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED     = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     MANAGERS          = "i_manager_id"
     PARENT            = "i_parent_id"
     PRIMARY_UNIT      = "i_primary_unit_id"
-    PROVENANCE        = "metadata_provenance"
-    RIGHTS            = "metadata_rights"
-    SHORT_DESCRIPTION = "metadata_short_description"
+    PROVENANCE        = "t_provenance"
+    RIGHTS            = "t_rights"
+    SHORT_DESCRIPTION = "t_short_description"
     SUBMITTERS        = "i_submitter_id"
-    TITLE             = "metadata_title"
+    TITLE             = "t_title"
     UNIT_DEFAULT      = "b_unit_default"
-    UNIT_TITLES       = "metadata_unit_titles"
+    UNIT_TITLES       = "t_unit_titles"
     UNITS             = "i_units"
   end
 

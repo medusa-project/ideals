@@ -34,9 +34,10 @@ class RegisteredElement < ApplicationRecord
     end
   end
 
-  METADATA_FIELD_PREFIX = "metadata_"
+  DATE_FIELD_PREFIX     = "d"
   KEYWORD_FIELD_SUFFIX  = ".keyword"
   SORTABLE_FIELD_SUFFIX = ".sort"
+  TEXT_FIELD_PREFIX     = "t"
 
   belongs_to :institution
 
@@ -58,9 +59,10 @@ class RegisteredElement < ApplicationRecord
   #                  document.
   #
   def self.sortable_field(name)
-    [METADATA_FIELD_PREFIX,
-     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_"),
-     SORTABLE_FIELD_SUFFIX].join
+    [TEXT_FIELD_PREFIX,
+     "element",
+     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join("_") +
+      SORTABLE_FIELD_SUFFIX
   end
 
   ##
@@ -78,8 +80,9 @@ class RegisteredElement < ApplicationRecord
   def indexed_field
     # N.B.: changing this probably requires changing the index schema and/or
     # reindexing.
-    [METADATA_FIELD_PREFIX,
-     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join
+    [(self.input_type == InputType::DATE) ? DATE_FIELD_PREFIX : TEXT_FIELD_PREFIX,
+     "element",
+     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join("_")
   end
 
   ##
@@ -87,7 +90,18 @@ class RegisteredElement < ApplicationRecord
   #                  indexed documents.
   #
   def indexed_sort_field
-    [indexed_field, SORTABLE_FIELD_SUFFIX].join
+    (self.input_type == InputType::DATE) ?
+      indexed_field : [indexed_field, SORTABLE_FIELD_SUFFIX].join
+  end
+
+  ##
+  # @return [String] Name of the keyword field in which the element is stored
+  #                  in indexed documents.
+  #
+  def indexed_text_field
+    [TEXT_FIELD_PREFIX,
+     "element",
+     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join("_")
   end
 
   def to_param

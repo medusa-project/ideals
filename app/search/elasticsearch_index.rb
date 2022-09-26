@@ -31,7 +31,7 @@ class ElasticsearchIndex
     CLASS           = "k_class"
     CREATED         = "d_created"
     # Only item documents may have this.
-    FULL_TEXT       = "t_full_text"
+    FULL_TEXT       = "lt_full_text"
     # Contains the value of {Indexed#index_id()}.
     ID              = "_id"
     INSTITUTION_KEY = "k_institution_key"
@@ -46,6 +46,8 @@ class ElasticsearchIndex
     SEARCH_ALL      = "search_all"
   end
 
-  SCHEMA = YAML.load_file(File.join(Rails.root, 'app', 'search', 'index_schema.yml'))
+  # ES has trouble with far distant years.
+  MAX_YEAR = 2500
+  SCHEMA   = YAML.load_file(File.join(Rails.root, 'app', 'search', 'index_schema.yml'))
 
 end

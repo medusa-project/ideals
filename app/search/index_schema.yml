@@ -1,22 +1,27 @@
 #
-# 1,000 words picture:
+# Application Elasticsearch schema.
 #
-# * Metadata element ---> (transformation) --------------------> text_elements (text)
-#                            \                                             |
-#                             \                                            v
-#                              \                                  copy_to search_all
-#                               \
-#                                \------------------------------> keyword_elements (keyword; mainly for faceting)
-#                                 \
-#                                  \---> (remove stop words) ---> sort_elements (icu_collation_keyword [supports natural sort])
-#                                   \
-#                                    \------> (normalize) ------> date_elements (date)
+# All fields are dynamic. Most metadata elements are indexed as text
+# (t_element_*) except for those with a date input type, which are indexed as
+# dates (d_element_*).
 #
-# * Non-metadata system fields ---> ?_* according to data type
+# The t_* type includes a keyword subfield to support faceting, as well as a
+# sort subfield to support sorting. The sort subfield uses the
+# icu_collation_keyword type to support a natural sort order.
 #
-# All operations in parentheses are carried out in Item.as_indexed_json().
+# Maximum document size depends on AWS OpenSearch instance size, which for
+# us is probably 10 MB. Large fields must be truncated to less than this
+# length, with enough room left over for the rest of the document.
 #
-# Requires Elasticsearch >= 7.0
+# Text values larger than 32 KB should be stored in longtext fields rather than
+# text.
+#
+# When this file is changed, a new index has to be created (see the
+# elasticsearch:indexes:* rake tasks) and then either the old index must be
+# copied into it ("reindexed" in ES terminology--if possible) or else all
+# documents must be resubmitted to it.
+#
+# Requires Elasticsearch >= 7.0 with the ICU Analysis plugin
 #
 settings:
   index:
@@ -48,22 +53,6 @@ settings:
 mappings:
   date_detection: false
   dynamic_templates:
-    - metadata_elements:
-        match: metadata*
-        mapping:
-          type: text
-          analyzer: custom_analyzer
-          copy_to: search_all
-          fields:
-            keyword:
-              type: keyword
-            sort:
-              type: icu_collation_keyword
-              index: false
-              numeric: true
-              language: en
-              strength: quaternary
-              alternate: shifted
     - booleans:
         match: b_*
         mapping:
@@ -103,6 +92,16 @@ mappings:
         mapping:
           type: long
           store: false
+    # This is a special text field for long text values (like full text)
+    # because the other text type has a keyword subfield that is limited to
+    # 32 KB.
+    - longtext:
+        match: lt_*
+        mapping:
+          type: text
+          analyzer: custom_analyzer
+          copy_to: search_all
+          store: false
     - text:
         match: t_*
         mapping:
@@ -110,6 +109,16 @@ mappings:
           analyzer: custom_analyzer
           copy_to: search_all
           store: false
+          fields:
+            keyword:
+              type: keyword
+            sort:
+              type: icu_collation_keyword
+              index: false
+              numeric: true
+              language: en
+              strength: quaternary
+              alternate: shifted
   properties:
     search_all:
       type: text
