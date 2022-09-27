@@ -7,7 +7,7 @@ body#welcome {
     background-image: image-url("orange_network.jpg");
     margin: -16px -16px 1em -16px;
     background-position: center;
-    border-bottom: 3px solid $uofi-orange;
+    border-bottom: 3px solid red; /* TODO: make customizable */
     display: flex;
     height: 200px;
     flex-flow: column nowrap;
@@ -17,7 +17,7 @@ body#welcome {
     form {
       width: 25em;
       input#q {
-        border: 1px solid $uofi-orange;
+        border: 1px solid red; /* TODO: make customizable */
         width: 100%;
       }
     }

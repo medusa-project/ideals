@@ -5,13 +5,12 @@ git_source(:github) {|repo| "https://github.com/#{repo}.git" }
 
 ruby "3.1.2"
 
-# scars-bootstrap-theme needs this
+# Bootstrap needs this
 gem "autoprefixer-rails"
 gem "aws-sdk-s3", "~> 1"
 # Use ActiveModel has_secure_password for local identity users
 gem "bcrypt", "~> 3"
-# No Bootstrap! This is provided by scars-bootstrap-theme.
-#gem "bootstrap"
+gem "bootstrap", "~> 4.6"
 # Handles RabbitMQ messages.
 gem "bunny"
 gem "amq-protocol"
@@ -53,9 +52,6 @@ gem "rails", "~> 7.0"
 gem "recaptcha"
 # Use SCSS for stylesheets
 gem "sassc"
-# Provides a SCARS-themed Bootstrap.
-gem "scars-bootstrap-theme", github: "medusa-project/scars-bootstrap-theme", branch: "release/bootstrap-4.4"
-#gem "scars-bootstrap-theme", path: "../scars-bootstrap-theme"
 gem "sprockets-rails"
 gem "tzinfo-data"
 # Use Uglifier as compressor for JavaScript assets
