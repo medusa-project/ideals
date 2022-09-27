@@ -31,7 +31,7 @@ class ElasticsearchIndex
     CLASS           = "k_class"
     CREATED         = "d_created"
     # Only item documents may have this.
-    FULL_TEXT       = "t_full_text"
+    FULL_TEXT       = "lt_full_text"
     # Contains the value of {Indexed#index_id()}.
     ID              = "_id"
     INSTITUTION_KEY = "k_institution_key"
@@ -46,6 +46,21 @@ class ElasticsearchIndex
     SEARCH_ALL      = "search_all"
   end
 
-  SCHEMA = YAML.load_file(File.join(Rails.root, 'app', 'search', 'index_schema.yml'))
+  ##
+  # Field values should be truncated to this length.
+  # (32766 total / 3 bytes per character)
+  #
+  MAX_KEYWORD_FIELD_LENGTH = 10922
+
+  ##
+  # Default is 10,000. This should remain in sync with the same value in the
+  # schema YAML.
+  #
+  MAX_RESULT_WINDOW = 10000
+
+  # ES has trouble with far distant years.
+  MAX_YEAR = 2500
+
+  SCHEMA   = YAML.load_file(File.join(Rails.root, 'app', 'search', 'index_schema.yml'))
 
 end

@@ -84,7 +84,7 @@ class Item < ApplicationRecord
     FILENAMES          = "t_filenames"
     FULL_TEXT          = ElasticsearchIndex::StandardFields::FULL_TEXT
     GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY = "k_unit_collection_sort_key"
-    HANDLE             = "t_handle"
+    HANDLE             = "k_handle"
     ID                 = ElasticsearchIndex::StandardFields::ID
     INSTITUTION_KEY    = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
     LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
@@ -331,15 +331,15 @@ class Item < ApplicationRecord
         select{ |e| e.kind == Embargo::Kind::ALL_ACCESS }.
         map(&:as_indexed_json)
     doc[IndexFields::FILENAMES]          = self.bitstreams.map(&:original_filename)
-    # N.B.: on AWS, the maximum document size depends on ES instance size, but
-    # for our purposes is likely 10485760 bytes (10 MB). Full text can
-    # sometimes exceed this, so we must truncate it. The length may be exceeded
-    # either by one large bitstream's FullText, or many smaller bitstreams'
-    # FullText.
+    # N.B.: in AWS OpenSearch, the maximum document size depends on instance
+    # size, but for our purposes is likely 10485760 bytes (10 MB). The length
+    # may be exceeded either by one large bitstream's FullText, or many smaller
+    # bitstreams' combined FullTexts. In either case it must be truncated.
     io         = StringIO.new
-    max_length = 7000000 # bytes; leave some room for the rest of the document
+    max_length = 7000000 # leave some room for the rest of the document
     Bitstream.uncached do
-      self.bitstreams.select{ |bs| bs.full_text_checked_at.present? }.each do |bs|
+      self.bitstreams.select{ |bs| bs.bundle == Bitstream::Bundle::CONTENT &&
+                                   bs.full_text_checked_at.present? }.each do |bs|
         text_obj = bs.full_text
         io      << text_obj.text.delete("\000") if text_obj
         break if io.length > max_length
@@ -370,11 +370,19 @@ class Item < ApplicationRecord
       # The fields are all arrays in order to support multiple values.
       doc[field]  = [] unless doc[field]&.respond_to?(:each)
       # Most element values are indexed as-is. But values of date-type
-      # registered elements need to get normalized as ISO 8601.
+      # registered elements (which may be in forms like "Month DD, YYYY") need
+      # to get normalized as ISO 8601.
       if reg_e.input_type == RegisteredElement::InputType::DATE
-        doc[field] << asc_e.date&.iso8601 || asc_e.string
+        date = asc_e.date
+        if date && date.year < ElasticsearchIndex::MAX_YEAR
+          doc[field] << date.iso8601
+        else
+          field = reg_e.indexed_text_field
+          doc[field]  = [] unless doc[field]&.respond_to?(:each)
+          doc[field] << asc_e.string
+        end
       else
-        doc[field] << asc_e.string[0..ElasticsearchClient::MAX_KEYWORD_FIELD_LENGTH]
+        doc[field] << asc_e.string[0..ElasticsearchIndex::MAX_KEYWORD_FIELD_LENGTH]
       end
     end
 

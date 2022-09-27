@@ -69,7 +69,7 @@ class CollectionTest < ActiveSupport::TestCase
 
   # reindex_all() (Indexed concern)
 
-  test "reindex_all() reindexes all items" do
+  test "reindex_all() reindexes all collections" do
     setup_elasticsearch
     institution = institutions(:uiuc)
     assert_equal 0, Collection.search.institution(institution).count
@@ -86,7 +86,6 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
-    assert_equal 19, doc.length
     assert !doc[Collection::IndexFields::BURIED]
     assert_equal "Collection", doc[Collection::IndexFields::CLASS]
     assert_not_empty doc[Collection::IndexFields::CREATED]
@@ -99,8 +98,6 @@ class CollectionTest < ActiveSupport::TestCase
     assert_not_empty doc[Collection::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Collection::IndexFields::LAST_MODIFIED]
-    assert_equal @instance.effective_managers.map(&:id),
-                 doc[Collection::IndexFields::MANAGERS]
     assert_nil doc[Collection::IndexFields::PARENT]
     assert_equal @instance.primary_unit.id,
                doc[Collection::IndexFields::PRIMARY_UNIT]
@@ -110,8 +107,6 @@ class CollectionTest < ActiveSupport::TestCase
                  doc[Collection::IndexFields::RIGHTS]
     assert_equal @instance.short_description,
                  doc[Collection::IndexFields::SHORT_DESCRIPTION]
-    assert_equal @instance.effective_submitters.map(&:id),
-                 doc[Collection::IndexFields::SUBMITTERS]
     assert_equal @instance.title, doc[Collection::IndexFields::TITLE]
     assert doc[Collection::IndexFields::UNIT_DEFAULT]
     assert_equal %w(Unit1 Unit2),

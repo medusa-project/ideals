@@ -80,22 +80,22 @@ class Collection < ApplicationRecord
     BURIED            = "b_buried"
     CLASS             = ElasticsearchIndex::StandardFields::CLASS
     CREATED           = ElasticsearchIndex::StandardFields::CREATED
-    DESCRIPTION       = "metadata_description"
+    DESCRIPTION       = "t_description"
     ID                = ElasticsearchIndex::StandardFields::ID
     INSTITUTION_KEY   = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
-    INTRODUCTION      = "metadata_introduction"
+    INTRODUCTION      = "t_introduction"
     LAST_INDEXED      = ElasticsearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED     = ElasticsearchIndex::StandardFields::LAST_MODIFIED
     MANAGERS          = "i_manager_id"
     PARENT            = "i_parent_id"
     PRIMARY_UNIT      = "i_primary_unit_id"
-    PROVENANCE        = "metadata_provenance"
-    RIGHTS            = "metadata_rights"
-    SHORT_DESCRIPTION = "metadata_short_description"
+    PROVENANCE        = "t_provenance"
+    RIGHTS            = "t_rights"
+    SHORT_DESCRIPTION = "t_short_description"
     SUBMITTERS        = "i_submitter_id"
-    TITLE             = "metadata_title"
+    TITLE             = "t_title"
     UNIT_DEFAULT      = "b_unit_default"
-    UNIT_TITLES       = "metadata_unit_titles"
+    UNIT_TITLES       = "t_unit_titles"
     UNITS             = "i_units"
   end
 
@@ -234,17 +234,15 @@ class Collection < ApplicationRecord
     doc[IndexFields::CLASS]             = self.class.to_s
     doc[IndexFields::CREATED]           = self.created_at.utc.iso8601
     doc[IndexFields::DESCRIPTION]       = self.description
-    doc[IndexFields::INSTITUTION_KEY]   = units.first&.institution&.key
+    doc[IndexFields::INSTITUTION_KEY]   = self.institution&.key
     doc[IndexFields::INTRODUCTION]      = self.introduction
     doc[IndexFields::LAST_INDEXED]      = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]     = self.updated_at.utc.iso8601
-    doc[IndexFields::MANAGERS]          = self.effective_managers.map(&:id)
     doc[IndexFields::PARENT]            = self.parent_id
     doc[IndexFields::PRIMARY_UNIT]      = self.primary_unit&.id
     doc[IndexFields::PROVENANCE]        = self.provenance
     doc[IndexFields::RIGHTS]            = self.rights
     doc[IndexFields::SHORT_DESCRIPTION] = self.short_description
-    doc[IndexFields::SUBMITTERS]        = self.effective_submitters.map(&:id)
     doc[IndexFields::TITLE]             = self.title
     doc[IndexFields::UNIT_DEFAULT]      = self.unit_default?
     doc[IndexFields::UNIT_TITLES]       = units.map(&:title)
@@ -391,7 +389,7 @@ class Collection < ApplicationRecord
   # @return [Institution]
   #
   def institution
-    primary_unit.institution
+    primary_unit&.institution || units.first&.institution
   end
 
   ##

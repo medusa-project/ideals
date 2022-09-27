@@ -1,0 +1,8 @@
+-# This will only be rendered in development, so no need for policy checks
+
+%h2
+  Indexed Document
+  %small (development only)
+
+%pre
+  = JSON.pretty_generate(@item.indexed_document)

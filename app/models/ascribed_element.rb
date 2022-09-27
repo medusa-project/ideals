@@ -38,11 +38,40 @@ class AscribedElement < ApplicationRecord
             allow_blank: false
 
   ##
-  # @return [Date] Instance corresponding to the string value if it is
-  #                recognized by {Date#parse}; otherwise `nil`.
+  # @return [Date, nil] Instance corresponding to the string value if it can be
+  #                     parsed; otherwise `nil`.
   #
   def date
-    self.string.present? ? Date.parse(self.string) : nil rescue nil
+    s = self.string
+    return nil if s.blank?
+    # ISO 8601
+    if s.match?(/\dT\d{2}:/)
+      return Date.parse(s)
+    # MM/DD/YY or MM/DD/YYYY
+    elsif s.match?(/^\d{1,2}\/\d{1,2}\/\d{2,4}/)
+      parts = s.split("/")
+      parts[2] = "19#{parts[2]}" if parts[2].length == 2
+      return Date.new(parts[2].to_i, parts[0].to_i, parts[1].to_i)
+    # YYYY-MM-DD
+    elsif s.match?(/^\d{4}-\d{2}-\d{2}/)
+      parts = s.split("-")
+      return Date.new(parts[0].to_i, parts[1].to_i, parts[2].to_i)
+    # YYYY-MM
+    elsif s.match?(/^\d{4}-\d{2}/)
+      parts = s.split("-")
+      return Date.new(parts[0].to_i, parts[1].to_i)
+    # YYYY
+    elsif s.match?(/^\d{4}/)
+      return Date.new(s.to_i)
+    # Mon DD YYYY, DD-Mon-YY, Mon YYYY
+    elsif s.match?(/[A-Za-z]+ \d{1,2} \d{4}/) ||
+      s.match?(/\d{2}-[A-Za-z]+-\d{2}/) ||
+      s.match?(/[A-Za-z]+ \d{4}/)
+      return Date.parse(s)
+    end
+    nil
+  rescue Date::Error
+    nil
   end
 
   ##

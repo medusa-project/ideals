@@ -47,36 +47,36 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
   # indexed_field()
 
   test "indexed_field() returns the expected name" do
-    assert_equal "metadata_dc_title",
+    assert_equal "t_element_dc_title",
                  @instance.registered_element.indexed_field
   end
 
   test "indexed_field() replaces reserved characters" do
-    assert_equal "metadata_dc_title",
+    assert_equal "t_element_dc_title",
                  @instance.registered_element.indexed_field
   end
 
   # indexed_keyword_field()
 
   test "indexed_keyword_field() returns the expected name" do
-    assert_equal "metadata_dc_title.keyword",
+    assert_equal "t_element_dc_title.keyword",
                  @instance.registered_element.indexed_keyword_field
   end
 
   test "indexed_keyword_field() replaces reserved characters" do
-    assert_equal "metadata_dc_title.keyword",
+    assert_equal "t_element_dc_title.keyword",
                  @instance.registered_element.indexed_keyword_field
   end
 
   # indexed_sort_field()
 
   test "indexed_sort_field() returns the expected name" do
-    assert_equal "metadata_dc_title.sort",
+    assert_equal "t_element_dc_title.sort",
                  @instance.registered_element.indexed_sort_field
   end
 
   test "indexed_sort_field() replaces reserved characters" do
-    assert_equal "metadata_dc_title.sort",
+    assert_equal "t_element_dc_title.sort",
                  @instance.registered_element.indexed_sort_field
   end
 

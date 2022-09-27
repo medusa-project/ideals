@@ -22,43 +22,63 @@ class RegisteredElementTest < ActiveSupport::TestCase
   # sortable_field()
 
   test "sortable_field() returns the expected name" do
-    assert_equal "metadata_title.sort",
+    assert_equal "t_element_title.sort",
                  RegisteredElement.sortable_field("title")
   end
 
   test "sortable_field() replaces reserved characters" do
-    assert_equal "metadata_dc_title.sort",
+    assert_equal "t_element_dc_title.sort",
                  RegisteredElement.sortable_field("dc:title")
   end
 
   # indexed_keyword_field()
 
   test "indexed_keyword_field() returns the expected name" do
-    assert_equal "metadata_dc_title.keyword", @instance.indexed_keyword_field
+    assert_equal "t_element_dc_title.keyword", @instance.indexed_keyword_field
   end
 
   test "indexed_keyword_field() replaces reserved characters" do
-    assert_equal "metadata_dc_title.keyword", @instance.indexed_keyword_field
+    assert_equal "t_element_dc_title.keyword", @instance.indexed_keyword_field
   end
 
   # indexed_field()
 
-  test "indexed_field() returns the expected name" do
-    assert_equal "metadata_dc_title", @instance.indexed_field
+  test "indexed_field() returns the expected name of a text-type field" do
+    assert_equal "t_element_dc_title", @instance.indexed_field
+  end
+
+  test "indexed_field() returns the expected name of a date-type field" do
+    @instance.input_type = RegisteredElement::InputType::DATE
+    assert_equal "d_element_dc_title", @instance.indexed_field
   end
 
   test "indexed_field() replaces reserved characters" do
-    assert_equal "metadata_dc_title", @instance.indexed_field
+    assert_equal "t_element_dc_title", @instance.indexed_field
   end
 
   # indexed_sort_field()
 
-  test "indexed_sort_field() returns the expected name" do
-    assert_equal "metadata_dc_title.sort", @instance.indexed_sort_field
+  test "indexed_sort_field() returns the expected name of a non-date-type field" do
+    assert_equal "t_element_dc_title.sort", @instance.indexed_sort_field
+  end
+
+  test "indexed_sort_field() returns the expected name of a date-type field" do
+    @instance.input_type = RegisteredElement::InputType::DATE
+    assert_equal "d_element_dc_title", @instance.indexed_sort_field
   end
 
   test "indexed_sort_field() replaces reserved characters" do
-    assert_equal "metadata_dc_title.sort", @instance.indexed_sort_field
+    assert_equal "t_element_dc_title.sort", @instance.indexed_sort_field
+  end
+
+  # indexed_text_field()
+
+  test "indexed_text_field() returns the expected name" do
+    assert_equal "t_element_dc_title", @instance.indexed_text_field
+  end
+
+  test "indexed_text_field() replaces reserved characters" do
+    assert_equal "t_element_dc_title", @instance.indexed_text_field
   end
 
   # input_type
