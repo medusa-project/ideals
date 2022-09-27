@@ -70,7 +70,7 @@ class AscribedElement < ApplicationRecord
       return Date.parse(s)
     end
     nil
-  rescue Date::Error
+  rescue # maybe a DateError, ArgumentError...
     nil
   end
 
