@@ -1,10 +1,11 @@
 ############################# institutions #################################
 
-Institution.create!(key:     "uiuc",
-                    name:    "University of Illinois at Urbana-Champaign",
-                    fqdn:    "www.ideals.illinois.edu",
-                    org_dn:  "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
-                    default: true)
+Institution.create!(key:            "uiuc",
+                    name:           "University of Illinois at Urbana-Champaign",
+                    fqdn:           "www.ideals.illinois.edu",
+                    feedback_email: "IDEALS @ Illinois <ideals@library.illinois.edu>",
+                    org_dn:         "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
+                    default:        true)
 
 ############################## User groups #################################
 
