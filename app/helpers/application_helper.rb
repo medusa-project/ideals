@@ -364,7 +364,7 @@ module ApplicationHelper
     html << "<dl class=\"metadata\">"
     reg_elements = profile ?
                        profile.elements.where(visible: true).order(:position) :
-                       RegisteredElement.all.order(:label)
+                       RegisteredElement.where(institution: current_institution).order(:label)
     reg_elements.each do |element|
       matching_ascribed_elements = ascribed_elements.
           select{ |e| e.name == element.name }.
