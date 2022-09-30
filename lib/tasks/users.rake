@@ -12,9 +12,10 @@ namespace :users do
   end
 
   desc "Create a local-identity sysadmin user"
-  task :create_local_sysadmin, [:email, :password, :institution_key] => :environment do |task, args|
+  task :create_local_sysadmin, [:email, :password, :name, :institution_key] => :environment do |task, args|
     user = LocalUser.create_manually(email:       args[:email],
                                      password:    args[:password],
+                                     name:        args[:name],
                                      institution: Institution.find_by_key(args[:institution_key]))
     user.user_groups << UserGroup.sysadmin
     user.save!
