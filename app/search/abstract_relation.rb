@@ -556,20 +556,16 @@ class AbstractRelation
                       j.set! query[:field] do
                         term = query[:term]
                         if term[:from_year].present? || term[:to_year].present? # date range
-                          if term[:from_year].present? ||
-                            term[:from_month].present? ||
-                            term[:from_day].present?
-                            from_date = Time.new(term[:from_year].present? ? term[:from_year].to_i : nil,
+                          if term[:from_year].present?
+                            from_date = Time.new(term[:from_year].to_i,
                                                  term[:from_month].present? ? term[:from_month].to_i : nil,
                                                  term[:from_day].present? ? term[:from_day].to_i : nil)
                             j.gte from_date.strftime("%Y-%m-%d")
                           end
-                          if term[:to_year].present? ||
-                            term[:to_month].present? ||
-                            term[:to_day].present?
-                            to_date   = Time.new(term[:to_year].present? ? term[:to_year].to_i : nil,
-                                                 term[:to_month].present? ? term[:to_month].to_i : nil,
-                                                 term[:to_day].present? ? term[:to_day].to_i : nil)
+                          if term[:to_year].present?
+                            to_date = Time.new(term[:to_year].to_i,
+                                               term[:to_month].present? ? term[:to_month].to_i : nil,
+                                               term[:to_day].present? ? term[:to_day].to_i : nil)
                             j.lte to_date.strftime("%Y-%m-%d")
                           end
                         else # exact date (maybe excluding month or day)

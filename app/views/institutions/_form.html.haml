@@ -32,6 +32,14 @@
       Copy this value from the properties page of a user of this institution
       who has signed in via Shibboleth.
   .form-group
+    = f.label :feedback_email, "Feedback Email"
+    = f.text_field :feedback_email, class: 'form-control'
+    %p.text-muted
+      %i.fa.fa-info-circle
+      This may be a plain email address or a sender name followed by an email
+      address in angle brackets, such as:
+      "Some Name &lt;email@example.edu&gt;"
+  .form-group
     .form-check
       = f.check_box :default, class: "form-check-input"
       = f.label :default, class: "form-check-label"

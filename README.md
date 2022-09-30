@@ -203,6 +203,15 @@ Then, you can access
 [http://ideals-ins2.local:3000](http://ideals-ins2.local:3000) in order to play
 around with multi-tenancy.
 
+# Elasticsearch Schema Migration
+
+From time to time, the index schema may have to change to accommodate new
+features. This requires creating a new index using the
+`elasticsearch:indexes:create` rake task, changing the index name in the
+application configuration (or changing the index alias on the ES side using
+the `elasticsearch:indexes:create_alias`/`delete_alias` rake tasks), and then
+reindexing all database content using the `elasticsearch:reindex` rake task.
+
 # Branches & Environments
 
 | Rails Environment      | Git Branch              | Machine                | Configuration File                          |

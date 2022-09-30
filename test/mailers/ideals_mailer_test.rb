@@ -13,7 +13,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     email = IdealsMailer.account_approved(identity).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
-    assert_equal [Configuration.instance.mail[:from]], email.from
+    assert_equal [institutions(:example).feedback_email], email.from
     assert_equal [identity.email], email.to
     assert_equal "Register your IDEALS account", email.subject
 
@@ -33,7 +33,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     email = IdealsMailer.account_denied(invitee).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
-    assert_equal [Configuration.instance.mail[:from]], email.from
+    assert_equal [institutions(:example).feedback_email], email.from
     assert_equal [invitee.email], email.to
     assert_equal "Your IDEALS account request", email.subject
 
@@ -52,7 +52,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     email = IdealsMailer.account_registered(identity).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
-    assert_equal [Configuration.instance.mail[:from]], email.from
+    assert_equal [institutions(:example).feedback_email], email.from
     assert_equal [identity.email], email.to
     assert_equal "You're ready to log in to IDEALS!", email.subject
 
@@ -73,8 +73,8 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert !ActionMailer::Base.deliveries.empty?
 
     config = Configuration.instance
-    assert_equal [config.mail[:from]], email.from
-    assert_equal [config.mail[:from]], email.to
+    assert_equal [institutions(:example).feedback_email], email.from
+    assert_equal [institutions(:example).feedback_email], email.to
     assert_equal "[TEST: IDEALS] Action required on a new IDEALS user",
                  email.subject
 
@@ -94,7 +94,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     email = IdealsMailer.account_request_received(invitee).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
-    assert_equal [Configuration.instance.mail[:from]], email.from
+    assert_equal [institutions(:example).feedback_email], email.from
     assert_equal [invitee.email], email.to
     assert_equal "Your IDEALS account request", email.subject
 
@@ -126,7 +126,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     email = IdealsMailer.invited(identity).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
-    assert_equal [Configuration.instance.mail[:from]], email.from
+    assert_equal [institutions(:example).feedback_email], email.from
     assert_equal [identity.email], email.to
     assert_equal "Register for an IDEALS account", email.subject
 
@@ -143,8 +143,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     email = IdealsMailer.item_submitted(item).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
-    config = ::Configuration.instance
-    assert_equal [config.mail[:from]], email.from
+    assert_equal [item.institution.feedback_email], email.from
     assert_equal ["admin@example.edu"], email.to
     assert_equal "A new IDEALS item requires review", email.subject
 
@@ -165,7 +164,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     email = IdealsMailer.password_reset(identity).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
-    assert_equal [Configuration.instance.mail[:from]], email.from
+    assert_equal [institutions(:example).feedback_email], email.from
     assert_equal [identity.email], email.to
     assert_equal "Reset your IDEALS password", email.subject
 
@@ -184,7 +183,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     email = IdealsMailer.test(recipient).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
-    assert_equal [Configuration.instance.mail[:from]], email.from
+    assert_equal [Institution.default.feedback_email], email.from
     assert_equal [recipient], email.to
     assert_equal "[TEST: IDEALS] Hello from IDEALS", email.subject
 

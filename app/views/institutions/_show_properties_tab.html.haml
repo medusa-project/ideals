@@ -19,5 +19,8 @@
   %dt Organization DN
   %dd
     %code= @institution.org_dn
+  %dt Feedback Email
+  %dd
+    = @institution.feedback_email
   %dt Default
   %dd= boolean(@institution.default, style: :word)
