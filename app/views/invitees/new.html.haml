@@ -16,8 +16,8 @@
   %p
     IDEALS administrators may be contacted at
     =succeed(".") do
-      %a(href="mailto:#{::Configuration.instance.mail[:from]}")
-        = ::Configuration.instance.mail[:from]
+      %a(href="mailto:#{current_institution.feedback_email}")
+        = current_institution.feedback_email
 
 = form_for(@invitee, url: create_unsolicited_invitees_path) do |f|
   .row.form-group

@@ -175,7 +175,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     assert_select "Identify > earliestDatestamp", items.first.created_at.utc.iso8601
     assert_select "Identify > deletedRecord", "persistent"
     assert_select "Identify > granularity", "YYYY-MM-DDThh:mm:ssZ"
-    assert_select "Identify > adminEmail", Configuration.instance.mail[:reply_to]
+    assert_select "Identify > adminEmail", institutions(:uiuc).feedback_email
   end
 
   test "Identify returns errors when illegal arguments are provided" do

@@ -9,5 +9,5 @@
 
 %p
   Please
-  = link_to("contact us", "mailto:#{::Configuration.instance.mail[:from]}")
+  = link_to("contact us", "mailto:#{current_institution.feedback_email}")
   if you have any questions.

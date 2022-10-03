@@ -1,17 +1,22 @@
 ##
 # # Attributes
 #
-# `created_at` Managed by ActiveRecord.
-# `default`    Boolean flag indicating whether a particular institution is the
-#              system default, i.e. the one that should be used when there is
-#              no other information available (like an `X-Forwarded-Host`
-#              header) to determine which one to use. Only one institution has
-#              this set to true.
-# `key`        Short string that uniquely identifies the institution.
-#              Populated from the `org_dn` string upon save.
-# `name`       Institution name, populated from the `org_dn` string upon save.
-# `org_dn`     Value of an `eduPersonOrgDN` attribute from the Shibboleth SP.
-# `updated_at` Managed by ActiveRecord.
+# `created_at`     Managed by ActiveRecord.
+# `default`        Boolean flag indicating whether a particular institution is
+#                  the system default, i.e. the one that should be used when
+#                  there is no other information available (like an
+#                  `X-Forwarded-Host` header) to determine which one to use.
+#                  Only one institution has this set to true.
+# `feedback_email` Email address for public feedback. This may be a plain
+#                  email address or a name followed by an email in angle
+#                  brackets.
+# `key`            Short string that uniquely identifies the institution.
+#                  Populated from the `org_dn` string upon save.
+# `name`           Institution name, populated from the `org_dn` string upon
+#                  save.
+# `org_dn`         Value of an `eduPersonOrgDN` attribute from the Shibboleth
+#                  SP.
+# `updated_at`     Managed by ActiveRecord.
 #
 class Institution < ApplicationRecord
 
