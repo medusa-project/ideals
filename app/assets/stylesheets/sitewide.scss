@@ -1,11 +1,26 @@
 // This stylesheet contains styles for elements that may appear in multiple
 // views.
-//
-// N.B.: before adding rules to this file, consider whether it might be better
-// to add them to https://github.com/medusa-project/scars-bootstrap-theme.
 
 html {
   overflow-x: hidden;
+}
+
+.container, .container-fluid {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+
+.page-content {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.bg-info {
+  background-color: #337ab7 !important;
+}
+
+.alert-light {
+  background-color: $gray-100;
 }
 
 h1 {
@@ -13,6 +28,14 @@ h1 {
   small {
     font-size: 0.6em;
   }
+}
+
+blockquote {
+  font-style: italic;
+}
+
+code {
+  color: black;
 }
 
 .navbar-toggler-icon {
@@ -132,3 +155,6 @@ h1 {
   padding: 2em;
   text-align: center;
 }
+
+@import "header";
+@import "footer";

@@ -749,7 +749,7 @@ const IDEALS = {
 
     NonNetIDLoginForm: function() {
         const ROOT_URL = $("input[name=root_url]").val();
-        const modal    = $("#non-netid-login-modal");
+        const modal    = $("#login-modal");
         const flash    = modal.find(".alert.login-status");
         modal.find("button[type=submit]").on("click", function(event) {
             event.preventDefault();

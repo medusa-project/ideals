@@ -1,0 +1,41 @@
+<% # This file contains all of the institution-specific style overrides. %>
+
+<% # @active_color %>
+
+.nav-pills .nav-link.active { background-color: <%= @active_color %>; }
+
+<% # @primary_color %>
+
+.btn-primary {
+  background-color: <%= @primary_color %>;
+  border-color: transparent;
+}
+.badge-primary { background-color: <%= @primary_color %>; }
+.bg-primary .card-header { background-color: <%= @primary_color %>; }
+
+<% # @primary_hover_color %>
+
+.btn-primary:hover {
+  background-color: <%= @primary_hover_color %>;
+  border-color: transparent;
+}
+
+<% # @link_color %>
+
+a { color: <%= @link_color %>; }
+
+<% # @link_hover_color %>
+
+a:hover { color: <%= @link_hover_color %>; }
+
+<% # @header_background_color %>
+
+header > div:first-child {
+  background-color: <%= @header_background_color %>;
+}
+
+<% # @footer_background_color %>
+
+footer .info-area {
+  background-color: <%= @footer_background_color %>;
+}

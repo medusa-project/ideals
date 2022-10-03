@@ -139,6 +139,7 @@ Rails.application.routes.draw do
   resources :registered_elements, param: :name, path: "elements"
   match "/settings", to: "settings#index", via: :get
   match "/settings", to: "settings#update", via: :patch
+  match "/custom-styles", to: "stylesheets#show", via: :get
   resources :submission_profiles, path: "submission-profiles" do
     match "/clone", to: "submission_profiles#clone", via: :post
     resources :submission_profile_elements, path: "elements", except: [:new, :index, :show]
