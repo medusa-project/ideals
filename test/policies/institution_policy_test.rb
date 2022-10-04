@@ -188,6 +188,57 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_properties?
   end
 
+  # edit_theme?()
+
+  test "edit_theme?() returns false with a nil user" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.edit_theme?
+  end
+
+  test "edit_theme?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_theme?
+  end
+
+  test "edit_theme?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_theme?
+  end
+
+  test "edit_theme?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.edit_theme?
+  end
+
+  test "edit_theme?() does not authorize administrators of different
+  institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_theme?
+  end
+
+  test "edit_theme?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_theme?
+  end
+
   # index?()
 
   test "index?() returns false with a nil request context" do
@@ -478,6 +529,56 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_statistics?
   end
 
+  # show_theme?()
+
+  test "show_theme?() returns false with a nil request context" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.show_theme?
+  end
+
+  test "show_theme?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_theme?
+  end
+
+  test "show_theme?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_theme?
+  end
+
+  test "show_theme?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_theme?
+  end
+
+  test "show_theme?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, institutions(:uiuc))
+    assert !policy.show_theme?
+  end
+
+  test "show_theme?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_theme?
+  end
+
   # show_users?()
 
   test "show_users?() returns false with a nil request context" do
@@ -625,39 +726,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.update?
-  end
-
-  # update_properties()
-
-  test "update_properties?() returns false with a nil request context" do
-    policy = InstitutionPolicy.new(nil, @institution)
-    assert !policy.update_properties?
-  end
-
-  test "update_properties?() is restrictive by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.update_properties?
-  end
-
-  test "update_properties?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.update_properties?
-  end
-
-  test "update_properties?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.update_properties?
   end
 
 end

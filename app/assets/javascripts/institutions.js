@@ -20,6 +20,19 @@ const InstitutionView = function() {
         });
     }).trigger("show.bs.tab");
 
+    $("#theme-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/theme";
+        $.get(url, function (data) {
+            $("#theme-tab-content").html(data);
+            $('button.edit-theme').on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-theme";
+                $.get(url, function(data) {
+                    $("#edit-theme-modal .modal-body").html(data);
+                });
+            });
+        });
+    }).trigger("show.bs.tab");
+
     $("#users-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/users";
         $.get(url, function (data) {

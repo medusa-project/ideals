@@ -164,6 +164,35 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_theme()
+
+  test "edit_theme() returns HTTP 403 for logged-out users" do
+    institution = institutions(:uiuc)
+    get institution_edit_theme_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_theme() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    institution = institutions(:uiuc)
+    get institution_edit_theme_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_theme() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:uiuc)
+    get institution_edit_theme_path(institution)
+    assert_response :not_found
+  end
+
+  test "edit_theme() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:uiuc)
+    get institution_edit_theme_path(institution), xhr: true
+    assert_response :ok
+  end
+
   # index()
 
   test "index() redirects to login page for logged-out users" do
@@ -326,6 +355,25 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   test "show_statistics() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
     get institution_statistics_path(institutions(:southwest)), xhr: true
+    assert_response :ok
+  end
+
+  # show_theme()
+
+  test "show_theme() returns HTTP 403 for logged-out users" do
+    get institution_theme_path(institutions(:southwest)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_theme() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get institution_theme_path(institutions(:southwest)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_theme() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get institution_theme_path(institutions(:southwest)), xhr: true
     assert_response :ok
   end
 

@@ -109,6 +109,15 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal expected, actual[1]['dl_count']
   end
 
+  # footer_background_color
+
+  test "footer_background_color must contain a valid CSS color" do
+    @instance.footer_background_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.footer_background_color = "#3b7a9c"
+    assert @instance.valid?
+  end
+
   # fqdn
 
   test "fqdn must be present" do
@@ -122,6 +131,15 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.fqdn = "-invalid_"
     assert !@instance.valid?
     @instance.fqdn = "host-name.example.org"
+    assert @instance.valid?
+  end
+
+  # header_background_color
+
+  test "header_background_color must contain a valid CSS color" do
+    @instance.header_background_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.header_background_color = "#3b7a9c"
     assert @instance.valid?
   end
 
@@ -140,6 +158,24 @@ class InstitutionTest < ActiveSupport::TestCase
     end
   end
 
+  # link_color
+
+  test "link_color must contain a valid CSS color" do
+    @instance.link_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.link_color = "#3b7a9c"
+    assert @instance.valid?
+  end
+
+  # link_hover_color
+
+  test "link_hover_color must contain a valid CSS color" do
+    @instance.link_hover_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.link_hover_color = "#3b7a9c"
+    assert @instance.valid?
+  end
+
   # name
 
   test "name must be present" do
@@ -147,6 +183,24 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.name = ""
     assert !@instance.valid?
+  end
+
+  # primary_color
+
+  test "primary_color must contain a valid CSS color" do
+    @instance.primary_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.primary_color = "#3b7a9c"
+    assert @instance.valid?
+  end
+
+  # primary_hover_color
+
+  test "primary_hover_color must contain a valid CSS color" do
+    @instance.primary_hover_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.primary_hover_color = "#3b7a9c"
+    assert @instance.valid?
   end
 
   # save()

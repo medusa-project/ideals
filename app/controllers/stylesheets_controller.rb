@@ -19,14 +19,7 @@ class StylesheetsController < ApplicationController
   # Responds to `GET /custom-styles`, returning CSS.
   #
   def show
-    # TODO: make these customizable
-    @active_color            = "#23527c" # uofi-blue-lighter-3
-    @footer_background_color = "#13294b" # uofi-blue
-    @header_background_color = "#13294b" # uofi-blue
-    @link_color              = "#23527c" # uofi-blue-lighter-3
-    @link_hover_color        = "#23527c" # uofi-blue-lighter-3
-    @primary_color           = "#23527c" # uofi-blue-lighter-3
-    @primary_hover_color     = "#05325b" # uofi-blue-lighter-1
+    @institution = current_institution
   end
 
   private

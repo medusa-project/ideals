@@ -1,0 +1,47 @@
+-# @param institution [Institution]
+
+= form_for(institution, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .alert.alert-light
+    = icon_for(:info)
+    CSS colors are supported in hexadecimal and RGB syntax. Examples:
+    %ul
+      %li
+        %code #fff
+      %li
+        %code #a045b9
+      %li
+        %code rgb(128, 72, 9)
+      %li
+        %code rgba(128, 72, 9, 0.5)
+
+  .form-group
+    = f.label :header_background_color, "Header Background Color"
+    = f.text_field :header_background_color, class: "form-control"
+
+  .form-group
+    = f.label :footer_background_color, "Footer Background Color"
+    = f.text_field :footer_background_color, class: "form-control"
+
+  .form-group
+    = f.label :primary_color, "Primary Color"
+    = f.text_field :primary_color, class: "form-control"
+
+  .form-group
+    = f.label :primary_hover_color, "Primary Hover Color"
+    = f.text_field :primary_hover_color, class: "form-control"
+
+  .form-group
+    = f.label :link_color, "Link Color"
+    = f.text_field :link_color, class: "form-control"
+
+  .form-group
+    = f.label :link_hover_color, "Link Hover Color"
+    = f.text_field :link_hover_color, class: "form-control"
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Save Changes", class: "btn btn-primary")

@@ -64,9 +64,13 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-administrators", to: "institutions#edit_administrators", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/edit-theme", to: "institutions#edit_theme", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "institutions#show_statistics", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/theme", to: "institutions#show_theme", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/users", to: "institutions#show_users", via: :get,
           constraints: lambda { |request| request.xhr? }

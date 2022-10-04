@@ -1,0 +1,43 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@institution).edit_theme?
+    -# Edit button
+    %button.btn.btn-light.edit-theme{"data-target":          "#edit-theme-modal",
+                                     "data-toggle":          "modal",
+                                     type:                   "button",
+                                     "data-institution-key": @institution.key }
+      %i.fa.fa-pencil-alt
+      Edit
+
+.clearfix.mb-3
+
+%dl
+  %dt Header Background Color
+  %dd
+    .color-thumbnail{style: "background-color: #{@institution.header_background_color}; "\
+                            "color: #{ColorUtils.maximize_text_contrast(@institution.header_background_color)}"}
+      = @institution.header_background_color
+  %dt Footer Background Color
+  %dd
+    .color-thumbnail{style: "background-color: #{@institution.footer_background_color}; "\
+                            "color: #{ColorUtils.maximize_text_contrast(@institution.footer_background_color)}"}
+      = @institution.footer_background_color
+  %dt Primary Color
+  %dd
+    .color-thumbnail{style: "background-color: #{@institution.primary_color}; "\
+                            "color: #{ColorUtils.maximize_text_contrast(@institution.primary_color)}"}
+      = @institution.primary_color
+  %dt Primary Hover Color
+  %dd
+    .color-thumbnail{style: "background-color: #{@institution.primary_hover_color}; "\
+                            "color: #{ColorUtils.maximize_text_contrast(@institution.primary_hover_color)}"}
+      = @institution.primary_hover_color
+  %dt Link Color
+  %dd
+    .color-thumbnail{style: "background-color: #{@institution.link_color}; "\
+                            "color: #{ColorUtils.maximize_text_contrast(@institution.link_color)}"}
+      = @institution.link_color
+  %dt Link Hover Color
+  %dd
+    .color-thumbnail{style: "background-color: #{@institution.link_hover_color}; "\
+                            "color: #{ColorUtils.maximize_text_contrast(@institution.link_hover_color)}"}
+      = @institution.link_hover_color

@@ -1,22 +1,30 @@
 ##
 # # Attributes
 #
-# `created_at`     Managed by ActiveRecord.
-# `default`        Boolean flag indicating whether a particular institution is
-#                  the system default, i.e. the one that should be used when
-#                  there is no other information available (like an
-#                  `X-Forwarded-Host` header) to determine which one to use.
-#                  Only one institution has this set to true.
-# `feedback_email` Email address for public feedback. This may be a plain
-#                  email address or a name followed by an email in angle
-#                  brackets.
-# `key`            Short string that uniquely identifies the institution.
-#                  Populated from the `org_dn` string upon save.
-# `name`           Institution name, populated from the `org_dn` string upon
-#                  save.
-# `org_dn`         Value of an `eduPersonOrgDN` attribute from the Shibboleth
-#                  SP.
-# `updated_at`     Managed by ActiveRecord.
+# * `created_at`              Managed by ActiveRecord.
+# * `default`                 Boolean flag indicating whether a particular
+#                             institution is the system default, i.e. the one
+#                             that should be used when there is no other
+#                             information available (like an `X-Forwarded-Host`
+#                             header) to determine which one to use.
+#                             Only one institution has this set to true.
+# * `feedback_email`          Email address for public feedback. This may be a
+#                             plain email address or a name followed by an
+#                             email in angle brackets.
+# * `footer_background_color` Theme background color of the footer.
+# * `header_background_color` Theme background color of the header.
+# * `key`                     Short string that uniquely identifies the
+#                             institution. Populated from the `org_dn` string
+#                             on save.
+# * `link_color`              Theme hyperlink color.
+# * `link_hover_color`        Theme hover-over-hyperlink color.
+# * `name`                    Institution name, populated from the `org_dn`
+#                             string upon save.
+# * `org_dn`                  Value of an `eduPersonOrgDN` attribute from the
+#                             Shibboleth SP.
+# * `primary_color`           Theme primary color.
+# * `primary_hover_color`     Theme hover-over primary color.
+# * `updated_at`              Managed by ActiveRecord.
 #
 class Institution < ApplicationRecord
 
@@ -56,7 +64,7 @@ class Institution < ApplicationRecord
   # uniqueness enforced by database constraints
   validates :org_dn, presence: true
 
-  validate :disallow_key_changes
+  validate :disallow_key_changes, :validate_css_colors
 
   before_save :set_properties, :ensure_default_uniqueness
   after_create :add_default_elements, :add_default_metadata_profile,
@@ -308,6 +316,20 @@ class Institution < ApplicationRecord
             self.key = kv[1]
           end
         end
+      end
+    end
+  end
+
+  def validate_css_colors
+    [:footer_background_color,
+     :header_background_color,
+     :link_color,
+     :link_hover_color,
+     :primary_color,
+     :primary_hover_color].each do |attr|
+      value = send(attr)
+      if value.present? && !ColorUtils.css_color?(value)
+        errors.add(attr, "must be a valid CSS color")
       end
     end
   end
