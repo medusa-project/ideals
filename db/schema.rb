@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_05_143843) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_05_195258) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -264,12 +264,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_05_143843) do
     t.string "fqdn", null: false
     t.boolean "default", default: false, null: false
     t.string "feedback_email"
-    t.string "footer_background_color", default: "#13294b"
-    t.string "header_background_color", default: "#13294b"
-    t.string "link_color", default: "#23527c"
-    t.string "link_hover_color", default: "#23527c"
-    t.string "primary_color", default: "#23527c"
-    t.string "primary_hover_color", default: "#05325b"
+    t.string "footer_background_color", default: "#13294b", null: false
+    t.string "header_background_color", default: "#13294b", null: false
+    t.string "link_color", default: "#23527c", null: false
+    t.string "link_hover_color", default: "#23527c", null: false
+    t.string "primary_color", default: "#23527c", null: false
+    t.string "primary_hover_color", default: "#05325b", null: false
     t.string "header_image_filename"
     t.string "footer_image_filename"
     t.index ["default"], name: "index_institutions_on_default"

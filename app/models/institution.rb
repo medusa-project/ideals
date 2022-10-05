@@ -70,6 +70,13 @@ class Institution < ApplicationRecord
   # uniqueness enforced by database constraints
   validates :org_dn, presence: true
 
+  validates :footer_background_color, presence: true
+  validates :header_background_color, presence: true
+  validates :link_color, presence: true
+  validates :link_hover_color, presence: true
+  validates :primary_color, presence: true
+  validates :primary_hover_color, presence: true
+
   validate :disallow_key_changes, :validate_css_colors
 
   before_save :set_properties, :ensure_default_uniqueness

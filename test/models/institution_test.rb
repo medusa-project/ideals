@@ -151,6 +151,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  test "footer_background_color cannot be blank" do
+    @instance.footer_background_color = ""
+    assert !@instance.valid?
+    @instance.footer_background_color = nil
+    assert !@instance.valid?
+  end
+
   # footer_image_url()
 
   test "footer_image_url() returns nil when footer_image is not set" do
@@ -185,6 +192,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.header_background_color = "#3b7a9c"
     assert @instance.valid?
+  end
+
+  test "header_background_color cannot be blank" do
+    @instance.header_background_color = ""
+    assert !@instance.valid?
+    @instance.header_background_color = nil
+    assert !@instance.valid?
   end
 
   # header_image_url()
@@ -222,6 +236,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  test "link__color cannot be blank" do
+    @instance.link_color = ""
+    assert !@instance.valid?
+    @instance.link_color = nil
+    assert !@instance.valid?
+  end
+
   # link_hover_color
 
   test "link_hover_color must contain a valid CSS color" do
@@ -229,6 +250,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.link_hover_color = "#3b7a9c"
     assert @instance.valid?
+  end
+
+  test "link_hover_color cannot be blank" do
+    @instance.link_hover_color = ""
+    assert !@instance.valid?
+    @instance.link_hover_color = nil
+    assert !@instance.valid?
   end
 
   # name
@@ -249,6 +277,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  test "primary_color cannot be blank" do
+    @instance.primary_color = ""
+    assert !@instance.valid?
+    @instance.primary_color = nil
+    assert !@instance.valid?
+  end
+
   # primary_hover_color
 
   test "primary_hover_color must contain a valid CSS color" do
@@ -256,6 +291,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.primary_hover_color = "#3b7a9c"
     assert @instance.valid?
+  end
+
+  test "primary_hover_color cannot be blank" do
+    @instance.primary_hover_color = ""
+    assert !@instance.valid?
+    @instance.primary_hover_color = nil
+    assert !@instance.valid?
   end
 
   # save()
