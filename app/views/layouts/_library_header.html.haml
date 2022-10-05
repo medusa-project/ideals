@@ -1,11 +1,15 @@
 %div
   %h1.sr-only= current_institution.name
   .d-flex.justify-content-between
-    %div
+    %div.ml-2
       - if current_institution.header_image_filename
-        %a.navbar-brand{href: root_url}
+        - if current_institution.main_website_url
+          %a.navbar-brand{href: root_url}
+            = image_tag(current_institution.header_image_url,
+                        alt: "Institution Logo")
+        - else
           = image_tag(current_institution.header_image_url,
-                      alt: "Institution Logo")
+                        alt: "Institution Logo")
 
     .user-actions
       - if logged_in?

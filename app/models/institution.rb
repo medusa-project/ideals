@@ -24,6 +24,7 @@
 #                             on save.
 # * `link_color`              Theme hyperlink color.
 # * `link_hover_color`        Theme hover-over-hyperlink color.
+# * `main_website_url`        URL of the institution's main website.
 # * `name`                    Institution name, populated from the `org_dn`
 #                             string upon save.
 # * `org_dn`                  Value of an `eduPersonOrgDN` attribute from the
@@ -74,6 +75,7 @@ class Institution < ApplicationRecord
   validates :header_background_color, presence: true
   validates :link_color, presence: true
   validates :link_hover_color, presence: true
+  validates :main_website_url, presence: true
   validates :primary_color, presence: true
   validates :primary_hover_color, presence: true
 

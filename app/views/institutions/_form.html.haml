@@ -25,6 +25,9 @@
       %code= "config/environments/#{Rails.env}.rb"
       file.
   .form-group
+    = f.label :main_website_url, "Main Website URL"
+    = f.text_field :main_website_url, class: 'form-control'
+  .form-group
     = f.label :org_dn, "Organization DN"
     = f.text_field :org_dn, class: 'form-control'
     %p.text-muted

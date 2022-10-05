@@ -286,8 +286,8 @@ class InstitutionsController < ApplicationController
                                         :footer_background_color,
                                         :fqdn, :header_background_color,
                                         :key, :link_color, :link_hover_color,
-                                        :name, :org_dn, :primary_color,
-                                        :primary_hover_color)
+                                        :main_website_url, :name, :org_dn,
+                                        :primary_color, :primary_hover_color)
   end
 
   def upload_images
