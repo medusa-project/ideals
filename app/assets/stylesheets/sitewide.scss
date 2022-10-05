@@ -141,10 +141,10 @@ code {
     white-space: nowrap;
   }
 }
-#file-chooser {
+.file-chooser {
   display: none;
 }
-#file-drop-zone {
+.file-drop-zone {
   border: 4px dashed #d0d0d0;
   border-radius: 18px;
   color: #606060;

@@ -626,7 +626,7 @@ const IDEALS = {
         // The file chooser is a file input, hidden via CSS, that is virtually
         // clicked when the drop zone is clicked in order to open a file
         // selection dialog.
-        const fileChooser = $("#file-chooser");
+        const fileChooser = $(".file-chooser");
         fileChooser.on("change", function() {
             const files = this.files;
             for (let i = 0; i < files.length; i++) {
@@ -634,7 +634,7 @@ const IDEALS = {
             }
         });
 
-        const dropZone = $("#file-drop-zone");
+        const dropZone = $(".file-drop-zone");
         dropZone.on("dragover", function(e) {
             e.preventDefault();
             e.originalEvent.dataTransfer.dropEffect = "copy";

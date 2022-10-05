@@ -7,11 +7,11 @@
   -# Needed by JavaScript
   = hidden_field_tag "import_uri", import_path(f.object)
 
-  -# This input is hidden via CSS. JavaScript sends #file-drop-zone click
+  -# This input is hidden via CSS. JavaScript sends .file-drop-zone click
   -# events to it in order to open a file selection dialog.
-  %input#file-chooser{type: "file", directory: true, webkitdirectory: true}
+  %input.file-chooser{type: "file", directory: true, webkitdirectory: true}
 
-  #file-drop-zone.bg-light.mb-3
+  .file-drop-zone.bg-light.mb-3
     %div
       %i.fa.fa-upload
       Drop a package or CSV file here, or click to select it.
