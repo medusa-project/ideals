@@ -31,24 +31,8 @@ footer {
         margin: 0px 0px 5px 0px;
       }
     }
-    .library-footer_social_div {
-      margin-top: 15px;
-      .library-footer_social_a {
-        margin-right: 15px;
-      }
-    }
-    .footer-library_i-mark {
-      margin: -20px auto 30px;
-      width: 200px;
-    }
-    .footer-library_i-mark_mobile {
-      margin: 0px 0px 15px 0px;
-    }
-    .footer-library_fdlp-div {
-      margin-top: 15px;
-      .footer-library_fdlp-div_img {
-        width: 100px;
-      }
+    img {
+      max-width: 200px;
     }
     .footer-library_copyright {
       font-size: 11px;

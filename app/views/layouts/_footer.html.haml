@@ -5,10 +5,8 @@
     \#{link_to 'Contact us', "mailto:#{current_institution.feedback_email}"}
     for questions and to provide feedback.
   .info-area
-    %a{href: "https://illinois.edu"}
-      -# TODO: fix
-      -#= image_tag '009_LIBRA_OrangeI_Vert_RGB.png',
-      -#  class: 'footer-library_i-mark',
-      -#  alt: 'University of Illinois Logo'
+    - if current_institution.footer_image_filename
+      = image_tag(current_institution.footer_image_url,
+                  alt: "Institution Logo")
     .footer-copyright.text-center
       Copyright © 2022 University of Illinois Board of Trustees

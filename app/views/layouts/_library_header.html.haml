@@ -1,25 +1,12 @@
 %div
-  %h1.sr-only University Library, University of Illinois at Urbana-Champaign
+  %h1.sr-only= current_institution.name
   .d-flex.justify-content-between
-    .table-row
-      .table-cell
-        %a.navbar-brand{href: "https://illinois.edu/"}
-          -# TODO: fix
-          -#= image_tag 'library_wordmark_horizontal_1.png',
-          -#  class: 'imark',
-          -#  alt: 'University of Illinois I-Mark'
-      .table-cell
-        %a{href: "https://www.library.illinois.edu"}
-          -# TODO: fix
-          -#= image_tag 'library_wordmark_horizontal_2.png',
-          -#  class: 'col-xs-12 banner-image-university',
-          -#  alt: 'University'
-      .table-cell
-        %a{href: "https://www.library.illinois.edu"}
-          -# TODO: fix
-          -#= image_tag 'library_wordmark_horizontal_3.png',
-          -#  class: 'col-xs-12 banner-image-library',
-          -#  alt: 'Library'
+    %div
+      - if current_institution.header_image_filename
+        %a.navbar-brand{href: root_url}
+          = image_tag(current_institution.header_image_url,
+                      alt: "Institution Logo")
+
     .user-actions
       - if logged_in?
         - if current_user.sysadmin?

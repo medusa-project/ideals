@@ -10,34 +10,58 @@
 
 .clearfix.mb-3
 
-%dl
-  %dt Header Background Color
-  %dd
-    .color-thumbnail{style: "background-color: #{@institution.header_background_color}; "\
-                            "color: #{ColorUtils.maximize_text_contrast(@institution.header_background_color)}"}
-      = @institution.header_background_color
-  %dt Footer Background Color
-  %dd
-    .color-thumbnail{style: "background-color: #{@institution.footer_background_color}; "\
-                            "color: #{ColorUtils.maximize_text_contrast(@institution.footer_background_color)}"}
-      = @institution.footer_background_color
-  %dt Primary Color
-  %dd
-    .color-thumbnail{style: "background-color: #{@institution.primary_color}; "\
-                            "color: #{ColorUtils.maximize_text_contrast(@institution.primary_color)}"}
-      = @institution.primary_color
-  %dt Primary Hover Color
-  %dd
-    .color-thumbnail{style: "background-color: #{@institution.primary_hover_color}; "\
-                            "color: #{ColorUtils.maximize_text_contrast(@institution.primary_hover_color)}"}
-      = @institution.primary_hover_color
-  %dt Link Color
-  %dd
-    .color-thumbnail{style: "background-color: #{@institution.link_color}; "\
-                            "color: #{ColorUtils.maximize_text_contrast(@institution.link_color)}"}
-      = @institution.link_color
-  %dt Link Hover Color
-  %dd
-    .color-thumbnail{style: "background-color: #{@institution.link_hover_color}; "\
-                            "color: #{ColorUtils.maximize_text_contrast(@institution.link_hover_color)}"}
-      = @institution.link_hover_color
+.row.mb-3
+  .col-sm-3
+    .card
+      .card-header Header Background Color
+      .card-body{style: "background-color: #{@institution.header_background_color}; "\
+                        "color: #{ColorUtils.maximize_text_contrast(@institution.header_background_color)}"}
+        = @institution.header_background_color
+  .col-sm-3
+    .card
+      .card-header Footer Background Color
+      .card-body{style: "background-color: #{@institution.footer_background_color}; "\
+                        "color: #{ColorUtils.maximize_text_contrast(@institution.footer_background_color)}"}
+        = @institution.footer_background_color
+  .col-sm-3
+    .card
+      .card-header Primary Color
+      .card-body{style: "background-color: #{@institution.primary_color}; "\
+                        "color: #{ColorUtils.maximize_text_contrast(@institution.primary_color)}"}
+        = @institution.primary_color
+  .col-sm-3
+    .card
+      .card-header Primary Hover Color
+      .card-body{style: "background-color: #{@institution.primary_hover_color}; "\
+                        "color: #{ColorUtils.maximize_text_contrast(@institution.primary_hover_color)}"}
+        = @institution.primary_hover_color
+
+.row
+  .col-sm-3
+    .card
+      .card-header Link Color
+      .card-body{style: "background-color: #{@institution.link_color}; "\
+                        "color: #{ColorUtils.maximize_text_contrast(@institution.link_color)}"}
+        = @institution.link_color
+  .col-sm-3
+    .card
+      .card-header Link Hover Color
+      .card-body{style: "background-color: #{@institution.link_hover_color}; "\
+                        "color: #{ColorUtils.maximize_text_contrast(@institution.link_hover_color)}"}
+        = @institution.link_hover_color
+  .col-sm-3
+    .card
+      .card-header Header Image
+      .card-body
+        - if @institution.header_image_filename
+          = image_tag(@institution.header_image_url)
+        - else
+          No image set.
+  .col-sm-3
+    .card
+      .card-header Footer Image
+      .card-body
+        - if @institution.footer_image_filename
+          = image_tag(@institution.footer_image_url)
+        - else
+          No image set.

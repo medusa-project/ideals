@@ -12,7 +12,13 @@
 #                             plain email address or a name followed by an
 #                             email in angle brackets.
 # * `footer_background_color` Theme background color of the footer.
+# * `footer_image_filename`   Filename of the footer image, which is expected
+#                             to exist in the application S3 bucket under
+#                             {image_key_prefix}.
 # * `header_background_color` Theme background color of the header.
+# * `header_image_filename`   Filename of the header image, which is expected
+#                             to exist in the application S3 bucket under
+#                             {image_key_prefix}.
 # * `key`                     Short string that uniquely identifies the
 #                             institution. Populated from the `org_dn` string
 #                             on save.
@@ -77,6 +83,50 @@ class Institution < ApplicationRecord
     Institution.find_by_default(true)
   end
 
+  ##
+  # @param extension [String]
+  # @return [String]
+  #
+  def self.footer_image_filename(extension)
+    "footer.#{extension.gsub(".", "")}"
+  end
+
+  ##
+  # @param institution_key [String]
+  # @param extension [String] Filename extension.
+  # @return [String]
+  #
+  def self.footer_image_key(institution_key, extension)
+    [image_key_prefix(institution_key),
+     footer_image_filename(extension)].join
+  end
+
+  ##
+  # @param extension [String]
+  # @return [String]
+  #
+  def self.header_image_filename(extension)
+    "header.#{extension.gsub(".", "")}"
+  end
+
+  ##
+  # @param institution_key [String]
+  # @param extension [String] Filename extension.
+  # @return [String]
+  #
+  def self.header_image_key(institution_key, extension)
+    [image_key_prefix(institution_key),
+     header_image_filename(extension)].join
+  end
+
+  ##
+  # @param institution_key [String]
+  # @return [String]
+  #
+  def self.image_key_prefix(institution_key)
+    ["institutions", institution_key, "theme"].join("/") + "/"
+  end
+
   def breadcrumb_label
     name
   end
@@ -131,6 +181,38 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [String] Presigned S3 URL.
+  #
+  def footer_image_url
+    return nil if self.footer_image_filename.blank?
+    bucket     = ::Configuration.instance.storage[:bucket]
+    key        = [self.class.image_key_prefix(self.key),
+                  self.footer_image_filename].join
+    aws_client = S3Client.instance.send(:get_client)
+    signer     = Aws::S3::Presigner.new(client: aws_client)
+    signer.presigned_url(:get_object,
+                         bucket:     bucket,
+                         key:        key,
+                         expires_in: 1.week.to_i)
+  end
+
+  ##
+  # @return [String] Presigned S3 URL.
+  #
+  def header_image_url
+    return nil if self.header_image_filename.blank?
+    bucket     = ::Configuration.instance.storage[:bucket]
+    key        = [self.class.image_key_prefix(self.key),
+                  self.header_image_filename].join
+    aws_client = S3Client.instance.send(:get_client)
+    signer     = Aws::S3::Presigner.new(client: aws_client)
+    signer.presigned_url(:get_object,
+                         bucket:     bucket,
+                         key:        key,
+                         expires_in: 1.week.to_i)
+  end
+
+  ##
   # @param start_time [Time]   Optional beginning of a time range.
   # @param end_time [Time]     Optional end of a time range.
   # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`
@@ -163,6 +245,26 @@ class Institution < ApplicationRecord
 
   def to_param
     key
+  end
+
+  ##
+  # @param io [IO]
+  # @param extension [String]
+  #
+  def upload_footer_image(io:, extension:)
+    filename = self.class.footer_image_filename(extension)
+    upload_theme_image(io: io, filename: filename)
+    self.update!(footer_image_filename: filename)
+  end
+
+  ##
+  # @param io [IO]
+  # @param extension [String]
+  #
+  def upload_header_image(io:, extension:)
+    filename = self.class.header_image_filename(extension)
+    upload_theme_image(io: io, filename: filename)
+    self.update!(header_image_filename: filename)
   end
 
   ##
@@ -318,6 +420,17 @@ class Institution < ApplicationRecord
         end
       end
     end
+  end
+
+  ##
+  # @param io [IO]
+  # @param filename [String]
+  #
+  def upload_theme_image(io:, filename:)
+    client = S3Client.instance
+    bucket = ::Configuration.instance.storage[:bucket]
+    key    = self.class.image_key_prefix(self.key) + filename
+    client.put_object(bucket: bucket, key: key, body: io)
   end
 
   def validate_css_colors

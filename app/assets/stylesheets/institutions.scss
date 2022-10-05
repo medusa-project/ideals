@@ -1,10 +1,13 @@
 body#show_institution {
-  .color-thumbnail {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: monospace;
-    height: 4em;
-    width: 16em;
+  #theme-tab-content {
+    .card-body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 4em;
+    }
+    img {
+      max-width: 100%;
+    }
   }
 }

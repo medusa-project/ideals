@@ -13,6 +13,39 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal institutions(:uiuc), Institution.default
   end
 
+  # footer_image_filename()
+
+  test "footer_image_filename() returns a correct key" do
+    assert_equal "footer.png", Institution.footer_image_filename("png")
+  end
+
+  # footer_image_key()
+
+  test "footer_image_key() returns a correct key" do
+    assert_equal "institutions/test/theme/footer.png",
+                 Institution.footer_image_key("test", "png")
+  end
+
+  # header_image_filename()
+
+  test "header_image_filename() returns a correct key" do
+    assert_equal "header.png", Institution.header_image_filename("png")
+  end
+
+  # header_image_key()
+
+  test "header_image_key() returns a correct key" do
+    assert_equal "institutions/test/theme/header.png",
+                 Institution.header_image_key("test", "png")
+  end
+
+  # image_key_prefix()
+
+  test "image_key_prefix() returns a correct key" do
+    assert_equal "institutions/test/theme/",
+                 Institution.image_key_prefix("test")
+  end
+
   # create()
 
   test "create() adds default elements" do
@@ -118,6 +151,17 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # footer_image_url()
+
+  test "footer_image_url() returns nil when footer_image is not set" do
+    assert_nil @instance.footer_image_url
+  end
+
+  test "footer_image_url() returns a correct URL" do
+    @instance.footer_image_filename = "footer.png"
+    assert @instance.footer_image_url.start_with?("http://")
+  end
+
   # fqdn
 
   test "fqdn must be present" do
@@ -141,6 +185,17 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.header_background_color = "#3b7a9c"
     assert @instance.valid?
+  end
+
+  # header_image_url()
+
+  test "header_image_url() returns nil when header_image is not set" do
+    assert_nil @instance.header_image_url
+  end
+
+  test "header_image_url() returns a correct URL" do
+    @instance.header_image_filename = "header.png"
+    assert @instance.header_image_url.start_with?("http://")
   end
 
   # key
@@ -219,6 +274,46 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.default = true
     @instance.save!
     assert_equal @instance, Institution.find_by_default(true)
+  end
+
+  # upload_footer_image()
+
+  test "upload_footer_image() uploads an image" do
+    setup_s3
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_footer_image(io: file, extension: "jpg")
+    end
+    bucket = ::Configuration.instance.storage[:bucket]
+    key    = Institution.footer_image_key(@instance.key, "jpg")
+    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+  end
+
+  test "upload_footer_image() updates the footer_image_filename attribute" do
+    setup_s3
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_footer_image(io: file, extension: "jpg")
+    end
+    assert_equal "footer.jpg", @instance.footer_image_filename
+  end
+
+  # upload_header_image()
+
+  test "upload_header_image() uploads an image" do
+    setup_s3
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_header_image(io: file, extension: "jpg")
+    end
+    bucket = ::Configuration.instance.storage[:bucket]
+    key    = Institution.header_image_key(@instance.key, "jpg")
+    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+  end
+
+  test "upload_header_image() updates the header_image_filename attribute" do
+    setup_s3
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_header_image(io: file, extension: "jpg")
+    end
+    assert_equal "header.jpg", @instance.header_image_filename
   end
 
   # url()

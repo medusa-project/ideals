@@ -233,6 +233,7 @@ class InstitutionsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         assign_administrators
+        upload_images
         @institution.update!(institution_params)
       end
     rescue => e
@@ -282,11 +283,23 @@ class InstitutionsController < ApplicationController
     # Key and name are accepted during creation. For updates, they are
     # overwritten by the contents of org_dn.
     params.require(:institution).permit(:default, :feedback_email,
-                                        :footer_background_color, :fqdn,
-                                        :header_background_color, :key,
-                                        :link_color, :link_hover_color,
+                                        :footer_background_color,
+                                        :fqdn, :header_background_color,
+                                        :key, :link_color, :link_hover_color,
                                         :name, :org_dn, :primary_color,
                                         :primary_hover_color)
+  end
+
+  def upload_images
+    p = params[:institution]
+    if p[:footer_image]
+      @institution.upload_footer_image(io:        p[:footer_image],
+                                       extension: p[:footer_image].original_filename.split(".").last)
+    end
+    if p[:header_image]
+      @institution.upload_header_image(io:        p[:header_image],
+                                       extension: p[:header_image].original_filename.split(".").last)
+    end
   end
 
 end
