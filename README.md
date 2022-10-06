@@ -183,12 +183,13 @@ always expected to be the case in the demo and production environments), the
 proxy supplies an `X-Forwarded-Host` header that conveys the fully-qualified
 domain name (FQDN) via which the app was accessed. The `current_institution()`
 method of `ApplicationController` (and `ApplicationHelper`) returns the
-`Institution` model associated with this FQDN in order to scope the content
-(and customize some functionality) to a particular institution.
+`Institution` model associated with this host+port in order to scope the
+content, and customize the theme and some other functionality, to a particular
+institution.
 
 To get this working in development, first add a couple of institutions through
-the UI, giving them FQDNs of `ideals-ins1.local` and `ideals-ins2.local`. Then
-add these to `/etc/hosts`:
+the UI, giving them FQDNs of `ideals-ins1.local:3000` and
+`ideals-ins2.local:3000`. Then add these to `/etc/hosts`:
 
 ```
 127.0.0.1 ideals-ins1.local
