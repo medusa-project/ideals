@@ -38,10 +38,11 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            institution: {
-             name: "New Institution",
-             key: "new",
-             fqdn: "new.org",
-             org_dn: "new"
+             name:             "New Institution",
+             key:              "new",
+             fqdn:             "new.org",
+             org_dn:           "new",
+             main_website_url: "https://new.org"
            }
          }
     assert_response :ok
@@ -55,10 +56,11 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
              institution: {
-               name: "New Institution",
-               key: "new",
-               fqdn: "new.org",
-               org_dn: "new"
+               name:             "New Institution",
+               key:              "new",
+               fqdn:             "new.org",
+               org_dn:           "new",
+               main_website_url: "https://new.org"
              }
            }
     end
@@ -161,6 +163,35 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     institution = institutions(:uiuc)
     get institution_edit_administrators_path(institution), xhr: true
+    assert_response :ok
+  end
+
+  # edit_theme()
+
+  test "edit_theme() returns HTTP 403 for logged-out users" do
+    institution = institutions(:uiuc)
+    get institution_edit_theme_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_theme() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    institution = institutions(:uiuc)
+    get institution_edit_theme_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_theme() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:uiuc)
+    get institution_edit_theme_path(institution)
+    assert_response :not_found
+  end
+
+  test "edit_theme() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:uiuc)
+    get institution_edit_theme_path(institution), xhr: true
     assert_response :ok
   end
 
@@ -329,6 +360,25 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_theme()
+
+  test "show_theme() returns HTTP 403 for logged-out users" do
+    get institution_theme_path(institutions(:southwest)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_theme() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get institution_theme_path(institutions(:southwest)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_theme() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get institution_theme_path(institutions(:southwest)), xhr: true
+    assert_response :ok
+  end
+
   # show_users()
 
   test "show_users() returns HTTP 403 for logged-out users" do
@@ -387,9 +437,8 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "update() updates an institution's properties when invoked by a
-  sysadmin" do
-    user = users(:uiuc_sysadmin)
+  test "update() updates an institution's properties" do
+    user = users(:uiuc_admin)
     log_in_as(user)
     institution = user.institution
     patch institution_path(institution),
@@ -403,25 +452,6 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
           }
     institution.reload
     assert_equal "New Institution", institution.name
-  end
-
-  test "update() does not update an institution's properties when invoked by an
-  institution admin" do
-    user = users(:uiuc_admin)
-    log_in_as(user)
-    institution      = user.institution
-    institution_name = institution.name
-    patch institution_path(institution),
-          xhr: true,
-          params: {
-            institution: {
-              name:   "New Institution",
-              fqdn:   "new.org",
-              org_dn: "new"
-            }
-          }
-    institution.reload
-    assert_equal institution_name, institution.name
   end
 
   test "update() returns HTTP 200" do

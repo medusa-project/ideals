@@ -1,8 +1,9 @@
 .btn-group.float-right{role: "group"}
-  - if policy(@institution).edit_properties?
+  - if policy(@institution).edit?
     -# Edit button
-    %button.btn.btn-light.edit-institution{"data-target": "#edit-institution-modal",
-                                           "data-toggle": "modal", type: "button",
+    %button.btn.btn-light.edit-institution{"data-target":          "#edit-institution-modal",
+                                           "data-toggle":          "modal",
+                                           type:                   "button",
                                            "data-institution-key": @institution.key }
       %i.fa.fa-pencil-alt
       Edit
@@ -19,6 +20,12 @@
   %dt Organization DN
   %dd
     %code= @institution.org_dn
+  %dt Main Website URL
+  %dd
+    - if @institution.main_website_url
+      = link_to(@institution.main_website_url, @institution.main_website_url)
+    - else
+      Not Set
   %dt Feedback Email
   %dd
     = @institution.feedback_email

@@ -19,39 +19,48 @@
 
 .row
   .col-sm-5.col-md-4.col-lg-3
-    .nav.flex-column.nav-pills{role: "tablist",
+    .nav.flex-column.nav-pills{role:               "tablist",
                                "aria-orientation": "vertical"}
       - if policy(@institution).show_properties?
-        %a#properties-tab.nav-link.active{href: "#properties-tab-content",
-                                          "data-toggle": "pill",
-                                          role: "tab",
+        %a#properties-tab.nav-link.active{href:            "#properties-tab-content",
+                                          "data-toggle":   "pill",
+                                          role:            "tab",
                                           "aria-controls": "properties-tab-content",
                                           "aria-selected": "true"}
           = icon_for(:info)
           Properties
+      - if policy(@institution).show_theme?
+        %a#theme-tab.nav-link{href:                   "#theme-tab-content",
+                              "data-toggle":          "pill",
+                              role:                   "tab",
+                              "aria-controls":        "theme-tab-content",
+                              "aria-selected":        "false",
+                              "data-institution-key": @institution.key}
+          %i.fa.fa-palette
+          Theme
       - if policy(@institution).show_users?
-        %a#users-tab.nav-link{href: "#users-tab-content",
-                              "data-toggle": "pill",
-                              role: "tab",
+        %a#users-tab.nav-link{href:            "#users-tab-content",
+                              "data-toggle":   "pill",
+                              role:            "tab",
                               "aria-controls": "users-tab-content",
                               "aria-selected": "true"}
           = icon_for(User)
           Users
       - if policy(@institution).show_statistics?
-        %a#statistics-tab.nav-link{href: "#statistics-tab-content",
-                                   "data-toggle": "pill",
-                                   role: "tab",
-                                   "aria-controls": "statistics-tab-content",
-                                   "aria-selected": "true",
+        %a#statistics-tab.nav-link{href:                   "#statistics-tab-content",
+                                   "data-toggle":          "pill",
+                                   role:                   "tab",
+                                   "aria-controls":        "statistics-tab-content",
+                                   "aria-selected":        "false",
                                    "data-institution-key": @institution.key}
           %i.fa.fa-chart-bar
           Statistics
       - if policy(@institution).show_access?
-        %a#access-tab.nav-link{href: "#access-tab-content",
-                               "data-toggle": "pill",
-                               role: "tab",
-                               "aria-controls": "access-tab-content",
-                               "aria-selected": "true",
+        %a#access-tab.nav-link{href:                   "#access-tab-content",
+                               "data-toggle":          "pill",
+                               role:                   "tab",
+                               "aria-controls":        "access-tab-content",
+                               "aria-selected":        "false",
                                "data-institution-key": @institution.key}
           %i.fa.fa-users
           Access
@@ -60,6 +69,11 @@
     - if policy(@institution).show_properties?
       #properties-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                         "aria-labelledby": "properties-tab"}
+        = spinner
+
+    - if policy(@institution).show_theme?
+      #theme-tab-content.tab-pane.fade{role: "tabpanel",
+                                       "aria-labelledby": "theme-tab"}
         = spinner
 
     - if policy(@institution).show_users?
@@ -79,3 +93,5 @@
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-institution-modal", title: "Edit Institution" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-theme-modal", title: "Edit Theme" }

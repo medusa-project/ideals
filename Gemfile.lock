@@ -23,14 +23,6 @@ GIT
     medusa-client (1.1.0)
       httpclient
 
-GIT
-  remote: https://github.com/medusa-project/scars-bootstrap-theme.git
-  revision: 8aeee15063941c277924a04ff5e3f77f884e5cb1
-  branch: release/bootstrap-4.4
-  specs:
-    scars-bootstrap-theme (4.4.1.pre.1.0)
-      rails
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -122,6 +114,10 @@ GEM
     aws-sigv4 (1.4.0)
       aws-eventstream (~> 1, >= 1.0.2)
     bcrypt (3.1.17)
+    bootstrap (4.6.2)
+      autoprefixer-rails (>= 9.1.0)
+      popper_js (>= 1.16.1, < 2)
+      sassc-rails (>= 2.0.0)
     builder (3.2.4)
     bunny (2.19.0)
       amq-protocol (~> 2.3, >= 2.3.1)
@@ -242,6 +238,7 @@ GEM
     parser (3.1.0.0)
       ast (~> 2.4.1)
     pg (1.2.3)
+    popper_js (1.16.1)
     power_assert (2.0.1)
     puma (5.6.4)
       nio4r (~> 2.0)
@@ -307,6 +304,12 @@ GEM
       sexp_processor (~> 4.16)
     sassc (2.4.0)
       ffi (~> 1.9)
+    sassc-rails (2.1.2)
+      railties (>= 4.0.0)
+      sassc (>= 2.0)
+      sprockets (> 3.0)
+      sprockets-rails
+      tilt
     set (1.0.2)
     sexp_processor (4.16.0)
     sorted_set (1.0.3)
@@ -358,6 +361,7 @@ DEPENDENCIES
   autoprefixer-rails
   aws-sdk-s3 (~> 1)
   bcrypt (~> 3)
+  bootstrap (~> 4.6)
   bunny
   capistrano-bundler
   capistrano-rails
@@ -386,7 +390,6 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails
   sassc
-  scars-bootstrap-theme!
   sprockets-rails
   tzinfo-data
   uglifier (>= 2.7.2)

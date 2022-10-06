@@ -15,6 +15,7 @@ class ApplicationController < ActionController::Base
   rescue_from GoneError, with: :rescue_gone
   rescue_from NotAuthorizedError, with: :rescue_unauthorized
 
+  before_action :redirect_to_default_institution
   after_action :copy_flash_to_response_headers
 
   ##
@@ -313,6 +314,21 @@ class ApplicationController < ActionController::Base
       elsif flash['success'].present?
         response.headers['X-Ideals-Message-Type'] = 'success'
         response.headers['X-Ideals-Message']      = flash['success']
+      end
+    end
+  end
+
+  ##
+  # Redirects to the default institution's FQDN if none was provided in the
+  # URL, and if not in the test environment (which uses an invalid request host
+  # of `www.example.com`).
+  #
+  def redirect_to_default_institution
+    unless Rails.env.test?
+      unless Institution.find_by_fqdn(request.host_with_port)
+        scheme = Rails.env.development? ? "http" : "https"
+        redirect_to scheme + "://" + Institution.find_by_default(true).fqdn,
+                    allow_other_host: true
       end
     end
   end

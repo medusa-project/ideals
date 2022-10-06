@@ -64,9 +64,13 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-administrators", to: "institutions#edit_administrators", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/edit-theme", to: "institutions#edit_theme", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "institutions#show_statistics", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/theme", to: "institutions#show_theme", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/users", to: "institutions#show_users", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -139,6 +143,7 @@ Rails.application.routes.draw do
   resources :registered_elements, param: :name, path: "elements"
   match "/settings", to: "settings#index", via: :get
   match "/settings", to: "settings#update", via: :patch
+  match "/custom-styles", to: "stylesheets#show", via: :get
   resources :submission_profiles, path: "submission-profiles" do
     match "/clone", to: "submission_profiles#clone", via: :post
     resources :submission_profile_elements, path: "elements", except: [:new, :index, :show]

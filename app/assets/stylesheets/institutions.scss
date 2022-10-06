@@ -1,0 +1,13 @@
+body#show_institution {
+  #theme-tab-content {
+    .card-body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 4em;
+    }
+    img {
+      max-width: 100%;
+    }
+  }
+}

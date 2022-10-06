@@ -23,14 +23,11 @@ class InstitutionPolicy < ApplicationPolicy
     update
   end
 
-  ##
-  # N.B.: this is not a controller method.
-  #
-  def edit_properties
-    update_properties
+  def edit_administrators
+    edit
   end
 
-  def edit_administrators
+  def edit_theme
     edit
   end
 
@@ -62,6 +59,10 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
+  def show_theme
+    show
+  end
+
   def show_users
     show
   end
@@ -71,17 +72,7 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def update
-    # Institution admins can update access but not properties (see
-    # {update_properties}).
     effective_institution_admin(user, institution, role)
-  end
-
-  ##
-  # N.B.: this is not a controller method, but is called from within
-  # {InstitutionController#update}.
-  #
-  def update_properties
-    effective_sysadmin(user, role)
   end
 
 end

@@ -13,21 +13,56 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal institutions(:uiuc), Institution.default
   end
 
+  # footer_image_filename()
+
+  test "footer_image_filename() returns a correct key" do
+    assert_equal "footer.png", Institution.footer_image_filename("png")
+  end
+
+  # footer_image_key()
+
+  test "footer_image_key() returns a correct key" do
+    assert_equal "institutions/test/theme/footer.png",
+                 Institution.footer_image_key("test", "png")
+  end
+
+  # header_image_filename()
+
+  test "header_image_filename() returns a correct key" do
+    assert_equal "header.png", Institution.header_image_filename("png")
+  end
+
+  # header_image_key()
+
+  test "header_image_key() returns a correct key" do
+    assert_equal "institutions/test/theme/header.png",
+                 Institution.header_image_key("test", "png")
+  end
+
+  # image_key_prefix()
+
+  test "image_key_prefix() returns a correct key" do
+    assert_equal "institutions/test/theme/",
+                 Institution.image_key_prefix("test")
+  end
+
   # create()
 
   test "create() adds default elements" do
-    institution = Institution.create!(name:   "New Institution",
-                                      key:    "new",
-                                      fqdn:   "example.net",
-                                      org_dn: "example")
+    institution = Institution.create!(name:             "New Institution",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      org_dn:           "example",
+                                      main_website_url: "https://example.net")
     assert_equal 27, institution.registered_elements.count
   end
 
   test "create() adds a default metadata profile" do
-    institution = Institution.create!(name:   "New Institution",
-                                      key:    "new",
-                                      fqdn:   "example.net",
-                                      org_dn: "example")
+    institution = Institution.create!(name:             "New Institution",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      org_dn:           "example",
+                                      main_website_url: "https://example.net")
     assert_equal 1, institution.metadata_profiles.count
     profile = institution.metadata_profiles.first
     assert profile.default
@@ -35,10 +70,11 @@ class InstitutionTest < ActiveSupport::TestCase
   end
 
   test "create() adds a default submission profile" do
-    institution = Institution.create!(name:   "New Institution",
-                                      key:    "new",
-                                      fqdn:   "example.net",
-                                      org_dn: "example")
+    institution = Institution.create!(name:             "New Institution",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      org_dn:           "example",
+                                      main_website_url: "https://example.net")
     assert_equal 1, institution.submission_profiles.count
     profile = institution.submission_profiles.first
     assert profile.default
@@ -109,6 +145,33 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal expected, actual[1]['dl_count']
   end
 
+  # footer_background_color
+
+  test "footer_background_color must contain a valid CSS color" do
+    @instance.footer_background_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.footer_background_color = "#3b7a9c"
+    assert @instance.valid?
+  end
+
+  test "footer_background_color cannot be blank" do
+    @instance.footer_background_color = ""
+    assert !@instance.valid?
+    @instance.footer_background_color = nil
+    assert !@instance.valid?
+  end
+
+  # footer_image_url()
+
+  test "footer_image_url() returns nil when footer_image is not set" do
+    assert_nil @instance.footer_image_url
+  end
+
+  test "footer_image_url() returns a correct URL" do
+    @instance.footer_image_filename = "footer.png"
+    assert @instance.footer_image_url.start_with?("http://")
+  end
+
   # fqdn
 
   test "fqdn must be present" do
@@ -123,6 +186,35 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.fqdn = "host-name.example.org"
     assert @instance.valid?
+    @instance.fqdn = "host-name.example.org:3000" # we need a port in development
+    assert @instance.valid?
+  end
+
+  # header_background_color
+
+  test "header_background_color must contain a valid CSS color" do
+    @instance.header_background_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.header_background_color = "#3b7a9c"
+    assert @instance.valid?
+  end
+
+  test "header_background_color cannot be blank" do
+    @instance.header_background_color = ""
+    assert !@instance.valid?
+    @instance.header_background_color = nil
+    assert !@instance.valid?
+  end
+
+  # header_image_url()
+
+  test "header_image_url() returns nil when header_image is not set" do
+    assert_nil @instance.header_image_url
+  end
+
+  test "header_image_url() returns a correct URL" do
+    @instance.header_image_filename = "header.png"
+    assert @instance.header_image_url.start_with?("http://")
   end
 
   # key
@@ -140,12 +232,76 @@ class InstitutionTest < ActiveSupport::TestCase
     end
   end
 
+  # link_color
+
+  test "link_color must contain a valid CSS color" do
+    @instance.link_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.link_color = "#3b7a9c"
+    assert @instance.valid?
+  end
+
+  test "link__color cannot be blank" do
+    @instance.link_color = ""
+    assert !@instance.valid?
+    @instance.link_color = nil
+    assert !@instance.valid?
+  end
+
+  # link_hover_color
+
+  test "link_hover_color must contain a valid CSS color" do
+    @instance.link_hover_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.link_hover_color = "#3b7a9c"
+    assert @instance.valid?
+  end
+
+  test "link_hover_color cannot be blank" do
+    @instance.link_hover_color = ""
+    assert !@instance.valid?
+    @instance.link_hover_color = nil
+    assert !@instance.valid?
+  end
+
   # name
 
   test "name must be present" do
     @instance.name = nil
     assert !@instance.valid?
     @instance.name = ""
+    assert !@instance.valid?
+  end
+
+  # primary_color
+
+  test "primary_color must contain a valid CSS color" do
+    @instance.primary_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.primary_color = "#3b7a9c"
+    assert @instance.valid?
+  end
+
+  test "primary_color cannot be blank" do
+    @instance.primary_color = ""
+    assert !@instance.valid?
+    @instance.primary_color = nil
+    assert !@instance.valid?
+  end
+
+  # primary_hover_color
+
+  test "primary_hover_color must contain a valid CSS color" do
+    @instance.primary_hover_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.primary_hover_color = "#3b7a9c"
+    assert @instance.valid?
+  end
+
+  test "primary_hover_color cannot be blank" do
+    @instance.primary_hover_color = ""
+    assert !@instance.valid?
+    @instance.primary_hover_color = nil
     assert !@instance.valid?
   end
 
@@ -165,6 +321,46 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.default = true
     @instance.save!
     assert_equal @instance, Institution.find_by_default(true)
+  end
+
+  # upload_footer_image()
+
+  test "upload_footer_image() uploads an image" do
+    setup_s3
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_footer_image(io: file, extension: "jpg")
+    end
+    bucket = ::Configuration.instance.storage[:bucket]
+    key    = Institution.footer_image_key(@instance.key, "jpg")
+    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+  end
+
+  test "upload_footer_image() updates the footer_image_filename attribute" do
+    setup_s3
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_footer_image(io: file, extension: "jpg")
+    end
+    assert_equal "footer.jpg", @instance.footer_image_filename
+  end
+
+  # upload_header_image()
+
+  test "upload_header_image() uploads an image" do
+    setup_s3
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_header_image(io: file, extension: "jpg")
+    end
+    bucket = ::Configuration.instance.storage[:bucket]
+    key    = Institution.header_image_key(@instance.key, "jpg")
+    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+  end
+
+  test "upload_header_image() updates the header_image_filename attribute" do
+    setup_s3
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_header_image(io: file, extension: "jpg")
+    end
+    assert_equal "header.jpg", @instance.header_image_filename
   end
 
   # url()

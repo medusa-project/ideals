@@ -58,6 +58,15 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Used for editing the theme.
+  #
+  # Responds to `GET /institutions/:key/edit-theme` (XHR only)
+  #
+  def edit_theme
+    render partial: "theme_form", locals: { institution: @institution }
+  end
+
+  ##
   # Responds to `GET /institutions`
   #
   def index
@@ -152,6 +161,15 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the theme tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/theme` (XHR only)
+  #
+  def show_theme
+    render partial: "show_theme_tab"
+  end
+
+  ##
   # Renders HTML for the users tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/users` (XHR only)
@@ -215,9 +233,8 @@ class InstitutionsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         assign_administrators
-        if policy(@institution).update_properties?
-          @institution.update!(institution_params)
-        end
+        upload_images
+        @institution.update!(institution_params)
       end
     rescue => e
       render partial: "shared/validation_messages",
@@ -265,8 +282,24 @@ class InstitutionsController < ApplicationController
   def institution_params
     # Key and name are accepted during creation. For updates, they are
     # overwritten by the contents of org_dn.
-    params.require(:institution).permit(:default, :feedback_email, :fqdn, :key,
-                                        :name, :org_dn)
+    params.require(:institution).permit(:default, :feedback_email,
+                                        :footer_background_color,
+                                        :fqdn, :header_background_color,
+                                        :key, :link_color, :link_hover_color,
+                                        :main_website_url, :name, :org_dn,
+                                        :primary_color, :primary_hover_color)
+  end
+
+  def upload_images
+    p = params[:institution]
+    if p[:footer_image]
+      @institution.upload_footer_image(io:        p[:footer_image],
+                                       extension: p[:footer_image].original_filename.split(".").last)
+    end
+    if p[:header_image]
+      @institution.upload_header_image(io:        p[:header_image],
+                                       extension: p[:header_image].original_filename.split(".").last)
+    end
   end
 
 end

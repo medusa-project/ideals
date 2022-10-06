@@ -1,26 +1,29 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 empty:
-  key:            empty
-  fqdn:           empty.edu
-  name:           Institution With No Users Or Units
-  org_dn:         empty
-  feedback_email: feedback@empty.edu
-  default:        false
+  key:              empty
+  fqdn:             empty.edu
+  name:             Institution With No Users Or Units
+  org_dn:           empty
+  main_website_url: https://empty.edu
+  feedback_email:   feedback@empty.edu
+  default:          false
 
 example:
-  key:            example
-  fqdn:           example.edu
-  name:           Example University
-  org_dn:         o=Example University,dc=example,dc=edu
-  feedback_email: feedback@example.edu
-  default:        false
+  key:              example
+  fqdn:             example.edu
+  name:             Example University
+  org_dn:           o=Example University,dc=example,dc=edu
+  main_website_url: https://example.edu
+  feedback_email:   feedback@example.edu
+  default:          false
 
 northeast:
   key:                  northeast
   fqdn:                 northeast.edu
   name:                 Northeast University
   org_dn:               o=Northeast University,dc=northeast,dc=edu
+  main_website_url:     https://northeast.edu
   feedback_email:       feedback@northeast.edu
   default:              false
   administering_groups:
@@ -31,6 +34,7 @@ southwest:
   fqdn:                 southwest.edu
   name:                 Southwest University
   org_dn:               o=Southwest University,dc=southwest,dc=edu
+  main_website_url:     https://southwest.edu
   feedback_email:       feedback@southwest.edu
   default:              false
   administering_groups:
@@ -41,6 +45,7 @@ uiuc:
   fqdn:                 www.ideals.illinois.edu
   name:                 University of Illinois at Urbana-Champaign
   org_dn:               <%= DspaceImporter::UIUC_ORG_DN %>
+  main_website_url:     https://illinois.edu
   feedback_email:       feedback@fakeuiuc.edu
   default:              true
   administering_groups:

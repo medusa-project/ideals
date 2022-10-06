@@ -1,56 +1,12 @@
 .clearfix
 
 %footer{role: "contentinfo"}
-  .row
-    .col-sm-12.text-line
-      IDEALS is a product of the University Library.
-      \#{link_to 'Contact us', "mailto:#{current_institution.feedback_email}"}
-      for questions and to provide feedback.
-    .col-md-12.info-area
-      .row
-        .col-md-4
-          %div Main Library Information Desk
-          %div
-            %a{href: "tel:+12173332290"} (217) 333-2290
-          %div 1408 W. Gregory Dr.
-          %div Urbana, IL 61801
-          .library-footer_social_div.mb-2
-            %a.library-footer_social_a{href: "https://www.facebook.com/universitylibrary", title: "Univeristy of Illinois library facebook"}
-              %span.library-footer_social_span.fab.fa-facebook-f.fa-lg
-            %a.library-footer_social_a{href: "https://www.instagram.com/uillinoislibrary/", title: "Univeristy of Illinois library instagram"}
-              %span.library-footer_social_span.fab.fa-instagram.fa-lg
-            %a.library-footer_social_a{href: "https://twitter.com/IllinoisLibrary", title: "Univeristy of Illinois library twitter"}
-              %span.library-footer_social_span.fab.fa-twitter.fa-lg
-          %a{href: "https://www.library.illinois.edu/friends/make-a-gift/"} Make a Gift
-        .col-md-4.d-none.d-md-block
-          %a{href: "https://illinois.edu"}
-            = image_tag '009_LIBRA_OrangeI_Vert_RGB.png',
-              class: 'footer-library_i-mark',
-              alt: 'University of Illinois Logo'
-          .footer-library_copyright.text-center
-            © 2022 University of Illinois Board of Trustees
-        .col-md-4
-          %nav#ui-skip-73{tabindex: "-1"}
-            %ul
-              %li
-                %a{href: "https://www.vpaa.uillinois.edu/resources/web_privacy"} Privacy Policy
-              %li
-                %a{href: "https://www.library.illinois.edu/specialcollectionsbuilding/"} Library Building Project
-              %li
-                %a{href: "https://guides.library.illinois.edu/usersdisabilities"} Assistive Technology and Services
-              %li
-                %a{href: "https://www.library.illinois.edu/geninfo/deia/"} Diversity, Equity, Inclusion & Accessibility
-              %li
-                %a{href: "https://illinois.edu/fb/sec/887006"} Suggest a Purchase
-              %li
-                %a{href: "https://www.library.illinois.edu/staff/"} Library Staff Website
-          .footer-library_fdlp-div
-            %a{href: "https://www.library.illinois.edu/doc/"}
-              = image_tag 'fdlp-emblem-logo-text-invert.png',
-                class: 'footer-library_fdlp-div_img',
-                alt: 'Federal Library Depository Program Logo'
-        .col-md-4.d-block.d-md-none
-          %a{href: "https://illinois.edu"}
-            = image_tag '009_LIBRA_OrangeI_Vert_RGB.png',
-              class: 'footer-library_i-mark footer-library_i-mark_mobile',
-              alt: 'University of Illinois Logo'
+  .text-line
+    \#{link_to 'Contact us', "mailto:#{current_institution.feedback_email}"}
+    for questions and to provide feedback.
+  .info-area
+    - if current_institution.footer_image_filename
+      = image_tag(current_institution.footer_image_url,
+                  alt: "Institution Logo")
+    .footer-copyright.text-center.mt-3
+      Copyright © 2022 University of Illinois Board of Trustees

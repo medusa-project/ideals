@@ -1,0 +1,86 @@
+header {
+  .btn-default {
+    background-color: inherit;
+    border: 1px solid white;
+  }
+}
+
+// Header row 1 (thin stripe)
+header > div:first-child {
+  height: 40px;
+  /* background-color controlled by theme */
+  color: white;
+  margin: 0px;
+  .btn {
+    color: white;
+  }
+  a.navbar-brand {
+    margin: 0;
+    padding: 0;
+  }
+  img {
+    height: 35px;
+    margin: 3px 0;
+  }
+  @media (max-width: 490px) {
+    .banner-image-university {
+      display: none;
+    }
+  }
+  @media (max-width: 300px) {
+    .banner-image-library {
+      display: none;
+    }
+  }
+  .banner-image-uiuc {
+    margin-top: -2px;
+  }
+  @media (max-width: 980px) {
+    .banner-image-uiuc {
+      display: none;
+    }
+  }
+  div {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .user-menus {
+    padding: 6px 4px 0 0;
+    .btn-default {
+      border: 0px;
+    }
+  }
+}
+
+// Header row 2 (title and buttons)
+header > .navbar {
+  border-bottom: 3px solid $gray-400;
+  margin-bottom: 1em;
+  padding: 0.2em 0em 0em 1em;
+  a.navbar-brand {
+    color: black;
+    font-family: 'Garamond', 'Palatino', 'Book Antiqua', serif;
+    font-size: 3em;
+    font-weight: 200;
+    margin: 0px 20px 0px 0px;
+    padding: 0px;
+  }
+  .nav-item {
+    .nav-link {
+      color: black;
+      padding: 1em;
+    }
+    .nav-link:hover {
+      background-color: $light;
+    }
+    .dropdown-item {
+      color: black;
+    }
+    .dropdown-item:hover {
+/*      background-color: $light; */
+    }
+  }
+  .nav-item.active .nav-link {
+/*    background-color: $light; */
+  }
+}

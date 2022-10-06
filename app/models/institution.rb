@@ -1,22 +1,37 @@
 ##
 # # Attributes
 #
-# `created_at`     Managed by ActiveRecord.
-# `default`        Boolean flag indicating whether a particular institution is
-#                  the system default, i.e. the one that should be used when
-#                  there is no other information available (like an
-#                  `X-Forwarded-Host` header) to determine which one to use.
-#                  Only one institution has this set to true.
-# `feedback_email` Email address for public feedback. This may be a plain
-#                  email address or a name followed by an email in angle
-#                  brackets.
-# `key`            Short string that uniquely identifies the institution.
-#                  Populated from the `org_dn` string upon save.
-# `name`           Institution name, populated from the `org_dn` string upon
-#                  save.
-# `org_dn`         Value of an `eduPersonOrgDN` attribute from the Shibboleth
-#                  SP.
-# `updated_at`     Managed by ActiveRecord.
+# * `created_at`              Managed by ActiveRecord.
+# * `default`                 Boolean flag indicating whether a particular
+#                             institution is the system default, i.e. the one
+#                             that should be used when there is no other
+#                             information available (like an `X-Forwarded-Host`
+#                             header) to determine which one to use.
+#                             Only one institution has this set to true.
+# * `feedback_email`          Email address for public feedback. This may be a
+#                             plain email address or a name followed by an
+#                             email in angle brackets.
+# * `footer_background_color` Theme background color of the footer.
+# * `footer_image_filename`   Filename of the footer image, which is expected
+#                             to exist in the application S3 bucket under
+#                             {image_key_prefix}.
+# * `header_background_color` Theme background color of the header.
+# * `header_image_filename`   Filename of the header image, which is expected
+#                             to exist in the application S3 bucket under
+#                             {image_key_prefix}.
+# * `key`                     Short string that uniquely identifies the
+#                             institution. Populated from the `org_dn` string
+#                             on save.
+# * `link_color`              Theme hyperlink color.
+# * `link_hover_color`        Theme hover-over-hyperlink color.
+# * `main_website_url`        URL of the institution's main website.
+# * `name`                    Institution name, populated from the `org_dn`
+#                             string upon save.
+# * `org_dn`                  Value of an `eduPersonOrgDN` attribute from the
+#                             Shibboleth SP.
+# * `primary_color`           Theme primary color.
+# * `primary_hover_color`     Theme hover-over primary color.
+# * `updated_at`              Managed by ActiveRecord.
 #
 class Institution < ApplicationRecord
 
@@ -45,7 +60,7 @@ class Institution < ApplicationRecord
   validates_format_of :fqdn,
                       # Rough but good enough
                       # Credit: https://stackoverflow.com/a/20204811
-                      with: /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/
+                      with: /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}(:\d+)?$)/
 
   # uniqueness enforced by database constraints
   validates :key, presence: true
@@ -56,7 +71,15 @@ class Institution < ApplicationRecord
   # uniqueness enforced by database constraints
   validates :org_dn, presence: true
 
-  validate :disallow_key_changes
+  validates :footer_background_color, presence: true
+  validates :header_background_color, presence: true
+  validates :link_color, presence: true
+  validates :link_hover_color, presence: true
+  validates :main_website_url, presence: true
+  validates :primary_color, presence: true
+  validates :primary_hover_color, presence: true
+
+  validate :disallow_key_changes, :validate_css_colors
 
   before_save :set_properties, :ensure_default_uniqueness
   after_create :add_default_elements, :add_default_metadata_profile,
@@ -67,6 +90,50 @@ class Institution < ApplicationRecord
   #
   def self.default
     Institution.find_by_default(true)
+  end
+
+  ##
+  # @param extension [String]
+  # @return [String]
+  #
+  def self.footer_image_filename(extension)
+    "footer.#{extension.gsub(".", "")}"
+  end
+
+  ##
+  # @param institution_key [String]
+  # @param extension [String] Filename extension.
+  # @return [String]
+  #
+  def self.footer_image_key(institution_key, extension)
+    [image_key_prefix(institution_key),
+     footer_image_filename(extension)].join
+  end
+
+  ##
+  # @param extension [String]
+  # @return [String]
+  #
+  def self.header_image_filename(extension)
+    "header.#{extension.gsub(".", "")}"
+  end
+
+  ##
+  # @param institution_key [String]
+  # @param extension [String] Filename extension.
+  # @return [String]
+  #
+  def self.header_image_key(institution_key, extension)
+    [image_key_prefix(institution_key),
+     header_image_filename(extension)].join
+  end
+
+  ##
+  # @param institution_key [String]
+  # @return [String]
+  #
+  def self.image_key_prefix(institution_key)
+    ["institutions", institution_key, "theme"].join("/") + "/"
   end
 
   def breadcrumb_label
@@ -123,6 +190,38 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [String] Presigned S3 URL.
+  #
+  def footer_image_url
+    return nil if self.footer_image_filename.blank?
+    bucket     = ::Configuration.instance.storage[:bucket]
+    key        = [self.class.image_key_prefix(self.key),
+                  self.footer_image_filename].join
+    aws_client = S3Client.instance.send(:get_client)
+    signer     = Aws::S3::Presigner.new(client: aws_client)
+    signer.presigned_url(:get_object,
+                         bucket:     bucket,
+                         key:        key,
+                         expires_in: 1.week.to_i)
+  end
+
+  ##
+  # @return [String] Presigned S3 URL.
+  #
+  def header_image_url
+    return nil if self.header_image_filename.blank?
+    bucket     = ::Configuration.instance.storage[:bucket]
+    key        = [self.class.image_key_prefix(self.key),
+                  self.header_image_filename].join
+    aws_client = S3Client.instance.send(:get_client)
+    signer     = Aws::S3::Presigner.new(client: aws_client)
+    signer.presigned_url(:get_object,
+                         bucket:     bucket,
+                         key:        key,
+                         expires_in: 1.week.to_i)
+  end
+
+  ##
   # @param start_time [Time]   Optional beginning of a time range.
   # @param end_time [Time]     Optional end of a time range.
   # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`
@@ -155,6 +254,26 @@ class Institution < ApplicationRecord
 
   def to_param
     key
+  end
+
+  ##
+  # @param io [IO]
+  # @param extension [String]
+  #
+  def upload_footer_image(io:, extension:)
+    filename = self.class.footer_image_filename(extension)
+    upload_theme_image(io: io, filename: filename)
+    self.update!(footer_image_filename: filename)
+  end
+
+  ##
+  # @param io [IO]
+  # @param extension [String]
+  #
+  def upload_header_image(io:, extension:)
+    filename = self.class.header_image_filename(extension)
+    upload_theme_image(io: io, filename: filename)
+    self.update!(header_image_filename: filename)
   end
 
   ##
@@ -308,6 +427,31 @@ class Institution < ApplicationRecord
             self.key = kv[1]
           end
         end
+      end
+    end
+  end
+
+  ##
+  # @param io [IO]
+  # @param filename [String]
+  #
+  def upload_theme_image(io:, filename:)
+    client = S3Client.instance
+    bucket = ::Configuration.instance.storage[:bucket]
+    key    = self.class.image_key_prefix(self.key) + filename
+    client.put_object(bucket: bucket, key: key, body: io)
+  end
+
+  def validate_css_colors
+    [:footer_background_color,
+     :header_background_color,
+     :link_color,
+     :link_hover_color,
+     :primary_color,
+     :primary_hover_color].each do |attr|
+      value = send(attr)
+      if value.present? && !ColorUtils.css_color?(value)
+        errors.add(attr, "must be a valid CSS color")
       end
     end
   end

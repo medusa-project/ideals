@@ -7,30 +7,38 @@
   .form-group
     = f.label :name, "Name"
     = f.text_field :name, class: 'form-control'
+  - if current_user.sysadmin?
+    .form-group
+      = f.label :key, "Key"
+      = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
+      %p.text-muted
+        %i.fa.fa-info-circle
+        A short alphabetic string that uniquely identifies the institution.
+        Used only internally and cannot be changed later.
+    .form-group
+      = f.label :fqdn, "Fully Qualified Domain Name (FQDN)"
+      = f.text_field :fqdn, class: 'form-control'
+      %p.text-muted
+        %i.fa.fa-info-circle
+        This must be present in the
+        %code config.hosts
+        key in the
+        %code= "config/environments/#{Rails.env}.rb"
+        file.
+    .form-group
+      = f.label :org_dn, "Organization DN"
+      = f.text_field :org_dn, class: 'form-control'
+      %p.text-muted
+        %i.fa.fa-info-circle
+        Copy this value from the properties page of a user of this institution
+        who has signed in via Shibboleth.
+    .form-group
+      .form-check
+        = f.check_box :default, class: "form-check-input"
+        = f.label :default, class: "form-check-label"
   .form-group
-    = f.label :key, "Key"
-    = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
-    %p.text-muted
-      %i.fa.fa-info-circle
-      A short alphabetic string that uniquely identifies the institution.
-      Used only internally and cannot be changed later.
-  .form-group
-    = f.label :fqdn, "Fully Qualified Domain Name (FQDN)"
-    = f.text_field :fqdn, class: 'form-control'
-    %p.text-muted
-      %i.fa.fa-info-circle
-      This must be present in the
-      %code config.hosts
-      key in the
-      %code= "config/environments/#{Rails.env}.rb"
-      file.
-  .form-group
-    = f.label :org_dn, "Organization DN"
-    = f.text_field :org_dn, class: 'form-control'
-    %p.text-muted
-      %i.fa.fa-info-circle
-      Copy this value from the properties page of a user of this institution
-      who has signed in via Shibboleth.
+    = f.label :main_website_url, "Main Website URL"
+    = f.text_field :main_website_url, placeholder: "https://", class: 'form-control'
   .form-group
     = f.label :feedback_email, "Feedback Email"
     = f.text_field :feedback_email, class: 'form-control'
@@ -38,11 +46,7 @@
       %i.fa.fa-info-circle
       This may be a plain email address or a sender name followed by an email
       address in angle brackets, such as:
-      "Some Name &lt;email@example.edu&gt;"
-  .form-group
-    .form-check
-      = f.check_box :default, class: "form-check-input"
-      = f.label :default, class: "form-check-label"
+      "Some Name &lt;email@example.edu&gt;".
 
   .clearfix
     .float-right
