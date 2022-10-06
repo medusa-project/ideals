@@ -32,6 +32,7 @@
 # * `primary_color`           Theme primary color.
 # * `primary_hover_color`     Theme hover-over primary color.
 # * `updated_at`              Managed by ActiveRecord.
+# * `welcome_html`            HTML text that appears on the main page.
 #
 class Institution < ApplicationRecord
 
