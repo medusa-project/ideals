@@ -4,6 +4,19 @@
 # Instances comprise a simple list. {AscribedElement} attaches them to entities
 # and {MetadataProfileElement} attaches them to {MetadataProfile}s.
 #
+# # System-Required Elements
+#
+# Some elements are required to be present for various functionality to work.
+# These are defined in {SYSTEM_REQUIRED_ELEMENTS}.
+#
+# * `dc:creator`         Stores item authors.
+# * `dc:date:issued`
+# * `dc:date:submitted`  Automatically created upon submission of an item.
+# * `dc:title`           Stores item titles.
+# * `dcterms:available`  Automatically created upon approval of an item (which
+#                        may be the same as the submission time).
+# * `dcterms:identifier` Stores item handles.
+#
 # # Attributes
 #
 # * `created_at`       Managed by ActiveRecord.
@@ -34,10 +47,12 @@ class RegisteredElement < ApplicationRecord
     end
   end
 
-  DATE_FIELD_PREFIX     = "d"
-  KEYWORD_FIELD_SUFFIX  = ".keyword"
-  SORTABLE_FIELD_SUFFIX = ".sort"
-  TEXT_FIELD_PREFIX     = "t"
+  DATE_FIELD_PREFIX        = "d"
+  KEYWORD_FIELD_SUFFIX     = ".keyword"
+  SYSTEM_REQUIRED_ELEMENTS = %w(dc:creator dc:date:issued dc:date:submitted
+                                dc:title dcterms:available dcterms:identifier)
+  SORTABLE_FIELD_SUFFIX    = ".sort"
+  TEXT_FIELD_PREFIX        = "t"
 
   belongs_to :institution
 
@@ -52,6 +67,8 @@ class RegisteredElement < ApplicationRecord
 
   # name
   validates_format_of :name, with: /\A[A-Za-z0-9_\-:]+\z/, allow_blank: false
+
+  before_save :restrict_changes_to_required_elements
 
   ##
   # @param name [String] Element name.
@@ -104,6 +121,14 @@ class RegisteredElement < ApplicationRecord
      name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join("_")
   end
 
+  ##
+  # @return [Boolean] Whether the element is required by the system. Such
+  #                   elements should be unmodifiable.
+  #
+  def required?
+    SYSTEM_REQUIRED_ELEMENTS.include?(self.name)
+  end
+
   def to_param
     name
   end
@@ -115,6 +140,16 @@ class RegisteredElement < ApplicationRecord
   def vocabulary
     self.vocabulary_key.present? ?
       Vocabulary.with_key(self.vocabulary_key) : nil
+  end
+
+
+  private
+
+  def restrict_changes_to_required_elements
+    if SYSTEM_REQUIRED_ELEMENTS.include?(self.name_was)
+      errors.add(:base, "System-required elements cannot be changed")
+      throw :abort
+    end
   end
 
 end

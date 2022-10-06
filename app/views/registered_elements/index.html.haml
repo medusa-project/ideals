@@ -19,18 +19,24 @@
 - @elements.each do |element|
   .card.mb-3
     .card-body
-      .btn-group.float-right
-        %button.btn.btn-light.btn-sm.edit-element{"data-element-name": element.name,
-                                                  "data-target": "#edit-element-modal",
-                                                  "data-toggle": "modal",
-                                                  type: "button"}
-          %i.fas.fa-pencil-alt
-          Edit
-        = link_to(registered_element_path(element), class: 'btn btn-sm btn-danger',
-                                                    method: :delete,
-                                                    data: { confirm: 'Are you sure you want to delete this element?' }) do
-          %i.fa.fa-trash
-          Delete
+      - if element.required?
+        .float-right
+          .badge.badge-pill.badge-warning
+            Required
+      - else
+        .btn-group.float-right
+          %button.btn.btn-light.btn-sm.edit-element{"data-element-name": element.name,
+                                                    "data-target": "#edit-element-modal",
+                                                    "data-toggle": "modal",
+                                                    type: "button"}
+            %i.fas.fa-pencil-alt
+            Edit
+          = link_to(registered_element_path(element), class: 'btn btn-sm btn-danger',
+                                                      method: :delete,
+                                                      data: { confirm: 'Are you sure you want to delete this element?' }) do
+            %i.fa.fa-trash
+            Delete
+
       %h5.card-title.element-label= element.label
       .row
         .col-sm-2.text-right
