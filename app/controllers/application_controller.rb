@@ -328,6 +328,7 @@ class ApplicationController < ActionController::Base
       unless Institution.find_by_fqdn(request.host_with_port)
         scheme = Rails.env.development? ? "http" : "https"
         redirect_to scheme + "://" + Institution.find_by_default(true).fqdn,
+                    status: :see_other,
                     allow_other_host: true
       end
     end
