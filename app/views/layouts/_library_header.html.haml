@@ -4,14 +4,14 @@
     %div.ml-2
       - if current_institution.header_image_filename
         - if current_institution.main_website_url
-          %a.navbar-brand{href: root_url}
+          %a.navbar-brand{href: current_institution.main_website_url}
             = image_tag(current_institution.header_image_url,
                         alt: "Institution Logo")
         - else
           = image_tag(current_institution.header_image_url,
                         alt: "Institution Logo")
 
-    .user-actions
+    .user-menus
       - if logged_in?
         - if current_user.sysadmin?
           -# Role-play menu

@@ -52,7 +52,8 @@
   .col-sm-3
     .card
       .card-header Header Image
-      .card-body
+      .card-body{style: "background-color: #{@institution.header_background_color}; "\
+                        "color: #{ColorUtils.maximize_text_contrast(@institution.header_background_color)}"}
         - if @institution.header_image_filename
           = image_tag(@institution.header_image_url)
         - else
@@ -60,7 +61,8 @@
   .col-sm-3
     .card
       .card-header Footer Image
-      .card-body
+      .card-body{style: "background-color: #{@institution.footer_background_color}; "\
+                        "color: #{ColorUtils.maximize_text_contrast(@institution.footer_background_color)}"}
         - if @institution.footer_image_filename
           = image_tag(@institution.footer_image_url)
         - else
