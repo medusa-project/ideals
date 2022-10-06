@@ -49,18 +49,20 @@ class InstitutionTest < ActiveSupport::TestCase
   # create()
 
   test "create() adds default elements" do
-    institution = Institution.create!(name:   "New Institution",
-                                      key:    "new",
-                                      fqdn:   "example.net",
-                                      org_dn: "example")
+    institution = Institution.create!(name:             "New Institution",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      org_dn:           "example",
+                                      main_website_url: "https://example.net")
     assert_equal 27, institution.registered_elements.count
   end
 
   test "create() adds a default metadata profile" do
-    institution = Institution.create!(name:   "New Institution",
-                                      key:    "new",
-                                      fqdn:   "example.net",
-                                      org_dn: "example")
+    institution = Institution.create!(name:             "New Institution",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      org_dn:           "example",
+                                      main_website_url: "https://example.net")
     assert_equal 1, institution.metadata_profiles.count
     profile = institution.metadata_profiles.first
     assert profile.default
@@ -68,10 +70,11 @@ class InstitutionTest < ActiveSupport::TestCase
   end
 
   test "create() adds a default submission profile" do
-    institution = Institution.create!(name:   "New Institution",
-                                      key:    "new",
-                                      fqdn:   "example.net",
-                                      org_dn: "example")
+    institution = Institution.create!(name:             "New Institution",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      org_dn:           "example",
+                                      main_website_url: "https://example.net")
     assert_equal 1, institution.submission_profiles.count
     profile = institution.submission_profiles.first
     assert profile.default

@@ -38,10 +38,11 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            institution: {
-             name: "New Institution",
-             key: "new",
-             fqdn: "new.org",
-             org_dn: "new"
+             name:             "New Institution",
+             key:              "new",
+             fqdn:             "new.org",
+             org_dn:           "new",
+             main_website_url: "https://new.org"
            }
          }
     assert_response :ok
@@ -55,10 +56,11 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
              institution: {
-               name: "New Institution",
-               key: "new",
-               fqdn: "new.org",
-               org_dn: "new"
+               name:             "New Institution",
+               key:              "new",
+               fqdn:             "new.org",
+               org_dn:           "new",
+               main_website_url: "https://new.org"
              }
            }
     end
@@ -435,9 +437,8 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "update() updates an institution's properties when invoked by a
-  sysadmin" do
-    user = users(:uiuc_sysadmin)
+  test "update() updates an institution's properties" do
+    user = users(:uiuc_admin)
     log_in_as(user)
     institution = user.institution
     patch institution_path(institution),
@@ -451,25 +452,6 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
           }
     institution.reload
     assert_equal "New Institution", institution.name
-  end
-
-  test "update() does not update an institution's properties when invoked by an
-  institution admin" do
-    user = users(:uiuc_admin)
-    log_in_as(user)
-    institution      = user.institution
-    institution_name = institution.name
-    patch institution_path(institution),
-          xhr: true,
-          params: {
-            institution: {
-              name:   "New Institution",
-              fqdn:   "new.org",
-              org_dn: "new"
-            }
-          }
-    institution.reload
-    assert_equal institution_name, institution.name
   end
 
   test "update() returns HTTP 200" do
