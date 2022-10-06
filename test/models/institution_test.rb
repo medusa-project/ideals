@@ -81,6 +81,22 @@ class InstitutionTest < ActiveSupport::TestCase
     assert profile.elements.count > 0
   end
 
+  # active_link_color
+
+  test "active_link_color must contain a valid CSS color" do
+    @instance.active_link_color = "#r8z8d8"
+    assert !@instance.valid?
+    @instance.active_link_color = "#3b7a9c"
+    assert @instance.valid?
+  end
+
+  test "active_link__color cannot be blank" do
+    @instance.active_link_color = ""
+    assert !@instance.valid?
+    @instance.active_link_color = nil
+    assert !@instance.valid?
+  end
+
   # download_count_by_month()
 
   test "download_count_by_month() raises an error if start_time > end_time" do

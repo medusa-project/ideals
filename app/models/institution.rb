@@ -1,6 +1,7 @@
 ##
 # # Attributes
 #
+# * `active_link_color`       Theme active hyperlink color.
 # * `created_at`              Managed by ActiveRecord.
 # * `default`                 Boolean flag indicating whether a particular
 #                             institution is the system default, i.e. the one
@@ -72,6 +73,7 @@ class Institution < ApplicationRecord
   # uniqueness enforced by database constraints
   validates :org_dn, presence: true
 
+  validates :active_link_color, presence: true
   validates :footer_background_color, presence: true
   validates :header_background_color, presence: true
   validates :link_color, presence: true
@@ -444,7 +446,8 @@ class Institution < ApplicationRecord
   end
 
   def validate_css_colors
-    [:footer_background_color,
+    [:active_link_color,
+     :footer_background_color,
      :header_background_color,
      :link_color,
      :link_hover_color,

@@ -36,20 +36,28 @@
                         "color: #{ColorUtils.maximize_text_contrast(@institution.primary_hover_color)}"}
         = @institution.primary_hover_color
 
-.row
-  .col-sm-3
+.row.mb-3
+  .col-sm-4
     .card
       .card-header Link Color
       .card-body{style: "background-color: #{@institution.link_color}; "\
                         "color: #{ColorUtils.maximize_text_contrast(@institution.link_color)}"}
         = @institution.link_color
-  .col-sm-3
+  .col-sm-4
     .card
       .card-header Link Hover Color
       .card-body{style: "background-color: #{@institution.link_hover_color}; "\
                         "color: #{ColorUtils.maximize_text_contrast(@institution.link_hover_color)}"}
         = @institution.link_hover_color
-  .col-sm-3
+  .col-sm-4
+    .card
+      .card-header Active Link Color
+      .card-body{style: "background-color: #{@institution.active_link_color}; "\
+                        "color: #{ColorUtils.maximize_text_contrast(@institution.active_link_color)}"}
+        = @institution.active_link_color
+
+.row
+  .col-sm-6
     .card
       .card-header Header Image
       .card-body{style: "background-color: #{@institution.header_background_color}; "\
@@ -58,7 +66,7 @@
           = image_tag(@institution.header_image_url)
         - else
           No image set.
-  .col-sm-3
+  .col-sm-6
     .card
       .card-header Footer Image
       .card-body{style: "background-color: #{@institution.footer_background_color}; "\

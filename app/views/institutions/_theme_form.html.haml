@@ -42,6 +42,10 @@
     = f.text_field :link_hover_color, class: "form-control"
 
   .form-group
+    = f.label :active_link_color, "Active Link Color"
+    = f.text_field :active_link_color, class: "form-control"
+
+  .form-group
     = f.label :header_image, "Header Image"
     %br
     = f.file_field :header_image, directory: false
