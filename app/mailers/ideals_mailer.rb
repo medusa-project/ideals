@@ -5,8 +5,6 @@ class IdealsMailer < ApplicationMailer
   # see https://answers.uillinois.edu/illinois/page.php?id=47888
   NO_REPLY_ADDRESS = "no-reply@illinois.edu"
 
-  default from: Institution.default.feedback_email
-
   ##
   # @param exception [Exception]
   # @param message [String, nil] Additional message text.
@@ -102,7 +100,8 @@ class IdealsMailer < ApplicationMailer
 
   def error(error_text)
     @error_text = error_text
-    mail(reply_to: NO_REPLY_ADDRESS,
+    mail(from:     Institution.default.feedback_email,
+         reply_to: NO_REPLY_ADDRESS,
          to:       ::Configuration.instance.admin[:tech_mail_list],
          subject:  "#{subject_prefix} System Error")
   end
@@ -152,7 +151,8 @@ class IdealsMailer < ApplicationMailer
   # Used to test email delivery. See also the `mail:test` rake task.
   #
   def test(recipient)
-    mail(to:      recipient,
+    mail(from:    Institution.default.feedback_email,
+         to:      recipient,
          subject: "#{subject_prefix} Hello from IDEALS")
   end
 
