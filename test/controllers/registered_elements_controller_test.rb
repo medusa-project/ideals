@@ -171,7 +171,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() updates an element" do
     log_in_as(users(:local_sysadmin))
-    element = registered_elements(:uiuc_dc_title)
+    element = registered_elements(:uiuc_dc_contributor)
     patch "/elements/#{element.name}",
           xhr: true,
           params: {
@@ -188,7 +188,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
-    element = registered_elements(:uiuc_dc_title)
+    element = registered_elements(:uiuc_dc_contributor)
     patch registered_element_path(element),
           xhr: true,
           params: {

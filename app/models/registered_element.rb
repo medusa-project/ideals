@@ -69,6 +69,7 @@ class RegisteredElement < ApplicationRecord
   validates_format_of :name, with: /\A[A-Za-z0-9_\-:]+\z/, allow_blank: false
 
   before_save :restrict_changes_to_required_elements
+  before_destroy :restrict_changes_to_required_elements
 
   ##
   # @param name [String] Element name.
