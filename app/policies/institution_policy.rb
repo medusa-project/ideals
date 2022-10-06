@@ -23,13 +23,6 @@ class InstitutionPolicy < ApplicationPolicy
     update
   end
 
-  ##
-  # N.B.: this is not a controller method.
-  #
-  def edit_properties
-    effective_sysadmin(user, role)
-  end
-
   def edit_administrators
     edit
   end

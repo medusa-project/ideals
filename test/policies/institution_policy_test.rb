@@ -155,39 +155,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_administrators?
   end
 
-  # edit_properties()
-
-  test "edit_properties?() returns false with a nil request context" do
-    policy = InstitutionPolicy.new(nil, @institution)
-    assert !policy.edit_properties?
-  end
-
-  test "edit_properties?() is restrictive by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit_properties?
-  end
-
-  test "edit_properties?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.edit_properties?
-  end
-
-  test "edit_properties?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit_properties?
-  end
-
   # edit_theme?()
 
   test "edit_theme?() returns false with a nil user" do
