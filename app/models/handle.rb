@@ -68,14 +68,17 @@ class Handle < ApplicationRecord
   end
 
   ##
-  # Permanent URL. In production, this will be a `hdl.handle.net` URL.
-  # Elsewhere, it may use the hostname of the handle server (which may not be
-  # registered with the GHR).
+  # Permanent URL. In production, this will be a Global Handle Registry
+  # (`hdl.handle.net`) URL. Elsewhere, it may use the hostname of the handle
+  # server (which may not be registered with the GHR).
   #
   # @see url
   #
   def permanent_url
-    ["https://hdl.handle.net/", self.handle].join
+    config = ::Configuration.instance
+    host   = config.handles[:use_ghr] ?
+               "https://hdl.handle.net/" : config.handles[:base_url]
+    [host, self.handle].join
   end
 
   ##

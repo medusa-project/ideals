@@ -71,7 +71,8 @@ class HandleTest < ActiveSupport::TestCase
   # permanent_url()
 
   test "permanent_url() returns a correct value" do
-    expected = ["https://hdl.handle.net/", @instance.handle].join
+    expected = [::Configuration.instance.handles[:base_url],
+                @instance.handle].join
     assert_equal expected, @instance.permanent_url
   end
 
