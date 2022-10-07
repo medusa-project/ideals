@@ -9,11 +9,9 @@
         - to_do_list.items.each do |item|
           %li= link_to(item[:message], item[:url])
 
-%h1 Welcome to IDEALS
-
 - if current_institution.welcome_html.present?
   = sanitize(current_institution.welcome_html,
-             tags: %w(p a ul ol li),
+             tags: %w(p a ul ol li h1 h2 h3 h4 h5 h6),
              attributes: %w(href))
 - else
   %p
