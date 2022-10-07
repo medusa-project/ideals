@@ -47,6 +47,7 @@ uiuc:
   org_dn:               o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
   main_website_url:     https://illinois.edu
   feedback_email:       feedback@fakeuiuc.edu
+  welcome_html:         <h1>Welcome to IDEALS</h1>
   default:              true
   administering_groups:
     - uiuc_admins

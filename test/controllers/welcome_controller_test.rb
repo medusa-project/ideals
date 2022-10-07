@@ -17,7 +17,7 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "index() displays welcome text to logged-out users" do
+  test "index() displays the current institution's welcome text" do
     get root_path
     assert_select "h1", "Welcome to IDEALS"
   end

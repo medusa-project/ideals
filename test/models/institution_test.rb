@@ -10,13 +10,13 @@ class InstitutionTest < ActiveSupport::TestCase
   # banner_image_filename()
 
   test "banner_image_filename() returns a correct key" do
-    assert_equal "header.png", Institution.banner_image_filename("png")
+    assert_equal "banner.png", Institution.banner_image_filename("png")
   end
 
   # banner_image_key()
 
   test "banner_image_key() returns a correct key" do
-    assert_equal "institutions/test/theme/header.png",
+    assert_equal "institutions/test/theme/banner.png",
                  Institution.banner_image_key("test", "png")
   end
 
