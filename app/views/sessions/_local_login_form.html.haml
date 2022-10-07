@@ -1,0 +1,23 @@
+.alert.alert-light
+  = icon_for(:info)
+  IDEALS migrated to a new platform on June 23, 2022. If you created
+  your account prior to this date, you will have to reset your password
+  using the forgot-password link below.
+.alert.alert-danger.login-status
+= form_tag "/auth/identity/callback" do
+  .form-group.row
+    %label.col-sm-4.col-form-label{for: :auth_key} Email
+    .col-sm-8
+      = email_field_tag :auth_key, nil, class: 'form-control'
+  .form-group.row
+    %label.col-sm-4.col-form-label{for: :password} Password
+    .col-sm-8
+      = password_field_tag :password, nil, class: 'form-control'
+      = link_to "(I forgot my password)", reset_password_path
+  %button.btn.btn-primary{type: "submit"}
+    %i.fa.fa-sign-in-alt
+    &nbsp;Log In
+
+%p.mt-3
+  New user?
+  = link_to("Sign up now.", new_invitee_path)

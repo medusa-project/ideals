@@ -5,12 +5,13 @@
   = form_tag(items_path, method: :get) do
     .input-group.mb-4
       = search_field_tag(:q, '',
-          placeholder: raw("Search across #{number_with_delimiter(@item_count)} items&hellip;"),
-          'aria-label': 'Search',
-          class: 'form-control form-control-lg')
+                         placeholder:  raw("Search across #{number_with_delimiter(@item_count)} items&hellip;"),
+                         'aria-label': 'Search',
+                         class:        'form-control form-control-lg')
       .input-group-append
         %input{type: "submit", value: "Search", class: "btn btn-primary"}
-  = link_to("Advanced Search", items_path(tab: "advanced-search"), id: "advanced-search-link")
+  = link_to("Advanced Search", items_path(tab: "advanced-search"),
+            id: "advanced-search-link")
 
 = banner_message
 = render partial: "shared/flashes"
@@ -23,8 +24,7 @@
       = render partial: "welcome"
     .col-4
       %button.btn.btn-lg.btn-primary.btn-block{"data-target": "#login-modal",
-                                        "data-toggle": "modal",
-                                        type:          "button"}
-        %i.fa.fa-user
+                                               "data-toggle": "modal",
+                                               type:          "button"}
         %i.fa.fa-sign-in-alt
         &nbsp;Log In

@@ -2,7 +2,7 @@
                         "aria-labelledby": "login-modal-label",
                         role:              "dialog",
                         tabindex:          "-1"}
-  .modal-dialog.modal-dialog-centered.modal-lg{role: "document"}
+  .modal-dialog.modal-dialog-centered{role: "document", class: (current_institution.key == "uiuc") ? "modal-lg" : "modal-md" }
     .modal-content
       = form_tag '/auth/identity/callback' do
         .modal-header

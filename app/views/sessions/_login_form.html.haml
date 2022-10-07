@@ -1,45 +1,11 @@
-.row
-  .col-md-6
-    .card.text-white.bg-primary
-      %h5.card-header I have an Illinois NetID
-      .card-body.pt-0.pr-0.pb-0.pl-0
-        = link_to(netid_login_path, class: "btn btn-primary btn-block pt-4 pr-4 pb-4 pl-4") do
-          -#= image_tag "library_wordmark_horizontal_1.png",
-          -#    style: "height: 2em",
-          -#    alt: "University of Illinois Logo"
-          %i.fa.fa-sign-in-alt
-          &nbsp;Log in with Illinois NetID
-
-  .col-md-6
-    .card
-      %h5.card-header I don't have a NetID
-      .card-body
-        .alert.alert-light
-          = icon_for(:info)
-          IDEALS migrated to a new platform on June 23, 2022. If you created
-          your account prior to this date, you will have to reset your password
-          using the forgot-password link below.
-        .alert.alert-danger.login-status
-        = form_tag "/auth/identity/callback" do
-          .form-group.row
-            .col-sm-4
-              %label{for: :auth_key}
-                Email
-            .col-sm-8
-              = email_field_tag :auth_key, nil, class: 'form-control'
-          .form-group.row
-            .col-sm-4
-              %label{for: :password}
-                Password
-            .col-sm-8
-              = password_field_tag :password, nil, class: 'form-control'
-              = link_to "(I forgot my password)", reset_password_path
-          %button.btn.btn-primary{type: "submit"}
-            %i.fa.fa-sign-in-alt
-            &nbsp;Log In
-
-        .row.mt-3
-          .col-sm-12
-            = link_to(new_invitee_path, class: "btn btn-light btn-block") do
-              %i.fa.fa-user
-              &nbsp;Request an account
+- if current_institution.key == "uiuc"
+  .row
+    .col-md-6
+      = render partial: "sessions/netid_login_form"
+    .col-md-6
+      .card
+        %h5.card-header I don't have a NetID
+        .card-body
+          = render partial: "sessions/local_login_form"
+- else
+  = render partial: "sessions/local_login_form"
