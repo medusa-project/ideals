@@ -1,8 +1,9 @@
-.alert.alert-light
-  = icon_for(:info)
-  IDEALS migrated to a new platform on June 23, 2022. If you created
-  your account prior to this date, you will have to reset your password
-  using the forgot-password link below.
+- if current_institution.key == "uiuc"
+  .alert.alert-light
+    = icon_for(:info)
+    IDEALS migrated to a new platform on June 23, 2022. If you created
+    your account prior to this date, you will have to reset your password
+    using the forgot-password link below.
 .alert.alert-danger.login-status
 = form_tag "/auth/identity/callback" do
   .form-group.row
