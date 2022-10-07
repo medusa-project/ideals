@@ -232,7 +232,8 @@ class ItemTest < ActiveSupport::TestCase
   test "assign_handle() creates an identifier element" do
     item = items(:described)
     item.assign_handle
-    assert_equal item.handle.handle_net_url, item.element("dcterms:identifier").uri
+    assert_equal item.handle.permanent_url,
+                 item.element("dcterms:identifier").uri
   end
 
   # buried?()
@@ -317,7 +318,8 @@ class ItemTest < ActiveSupport::TestCase
     item.primary_collection.submissions_reviewed = false
     item.complete_submission
     assert_not_nil item.handle.suffix
-    assert_equal item.handle.handle_net_url, item.element("dcterms:identifier").uri
+    assert_equal item.handle.permanent_url,
+                 item.element("dcterms:identifier").uri
   end
 
   test "complete_submission() does not move any associated Bitstreams into

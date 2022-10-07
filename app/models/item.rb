@@ -402,8 +402,8 @@ class Item < ApplicationRecord
     self.create_handle!
     # Assign a dcterms:identifier element with a URI value of the handle URI.
     self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:identifier"),
-                        string:             self.handle.handle_net_url,
-                        uri:                self.handle.handle_net_url)
+                        string:             self.handle.permanent_url,
+                        uri:                self.handle.permanent_url)
   end
 
   def breadcrumb_label

@@ -13,7 +13,7 @@
     %dt Handle.net URI
     %dd
       - if @item.handle
-        = link_to(@item.handle.handle_net_url, @item.handle.handle_net_url)
+        = link_to(@item.handle.permanent_url, @item.handle.permanent_url)
       - else
         None
     %dt Local Handle URI

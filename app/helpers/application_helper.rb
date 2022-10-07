@@ -258,7 +258,7 @@ module ApplicationHelper
   def highwire_meta_tags(entity)
     html = StringIO.new
     html << "<meta name=\"citation_public_url\" "\
-              "content=\"#{entity.handle&.handle_net_url || polymorphic_url(entity)}\">\n"
+              "content=\"#{entity.handle&.permanent_url || polymorphic_url(entity)}\">\n"
     if entity.kind_of?(Item)
       entity.bitstreams.
         select{ |b| b.bundle == Bitstream::Bundle::CONTENT }.

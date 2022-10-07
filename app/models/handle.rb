@@ -68,11 +68,13 @@ class Handle < ApplicationRecord
   end
 
   ##
-  # Handle.net URL.
+  # Permanent URL. In production, this will be a `hdl.handle.net` URL.
+  # Elsewhere, it may use the hostname of the handle server (which may not be
+  # registered with the GHR).
   #
   # @see url
   #
-  def handle_net_url
+  def permanent_url
     ["https://hdl.handle.net/", self.handle].join
   end
 
@@ -115,7 +117,7 @@ class Handle < ApplicationRecord
   ##
   # URL of the handle on the local handle server.
   #
-  # @see handle_net_url
+  # @see permanent_url
   #
   def url
     sprintf("%s/%s",
