@@ -26,8 +26,19 @@
       = link_to(@institution.main_website_url, @institution.main_website_url)
     - else
       Not Set
+  %dt Copyright Notice
+  %dd
+    - if @institution.copyright_notice
+      = @institution.copyright_notice
+    - else
+      .badge.badge-danger
+        Not Set
   %dt Feedback Email
   %dd
-    = @institution.feedback_email
+    - if @institution.feedback_email
+      = @institution.feedback_email
+    - else
+      .badge.badge-danger
+        Not Set
   %dt Default
   %dd= boolean(@institution.default, style: :word)

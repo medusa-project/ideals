@@ -6,6 +6,9 @@
 #                             in the application S3 bucket under
 #                             {image_key_prefix}. If not present, a generic
 #                             image is used.
+# * `copyright_notice`        Generic institution-wide copyright notice,
+#                             displayed on the website somewhere (probably in
+#                             the footer).
 # * `created_at`              Managed by ActiveRecord.
 # * `default`                 Boolean flag indicating whether a particular
 #                             institution is the system default, i.e. the one

@@ -1,4 +1,7 @@
 body#show_institution {
+  .badge {
+    text-transform: uppercase;
+  }
   #theme-tab-content {
     .card-body {
       display: flex;

@@ -74,6 +74,10 @@
       %code &lt;h5&gt;
       ,
       %code &lt;h6&gt;
+  .form-group
+    = f.label :copyright_notice, "Copyright Notice"
+    = f.text_field :copyright_notice, class: 'form-control'
+
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel

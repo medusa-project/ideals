@@ -280,8 +280,8 @@ class InstitutionsController < ApplicationController
   def institution_params
     # Key and name are accepted during creation. For updates, they are
     # overwritten by the contents of org_dn.
-    params.require(:institution).permit(:active_link_color, :default,
-                                        :feedback_email,
+    params.require(:institution).permit(:active_link_color, :copyright_notice,
+                                        :default, :feedback_email,
                                         :footer_background_color,
                                         :fqdn, :header_background_color,
                                         :key, :link_color, :link_hover_color,
