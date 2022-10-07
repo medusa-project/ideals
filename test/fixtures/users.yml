@@ -59,7 +59,7 @@ uiuc:
   name:        Shib Boleth, Esq.
   email:       shib@illinois.edu
   phone:       (888) 555-1234
-  org_dn:      <%= DspaceImporter::UIUC_ORG_DN %>
+  org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
   institution: uiuc
 
 uiuc_admin:
@@ -68,7 +68,7 @@ uiuc_admin:
   name:        UIUC Institution Admin
   email:       instadmin@illinois.edu
   phone:       (888) 555-1235
-  org_dn:      <%= DspaceImporter::UIUC_ORG_DN %>
+  org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
   institution: uiuc
   user_groups:
     - uiuc_admins
@@ -79,7 +79,7 @@ uiuc_sysadmin:
   name:        UIUC Sysadmin
   email:       sysadmin@illinois.edu
   phone:       (888) 555-1235
-  org_dn:      <%= DspaceImporter::UIUC_ORG_DN %>
+  org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
   institution: uiuc
   user_groups:
     - sysadmin

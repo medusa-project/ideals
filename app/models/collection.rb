@@ -133,7 +133,7 @@ class Collection < ApplicationRecord
   validate :validate_buried, if: -> { buried }
   validate :validate_exhumed, if: -> { !buried }
 
-  after_save :assign_handle, if: -> { handle.nil? && !DspaceImporter.instance.running? }
+  after_save :assign_handle, if: -> { handle.nil? }
   before_destroy :validate_empty
 
   ##
@@ -479,9 +479,7 @@ class Collection < ApplicationRecord
   # @return [void]
   #
   def assign_handle
-    if self.handle.nil? && !DspaceImporter.instance.running?
-      self.handle = Handle.create!(collection: self)
-    end
+    self.handle = Handle.create!(collection: self) if self.handle.nil?
   end
 
   ##

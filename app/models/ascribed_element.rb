@@ -27,11 +27,7 @@
 class AscribedElement < ApplicationRecord
 
   belongs_to :registered_element
-  # N.B.: "Touching" ensures that the owning resource is updated (its
-  # `updated_at` column is updated and it is reindexed) when the instance is
-  # updated. Normally, this is desired. However, it happens to make bulk-
-  # importing metadata excruciatingly slow, so it is disabled during imports.
-  belongs_to :item, touch: !DspaceImporter.instance.running?
+  belongs_to :item, touch: true
 
   validates :string, presence: true
   validates :position, numericality: { greater_than_or_equal_to: 1 },

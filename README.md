@@ -134,26 +134,6 @@ $ brew services restart rabbitmq
 Refer to the instructions in the
 [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally).
 
-# Migrate content from DSpace
-
-See [README_MIGRATION.md](README_MIGRATION.md) for detailed information about
-the migration process.
-
-Below is a basic summary that will work in development:
-
-```sh
-rails elasticsearch:purge
-rails storage:purge
-rails db:reset
-rails dspace:migrate_critical[dbname,dbhost,dbuser,dbpass]
-rails ideals:seed_database
-rails elasticsearch:reindex[2] # thread count
-rails dspace:bitstreams:copy[dspace_ssh_user]
-rails dspace:migrate_non_critical[dbname,dbhost,dbuser,dbpass] # optional
-rails downloads:compile_monthly_counts # optional, see "Download Statistics" below
-rails bitstreams:read_full_text[2] # optional
-```
-
 # Create a user account
 
 There are two main categories of accounts: local identity, where account

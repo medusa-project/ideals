@@ -113,15 +113,15 @@ class Bitstream < ApplicationRecord
     can_read_full_text? &&
     full_text_checked_at.blank? &&
     effective_key.present? &&
-    (defined?(ActiveSupport::TestCase) != "constant" || ActiveSupport::TestCase.respond_to?(:seeding) && !ActiveSupport::TestCase.seeding?) &&
-    !DspaceImporter.instance.running? }
+    (defined?(ActiveSupport::TestCase) != "constant" || ActiveSupport::TestCase.respond_to?(:seeding) && !ActiveSupport::TestCase.seeding?)
+  }
   before_destroy :delete_derivatives, :delete_from_staging,
                  :delete_from_permanent_storage
   before_destroy :delete_from_medusa, if: -> { medusa_uuid.present? }
 
-  before_create :shift_bundle_positions_before_create, unless: -> { DspaceImporter.instance.running? }
-  before_update :shift_bundle_positions_before_update, unless: -> { DspaceImporter.instance.running? }
-  after_destroy :shift_bundle_positions_after_destroy, unless: -> { DspaceImporter.instance.running? }
+  before_create :shift_bundle_positions_before_create
+  before_update :shift_bundle_positions_before_update
+  after_destroy :shift_bundle_positions_after_destroy
 
   LOGGER = CustomLogger.new(Bitstream)
 

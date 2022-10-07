@@ -9,9 +9,4 @@ namespace :ideals do
     end
   end
 
-  desc "Seed the database (AFTER MIGRATION)"
-  task seed_database: :environment do
-    IdealsSeeder.new.seed
-  end
-
 end

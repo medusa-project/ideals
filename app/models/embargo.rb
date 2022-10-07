@@ -31,7 +31,7 @@ class Embargo < ApplicationRecord
 
   validates_inclusion_of :kind, in: -> (value) { Kind.all }
 
-  validate :validate_expiration, unless: -> () { DspaceImporter.instance.running? }
+  validate :validate_expiration
 
   class IndexFields
     ALL_ACCESS_EXPIRES_AT = "d_all_access_expires_at"

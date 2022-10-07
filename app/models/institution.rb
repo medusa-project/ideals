@@ -294,7 +294,6 @@ class Institution < ApplicationRecord
     # it was launched were imported from DSpace. This list is, for now, a
     # duplicate of those.
     # See: https://uofi.app.box.com/notes/593479281190
-    # Also see: IdealsSeeder.update_registered_elements()
     self.registered_elements.build(name:             "dc:contributor",
                                    label:            "Contributor",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD)
