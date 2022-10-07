@@ -2,6 +2,10 @@
 # # Attributes
 #
 # * `active_link_color`       Theme active hyperlink color.
+# * `banner_image_filename`   Filename of the banner image, which may exist in
+#                             in the application S3 bucket under
+#                             {image_key_prefix}. If not present, a generic
+#                             image is used.
 # * `created_at`              Managed by ActiveRecord.
 # * `default`                 Boolean flag indicating whether a particular
 #                             institution is the system default, i.e. the one
@@ -89,6 +93,24 @@ class Institution < ApplicationRecord
                :add_default_submission_profile
 
   ##
+  # @param extension [String]
+  # @return [String]
+  #
+  def self.banner_image_filename(extension)
+    "banner.#{extension.gsub(".", "")}"
+  end
+
+  ##
+  # @param institution_key [String]
+  # @param extension [String] Filename extension.
+  # @return [String]
+  #
+  def self.banner_image_key(institution_key, extension)
+    [image_key_prefix(institution_key),
+     banner_image_filename(extension)].join
+  end
+
+  ##
   # @return [Institution] The default institution.
   #
   def self.default
@@ -137,6 +159,22 @@ class Institution < ApplicationRecord
   #
   def self.image_key_prefix(institution_key)
     ["institutions", institution_key, "theme"].join("/") + "/"
+  end
+
+  ##
+  # @return [String] Presigned S3 URL.
+  #
+  def banner_image_url
+    return nil if self.banner_image_filename.blank?
+    bucket     = ::Configuration.instance.storage[:bucket]
+    key        = [self.class.image_key_prefix(self.key),
+                  self.banner_image_filename].join
+    aws_client = S3Client.instance.send(:get_client)
+    signer     = Aws::S3::Presigner.new(client: aws_client)
+    signer.presigned_url(:get_object,
+                         bucket:     bucket,
+                         key:        key,
+                         expires_in: 1.week.to_i)
   end
 
   def breadcrumb_label
@@ -257,6 +295,16 @@ class Institution < ApplicationRecord
 
   def to_param
     key
+  end
+
+  ##
+  # @param io [IO]
+  # @param extension [String]
+  #
+  def upload_banner_image(io:, extension:)
+    filename = self.class.banner_image_filename(extension)
+    upload_theme_image(io: io, filename: filename)
+    self.update!(banner_image_filename: filename)
   end
 
   ##

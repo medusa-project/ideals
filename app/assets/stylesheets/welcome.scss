@@ -4,6 +4,7 @@ body#welcome {
     margin-bottom: -14px;
   }
   #welcome-image {
+    /* may be overridden by the theme */
     background-image: image-url("orange_network.jpg");
     margin: -16px -16px 1em -16px;
     background-position: center;

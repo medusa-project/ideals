@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class InstitutionsController < ApplicationController
 
   before_action :ensure_logged_in
@@ -294,6 +292,10 @@ class InstitutionsController < ApplicationController
 
   def upload_images
     p = params[:institution]
+    if p[:banner_image]
+      @institution.upload_banner_image(io:        p[:banner_image],
+                                       extension: p[:banner_image].original_filename.split(".").last)
+    end
     if p[:footer_image]
       @institution.upload_footer_image(io:        p[:footer_image],
                                        extension: p[:footer_image].original_filename.split(".").last)

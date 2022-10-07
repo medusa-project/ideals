@@ -7,6 +7,19 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # banner_image_filename()
+
+  test "banner_image_filename() returns a correct key" do
+    assert_equal "header.png", Institution.banner_image_filename("png")
+  end
+
+  # banner_image_key()
+
+  test "banner_image_key() returns a correct key" do
+    assert_equal "institutions/test/theme/header.png",
+                 Institution.banner_image_key("test", "png")
+  end
+
   # default()
 
   test "default() returns the default institution" do
@@ -95,6 +108,17 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.active_link_color = nil
     assert !@instance.valid?
+  end
+
+  # banner_image_url()
+
+  test "banner_image_url() returns nil when banner_image is not set" do
+    assert_nil @instance.banner_image_url
+  end
+
+  test "banner_image_url() returns a correct URL" do
+    @instance.banner_image_filename = "banner.png"
+    assert @instance.banner_image_url.start_with?("http://")
   end
 
   # download_count_by_month()
@@ -337,6 +361,26 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.default = true
     @instance.save!
     assert_equal @instance, Institution.find_by_default(true)
+  end
+
+  # upload_banner_image()
+
+  test "upload_banner_image() uploads an image" do
+    setup_s3
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_banner_image(io: file, extension: "jpg")
+    end
+    bucket = ::Configuration.instance.storage[:bucket]
+    key    = Institution.banner_image_key(@instance.key, "jpg")
+    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+  end
+
+  test "upload_banner_image() updates the footer_image_filename attribute" do
+    setup_s3
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_banner_image(io: file, extension: "jpg")
+    end
+    assert_equal "banner.jpg", @instance.banner_image_filename
   end
 
   # upload_footer_image()

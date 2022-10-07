@@ -57,7 +57,7 @@
         = @institution.active_link_color
 
 .row
-  .col-sm-6
+  .col-sm-4
     .card
       .card-header Header Image
       .card-body{style: "background-color: #{@institution.header_background_color}; "\
@@ -66,7 +66,15 @@
           = image_tag(@institution.header_image_url)
         - else
           No image set.
-  .col-sm-6
+  .col-sm-4
+    .card
+      .card-header Banner Image
+      .card-body
+        - if @institution.banner_image_filename
+          = image_tag(@institution.banner_image_url)
+        - else
+          No image set.
+  .col-sm-4
     .card
       .card-header Footer Image
       .card-body{style: "background-color: #{@institution.footer_background_color}; "\

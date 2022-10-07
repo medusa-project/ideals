@@ -1,5 +1,11 @@
 <% # This file contains all of the institution-specific style overrides. %>
 
+<% if @institution.banner_image_filename %>
+  body#welcome #welcome-image {
+    background-image: url("<%= raw(@institution.banner_image_url) %>") !important;
+  }
+<% end %>
+
 <% # primary_color %>
 
 .btn-primary {
