@@ -39,6 +39,9 @@
 #                             Shibboleth SP.
 # * `primary_color`           Theme primary color.
 # * `primary_hover_color`     Theme hover-over primary color.
+# * `service_name`            Name of the service that the institution is
+#                             running. For example, at UIUC, this would be
+#                             IDEALS.
 # * `updated_at`              Managed by ActiveRecord.
 # * `welcome_html`            HTML text that appears on the main page.
 #
@@ -79,6 +82,8 @@ class Institution < ApplicationRecord
 
   # uniqueness enforced by database constraints
   validates :org_dn, presence: true
+
+  validates :service_name, presence: true
 
   validates :active_link_color, presence: true
   validates :footer_background_color, presence: true

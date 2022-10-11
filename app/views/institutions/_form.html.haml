@@ -7,6 +7,9 @@
   .form-group
     = f.label :name, "Name"
     = f.text_field :name, class: 'form-control'
+  .form-group
+    = f.label :service_name, "Service Name"
+    = f.text_field :service_name, class: 'form-control'
   - if current_user.sysadmin?
     .form-group
       = f.label :key, "Key"

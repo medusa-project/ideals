@@ -363,6 +363,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal @instance, Institution.find_by_default(true)
   end
 
+  # service_name
+
+  test "service_name is required" do
+    @instance.service_name = nil
+    assert !@instance.valid?
+  end
+
   # upload_banner_image()
 
   test "upload_banner_image() uploads an image" do

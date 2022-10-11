@@ -4,6 +4,7 @@ empty:
   key:              empty
   fqdn:             empty.edu
   name:             Institution With No Users Or Units
+  service_name:     IDEALS
   org_dn:           empty
   main_website_url: https://empty.edu
   feedback_email:   feedback@empty.edu
@@ -13,6 +14,7 @@ example:
   key:              example
   fqdn:             example.edu
   name:             Example University
+  service_name:     IDEALS
   org_dn:           o=Example University,dc=example,dc=edu
   main_website_url: https://example.edu
   feedback_email:   feedback@example.edu
@@ -22,6 +24,7 @@ northeast:
   key:                  northeast
   fqdn:                 northeast.edu
   name:                 Northeast University
+  service_name:         IDEALS
   org_dn:               o=Northeast University,dc=northeast,dc=edu
   main_website_url:     https://northeast.edu
   feedback_email:       feedback@northeast.edu
@@ -33,6 +36,7 @@ southwest:
   key:                  southwest
   fqdn:                 southwest.edu
   name:                 Southwest University
+  service_name:         IDEALS
   org_dn:               o=Southwest University,dc=southwest,dc=edu
   main_website_url:     https://southwest.edu
   feedback_email:       feedback@southwest.edu
@@ -44,6 +48,7 @@ uiuc:
   key:                  uiuc
   fqdn:                 www.ideals.illinois.edu
   name:                 University of Illinois at Urbana-Champaign
+  service_name:         IDEALS
   org_dn:               o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
   main_website_url:     https://illinois.edu
   feedback_email:       feedback@fakeuiuc.edu

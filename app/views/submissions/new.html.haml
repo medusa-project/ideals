@@ -36,7 +36,8 @@
                            "aria-expanded": false,
                            "aria-controls": "deposit-agreement-collapse"}
         %i.far.fa-plus-square
-        IDEALS Deposit Agreement
+        = current_institution.service_name
+        Deposit Agreement
         %span.text-info (expand)
     #deposit-agreement-collapse.collapse{"aria-labelledby": "deposit-agreement-heading",
                                          "data-parent":     "#deposit-agreement"}
@@ -78,7 +79,10 @@
     .col-sm-9
       %p.mt-2.text-info
         %i.fa.fa-info-circle
-        Deposit into IDEALS requires that the depositor be the creator of the dataset or have permission to deposit it.
+        Deposit into
+        = current_institution.service_name
+        requires that the depositor be the creator of the dataset or have
+        permission to deposit it.
 
   %hr
 
@@ -99,7 +103,9 @@
     .col-sm-9
       %p.mt-2.text-info
         %i.fa.fa-info-circle
-        Deposit into IDEALS requires removal of any private, confidential,
+        Deposit into
+        = current_institution.service_name
+        requires removal of any private, confidential,
         export-controlled, or other legally protected information from the
         work. A selection of "Not Applicable" indicates that the work never
         included such information, while a selection of ‘Yes’ indicates that
@@ -108,7 +114,10 @@
   %hr
 
   %p
-    %strong Do you agree to the IDEALS Deposit Agreement in its entirety?
+    %strong
+      Do you agree to the
+      = current_institution.service_name
+      Deposit Agreement in its entirety?
 
   .row
     .col-sm-3.question.mb-3
@@ -121,7 +130,9 @@
     .col-sm-9
       %p.mt-2.text-info
         %i.fa.fa-info-circle
-        Deposit into IDEALS requires agreement to the Deposit Agreement. Click
+        Deposit into
+        = current_institution.service_name
+        requires agreement to the Deposit Agreement. Click
         on the Deposit Agreement heading above to view the full agreement.
 
   %hr
@@ -134,4 +145,6 @@
       .col-sm-9
         #feedback.text-danger.ml-2
           = icon_for(:warning)
-          The selections you have made indicate that you are not ready to deposit your dataset. IDEALS curators are available to discuss your dataset with you. Please contact us!
+          The selections you have made indicate that you are not ready to deposit your dataset.
+          = current_institution.service_name
+          curators are available to discuss your dataset with you. Please contact us!

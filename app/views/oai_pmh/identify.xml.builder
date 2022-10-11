@@ -21,7 +21,7 @@ xml.tag!("OAI-PMH",
   else
     # 4.2
     xml.tag!("Identify") do
-      xml.tag!("repositoryName", "IDEALS @ #{current_institution.name}")
+      xml.tag!("repositoryName", "#{@repository_name} @ #{current_institution.name}")
       xml.tag!("baseURL", @base_url)
       xml.tag!("protocolVersion", "2.0")
       xml.tag!("adminEmail", current_institution.feedback_email)
