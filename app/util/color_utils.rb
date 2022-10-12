@@ -14,13 +14,13 @@ class ColorUtils
   end
 
   ##
-  # Returns a color (either black or white) with the greatest contrast against
-  # the given color.
+  # Returns a color (either black or white) with an optimal contrast against
+  # the given color for the purpose of e.g. text over a background color.
   #
   # @param color [String] CSS color.
   # @return [String] CSS color.
   #
-  def self.maximize_text_contrast(color)
+  def self.optimize_text_contrast(color)
     rgb = to_rgb(color)
     avg = rgb.sum / 3.0
     (avg > 127) ? "#000000" : "#ffffff"

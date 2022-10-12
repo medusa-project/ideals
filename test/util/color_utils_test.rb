@@ -41,11 +41,11 @@ class ColorUtilsTest < ActiveSupport::TestCase
     assert !ColorUtils.css_color?("rgba(35, 250, 12, 5, 0.5)")
   end
 
-  # maximize_text_contrast()
+  # optimize_text_contrast()
 
-  test "maximize_text_contrast() returns the correct color" do
-    assert_equal "#000000", ColorUtils.maximize_text_contrast("#a0c0d0")
-    assert_equal "#ffffff", ColorUtils.maximize_text_contrast("#304050")
+  test "optimize_text_contrast() returns the correct color" do
+    assert_equal "#000000", ColorUtils.optimize_text_contrast("#a0c0d0")
+    assert_equal "#ffffff", ColorUtils.optimize_text_contrast("#304050")
   end
 
   # to_rgb()
