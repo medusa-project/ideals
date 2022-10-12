@@ -63,6 +63,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "create() adds default elements" do
     institution = Institution.create!(name:             "New Institution",
+                                      service_name:     "New",
                                       key:              "new",
                                       fqdn:             "example.net",
                                       org_dn:           "example",
@@ -72,6 +73,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "create() adds a default metadata profile" do
     institution = Institution.create!(name:             "New Institution",
+                                      service_name:     "New",
                                       key:              "new",
                                       fqdn:             "example.net",
                                       org_dn:           "example",
@@ -84,6 +86,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "create() adds a default submission profile" do
     institution = Institution.create!(name:             "New Institution",
+                                      service_name:     "New",
                                       key:              "new",
                                       fqdn:             "example.net",
                                       org_dn:           "example",

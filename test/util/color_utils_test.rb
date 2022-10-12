@@ -44,7 +44,8 @@ class ColorUtilsTest < ActiveSupport::TestCase
   # optimize_text_contrast()
 
   test "optimize_text_contrast() returns the correct color" do
-    assert_equal "#000000", ColorUtils.optimize_text_contrast("#a0c0d0")
+    assert_equal "#000000", ColorUtils.optimize_text_contrast("#ffffff")
+    assert_equal "#ffffff", ColorUtils.optimize_text_contrast("#a0c0d0")
     assert_equal "#ffffff", ColorUtils.optimize_text_contrast("#304050")
   end
 

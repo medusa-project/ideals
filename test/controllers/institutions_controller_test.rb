@@ -39,6 +39,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
          params: {
            institution: {
              name:             "New Institution",
+             service_name:     "New",
              key:              "new",
              fqdn:             "new.org",
              org_dn:           "new",
@@ -57,6 +58,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
            params: {
              institution: {
                name:             "New Institution",
+               service_name:     "New",
                key:              "new",
                fqdn:             "new.org",
                org_dn:           "new",
