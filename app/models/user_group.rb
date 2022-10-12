@@ -4,14 +4,17 @@
 #
 # # Attributes
 #
-# * `created_at`     Managed by ActiveRecord.
-# * `institution_id` Foreign key to [Institution] indicating that the group is
-#                    exclusive to that institution. May also be `nil`,
-#                    indicating that the group is global, available to all
-#                    institutions.
-# * `key`            Short unique identifying key.
-# * `name`           Arbitrary but unique group name.
-# * `updated_at`     Managed by ActiveRecord.
+# * `created_at`          Managed by ActiveRecord.
+# * `defines_institution` Whether the group defines the users in its owning
+#                         institution. Every institution should have one such
+#                         group.
+# * `institution_id`      Foreign key to [Institution] indicating that the
+#                         group is exclusive to that institution. May also be
+#                         `nil`, indicating that the group is global, available
+#                         to all institutions.
+# * `key`                 Short unique identifying key.
+# * `name`                Arbitrary but unique group name.
+# * `updated_at`          Managed by ActiveRecord.
 #
 class UserGroup < ApplicationRecord
   include Breadcrumb
@@ -36,6 +39,7 @@ class UserGroup < ApplicationRecord
   validates :name, presence: true # uniqueness enforced by database constraints
   validates :key, presence: true  # uniqueness enforced by database constraints
 
+  after_save :ensure_defines_institution_uniqueness
   before_destroy :prevent_destroy_of_required_group
 
   ##
@@ -116,8 +120,29 @@ class UserGroup < ApplicationRecord
     self.users.where(type: ShibbolethUser.to_s)
   end
 
+  ##
+  # @return [Boolean] Whether the group is required by the system. Required
+  #                   groups can be modified but not deleted.
+  #
+  def required?
+    self.defines_institution || SYSTEM_REQUIRED_GROUPS.include?(self.key)
+  end
 
   private
+
+  ##
+  # Marks all other instances of the same institution as "not defining the
+  # institution" if the instance is marked as defining the institution.
+  #
+  def ensure_defines_institution_uniqueness
+    if self.defines_institution
+      self.class.all.
+        where(institution_id: self.institution_id).
+        where("id != ?", self.id).each do |instance|
+        instance.update!(defines_institution: false)
+      end
+    end
+  end
 
   def prevent_destroy_of_required_group
     if SYSTEM_REQUIRED_GROUPS.include?(self.key)

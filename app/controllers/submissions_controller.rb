@@ -208,7 +208,7 @@ class SubmissionsController < ApplicationController
                                         expires_at: Time.parse(@item.temp_embargo_expires_at),
                                         reason:     @item.temp_embargo_reason)
         if @item.temp_embargo_type == "institution"
-          embargo.user_groups << UserGroup.find_by_key("uiuc") # TODO: make this work with other institutions
+          embargo.user_groups << current_institution.defining_user_group
         end
       end
       @item.temp_embargo_type       = nil

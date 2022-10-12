@@ -24,6 +24,15 @@
 
 %h1= @user_group.name
 
+- if @user_group.defines_institution
+  .alert.alert-light
+    = icon_for(:info)
+    This group defines all of the members of
+    = "#{current_institution.name},"
+    including faculty, staff, and students. When an item is submitted with the
+    option for institution-only access privileges, an embargo is attached to it
+    allowing access only to members of this group.
+
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item{role: "presentation"}
     %a#membership-tab.nav-link.active{"data-toggle":   "tab",

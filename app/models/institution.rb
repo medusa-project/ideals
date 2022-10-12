@@ -98,7 +98,7 @@ class Institution < ApplicationRecord
 
   before_save :set_properties, :ensure_default_uniqueness
   after_create :add_default_elements, :add_default_metadata_profile,
-               :add_default_submission_profile
+               :add_default_submission_profile, :add_defining_user_group
 
   ##
   # @param extension [String]
@@ -191,6 +191,13 @@ class Institution < ApplicationRecord
 
   def breadcrumb_parent
     Institution
+  end
+
+  ##
+  # @return [UserGroup] The user group that defines the instance's users.
+  #
+  def defining_user_group
+    self.user_groups.where(defines_institution: true).limit(1).first
   end
 
   ##
@@ -452,6 +459,12 @@ class Institution < ApplicationRecord
                                              default: true)
     profile.save!
     profile.add_default_elements
+  end
+
+  def add_defining_user_group
+    self.user_groups.build(name:                "#{self.name} Users",
+                           key:                 "institution",
+                           defines_institution: true).save!
   end
 
   def disallow_key_changes

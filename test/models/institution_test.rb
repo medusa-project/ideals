@@ -97,6 +97,16 @@ class InstitutionTest < ActiveSupport::TestCase
     assert profile.elements.count > 0
   end
 
+  test "create() adds a defining user group" do
+    institution = Institution.create!(name:             "New Institution",
+                                      service_name:     "New",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      org_dn:           "example",
+                                      main_website_url: "https://example.net")
+    assert_not_nil institution.defining_user_group
+  end
+
   # active_link_color
 
   test "active_link_color must contain a valid CSS color" do
@@ -122,6 +132,12 @@ class InstitutionTest < ActiveSupport::TestCase
   test "banner_image_url() returns a correct URL" do
     @instance.banner_image_filename = "banner.png"
     assert @instance.banner_image_url.start_with?("http://")
+  end
+
+  # defining_user_group()
+
+  test "defining_user_group() returns the defining user group" do
+    assert_not_nil @instance.defining_user_group
   end
 
   # download_count_by_month()

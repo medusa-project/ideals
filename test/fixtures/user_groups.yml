@@ -1,34 +1,50 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 hostname:
-  key:  hostname
-  name: Hostname-Based Group
+  key:                 hostname
+  name:                Hostname-Based Group
+  defines_institution: false
 
 northeast_admins:
-  key:  northeast_admins
-  name: Northeast University Administrators
+  key:                 northeast_admins
+  name:                Northeast University Administrators
+  defines_institution: false
 
 southwest_admins:
-  key:  southwest_admins
-  name: Southwest University Administrators
+  key:                 southwest_admins
+  name:                Southwest University Administrators
+  defines_institution: false
 
 sysadmin:
-  key:  sysadmin
-  name: System Administrators
+  key:                 sysadmin
+  name:                System Administrators
+  defines_institution: false
 
 temp:
-  key:  temp
-  name: Temporary Group
+  key:                 temp
+  name:                Temporary Group
+  defines_institution: false
   users:
 
+southwest:
+  key:                 institution
+  name:                Southwest University Users
+  institution:         southwest
+  defines_institution: true
+
 uiuc:
-  key:  uiuc
-  name: U of I Users
+  key:                 uiuc
+  name:                U of I Users
+  institution:         uiuc
+  defines_institution: true
 
 uiuc_admins:
-  key:  uiuc_admins
-  name: U of I Administrators
+  key:                 uiuc_admins
+  name:                U of I Administrators
+  institution:         uiuc
+  defines_institution: false
 
 unused:
-  key:  unused
-  name: Unused Group
+  key:                 unused
+  name:                Unused Group
+  defines_institution: false

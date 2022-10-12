@@ -36,6 +36,21 @@ class UserGroupTest < ActiveSupport::TestCase
     assert @instance.all_users.include?(users(:uiuc_sysadmin))
   end
 
+  # defines_institution
+
+  test "setting a group as defining its institution sets all other instances of
+  the same institution as not defining their institution" do
+    institution = institutions(:uiuc)
+    assert_equal 1, UserGroup.where(institution:         institution,
+                                    defines_institution: true).count
+    UserGroup.create!(name:                "New Group",
+                      key:                 "new",
+                      institution:         institution,
+                      defines_institution: true)
+    assert_equal 1, UserGroup.where(institution:         institution,
+                                    defines_institution: true).count
+  end
+
   # destroy()
 
   test "destroy() destroys an ordinary group" do
@@ -139,6 +154,23 @@ class UserGroupTest < ActiveSupport::TestCase
                         name:        "Test",
                         institution: institution)
     end
+  end
+
+  # required?()
+
+  test "required?() returns true for a system-required group" do
+    assert @instance.required?
+  end
+
+  test "required?() returns true for a defining-institution group" do
+    group = user_groups(:unused)
+    group.defines_institution = true
+    assert group.required?
+  end
+
+  test "required?() returns false for other groups" do
+    group = user_groups(:unused)
+    assert !group.required?
   end
 
 end
