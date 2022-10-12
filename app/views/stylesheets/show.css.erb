@@ -8,14 +8,27 @@
 
 <% # primary_color %>
 
+.badge-primary {
+    background-color: <%= h @institution.primary_color %>;
+    color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %>;
+}
+.bg-primary .card-header {
+    background-color: <%= h @institution.primary_color %>;
+    color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %>;
+}
 .btn-primary {
   background-color: <%= h @institution.primary_color %>;
   border-color: transparent;
+  color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %> !important;
 }
-.badge-primary { background-color: <%= h @institution.primary_color %>; }
-.bg-primary .card-header { background-color: <%= h @institution.primary_color %>; }
-.nav-pills .nav-link.active { background-color: <%= h @institution.primary_color %>; }
-.progress-bar { background-color: <%= h @institution.primary_color %>; }
+.nav-pills .nav-link.active {
+    background-color: <%= h @institution.primary_color %>;
+    color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %>;
+}
+.progress-bar {
+    background-color: <%= h @institution.primary_color %>;
+    color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %>;
+}
 
 <% # primary_hover_color %>
 
@@ -35,16 +48,24 @@ a:hover { color: <%= h @institution.link_hover_color %>; }
 <% # active_link_color %>
 
 a:active { color: <%= h @institution.active_link_color %> }
-a.dropdown-item:active { background-color: <%= h @institution.active_link_color %> !important; }
+a.dropdown-item:active {
+    background-color: <%= h @institution.active_link_color %> !important;
+    color: <%= ColorUtils.optimize_text_contrast(@institution.active_link_color) %>;
+}
 
 <% # header_background_color %>
 
 header > div:first-child {
   background-color: <%= h @institution.header_background_color %>;
+  color: <%= ColorUtils.optimize_text_contrast(@institution.header_background_color) %>;
+}
+header > div:first-child .btn {
+  color: <%= ColorUtils.optimize_text_contrast(@institution.header_background_color) %>;
 }
 
 <% # footer_background_color %>
 
 footer .info-area {
   background-color: <%= h @institution.footer_background_color %>;
+  color: <%= ColorUtils.optimize_text_contrast(@institution.footer_background_color) %>;
 }

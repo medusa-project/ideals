@@ -8,11 +8,11 @@ header {
 // Header row 1 (thin stripe)
 header > div:first-child {
   height: 40px;
-  /* background-color controlled by theme */
-  color: white;
+  /* background-color is controlled by the theme */
+  /* color is controlled by the theme */
   margin: 0px;
   .btn {
-    color: white;
+    /* color is controlled by the theme */
   }
   a.navbar-brand {
     margin: 0;
