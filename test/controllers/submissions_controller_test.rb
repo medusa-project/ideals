@@ -99,10 +99,11 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert item.embargoes.empty?
   end
 
-  test "complete() attaches a correct embargo when the UofI-only radio is selected" do
+  test "complete() attaches a correct embargo when the institution-only radio
+  is selected" do
     item = items(:submitting)
     log_in_as(item.submitter)
-    item.update!(temp_embargo_type:       "uofi",
+    item.update!(temp_embargo_type:       "institution",
                  temp_embargo_kind:       Embargo::Kind::DOWNLOAD,
                  temp_embargo_expires_at: "2053-01-01",
                  temp_embargo_reason:     "Test reason")

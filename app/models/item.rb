@@ -179,7 +179,7 @@ class Item < ApplicationRecord
                                 allow_blank: true
   validates :temp_embargo_expires_at, format: /\d{4}-\d{2}-\d{2}/,
                                       allow_blank: true
-  validates :temp_embargo_type, inclusion: { in: %w(open uofi closed) },
+  validates :temp_embargo_type, inclusion: { in: %w(open institution closed) },
                                 allow_blank: true
   validates :stage, inclusion: { in: Stages.all }
   validate :validate_exhumed, if: -> { stage != Item::Stages::BURIED }

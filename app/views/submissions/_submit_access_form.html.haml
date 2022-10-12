@@ -18,11 +18,11 @@
                       "Open",
                       class: "form-check-label")
         .form-check.mb-1
-          = radio_button_tag("item[temp_embargo_type]", "uofi",
-                             f.object.temp_embargo_type == "uofi",
+          = radio_button_tag("item[temp_embargo_type]", "institution",
+                             f.object.temp_embargo_type == "institution",
                              class: "form-check-input")
-          = label_tag("item_temp_embargo_type_uofi",
-                      "U of I-only",
+          = label_tag("item_temp_embargo_type_institution",
+                      "Restricted to #{current_institution.name}",
                       class: "form-check-label")
         .form-check.mb-1
           = radio_button_tag("item[temp_embargo_type]", "closed",

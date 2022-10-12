@@ -207,8 +207,8 @@ class SubmissionsController < ApplicationController
         embargo = @item.embargoes.build(kind:       @item.temp_embargo_kind || Embargo::Kind::DOWNLOAD,
                                         expires_at: Time.parse(@item.temp_embargo_expires_at),
                                         reason:     @item.temp_embargo_reason)
-        if @item.temp_embargo_type == "uofi"
-          embargo.user_groups << UserGroup.find_by_key("uiuc")
+        if @item.temp_embargo_type == "institution"
+          embargo.user_groups << UserGroup.find_by_key("uiuc") # TODO: make this work with other institutions
         end
       end
       @item.temp_embargo_type       = nil

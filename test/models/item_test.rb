@@ -832,7 +832,7 @@ class ItemTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.temp_embargo_type = "open"
     assert @instance.valid?
-    @instance.temp_embargo_type = "uofi"
+    @instance.temp_embargo_type = "institution"
     assert @instance.valid?
     @instance.temp_embargo_type = "closed"
     assert @instance.valid?
