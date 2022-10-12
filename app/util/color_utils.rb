@@ -23,7 +23,7 @@ class ColorUtils
   def self.optimize_text_contrast(color)
     rgb = to_rgb(color)
     avg = rgb.sum / 3.0
-    (avg > 127) ? "#000000" : "#ffffff"
+    (avg > 190) ? "#000000" : "#ffffff"
   end
 
   ##
