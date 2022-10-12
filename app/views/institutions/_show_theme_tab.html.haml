@@ -62,10 +62,13 @@
       .card-header Header Image
       .card-body{style: "background-color: #{@institution.header_background_color}; "\
                         "color: #{ColorUtils.optimize_text_contrast(@institution.header_background_color)}"}
-        - if @institution.header_image_filename
-          = image_tag(@institution.header_image_url)
+        - if @institution.key == "uiuc"
+          This institution is using a custom header image that is not configurable.
         - else
-          No image set.
+          - if @institution.header_image_filename
+            = image_tag(@institution.header_image_url)
+          - else
+            No image set.
   .col-sm-4
     .card
       .card-header Banner Image

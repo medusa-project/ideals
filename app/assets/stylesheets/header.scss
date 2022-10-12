@@ -22,22 +22,32 @@ header > div:first-child {
     height: 35px;
     margin: 3px 0;
   }
-  @media (max-width: 490px) {
-    .banner-image-university {
-      display: none;
+  .responsive-header-images {
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    align-items: center;
+    a {
+      margin: 0;
+      padding: 0;
     }
-  }
-  @media (max-width: 300px) {
-    .banner-image-library {
-      display: none;
+    a:first-child {
+      padding-left: 9px;
+      padding-right: 10px;
     }
-  }
-  .banner-image-uiuc {
-    margin-top: -2px;
-  }
-  @media (max-width: 980px) {
-    .banner-image-uiuc {
-      display: none;
+    img {
+      height: 21px;
+      margin-top: 6px;
+    }
+    @media (max-width: 490px) {
+      .banner-image-university {
+        display: none;
+      }
+    }
+    @media (max-width: 300px) {
+      .banner-image-library {
+        display: none;
+      }
     }
   }
   div {
