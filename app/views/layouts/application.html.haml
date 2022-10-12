@@ -9,7 +9,8 @@
     %meta{content: current_institution.service_name, name: "Generator"}/
     %title
       = yield :title
-      | IDEALS
+      |
+      = current_institution.service_name
     = stylesheet_link_tag 'application', media: 'all'
     %link{rel: "stylesheet", href: custom_styles_path}
     = javascript_include_tag 'application'
