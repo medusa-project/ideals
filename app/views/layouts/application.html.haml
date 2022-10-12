@@ -19,7 +19,7 @@
   %body{id: yield(:body_id).present? ? yield(:body_id) : nil,
         'data-nav': yield(:active_nav)}
     .container-fluid
-      = render partial: 'layouts/header'
+      = render partial: 'layouts/lower_header'
       .page-content
         - unless request.path == "/"
           = banner_message
