@@ -78,7 +78,7 @@ class ShibbolethUser < User
     cache_key = Digest::MD5.hexdigest("#{self.netid} ismemberof #{group}")
     Rails.cache.fetch(cache_key, expires_in: 12.hours) do
       begin
-        user = UiucLibAd::Entity.new(entity_cn: self.netid)
+        user = UiucLibAd::User.new(cn: self.netid)
         user.is_member_of?(group_cn: group)
       rescue UiucLibAd::NoDNFound
         false
