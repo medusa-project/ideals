@@ -1,8 +1,13 @@
-# frozen_string_literal: true
-
 class WelcomeController < ApplicationController
 
   before_action :store_location, only: :index
+
+  ##
+  # Responds to `GET /about`
+  #
+  def about
+    @about_html = current_institution.about_html
+  end
 
   ##
   # Responds to `GET /`

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_12_183153) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_13_183101) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -278,6 +278,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_12_183153) do
     t.string "banner_image_filename"
     t.string "copyright_notice"
     t.string "service_name", null: false
+    t.string "about_url"
+    t.text "about_html"
     t.index ["default"], name: "index_institutions_on_default"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true

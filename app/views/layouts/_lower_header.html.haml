@@ -1,13 +1,13 @@
 %header
-  = render partial: 'layouts/upper_header'
+  = render partial: "layouts/upper_header"
   %nav.navbar.navbar-expand-lg{role: "navigation"}
     = link_to current_institution.service_name, root_path, class: 'navbar-brand'
     %button.navbar-toggler{"aria-controls": "navbar-supported-content",
                            "aria-expanded": "false",
-                           "aria-label": "Toggle navigation",
-                           "data-target": "#navbar-supported-content",
-                           "data-toggle": "collapse",
-                           type: "button"}
+                           "aria-label":    "Toggle navigation",
+                           "data-target":   "#navbar-supported-content",
+                           "data-toggle":   "collapse",
+                           type:            "button"}
       %span.navbar-toggler-icon
     #navbar-supported-content.collapse.navbar-collapse
       %ul.navbar-nav.mr-auto
@@ -23,19 +23,23 @@
             %i.fa.fa-cubes
             Browse
           .dropdown-menu
-            = link_to units_path, class: "dropdown-item" do
-              Academic Units and Collections
-            = link_to recent_items_path, class: "dropdown-item" do
-              Most Recent Items
+            = link_to "Academic Units and Collections", units_path, class: "dropdown-item"
+            = link_to "Most Recent Items", recent_items_path, class: "dropdown-item"
             - re = RegisteredElement.find_by_name("dc:date:issued")
             - if re # safety check in case this element doesn't exist for some reason
-              = link_to items_path(sort: re.indexed_sort_field,
-                                   direction: "desc"), class: "dropdown-item" do
-                Items By Publication Date
-        %li#policies-nav.nav-item
-          = link_to "https://wiki.illinois.edu//wiki/display/IDEALS/IDEALS+Resources+and+Information", class: 'nav-link' do
-            = icon_for(:info)
-            About
+              = link_to "Items By Publication Date",
+                        items_path(sort: re.indexed_sort_field,
+                                   direction: "desc"), class: "dropdown-item"
+        - if current_institution.about_url || current_institution.about_html
+          %li#policies-nav.nav-item
+            - if current_institution.about_url.present?
+              = link_to current_institution.about_url, class: 'nav-link' do
+                = icon_for(:info)
+                About
+            - elsif current_institution.about_html.present?
+              = link_to about_path, class: 'nav-link' do
+                = icon_for(:info)
+                About
       = form_tag items_path, method: "get", class: "form-inline" do
         .input-group.mr-3
           %input.form-control{name: "q", type: "search", placeholder: "Search", "aria-label": "Search"}

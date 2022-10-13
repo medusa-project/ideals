@@ -11,7 +11,7 @@
 
 - if current_institution.welcome_html.present?
   = sanitize(current_institution.welcome_html,
-             tags: %w(p a ul ol li h1 h2 h3 h4 h5 h6),
+             tags: ApplicationHelper::ALLOWED_HTML_TAGS,
              attributes: %w(href))
 - else
   %p

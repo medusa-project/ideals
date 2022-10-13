@@ -42,6 +42,7 @@
   .form-group
     = f.label :main_website_url, "Main Website URL"
     = f.text_field :main_website_url, placeholder: "https://", class: 'form-control'
+
   .form-group
     = f.label :feedback_email, "Feedback Email"
     = f.text_field :feedback_email, class: 'form-control'
@@ -50,33 +51,27 @@
       This may be a plain email address or a sender name followed by an email
       address in angle brackets, such as:
       "Some Name &lt;email@example.edu&gt;".
+
   .form-group
-    = f.label :welcome_html, "Welcome Text"
+    = f.label :welcome_html, "Welcome HTML"
     = f.text_area :welcome_html, class: 'form-control', rows: 8
     %p.text-muted
       %i.fa.fa-info-circle
       The following HTML tags are allowed:
-      %code &lt;p&gt;
-      ,
-      %code &lt;a&gt;
-      ,
-      %code &lt;ul&gt;
-      ,
-      %code &lt;ol&gt;
-      ,
-      %code &lt;li&gt;
-      ,
-      %code &lt;h1&gt;
-      ,
-      %code &lt;h2&gt;
-      ,
-      %code &lt;h3&gt;
-      ,
-      %code &lt;h4&gt;
-      ,
-      %code &lt;h5&gt;
-      ,
-      %code &lt;h6&gt;
+      = raw(ApplicationHelper::ALLOWED_HTML_TAGS.map{ |t| "<code>&lt;#{t}&gt;</code>" }.join(", "))
+
+  .form-group
+    = f.label :about_html, "About HTML"
+    = f.text_area :about_html, class: 'form-control', rows: 8
+    %p.text-muted
+      %i.fa.fa-info-circle
+      The following HTML tags are allowed:
+      = raw(ApplicationHelper::ALLOWED_HTML_TAGS.map{ |t| raw("<code>&lt;#{t}&gt;</code>") }.join(", "))
+
+  .form-group
+    = f.label :about_url, "About URL"
+    = f.text_field :about_url, class: 'form-control'
+
   .form-group
     = f.label :copyright_notice, "Copyright Notice"
     = f.text_field :copyright_notice, class: 'form-control'

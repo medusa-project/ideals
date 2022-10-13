@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   match "/logout", to: "sessions#destroy", as: :logout, via: :all
   match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: [:get, :post]
 
+  match "/about", to: "welcome#about", via: :get, as: "about"
   match '/all-tasks', to: "tasks#index_all", via: :get, as: "all_tasks"
   match '/all-users', to: "users#index_all", via: :get, as: "all_users"
   resources :collections, except: [:destroy, :edit, :new] do

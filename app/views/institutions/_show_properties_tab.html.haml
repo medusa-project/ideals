@@ -28,6 +28,12 @@
       = link_to(@institution.main_website_url, @institution.main_website_url)
     - else
       Not Set
+  %dt About URL
+  %dd
+    - if @institution.about_url
+      = link_to(@institution.about_url, @institution.about_url)
+    - else
+      Not Set
   %dt Copyright Notice
   %dd
     - if @institution.copyright_notice

@@ -10,6 +10,13 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
+  # about()
+
+  test "about() returns HTTP 200" do
+    get about_path
+    assert_response :ok
+  end
+
   # index()
 
   test "index() returns HTTP 200" do

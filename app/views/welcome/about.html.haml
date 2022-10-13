@@ -1,0 +1,3 @@
+= sanitize(@about_html,
+           tags: ApplicationHelper::ALLOWED_HTML_TAGS,
+           attributes: %w(href))
