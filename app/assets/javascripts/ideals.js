@@ -589,7 +589,7 @@ const IDEALS = {
                 console.error(status);
                 console.error(error);
                 alert("There was an error removing the file. If this error " +
-                    "persists, please contact IDEALS staff.");
+                    "persists, please contact the administrators.");
             };
             new IDEALS.Client().delete(bitstreamURI, onSuccess, onError);
         };

@@ -21,7 +21,7 @@
 	<xsl:template match="/">
 		<html>
 			<head>
-                <title>IDEALS OAI-PMH 2.0 Endpoint</title>
+                <title>OAI-PMH 2.0 Endpoint</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
@@ -60,7 +60,7 @@
                 <div class="container">
                     <div class="navbar navbar-default" role="navigation">
                         <div class="navbar-header">
-                            <a class="navbar-brand" href="#">IDEALS OAI-PMH 2.0 Endpoint</a>
+                            <a class="navbar-brand" href="#">OAI-PMH 2.0 Endpoint</a>
                         </div>
                         <div class="navbar-collapse collapse">
                             <ul class="nav navbar-nav navbar-right">

@@ -3,7 +3,8 @@
   %hr
   %p Details have been logged, and system administrators have been notified.
   %p
-    IDEALS @ Illinois administrators may be contacted at:
+    = current_institution.service_name
+    administrators may be contacted at:
     %a{href: "mailto:#{current_institution.feedback_email}"}
       = current_institution.feedback_email
 

@@ -98,7 +98,8 @@ class LocalIdentitiesController < ApplicationController
       render "register"
     else
       flash['success'] = "Thanks for registering! Check your email for a "\
-                         "link to log in and start using IDEALS."
+                         "link to log in and start using "\
+                         "#{@identity.invitee.institution.service_name}."
       redirect_to root_url
     end
   end

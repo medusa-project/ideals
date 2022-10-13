@@ -167,15 +167,16 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
 
   # 4.2 Identify
   test "Identify returns correct information" do
+    institution = institutions(:uiuc)
     get "/oai-pmh", params: { verb: "Identify" }
-    assert_select "Identify > repositoryName", "IDEALS @ #{institutions(:uiuc).name}"
+    assert_select "Identify > repositoryName", "#{institution.service_name} @ #{institution.name}"
     assert_select "Identify > baseURL", "http://www.example.com/oai-pmh"
     assert_select "Identify > protocolVersion", "2.0"
     items = Item.non_embargoed.order(created_at: :desc).limit(1)
     assert_select "Identify > earliestDatestamp", items.first.created_at.utc.iso8601
     assert_select "Identify > deletedRecord", "persistent"
     assert_select "Identify > granularity", "YYYY-MM-DDThh:mm:ssZ"
-    assert_select "Identify > adminEmail", institutions(:uiuc).feedback_email
+    assert_select "Identify > adminEmail", institution.feedback_email
   end
 
   test "Identify returns errors when illegal arguments are provided" do

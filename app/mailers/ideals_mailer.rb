@@ -38,10 +38,11 @@ class IdealsMailer < ApplicationMailer
   # @param identity [LocalIdentity]
   #
   def account_approved(identity)
-    @identity = identity
-    mail(from:    @identity.invitee.institution.feedback_email,
+    @identity    = identity
+    @institution = @identity.invitee.institution
+    mail(from:    @institution.feedback_email,
          to:      @identity.email,
-         subject: "Register your IDEALS account")
+         subject: "Register your #{@institution.service_name} account")
   end
 
   ##
@@ -50,10 +51,11 @@ class IdealsMailer < ApplicationMailer
   # @param invitee [Invitee]
   #
   def account_denied(invitee)
-    @invitee = invitee
-    mail(from:    @invitee.institution.feedback_email,
+    @invitee     = invitee
+    @institution = @invitee.institution
+    mail(from:    @institution.feedback_email,
          to:      @invitee.email,
-         subject: "Your IDEALS account request")
+         subject: "Your #{@institution.service_name} account request")
   end
 
   ##
@@ -63,10 +65,11 @@ class IdealsMailer < ApplicationMailer
   # @param identity [Identity]
   #
   def account_registered(identity)
-    @identity = identity
-    mail(from:    @identity.invitee.institution.feedback_email,
+    @identity    = identity
+    @institution = @identity.invitee.institution
+    mail(from:    @institution.feedback_email,
          to:      @identity.email,
-         subject: "You're ready to log in to IDEALS!")
+         subject: "You're ready to log in to #{@institution.service_name}!")
   end
 
   ##
@@ -77,10 +80,13 @@ class IdealsMailer < ApplicationMailer
   #
   def account_request_action_required(invitee)
     config       = ::Configuration.instance
+    @invitee     = invitee
     @invitee_url = "#{config.website[:base_url]}/invitees/#{invitee.id}"
-    mail(from:    invitee.institution.feedback_email,
-         to:      [invitee.institution.feedback_email],
-         subject: "#{subject_prefix} Action required on a new IDEALS user")
+    @institution = @invitee.institution
+    mail(from:    @institution.feedback_email,
+         to:      [@institution.feedback_email],
+         subject: "#{subject_prefix} Action required on a new "\
+                  "#{@institution.service_name} user")
   end
 
   ##
@@ -92,10 +98,11 @@ class IdealsMailer < ApplicationMailer
   # @param invitee [Invitee]
   #
   def account_request_received(invitee)
-    @invitee = invitee
-    mail(from:    @invitee.institution.feedback_email,
+    @invitee     = invitee
+    @institution = @invitee.institution
+    mail(from:    @institution.feedback_email,
          to:      @invitee.email,
-         subject: "Your IDEALS account request")
+         subject: "Your #{@institution.service_name} account request")
   end
 
   def error(error_text)
@@ -116,24 +123,26 @@ class IdealsMailer < ApplicationMailer
   # @param identity [LocalIdentity]
   #
   def invited(identity)
-    @identity = identity
-    mail(from:    @identity.invitee.institution.feedback_email,
+    @identity    = identity
+    @institution = @identity.invitee.institution
+    mail(from:    @institution.feedback_email,
          to:      @identity.email,
-         subject: "Register for an IDEALS account")
+         subject: "Register for an #{@institution.service_name} account")
   end
 
   ##
   # @param item [Item]
   #
   def item_submitted(item)
-    config    = ::Configuration.instance
-    @item_url = item_url(item, host: config.website[:base_url])
+    config       = ::Configuration.instance
+    @item_url    = item_url(item, host: config.website[:base_url])
+    @institution = item.institution
     if item.primary_collection&.managing_users&.any?
       recipients = item.primary_collection.managing_users.map(&:email)
       mail(from:     item.institution.feedback_email,
            reply_to: NO_REPLY_ADDRESS,
            to:       recipients,
-           subject:  "A new IDEALS item requires review")
+           subject:  "A new #{@institution.service_name} item requires review")
     end
   end
 
@@ -141,10 +150,11 @@ class IdealsMailer < ApplicationMailer
   # @param identity [Identity]
   #
   def password_reset(identity)
-    @identity = identity
-    mail(from:    @identity.invitee.institution.feedback_email,
+    @identity    = identity
+    @institution = @identity.invitee.institution
+    mail(from:    @institution.feedback_email,
          to:      @identity.email,
-         subject: "Reset your IDEALS password")
+         subject: "Reset your #{@institution.service_name} password")
   end
 
   ##

@@ -7,8 +7,8 @@
   %a(href="/invitees/request" )
   %br
 
-  If you do not have a NetID, but do have approval
-  to register with IDEALS, please contact the IDEALS @ Illinois administrators at
-  =succeed "." do
+  If you do not have a NetID, but are approved to register, please contact the
+  = current_institution.service_name administrators at
+  = succeed "." do
     %a(href="mailto:#{current_institution.feedback_email}")
       = current_institution.feedback_email

@@ -7,15 +7,18 @@
   %p
     = icon_for(:info)
     In special circumstances, individuals who do not have an Illinois NetID are approved to register a non-NetID identity
-    in the IDEALS system.
+    in the
+    = current_institution.service_name
+    system.
   %p
     %strong These non-NetID identities are not valid for access to items restricted to University of Illinois only or embargoed items.
   %p
-    To request a non-NetID IDEALS identity, provide your email address in the form below, along with the purpose.
+    To request a non-NetID identity, provide your email address in the form below, along with the purpose.
     If approved, you will be sent an email inviting you to register.
   %p
-    IDEALS administrators may be contacted at
-    =succeed(".") do
+    = current_institution.service_name
+    administrators may be contacted at
+    = succeed(".") do
       %a(href="mailto:#{current_institution.feedback_email}")
         = current_institution.feedback_email
 

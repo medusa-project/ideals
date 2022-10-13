@@ -80,9 +80,9 @@ class InviteesController < ApplicationController
       flash['error'] = "#{e}"
       redirect_to new_invitee_url
     else
-      flash['success'] = "Thanks for requesting an IDEALS account! IDEALS "\
-          "staff will review your request and act on it as soon as possible. "\
-          "When we do, we'll notify you via email."
+      flash['success'] = "Thanks for requesting an account! We will review "\
+          "your request and act on it as soon as possible. When we do, we'll "\
+          "notify you via email."
       redirect_to root_url
     end
   end

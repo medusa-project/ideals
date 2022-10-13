@@ -5,7 +5,7 @@ namespace :handles do
     puts HandleClient.new.list_prefixes
   end
 
-  desc 'Delete all IDEALS handles from the handle server'
+  desc 'Delete all handles from the handle server'
   task :purge => :environment do
     client   = HandleClient.new
     handles  = client.get_handles

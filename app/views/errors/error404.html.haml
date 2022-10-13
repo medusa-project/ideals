@@ -3,6 +3,7 @@
   %hr
   %p You may have mistyped the address or the page may have moved.
   %p
-    IDEALS @ Illinois administrators may be contacted at:
+    = current_institution.service_name
+    administrators may be contacted at:
     %a{href: "mailto:#{current_institution.feedback_email}"}
       = current_institution.feedback_email
