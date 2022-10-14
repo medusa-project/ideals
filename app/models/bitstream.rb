@@ -440,20 +440,6 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # This method is only used during migration out of DSpace.
-  #
-  # @return [String,nil] Path on the DSpace file system relative to the asset
-  #                      store root.
-  #
-  def dspace_relative_path
-    dspace_id.present? ? ["",
-                          dspace_id[0..1],
-                          dspace_id[2..3],
-                          dspace_id[4..5],
-                          dspace_id].join("/") : nil
-  end
-
-  ##
   # @return [String, nil] The permanent key, if present; otherwise the staging
   #                       key, if present; otherwise nil.
   #

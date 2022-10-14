@@ -536,18 +536,6 @@ class BitstreamTest < ActiveSupport::TestCase
     File.delete(file)
   end
 
-  # dspace_relative_path()
-
-  test "dspace_relative_path() returns nil when dspace_id is not set" do
-    assert_nil @instance.dspace_relative_path
-  end
-
-  test "dspace_relative_path() returns the correct path" do
-    @instance.dspace_id = "125415979481218159291827549801925969929"
-    assert_equal "/12/54/15/125415979481218159291827549801925969929",
-                 @instance.dspace_relative_path
-  end
-
   # effective_key()
 
   test "effective_key() returns the permanent key if both it and the staging
