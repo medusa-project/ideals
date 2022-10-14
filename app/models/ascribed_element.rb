@@ -60,7 +60,7 @@ class AscribedElement < ApplicationRecord
     elsif s.match?(/^\d{4}/)
       return Date.new(s.to_i)
     # Mon DD YYYY, DD-Mon-YY, Mon YYYY
-    elsif s.match?(/[A-Za-z]+ \d{1,2} \d{4}/) ||
+    elsif s.match?(/[A-Za-z]+ \d{1,2},? \d{4}/) ||
       s.match?(/\d{2}-[A-Za-z]+-\d{2}/) ||
       s.match?(/[A-Za-z]+ \d{4}/)
       return Date.parse(s)

@@ -59,6 +59,11 @@ class AscribedElementTest < ActiveSupport::TestCase
     assert_equal Date.new(1992, 10, 23), @instance.date
   end
 
+  test "date() returns a valid instance with a string containing Month DD, YYYY" do
+    @instance.string = "Oct 23, 1992"
+    assert_equal Date.new(1992, 10, 23), @instance.date
+  end
+
   test "date() returns a valid instance with a string containing Month YYYY" do
     @instance.string = "Sep 1993"
     assert_equal Date.new(1993, 9, 1), @instance.date
