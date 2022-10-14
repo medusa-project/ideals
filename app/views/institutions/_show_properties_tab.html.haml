@@ -1,18 +1,20 @@
-.btn-group.float-right{role: "group"}
-  - if policy(@institution).edit?
+- if policy(@institution).edit_properties?
+  .btn-group.float-right{role: "group"}
     -# Edit button
-    %button.btn.btn-light.edit-institution{"data-target":          "#edit-institution-modal",
-                                           "data-toggle":          "modal",
-                                           type:                   "button",
-                                           "data-institution-key": @institution.key }
+    %button.btn.btn-light.edit-properties{"data-target":          "#edit-properties-modal",
+                                          "data-toggle":          "modal",
+                                          type:                   "button",
+                                          "data-institution-key": @institution.key }
       %i.fa.fa-pencil-alt
       Edit
+- else
+  .alert.alert-light
+    = icon_for(:info)
+    Institution properties can only be changed by system administrators.
 
 .clearfix.mb-3
 
 %dl
-  %dt Service Name
-  %dd= @institution.service_name
   %dt Key
   %dd
     %code= @institution.key
@@ -22,31 +24,5 @@
   %dt Organization DN
   %dd
     %code= @institution.org_dn
-  %dt Main Website URL
-  %dd
-    - if @institution.main_website_url
-      = link_to(@institution.main_website_url, @institution.main_website_url)
-    - else
-      Not Set
-  %dt About URL
-  %dd
-    - if @institution.about_url
-      = link_to(@institution.about_url, @institution.about_url)
-    - else
-      Not Set
-  %dt Copyright Notice
-  %dd
-    - if @institution.copyright_notice
-      = @institution.copyright_notice
-    - else
-      .badge.badge-danger
-        Not Set
-  %dt Feedback Email
-  %dd
-    - if @institution.feedback_email
-      = @institution.feedback_email
-    - else
-      .badge.badge-danger
-        Not Set
   %dt Default
   %dd= boolean(@institution.default, style: :word)

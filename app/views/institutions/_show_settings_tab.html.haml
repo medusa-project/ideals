@@ -1,0 +1,51 @@
+.btn-group.float-right{role: "group"}
+  - if policy(@institution).edit_settings?
+    -# Edit button
+    %button.btn.btn-light.edit-settings{"data-target":          "#edit-settings-modal",
+                                        "data-toggle":          "modal",
+                                        type:                   "button",
+                                        "data-institution-key": @institution.key }
+      %i.fa.fa-pencil-alt
+      Edit
+
+.clearfix.mb-3
+
+%dl
+  %dt Service Name
+  %dd= @institution.service_name
+  %dt Main Website URL
+  %dd
+    - if @institution.main_website_url
+      = link_to(@institution.main_website_url, @institution.main_website_url)
+    - else
+      Not Set
+  %dt Feedback Email
+  %dd
+    - if @institution.feedback_email
+      = @institution.feedback_email
+    - else
+      .badge.badge-danger
+        Not Set
+  %dt Welcome HTML
+  %dd
+    - if @institution.welcome_html
+      .badge.badge-success
+        Set
+    - else
+      .badge.badge-danger
+        Not Set
+  %dt About
+  %dd
+    - if @institution.about_html || @institution.about_url
+      .badge.badge-success
+        Set
+    - else
+      .badge.badge-danger
+        Not Set
+  %dt Copyright Notice
+  %dd
+    - if @institution.copyright_notice
+      = @institution.copyright_notice
+    - else
+      .badge.badge-danger
+        Not Set

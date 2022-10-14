@@ -1,3 +1,8 @@
+##
+# N.B.: Institution properties are split into three categories: properties,
+# settings, and theme. Properties can only be edited by sysadmins. The other
+# two can be edited by admins of the same institution.
+#
 class InstitutionsController < ApplicationController
 
   before_action :ensure_logged_in
@@ -9,9 +14,10 @@ class InstitutionsController < ApplicationController
   # Responds to `POST /institutions`
   #
   def create
-    @institution = Institution.new(institution_params)
+    @institution = Institution.new(properties_params)
     authorize @institution
     begin
+      @institution.service_name = "New Service"
       @institution.save!
     rescue => e
       render partial: "shared/validation_messages",
@@ -39,20 +45,28 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /institutions/:key/edit`
-  #
-  def edit
-    render partial: "institutions/form",
-           locals: { institution: @institution }
-  end
-
-  ##
   # Used for editing administrators.
   #
   # Responds to `GET /institutions/:key/edit-administrators` (XHR only)
   #
   def edit_administrators
     render partial: "administrators_form", locals: { institution: @institution }
+  end
+
+  ##
+  # Responds to `GET /institutions/:key/edit-properties`
+  #
+  def edit_properties
+    render partial: "institutions/properties_form",
+           locals: { institution: @institution }
+  end
+
+  ##
+  # Responds to `GET /institutions/:key/edit-settings`
+  #
+  def edit_settings
+    render partial: "institutions/settings_form",
+           locals: { institution: @institution }
   end
 
   ##
@@ -121,7 +135,7 @@ class InstitutionsController < ApplicationController
   def new
     @institution = Institution.new
     authorize @institution
-    render partial: "institutions/form",
+    render partial: "institutions/properties_form",
            locals: { institution: @institution }
   end
 
@@ -147,6 +161,15 @@ class InstitutionsController < ApplicationController
   #
   def show_properties
     render partial: "show_properties_tab"
+  end
+
+  ##
+  # Renders HTML for the settings tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/settings` (XHR only)
+  #
+  def show_settings
+    render partial: "show_settings_tab"
   end
 
   ##
@@ -225,14 +248,32 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Responds to `PATCH /institutions/:key`
+  # Responds to `PATCH /institutions/:key/properties`
   #
-  def update
+  def update_properties
+    begin
+      ActiveRecord::Base.transaction do
+        @institution.update!(properties_params)
+      end
+    rescue => e
+      render partial: "shared/validation_messages",
+             locals: { object: @institution.errors.any? ? @institution : e },
+             status: :bad_request
+    else
+      flash['success'] = "Institution \"#{@institution.name}\" updated."
+      render "shared/reload"
+    end
+  end
+
+  ##
+  # Responds to `PATCH /institutions/:key/settings`
+  #
+  def update_settings
     begin
       ActiveRecord::Base.transaction do
         assign_administrators
         upload_images
-        @institution.update!(institution_params)
+        @institution.update!(settings_params)
       end
     rescue => e
       render partial: "shared/validation_messages",
@@ -277,18 +318,29 @@ class InstitutionsController < ApplicationController
     @institution ? authorize(@institution) : skip_authorization
   end
 
-  def institution_params
+  ##
+  # N.B.: this is used for both property updates and creates of new
+  # institutions. Therefore it must contain all of an instance's required
+  # properties, including `service_name`, which is otherwise considered a
+  # "setting."
+  #
+  def properties_params
     # Key and name are accepted during creation. For updates, they are
-    # overwritten by the contents of org_dn.
+    # overwritten by the contents of org_dn. TODO: do we want to keep doing this?
+    params.require(:institution).permit(:default, :fqdn, :key, :name, :org_dn,
+                                        :service_name)
+  end
+
+  def settings_params
     params.require(:institution).permit(:about_html, :about_url,
                                         :active_link_color, :copyright_notice,
-                                        :default, :feedback_email,
+                                        :feedback_email,
                                         :footer_background_color,
-                                        :fqdn, :header_background_color,
-                                        :key, :link_color, :link_hover_color,
-                                        :main_website_url, :name, :org_dn,
-                                        :primary_color, :primary_hover_color,
-                                        :service_name, :welcome_html)
+                                        :header_background_color, :link_color,
+                                        :link_hover_color,
+                                        :main_website_url, :primary_color,
+                                        :primary_hover_color, :service_name,
+                                        :welcome_html)
   end
 
   def upload_images

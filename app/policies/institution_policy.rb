@@ -19,16 +19,20 @@ class InstitutionPolicy < ApplicationPolicy
     create
   end
 
-  def edit
-    update
+  def edit_administrators
+    edit_settings
   end
 
-  def edit_administrators
-    edit
+  def edit_properties
+    update_properties
+  end
+
+  def edit_settings
+    update_settings
   end
 
   def edit_theme
-    edit
+    edit_settings
   end
 
   def index
@@ -44,7 +48,7 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show
-    update
+    effective_institution_admin(user, institution, role)
   end
 
   def show_access
@@ -52,6 +56,10 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show_properties
+    show
+  end
+
+  def show_settings
     show
   end
 
@@ -71,7 +79,11 @@ class InstitutionPolicy < ApplicationPolicy
     show_statistics
   end
 
-  def update
+  def update_properties
+    effective_sysadmin(user, role)
+  end
+
+  def update_settings
     effective_institution_admin(user, institution, role)
   end
 

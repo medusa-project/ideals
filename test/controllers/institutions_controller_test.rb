@@ -117,28 +117,6 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  # edit()
-
-  test "edit() returns HTTP 403 for logged-out users" do
-    institution = institutions(:southwest)
-    get edit_institution_path(institution), xhr: true
-    assert_response :forbidden
-  end
-
-  test "edit() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    institution = institutions(:southwest)
-    get edit_institution_path(institution), xhr: true
-    assert_response :forbidden
-  end
-
-  test "edit() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
-    institution = institutions(:southwest)
-    get edit_institution_path(institution), xhr: true
-    assert_response :ok
-  end
-
   # edit_administrators()
 
   test "edit_administrators() returns HTTP 403 for logged-out users" do
@@ -165,6 +143,50 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     institution = institutions(:uiuc)
     get institution_edit_administrators_path(institution), xhr: true
+    assert_response :ok
+  end
+
+  # edit_properties()
+
+  test "edit_properties() returns HTTP 403 for logged-out users" do
+    institution = institutions(:southwest)
+    get institution_edit_properties_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_properties() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    institution = institutions(:southwest)
+    get institution_edit_properties_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_properties() returns HTTP 200" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:southwest)
+    get institution_edit_properties_path(institution), xhr: true
+    assert_response :ok
+  end
+
+  # edit_settings()
+
+  test "edit_settings() returns HTTP 403 for logged-out users" do
+    institution = institutions(:southwest)
+    get institution_edit_settings_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_settings() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    institution = institutions(:southwest)
+    get institution_edit_settings_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_settings() returns HTTP 200" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:southwest)
+    get institution_edit_settings_path(institution), xhr: true
     assert_response :ok
   end
 
@@ -343,6 +365,25 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_settings()
+
+  test "show_settings() returns HTTP 403 for logged-out users" do
+    get institution_settings_path(institutions(:southwest)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_settings() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get institution_settings_path(institutions(:southwest)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_settings() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get institution_settings_path(institutions(:southwest)), xhr: true
+    assert_response :ok
+  end
+
   # show_statistics()
 
   test "show_statistics() returns HTTP 403 for logged-out users" do
@@ -424,26 +465,26 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # update()
+  # update_properties()
 
-  test "update() redirects to login page for logged-out users" do
+  test "update_properties() redirects to login page for logged-out users" do
     institution = institutions(:southwest)
-    patch institution_path(institution)
+    patch institution_properties_path(institution)
     assert_redirected_to login_path
   end
 
-  test "update() returns HTTP 403 for unauthorized users" do
+  test "update_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     institution = institutions(:southwest)
-    patch institution_path(institution)
+    patch institution_properties_path(institution)
     assert_response :forbidden
   end
 
-  test "update() updates an institution's properties" do
-    user = users(:uiuc_admin)
+  test "update_properties() updates an institution's properties" do
+    user = users(:uiuc_sysadmin)
     log_in_as(user)
     institution = user.institution
-    patch institution_path(institution),
+    patch institution_properties_path(institution),
           xhr: true,
           params: {
             institution: {
@@ -456,11 +497,11 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "New Institution", institution.name
   end
 
-  test "update() returns HTTP 200" do
-    user = users(:uiuc_admin)
+  test "update_properties() returns HTTP 200" do
+    user = users(:uiuc_sysadmin)
     log_in_as(user)
     institution = user.institution
-    patch institution_path(institution),
+    patch institution_properties_path(institution),
           xhr: true,
           params: {
             institution: {
@@ -472,10 +513,10 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "update() returns HTTP 400 for illegal arguments" do
+  test "update_properties() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:local_sysadmin))
     institution = institutions(:southwest)
-    patch institution_path(institution),
+    patch institution_properties_path(institution),
           xhr: true,
           params: {
             institution: {
@@ -485,9 +526,74 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  test "update() returns HTTP 404 for nonexistent institutions" do
+  test "update_properties() returns HTTP 404 for nonexistent institutions" do
     log_in_as(users(:local_sysadmin))
-    patch "/institutions/bogus"
+    patch "/institutions/bogus/properties"
+    assert_response :not_found
+  end
+
+  # update_settings()
+
+  test "update_settings() redirects to login page for logged-out users" do
+    institution = institutions(:southwest)
+    patch institution_settings_path(institution)
+    assert_redirected_to login_path
+  end
+
+  test "update_settings() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    institution = institutions(:southwest)
+    patch institution_settings_path(institution)
+    assert_response :forbidden
+  end
+
+  test "update_settings() updates an institution's settings" do
+    user = users(:uiuc_admin)
+    log_in_as(user)
+    institution = user.institution
+    patch institution_settings_path(institution),
+          xhr: true,
+          params: {
+            institution: {
+              link_hover_color: "#335599"
+            }
+          }
+    institution.reload
+    assert_equal "#335599", institution.link_hover_color
+  end
+
+  test "update_settings() returns HTTP 200" do
+    user = users(:uiuc_admin)
+    log_in_as(user)
+    institution = user.institution
+    patch institution_settings_path(institution),
+          xhr: true,
+          params: {
+            institution: {
+              name: "New Institution",
+              fqdn: "new.org",
+              org_dn: "new"
+            }
+          }
+    assert_response :ok
+  end
+
+  test "update_settings() returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:southwest)
+    patch institution_settings_path(institution),
+          xhr: true,
+          params: {
+            institution: {
+              link_hover_color: "" # invalid
+            }
+          }
+    assert_response :bad_request
+  end
+
+  test "update_settings() returns HTTP 404 for nonexistent institutions" do
+    log_in_as(users(:local_sysadmin))
+    patch "/institutions/bogus/settings"
     assert_response :not_found
   end
 

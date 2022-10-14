@@ -29,6 +29,14 @@
                                           "aria-selected": "true"}
           = icon_for(:info)
           Properties
+      - if policy(@institution).show_settings?
+        %a#settings-tab.nav-link{href:            "#settings-tab-content",
+                                 "data-toggle":   "pill",
+                                 role:            "tab",
+                                 "aria-controls": "settings-tab-content",
+                                 "aria-selected": "false"}
+          %i.fa.fa-cog
+          Settings
       - if policy(@institution).show_theme?
         %a#theme-tab.nav-link{href:                   "#theme-tab-content",
                               "data-toggle":          "pill",
@@ -71,6 +79,11 @@
                                                         "aria-labelledby": "properties-tab"}
         = spinner
 
+    - if policy(@institution).show_settings?
+      #settings-tab-content.tab-pane.fade{role: "tabpanel",
+                                          "aria-labelledby": "settings-tab"}
+        = spinner
+
     - if policy(@institution).show_theme?
       #theme-tab-content.tab-pane.fade{role: "tabpanel",
                                        "aria-labelledby": "theme-tab"}
@@ -92,6 +105,8 @@
         = spinner
 
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-institution-modal", title: "Edit Institution" }
+         locals: { id: "edit-properties-modal", title: "Edit Properties" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-settings-modal", title: "Edit Settings" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-theme-modal", title: "Edit Theme" }

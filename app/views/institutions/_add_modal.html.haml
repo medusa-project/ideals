@@ -9,4 +9,4 @@
         %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
           %span{"aria-hidden": "true"} &times;
       .modal-body
-        = render partial: "institutions/form", locals: { institution: institution }
+        = render partial: "institutions/properties_form", locals: { institution: @new_institution }

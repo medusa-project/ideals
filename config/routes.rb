@@ -59,15 +59,21 @@ Rails.application.routes.draw do
     match "/delete-all-files", to: "imports#delete_all_files", via: :post
     match "/upload-file", to: "imports#upload_file", via: :post
   end
-  resources :institutions, param: :key do
+  resources :institutions, except: [:edit, :update], param: :key do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/access", to: "institutions#show_access", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-administrators", to: "institutions#edit_administrators", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/edit-properties", to: "institutions#edit_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-settings", to: "institutions#edit_settings", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-theme", to: "institutions#edit_theme", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/settings", to: "institutions#show_settings", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "institutions#show_statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -77,6 +83,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
 
     match "/item-download-counts", to: "institutions#item_download_counts", via: :get
+    match "/properties", to: "institutions#update_properties", via: [:patch, :post]
+    match "/settings", to: "institutions#update_settings", via: [:patch, :post]
     match "/statistics-by-range", to: "institutions#statistics_by_range", via: :get
   end
   resources :invitees, except: [:edit, :update] do

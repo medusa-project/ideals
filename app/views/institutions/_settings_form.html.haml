@@ -1,44 +1,11 @@
--# @param institution [Institution]
-
-= form_for(institution, remote: true) do |f|
+= form_for(institution, url: institution_settings_path(institution), remote: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
   .form-group
-    = f.label :name, "Name"
-    = f.text_field :name, class: 'form-control'
-  .form-group
     = f.label :service_name, "Service Name"
     = f.text_field :service_name, class: 'form-control'
-  - if current_user.sysadmin?
-    .form-group
-      = f.label :key, "Key"
-      = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
-      %p.text-muted
-        %i.fa.fa-info-circle
-        A short alphabetic string that uniquely identifies the institution.
-        Used only internally and cannot be changed later.
-    .form-group
-      = f.label :fqdn, "Fully Qualified Domain Name (FQDN)"
-      = f.text_field :fqdn, class: 'form-control'
-      %p.text-muted
-        %i.fa.fa-info-circle
-        This must be present in the
-        %code config.hosts
-        key in the
-        %code= "config/environments/#{Rails.env}.rb"
-        file.
-    .form-group
-      = f.label :org_dn, "Organization DN"
-      = f.text_field :org_dn, class: 'form-control'
-      %p.text-muted
-        %i.fa.fa-info-circle
-        Copy this value from the properties page of a user of this institution
-        who has signed in via Shibboleth.
-    .form-group
-      .form-check
-        = f.check_box :default, class: "form-check-input"
-        = f.label :default, class: "form-check-label"
+
   .form-group
     = f.label :main_website_url, "Main Website URL"
     = f.text_field :main_website_url, placeholder: "https://", class: 'form-control'
@@ -71,6 +38,9 @@
   .form-group
     = f.label :about_url, "About URL"
     = f.text_field :about_url, class: 'form-control'
+    %p.text-muted
+      %i.fa.fa-info-circle
+      If filled in, this will override the About HTML.
 
   .form-group
     = f.label :copyright_notice, "Copyright Notice"
@@ -79,5 +49,4 @@
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
-      = f.submit(f.object.new_record? ? "Create Institution" : "Save Changes",
-                 class: "btn btn-primary")
+      = f.submit("Save Changes", class: "btn btn-primary")

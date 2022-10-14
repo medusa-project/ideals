@@ -71,39 +71,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  # edit?()
-
-  test "edit?() returns false with a nil request context" do
-    policy = InstitutionPolicy.new(nil, @institution)
-    assert !policy.edit?
-  end
-
-  test "edit?() is restrictive by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit?
-  end
-
-  test "edit?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.edit?
-  end
-
-  test "edit?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit?
-  end
-
   # edit_administrators?()
 
   test "edit_administrators?() returns false with a nil user" do
@@ -153,6 +120,90 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.edit_administrators?
+  end
+
+  # edit_properties?()
+
+  test "edit_properties?() returns false with a nil request context" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.edit_properties?
+  end
+
+  test "edit_properties?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_properties?
+  end
+
+  test "edit_properties?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_properties?
+  end
+
+  test "edit_properties?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_properties?
+  end
+
+  # edit_settings?()
+
+  test "edit_settings?() returns false with a nil user" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.edit_settings?
+  end
+
+  test "edit_settings?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_settings?
+  end
+
+  test "edit_settings?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_settings?
+  end
+
+  test "edit_settings?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.edit_settings?
+  end
+
+  test "edit_settings?() does not authorize administrators of different
+  institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_settings?
+  end
+
+  test "edit_settings?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_settings?
   end
 
   # edit_theme?()
@@ -446,6 +497,56 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_properties?
   end
 
+  # show_settings?()
+
+  test "show_settings?() returns false with a nil request context" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.show_settings?
+  end
+
+  test "show_settings?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_settings?
+  end
+
+  test "show_settings?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_settings?
+  end
+
+  test "show_settings?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_settings?
+  end
+
+  test "show_settings?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, institutions(:uiuc))
+    assert !policy.show_settings?
+  end
+
+  test "show_settings?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_settings?
+  end
+
   # show_statistics?()
 
   test "show_statistics?() returns false with a nil request context" do
@@ -646,53 +747,86 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.statistics_by_range?
   end
 
-  # update?()
+  # update_properties?()
 
-  test "update?() returns false with a nil request context" do
+  test "update_properties?() returns false with a nil request context" do
     policy = InstitutionPolicy.new(nil, @institution)
-    assert !policy.update?
+    assert !policy.update_properties?
   end
 
-  test "update?() is restrictive by default" do
+  test "update_properties?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.update?
+    assert !policy.update_properties?
   end
 
-  test "update?() authorizes sysadmins" do
+  test "update_properties?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.update?
+    assert policy.update_properties?
   end
 
-  test "update?() authorizes administrators of the same institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.update?
-  end
-
-  test "update?() does not authorize administrators of a different institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = InstitutionPolicy.new(context, institutions(:uiuc))
-    assert !policy.update?
-  end
-
-  test "update?() respects role limits" do
+  test "update_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.update?
+    assert !policy.update_properties?
+  end
+
+  # update_settings?()
+
+  test "update_settings?() returns false with a nil request context" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.update_settings?
+  end
+
+  test "update_settings?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.update_settings?
+  end
+
+  test "update_settings?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.update_settings?
+  end
+
+  test "update_settings?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.update_settings?
+  end
+
+  test "update_settings?() does not authorize administrators of a different institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, institutions(:uiuc))
+    assert !policy.update_settings?
+  end
+
+  test "update_settings?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.update_settings?
   end
 
 end

@@ -11,10 +11,23 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/properties";
         $.get(url, function (data) {
             $("#properties-tab-content").html(data);
-            $('button.edit-institution').on("click", function() {
-                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit";
+            $('button.edit-properties').on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-properties";
                 $.get(url, function(data) {
-                    $("#edit-institution-modal .modal-body").html(data);
+                    $("#edit-properties-modal .modal-body").html(data);
+                });
+            });
+        });
+    }).trigger("show.bs.tab");
+
+    $("#settings-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/settings";
+        $.get(url, function (data) {
+            $("#settings-tab-content").html(data);
+            $('button.edit-settings').on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-settings";
+                $.get(url, function(data) {
+                    $("#edit-settings-modal .modal-body").html(data);
                 });
             });
         });
