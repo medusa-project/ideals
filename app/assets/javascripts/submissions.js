@@ -466,14 +466,7 @@ const SubmissionForm = function() {
         }
         const hiddenPerson = clone.find("[data-input-type=person]");
         if (hiddenPerson) {
-            function getRandomString() {
-                let output = "";
-                for (let i = 0; i < 16; i++) {
-                    output += (Math.floor(Math.random() * 16)).toString(16);
-                }
-                return output;
-            }
-            const hiddenID = getRandomString();
+            const hiddenID = IDEALS.randomString();
             hiddenPerson.attr("id", hiddenID);
             clone.find("input[type=text]").each(function(i, input) {
                 $(input).attr("data-for", hiddenID);
