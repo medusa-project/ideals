@@ -90,7 +90,6 @@ class Institution < ApplicationRecord
   validates :header_background_color, presence: true
   validates :link_color, presence: true
   validates :link_hover_color, presence: true
-  validates :main_website_url, presence: true
   validates :primary_color, presence: true
   validates :primary_hover_color, presence: true
 
