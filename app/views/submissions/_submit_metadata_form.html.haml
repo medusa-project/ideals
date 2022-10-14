@@ -46,8 +46,8 @@
                     - hidden_input_id = SecureRandom.hex
                     - date            = ascribed_element.date
                     -# This hidden input contains a date in "Month DD, YYYY" format.
-                    -# Changes to the Y/M/D select menus below cause its value
-                    -# to change (via JS).
+                    -# Changes to the year field and M/D select menus below
+                    -# cause its value to change (via JS).
                     = hidden_field_tag("elements[][string]",
                                        ascribed_element.string,
                                        id: hidden_input_id,
@@ -66,11 +66,12 @@
                                    include_blank: true,
                                    data: { for: hidden_input_id },
                                    class: "custom-select mr-2")
-                      = select_tag("year",
-                                   options_for_select((1900..((Time.now + 1.year).year)),
-                                                      date&.year || Time.now.year),
-                                   data: { for: hidden_input_id },
-                                   class: "custom-select")
+                      = text_field_tag("year", date&.year,
+                                       size: 4,
+                                       maxlength: 4,
+                                       placeholder: "YYYY",
+                                       data: { for: hidden_input_id },
+                                       class: "form-control")
                   - when RegisteredElement::InputType::PERSON
                     - hidden_input_id = SecureRandom.hex
                     - person_name     = ascribed_element.person_name || {}

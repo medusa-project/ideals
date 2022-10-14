@@ -334,18 +334,32 @@ const SubmissionForm = function() {
      * profile elements, and sets the corresponding hidden input value
      * appropriately (in "Familyname, Givenname" format).
      */
-    metadataForm.find("[name=family_name], [name=given_name]").on("change", function() {
-        const hiddenInput = $("#" + $(this).data("for"));
-        const parent      = hiddenInput.parent();
-        const familyName  = parent.find("[name=family_name]").val();
-        const givenName   = parent.find("[name=given_name]").val();
-        hiddenInput.val(familyName + ", " + givenName);
-    });
+    const wirePersonNameTransformer = function() {
+        metadataForm.find("[name=family_name], [name=given_name]").off("change").on("change", function () {
+            const hiddenInput = $("#" + $(this).data("for"));
+            const parent = hiddenInput.parent();
+            const familyName = parent.find("[name=family_name]").val();
+            const givenName = parent.find("[name=given_name]").val();
+            hiddenInput.val(familyName + ", " + givenName);
+        });
+    }
 
     /**
-     * Reads the month, day, and year select menus of date-type submission
-     * profile elements, and sets the corresponding hidden date input value
-     * appropriately (in "Month DD, YYYY" format).
+     * Ensures that the year field of date-type submission profile elements
+     * contains a valid year (i.e. no non-numbers and no leading zeroes).
+     */
+    const wireYearTransformer = function() {
+        metadataForm.find("[name=year]").on("input", function () {
+            const input = $(this);
+            input.val(input.val().replace(/[^\d]/g, "")); // only numbers
+            input.val(input.val().replace(/^0/g, ""));    // years may not start with 0
+        });
+    }
+
+    /**
+     * Reads the month & day select menus and year text field of date-type
+     * submission profile elements, and sets the corresponding hidden date
+     * input value appropriately (in "Month DD, YYYY" format).
      */
     metadataForm.find("[name=month], [name=day], [name=year]").on("change", function() {
         const hiddenInput = $("#" + $(this).data("for"));
@@ -435,6 +449,8 @@ const SubmissionForm = function() {
     wireElementChangeListeners();
     wireRemoveButtons();
     wireDependentSelects();
+    wirePersonNameTransformer();
+    wireYearTransformer();
 
     metadataForm.find("button.add").on("click", function(e) {
         // Show the "remove" button of all adjacent input groups
@@ -443,16 +459,33 @@ const SubmissionForm = function() {
         // Clone the last input group
         const prevInputGroup = inputGroups.last();
         const clone = prevInputGroup.clone();
-        clone.find("input[type=text], select, textarea").val("");
+        // Clear out its value
+        clone.find("input[type=text], input[data-input-type=person], select, textarea").val("");
         if (clone.find("select").length > 0) {
             clone.find("select").attr("name", "elements[][string]");
-            clone.find("input[type=text]").remove();
+        }
+        const hiddenPerson = clone.find("[data-input-type=person]");
+        if (hiddenPerson) {
+            function getRandomString() {
+                let output = "";
+                for (let i = 0; i < 16; i++) {
+                    output += (Math.floor(Math.random() * 16)).toString(16);
+                }
+                return output;
+            }
+            const hiddenID = getRandomString();
+            hiddenPerson.attr("id", hiddenID);
+            clone.find("input[type=text]").each(function(i, input) {
+                $(input).attr("data-for", hiddenID);
+            });
         }
         // Insert the clone after the last input group
         prevInputGroup.after(clone);
         wireRemoveButtons();
         wireDependentSelects();
         wireElementChangeListeners();
+        wirePersonNameTransformer();
+        wireYearTransformer();
     });
 
     /*************************** Files section *****************************/
