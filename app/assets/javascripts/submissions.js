@@ -335,7 +335,7 @@ const SubmissionForm = function() {
      * appropriately (in "Familyname, Givenname" format).
      */
     const wirePersonNameTransformer = function() {
-        metadataForm.find("[name=family_name], [name=given_name]").off("change").on("change", function () {
+        metadataForm.find("[name=family_name], [name=given_name]").on("change", function () {
             const hiddenInput = $("#" + $(this).data("for"));
             const parent = hiddenInput.parent();
             const familyName = parent.find("[name=family_name]").val();
@@ -348,7 +348,7 @@ const SubmissionForm = function() {
      * Ensures that the year field of date-type submission profile elements
      * contains a valid year (i.e. no non-numbers and no leading zeroes).
      */
-    const wireYearTransformer = function() {
+    const wireYearValidator = function() {
         metadataForm.find("[name=year]").on("input", function () {
             const input = $(this);
             input.val(input.val().replace(/[^\d]/g, "")); // only numbers
@@ -361,22 +361,24 @@ const SubmissionForm = function() {
      * submission profile elements, and sets the corresponding hidden date
      * input value appropriately (in "Month DD, YYYY" format).
      */
-    metadataForm.find("[name=month], [name=day], [name=year]").on("change", function() {
-        const hiddenInput = $("#" + $(this).data("for"));
-        const parent      = hiddenInput.parent();
-        const month       = parent.find("[name=month]").val(); // may be empty
-        const day         = parent.find("[name=day]").val();   // may be empty
-        const year        = parent.find("[name=year]").val();
-        let date;
-        if (month && day) {
-            date = month + " " + day + ", " + year;
-        } else if (month) {
-            date = month + " " + year;
-        } else {
-            date = year;
-        }
-        hiddenInput.val(date);
-    });
+    const wireDateTransformer = function() {
+        metadataForm.find("[name=month], [name=day], [name=year]").on("change", function () {
+            const hiddenInput = $("#" + $(this).data("for"));
+            const parent = hiddenInput.parent();
+            const month = parent.find("[name=month]").val(); // may be empty
+            const day = parent.find("[name=day]").val();   // may be empty
+            const year = parent.find("[name=year]").val();
+            let date;
+            if (month && day) {
+                date = month + " " + day + ", " + year;
+            } else if (month) {
+                date = month + " " + year;
+            } else {
+                date = year;
+            }
+            hiddenInput.val(date);
+        });
+    }
 
     // When a "Type of Resource" of "Other" is selected, add a text field next
     // to it. This is a hack for one element only since submission profiles
@@ -429,7 +431,7 @@ const SubmissionForm = function() {
     }
 
     const wireElementChangeListeners = function() {
-        wireElementChangeListener(metadataForm.find("input, select, textarea"));
+        wireElementChangeListener(metadataForm.find("input[type=text], select, textarea"));
     };
 
     const wireRemoveButtons = function() {
@@ -446,11 +448,12 @@ const SubmissionForm = function() {
     };
 
     showOrHideRemoveButtons();
-    wireElementChangeListeners();
     wireRemoveButtons();
     wireDependentSelects();
     wirePersonNameTransformer();
-    wireYearTransformer();
+    wireDateTransformer();
+    wireYearValidator();
+    wireElementChangeListeners();
 
     metadataForm.find("button.add").on("click", function(e) {
         // Show the "remove" button of all adjacent input groups
@@ -462,13 +465,16 @@ const SubmissionForm = function() {
         // Clear out its value
         clone.find("input[type=text], input[data-input-type=person], select, textarea").val("");
         if (clone.find("select").length > 0) {
-            clone.find("select").attr("name", "elements[][string]");
+            //clone.find("select").attr("name", "elements[][string]");
+            clone.find("input[type=hidden]").filter(function() {
+                return $(this).attr("name") !== "elements[][name]";
+            }).val("");
         }
-        const hiddenPerson = clone.find("[data-input-type=person]");
-        if (hiddenPerson) {
-            const hiddenID = IDEALS.randomString();
-            hiddenPerson.attr("id", hiddenID);
-            clone.find("input[type=text]").each(function(i, input) {
+        const hiddenDateOrPerson = clone.find("[data-input-type=date], [data-input-type=person]");
+        if (hiddenDateOrPerson) {
+            const hiddenID = IDEALS.Util.randomString(16);
+            hiddenDateOrPerson.attr("id", hiddenID);
+            clone.find("input[type=text], select").each(function(i, input) {
                 $(input).attr("data-for", hiddenID);
             });
         }
@@ -476,9 +482,10 @@ const SubmissionForm = function() {
         prevInputGroup.after(clone);
         wireRemoveButtons();
         wireDependentSelects();
-        wireElementChangeListeners();
         wirePersonNameTransformer();
-        wireYearTransformer();
+        wireDateTransformer();
+        wireYearValidator();
+        wireElementChangeListeners();
     });
 
     /*************************** Files section *****************************/
