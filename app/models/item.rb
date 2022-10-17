@@ -529,16 +529,16 @@ class Item < ApplicationRecord
   #
   def effective_primary_unit
     #noinspection RubyMismatchedReturnType
-    self.effective_primary_collection&.primary_unit || self.collections.first&.primary_unit
+    self.effective_primary_collection&.primary_unit ||
+      self.collections.first&.primary_unit
   end
 
   ##
-  # @return [SubmissionProfile] The primary collection's submission profile, o
-  #                             the {SubmissionProfile#default default profile}
-  #                             if not set.
+  # @return [SubmissionProfile] The primary collection's effective submission
+  #                             profile.
   #
   def effective_submission_profile
-    self.primary_collection&.effective_submission_profile || SubmissionProfile.default
+    self.effective_primary_collection&.effective_submission_profile
   end
 
   ##

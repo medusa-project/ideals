@@ -23,12 +23,6 @@ class SubmissionProfileTest < ActiveSupport::TestCase
     end
   end
 
-  # default()
-
-  test "default() returns the default submission profile" do
-    assert_equal submission_profiles(:default).id, SubmissionProfile.default.id
-  end
-
   # add_default_elements()
 
   test "add_default_elements() adds default elements to an instance that does
@@ -60,11 +54,12 @@ class SubmissionProfileTest < ActiveSupport::TestCase
   # default
 
   test "setting a profile as the default sets all other instances to not-default" do
-    assert_equal 1, SubmissionProfile.where(default: true).count
+    institution = institutions(:uiuc)
+    assert_equal 1, institution.submission_profiles.where(default: true).count
     SubmissionProfile.create!(name:        "New Profile",
-                              institution: institutions(:uiuc),
+                              institution: institution,
                               default:     true)
-    assert_equal 1, SubmissionProfile.where(default: true).count
+    assert_equal 1, institution.submission_profiles.where(default: true).count
   end
 
   # dup()

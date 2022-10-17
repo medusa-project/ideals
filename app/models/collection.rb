@@ -353,11 +353,12 @@ class Collection < ApplicationRecord
 
   ##
   # @return [SubmissionProfile] The submission profile assigned to the
-  #         instance, or the default profile if no profile is assigned.
+  #         instance, or the owning institution's default profile if no profile
+  #         is assigned.
   #
   def effective_submission_profile
     #noinspection RubyMismatchedReturnType
-    self.submission_profile || SubmissionProfile.default
+    self.submission_profile || self.institution.default_submission_profile
   end
 
   ##

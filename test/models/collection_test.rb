@@ -336,8 +336,8 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal profile, @instance.effective_submission_profile
   end
 
-  test "effective_submission_profile() falls back to the default profile if no
-  profile is assigned" do
+  test "effective_submission_profile() falls back to the institution's default
+  profile if no profile is assigned" do
     @instance.submission_profile = nil
     assert_equal submission_profiles(:default),
                  @instance.effective_submission_profile

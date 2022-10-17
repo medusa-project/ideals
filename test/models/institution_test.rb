@@ -134,6 +134,12 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.banner_image_url.start_with?("http://")
   end
 
+  # default_submission_profile()
+
+  test "default_submission_profile() returns the default submission profile" do
+    assert @instance.default_submission_profile.default
+  end
+
   # defining_user_group()
 
   test "defining_user_group() returns the defining user group" do

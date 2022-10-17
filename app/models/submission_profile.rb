@@ -42,13 +42,6 @@ class SubmissionProfile < ApplicationRecord
   after_save :ensure_default_uniqueness
 
   ##
-  # @return [SubmissionProfile] Default submission profile.
-  #
-  def self.default
-    SubmissionProfile.find_by_default(true)
-  end
-
-  ##
   # Ascribes some baseline {SubmissionProfileElement}s to a newly created
   # profile.
   #

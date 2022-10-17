@@ -193,6 +193,13 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [SubmissionProfile]
+  #
+  def default_submission_profile
+    self.submission_profiles.where(default: true).limit(1).first
+  end
+
+  ##
   # @return [UserGroup] The user group that defines the instance's users.
   #
   def defining_user_group

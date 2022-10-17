@@ -14,3 +14,8 @@ unused:
   name: Unused Profile
   default: false
   institution: uiuc
+
+southwest_default:
+  name: Default Profile
+  default: true
+  institution: southwest

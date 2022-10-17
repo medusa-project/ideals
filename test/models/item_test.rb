@@ -518,13 +518,6 @@ class ItemTest < ActiveSupport::TestCase
                  @instance.effective_submission_profile
   end
 
-  test "effective_submission_profile() falls back to the default profile if
-  there is no primary collection assigned" do
-    @instance.primary_collection = nil
-    assert_equal submission_profiles(:default),
-                 @instance.effective_submission_profile
-  end
-
   # element() (Describable concern)
 
   test "element() returns a matching element" do
