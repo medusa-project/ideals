@@ -67,6 +67,7 @@ class SubmissionsController < ApplicationController
   def create
     collection = Collection.find_by(id: params[:primary_collection_id]) # may be nil
     item       = CreateItemCommand.new(submitter:          current_user,
+                                       institution:        current_institution,
                                        primary_collection: collection).execute
     authorize item, policy_class: SubmissionPolicy # this should always succeed
     redirect_to edit_submission_path(item)

@@ -511,6 +511,14 @@ class ItemTest < ActiveSupport::TestCase
                  @instance.effective_submission_profile
   end
 
+  test "effective_submission_profile() returns the owning institution's profile
+  if the primary collection's submission profile is not set" do
+    institution = @instance.institution
+    @instance.collections.destroy_all
+    assert_equal institution.default_submission_profile,
+                 @instance.effective_submission_profile
+  end
+
   # element() (Describable concern)
 
   test "element() returns a matching element" do
@@ -571,13 +579,6 @@ class ItemTest < ActiveSupport::TestCase
 
   test "exhume!() does nothing to a non-buried item" do
     @instance.exhume!
-  end
-
-  # institution()
-
-  test "institution() returns the primary collection's primary unit's institution" do
-    assert_equal @instance.primary_collection.primary_unit.institution,
-                 @instance.institution
   end
 
   # metadata_profile()

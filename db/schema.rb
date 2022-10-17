@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_17_154444) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_17_193049) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -310,6 +310,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_17_154444) do
     t.text "temp_embargo_reason"
     t.string "temp_embargo_type"
     t.integer "temp_embargo_kind"
+    t.bigint "institution_id"
+    t.index ["institution_id"], name: "index_items_on_institution_id"
     t.index ["stage"], name: "index_items_on_stage"
     t.index ["submitter_id"], name: "index_items_on_submitter_id"
   end
@@ -661,6 +663,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_17_154444) do
   add_foreign_key "institution_administrators", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "invitees", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "items", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
   add_foreign_key "manager_groups", "collections", on_update: :cascade, on_delete: :cascade

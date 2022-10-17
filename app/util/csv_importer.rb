@@ -144,6 +144,7 @@ class CsvImporter
 
   def create_item(submitter:, primary_collection:, header_row:, columns:)
     item = CreateItemCommand.new(submitter:          submitter,
+                                 institution:        primary_collection.institution,
                                  primary_collection: primary_collection,
                                  stage:              Item::Stages::SUBMITTED,
                                  event_description:  "Item imported from CSV.").execute

@@ -2,15 +2,18 @@ class CreateItemCommand < Command
 
   ##
   # @param submitter [User]
+  # @param institution [Institution]
   # @param primary_collection [Collection]
   # @param stage [Integer] One of the [Item::Stages] constant values.
   # @param event_description [String]
   #
   def initialize(submitter:,
+                 institution:,
                  primary_collection: nil,
                  stage:              Item::Stages::SUBMITTING,
                  event_description:  "Item created upon initiation of the submission process.")
     @submitter          = submitter
+    @institution        = institution
     @primary_collection = primary_collection
     @stage              = stage
     @event_description  = event_description
@@ -22,6 +25,7 @@ class CreateItemCommand < Command
   def execute
     Item.transaction do
       item = Item.create!(submitter:          @submitter,
+                          institution:        @institution,
                           primary_collection: @primary_collection,
                           stage:              @stage)
 

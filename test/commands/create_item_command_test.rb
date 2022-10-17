@@ -3,10 +3,12 @@ require 'test_helper'
 class CreateItemCommandTest < ActiveSupport::TestCase
 
   test "execute() returns the expected instance" do
-    submitter  = users(:local_sysadmin)
-    collection = collections(:collection1)
-    command    = CreateItemCommand.new(submitter:          submitter,
-                                       primary_collection: collection)
+    submitter   = users(:local_sysadmin)
+    collection  = collections(:collection1)
+    institution = collection.institution
+    command     = CreateItemCommand.new(submitter:          submitter,
+                                        institution:        institution,
+                                        primary_collection: collection)
     item = command.execute
 
     assert_equal submission_profile_elements(:default_description).placeholder_text,
@@ -14,14 +16,18 @@ class CreateItemCommandTest < ActiveSupport::TestCase
     assert_equal submission_profile_elements(:default_subject).placeholder_text,
                  item.element("dc:subject").string
     assert_equal Item::Stages::SUBMITTING, item.stage
+    assert_equal institution, item.institution
   end
 
   test "execute() creates an associated Event" do
     Event.destroy_all
 
-    submitter = users(:local_sysadmin)
-    command   = CreateItemCommand.new(submitter:          submitter,
-                                      primary_collection: collections(:collection1))
+    submitter   = users(:local_sysadmin)
+    collection  = collections(:collection1)
+    institution = collection.institution
+    command     = CreateItemCommand.new(submitter:          submitter,
+                                        institution:        institution,
+                                        primary_collection: collection)
     item = command.execute
 
     event = Event.all.first

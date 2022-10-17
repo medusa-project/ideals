@@ -27,6 +27,15 @@
 # # Attributes
 #
 # * `created_at`              Managed by ActiveRecord.
+# * `institution_id`          Foreign key to {Institution}. An item's owning
+#                             institution is the same as that of its
+#                             {effective_primary_unit effective primary unit},
+#                             but in some cases, such as during the submission
+#                             process, it may be necessary to know the
+#                             institution before a collection has been
+#                             assigned. The rest of the time, this attribute is
+#                             just a shortcut to avoid having to navigate that
+#                             relationship.
 # * `stage`                   Lifecycle stage, whose value is one of the
 #                             [Stages] constant values.
 # * `stage_reason`            Reason for setting the {stage} attribute to its
@@ -168,6 +177,7 @@ class Item < ApplicationRecord
           class_name: "CollectionItemMembership"
   has_one :primary_collection, through: :primary_collection_membership,
           class_name: "Collection", source: :collection
+  belongs_to :institution, optional: true
   belongs_to :submitter, class_name: "User", inverse_of: "submitted_items",
              optional: true
 
@@ -353,7 +363,8 @@ class Item < ApplicationRecord
         self.unit_and_collection_sort_key
     doc[IndexFields::HANDLE]             = self.handle&.handle
     units                                = self.all_units
-    doc[IndexFields::INSTITUTION_KEY]    = units.first&.institution&.key
+    doc[IndexFields::INSTITUTION_KEY]    = self.institution&.key ||
+      units.first&.institution&.key
     doc[IndexFields::LAST_INDEXED]       = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]      = self.updated_at.utc.iso8601
     doc[IndexFields::PRIMARY_COLLECTION] = self.primary_collection&.id
@@ -533,10 +544,12 @@ class Item < ApplicationRecord
 
   ##
   # @return [SubmissionProfile] The primary collection's effective submission
-  #                             profile.
+  #                             profile, if set; otherwise, the owning
+  #                             institution's default submission profile.
   #
   def effective_submission_profile
-    self.effective_primary_collection&.effective_submission_profile
+    self.effective_primary_collection&.effective_submission_profile ||
+      self.institution&.default_submission_profile
   end
 
   ##
@@ -575,20 +588,6 @@ class Item < ApplicationRecord
   #
   def exists_in_medusa?
     self.bitstreams.where.not(medusa_uuid: nil).count > 0
-  end
-
-  ##
-  # Shortcut to accessing the owning institution through the
-  # {effective_primary_collection} relationship.
-  #
-  # This will of course be nil if there is no associated collection, which may
-  # be the case e.g. during the submission process if metadata is ascribed
-  # before a collection is assigned.
-  #
-  # @return [Institution, nil]
-  #
-  def institution
-    effective_primary_collection&.institution
   end
 
   ##
