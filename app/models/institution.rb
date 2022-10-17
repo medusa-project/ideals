@@ -193,6 +193,13 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [MetadataProfile]
+  #
+  def default_metadata_profile
+    self.metadata_profiles.where(default: true).limit(1).first
+  end
+
+  ##
   # @return [SubmissionProfile]
   #
   def default_submission_profile

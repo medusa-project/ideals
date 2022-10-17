@@ -294,8 +294,8 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal profile, @instance.effective_metadata_profile
   end
 
-  test "effective_metadata_profile() falls back to the default profile if no
-  profile is assigned" do
+  test "effective_metadata_profile() falls back to the institution's default
+  profile if no profile is assigned" do
     @instance.metadata_profile = nil
     assert_equal metadata_profiles(:default),
                  @instance.effective_metadata_profile

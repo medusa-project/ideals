@@ -9,6 +9,8 @@ class CsvExporter
   # Exports all items from all of the given units and collections, including
   # child units and collections.
   #
+  # All provided units and collections must be in the same institution.
+  #
   # @param units [Enumerable<Unit>]
   # @param collections [Enumerable<Collection>]
   # @param elements [Enumerable<String>] Elements to include. If omitted, all
@@ -21,7 +23,8 @@ class CsvExporter
       raise ArgumentError, "No units or collections specified."
     end
     if elements.empty?
-      elements = MetadataProfile.default.elements.map(&:name)
+      elements = (units.first || collections.first).institution.
+        default_metadata_profile.elements.map(&:name)
     end
     collection_ids = Set.new
     units.each do |unit|

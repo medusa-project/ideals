@@ -12,7 +12,10 @@ module Search
   RESULTS_PARAMS         = [:direction, { fq: [] }, :sort, :start]
 
   def self.advanced_search_params
-    [:full_text, { elements: MetadataProfile.default.elements.map(&:name) }]
+    # N.B.: technically we could constrain the elements array here to only
+    # those in the current institution's metadata profile, but opening it up to
+    # all elements is a little simpler and shouldn't cause any problems.
+    [:full_text, { elements: RegisteredElement.pluck(:name) }]
   end
 
   ##

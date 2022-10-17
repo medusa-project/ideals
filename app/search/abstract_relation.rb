@@ -43,7 +43,7 @@ class AbstractRelation
     @filter_ranges    = [] # Array<Hash<Symbol,String>> with :field, :op, and :value keys
     @filters          = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @limit            = ElasticsearchIndex::MAX_RESULT_WINDOW
-    @metadata_profile = MetadataProfile.default
+    @metadata_profile = nil
     @multi_queries    = [] # Array<Hash<Symbol,String>> with :field and :term keys
     @must_nots        = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @must_not_ranges  = [] # Array<Hash<Symbol,String>> with :field, :op, and :value keys
@@ -149,6 +149,10 @@ class AbstractRelation
   end
 
   ##
+  # Scopes the search to content in the given institution. Also uses its
+  # default metadata profile if no metadata profile has been set yet (using
+  # {metadata_profile}).
+  #
   # @param institution [Institution]
   # @return [self]
   #
@@ -156,6 +160,7 @@ class AbstractRelation
     if institution
       filter(ElasticsearchIndex::StandardFields::INSTITUTION_KEY,
              institution.key)
+      @metadata_profile ||= institution.default_metadata_profile
     end
     @loaded = false
     self

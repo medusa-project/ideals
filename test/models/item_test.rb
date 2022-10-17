@@ -477,13 +477,6 @@ class ItemTest < ActiveSupport::TestCase
                  @instance.effective_metadata_profile
   end
 
-  test "effective_metadata_profile() falls back to the default profile if there
-  is no primary collection assigned" do
-    @instance.primary_collection = nil
-    assert_equal metadata_profiles(:default),
-                 @instance.effective_metadata_profile
-  end
-
   # effective_primary_collection()
 
   test "effective_primary_collection() returns the primary collection when set" do

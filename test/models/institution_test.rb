@@ -134,6 +134,12 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.banner_image_url.start_with?("http://")
   end
 
+  # default_metadata_profile()
+
+  test "default_metadata_profile() returns the default metadata profile" do
+    assert @instance.default_metadata_profile.default
+  end
+
   # default_submission_profile()
 
   test "default_submission_profile() returns the default submission profile" do

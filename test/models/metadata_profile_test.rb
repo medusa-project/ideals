@@ -32,12 +32,6 @@ class MetadataProfileTest < ActiveSupport::TestCase
     end
   end
 
-  # default()
-
-  test "default() returns the default metadata profile" do
-    assert_equal metadata_profiles(:default).id, MetadataProfile.default.id
-  end
-
   # add_default_elements()
 
   test "add_default_elements() adds default elements to an instance that does
@@ -68,12 +62,14 @@ class MetadataProfileTest < ActiveSupport::TestCase
 
   # default
 
-  test "setting a profile as the default sets all other instances to not-default" do
-    assert_equal 1, MetadataProfile.where(default: true).count
+  test "setting a profile as the default sets all other instances in the same
+  institution to not-default" do
+    institution = institutions(:uiuc)
+    assert_equal 1, institution.metadata_profiles.where(default: true).count
     MetadataProfile.create!(name:        "New Profile",
-                            institution: institutions(:uiuc),
+                            institution: institution,
                             default:     true)
-    assert_equal 1, MetadataProfile.where(default: true).count
+    assert_equal 1, institution.metadata_profiles.where(default: true).count
   end
 
   # dup()
