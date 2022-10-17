@@ -49,104 +49,128 @@ class SubmissionProfile < ApplicationRecord
   end
 
   ##
-  # Ascribes some baseline [SubmissionProfileElement]s to a newly created
+  # Ascribes some baseline {SubmissionProfileElement}s to a newly created
   # profile.
   #
   def add_default_elements
     raise "Instance already has elements ascribed to it" if self.elements.any?
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:title"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:title",
+                                                                      institution: self.institution),
                         position:           0,
                         repeatable:         false,
                         required:           true)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:issued"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:date:issued",
+                                                                      institution: self.institution),
                         position:           1,
                         repeatable:         true,
                         required:           true)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:type"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:type",
+                                                                      institution: self.institution),
                         position:           2,
                         repeatable:         true,
                         required:           true)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:subject"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:subject",
+                                                                      institution: self.institution),
                         position:           3,
                         repeatable:         true,
                         required:           true)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:creator"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:creator",
+                                                                      institution: self.institution),
                         position:           4,
                         repeatable:         true,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:contributor",
+                                                                      institution: self.institution),
                         position:           5,
                         repeatable:         true,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:abstract"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:description:abstract",
+                                                                      institution: self.institution),
                         position:           6,
                         repeatable:         false,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:coverage:spatial"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:coverage:spatial",
+                                                                      institution: self.institution),
                         position:           7,
                         repeatable:         true,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:type:genre"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:type:genre",
+                                                                      institution: self.institution),
                         position:           8,
                         repeatable:         true,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:language"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:language",
+                                                                      institution: self.institution),
                         position:           9,
                         repeatable:         false,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier:bibliographicCitation"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:identifier:bibliographicCitation",
+                                                                      institution: self.institution),
                         position:           10,
                         repeatable:         false,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:publisher"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:publisher",
+                                                                      institution: self.institution),
                         position:           11,
                         repeatable:         false,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:relation:ispartof"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:relation:ispartof",
+                                                                      institution: self.institution),
                         position:           12,
                         repeatable:         true,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:description:sponsorship"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:description:sponsorship",
+                                                                      institution: self.institution),
                         position:           13,
                         repeatable:         true,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:rights"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:rights",
+                                                                      institution: self.institution),
                         position:           14,
                         repeatable:         true,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:identifier"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:identifier",
+                                                                      institution: self.institution),
                         position:           15,
                         repeatable:         true,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:name"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "thesis:degree:name",
+                                                                      institution: self.institution),
                         position:           16,
                         repeatable:         false,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:level"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "thesis:degree:level",
+                                                                      institution: self.institution),
                         position:           17,
                         repeatable:         false,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:committeeChair"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:contributor:committeeChair",
+                                                                      institution: self.institution),
                         position:           18,
                         repeatable:         true,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:contributor:advisor"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:contributor:advisor",
+                                                                      institution: self.institution),
                         position:           19,
                         repeatable:         true,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:grantor"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "thesis:degree:grantor",
+                                                                      institution: self.institution),
                         position:           20,
                         repeatable:         false,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:discipline"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "thesis:degree:discipline",
+                                                                      institution: self.institution),
                         position:           21,
                         repeatable:         false,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:department"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "thesis:degree:department",
+                                                                      institution: self.institution),
                         position:           22,
                         repeatable:         false,
                         required:           false)
-    self.elements.build(registered_element: RegisteredElement.find_by_name("thesis:degree:program"),
+    self.elements.build(registered_element: RegisteredElement.find_by(name: "thesis:degree:program",
+                                                                      institution: self.institution),
                         position:           23,
                         repeatable:         false,
                         required:           false)
