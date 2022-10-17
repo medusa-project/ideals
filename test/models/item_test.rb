@@ -23,15 +23,21 @@ class ItemTest < ActiveSupport::TestCase
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
-    items = Item.all.limit(5)
+    institution = institutions(:uiuc)
+    items = Item.
+      distinct.
+      joins("LEFT JOIN collection_item_memberships cim ON items.id = cim.item_id").
+      joins("LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id").
+      joins("LEFT JOIN units u ON u.id = ucm.unit_id").
+      where("u.institution_id": institution.id)
     items.each(&:reindex)
     refresh_elasticsearch
-    count = Item.search.institution(institutions(:uiuc)).count
+    count = Item.search.institution(institution).count
     assert count > 0
 
     Item.delete_document(items.first.index_id)
     refresh_elasticsearch
-    assert_equal count - 1, Item.search.institution(institutions(:uiuc)).count
+    assert_equal count - 1, Item.search.institution(institution).count
   end
 
   # non_embargoed()
@@ -44,13 +50,20 @@ class ItemTest < ActiveSupport::TestCase
 
   test "reindex_all() reindexes all items" do
     setup_elasticsearch
-    assert_equal 0, Item.search.institution(institutions(:uiuc)).count
+    institution = institutions(:uiuc)
+    assert_equal 0, Item.search.institution(institution).count
 
     Item.reindex_all
     refresh_elasticsearch
 
-    expected = Item.where.not(stage: Item::Stages::BURIED).count
-    actual   = Item.search.institution(institutions(:uiuc)).count
+    expected = Item.distinct.
+      joins("LEFT JOIN collection_item_memberships cim ON items.id = cim.item_id").
+      joins("LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id").
+      joins("LEFT JOIN units u ON u.id = ucm.unit_id").
+      where("u.institution_id": institution.id).
+      where.not(stage: Item::Stages::BURIED).
+      count
+    actual   = Item.search.institution(institution).count
     assert actual > 0
     assert_equal expected, actual
   end

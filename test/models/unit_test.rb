@@ -21,15 +21,16 @@ class UnitTest < ActiveSupport::TestCase
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
-    units = Unit.all.limit(5)
+    institution = institutions(:uiuc)
+    units       = Unit.where(institution: institution)
     units.each(&:reindex)
     refresh_elasticsearch
-    count = Unit.search.institution(institutions(:uiuc)).count
+    count = Unit.search.institution(institution).count
     assert count > 0
 
     Unit.delete_document(units.first.index_id)
     refresh_elasticsearch
-    assert_equal count - 1, Unit.search.institution(institutions(:uiuc)).count
+    assert_equal count - 1, Unit.search.institution(institution).count
   end
 
   # search() (Indexed concern)
@@ -42,8 +43,9 @@ class UnitTest < ActiveSupport::TestCase
 
   test "reindex_all() reindexes all units" do
     setup_elasticsearch
+    institution = institutions(:uiuc)
     assert_equal 0, Unit.search.
-      institution(institutions(:uiuc)).
+      institution(institution).
       include_children(true).
       count
 
@@ -51,11 +53,12 @@ class UnitTest < ActiveSupport::TestCase
     refresh_elasticsearch
 
     actual = Unit.search.
-      institution(institutions(:uiuc)).
+      institution(institution).
       include_children(true).
       count
     assert actual > 0
-    assert_equal Unit.where.not(buried: true).count, actual
+    assert_equal Unit.where(institution: institution).where.not(buried: true).count,
+                 actual
   end
 
   # all_administrators()

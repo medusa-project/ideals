@@ -1,5 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+################################# northeast #################################
+
+northeast_dc_title:
+  institution:      northeast
+  name:             dc:title
+  label:            Title
+  uri:              http://purl.org/dc/title
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
 ################################### uiuc ####################################
 
 uiuc_unused:

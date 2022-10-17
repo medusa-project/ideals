@@ -175,7 +175,8 @@ class CsvImporter
       item.elements.select{ |e| e.name == element_name }.each(&:destroy)
       values = cell_value.split(MULTI_VALUE_DELIMITER)
       values.select(&:present?).each_with_index do |value, value_index|
-        reg_el = RegisteredElement.find_by_name(element_name)
+        reg_el = RegisteredElement.where(name:        element_name,
+                                         institution: item.institution).limit(1).first
         unless reg_el
           raise ArgumentError, "Element not present in registry: #{element_name}"
         end

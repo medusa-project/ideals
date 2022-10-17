@@ -11,15 +11,19 @@ class CollectionTest < ActiveSupport::TestCase
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
-    collections = Collection.all.limit(5)
+    institution = institutions(:uiuc)
+    collections = Collection.
+      joins("LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = collections.id").
+      joins("LEFT JOIN units u ON u.id = ucm.unit_id").
+      where("u.institution_id": institution.id)
     collections.each(&:reindex)
     refresh_elasticsearch
-    count = Collection.search.institution(institutions(:uiuc)).count
+    count = Collection.search.institution(institution).count
     assert count > 0
 
     Collection.delete_document(collections.first.index_id)
     refresh_elasticsearch
-    assert_equal count - 1, Collection.search.institution(institutions(:uiuc)).count
+    assert_equal count - 1, Collection.search.institution(institution).count
   end
 
   # search() (Indexed concern)
@@ -79,7 +83,14 @@ class CollectionTest < ActiveSupport::TestCase
 
     actual = Collection.search.institution(institution).count
     assert actual > 0
-    assert_equal Collection.where.not(buried: true).count, actual
+    expected = Collection.
+      distinct.
+      joins("LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = collections.id").
+      joins("LEFT JOIN units u on ucm.unit_id = u.id").
+      where("u.institution_id": institution.id).
+      where.not(buried: true).
+      count
+    assert_equal expected, actual
   end
 
   # as_indexed_json()

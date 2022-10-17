@@ -1,6 +1,15 @@
 # N.B.: All items must specify their collection membership in
 # collection_item_memberships.yml
 
+################################ northeast ##################################
+
+northeast_unit1_collection1_item1:
+  submitter:    local_sysadmin
+  stage:        <%= Item::Stages::APPROVED %>
+  stage_reason:
+
+################################## uiuc #####################################
+
 # collection1 items
 
 item1: # TODO: remove this

@@ -1,3 +1,13 @@
+################################ northeast ##################################
+
+northeast_unit1_collection1:
+  metadata_profile:     default
+  submission_profile:   default
+  submissions_reviewed: true
+  buried:               false
+
+################################## uiuc #####################################
+
 collection1:
   metadata_profile:     default
   submission_profile:   default

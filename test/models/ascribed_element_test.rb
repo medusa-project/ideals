@@ -9,6 +9,13 @@ class AscribedElementTest < ActiveSupport::TestCase
 
   # base-level tests
 
+  test "instance's associated RegisteredElement and Item must be associated
+  with the same Institution" do
+    @instance.registered_element = registered_elements(:uiuc_dc_title)
+    @instance.item               = items(:northeast_unit1_collection1_item1)
+    assert !@instance.valid?
+  end
+
   test "instance's owning item is updated when the instance is updated" do
     item = items(:described)
     original_updated_at = item.updated_at

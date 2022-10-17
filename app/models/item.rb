@@ -580,10 +580,17 @@ class Item < ApplicationRecord
   end
 
   ##
-  # @return [Institution]
+  # Shortcut to accessing the owning institution through the
+  # {effective_primary_collection} relationship.
+  #
+  # This will of course be nil if there is no associated collection, which may
+  # be the case e.g. during the submission process if metadata is ascribed
+  # before a collection is assigned.
+  #
+  # @return [Institution, nil]
   #
   def institution
-    effective_primary_collection.institution
+    effective_primary_collection&.institution
   end
 
   ##

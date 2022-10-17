@@ -373,7 +373,8 @@ class SafImporter
       position = 1 if name != tmp_name
       tmp_name = name
 
-      re = RegisteredElement.find_by_name(name)
+      re = RegisteredElement.where(name:        name,
+                                   institution: item.institution).limit(1).first
       unless re
         raise IOError, "Metadata file (#{metadata_relative_path}) contains an "\
                        "element (#{name}) that does not exist in the registry"

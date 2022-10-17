@@ -1,6 +1,5 @@
 ##
-# Attachment of a [RegisteredElement] to a [Describable] resource--typically
-# either an [Item] or a [Collection].
+# Attachment of a {RegisteredElement} to a {Describable} resource.
 #
 # N.B.: Because it is so common to access multiple elements ascribed to the
 # same entity during a single request, it is usually very beneficial for
@@ -9,15 +8,17 @@
 #
 # # Attributes
 #
-# * `collection_id`:         ID of the associated [Collection]. Set only if
-#                            `item_id` is not set.
+# * `collection_id`:         ID of the associated {Collection}. Set only if
+#                            {item_id} is not set.
 # * `created_at`:            Managed by ActiveRecord.
-# * `item_id`:               ID of the associated [Item]. Set only if
-#                            `collection_id` is not set.
-# * `position`               Position relative to other [AscribedElement]s
+# * `item_id`:               ID of the associated {Item}. Set only if
+#                            {collection_id} is not set.
+# * `position`               Position relative to other {AscribedElement}s
 #                            **with the same name** attached to the same
 #                            resource. The counting starts at 1.
-# * `registered_element_id`: ID of the associated [RegisteredElement].
+# * `registered_element_id`: ID of the associated {RegisteredElement}. Note
+#                            that its owning institution must be the same as
+#                            that of the associated {Item}.
 # * `string`:                String value. Note that this may contain a date,
 #                            which, when received from the submission form, is
 #                            in `Month DD, YYYY` format.
@@ -27,11 +28,16 @@
 class AscribedElement < ApplicationRecord
 
   belongs_to :registered_element
+  # N.B.: in practice, the touching probably doesn't matter much, as instances
+  # are rarely updated (usually they are deleted and replaced during metadata
+  # edits).
   belongs_to :item, touch: true
 
   validates :string, presence: true
   validates :position, numericality: { greater_than_or_equal_to: 1 },
             allow_blank: false
+
+  validate :registered_element_and_item_are_of_same_institution
 
   ##
   # @return [Date, nil] Instance corresponding to the string value if it can be
@@ -98,6 +104,19 @@ class AscribedElement < ApplicationRecord
       }
     end
     nil
+  end
+
+
+  private
+
+  def registered_element_and_item_are_of_same_institution
+    # Occasionally--during the submission process in particular--an item may
+    # not be associated with a collection before metadata is ascribed.
+    ins = self.item.institution
+    if ins && ins.id != self.registered_element.institution_id
+      errors.add(:base, "Registered element and item must be of the same institution")
+      throw(:abort)
+    end
   end
 
 end

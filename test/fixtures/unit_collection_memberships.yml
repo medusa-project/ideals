@@ -1,3 +1,13 @@
+################################ northeast ##################################
+
+northeast_unit1_collection1:
+  unit:         northeast_unit1
+  collection:   northeast_unit1_collection1
+  primary:      true
+  unit_default: true
+
+################################## uiuc #####################################
+
 unit1_collection1:
   unit:         unit1
   collection:   collection1
