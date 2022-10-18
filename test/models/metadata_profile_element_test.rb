@@ -132,6 +132,11 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
                            registered_element: registered_elements(:uiuc_dc_title))
   end
 
+  test "registered_element must be of the same institution as the owning profile" do
+    @instance.registered_element = registered_elements(:northeast_dc_title)
+    assert !@instance.valid?
+  end
+
   # relevance_weight
 
   test "relevance_weight must be greater than 0" do

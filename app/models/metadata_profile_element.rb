@@ -46,6 +46,8 @@ class MetadataProfileElement < ApplicationRecord
                                                greater_than_or_equal_to: MIN_RELEVANCE_WEIGHT,
                                                less_than_or_equal_to: MAX_RELEVANCE_WEIGHT }
 
+  validate :registered_element_and_profile_are_of_same_institution
+
   before_create :shift_element_positions_before_create
   before_update :shift_element_positions_before_update
   after_destroy :shift_element_positions_after_destroy
@@ -141,6 +143,16 @@ class MetadataProfileElement < ApplicationRecord
           element.update_column(:position, position) if element.position != position
         end
       end
+    end
+  end
+
+  def registered_element_and_profile_are_of_same_institution
+    profile = self.metadata_profile&.institution
+    reg_e   = self.registered_element
+    if profile && reg_e && profile.id != reg_e.institution_id
+      errors.add(:base, "Registered element and owning metadata profile must "\
+                        "be of the same institution")
+      throw(:abort)
     end
   end
 
