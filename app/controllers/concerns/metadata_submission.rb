@@ -37,7 +37,7 @@ module MetadataSubmission
             position = 1
           end
           reg_e = RegisteredElement.where(name:        element[:name],
-                                          institution: item.institution).limit(1).first
+                                          institution: current_institution).limit(1).first
           item.elements.build(registered_element: reg_e,
                               string:             element[:string],
                               uri:                element[:uri],
