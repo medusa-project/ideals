@@ -20,13 +20,9 @@ class ItemPolicy < ApplicationPolicy
     # @return [ItemRelation]
     #
     def resolve
-      if ItemPolicy.new(@request_context, nil).effective_sysadmin?(user, role)
-        relation
-      else
-        relation.
-          filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
-          non_embargoed
-      end
+      relation.
+        filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
+        non_embargoed
     end
   end
 

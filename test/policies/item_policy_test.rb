@@ -4,16 +4,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   class ScopeTest < ActiveSupport::TestCase
 
-    test "resolve() sets no filters for sysadmins" do
-      user    = users(:local_sysadmin)
-      context = RequestContext.new(user:        user,
-                                   institution: user.institution)
-      relation = ItemRelation.new
-      scope    = ItemPolicy::Scope.new(context, relation)
-      assert_equal 0, scope.resolve.instance_variable_get("@filters").length
-    end
-
-    test "resolve() sets filters for non-sysadmins" do
+    test "resolve() sets correct filters" do
       user    = users(:norights)
       context = RequestContext.new(user:        user,
                                    institution: user.institution)
