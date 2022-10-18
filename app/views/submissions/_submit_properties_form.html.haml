@@ -1,5 +1,3 @@
--# frozen_string_literal: true
-
 = form_for(@item, url: submission_path(@item), remote: true,
            html: { id: "properties-form" }) do |f|
   = token_tag(nil)
@@ -11,12 +9,14 @@
   = f.hidden_field :initial_primary_collection_unit_id, value: f.object&.primary_collection&.primary_unit&.id
   = f.hidden_field :initial_primary_collection_id, value: f.object.primary_collection&.id
 
-  %p.text-info
-    %i.fa.fa-info-circle
-    = current_institution.service_name
-    items are organized by academic unit and collection. If you are |
-    depositing your own research and unsure which collection to deposit into, |
-    the Illinois Research and Scholarship (Open Collection) can be used. |
+  - if current_institution.key == "uiuc"
+    %p.text-info
+      %i.fa.fa-info-circle
+      = current_institution.service_name
+      items are organized by academic unit and collection.
+      If you are depositing your own research and unsure which collection to
+      deposit into, the Illinois Research and Scholarship (Open Collection)
+      can be used.
 
   %section#unit-section
     %p Select the unit into which you would like to deposit the item.
