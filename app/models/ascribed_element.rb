@@ -112,8 +112,9 @@ class AscribedElement < ApplicationRecord
   def registered_element_and_item_are_of_same_institution
     # Occasionally--during the submission process in particular--an item may
     # not be associated with a collection before metadata is ascribed.
-    ins = self.item.institution
-    if ins && ins.id != self.registered_element.institution_id
+    ins   = self.item.institution
+    reg_e = self.registered_element
+    if ins && reg_e && ins.id != reg_e.institution_id
       errors.add(:base, "Registered element and item must be of the same institution")
       throw(:abort)
     end
