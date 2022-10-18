@@ -1,7 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 default_title:
-  submission_profile: default
+  submission_profile: uiuc_default
   registered_element: uiuc_dc_title
   position:           0
   repeatable:         false
@@ -9,7 +9,7 @@ default_title:
   placeholder_text:
 
 default_description:
-  submission_profile: default
+  submission_profile: uiuc_default
   registered_element: uiuc_dc_description
   position:           1
   repeatable:         false
@@ -17,7 +17,7 @@ default_description:
   placeholder_text:   This is some description placeholder text.
 
 default_subject:
-  submission_profile: default
+  submission_profile: uiuc_default
   registered_element: uiuc_dc_subject
   position:           2
   repeatable:         true

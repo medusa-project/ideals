@@ -15,6 +15,11 @@ uiuc_unused:
   default: false
   institution: uiuc
 
+northeast_default:
+  name: Default Profile
+  default: true
+  institution: northeast
+
 southwest_default:
   name: Default Profile
   default: true
