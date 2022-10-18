@@ -4,7 +4,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   setup do
     @user    = users(:norights)
-    @profile = metadata_profiles(:default)
+    @profile = metadata_profiles(:uiuc_default)
   end
 
   # clone?()

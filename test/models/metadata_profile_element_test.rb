@@ -23,7 +23,7 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
     reg_element = RegisteredElement.create!(institution: institutions(:uiuc),
                                             name:        "newElement",
                                             label:       "New Element")
-    profile = metadata_profiles(:default)
+    profile = metadata_profiles(:uiuc_default)
     MetadataProfileElement.create!(position: 1,
                                    registered_element: reg_element,
                                    metadata_profile: profile)
@@ -105,7 +105,7 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
 
   test "position is required" do
     assert_raises ActiveRecord::RecordInvalid do
-      MetadataProfileElement.create!(metadata_profile: metadata_profiles(:default),
+      MetadataProfileElement.create!(metadata_profile: metadata_profiles(:uiuc_default),
                                      registered_element: registered_elements(:uiuc_dc_title))
     end
   end
@@ -120,12 +120,12 @@ class MetadataProfileElementTest < ActiveSupport::TestCase
   test "registered_element is required" do
     assert_raises ActiveRecord::RecordInvalid do
       MetadataProfileElement.create!(position: 0,
-                                     metadata_profile: metadata_profiles(:default))
+                                     metadata_profile: metadata_profiles(:uiuc_default))
     end
   end
 
   test "registered_element must be unique within a metadata profile" do
-    profile = metadata_profiles(:unused)
+    profile = metadata_profiles(:uiuc_unused)
     profile.elements.build(position: 0,
                            registered_element: registered_elements(:uiuc_dc_title))
     profile.elements.build(position: 1,

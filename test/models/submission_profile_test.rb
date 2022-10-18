@@ -3,7 +3,7 @@ require 'test_helper'
 class SubmissionProfileTest < ActiveSupport::TestCase
 
   setup do
-    @instance = submission_profiles(:default)
+    @instance = submission_profiles(:uiuc_default)
   end
 
   # base-level tests
@@ -45,7 +45,7 @@ class SubmissionProfileTest < ActiveSupport::TestCase
 
   test "add_default_elements() raises an error if the instance already has
   elements attached to it" do
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     assert_raises do
       profile.add_default_elements
     end

@@ -23,7 +23,7 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
     reg_element = RegisteredElement.create!(institution: institutions(:uiuc),
                                             name:        "newElement",
                                             label:       "New Element")
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     SubmissionProfileElement.create!(position: 1,
                                      registered_element: reg_element,
                                      submission_profile: profile)
@@ -60,7 +60,7 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
 
   test "position is required" do
     assert_raises ActiveRecord::RecordInvalid do
-      SubmissionProfileElement.create!(submission_profile: submission_profiles(:default),
+      SubmissionProfileElement.create!(submission_profile: submission_profiles(:uiuc_default),
                                        registered_element: registered_elements(:uiuc_dc_title))
     end
   end
@@ -84,12 +84,12 @@ class SubmissionProfileElementTest < ActiveSupport::TestCase
   test "registered_element is required" do
     assert_raises ActiveRecord::RecordInvalid do
       SubmissionProfileElement.create!(position: 0,
-                                       submission_profile: submission_profiles(:default))
+                                       submission_profile: submission_profiles(:uiuc_default))
     end
   end
 
   test "registered_element must be unique within a submission profile" do
-    profile = submission_profiles(:unused)
+    profile = submission_profiles(:uiuc_unused)
     profile.elements.build(position: 0,
                            registered_element: registered_elements(:uiuc_dc_title))
     profile.elements.build(position: 1,

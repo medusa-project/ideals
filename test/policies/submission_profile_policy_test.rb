@@ -4,7 +4,7 @@ class SubmissionProfilePolicyTest < ActiveSupport::TestCase
 
   setup do
     @user    = users(:norights)
-    @profile = submission_profiles(:default)
+    @profile = submission_profiles(:uiuc_default)
   end
 
   # clone?()

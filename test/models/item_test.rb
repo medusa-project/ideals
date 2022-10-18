@@ -585,7 +585,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "metadata_profile() returns the primary collection's effective metadata
   profile" do
-    assert_equal metadata_profiles(:default), @instance.metadata_profile
+    assert_equal metadata_profiles(:uiuc_default), @instance.metadata_profile
   end
 
   # move_into_permanent_storage()

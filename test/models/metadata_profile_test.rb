@@ -3,13 +3,13 @@ require 'test_helper'
 class MetadataProfileTest < ActiveSupport::TestCase
 
   setup do
-    @instance = metadata_profiles(:default)
+    @instance = metadata_profiles(:uiuc_default)
   end
 
   # base-level tests
 
   test "instances with dependent units cannot be destroyed" do
-    @instance = metadata_profiles(:unused)
+    @instance = metadata_profiles(:uiuc_unused)
     unit = units(:unit1)
     unit.update!(metadata_profile: @instance)
     assert_raises ActiveRecord::DeleteRestrictionError do
@@ -54,7 +54,7 @@ class MetadataProfileTest < ActiveSupport::TestCase
 
   test "add_default_elements() raises an error if the instance already has
   elements attached to it" do
-    profile = metadata_profiles(:default)
+    profile = metadata_profiles(:uiuc_default)
     assert_raises do
       profile.add_default_elements
     end

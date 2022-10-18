@@ -3,7 +3,7 @@ require 'test_helper'
 class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    @profile = metadata_profiles(:empty)
+    @profile = metadata_profiles(:uiuc_empty)
   end
 
   teardown do

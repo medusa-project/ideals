@@ -41,7 +41,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
          params: {
              primary_unit_id: units(:unit1).id,
              collection: {
-                 metadata_profile_id: metadata_profiles(:empty).id
+                 metadata_profile_id: metadata_profiles(:uiuc_empty).id
              },
              elements: {
                  title: "New Collection"
@@ -606,7 +606,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
           params: {
               collection: {
                   description: "New description",
-                  metadata_profile_id: metadata_profiles(:empty).id
+                  metadata_profile_id: metadata_profiles(:uiuc_empty).id
               }
           }
     collection.reload

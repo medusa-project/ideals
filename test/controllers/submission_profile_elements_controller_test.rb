@@ -3,7 +3,7 @@ require 'test_helper'
 class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    @profile = submission_profiles(:empty)
+    @profile = submission_profiles(:uiuc_empty)
   end
 
   teardown do

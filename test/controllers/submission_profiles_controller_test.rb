@@ -9,28 +9,28 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   # clone()
 
   test "clone() redirects to login page for logged-out users" do
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     post submission_profile_clone_path(profile)
     assert_redirected_to login_path
   end
 
   test "clone() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     post submission_profile_clone_path(profile)
     assert_response :forbidden
   end
 
   test "clone() redirects to the clone upon success" do
     log_in_as(users(:local_sysadmin))
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     post submission_profile_clone_path(profile)
     assert_redirected_to submission_profile_path(SubmissionProfile.order(created_at: :desc).first)
   end
 
   test "clone() clones a profile" do
     log_in_as(users(:local_sysadmin))
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     assert_difference "SubmissionProfile.count" do
       post submission_profile_clone_path(profile)
     end
@@ -107,13 +107,13 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete submission_profile_path(submission_profiles(:unused))
+    delete submission_profile_path(submission_profiles(:uiuc_unused))
     assert_response :forbidden
   end
 
   test "destroy() destroys the profile" do
     log_in_as(users(:local_sysadmin))
-    profile = submission_profiles(:unused)
+    profile = submission_profiles(:uiuc_unused)
     assert_difference "SubmissionProfile.count", -1 do
       delete submission_profile_path(profile)
     end
@@ -121,7 +121,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() returns HTTP 302 for an existing profile" do
     log_in_as(users(:local_sysadmin))
-    profile = submission_profiles(:unused)
+    profile = submission_profiles(:uiuc_unused)
     delete submission_profile_path(profile)
     assert_redirected_to submission_profiles_path
   end
@@ -135,21 +135,21 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   # edit()
 
   test "edit() redirects to login page for logged-out users" do
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     get edit_submission_profile_path(profile)
     assert_redirected_to login_path
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     get edit_submission_profile_path(profile)
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     get edit_submission_profile_path(profile)
     assert_response :ok
   end
@@ -185,28 +185,28 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   # show()
 
   test "show() redirects to login page for logged-out users" do
-    get submission_profile_path(submission_profiles(:default))
+    get submission_profile_path(submission_profiles(:uiuc_default))
     assert_redirected_to login_path
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get submission_profile_path(submission_profiles(:default))
+    get submission_profile_path(submission_profiles(:uiuc_default))
     assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
-    get submission_profile_path(submission_profiles(:default))
+    get submission_profile_path(submission_profiles(:uiuc_default))
     assert_response :ok
   end
 
   test "show() respects role limits" do
     log_in_as(users(:local_sysadmin))
-    get submission_profile_path(submission_profiles(:default))
+    get submission_profile_path(submission_profiles(:uiuc_default))
     assert_response :ok
 
-    get submission_profile_path(submission_profiles(:default),
+    get submission_profile_path(submission_profiles(:uiuc_default),
                                 role: Role::LOGGED_OUT)
     assert_response :forbidden
   end
@@ -220,13 +220,13 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch submission_profile_path(submission_profiles(:unused))
+    patch submission_profile_path(submission_profiles(:uiuc_unused))
     assert_response :forbidden
   end
 
   test "update() updates a profile" do
     log_in_as(users(:local_sysadmin))
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     patch submission_profile_path(profile),
           xhr: true,
           params: {
@@ -240,7 +240,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     patch submission_profile_path(profile),
           xhr: true,
           params: {
@@ -253,7 +253,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:local_sysadmin))
-    profile = submission_profiles(:default)
+    profile = submission_profiles(:uiuc_default)
     patch submission_profile_path(profile),
           xhr: true,
           params: {

@@ -307,14 +307,14 @@ class CollectionTest < ActiveSupport::TestCase
   # effective_metadata_profile()
 
   test "effective_metadata_profile() returns the assigned metadata profile" do
-    profile = metadata_profiles(:unused)
+    profile = metadata_profiles(:uiuc_unused)
     @instance.metadata_profile = profile
     assert_equal profile, @instance.effective_metadata_profile
   end
 
   test "effective_metadata_profile() falls back to the primary unit's profile
   if no profile is assigned" do
-    profile = metadata_profiles(:default)
+    profile = metadata_profiles(:uiuc_default)
     @instance.metadata_profile = nil
     @instance.primary_unit.metadata_profile = profile
     assert_equal profile, @instance.effective_metadata_profile
@@ -324,14 +324,14 @@ class CollectionTest < ActiveSupport::TestCase
   profile if no profile is assigned to the primary unit" do
     @instance.metadata_profile = nil
     @instance.primary_unit.metadata_profile = nil
-    assert_equal metadata_profiles(:default),
+    assert_equal metadata_profiles(:uiuc_default),
                  @instance.effective_metadata_profile
   end
 
   # effective_submission_profile()
 
   test "effective_submission_profile() returns the assigned submission profile" do
-    profile = submission_profiles(:unused)
+    profile = submission_profiles(:uiuc_unused)
     @instance.submission_profile = profile
     assert_equal profile, @instance.effective_submission_profile
   end
@@ -339,7 +339,7 @@ class CollectionTest < ActiveSupport::TestCase
   test "effective_submission_profile() falls back to the institution's default
   profile if no profile is assigned" do
     @instance.submission_profile = nil
-    assert_equal submission_profiles(:default),
+    assert_equal submission_profiles(:uiuc_default),
                  @instance.effective_submission_profile
   end
 
