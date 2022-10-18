@@ -195,15 +195,46 @@ reindexing all database content using the `elasticsearch:reindex` rake task.
 
 # Branches & Environments
 
-| Rails Environment      | Git Branch              | Machine                | Configuration File                          |
-|------------------------|-------------------------|------------------------|---------------------------------------------|
-| `development`          | any (usually `develop`) | Local                  | `config/credentials/development.yml`        |
-| `development` (Docker) | any (usually `develop`) | Docker                 | `config/credentials/development-docker.yml` |
-| `test`                 | any                     | Local & GitHub Actions | `config/credentials/test.yml` & `ci.yml`    |
-| `test` (Docker)        | any                     | Docker                 | `config/credentials/test-docker.yml`        |
-| `demo`                 | `demo`                  | aws-ideals-demo        | `config/credentials/demo.yml.enc`           |
-| `carli_demo`           | `carli_demo`            | aws-scholarship-demo   | `config/credentials/carli_demo.yml.enc`
-| `production`           | `production`            | aws-ideals-production  | `config/credentials/production.yml.enc`     |
+There are five main Git branches, which correspond to the environments in
+which the application runs: locally, CARLI demo, CARLI production, UIUC demo,
+and UIUC production. Here is how branching works:
+
+```
+--------------   ---------------------
+|            |   |                   |
+|            V   V                   |
+|           develop                  |
+|         /         \                |
+|        /           \               |
+|       V             V              |
+|    demo <---------> carli_demo     |  (merge these two often)
+|      | \             /  |          |
+|      |  \           /   |          |
+|      |   \         /    |          |
+|      |    \       /     |          |
+|      |     \     /      |          |
+|      |      \   /       |          |
+|      |       \ /        |          |
+|      |        X         |          |
+|      |       / \        |          |
+|      |      /   \       |          |
+|      |     /     \      |          |
+|      V    V       V     V          |
+|  production <--> carli_production  |  (merge these two often)
+|      |                   |         |
+--------                   -----------
+```
+
+| Rails Environment      | Git Branch              | Machine                    | Configuration File                            |
+|------------------------|-------------------------|----------------------------|-----------------------------------------------|
+| `development`          | any (usually `develop`) | Local                      | `config/credentials/development.yml`          |
+| `development` (Docker) | any (usually `develop`) | Docker                     | `config/credentials/development-docker.yml`   |
+| `test`                 | any                     | Local & GitHub Actions     | `config/credentials/test.yml` & `ci.yml`      |
+| `test` (Docker)        | any                     | Docker                     | `config/credentials/test-docker.yml`          |
+| `demo`                 | `demo`                  | aws-ideals-demo            | `config/credentials/demo.yml.enc`             |
+| `carli_demo`           | `carli_demo`            | aws-scholarship-demo       | `config/credentials/carli_demo.yml.enc`       |
+| `production`           | `production`            | aws-ideals-production      | `config/credentials/production.yml.enc`       |
+| `carli_production`     | `carli_production`      | aws-scholarship-production | `config/credentials/carli_production.yml.enc` |
 
 Files that end in `.enc` are encrypted. Obtain the encryption key from a
 project team member and then use `rails credentials:edit -e <environment>`
