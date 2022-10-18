@@ -429,6 +429,9 @@ class Institution < ApplicationRecord
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
                                    label:            "Keyword",
                                    highwire_mapping: "citation_keywords")
+    self.registered_elements.build(name:             "dcterms:available",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Available")
     self.registered_elements.build(name:             "dc:title",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
                                    label:            "Title",
