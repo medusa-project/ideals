@@ -85,7 +85,8 @@ class RegisteredElementsController < ApplicationController
   end
 
   def set_element
-    @element = RegisteredElement.find_by_name(params[:name])
+    @element = RegisteredElement.find_by(name:        params[:name],
+                                         institution: current_institution)
     raise ActiveRecord::RecordNotFound unless @element
   end
 

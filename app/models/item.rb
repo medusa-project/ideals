@@ -271,16 +271,19 @@ class Item < ApplicationRecord
 
   ##
   # Sets {stage} to {Stages::APPROVED} and creates an associated
-  # `dcterms:available` [AscribedElement] with a string value of the current
+  # `dcterms:available` {AscribedElement} with a string value of the current
   # ISO-8601 timestamp.
   #
   # @return [void]
   #
   def approve
     self.stage = Stages::APPROVED
-    unless self.elements.find{ |e| e.name == "dcterms:available" }
-      self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
-                          string:             Time.now.iso8601)
+    name       = "dcterms:available"
+    unless self.elements.find{ |e| e.name == name }
+      reg_e = RegisteredElement.find_by(name:        name,
+                                        institution: self.institution)
+      self.elements.build(registered_element: reg_e,
+                          string:             Time.now.iso8601) if reg_e
     end
   end
 
@@ -412,9 +415,11 @@ class Item < ApplicationRecord
     return if self.handle
     self.create_handle!
     # Assign a dcterms:identifier element with a URI value of the handle URI.
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:identifier"),
+    reg_e = RegisteredElement.find_by(name:        "dcterms:identifier",
+                                      institution: self.institution)
+    self.elements.build(registered_element: reg_e,
                         string:             self.handle.permanent_url,
-                        uri:                self.handle.permanent_url)
+                        uri:                self.handle.permanent_url) if reg_e
   end
 
   def breadcrumb_label
@@ -455,8 +460,10 @@ class Item < ApplicationRecord
   def complete_submission
     # Assign a dcterms:date:submitted element with a string value of the
     # current ISO-8601 timestamp.
-    self.elements.build(registered_element: RegisteredElement.find_by_name("dc:date:submitted"),
-                        string:             Time.now.iso8601)
+    reg_e = RegisteredElement.find_by(name:        "dc:date:submitted",
+                                      institution: self.institution)
+    self.elements.build(registered_element: reg_e,
+                        string:             Time.now.iso8601) if reg_e
     if self.primary_collection&.submissions_reviewed
       self.update!(stage: Stages::SUBMITTED)
     else

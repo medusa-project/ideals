@@ -125,14 +125,18 @@ class ItemTest < ActiveSupport::TestCase
   not already exist" do
     item = items(:submitting)
     item.approve
-    assert_not_nil item.element("dcterms:available").string
+    e = item.element("dcterms:available")
+    assert_not_nil e.string
+    assert_equal e.registered_element.institution, item.institution
   end
 
   test "approve() does not create an associated dcterms:available element if
   one already exists" do
-    item = items(:described)
+    item       = items(:described)
     item.stage = Item::Stages::APPROVED
-    item.elements.build(registered_element: RegisteredElement.find_by_name("dcterms:available"),
+    reg_e      = RegisteredElement.find_by(name:        "dcterms:available",
+                                           institution: item.institution)
+    item.elements.build(registered_element: reg_e,
                         string:             "whatever")
     item.approve
     assert_equal 1, item.elements.select{ |e| e.name == "dcterms:available" }.length
@@ -242,11 +246,12 @@ class ItemTest < ActiveSupport::TestCase
     assert item.handle.exists_on_server?
   end
 
-  test "assign_handle() creates an identifier element" do
+  test "assign_handle() creates an associated identifier element" do
     item = items(:described)
     item.assign_handle
-    assert_equal item.handle.permanent_url,
-                 item.element("dcterms:identifier").uri
+    e = item.element("dcterms:identifier")
+    assert_equal item.handle.permanent_url, e.uri
+    assert_equal e.registered_element.institution, item.institution
   end
 
   # buried?()
@@ -282,7 +287,9 @@ class ItemTest < ActiveSupport::TestCase
   test "complete_submission() creates an associated dc:date:submitted element" do
     item = items(:described)
     item.complete_submission
-    assert_not_nil item.element("dc:date:submitted").string
+    e = item.element("dc:date:submitted")
+    assert_not_nil e.string
+    assert_equal item.institution, e.registered_element.institution
   end
 
   test "complete_submission() sets the stage to submitted if the collection is
@@ -314,7 +321,9 @@ class ItemTest < ActiveSupport::TestCase
     item = items(:submitting)
     item.primary_collection.submissions_reviewed = false
     item.complete_submission
-    assert_not_nil item.element("dcterms:available").string
+    e = item.element("dcterms:available")
+    assert_not_nil e.string
+    assert_equal e.registered_element.institution, item.institution
   end
 
   test "complete_submission() does not assign a handle if the collection is
