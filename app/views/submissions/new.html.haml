@@ -17,16 +17,23 @@
       %ol
         - @submissions.each do |item|
           %li.mb-1
-            - if item.primary_collection
+            - if item.title
+              = link_to(raw("#{item.title} (started #{local_time_ago(item.created_at)})"),
+                        edit_submission_path(item))
+            - elsif item.primary_collection
               = link_to(raw("Started #{local_time_ago(item.created_at)} in #{item.primary_collection.title}"),
                         edit_submission_path(item))
             - else
-              = link_to(raw("Started #{local_time_ago(item.created_at)} (collection not selected)"),
+              = link_to(raw("Started #{local_time_ago(item.created_at)}"),
                         edit_submission_path(item))
-      %p Select a submission above to return to it. Or, continue to the questions below to start a new submission.
+      %p
+        Select a submission above to return to it. Or, continue to the
+        questions below to start a new submission.
 
 #deposit-agreement.accordion.mb-3
-  %p To start your deposit, please review the deposit agreement and answer the following questions.
+  %p
+    To start your deposit, please review the deposit agreement and answer the
+    following questions.
 
   .card
     #deposit-agreement-header.card-header
