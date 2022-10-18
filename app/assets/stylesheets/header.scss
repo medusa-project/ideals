@@ -7,7 +7,7 @@ header {
 
 // Header row 1 (thin stripe)
 header > div:first-child {
-  height: 40px;
+  height: 36px;
   /* background-color is controlled by the theme */
   /* color is controlled by the theme */
   margin: 0px;
@@ -20,7 +20,7 @@ header > div:first-child {
   }
   img {
     height: 35px;
-    margin: 3px 0;
+    margin: 0;
   }
   .responsive-header-images {
     display: flex;
@@ -55,7 +55,7 @@ header > div:first-child {
     padding-right: 0;
   }
   .user-menus {
-    padding: 6px 4px 0 0;
+    padding: 4px 4px 0 0;
     .btn-default {
       border: 0px;
     }
