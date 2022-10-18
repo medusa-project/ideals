@@ -7,6 +7,7 @@ class ImportItemCommandTest < ActiveSupport::TestCase
     command    = ImportItemCommand.new(primary_collection: collection)
     item       = command.execute
     assert_equal Item::Stages::APPROVED, item.stage
+    assert_equal collection.institution, item.institution
   end
 
   test "execute() creates an associated Event" do

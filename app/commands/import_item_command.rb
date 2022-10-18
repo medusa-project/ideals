@@ -10,6 +10,7 @@ class ImportItemCommand < Command
   def execute
     Item.transaction do
       item = Item.create!(primary_collection: @primary_collection,
+                          institution:        @primary_collection.institution,
                           stage:              Item::Stages::APPROVED)
 
       Event.create!(event_type:    Event::Type::CREATE,
