@@ -68,7 +68,7 @@ class InstitutionTest < ActiveSupport::TestCase
                                       fqdn:             "example.net",
                                       org_dn:           "example",
                                       main_website_url: "https://example.net")
-    assert_equal 27, institution.registered_elements.count
+    assert_equal 28, institution.registered_elements.count
   end
 
   test "create() adds a default metadata profile" do
