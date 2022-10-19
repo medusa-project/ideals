@@ -24,12 +24,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "delete_document() deletes a document" do
     institution = institutions(:uiuc)
-    items = Item.
-      distinct.
-      joins("LEFT JOIN collection_item_memberships cim ON items.id = cim.item_id").
-      joins("LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id").
-      joins("LEFT JOIN units u ON u.id = ucm.unit_id").
-      where("u.institution_id": institution.id)
+    items = Item.where(institution_id: institution.id)
     items.each(&:reindex)
     refresh_elasticsearch
     count = Item.search.institution(institution).count
@@ -57,10 +52,7 @@ class ItemTest < ActiveSupport::TestCase
     refresh_elasticsearch
 
     expected = Item.distinct.
-      joins("LEFT JOIN collection_item_memberships cim ON items.id = cim.item_id").
-      joins("LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id").
-      joins("LEFT JOIN units u ON u.id = ucm.unit_id").
-      where("u.institution_id": institution.id).
+      where(institution_id: institution.id).
       where.not(stage: Item::Stages::BURIED).
       count
     actual   = Item.search.institution(institution).count
