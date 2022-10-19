@@ -22,12 +22,14 @@
 # * `created_at`          Managed by ActiveRecord.
 # * `institution_id`      Foreign key to {Institution}.
 # * `introduction`        Introduction string. May contain HTML.
-# * `metadata_profile_id` Foreign key to [MetadataProfile]. Instances without
-#                         this set will use the {MetadataProfile#default
-#                         default profile}. Child collections may override it
-#                         with their own {metadata_profile} property. In most
-#                         cases, {effective_metadata_profile} should be used
-#                         instead of accessing this directly.
+# * `metadata_profile_id` Foreign key to {MetadataProfile}. Instances without
+#                         this set will use the
+#                         {Institution#default_metadata_profile default
+#                         metadata profile of the institution}. Child
+#                         collections may override it with their own
+#                         {metadata_profile} property. In most cases,
+#                         {effective_metadata_profile} should be used instead
+#                         of accessing this directly.
 # * `parent_id`           Foreign key to a parent {Unit}.
 # * `rights`              Rights string.
 # * `short_description`   Short description string.

@@ -14,8 +14,10 @@ class CsvExporter
   # @param units [Enumerable<Unit>]
   # @param collections [Enumerable<Collection>]
   # @param elements [Enumerable<String>] Elements to include. If omitted, all
-  #                 of the elements in the {MetadataProfile#default default
-  #                 metadata profile} are included.
+  #                 of the elements in the
+  #                 {Institution#default_metadata_profile default metadata
+  #                 profile of an institution associated with one of the units
+  #                 or collections} are included.
   # @return [String] CSV string.
   #
   def export(units: [], collections: [], elements: [])
@@ -62,12 +64,14 @@ class CsvExporter
   end
 
   ##
-  # Exports all items contained in any of a [Unit]'s collections.
+  # Exports all items contained in any of a {Unit}'s collections.
   #
   # @param unit [Unit]
   # @param elements [Enumerable<String>] Elements to include. If omitted, all
-  #                 of the elements in the {MetadataProfile#default default
-  #                 metadata profile} are included.
+  #                 of the elements in the
+  #                 {Institution#default_metadata_profile default metadata
+  #                 profile of an institution associated with one of the units
+  #                 or collections} are included.
   # @return [String] CSV string.
   #
   def export_unit(unit, elements: [])
