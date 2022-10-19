@@ -78,9 +78,6 @@ class Institution < ApplicationRecord
   # uniqueness enforced by database constraints
   validates :name, presence: true
 
-  # uniqueness enforced by database constraints
-  validates :org_dn, presence: true
-
   validates :service_name, presence: true
 
   validates :active_link_color, presence: true

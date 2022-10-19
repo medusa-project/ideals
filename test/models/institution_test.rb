@@ -66,7 +66,6 @@ class InstitutionTest < ActiveSupport::TestCase
                                       service_name:     "New",
                                       key:              "new",
                                       fqdn:             "example.net",
-                                      org_dn:           "example",
                                       main_website_url: "https://example.net")
     assert_equal 28, institution.registered_elements.count
   end
@@ -76,7 +75,6 @@ class InstitutionTest < ActiveSupport::TestCase
                                       service_name:     "New",
                                       key:              "new",
                                       fqdn:             "example.net",
-                                      org_dn:           "example",
                                       main_website_url: "https://example.net")
     assert_equal 1, institution.metadata_profiles.count
     profile = institution.metadata_profiles.first
@@ -89,7 +87,6 @@ class InstitutionTest < ActiveSupport::TestCase
                                       service_name:     "New",
                                       key:              "new",
                                       fqdn:             "example.net",
-                                      org_dn:           "example",
                                       main_website_url: "https://example.net")
     assert_equal 1, institution.submission_profiles.count
     profile = institution.submission_profiles.first
@@ -102,7 +99,6 @@ class InstitutionTest < ActiveSupport::TestCase
                                       service_name:     "New",
                                       key:              "new",
                                       fqdn:             "example.net",
-                                      org_dn:           "example",
                                       main_website_url: "https://example.net")
     assert_not_nil institution.defining_user_group
   end

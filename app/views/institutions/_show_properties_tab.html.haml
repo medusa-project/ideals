@@ -23,6 +23,9 @@
     %code= link_to(@institution.fqdn, @institution.url)
   %dt Organization DN
   %dd
-    %code= @institution.org_dn
+    - if @institution.org_dn.present?
+      %code= @institution.org_dn
+    - else
+      Not Set
   %dt Default
   %dd= boolean(@institution.default, style: :word)
