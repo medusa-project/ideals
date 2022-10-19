@@ -378,13 +378,6 @@ class InstitutionTest < ActiveSupport::TestCase
 
   # save()
 
-  test "save() updates the instance properties" do
-    @instance.org_dn = "o=New Name,dc=new,dc=edu"
-    @instance.save!
-    assert_equal "new", @instance.key
-    assert_equal "New Name", @instance.name
-  end
-
   test "save() sets all other instances as not-default when the instance is set
   as default" do
     Institution.update_all(default: false)

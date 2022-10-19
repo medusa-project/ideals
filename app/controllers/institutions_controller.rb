@@ -326,8 +326,6 @@ class InstitutionsController < ApplicationController
   # "setting."
   #
   def properties_params
-    # Key and name are accepted during creation. For updates, they are
-    # overwritten by the contents of org_dn. TODO: do we want to keep doing this?
     params.require(:institution).permit(:default, :fqdn, :key, :name, :org_dn,
                                         :service_name)
   end

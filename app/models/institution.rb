@@ -28,13 +28,11 @@
 #                             to exist in the application S3 bucket under
 #                             {image_key_prefix}.
 # * `key`                     Short string that uniquely identifies the
-#                             institution. Populated from the `org_dn` string
-#                             on save.
+#                             institution.
 # * `link_color`              Theme hyperlink color.
 # * `link_hover_color`        Theme hover-over-hyperlink color.
 # * `main_website_url`        URL of the institution's main website.
-# * `name`                    Institution name, populated from the `org_dn`
-#                             string upon save.
+# * `name`                    Institution name.
 # * `org_dn`                  Value of an `eduPersonOrgDN` attribute from the
 #                             Shibboleth SP.
 # * `primary_color`           Theme primary color.
@@ -95,7 +93,7 @@ class Institution < ApplicationRecord
 
   validate :disallow_key_changes, :validate_css_colors
 
-  before_save :set_properties, :ensure_default_uniqueness
+  before_save :ensure_default_uniqueness
   after_create :add_default_elements, :add_default_metadata_profile,
                :add_default_submission_profile, :add_defining_user_group
 
@@ -497,24 +495,6 @@ class Institution < ApplicationRecord
       Institution.where(default: true).
         where("id != ?", self.id).
         update_all(default: false)
-    end
-  end
-
-  ##
-  # Sets the key and name properties using the `org_dn` string.
-  #
-  def set_properties
-    if org_dn.present?
-      org_dn.split(",").each do |part|
-        kv = part.split("=")
-        if kv.length == 2 # should always be true
-          if kv[0] == "o"
-            self.name = kv[1]
-          elsif kv[0] == "dc" && kv[1] != "edu"
-            self.key = kv[1]
-          end
-        end
-      end
     end
   end
 
