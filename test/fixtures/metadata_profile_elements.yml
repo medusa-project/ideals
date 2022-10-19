@@ -1,6 +1,6 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-default_title:
+uiuc_default_title:
   metadata_profile:   uiuc_default
   registered_element: uiuc_dc_title
   position:           0
@@ -10,7 +10,7 @@ default_title:
   sortable:           true
   relevance_weight:   <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
-default_description:
+uiuc_default_description:
   metadata_profile:   uiuc_default
   registered_element: uiuc_dc_description
   position:           1
@@ -20,7 +20,7 @@ default_description:
   sortable:           false
   relevance_weight:   <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
-default_subject:
+uiuc_default_subject:
   metadata_profile:   uiuc_default
   registered_element: uiuc_dc_subject
   position:           2

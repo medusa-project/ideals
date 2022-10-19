@@ -6,7 +6,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
 
   test "collection_download_counts_by_item() returns correct results with no
   arguments" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
                                      unit_id:        99999, # fake but doesn't matter
                                      collection_id:  collection.id,
@@ -29,7 +29,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
 
   test "collection_download_counts_by_item() returns correct results when
   supplying start and end times" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
                                      unit_id:        99999, # fake but doesn't matter
                                      collection_id:  collection.id,

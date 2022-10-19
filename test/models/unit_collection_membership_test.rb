@@ -15,10 +15,10 @@ class UnitCollectionMembershipTest < ActiveSupport::TestCase
     # assert the initial unit-default membership
     memberships = unit.unit_collection_memberships.where(unit_default: true)
     assert_equal 1, memberships.count
-    assert_equal collections(:collection1), memberships.first.collection
+    assert_equal collections(:uiuc_collection1), memberships.first.collection
 
     # change it
-    unit.unit_collection_memberships.where(collection: collections(:empty)).each do |m|
+    unit.unit_collection_memberships.where(collection: collections(:uiuc_empty)).each do |m|
       m.update!(unit_default: true)
     end
 
@@ -26,7 +26,7 @@ class UnitCollectionMembershipTest < ActiveSupport::TestCase
     unit.reload
     memberships = unit.unit_collection_memberships.where(unit_default: true)
     assert_equal 1, memberships.count
-    assert_equal collections(:empty), memberships.first.collection
+    assert_equal collections(:uiuc_empty), memberships.first.collection
   end
 
 end

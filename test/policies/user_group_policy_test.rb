@@ -15,7 +15,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "create?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -80,7 +80,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -141,7 +141,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -194,7 +194,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_ad_groups?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -247,7 +247,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_affiliations?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -300,7 +300,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_departments?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -353,7 +353,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_email_patterns?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -406,7 +406,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_hosts?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -459,7 +459,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_local_users?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -512,7 +512,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_netid_users?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -565,7 +565,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "index?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -651,7 +651,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "new?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)
@@ -704,7 +704,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "show?() authorizes managers of any collection in the same institution" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     @user_group.update!(institution: subject_user.institution)
     context = RequestContext.new(user:        subject_user,
@@ -759,7 +759,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "update?() authorizes managers of any collection" do
     subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:collection1))
+    subject_user.managers.build(collection: collections(:uiuc_collection1))
     subject_user.save!
     context = RequestContext.new(user:        subject_user,
                                  institution: subject_user.institution)

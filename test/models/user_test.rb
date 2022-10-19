@@ -67,13 +67,13 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_manager?() returns true when the user is a sysadmin" do
     @user = users(:local_sysadmin)
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     assert @user.effective_manager?(collection)
   end
 
   test "effective_manager?() returns true if the user is an administrator of
   the given collection's institution" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     @user.administering_institutions << collection.institution
     @user.save!
     assert @user.effective_manager?(collection)
@@ -81,7 +81,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_manager?() returns true when the user is an administrator of
   one of the collection's units" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     unit = collection.primary_unit
     unit.administering_users << @user
     unit.save!
@@ -90,8 +90,8 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_manager?() returns true when the user is a manager of one of
   the given collection's parents" do
-    parent = collections(:collection1)
-    child  = collections(:collection1_collection1)
+    parent = collections(:uiuc_collection1)
+    child  = collections(:uiuc_collection1_collection1)
     parent.managing_users << @user
     parent.save!
     assert @user.effective_manager?(child)
@@ -99,7 +99,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_manager?() returns true when the user is a manager of the
   given collection" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     collection.managing_users << @user
     collection.save!
     assert @user.effective_manager?(collection)
@@ -107,20 +107,20 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_manager?() returns false when the user is not a manager of
   the given collection, nor a unit admin, nor a sysadmin" do
-    assert !@user.effective_manager?(collections(:collection1))
+    assert !@user.effective_manager?(collections(:uiuc_collection1))
   end
 
   # effective_submitter?()
 
   test "effective_submitter?() returns true when the user is a sysadmin" do
     @user = users(:local_sysadmin)
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     assert @user.effective_submitter?(collection)
   end
 
   test "effective_submitter?() returns true when the user is an administrator of
   one of the collection's units" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     unit = collection.primary_unit
     unit.administering_users << @user
     unit.save!
@@ -129,8 +129,8 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_submitter?() returns true when the user is a manager of one
   of the given collection's parents" do
-    parent = collections(:collection1)
-    child  = collections(:collection1_collection1)
+    parent = collections(:uiuc_collection1)
+    child  = collections(:uiuc_collection1_collection1)
     parent.managing_users << @user
     parent.save!
     assert @user.effective_submitter?(child)
@@ -138,7 +138,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_submitter?() returns true when the user is a manager of the
   given collection" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     collection.managing_users << @user
     collection.save!
     assert @user.effective_submitter?(collection)
@@ -146,7 +146,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_submitter?() returns true when the user is a submitter in the
   given collection" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     collection.submitting_users << @user
     collection.save!
     assert @user.effective_submitter?(collection)
@@ -154,7 +154,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_submitter?() returns false when the user is not a manager of
   the given collection, nor a unit admin, nor a sysadmin" do
-    assert !@user.effective_submitter?(collections(:collection1))
+    assert !@user.effective_submitter?(collections(:uiuc_collection1))
   end
 
   # effective_submittable_collections()
@@ -270,7 +270,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "manager?() returns true when the user is a directly assigned manager of
   the given collection" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     collection.managing_users << @user
     collection.save!
     assert @user.manager?(collection)
@@ -280,13 +280,13 @@ class UserTest < ActiveSupport::TestCase
   is allowed to manage the given unit" do
     group = user_groups(:temp)
     @user.user_groups << group
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     collection.managing_users << @user
     assert @user.manager?(collection)
   end
 
   test "manager?() returns false when the user is not a manager of the given collection" do
-    assert !@user.manager?(collections(:collection1))
+    assert !@user.manager?(collections(:uiuc_collection1))
   end
 
   # name
@@ -302,7 +302,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "submitter?() returns true when the user is a directly assigned
   submitter in the given collection" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     collection.submitting_users << @user
     collection.save!
     assert @user.submitter?(collection)
@@ -312,13 +312,13 @@ class UserTest < ActiveSupport::TestCase
   is allowed to submit to the given unit" do
     group = user_groups(:temp)
     @user.user_groups << group
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     collection.submitting_users << @user
     assert @user.submitter?(collection)
   end
 
   test "submitter?() returns false when the user is not a submitter in the given collection" do
-    assert !@user.submitter?(collections(:collection1))
+    assert !@user.submitter?(collections(:uiuc_collection1))
   end
 
   # sysadmin?()

@@ -8,39 +8,39 @@ northeast_unit1_collection1:
 
 ################################## uiuc #####################################
 
-collection1:
+uiuc_collection1:
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
   buried:               false
 
-collection1_collection1:
+uiuc_collection1_collection1:
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
-  parent:               collection1
+  parent:               uiuc_collection1
   buried:               false
 
-collection1_collection1_collection1:
+uiuc_collection1_collection1_collection1:
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
-  parent:               collection1_collection1
+  parent:               uiuc_collection1_collection1
   buried:               false
 
-collection2:
-  metadata_profile:     uiuc_default
-  submission_profile:   uiuc_default
-  submissions_reviewed: true
-  buried:               false
-
-unit1_unit2_unit1_collection1:
+uiuc_collection2:
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
   buried:               false
 
-described:
+uiuc_unit1_unit2_unit1_collection1:
+  metadata_profile:     uiuc_default
+  submission_profile:   uiuc_default
+  submissions_reviewed: true
+  buried:               false
+
+uiuc_described:
   title:                Some title
   description:          Some description
   metadata_profile:     uiuc_default
@@ -48,19 +48,19 @@ described:
   submissions_reviewed: true
   buried:               false
 
-empty:
+uiuc_empty:
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
   buried:               false
 
-undescribed:
+uiuc_undescribed:
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
   buried:               false
 
-buried:
+uiuc_buried:
   title:                Some title
   description:          Some description
   metadata_profile:     uiuc_default

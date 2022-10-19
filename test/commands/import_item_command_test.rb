@@ -3,7 +3,7 @@ require 'test_helper'
 class ImportItemCommandTest < ActiveSupport::TestCase
 
   test "execute() returns the expected instance" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     command    = ImportItemCommand.new(primary_collection: collection)
     item       = command.execute
     assert_equal Item::Stages::APPROVED, item.stage
@@ -13,7 +13,7 @@ class ImportItemCommandTest < ActiveSupport::TestCase
   test "execute() creates an associated Event" do
     Event.destroy_all
 
-    command = ImportItemCommand.new(primary_collection: collections(:collection1))
+    command = ImportItemCommand.new(primary_collection: collections(:uiuc_collection1))
     item    = command.execute
 
     event = Event.all.first

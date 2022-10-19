@@ -86,7 +86,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   # increment()
 
   test "increment() increments the count of an existing row" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     now        = Time.now
     year       = now.year
     month      = now.month
@@ -98,7 +98,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "increment() adds a new row if necessary" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     now        = Time.now
     year       = now.year
     month      = now.month

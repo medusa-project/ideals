@@ -13,7 +13,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   # chlldren()
 
   test "children() returns HTTP 404 for non-XHR requests" do
-    collections(:described).reindex # this is needed to fully initialize the schema
+    collections(:uiuc_described).reindex # this is needed to fully initialize the schema
     get unit_children_path(units(:unit1))
     assert_response :not_found
   end
@@ -24,7 +24,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "children() returns HTTP 200 for XHR requests" do
-    collections(:described).reindex # this is needed to fully initialize the schema
+    collections(:uiuc_described).reindex # this is needed to fully initialize the schema
     get unit_children_path(units(:unit1)), xhr: true
     assert_response :ok
   end
@@ -32,7 +32,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   # collections_tree_fragment()
 
   test "collections_tree_fragment() returns HTTP 404 for non-XHR requests" do
-    collections(:described).reindex # this is needed to fully initialize the schema
+    collections(:uiuc_described).reindex # this is needed to fully initialize the schema
     get unit_collections_tree_fragment_path(units(:unit1))
     assert_response :not_found
   end
@@ -43,7 +43,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "collections_tree_fragment() returns HTTP 200 for XHR requests" do
-    collections(:described).reindex # this is needed to fully initialize the schema
+    collections(:uiuc_described).reindex # this is needed to fully initialize the schema
     get unit_collections_tree_fragment_path(units(:unit1)), xhr: true
     assert_response :ok
   end
@@ -325,13 +325,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   # show()
 
   test "show() returns HTTP 200 for HTML" do
-    collections(:described).reindex # this is needed to fully initialize the schema
+    collections(:uiuc_described).reindex # this is needed to fully initialize the schema
     get unit_path(units(:unit1))
     assert_response :ok
   end
 
   test "show() returns HTTP 200 for JSON" do
-    collections(:described).reindex # this is needed to fully initialize the schema
+    collections(:uiuc_described).reindex # this is needed to fully initialize the schema
     get unit_path(units(:unit1), format: :json)
     assert_response :ok
   end

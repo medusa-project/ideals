@@ -4,16 +4,16 @@ class CreateItemCommandTest < ActiveSupport::TestCase
 
   test "execute() returns the expected instance" do
     submitter   = users(:local_sysadmin)
-    collection  = collections(:collection1)
+    collection  = collections(:uiuc_collection1)
     institution = collection.institution
     command     = CreateItemCommand.new(submitter:          submitter,
                                         institution:        institution,
                                         primary_collection: collection)
     item = command.execute
 
-    assert_equal submission_profile_elements(:default_description).placeholder_text,
+    assert_equal submission_profile_elements(:uiuc_default_description).placeholder_text,
                  item.element("dc:description").string
-    assert_equal submission_profile_elements(:default_subject).placeholder_text,
+    assert_equal submission_profile_elements(:uiuc_default_subject).placeholder_text,
                  item.element("dc:subject").string
     assert_equal Item::Stages::SUBMITTING, item.stage
     assert_equal institution, item.institution
@@ -23,7 +23,7 @@ class CreateItemCommandTest < ActiveSupport::TestCase
     Event.destroy_all
 
     submitter   = users(:local_sysadmin)
-    collection  = collections(:collection1)
+    collection  = collections(:uiuc_collection1)
     institution = collection.institution
     command     = CreateItemCommand.new(submitter:          submitter,
                                         institution:        institution,

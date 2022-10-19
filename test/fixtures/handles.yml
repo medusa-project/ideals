@@ -1,7 +1,7 @@
 # collection handles
 
 collection1_handle:
-  collection: collection1
+  collection: uiuc_collection1
   suffix:     5000
 
 # item handles

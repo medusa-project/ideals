@@ -81,20 +81,20 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() redirects to login page for logged-out users" do
     delete metadata_profile_metadata_profile_element_path(@profile,
-                                                          metadata_profile_elements(:default_description))
+                                                          metadata_profile_elements(:uiuc_default_description))
     assert_redirected_to login_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     delete metadata_profile_metadata_profile_element_path(@profile,
-                                                          metadata_profile_elements(:default_description))
+                                                          metadata_profile_elements(:uiuc_default_description))
     assert_response :forbidden
   end
 
   test "destroy() destroys the element" do
     log_in_as(users(:local_sysadmin))
-    element = metadata_profile_elements(:default_title)
+    element = metadata_profile_elements(:uiuc_default_title)
     assert_difference "MetadataProfileElement.count", -1 do
       delete metadata_profile_metadata_profile_element_path(element.metadata_profile,
                                                             element)
@@ -103,7 +103,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() returns HTTP 302 for an existing element" do
     log_in_as(users(:local_sysadmin))
-    element = metadata_profile_elements(:default_title)
+    element = metadata_profile_elements(:uiuc_default_title)
     delete metadata_profile_metadata_profile_element_path(element.metadata_profile,
                                                           element)
     assert_redirected_to element.metadata_profile
@@ -118,21 +118,21 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   # edit()
 
   test "edit() redirects to login page for logged-out users" do
-    element = metadata_profile_elements(:default_title)
+    element = metadata_profile_elements(:uiuc_default_title)
     get edit_metadata_profile_metadata_profile_element_path(@profile, element)
     assert_redirected_to login_path
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    element = metadata_profile_elements(:default_title)
+    element = metadata_profile_elements(:uiuc_default_title)
     get edit_metadata_profile_metadata_profile_element_path(@profile, element)
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
-    element = metadata_profile_elements(:default_title)
+    element = metadata_profile_elements(:uiuc_default_title)
     get edit_metadata_profile_metadata_profile_element_path(@profile, element)
     assert_response :ok
   end
@@ -140,21 +140,21 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to login page for logged-out users" do
-    element = metadata_profile_elements(:default_title)
+    element = metadata_profile_elements(:uiuc_default_title)
     patch metadata_profile_metadata_profile_element_path(@profile, element)
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    element = metadata_profile_elements(:default_title)
+    element = metadata_profile_elements(:uiuc_default_title)
     patch metadata_profile_metadata_profile_element_path(@profile, element)
     assert_response :forbidden
   end
 
   test "update() updates an element" do
     log_in_as(users(:local_sysadmin))
-    element = metadata_profile_elements(:default_title)
+    element = metadata_profile_elements(:uiuc_default_title)
     patch metadata_profile_metadata_profile_element_path(@profile, element),
           xhr: true,
           params: {
@@ -170,7 +170,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
-    element = metadata_profile_elements(:default_title)
+    element = metadata_profile_elements(:uiuc_default_title)
     patch metadata_profile_metadata_profile_element_path(@profile, element),
           xhr: true,
           params: {
@@ -186,7 +186,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:local_sysadmin))
-    element = metadata_profile_elements(:default_title)
+    element = metadata_profile_elements(:uiuc_default_title)
     patch metadata_profile_metadata_profile_element_path(@profile, element),
           xhr: true,
           params: {

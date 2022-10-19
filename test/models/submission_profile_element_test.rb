@@ -3,7 +3,7 @@ require 'test_helper'
 class SubmissionProfileElementTest < ActiveSupport::TestCase
 
   setup do
-    @instance = submission_profile_elements(:default_title)
+    @instance = submission_profile_elements(:uiuc_default_title)
     assert @instance.valid?
   end
 

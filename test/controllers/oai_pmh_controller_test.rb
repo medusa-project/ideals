@@ -230,7 +230,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   test "ListIdentifiers disallows all other arguments when resumptionToken is present" do
     get "/oai-pmh", params: { verb: "ListIdentifiers",
                               resumptionToken: "offset:10",
-                              set: collections(:collection1).id }
+                              set: collections(:uiuc_collection1).id }
     assert_select "error", "resumptionToken is an exclusive argument."
   end
 

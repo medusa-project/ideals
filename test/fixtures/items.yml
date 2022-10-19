@@ -11,7 +11,7 @@ northeast_unit1_collection1_item1:
 
 ################################## uiuc #####################################
 
-# collection1 items
+# uiuc_collection1 items
 
 item1: # TODO: remove this
   institution:  uiuc
@@ -85,7 +85,7 @@ multiple_bitstreams:
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-# collection1_collection1 items
+# uiuc_collection1_collection1 items
 
 collection1_collection1_item1:
   institution:  uiuc

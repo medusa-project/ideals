@@ -763,7 +763,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "set_primary_collection() sets a new collection as primary" do
-    col = collections(:collection2)
+    col = collections(:uiuc_collection2)
     assert_not_equal col, @instance.primary_collection
     @instance.set_primary_collection(col)
     @instance.reload
@@ -782,7 +782,7 @@ class ItemTest < ActiveSupport::TestCase
   are all buried" do
     @instance = items(:buried)
     @instance.collection_item_memberships.destroy_all
-    @instance.collections << collections(:buried)
+    @instance.collections << collections(:uiuc_buried)
     assert ActiveRecord::RecordInvalid do
       @instance.update!(stage: Item::Stages::APPROVED)
     end

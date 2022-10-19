@@ -3,7 +3,7 @@
 csv_new:
   user:               uiuc_admin
   institution:        uiuc
-  collection:         collection1
+  collection:         uiuc_collection1
   kind:               <%= Import::Kind::CSV %>
   status:             <%= Import::Status::NEW %>
   percent_complete:   0
@@ -14,7 +14,7 @@ csv_new:
 saf_new:
   user:               uiuc_admin
   institution:        uiuc
-  collection:         collection1
+  collection:         uiuc_collection1
   kind:               <%= Import::Kind::SAF %>
   status:             <%= Import::Status::NEW %>
   percent_complete:   0
@@ -25,7 +25,7 @@ saf_new:
 saf_running:
   user:               uiuc_admin
   institution:        uiuc
-  collection:         collection1
+  collection:         uiuc_collection1
   kind:               <%= Import::Kind::SAF %>
   status:             <%= Import::Status::RUNNING %>
   percent_complete:   0.5
@@ -36,7 +36,7 @@ saf_running:
 saf_succeeded:
   user:               uiuc_admin
   institution:        uiuc
-  collection:         collection1
+  collection:         uiuc_collection1
   kind:               <%= Import::Kind::SAF %>
   status:             <%= Import::Status::SUCCEEDED %>
   percent_complete:   0.5
@@ -47,7 +47,7 @@ saf_succeeded:
 saf_failed:
   user:               uiuc_admin
   institution:        uiuc
-  collection:         collection1
+  collection:         uiuc_collection1
   kind:               <%= Import::Kind::SAF %>
   status:             <%= Import::Status::FAILED %>
   percent_complete:   0.5

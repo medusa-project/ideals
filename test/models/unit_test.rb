@@ -204,7 +204,7 @@ class UnitTest < ActiveSupport::TestCase
   # default_collection()
 
   test "default_collection() returns the default collection" do
-    assert_equal collections(:collection1), @instance.default_collection
+    assert_equal collections(:uiuc_collection1), @instance.default_collection
   end
 
   test "default_collection() returns nil when there is no  default collection" do

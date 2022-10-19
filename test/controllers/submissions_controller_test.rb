@@ -306,7 +306,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() updates an item" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:empty)
+    collection = collections(:uiuc_empty)
     item       = items(:submitting)
     patch submission_path(item),
           xhr: true,
@@ -326,7 +326,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               item: {
-                  primary_collection_id: collections(:empty).id
+                  primary_collection_id: collections(:uiuc_empty).id
               }
           }
     assert_response :no_content

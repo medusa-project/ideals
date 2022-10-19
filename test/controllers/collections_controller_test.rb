@@ -13,17 +13,17 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # chlldren()
 
   test "children() returns HTTP 200 for XHR requests" do
-    get collection_children_path(collections(:collection1)), xhr: true
+    get collection_children_path(collections(:uiuc_collection1)), xhr: true
     assert_response :ok
   end
 
   test "children() returns HTTP 404 for non-XHR requests" do
-    get collection_children_path(collections(:collection1))
+    get collection_children_path(collections(:uiuc_collection1))
     assert_response :not_found
   end
 
   test "children() returns HTTP 410 for a buried collection" do
-    get collection_children_path(collections(:buried)), xhr: true
+    get collection_children_path(collections(:uiuc_buried)), xhr: true
     assert_response :gone
   end
 
@@ -98,25 +98,25 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # delete()
 
   test "delete() redirects to login page for logged-out users" do
-    post collection_delete_path(collections(:collection1))
+    post collection_delete_path(collections(:uiuc_collection1))
     assert_redirected_to login_path
   end
 
   test "delete() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post collection_delete_path(collections(:collection1))
+    post collection_delete_path(collections(:uiuc_collection1))
     assert_response :forbidden
   end
 
   test "delete() returns HTTP 410 for a buried collection" do
     log_in_as(users(:local_sysadmin))
-    post collection_delete_path(collections(:buried))
+    post collection_delete_path(collections(:uiuc_buried))
     assert_response :gone
   end
 
   test "delete() buries the collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:empty)
+    collection = collections(:uiuc_empty)
     post collection_delete_path(collection)
     collection.reload
     assert collection.buried
@@ -124,7 +124,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "delete() redirects to the collection when the delete fails" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     post collection_delete_path(collection) # fails because collection is not empty
     assert_redirected_to collection
   end
@@ -132,7 +132,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "delete() redirects to the parent collection, if available, for an
   existing collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1_collection1_collection1)
+    collection = collections(:uiuc_collection1_collection1_collection1)
     post collection_delete_path(collection)
     assert_redirected_to collection.parent
   end
@@ -140,7 +140,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "delete() redirects to the primary unit, if there is no parent
   collection, for an existing collection" do
     log_in_as(users(:local_sysadmin))
-    collection   = collections(:empty)
+    collection   = collections(:uiuc_empty)
     primary_unit = collection.primary_unit
     post collection_delete_path(collection)
     assert_redirected_to primary_unit
@@ -155,35 +155,35 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # edit_collection_membership()
 
   test "edit_collection_membership() returns HTTP 403 for logged-out users" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_collection_membership_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_collection_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_collection_membership_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_collection_membership() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_collection_membership_path(collection)
     assert_response :not_found
   end
 
   test "edit_collection_membership() returns HTTP 410 for a buried collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:buried)
+    collection = collections(:uiuc_buried)
     get collection_edit_collection_membership_path(collection), xhr: true
     assert_response :gone
   end
 
   test "edit_collection_membership() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_collection_membership_path(collection), xhr: true
     assert_response :ok
   end
@@ -191,35 +191,35 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # edit_managers()
 
   test "edit_managers() returns HTTP 403 for logged-out users" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_managers_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_managers() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_managers_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_managers() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_managers_path(collection)
     assert_response :not_found
   end
 
   test "edit_managers() returns HTTP 410 for a buried collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:buried)
+    collection = collections(:uiuc_buried)
     get collection_edit_managers_path(collection), xhr: true
     assert_response :gone
   end
 
   test "edit_managers() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_managers_path(collection), xhr: true
     assert_response :ok
   end
@@ -227,35 +227,35 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # edit_properties()
 
   test "edit_properties() returns HTTP 403 for logged-out users" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_properties_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_properties_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_properties_path(collection)
     assert_response :not_found
   end
 
   test "edit_properties() returns HTTP 410 for a buried collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:buried)
+    collection = collections(:uiuc_buried)
     get collection_edit_properties_path(collection), xhr: true
     assert_response :gone
   end
 
   test "edit_properties() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_properties_path(collection), xhr: true
     assert_response :ok
   end
@@ -263,35 +263,35 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # edit_submitters()
 
   test "edit_submitters() returns HTTP 403 for logged-out users" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_submitters_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_submitters() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_submitters_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_submitters() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_submitters_path(collection)
     assert_response :not_found
   end
 
   test "edit_submitters() returns HTTP 410 for a buried collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:buried)
+    collection = collections(:uiuc_buried)
     get collection_edit_submitters_path(collection), xhr: true
     assert_response :gone
   end
 
   test "edit_submitters() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_submitters_path(collection), xhr: true
     assert_response :ok
   end
@@ -299,35 +299,35 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # edit_unit_membership()
 
   test "edit_unit_membership() returns HTTP 403 for logged-out users" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_unit_membership_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_unit_membership() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_unit_membership_path(collection), xhr: true
     assert_response :ok
   end
 
   test "edit_unit_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_unit_membership_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_unit_membership() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_edit_unit_membership_path(collection)
     assert_response :not_found
   end
 
   test "edit_unit_membership() returns HTTP 410 for a buried collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:buried)
+    collection = collections(:uiuc_buried)
     get collection_edit_unit_membership_path(collection), xhr: true
     assert_response :gone
   end
@@ -347,19 +347,19 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # item_download_counts()
 
   test "item_download_counts() returns HTTP 200 for HTML" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_item_download_counts_path(collection)
     assert_response :ok
   end
 
   test "item_download_counts() returns HTTP 200 for CSV" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_item_download_counts_path(collection, format: :csv)
     assert_response :ok
   end
 
   test "item_download_counts() returns HTTP 410 for a buried collection" do
-    collection = collections(:buried)
+    collection = collections(:uiuc_buried)
     get collection_item_download_counts_path(collection)
     assert_response :gone
   end
@@ -367,104 +367,104 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # show_item_results()
 
   test "show_item_results() returns HTTP 200" do
-    get collection_item_results_path(collections(:collection1)), xhr: true
+    get collection_item_results_path(collections(:uiuc_collection1)), xhr: true
     assert_response :ok
   end
 
   test "show_item_results() returns HTTP 404 for non-XHR requests" do
-    get collection_item_results_path(collections(:collection1))
+    get collection_item_results_path(collections(:uiuc_collection1))
     assert_response :not_found
   end
 
   test "show_item_results() returns HTTP 410 for a buried collection" do
-    get collection_item_results_path(collections(:buried)), xhr: true
+    get collection_item_results_path(collections(:uiuc_buried)), xhr: true
     assert_response :gone
   end
 
   # show()
 
   test "show() returns HTTP 200 for HTML" do
-    get collection_path(collections(:collection1))
+    get collection_path(collections(:uiuc_collection1))
     assert_response :ok
   end
 
   test "show() returns HTTP 200 for JSON" do
-    get collection_path(collections(:collection1), format: :json)
+    get collection_path(collections(:uiuc_collection1), format: :json)
     assert_response :ok
   end
 
   test "show() returns HTTP 410 for a buried collection" do
-    get collection_path(collections(:buried))
+    get collection_path(collections(:uiuc_buried))
     assert_response :gone
   end
 
   test "show() respects role limits" do
     log_in_as(users(:local_sysadmin))
-    get collection_path(collections(:collection1))
+    get collection_path(collections(:uiuc_collection1))
     assert_select("#access-tab")
 
-    get collection_path(collections(:collection1), role: Role::LOGGED_OUT)
+    get collection_path(collections(:uiuc_collection1), role: Role::LOGGED_OUT)
     assert_select("#access-tab", false)
   end
 
   # show_about()
 
   test "show_about() returns HTTP 404 for non-XHR requests" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_about_path(collection)
     assert_response :not_found
   end
 
   test "show_about() returns HTTP 200 for XHR requests" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_about_path(collection), xhr: true
     assert_response :ok
   end
 
   test "show_about() returns HTTP 410 for a buried collection" do
     log_in_as(users(:local_sysadmin))
-    get collection_about_path(collections(:buried)), xhr: true
+    get collection_about_path(collections(:uiuc_buried)), xhr: true
     assert_response :gone
   end
 
   # show_access()
 
   test "show_access() returns HTTP 403 for logged-out users" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_access_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "show_access() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_access_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "show_access() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_access_path(collection)
     assert_response :not_found
   end
 
   test "show_access() returns HTTP 410 for a buried collection" do
     log_in_as(users(:local_sysadmin))
-    get collection_access_path(collections(:buried)), xhr: true
+    get collection_access_path(collections(:uiuc_buried)), xhr: true
     assert_response :gone
   end
 
   test "show_access() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_access_path(collection), xhr: true
     assert_response :ok
   end
 
   test "show_access() respects role limits" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_access_path(collection), xhr: true
     assert_select(".edit-collection-managers")
 
@@ -475,47 +475,47 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # show_items()
 
   test "show_items() returns HTTP 200 for HTML" do
-    get collection_items_path(collections(:collection1))
+    get collection_items_path(collections(:uiuc_collection1))
     assert_response :ok
   end
 
   test "show_items() returns HTTP 403 for CSV for non-unit-administrators" do
-    get collection_items_path(collections(:collection1), format: :csv)
+    get collection_items_path(collections(:uiuc_collection1), format: :csv)
     assert_response :forbidden
   end
 
   test "show_items() returns HTTP 200 for CSV for unit administrators" do
     log_in_as(users(:local_sysadmin))
-    get collection_items_path(collections(:collection1), format: :csv)
+    get collection_items_path(collections(:uiuc_collection1), format: :csv)
     assert_response :ok
   end
 
   test "show_items() returns HTTP 410 for a buried collection" do
-    get collection_items_path(collections(:buried))
+    get collection_items_path(collections(:uiuc_buried))
     assert_response :gone
   end
 
   # show_statistics()
 
   test "show_statistics() returns HTTP 200" do
-    get collection_statistics_path(collections(:collection1)), xhr: true
+    get collection_statistics_path(collections(:uiuc_collection1)), xhr: true
     assert_response :ok
   end
 
   test "show_statistics() returns HTTP 404 for non-XHR requests" do
-    get collection_statistics_path(collections(:collection1))
+    get collection_statistics_path(collections(:uiuc_collection1))
     assert_response :not_found
   end
 
   test "show_statistics() returns HTTP 410 for a buried collection" do
-    get collection_statistics_path(collections(:buried)), xhr: true
+    get collection_statistics_path(collections(:uiuc_buried)), xhr: true
     assert_response :gone
   end
 
   # statistics_by_range()
 
   test "statistics_by_range() returns HTTP 200 for HTML" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_statistics_by_range_path(collection), params: {
       from_year:  2008,
       from_month: 1,
@@ -526,7 +526,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "statistics_by_range() returns HTTP 200 for CSV" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     get collection_statistics_by_range_path(collection, format: :csv), params: {
       from_year:  2008,
       from_month: 1,
@@ -537,26 +537,26 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "statistics_by_range() returns HTTP 410 for a buried collection" do
-    get collection_path(collections(:buried)), xhr: true
+    get collection_path(collections(:uiuc_buried)), xhr: true
     assert_response :gone
   end
 
   # undelete()
 
   test "undelete() redirects to login page for logged-out users" do
-    post collection_undelete_path(collections(:buried))
+    post collection_undelete_path(collections(:uiuc_buried))
     assert_redirected_to login_path
   end
 
   test "undelete() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post collection_undelete_path(collections(:buried))
+    post collection_undelete_path(collections(:uiuc_buried))
     assert_response :forbidden
   end
 
   test "undelete() exhumes the collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:buried)
+    collection = collections(:uiuc_buried)
     collection.units.first.exhume!
     post collection_undelete_path(collection)
     collection.reload
@@ -565,14 +565,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "undelete() redirects to the collection when the undelete fails" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     post collection_undelete_path(collection) # fails because collection is not empty
     assert_redirected_to collection
   end
 
   test "undelete() redirects to the collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:buried)
+    collection = collections(:uiuc_buried)
     post collection_undelete_path(collection)
     assert_redirected_to collection
   end
@@ -586,21 +586,21 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to login page for logged-out users" do
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     patch collection_path(collection)
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     patch collection_path(collection)
     assert_response :forbidden
   end
 
   test "update() updates a collection" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     patch collection_path(collection),
           xhr: true,
           params: {
@@ -615,7 +615,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     patch collection_path(collection),
           xhr: true,
           params: {
@@ -628,7 +628,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:local_sysadmin))
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     patch collection_path(collection),
           xhr: true,
           params: {
@@ -642,12 +642,12 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "update() returns HTTP 403 when updating the collection parent_id to a
   collection of which the current user is not an effective manager" do
     log_in_as(users(:collection1_collection1_manager))
-    collection = collections(:collection1_collection1)
+    collection = collections(:uiuc_collection1_collection1)
     patch collection_path(collection),
           xhr: true,
           params: {
             collection: {
-              parent_id: collections(:described).id
+              parent_id: collections(:uiuc_described).id
             }
           }
     assert_response :forbidden
@@ -661,7 +661,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 410 for a buried collections" do
     log_in_as(users(:local_sysadmin))
-    patch collection_path(collections(:buried)), xhr: true
+    patch collection_path(collections(:uiuc_buried)), xhr: true
     assert_response :gone
   end
 

@@ -163,7 +163,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     collection.managing_users << doing_user
     collection.save!
 
@@ -181,7 +181,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     collection.managing_users << doing_user
     collection.save!
 
@@ -199,7 +199,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     doing_user    = users(:norights)
     context       = RequestContext.new(user:        doing_user,
                                        institution: doing_user.institution)
-    collection               = collections(:collection1)
+    collection               = collections(:uiuc_collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
     unit.save!
@@ -218,7 +218,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     doing_user    = users(:norights)
     context       = RequestContext.new(user:        doing_user,
                                        institution: doing_user.institution)
-    collection               = collections(:collection1)
+    collection               = collections(:uiuc_collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
     unit.save!
@@ -950,7 +950,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
-    collection = collections(:collection1)
+    collection = collections(:uiuc_collection1)
     collection.managing_users << doing_user
     collection.save!
 
@@ -966,7 +966,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     doing_user = users(:norights)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
-    collection               = collections(:collection1)
+    collection               = collections(:uiuc_collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
     unit.save!

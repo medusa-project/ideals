@@ -84,13 +84,13 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
     delete submission_profile_submission_profile_element_path(@profile,
-                                                              submission_profile_elements(:default_subject))
+                                                              submission_profile_elements(:uiuc_default_subject))
     assert_response :forbidden
   end
 
   test "destroy() destroys the element" do
     log_in_as(users(:local_sysadmin))
-    element = submission_profile_elements(:default_title)
+    element = submission_profile_elements(:uiuc_default_title)
     assert_difference "SubmissionProfileElement.count", -1 do
       delete submission_profile_submission_profile_element_path(element.submission_profile,
                                                                 element)
@@ -99,7 +99,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() returns HTTP 302 for an existing element" do
     log_in_as(users(:local_sysadmin))
-    element = submission_profile_elements(:default_title)
+    element = submission_profile_elements(:uiuc_default_title)
     delete submission_profile_submission_profile_element_path(element.submission_profile,
                                                               element)
     assert_redirected_to element.submission_profile
@@ -114,21 +114,21 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   # edit()
 
   test "edit() redirects to login page for logged-out users" do
-    element = submission_profile_elements(:default_title)
+    element = submission_profile_elements(:uiuc_default_title)
     get edit_submission_profile_submission_profile_element_path(@profile, element)
     assert_redirected_to login_path
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    element = submission_profile_elements(:default_title)
+    element = submission_profile_elements(:uiuc_default_title)
     get edit_submission_profile_submission_profile_element_path(@profile, element)
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
-    element = submission_profile_elements(:default_title)
+    element = submission_profile_elements(:uiuc_default_title)
     get edit_submission_profile_submission_profile_element_path(@profile, element)
     assert_response :ok
   end
@@ -142,14 +142,14 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    element = submission_profile_elements(:default_title)
+    element = submission_profile_elements(:uiuc_default_title)
     patch submission_profile_submission_profile_element_path(@profile, element)
     assert_response :forbidden
   end
 
   test "update() updates an element" do
     log_in_as(users(:local_sysadmin))
-    element = submission_profile_elements(:default_title)
+    element = submission_profile_elements(:uiuc_default_title)
     patch submission_profile_submission_profile_element_path(@profile, element),
           xhr: true,
           params: {
@@ -165,7 +165,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
-    element = submission_profile_elements(:default_title)
+    element = submission_profile_elements(:uiuc_default_title)
     patch submission_profile_submission_profile_element_path(@profile, element),
           xhr: true,
           params: {
@@ -180,7 +180,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:local_sysadmin))
-    element = submission_profile_elements(:default_title)
+    element = submission_profile_elements(:uiuc_default_title)
     patch submission_profile_submission_profile_element_path(@profile, element),
           xhr: true,
           params: {

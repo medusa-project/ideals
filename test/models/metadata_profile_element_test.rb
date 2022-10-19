@@ -3,7 +3,7 @@ require 'test_helper'
 class MetadataProfileElementTest < ActiveSupport::TestCase
 
   setup do
-    @instance = metadata_profile_elements(:default_title)
+    @instance = metadata_profile_elements(:uiuc_default_title)
     assert @instance.valid?
   end
 

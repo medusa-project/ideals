@@ -10,59 +10,59 @@ northeast_unit1_collection1:
 
 unit1_collection1:
   unit:         unit1
-  collection:   collection1
+  collection:   uiuc_collection1
   primary:      true
   unit_default: true
 
 unit1_collection1_collection1:
   unit:         unit1
-  collection:   collection1_collection1
+  collection:   uiuc_collection1_collection1
   primary:      true
   unit_default: false
 
 unit1_collection1_collection1_collection1:
   unit:         unit1
-  collection:   collection1_collection1_collection1
+  collection:   uiuc_collection1_collection1_collection1
   primary:      true
   unit_default: false
 
 unit1_unit2_unit1_collection1:
   unit:         unit1_unit2_unit1
-  collection:   unit1_unit2_unit1_collection1
+  collection:   uiuc_unit1_unit2_unit1_collection1
   primary:      true
   unit_default: true
 
 unit2_collection1:
   unit:         unit2
-  collection:   collection1
+  collection:   uiuc_collection1
   primary:      false
   unit_default: false
 
 unit1_described:
   unit:         unit1
-  collection:   described
+  collection:   uiuc_described
   unit_default: false
   primary:      true
 
 unit1_empty:
   unit:         unit1
-  collection:   empty
+  collection:   uiuc_empty
   unit_default: false
   primary:      true
 
 unit1_undescribed:
   unit:         unit1
-  collection:   undescribed
+  collection:   uiuc_undescribed
   unit_default: false
 
 unit2_collection2:
   unit:         unit2
-  collection:   collection2
+  collection:   uiuc_collection2
   primary:      true
   unit_default: false
 
 buried_buried:
   unit:         buried
-  collection:   buried
+  collection:   uiuc_buried
   primary:      true
   unit_default: true

@@ -33,7 +33,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:collection1),
+                         collection:  collections(:uiuc_collection1),
                          kind:        Import::Kind::CSV)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -95,7 +95,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:collection1),
+                         collection:  collections(:uiuc_collection1),
                          kind:        Import::Kind::CSV)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -158,7 +158,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:collection1),
+                         collection:  collections(:uiuc_collection1),
                          kind:        Import::Kind::CSV)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -212,7 +212,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:collection1),
+                         collection:  collections(:uiuc_collection1),
                          kind:        Import::Kind::CSV)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -266,7 +266,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:collection1),
+                         collection:  collections(:uiuc_collection1),
                          kind:        Import::Kind::CSV)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -328,7 +328,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:collection1),
+                         collection:  collections(:uiuc_collection1),
                          kind:        Import::Kind::CSV)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -391,7 +391,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:collection1),
+                         collection:  collections(:uiuc_collection1),
                          kind:        Import::Kind::CSV)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -454,7 +454,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:collection1),
+                         collection:  collections(:uiuc_collection1),
                          kind:        Import::Kind::CSV)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)

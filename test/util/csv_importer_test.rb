@@ -21,7 +21,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     @instance.import(csv:                csv,
                      submitter:          users(:local_sysadmin),
-                     primary_collection: collections(:empty))
+                     primary_collection: collections(:uiuc_empty))
     item     = Item.order(created_at: :desc).limit(1).first
     creators = item.elements.select{ |e| e.name == "dc:creator" }.map(&:string)
     assert creators.include?("Bob")
@@ -36,7 +36,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     @instance.import(csv:                csv,
                      submitter:          users(:local_sysadmin),
-                     primary_collection: collections(:empty))
+                     primary_collection: collections(:uiuc_empty))
     item     = Item.order(created_at: :desc).limit(1).first
     creators = item.elements.
       where(registered_element: RegisteredElement.find_by_name("dc:creator")).
@@ -54,7 +54,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     @instance.import(csv:                csv,
                      submitter:          users(:local_sysadmin),
-                     primary_collection: collections(:empty))
+                     primary_collection: collections(:uiuc_empty))
     item = Item.order(created_at: :desc).limit(1).first
     assert_equal Item::Stages::SUBMITTED, item.stage
     assert_equal "New Item", item.title
@@ -68,7 +68,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     imported_items = []
     @instance.import(csv:                csv,
                      submitter:          users(:local_sysadmin),
-                     primary_collection: collections(:empty),
+                     primary_collection: collections(:uiuc_empty),
                      imported_items:     imported_items)
     assert_equal 1, imported_items.length
   end
@@ -82,7 +82,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
                        submitter:          users(:local_sysadmin),
-                       primary_collection: collections(:empty))
+                       primary_collection: collections(:uiuc_empty))
     end
   end
 
@@ -95,7 +95,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::RecordNotFound do
       @instance.import(csv:                csv,
                        submitter:          users(:local_sysadmin),
-                       primary_collection: collections(:empty))
+                       primary_collection: collections(:uiuc_empty))
     end
   end
 
@@ -107,7 +107,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     @instance.import(csv:                csv,
                      submitter:          users(:local_sysadmin),
-                     primary_collection: collections(:empty))
+                     primary_collection: collections(:uiuc_empty))
     item.reload
     assert_equal "New Title", item.title
   end
@@ -120,7 +120,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     @instance.import(csv:                csv,
                      submitter:          users(:local_sysadmin),
-                     primary_collection: collections(:empty))
+                     primary_collection: collections(:uiuc_empty))
     item.reload
     assert_nil item.element("dc:subject")
   end
@@ -134,7 +134,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     @instance.import(csv:                csv,
                      submitter:          users(:local_sysadmin),
-                     primary_collection: collections(:empty))
+                     primary_collection: collections(:uiuc_empty))
     item.reload
     assert_equal "New Title", item.element("dc:title").string      # new value
     assert_equal "Some subject", item.element("dc:subject").string # existing value
@@ -149,7 +149,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     task = Task.create!(name: "TestImport", status_text: "Lorem Ipsum")
     @instance.import(csv:                csv,
                      submitter:          users(:local_sysadmin),
-                     primary_collection: collections(:empty),
+                     primary_collection: collections(:uiuc_empty),
                      task:               task)
     assert_equal Task::Status::SUCCEEDED, task.status
     assert_equal 1, task.percent_complete
@@ -165,7 +165,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises do
       @instance.import(csv:                csv,
                        submitter:          users(:local_sysadmin),
-                       primary_collection: collections(:empty),
+                       primary_collection: collections(:uiuc_empty),
                        task:               task)
     end
     assert_equal Task::Status::FAILED, task.status

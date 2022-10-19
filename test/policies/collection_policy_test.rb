@@ -3,13 +3,13 @@ require 'test_helper'
 class CollectionPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @collection = collections(:collection1)
+    @collection = collections(:uiuc_collection1)
   end
 
   # change_parent?()
 
   test "change_parent?() returns false with a nil user" do
-    collection2 = collections(:described)
+    collection2 = collections(:uiuc_described)
     policy      = CollectionPolicy.new(nil, @collection)
     assert !policy.change_parent?(collection2.id)
   end
@@ -18,7 +18,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    collection2 = collections(:described)
+    collection2 = collections(:uiuc_described)
     policy      = CollectionPolicy.new(context, @collection)
     assert !policy.change_parent?(collection2.id)
   end
@@ -27,7 +27,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    collection2 = collections(:described)
+    collection2 = collections(:uiuc_described)
     policy      = CollectionPolicy.new(context, @collection)
     assert policy.change_parent?(collection2.id)
   end
@@ -38,7 +38,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    collection2 = collections(:described)
+    collection2 = collections(:uiuc_described)
     policy      = CollectionPolicy.new(context, @collection)
     assert !policy.change_parent?(collection2.id)
   end

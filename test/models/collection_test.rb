@@ -4,7 +4,7 @@ class CollectionTest < ActiveSupport::TestCase
 
   setup do
     setup_elasticsearch
-    @instance = collections(:collection1)
+    @instance = collections(:uiuc_collection1)
     assert @instance.valid?
   end
 
@@ -35,29 +35,29 @@ class CollectionTest < ActiveSupport::TestCase
   # all_children()
 
   test "all_children() returns the correct collections" do
-    assert_equal 2, collections(:collection1).all_children.count
+    assert_equal 2, collections(:uiuc_collection1).all_children.count
   end
 
   # all_managing_groups()
 
   test "all_managing_groups() returns the correct groups" do
-    groups = collections(:collection1_collection1_collection1).all_managing_groups
+    groups = collections(:uiuc_collection1_collection1_collection1).all_managing_groups
     assert_equal 0, groups.length
   end
 
   # all_parents()
 
   test "all_parents() returns the parents" do
-    result = collections(:collection1_collection1_collection1).all_parents
+    result = collections(:uiuc_collection1_collection1_collection1).all_parents
     assert_equal 2, result.count
-    assert_equal collections(:collection1_collection1), result[0]
-    assert_equal collections(:collection1), result[1]
+    assert_equal collections(:uiuc_collection1_collection1), result[0]
+    assert_equal collections(:uiuc_collection1), result[1]
   end
 
   # all_submitting_groups()
 
   test "all_submitting_groups() returns the correct groups" do
-    groups = collections(:collection1_collection1_collection1).all_submitting_groups
+    groups = collections(:uiuc_collection1_collection1_collection1).all_submitting_groups
     assert_equal 0, groups.length
   end
 
@@ -202,7 +202,7 @@ class CollectionTest < ActiveSupport::TestCase
   # destroy()
 
   test "destroy() raises an error when there are dependent collections" do
-    @instance = collections(:collection1_collection1)
+    @instance = collections(:uiuc_collection1_collection1)
     @instance.items.destroy_all
     @instance.all_children.each do |child|
       child.items.destroy_all
@@ -224,7 +224,7 @@ class CollectionTest < ActiveSupport::TestCase
   end
 
   test "destroy() succeeds when there are no dependent collections" do
-    assert collections(:empty).destroy
+    assert collections(:uiuc_empty).destroy
   end
 
   # download_count_by_month()
@@ -295,8 +295,8 @@ class CollectionTest < ActiveSupport::TestCase
   end
 
   test "effective_managers() includes managers of parent collections" do
-    parent    = collections(:collection1)
-    @instance = collections(:collection1_collection1)
+    parent    = collections(:uiuc_collection1)
+    @instance = collections(:uiuc_collection1_collection1)
     @instance.effective_managers.include?(parent.managing_users.first)
   end
 
@@ -354,8 +354,8 @@ class CollectionTest < ActiveSupport::TestCase
   end
 
   test "effective_submitters() includes managers of parent collections" do
-    parent    = collections(:collection1)
-    @instance = collections(:collection1_collection1)
+    parent    = collections(:uiuc_collection1)
+    @instance = collections(:uiuc_collection1_collection1)
     @instance.effective_submitters.include?(parent.managing_users.first)
   end
 
@@ -364,8 +364,8 @@ class CollectionTest < ActiveSupport::TestCase
   end
 
   test "effective_submitters() includes submitters into parent collections" do
-    parent    = collections(:collection1)
-    @instance = collections(:collection1_collection1)
+    parent    = collections(:uiuc_collection1)
+    @instance = collections(:uiuc_collection1_collection1)
     @instance.effective_submitters.include?(parent.submitting_users.first)
   end
 
@@ -376,7 +376,7 @@ class CollectionTest < ActiveSupport::TestCase
   # exhume!()
 
   test "exhume!() exhumes a buried collection" do
-    @instance = collections(:buried)
+    @instance = collections(:uiuc_buried)
     @instance.units.first.exhume!
     @instance.exhume!
     assert !@instance.buried
@@ -409,7 +409,7 @@ class CollectionTest < ActiveSupport::TestCase
   end
 
   test "parent_id cannot be set to an ID of a collection in a different unit" do
-    other = collections(:collection2)
+    other = collections(:uiuc_collection2)
     assert_not_equal @instance.primary_unit, other.primary_unit
     @instance.parent_id = other.id
     assert_raises ActiveRecord::RecordInvalid do
@@ -435,7 +435,7 @@ class CollectionTest < ActiveSupport::TestCase
   # save()
 
   test "save() creates an associated handle" do
-    @instance = collections(:described)
+    @instance = collections(:uiuc_described)
     assert_nil @instance.handle
     @instance.save!
     assert_not_nil @instance.handle
@@ -560,11 +560,11 @@ class CollectionTest < ActiveSupport::TestCase
   # unit_default?()
 
   test "unit_default?() returns false for a non-unit-default collection" do
-    assert !collections(:described).unit_default?
+    assert !collections(:uiuc_described).unit_default?
   end
 
   test "unit_default?() returns true for a unit-default collection" do
-    assert collections(:collection1).unit_default?
+    assert collections(:uiuc_collection1).unit_default?
   end
 
   # units

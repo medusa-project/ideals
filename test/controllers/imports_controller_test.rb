@@ -44,7 +44,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            import: {
-             collection_id: collections(:collection1).id
+             collection_id: collections(:uiuc_collection1).id
            }
          }
     assert_response :ok
@@ -58,7 +58,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
              import: {
-               collection_id: collections(:collection1).id
+               collection_id: collections(:uiuc_collection1).id
              }
            }
     end
@@ -212,7 +212,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   test "update() updates an element" do
     log_in_as(users(:uiuc_admin))
     import        = imports(:saf_new)
-    collection_id = collections(:collection1).id
+    collection_id = collections(:uiuc_collection1).id
     patch "/imports/#{import.id}",
           xhr: true,
           params: {
@@ -231,7 +231,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             import: {
-              collection_id: collections(:collection1).id
+              collection_id: collections(:uiuc_collection1).id
             }
           }
     assert_response :ok
