@@ -1,6 +1,6 @@
 -# @param institution [Institution]
 
-= form_for(institution, remote: true) do |f|
+= form_for(institution, url: institution_settings_path(institution), remote: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
