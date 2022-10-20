@@ -14,14 +14,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() redirects to login page for logged-out users" do
-    post item_bitstreams_path(items(:item1))
+    post item_bitstreams_path(items(:uiuc_item1))
     assert_redirected_to login_path
   end
 
   test "create() returns HTTP 200" do
     skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
     log_in_as(users(:local_sysadmin))
-    post item_bitstreams_path(items(:item1)),
+    post item_bitstreams_path(items(:uiuc_item1)),
          file_fixture("escher_lego.jpg")
     assert_response :ok
   end
@@ -30,7 +30,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
     log_in_as(users(:local_sysadmin))
     assert_difference "Bitstream.count" do
-      post item_bitstreams_path(items(:item1)),
+      post item_bitstreams_path(items(:uiuc_item1)),
            file_fixture("escher_lego.jpg")
     end
   end
@@ -38,46 +38,46 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "create() returns HTTP 400 for illegal arguments" do
     skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
     log_in_as(users(:local_sysadmin))
-    post item_bitstreams_path(items(:item1))
+    post item_bitstreams_path(items(:uiuc_item1))
     assert_response :bad_request
   end
 
   # destroy()
 
   test "destroy() redirects to login page for logged-out users" do
-    delete item_bitstream_path(items(:item1), bitstreams(:item1_in_staging))
+    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
     assert_redirected_to login_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete item_bitstream_path(items(:item1), bitstreams(:item1_in_staging))
+    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
     assert_response :forbidden
   end
 
   test "destroy() destroys the bitstream" do
     log_in_as(users(:local_sysadmin))
     assert_difference "Bitstream.count", -1 do
-      delete item_bitstream_path(items(:item1), bitstreams(:item1_in_staging))
+      delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
     end
   end
 
   test "destroy() returns HTTP 204 for an existing bitstream" do
     log_in_as(users(:local_sysadmin))
-    delete item_bitstream_path(items(:item1), bitstreams(:item1_in_staging))
+    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
     assert_response :no_content
   end
 
   test "destroy() returns HTTP 404 for a missing bitstream" do
     log_in_as(users(:local_sysadmin))
-    delete "/items/#{items(:item1).id}/bitstreams/999999"
+    delete "/items/#{items(:uiuc_item1).id}/bitstreams/999999"
     assert_response :not_found
   end
 
   # edit()
 
   test "edit() returns HTTP 403 for logged-out users" do
-    item      = items(:item1)
+    item      = items(:uiuc_item1)
     bitstream = item.bitstreams.first
     get edit_item_bitstream_path(item, bitstream), xhr: true
     assert_response :forbidden
@@ -85,7 +85,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item      = items(:item1)
+    item      = items(:uiuc_item1)
     bitstream = item.bitstreams.first
     get edit_item_bitstream_path(item, bitstream), xhr: true
     assert_response :forbidden
@@ -93,7 +93,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item      = items(:item1)
+    item      = items(:uiuc_item1)
     bitstream = item.bitstreams.first
     get edit_item_bitstream_path(item, bitstream)
     assert_response :not_found
@@ -101,7 +101,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item      = items(:item1)
+    item      = items(:uiuc_item1)
     bitstream = item.bitstreams.first
     get edit_item_bitstream_path(item, bitstream), xhr: true
     assert_response :ok
@@ -110,26 +110,26 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   # index()
 
   test "index() with a non-zip format returns HTTP 415" do
-    item = items(:approved)
+    item = items(:uiuc_approved)
     get item_bitstreams_path(item)
     assert_response :unsupported_media_type
   end
 
   test "index() with no results returns HTTP 204" do
-    item = items(:approved)
+    item = items(:uiuc_approved)
     item.bitstreams.delete_all
     get item_bitstreams_path(item, format: :zip)
     assert_response :no_content
   end
 
   test "index() redirects to a Download" do
-    item = items(:approved)
+    item = items(:uiuc_approved)
     get item_bitstreams_path(item, format: :zip)
     assert_response 302
   end
 
   test "index() ascribes a download event to all downloaded bitstreams" do
-    item = items(:approved)
+    item = items(:uiuc_approved)
     item.bitstreams.each do |bs|
       assert_equal 0, bs.download_count
     end
@@ -143,13 +143,13 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   # ingest()
 
   test "ingest() redirects to login page for logged-out users" do
-    post item_bitstream_ingest_path(items(:item1), bitstreams(:item1_in_staging))
+    post item_bitstream_ingest_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
     assert_redirected_to login_path
   end
 
   test "ingest() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post item_bitstream_ingest_path(items(:item1), bitstreams(:item1_in_staging))
+    post item_bitstream_ingest_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
     assert_response :forbidden
   end
 
@@ -157,7 +157,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     bitstream = bitstreams(:item1_in_staging)
     bitstream.update!(staging_key: nil)
-    post item_bitstream_ingest_path(items(:item1), bitstream)
+    post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
     assert_response :bad_request
   end
 
@@ -167,14 +167,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     item = bitstream.item
     item.handle.destroy!
     item.update!(handle: nil)
-    post item_bitstream_ingest_path(items(:item1), bitstream)
+    post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
     assert_response :bad_request
   end
 
   test "ingest() returns HTTP 409 if the bitstream has already been submitted for ingest" do
     log_in_as(users(:local_sysadmin))
     bitstream = bitstreams(:approved_in_permanent)
-    post item_bitstream_ingest_path(items(:item1), bitstream)
+    post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
     assert_response :conflict
   end
 
@@ -182,7 +182,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     bitstream = bitstreams(:approved_in_permanent)
     bitstream.update!(medusa_uuid: SecureRandom.uuid)
-    post item_bitstream_ingest_path(items(:item1), bitstream)
+    post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
     assert_response :conflict
   end
 
@@ -191,21 +191,21 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     bitstream = bitstreams(:awaiting_ingest_into_medusa)
     assert !bitstream.submitted_for_ingest
 
-    post item_bitstream_ingest_path(items(:item1), bitstream)
+    post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
     bitstream.reload
     assert bitstream.submitted_for_ingest
   end
 
   test "ingest() returns HTTP 204 for a successful ingest" do
     log_in_as(users(:local_sysadmin))
-    post item_bitstream_ingest_path(items(:awaiting_ingest_into_medusa),
+    post item_bitstream_ingest_path(items(:uiuc_awaiting_ingest_into_medusa),
                                     bitstreams(:awaiting_ingest_into_medusa))
     assert_response :no_content
   end
 
   test "ingest() returns HTTP 404 for a missing bitstream" do
     log_in_as(users(:local_sysadmin))
-    post "/items/#{items(:item1).id}/bitstreams/999999/ingest"
+    post "/items/#{items(:uiuc_item1).id}/bitstreams/999999/ingest"
     assert_response :not_found
   end
 
@@ -213,7 +213,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "object() returns HTTP 307" do
     fixture   = file_fixture("pdf.pdf")
-    item      = items(:item1)
+    item      = items(:uiuc_item1)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -231,7 +231,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "object() increments the bitstream's download count when dl=1" do
     fixture   = file_fixture("pdf.pdf")
-    item      = items(:item1)
+    item      = items(:uiuc_item1)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -251,7 +251,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "object() does not increment the bitstream's download count when a dl
   argument is not provided" do
     fixture   = file_fixture("pdf.pdf")
-    item      = items(:item1)
+    item      = items(:uiuc_item1)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -270,7 +270,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "object() returns HTTP 403 for submitting items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:submitting)
+    item      = items(:uiuc_submitting)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -288,7 +288,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "object() returns HTTP 403 for embargoed items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:embargoed)
+    item      = items(:uiuc_embargoed)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -306,7 +306,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "object() returns HTTP 403 for withdrawn items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:withdrawn)
+    item      = items(:uiuc_withdrawn)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -323,13 +323,13 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "object() returns HTTP 404 for missing bitstreams" do
-    get item_bitstream_object_path(items(:item1), 9999999)
+    get item_bitstream_object_path(items(:uiuc_item1), 9999999)
     assert_response :not_found
   end
 
   test "object() respects role limits" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:withdrawn) # (an item that only sysadmins have access to)
+    item      = items(:uiuc_withdrawn) # (an item that only sysadmins have access to)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -355,7 +355,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   # show()
 
   test "show() returns HTTP 200" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     bs   = bitstreams(:item1_in_staging)
     get item_bitstream_path(item, bs)
     assert_response :ok
@@ -363,7 +363,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "show() returns HTTP 403 for submitting items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:submitting)
+    item      = items(:uiuc_submitting)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -381,7 +381,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "show() returns HTTP 403 for embargoed items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:embargoed)
+    item      = items(:uiuc_embargoed)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -399,7 +399,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "show() returns HTTP 403 for withdrawn items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:withdrawn)
+    item      = items(:uiuc_withdrawn)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -417,7 +417,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "show() respects role limits" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:withdrawn) # (an item that only sysadmins have access to)
+    item      = items(:uiuc_withdrawn) # (an item that only sysadmins have access to)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -444,7 +444,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "stream() returns HTTP 200 for bitstreams in staging" do
     fixture   = file_fixture("pdf.pdf")
-    item      = items(:item1)
+    item      = items(:uiuc_item1)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -463,7 +463,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "stream() returns HTTP 200 for bitstreams in permanent storage" do
     fixture   = file_fixture("pdf.pdf")
-    item      = items(:item1)
+    item      = items(:uiuc_item1)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -483,7 +483,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "stream() returns HTTP 403 for submitting items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:submitting)
+    item      = items(:uiuc_submitting)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -501,7 +501,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "stream() returns HTTP 403 for embargoed items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:embargoed)
+    item      = items(:uiuc_embargoed)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -519,7 +519,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "stream() returns HTTP 403 for withdrawn items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:withdrawn)
+    item      = items(:uiuc_withdrawn)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -536,12 +536,12 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "stream() returns HTTP 404 for missing bitstreams" do
-    get item_bitstream_stream_path(items(:item1), 9999999)
+    get item_bitstream_stream_path(items(:uiuc_item1), 9999999)
     assert_response :not_found
   end
 
   test "stream() returns HTTP 404 when the underlying data is missing" do
-    item      = items(:item1)
+    item      = items(:uiuc_item1)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: "cats.jpg",
                                          length:   234234)
@@ -552,7 +552,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "stream() respects role limits" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:withdrawn) # (an item that only sysadmins have access to)
+    item      = items(:uiuc_withdrawn) # (an item that only sysadmins have access to)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -577,7 +577,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "stream() supports a response-content-disposition argument" do
     fixture   = file_fixture("pdf.pdf")
-    item      = items(:item1)
+    item      = items(:uiuc_item1)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -666,14 +666,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 404 for nonexistent collections" do
     log_in_as(users(:local_sysadmin))
-    patch "/items/#{items(:item1).id}/bitstreams/bogus"
+    patch "/items/#{items(:uiuc_item1).id}/bitstreams/bogus"
     assert_response :not_found
   end
 
   # viewer()
 
   test "viewer() returns HTTP 200" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     bs   = bitstreams(:item1_in_staging)
     get item_bitstream_viewer_path(item, bs), xhr: true
     assert_response :ok
@@ -681,7 +681,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "viewer() returns HTTP 403 for submitting items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:submitting)
+    item      = items(:uiuc_submitting)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -699,7 +699,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "viewer() returns HTTP 403 for embargoed items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:embargoed)
+    item      = items(:uiuc_embargoed)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -717,7 +717,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "viewer() returns HTTP 403 for withdrawn items" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:withdrawn)
+    item      = items(:uiuc_withdrawn)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))
@@ -734,7 +734,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "viewer() returns HTTP 404 for non-XHR requests" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     bs   = bitstreams(:item1_in_staging)
     get item_bitstream_viewer_path(item, bs)
     assert_response :not_found
@@ -742,7 +742,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "viewer() respects role limits" do
     fixture   = file_fixture("crane.jpg")
-    item      = items(:withdrawn) # (an item that only sysadmins have access to)
+    item      = items(:uiuc_withdrawn) # (an item that only sysadmins have access to)
     bitstream = Bitstream.new_in_staging(item:     item,
                                          filename: File.basename(fixture),
                                          length:   File.size(fixture))

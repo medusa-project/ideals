@@ -5,7 +5,7 @@ class MonthlyUnitItemDownloadCountTest < ActiveSupport::TestCase
   # compile_counts()
 
   test "compile_counts() compiles correct counts" do
-    item        = items(:multiple_bitstreams)
+    item        = items(:uiuc_multiple_bitstreams)
     unit        = item.primary_collection.primary_unit
     start_year  = 2018
     start_month = 1

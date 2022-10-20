@@ -5,7 +5,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   # compile_counts()
 
   test "compile_counts() compiles correct counts" do
-    item        = items(:multiple_bitstreams)
+    item        = items(:uiuc_multiple_bitstreams)
     collection  = item.primary_collection
     start_year  = 2018
     start_month = 1
@@ -50,7 +50,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "for_collection() returns a correct value" do
-    item        = items(:multiple_bitstreams)
+    item        = items(:uiuc_multiple_bitstreams)
     collection  = item.primary_collection
     start_year  = 2018
     start_month = 1

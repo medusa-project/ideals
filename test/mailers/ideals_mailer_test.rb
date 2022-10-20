@@ -139,7 +139,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # item_submitted()
 
   test "item_submitted() sends the expected email" do
-    item  = items(:submitted)
+    item  = items(:uiuc_submitted)
     email = IdealsMailer.item_submitted(item).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 

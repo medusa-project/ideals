@@ -17,7 +17,7 @@ class AscribedElementTest < ActiveSupport::TestCase
   end
 
   test "instance's owning item is updated when the instance is updated" do
-    item = items(:described)
+    item = items(:uiuc_described)
     original_updated_at = item.updated_at
 
     sleep 0.1

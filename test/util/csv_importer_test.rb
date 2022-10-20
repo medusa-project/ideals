@@ -100,7 +100,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   end
 
   test "import() updates an existing item" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     csv = CSV.generate do |row|
       row << ["id", "dc:title"]
       row << ["#{item.id}", "New Title"]
@@ -113,7 +113,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   end
 
   test "import() deletes elements corresponding to blank element values" do
-    item = items(:described)
+    item = items(:uiuc_described)
     csv = CSV.generate do |row|
       row << ["id", "dc:subject"]
       row << ["#{item.id}", ""]
@@ -127,7 +127,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import() does not modify elements other than those contained in the
   CSV" do
-    item = items(:described)
+    item = items(:uiuc_described)
     csv = CSV.generate do |row|
       row << ["id", "dc:title"]
       row << ["#{item.id}", "New Title"]
@@ -141,7 +141,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   end
 
   test "import() succeeds the provided Task object upon success" do
-    item = items(:described)
+    item = items(:uiuc_described)
     csv = CSV.generate do |row|
       row << ["id", "dc:title"]
       row << ["#{item.id}", "New Title"]
@@ -156,7 +156,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   end
 
   test "import() fails the provided Task object upon error" do
-    item = items(:described)
+    item = items(:uiuc_described)
     csv = CSV.generate do |row|
       row << ["id", "bogus"]
       row << ["#{item.id}", "Bogus element value"]

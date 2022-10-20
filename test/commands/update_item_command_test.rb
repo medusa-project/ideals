@@ -6,7 +6,7 @@ class UpdateItemCommandTest < ActiveSupport::TestCase
     Event.destroy_all
 
     user        = users(:local_sysadmin)
-    item        = items(:item1)
+    item        = items(:uiuc_item1)
     description = "I just updated this item"
     command     = UpdateItemCommand.new(item: item,
                                         user: user,

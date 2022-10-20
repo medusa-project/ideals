@@ -8,7 +8,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
       user        = users(:local_sysadmin)
       context     = RequestContext.new(user:        user,
                                        institution: user.institution)
-      owning_item = items(:approved)
+      owning_item = items(:uiuc_approved)
       relation    = owning_item.bitstreams
       count       = relation.count
       scope       = BitstreamPolicy::Scope.new(context, relation, owning_item)
@@ -19,7 +19,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
       user        = users(:norights)
       context     = RequestContext.new(user:        user,
                                        institution: user.institution)
-      owning_item = items(:approved)
+      owning_item = items(:uiuc_approved)
       relation    = owning_item.bitstreams
       count       = relation.count
       assert count > 0
@@ -38,7 +38,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
       context     = RequestContext.new(user:        user,
                                        institution: user.institution,
                                        role_limit:  Role::LOGGED_OUT)
-      owning_item = items(:approved)
+      owning_item = items(:uiuc_approved)
       relation    = owning_item.bitstreams
       count       = relation.count
       assert count > 0

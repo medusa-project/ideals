@@ -58,7 +58,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
   # compile_counts()
 
   test "compile_counts() compiles correct counts" do
-    item        = items(:multiple_bitstreams)
+    item        = items(:uiuc_multiple_bitstreams)
     start_year  = 2018
     start_month = 1
     end_year    = 2020
@@ -101,7 +101,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "for_item() returns a correct value" do
-    item        = items(:multiple_bitstreams)
+    item        = items(:uiuc_multiple_bitstreams)
     start_year  = 2018
     start_month = 1
     end_year    = 2020
@@ -133,7 +133,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
   # increment()
 
   test "increment() increments the count of an existing row" do
-    item  = items(:described)
+    item  = items(:uiuc_described)
     now   = Time.now
     year  = now.year
     month = now.month
@@ -145,7 +145,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "increment() adds a new row if necessary" do
-    item  = items(:described)
+    item  = items(:uiuc_described)
     now   = Time.now
     year  = now.year
     month = now.month

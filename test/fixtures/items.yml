@@ -13,73 +13,73 @@ northeast_unit1_collection1_item1:
 
 # uiuc_collection1 items
 
-item1: # TODO: remove this
+uiuc_item1: # TODO: remove this
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-submitting:
+uiuc_submitting:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::SUBMITTING %>
   stage_reason:
 
-submitted:
+uiuc_submitted:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::SUBMITTED %>
   stage_reason:
 
-approved:
+uiuc_approved:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-awaiting_ingest_into_medusa:
+uiuc_awaiting_ingest_into_medusa:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-in_medusa:
+uiuc_in_medusa:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-described:
+uiuc_described:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-embargoed:
+uiuc_embargoed:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-undescribed:
+uiuc_undescribed:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-withdrawn:
+uiuc_withdrawn:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::WITHDRAWN %>
   stage_reason:
 
-buried:
+uiuc_buried:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::BURIED %>
   stage_reason:
 
-multiple_bitstreams:
+uiuc_multiple_bitstreams:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>
@@ -87,7 +87,7 @@ multiple_bitstreams:
 
 # uiuc_collection1_collection1 items
 
-collection1_collection1_item1:
+uiuc_collection1_collection1_item1:
   institution:  uiuc
   submitter:    local_sysadmin
   stage:        <%= Item::Stages::APPROVED %>

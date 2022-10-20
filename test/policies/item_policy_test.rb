@@ -32,7 +32,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   end
 
   setup do
-    @item = items(:item1)
+    @item = items(:uiuc_item1)
   end
 
   # approve()
@@ -217,7 +217,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:submitting))
+    policy  = ItemPolicy.new(context, items(:uiuc_submitting))
     assert !policy.download_counts?
   end
 
@@ -225,7 +225,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    item    = items(:item1)
+    item    = items(:uiuc_item1)
     policy  = ItemPolicy.new(context, item)
     assert policy.download_counts?
     item.embargoes.build(expires_at: Time.now + 1.hour,
@@ -240,7 +240,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     group.users << user
     context      = RequestContext.new(user:        user,
                                       institution: user.institution)
-    item         = items(:item1)
+    item         = items(:uiuc_item1)
     policy       = ItemPolicy.new(context, item)
     assert policy.download_counts?
 
@@ -254,7 +254,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    item    = items(:buried)
+    item    = items(:uiuc_buried)
     policy  = ItemPolicy.new(context, item)
     assert !policy.download_counts?
   end
@@ -263,7 +263,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:embargoed))
+    policy  = ItemPolicy.new(context, items(:uiuc_embargoed))
     assert policy.download_counts?
   end
 
@@ -271,7 +271,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:submitting))
+    policy  = ItemPolicy.new(context, items(:uiuc_submitting))
     assert policy.download_counts?
   end
 
@@ -279,7 +279,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:withdrawn))
+    policy  = ItemPolicy.new(context, items(:uiuc_withdrawn))
     assert policy.download_counts?
   end
 
@@ -289,7 +289,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ItemPolicy.new(context, items(:embargoed))
+    policy  = ItemPolicy.new(context, items(:uiuc_embargoed))
     assert !policy.download_counts?
   end
 
@@ -598,7 +598,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:submitting))
+    policy  = ItemPolicy.new(context, items(:uiuc_submitting))
     assert !policy.file_navigator?
   end
 
@@ -606,7 +606,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    item    = items(:item1)
+    item    = items(:uiuc_item1)
     policy  = ItemPolicy.new(context, item)
     assert policy.file_navigator?
     item.embargoes.build(expires_at: Time.now + 1.hour,
@@ -621,7 +621,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     group.users << user
     context      = RequestContext.new(user:        user,
                                       institution: user.institution)
-    item         = items(:item1)
+    item         = items(:uiuc_item1)
     policy       = ItemPolicy.new(context, item)
     assert policy.file_navigator?
 
@@ -635,7 +635,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:embargoed))
+    policy  = ItemPolicy.new(context, items(:uiuc_embargoed))
     assert policy.file_navigator?
   end
 
@@ -643,7 +643,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:submitting))
+    policy  = ItemPolicy.new(context, items(:uiuc_submitting))
     assert policy.file_navigator?
   end
 
@@ -651,7 +651,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:withdrawn))
+    policy  = ItemPolicy.new(context, items(:uiuc_withdrawn))
     assert policy.file_navigator?
   end
 
@@ -659,7 +659,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:buried))
+    policy  = ItemPolicy.new(context, items(:uiuc_buried))
     assert policy.file_navigator?
   end
 
@@ -669,7 +669,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ItemPolicy.new(context, items(:embargoed))
+    policy  = ItemPolicy.new(context, items(:uiuc_embargoed))
     assert !policy.file_navigator?
   end
 
@@ -870,7 +870,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:submitting))
+    policy  = ItemPolicy.new(context, items(:uiuc_submitting))
     assert !policy.show?
   end
 
@@ -878,7 +878,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    item    = items(:item1)
+    item    = items(:uiuc_item1)
     policy  = ItemPolicy.new(context, item)
     assert policy.show?
     item.embargoes.build(expires_at: Time.now + 1.hour,
@@ -893,7 +893,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     group.users << user
     context      = RequestContext.new(user:        user,
                                       institution: user.institution)
-    item         = items(:item1)
+    item         = items(:uiuc_item1)
     policy       = ItemPolicy.new(context, item)
     assert policy.show?
 
@@ -907,7 +907,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:embargoed))
+    policy  = ItemPolicy.new(context, items(:uiuc_embargoed))
     assert policy.show?
   end
 
@@ -915,7 +915,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:submitting))
+    policy  = ItemPolicy.new(context, items(:uiuc_submitting))
     assert policy.show?
   end
 
@@ -923,7 +923,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:withdrawn))
+    policy  = ItemPolicy.new(context, items(:uiuc_withdrawn))
     assert policy.show?
   end
 
@@ -931,7 +931,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:buried))
+    policy  = ItemPolicy.new(context, items(:uiuc_buried))
     assert policy.show?
   end
 
@@ -941,7 +941,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ItemPolicy.new(context, items(:embargoed))
+    policy  = ItemPolicy.new(context, items(:uiuc_embargoed))
     assert !policy.show?
   end
 
@@ -1019,7 +1019,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:embargoed))
+    policy  = ItemPolicy.new(context, items(:uiuc_embargoed))
     assert policy.show_all_metadata?
   end
 
@@ -1095,7 +1095,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   test "show_collections?() does not authorize access to withdrawn items by
   roles beneath collection manager" do
-    @item   = items(:withdrawn)
+    @item   = items(:uiuc_withdrawn)
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -1105,7 +1105,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   test "show_collections?() does not authorize access to buried items by
   roles beneath collection manager" do
-    @item   = items(:buried)
+    @item   = items(:uiuc_buried)
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -1114,7 +1114,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_collections?() respects role limits" do
-    @item   = items(:withdrawn)
+    @item   = items(:uiuc_withdrawn)
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
@@ -1261,7 +1261,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_file_navigator?() does not authorize download-embargoed items" do
-    @item   = items(:embargoed)
+    @item   = items(:uiuc_embargoed)
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -1309,7 +1309,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   test "show_metadata?() does not authorize access to withdrawn items by
   roles beneath collection manager" do
-    @item   = items(:withdrawn)
+    @item   = items(:uiuc_withdrawn)
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -1319,7 +1319,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   test "show_metadata?() does not authorize access to buried items by
   roles beneath collection manager" do
-    @item   = items(:buried)
+    @item   = items(:uiuc_buried)
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -1328,7 +1328,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_metadata?() respects role limits" do
-    @item   = items(:withdrawn)
+    @item   = items(:uiuc_withdrawn)
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
@@ -1437,7 +1437,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:submitting))
+    policy  = ItemPolicy.new(context, items(:uiuc_submitting))
     assert !policy.statistics?
   end
 
@@ -1445,7 +1445,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    item    = items(:item1)
+    item    = items(:uiuc_item1)
     policy  = ItemPolicy.new(context, item)
     assert policy.statistics?
     item.embargoes.build(expires_at: Time.now + 1.hour,
@@ -1457,7 +1457,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    item    = items(:buried)
+    item    = items(:uiuc_buried)
     policy  = ItemPolicy.new(context, item)
     assert !policy.statistics?
   end
@@ -1466,7 +1466,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:embargoed))
+    policy  = ItemPolicy.new(context, items(:uiuc_embargoed))
     assert policy.statistics?
   end
 
@@ -1474,7 +1474,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:submitting))
+    policy  = ItemPolicy.new(context, items(:uiuc_submitting))
     assert policy.statistics?
   end
 
@@ -1482,7 +1482,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ItemPolicy.new(context, items(:withdrawn))
+    policy  = ItemPolicy.new(context, items(:uiuc_withdrawn))
     assert policy.statistics?
   end
 
@@ -1492,7 +1492,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ItemPolicy.new(context, items(:embargoed))
+    policy  = ItemPolicy.new(context, items(:uiuc_embargoed))
     assert !policy.statistics?
   end
 

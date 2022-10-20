@@ -22,7 +22,7 @@ class RegisteredElementTest < ActiveSupport::TestCase
   # destroy()
 
   test "instances with attached AscribedElements cannot be destroyed" do
-    item = items(:approved)
+    item = items(:uiuc_approved)
     item.elements.build(registered_element: @instance,
                         string:             "new element").save!
     assert_raises ActiveRecord::InvalidForeignKey do

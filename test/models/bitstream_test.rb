@@ -79,7 +79,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # new_in_staging()
 
   test "new_in_staging() returns a correct instance" do
-    item     = items(:item1)
+    item     = items(:uiuc_item1)
     filename = "cats.jpg"
     length   = 3424
     bs       = Bitstream.new_in_staging(item:     item,
@@ -223,7 +223,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "create() updates bundle positions in the owning item" do
-    item = items(:multiple_bitstreams)
+    item = items(:uiuc_multiple_bitstreams)
     Bitstream.create!(bundle_position:   1,
                       item:              item,
                       original_filename: "cats.jpg")
@@ -334,7 +334,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(item:     items(:item1),
+      @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                            filename: File.basename(fixture),
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
@@ -359,7 +359,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(item:     items(:item1),
+      @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                            filename: File.basename(fixture),
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
@@ -391,7 +391,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(item:     items(:item1),
+      @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                            filename: File.basename(fixture),
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
@@ -415,7 +415,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(item:     items(:item1),
+      @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                            filename: File.basename(fixture),
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
@@ -601,7 +601,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "ingest_into_medusa() raises an error if the ID is blank" do
     @instance = Bitstream.new
-    @instance.item = items(:item1)
+    @instance.item = items(:uiuc_item1)
     assert_raises ArgumentError do
       @instance.ingest_into_medusa
     end
@@ -730,7 +730,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "move_into_permanent_storage() raises an error if no object exists in
   staging" do
-    @instance = Bitstream.new_in_staging(item:     items(:item1),
+    @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                          filename: "file.jpg",
                                          length:   1234)
     assert_raises do
@@ -742,7 +742,7 @@ class BitstreamTest < ActiveSupport::TestCase
     begin
       fixture = file_fixture("escher_lego.jpg")
       File.open(fixture, "r") do |file|
-        @instance = Bitstream.new_in_staging(item:     items(:item1),
+        @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                              filename: File.basename(fixture),
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)
@@ -765,7 +765,7 @@ class BitstreamTest < ActiveSupport::TestCase
     begin
       fixture = file_fixture("escher_lego.jpg")
       File.open(fixture, "r") do |file|
-        @instance = Bitstream.new_in_staging(item:     items(:item1),
+        @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                              filename: File.basename(fixture),
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)
@@ -925,7 +925,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() sets all other bitstreams attached to the same item to not
   primary" do
-    item = items(:approved)
+    item = items(:uiuc_approved)
     b1   = item.bitstreams.build(primary: true)
     b2   = item.bitstreams.build(primary: false)
     item.save!
@@ -1023,7 +1023,7 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance.update!(staging_key:"cats")
     assert_raises ActiveRecord::RecordNotUnique do
       Bitstream.create!(staging_key: "cats",
-                        item:        items(:item1))
+                        item:        items(:uiuc_item1))
     end
   end
 
@@ -1076,7 +1076,7 @@ class BitstreamTest < ActiveSupport::TestCase
       # Write a file to the bucket.
       fixture = file_fixture("escher_lego.jpg")
       File.open(fixture, "r") do |file|
-        @instance = Bitstream.new_in_staging(item:     items(:item1),
+        @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                              filename: File.basename(fixture),
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)

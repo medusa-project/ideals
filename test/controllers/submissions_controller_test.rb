@@ -14,20 +14,20 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   # complete()
 
   test "complete() redirects to login page for logged-out users" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     post submission_complete_path(item)
     assert_redirected_to login_path
   end
 
   test "complete() returns HTTP 302 for logged-in users" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     log_in_as(item.submitter)
     post submission_complete_path(item)
     assert_redirected_to submission_status_path(item)
   end
 
   test "complete() returns HTTP 302 when an item has already been submitted" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     assert !item.submitting?
     log_in_as(item.submitter)
     post submission_complete_path(item)
@@ -36,7 +36,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "complete() redirects to the edit-submission form when the item is
   missing any required metadata fields" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     item.elements.destroy_all
     log_in_as(item.submitter)
     post submission_complete_path(item)
@@ -45,7 +45,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "complete() redirects to the edit-submission form when the item has no
   associated bitstreams" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     item.bitstreams.destroy_all
     log_in_as(item.submitter)
     post submission_complete_path(item)
@@ -54,7 +54,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "complete() redirects to the item when its collection is not reviewing
   submissions" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     item.primary_collection.update!(submissions_reviewed: false)
 
     log_in_as(item.submitter)
@@ -64,7 +64,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "complete() redirects to the submission status page when its collection
   is reviewing submissions" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     item.primary_collection.update!(submissions_reviewed: true)
 
     log_in_as(item.submitter)
@@ -73,7 +73,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "complete() updates the item's stage attribute" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     assert item.submitting?
     log_in_as(item.submitter)
     post submission_complete_path(item)
@@ -85,7 +85,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "complete() does not attach an embargo when the open radio is selected" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     log_in_as(item.submitter)
     item.update!(temp_embargo_type:       "open",
                  temp_embargo_kind:       Embargo::Kind::DOWNLOAD)
@@ -101,7 +101,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "complete() attaches a correct embargo when the institution-only radio
   is selected" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     log_in_as(item.submitter)
     item.update!(temp_embargo_type:       "institution",
                  temp_embargo_kind:       Embargo::Kind::DOWNLOAD,
@@ -124,7 +124,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "complete() attaches a correct Embargo when the closed radio is selected" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     log_in_as(item.submitter)
     item.update!(temp_embargo_type:       "closed",
                  temp_embargo_kind:       Embargo::Kind::DOWNLOAD,
@@ -147,7 +147,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "complete() attaches a correct embargo when the hide records checkbox is
   checked" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     log_in_as(item.submitter)
     item.update!(temp_embargo_type:       "closed",
                  temp_embargo_kind:       Embargo::Kind::ALL_ACCESS,
@@ -194,19 +194,19 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   # destroy()
 
   test "destroy() redirects to login page for logged-out users" do
-    delete submission_path(items(:submitting))
+    delete submission_path(items(:uiuc_submitting))
     assert_redirected_to login_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete submission_path(items(:submitting))
+    delete submission_path(items(:uiuc_submitting))
     assert_response :forbidden
   end
 
   test "destroy() destroys the item" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     assert_difference "Item.count", -1 do
       delete submission_path(item)
     end
@@ -214,7 +214,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() returns HTTP 302 for an existing item" do
     log_in_as(users(:local_sysadmin))
-    submission = items(:submitting)
+    submission = items(:uiuc_submitting)
     delete submission_path(submission)
     assert_redirected_to root_path
   end
@@ -227,7 +227,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() redirects back when an item has already been submitted" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     delete submission_path(item)
     assert_redirected_to root_url
   end
@@ -235,20 +235,20 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   # edit()
 
   test "edit() redirects to login page for logged-out users" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     get edit_submission_path(item)
     assert_redirected_to login_path
   end
 
   test "edit() returns HTTP 200 for logged-in users" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     log_in_as(item.submitter)
     get edit_submission_path(item)
     assert_response :ok
   end
 
   test "edit() redirects back when an item has already been submitted" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     log_in_as(item.submitter)
     get edit_submission_path(item)
     assert_redirected_to root_path
@@ -270,20 +270,20 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   # status()
 
   test "status() redirects to login page for logged-out users" do
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     get submission_status_path(item)
     assert_redirected_to login_path
   end
 
   test "status() returns HTTP 200 for logged-in users" do
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     log_in_as(item.submitter)
     get submission_status_path(item)
     assert_response :ok
   end
 
   test "status() redirects back when an item is not in the submitted stage" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     log_in_as(item.submitter)
     get submission_status_path(item)
     assert_redirected_to root_path
@@ -292,14 +292,14 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to login page for logged-out users" do
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     patch submission_path(item)
     assert_redirected_to login_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     patch submission_path(item)
     assert_response :forbidden
   end
@@ -307,7 +307,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   test "update() updates an item" do
     log_in_as(users(:local_sysadmin))
     collection = collections(:uiuc_empty)
-    item       = items(:submitting)
+    item       = items(:uiuc_submitting)
     patch submission_path(item),
           xhr: true,
           params: {
@@ -321,7 +321,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 204" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     patch submission_path(item),
           xhr: true,
           params: {
@@ -334,7 +334,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     patch submission_path(item),
           xhr: true,
           params: {
@@ -353,7 +353,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() redirects back when an item has already been submitted" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     patch submission_path(item)
     assert_redirected_to root_url
   end

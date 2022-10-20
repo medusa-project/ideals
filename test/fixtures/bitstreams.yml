@@ -5,7 +5,7 @@
 # They are set to temporary values here in order to get seeded into the bucket.
 
 item1_in_staging:
-  item:                 item1
+  item:                 uiuc_item1
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
@@ -19,7 +19,7 @@ item1_in_staging:
   description:          Sample description
 
 submitting_in_staging:
-  item:                 submitting
+  item:                 uiuc_submitting
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
@@ -33,7 +33,7 @@ submitting_in_staging:
   description:          Sample description
 
 submitted_in_staging:
-  item:                 submitted
+  item:                 uiuc_submitted
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
@@ -47,7 +47,7 @@ submitted_in_staging:
   description:          Sample description
 
 awaiting_ingest_into_medusa:
-  item:                 awaiting_ingest_into_medusa
+  item:                 uiuc_awaiting_ingest_into_medusa
   submitted_for_ingest: false
   staging_key:
   permanent_key:        <%= SecureRandom.hex %>
@@ -61,7 +61,7 @@ awaiting_ingest_into_medusa:
   description:          Sample description
 
 approved_in_permanent:
-  item:                 approved
+  item:                 uiuc_approved
   submitted_for_ingest: true
   staging_key:
   permanent_key:        <%= SecureRandom.hex %>
@@ -75,7 +75,7 @@ approved_in_permanent:
   description:          Sample description
 
 item2_in_medusa:
-  item:                 in_medusa
+  item:                 uiuc_in_medusa
   submitted_for_ingest: true
   staging_key:
   permanent_key:        <%= SecureRandom.hex %>
@@ -89,7 +89,7 @@ item2_in_medusa:
   description:          Sample description
 
 license_bundle:
-  item:                 item1
+  item:                 uiuc_item1
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
@@ -103,7 +103,7 @@ license_bundle:
   description:          Sample description
 
 role_limited:
-  item:                 item1
+  item:                 uiuc_item1
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
@@ -117,7 +117,7 @@ role_limited:
   description:          Sample description
 
 embargoed_in_staging:
-  item:                 embargoed
+  item:                 uiuc_embargoed
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
@@ -131,7 +131,7 @@ embargoed_in_staging:
   description:          Sample description
 
 withdrawn_in_staging:
-  item:                 withdrawn
+  item:                 uiuc_withdrawn
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
@@ -145,7 +145,7 @@ withdrawn_in_staging:
   description:          Sample description
 
 multiple_bitstreams_1:
-  item:                 multiple_bitstreams
+  item:                 uiuc_multiple_bitstreams
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
@@ -159,7 +159,7 @@ multiple_bitstreams_1:
   description:          Sample description
 
 multiple_bitstreams_2:
-  item:                 multiple_bitstreams
+  item:                 uiuc_multiple_bitstreams
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
@@ -173,7 +173,7 @@ multiple_bitstreams_2:
   description:          Sample description
 
 multiple_bitstreams_3:
-  item:                 multiple_bitstreams
+  item:                 uiuc_multiple_bitstreams
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
@@ -187,7 +187,7 @@ multiple_bitstreams_3:
   description:          Sample description
 
 collection1_collection1_item1_in_staging:
-  item:                 collection1_collection1_item1
+  item:                 uiuc_collection1_collection1_item1
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:

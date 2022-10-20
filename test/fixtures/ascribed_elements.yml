@@ -4,40 +4,40 @@ described_title:
   string:             Some title
   uri:
   registered_element: uiuc_dc_title
-  item:               described
+  item:               uiuc_described
   position:           1
 
 described_description:
   string:             Some description
   uri:
   registered_element: uiuc_dc_description
-  item:               described
+  item:               uiuc_described
   position:           1
 
 described_subject:
   string:             Some subject
   uri:
   registered_element: uiuc_dc_subject
-  item:               described
+  item:               uiuc_described
   position:           1
 
 in_medusa_title:
   string:             Some title
   uri:
   registered_element: uiuc_dc_title
-  item:               in_medusa
+  item:               uiuc_in_medusa
   position:           1
 
 submitting_item_title:
   string:             Some title
   uri:
   registered_element: uiuc_dc_title
-  item:               submitting
+  item:               uiuc_submitting
   position:           1
 
 submitted_item_title:
   string:             Some title
   uri:
   registered_element: uiuc_dc_title
-  item:               submitted
+  item:               uiuc_submitted
   position:           1

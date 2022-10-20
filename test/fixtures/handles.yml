@@ -7,13 +7,13 @@ collection1_handle:
 # item handles
 
 handle1:
-  item:   item1
+  item:   uiuc_item1
   suffix: 5001
 
 awaiting_ingest_into_medusa:
-  item:   awaiting_ingest_into_medusa
+  item:   uiuc_awaiting_ingest_into_medusa
   suffix: 5002
 
 approved:
-  item:   approved
+  item:   uiuc_approved
   suffix: 5003

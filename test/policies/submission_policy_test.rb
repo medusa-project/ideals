@@ -3,7 +3,7 @@ require 'test_helper'
 class SubmissionPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @item = items(:item1)
+    @item = items(:uiuc_item1)
   end
 
   # complete?()

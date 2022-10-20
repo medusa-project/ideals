@@ -14,28 +14,28 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # approve()
 
   test "approve() redirects to login page for logged-out users" do
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_approve_path(item)
     assert_redirected_to login_path
   end
 
   test "approve() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_approve_path(item)
     assert_response :forbidden
   end
 
   test "approve() redirects to the item page for authorized users" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_approve_path(item)
     assert_redirected_to item_path(item)
   end
 
   test "approve() approves an item" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_approve_path(item)
     item.reload
     assert_equal Item::Stages::APPROVED, item.stage
@@ -43,7 +43,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "approve() moves an item's bitstreams into permanent storage" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_approve_path(item)
 
     item.bitstreams.each do |bs|
@@ -52,7 +52,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "approve() creates an associated handle" do
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     assert_nil item.handle
     log_in_as(users(:local_sysadmin))
     patch item_approve_path(item)
@@ -63,19 +63,19 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # delete()
 
   test "delete() redirects to login page for logged-out users" do
-    post item_delete_path(items(:item1))
+    post item_delete_path(items(:uiuc_item1))
     assert_redirected_to login_path
   end
 
   test "delete() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post item_delete_path(items(:item1))
+    post item_delete_path(items(:uiuc_item1))
     assert_response :forbidden
   end
 
   test "delete() buries the item" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitting)
+    item = items(:uiuc_submitting)
     post item_delete_path(item)
     item.reload
     assert item.buried?
@@ -83,7 +83,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "delete() returns HTTP 302 for an existing item" do
     log_in_as(users(:local_sysadmin))
-    submission = items(:item1)
+    submission = items(:uiuc_item1)
     expected   = submission.primary_collection
     post item_delete_path(submission)
     assert_redirected_to expected
@@ -98,14 +98,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # download_counts()
 
   test "download_counts() redirects to login page for logged-out users" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_download_counts_path(item)
     assert_redirected_to login_path
   end
 
   test "download_counts() returns HTTP 200 for HTML" do
     log_in_as(users(:local_sysadmin))
-    get item_download_counts_path(items(:item1),
+    get item_download_counts_path(items(:uiuc_item1),
                                   from_year: 2022, from_month: 1,
                                   to_year: 2022, to_month: 2)
     assert_response :ok
@@ -113,7 +113,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "download_counts() returns HTTP 200 for CSV" do
     log_in_as(users(:local_sysadmin))
-    get item_download_counts_path(items(:item1),
+    get item_download_counts_path(items(:uiuc_item1),
                                   from_year: 2022, from_month: 1,
                                   to_year: 2022, to_month: 2,
                                   format: :csv)
@@ -123,28 +123,28 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # edit_embargoes()
 
   test "edit_embargoes() returns HTTP 403 for logged-out users" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_embargoes_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_embargoes() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_embargoes_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_embargoes() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_embargoes_path(item)
     assert_response :not_found
   end
 
   test "edit_embargoes() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_embargoes_path(item), xhr: true
     assert_response :ok
   end
@@ -152,28 +152,28 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # edit_membership()
 
   test "edit_membership() returns HTTP 403 for logged-out users" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_membership_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_membership() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_membership_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_membership() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_membership_path(item)
     assert_response :not_found
   end
 
   test "edit_membership() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_membership_path(item), xhr: true
     assert_response :ok
   end
@@ -181,28 +181,28 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # edit_metadata()
 
   test "edit_metadata() returns HTTP 403 for logged-out users" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_metadata_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_metadata() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_metadata_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_metadata() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_metadata_path(item)
     assert_response :not_found
   end
 
   test "edit_metadata() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_metadata_path(item), xhr: true
     assert_response :ok
   end
@@ -210,28 +210,28 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # edit_properties()
 
   test "edit_properties() returns HTTP 403 for logged-out users" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_properties_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_properties_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_properties_path(item)
     assert_response :not_found
   end
 
   test "edit_properties() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_properties_path(item), xhr: true
     assert_response :ok
   end
@@ -239,28 +239,28 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # edit_withdrawal()
 
   test "edit_withdrawal() returns HTTP 403 for logged-out users" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_withdrawal_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_withdrawal() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_withdrawal_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_withdrawal() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_withdrawal_path(item)
     assert_response :not_found
   end
 
   test "edit_withdrawal() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_edit_withdrawal_path(item), xhr: true
     assert_response :ok
   end
@@ -318,32 +318,32 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # file_navigator()
 
   test "file_navigator() returns HTTP 200 for XHR requests" do
-    get item_file_navigator_path(items(:item1)), xhr: true
+    get item_file_navigator_path(items(:uiuc_item1)), xhr: true
     assert_response :ok
   end
 
   test "file_navigator() returns HTTP 404 for non-XHR requests" do
-    get item_file_navigator_path(items(:item1))
+    get item_file_navigator_path(items(:uiuc_item1))
     assert_response :not_found
   end
 
   test "file_navigator() returns HTTP 403 for submitting items" do
-    get item_file_navigator_path(items(:submitting)), xhr: true
+    get item_file_navigator_path(items(:uiuc_submitting)), xhr: true
     assert_response :forbidden
   end
 
   test "file_navigator() returns HTTP 403 for embargoed items" do
-    get item_file_navigator_path(items(:embargoed)), xhr: true
+    get item_file_navigator_path(items(:uiuc_embargoed)), xhr: true
     assert_response :forbidden
   end
 
   test "file_navigator() returns HTTP 410 for withdrawn items" do
-    get item_file_navigator_path(items(:withdrawn)), xhr: true
+    get item_file_navigator_path(items(:uiuc_withdrawn)), xhr: true
     assert_response :gone
   end
 
   test "file_navigator() returns HTTP 410 for buried items" do
-    get item_file_navigator_path(items(:buried)), xhr: true
+    get item_file_navigator_path(items(:uiuc_buried)), xhr: true
     assert_response :gone
   end
 
@@ -398,7 +398,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "process_review() approves items" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     post items_process_review_path,
          params: {
              items: [item.id],
@@ -410,7 +410,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "process_review() creates an associated handle for approved items" do
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     assert_nil item.handle
     log_in_as(users(:local_sysadmin))
     post items_process_review_path,
@@ -423,7 +423,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "process_review() sends an ingest message to Medusa for approved items" do
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     log_in_as(users(:local_sysadmin))
     post items_process_review_path,
          params: {
@@ -439,7 +439,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "process_review() rejects items" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     post items_process_review_path,
          params: {
              items: [item.id],
@@ -460,28 +460,28 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # reject()
 
   test "reject() redirects to login page for logged-out users" do
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_reject_path(item)
     assert_redirected_to login_path
   end
 
   test "reject() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_reject_path(item)
     assert_response :forbidden
   end
 
   test "reject() redirects to the item page for authorized users" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_reject_path(item)
     assert_redirected_to item_path(item)
   end
 
   test "reject() rejects an item" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_reject_path(item)
     item.reload
     assert_equal Item::Stages::REJECTED, item.stage
@@ -509,80 +509,80 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # show()
 
   test "show() returns HTTP 200" do
-    get item_path(items(:item1))
+    get item_path(items(:uiuc_item1))
     assert_response :ok
   end
 
   test "show() returns HTTP 200 for JSON" do
-    get item_path(items(:item1), format: :json)
+    get item_path(items(:uiuc_item1), format: :json)
     assert_response :ok
   end
 
   test "show() returns HTTP 403 for submitting items" do
-    get item_path(items(:submitting))
+    get item_path(items(:uiuc_submitting))
     assert_response :forbidden
   end
 
   test "show() returns HTTP 403 for embargoed items" do
-    get item_path(items(:embargoed))
+    get item_path(items(:uiuc_embargoed))
     assert_response :forbidden
   end
 
   test "show() returns HTTP 410 for withdrawn items" do
-    get item_path(items(:withdrawn))
+    get item_path(items(:uiuc_withdrawn))
     assert_response :gone
   end
 
   test "show() returns HTTP 410 for buried items" do
-    get item_path(items(:buried))
+    get item_path(items(:uiuc_buried))
     assert_response :gone
   end
 
   test "show() respects role limits" do
     log_in_as(users(:local_sysadmin))
-    get item_path(items(:item1))
+    get item_path(items(:uiuc_item1))
     assert_select("dl.properties")
 
-    get item_path(items(:item1), role: Role::LOGGED_OUT)
+    get item_path(items(:uiuc_item1), role: Role::LOGGED_OUT)
     assert_select("dl.properties", false)
   end
 
   # statistics()
 
   test "statistics() returns HTTP 403 for logged-out users" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_statistics_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "statistics() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    get item_statistics_path(items(:item1))
+    get item_statistics_path(items(:uiuc_item1))
     assert_response :not_found
   end
 
   test "statistics() returns HTTP 200" do
     log_in_as(users(:local_sysadmin))
-    get item_statistics_path(items(:item1)), xhr: true
+    get item_statistics_path(items(:uiuc_item1)), xhr: true
     assert_response :ok
   end
 
   # undelete()
 
   test "undelete() redirects to login page for logged-out users" do
-    post item_undelete_path(items(:buried))
+    post item_undelete_path(items(:uiuc_buried))
     assert_redirected_to login_path
   end
 
   test "undelete() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    post item_undelete_path(items(:buried))
+    post item_undelete_path(items(:uiuc_buried))
     assert_response :forbidden
   end
 
   test "undelete() buries the item" do
     log_in_as(users(:local_sysadmin))
-    item = items(:buried)
+    item = items(:uiuc_buried)
     post item_undelete_path(item)
     item.reload
     assert !item.buried?
@@ -590,7 +590,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "undelete() returns HTTP 302 for an existing item" do
     log_in_as(users(:local_sysadmin))
-    item = items(:buried)
+    item = items(:uiuc_buried)
     post item_undelete_path(item)
     assert_redirected_to item
   end
@@ -608,28 +608,28 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # upload_bitstreams()
 
   test "upload_bitstreams() returns HTTP 403 for logged-out users" do
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_upload_bitstreams_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "upload_bitstreams() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_upload_bitstreams_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "upload_bitstreams() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_upload_bitstreams_path(item)
     assert_response :not_found
   end
 
   test "upload_bitstreams() returns HTTP 200 for XHR requests" do
     log_in_as(users(:local_sysadmin))
-    item = items(:item1)
+    item = items(:uiuc_item1)
     get item_upload_bitstreams_path(item), xhr: true
     assert_response :ok
   end
@@ -637,28 +637,28 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # withdraw()
 
   test "withdraw() redirects to login page for logged-out users" do
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_withdraw_path(item)
     assert_redirected_to login_path
   end
 
   test "withdraw() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_withdraw_path(item)
     assert_response :forbidden
   end
 
   test "withdraw() redirects to the item page for authorized users" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_withdraw_path(item)
     assert_redirected_to item_path(item)
   end
 
   test "withdraw() withdraws an item" do
     log_in_as(users(:local_sysadmin))
-    item = items(:submitted)
+    item = items(:uiuc_submitted)
     patch item_withdraw_path(item)
     item.reload
     assert_equal Item::Stages::WITHDRAWN, item.stage

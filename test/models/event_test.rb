@@ -36,13 +36,13 @@ class EventTest < ActiveSupport::TestCase
   test "first() returns the first event" do
     Event.delete_all
     e1 = Event.create!(happened_at: 1.hour.ago,
-                       item:        items(:item1),
+                       item:        items(:uiuc_item1),
                        event_type:  Event::Type::CREATE)
     e2 = Event.create!(happened_at: 2.hours.ago,
-                       item:        items(:item1),
+                       item:        items(:uiuc_item1),
                        event_type:  Event::Type::CREATE)
     e3 = Event.create!(happened_at: 3.hours.ago,
-                       item:        items(:item1),
+                       item:        items(:uiuc_item1),
                        event_type:  Event::Type::CREATE)
     assert_equal e3, Event.first
   end
@@ -54,7 +54,7 @@ class EventTest < ActiveSupport::TestCase
     @instance.item      = nil
     assert !@instance.valid?
 
-    @instance.item = items(:item1)
+    @instance.item = items(:uiuc_item1)
     assert @instance.valid?
 
     @instance.bitstream = bitstreams(:item1_in_staging)

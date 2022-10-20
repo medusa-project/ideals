@@ -17,7 +17,7 @@ class HandleTest < ActiveSupport::TestCase
   test "set_suffix_start() updates the suffix sequence" do
     Handle.set_suffix_start(54)
     handle = Handle.new
-    handle.item = items(:item1)
+    handle.item = items(:uiuc_item1)
     handle.transient = true
     handle.save
     handle.reload
@@ -28,7 +28,7 @@ class HandleTest < ActiveSupport::TestCase
 
   test "create() puts the handle to the handle server" do
     client = HandleClient.new
-    handle = Handle.create!(item: items(:described))
+    handle = Handle.create!(item: items(:uiuc_described))
     begin
       assert client.exists?(handle)
     ensure
