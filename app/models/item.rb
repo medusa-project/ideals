@@ -299,6 +299,10 @@ class Item < ApplicationRecord
   #
   def as_change_hash
     hash = super
+    hash.delete("temp_embargo_kind")
+    hash.delete("temp_embargo_expires_at")
+    hash.delete("temp_embargo_reason")
+    hash.delete("temp_embargo_type")
     hash['stage'] = Stages::label_for(hash['stage'])
     # Add ascribed elements.
     # Because there may be multiple elements with the same name, we maintain a
