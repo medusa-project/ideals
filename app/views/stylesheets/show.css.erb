@@ -21,9 +21,16 @@
   border-color: transparent;
   color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %> !important;
 }
+.btn-outline-primary {
+    border-color: <%= h @institution.primary_color %>;
+}
 .nav-pills .nav-link.active {
     background-color: <%= h @institution.primary_color %>;
     color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %>;
+}
+.page-item.active .page-link {
+    background-color: <%= h @institution.primary_color %>;
+    border: 1px solid <%= h @institution.primary_color %>;
 }
 .progress-bar {
     background-color: <%= h @institution.primary_color %>;
@@ -32,18 +39,18 @@
 
 <% # primary_hover_color %>
 
-.btn-primary:hover {
+.btn-primary:hover, .btn-outline-primary:hover {
   background-color: <%= h @institution.primary_hover_color %>;
   border-color: transparent;
 }
 
 <% # link_color %>
 
-a { color: <%= h @institution.link_color %>; }
+a, a.page-link, .btn-outline-primary { color: <%= h @institution.link_color %>; }
 
 <% # link_hover_color %>
 
-a:hover { color: <%= h @institution.link_hover_color %>; }
+a:hover, a.page-link:hover { color: <%= h @institution.link_hover_color %>; }
 
 <% # active_link_color %>
 
