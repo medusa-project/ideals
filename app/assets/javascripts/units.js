@@ -36,6 +36,12 @@ const UnitView = function() {
                     $("#edit-unit-properties-modal .modal-body").html(data);
                 });
             });
+            $(".add-child-unit").on("click", function() {
+                const url = "/units/new?parent_id=" + unitID;
+                $.get(url, function(data) {
+                    $("#add-child-unit-modal .modal-body").html(data);
+                });
+            });
             $('.edit-unit-membership').on("click", function () {
                 const url = ROOT_URL + "/units/" + unitID + "/edit-membership";
                 $.get(url, function (data) {

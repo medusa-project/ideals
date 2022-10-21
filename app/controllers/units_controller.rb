@@ -188,11 +188,14 @@ class UnitsController < ApplicationController
   end
 
   ##
+  # Renders the new-unit form. A `parent_id` query argument is supported which
+  # will inject a parent unit ID into a hidden form input.
+  #
   # Responds to `GET /units/new` (XHR only)
   #
   def new
     @unit = Unit.new
-    render partial: "new_form"
+    render partial: "new_form", locals: { parent_id: params[:parent_id] }
   end
 
   ##

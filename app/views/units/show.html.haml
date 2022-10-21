@@ -72,6 +72,9 @@
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-unit-membership-modal",
                    title: "Change Unit Membership" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "add-child-unit-modal",
+                   title: "Add Child Unit" }
 = render partial: "collections/add_modal",
          locals: { primary_unit: @unit,
                    title: "Add Collection" }

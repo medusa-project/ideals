@@ -50,6 +50,12 @@
                                                role: "button"}
       %i.fas.fa-pencil-alt
       Change Unit Membership
+    %button.btn.btn-light.add-child-unit{"data-unit-id": @unit.id,
+                                         "data-target":  "#add-child-unit-modal",
+                                         "data-toggle":  "modal",
+                                         role:           "button"}
+      %i.fa.fa-plus
+      Add Child Unit
 
 - if @unit.parent
   %h2 Parent Unit

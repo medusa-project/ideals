@@ -1,19 +1,28 @@
+-# Accepts the following locals:
+-#
+-# @param parent_id [Integer] Optional parent unit ID.
+-#
+
+- parent_id = nil unless defined?(parent_id)
+
 = form_for(@unit, remote: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
   = f.hidden_field :institution_id, value: current_institution.id
+  = f.hidden_field :parent_id, value: parent_id
 
   .form-group
     = f.label :title
     = f.text_field :title, class: "form-control"
 
-  .form-group
-    = f.label :parent_id, "Parent Unit"
-    = f.select(:parent_id,
-        options_for_select(unit_tree_options(include_root: true, include_only_admin: true),
-        f.object.parent&.id),
-        {}, { class: "custom-select" })
+  - unless parent_id
+    .form-group
+      = f.label :parent_id, "Parent Unit"
+      = f.select(:parent_id,
+          options_for_select(unit_tree_options(include_root: true, include_only_admin: true),
+          f.object.parent&.id),
+          {}, { class: "custom-select" })
 
   %p.form-text.text-muted
     = icon_for(:info)
