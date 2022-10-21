@@ -80,6 +80,8 @@ module ApplicationHelper
           crumbs.unshift({label: "Metadata Profiles", url: metadata_profiles_path})
         elsif object.to_s == "SubmissionProfile"
           crumbs.unshift({label: "Submission Profiles", url: submission_profiles_path})
+        elsif object.to_s == "Unit"
+          crumbs.unshift({label: "Academic Units", url: units_path})
         elsif object.to_s == "User"
           crumbs.unshift({label: "Users", url: users_path})
         elsif object.to_s == "UserGroup"

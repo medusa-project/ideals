@@ -177,7 +177,7 @@ class Unit < ApplicationRecord
   end
 
   def breadcrumb_parent
-    self.parent
+    self.parent || Unit
   end
 
   ##
