@@ -97,7 +97,8 @@ class SubmissionsController < ApplicationController
   # Responds to `GET /submissions/:id/edit`
   #
   def edit
-    @submission_profile = @item.effective_submission_profile
+    @submission_profile = @item.effective_submission_profile ||
+      current_institution.default_submission_profile
   end
 
   ##
