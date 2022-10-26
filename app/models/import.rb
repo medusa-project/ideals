@@ -65,9 +65,7 @@ class Import < ApplicationRecord
   validates :status, inclusion: { in: Status.all }
 
   def delete_all_files
-    config = ::Configuration.instance
-    S3Client.instance.delete_objects(bucket:     config.storage[:bucket],
-                                     key_prefix: self.root_key_prefix)
+    PersistentStore.instance.delete_objects(key_prefix: self.root_key_prefix)
   end
 
   ##
@@ -95,9 +93,7 @@ class Import < ApplicationRecord
   # @return [Enumerable<String>] All object keys in the package.
   #
   def object_keys
-    config = ::Configuration.instance
-    S3Client.instance.objects(bucket:     config.storage[:bucket],
-                              key_prefix: root_key_prefix).map(&:key)
+    PersistentStore.instance.objects(key_prefix: root_key_prefix).map(&:key)
   end
 
   ##
@@ -134,20 +130,19 @@ class Import < ApplicationRecord
     Tempfile.open("import") do |tempfile|
       IO.copy_stream(io, tempfile)
       tempfile.close
-      client = S3Client.instance
-      bucket = ::Configuration.instance.storage[:bucket]
-      key    = object_key(relative_path)
+      store = PersistentStore.instance
+      key   = object_key(relative_path)
       # When used to simply upload the IO argument, put_object() fails randomly
       # and silently as of AWS SDK 1.111.0/Rails 7. Here is a workaround
       # whereby we retry the upload as many times as necessary, pausing in
       # between attempts. Don't ask me why the pausing works. (Is this only a
       # problem with Minio?)
       20.times do
-        client.put_object(bucket: bucket,
-                          key:    key,
-                          body:   tempfile)
+        store.put_object(key:             key,
+                         institution_key: self.institution.key,
+                         path:            tempfile.path)
         sleep 1
-        break if client.object_exists?(bucket: bucket, key: key)
+        break if store.object_exists?(key: key)
       end
     end
   end

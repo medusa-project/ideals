@@ -109,8 +109,6 @@ class CsvImporter
   # @return [void]
   #
   def import_from_s3(import, submitter, task: nil)
-    client         = S3Client.instance
-    bucket         = ::Configuration.instance.storage[:bucket]
     object_keys    = import.object_keys
     csv_object_key = object_keys.first
     imported_items = []
@@ -119,8 +117,7 @@ class CsvImporter
                    status:         Import::Status::RUNNING,
                    imported_items: imported_items)
 
-    csv = client.get_object(bucket: bucket,
-                            key:    csv_object_key).body.read
+    csv = PersistentStore.instance.get_object(key: csv_object_key).read
     import(csv:                csv,
            submitter:          submitter,
            primary_collection: import.collection,

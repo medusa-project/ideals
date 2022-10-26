@@ -103,13 +103,9 @@ class Download < ApplicationRecord
   # @return [String]
   #
   def presigned_url(expiry_seconds: 900)
-    signer = Aws::S3::Presigner.new(client: S3Client.instance)
-    bucket = ::Configuration.instance.storage[:bucket]
-    signer.presigned_url(:get_object,
-                         bucket:                       bucket,
-                         key:                          self.object_key,
-                         response_content_disposition: content_disposition(self.filename),
-                         expires_in:                   expiry_seconds)
+    PersistentStore.instance.presigned_url(key:                          self.object_key,
+                                           expires_in:                   expiry_seconds,
+                                           response_content_disposition: content_disposition(self.filename))
   end
 
   ##
@@ -144,11 +140,9 @@ class Download < ApplicationRecord
 
   def delete_object
     if self.filename.present?
-      bucket = ::Configuration.instance.storage[:bucket]
-      key    = self.object_key
+      key = self.object_key
       LOGGER.debug('delete_object(): deleting %s', key)
-      S3Client.instance.delete_object(bucket: bucket,
-                                      key:    key)
+      PersistentStore.instance.delete_object(key: key)
     end
   end
 

@@ -107,9 +107,8 @@ class ActiveSupport::TestCase
     Bitstream.where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").each do |bs|
       fix_bitstream_keys(bs)
       File.open(file_fixture(bs.original_filename), "r") do |file|
-        client.put_object(bucket: bucket,
-                          key:    bs.effective_key,
-                          body:   file)
+        PersistentStore.instance.put_object(key:  bs.effective_key,
+                                            file: file)
       end
     end
     @@seeding = false

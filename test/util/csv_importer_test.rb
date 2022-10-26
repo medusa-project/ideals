@@ -254,9 +254,8 @@ class CsvImporterTest < ActiveSupport::TestCase
   private
 
   def upload_to_s3(file, import)
-    S3Client.instance.put_object(bucket: ::Configuration.instance.storage[:bucket],
-                                 key:    import.root_key_prefix + file.basename.to_s,
-                                 body:   file.read)
+    PersistentStore.instance.put_object(key:  import.root_key_prefix + file.basename.to_s,
+                                        file: file)
   end
 
 end

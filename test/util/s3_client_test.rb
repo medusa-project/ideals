@@ -105,20 +105,25 @@ class S3ClientTest < ActiveSupport::TestCase
     assert_equal 2, client.objects(bucket: bucket, key_prefix: "cats").count
   end
 
-  # upload_path()
+  # set_tag()
 
-  test "upload_path() uploads correct objects with correct keys" do
-    root_path = File.join(Rails.root, "test", "fixtures", "saf_packages", "valid_item")
-    client    = S3Client.instance
-    bucket    = ::Configuration.instance.storage[:bucket]
-    client.upload_path(root_path:  root_path,
-                       bucket:     bucket,
-                       key_prefix: "prefix/")
+  test "set_tag() sets the given tag on an object" do
+    bucket = ::Configuration.instance.storage[:bucket]
+    key    = "cats/siamese"
+    client = S3Client.instance
+    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")
+    client.put_object(bucket: bucket,
+                      key:    key,
+                      body:   file)
+    client.set_tag(bucket:    bucket,
+                   key:       key,
+                   tag_key:   "test",
+                   tag_value: "value")
 
-    assert_equal 5, client.num_objects(bucket: bucket, key_prefix: "prefix/")
-    assert client.object_exists?(bucket: bucket, key: "prefix/item_1/content")
-    assert client.object_exists?(bucket: bucket, key: "prefix/item_1/dublin_core.xml")
-    assert client.get_object(bucket: bucket, key: "prefix/item_1/dublin_core.xml").length > 0
+    response = client.get_object_tagging(bucket: bucket, key: key)
+    tag      = response.to_h[:tag_set][0]
+    assert_equal "test", tag[:key]
+    assert_equal "value", tag[:value]
   end
 
 end

@@ -34,17 +34,15 @@ class DownloadTest < ActiveSupport::TestCase
   # expire()
 
   test "expire() deletes the corresponding storage object" do
-    client      = S3Client.instance
-    bucket      = ::Configuration.instance.storage[:bucket]
+    store       = PersistentStore.instance
     institution = institutions(:uiuc)
     File.open(file_fixture("crane.jpg"), "r") do |file|
       download = Download.create!(filename:    "file.jpg",
                                   institution: institution)
-      client.put_object(bucket: bucket,
-                        key:    download.object_key,
-                        body:   file)
+      store.put_object(key:  download.object_key,
+                       file: file)
       download.expire
-      assert !client.object_exists?(bucket: bucket, key: download.object_key)
+      assert !store.object_exists?(key: download.object_key)
     end
   end
 

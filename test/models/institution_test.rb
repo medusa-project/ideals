@@ -397,9 +397,8 @@ class InstitutionTest < ActiveSupport::TestCase
     File.open(file_fixture("escher_lego.jpg"), "r") do |file|
       @instance.upload_banner_image(io: file, extension: "jpg")
     end
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = Institution.banner_image_key(@instance.key, "jpg")
-    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+    key = Institution.banner_image_key(@instance.key, "jpg")
+    assert PersistentStore.instance.object_exists?(key: key)
   end
 
   test "upload_banner_image() updates the footer_image_filename attribute" do
@@ -417,9 +416,8 @@ class InstitutionTest < ActiveSupport::TestCase
     File.open(file_fixture("escher_lego.jpg"), "r") do |file|
       @instance.upload_footer_image(io: file, extension: "jpg")
     end
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = Institution.footer_image_key(@instance.key, "jpg")
-    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+    key = Institution.footer_image_key(@instance.key, "jpg")
+    assert PersistentStore.instance.object_exists?(key: key)
   end
 
   test "upload_footer_image() updates the footer_image_filename attribute" do
@@ -437,9 +435,8 @@ class InstitutionTest < ActiveSupport::TestCase
     File.open(file_fixture("escher_lego.jpg"), "r") do |file|
       @instance.upload_header_image(io: file, extension: "jpg")
     end
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = Institution.header_image_key(@instance.key, "jpg")
-    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+    key = Institution.header_image_key(@instance.key, "jpg")
+    assert PersistentStore.instance.object_exists?(key: key)
   end
 
   test "upload_header_image() updates the header_image_filename attribute" do

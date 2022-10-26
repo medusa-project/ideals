@@ -210,13 +210,9 @@ class Bitstream < ApplicationRecord
 
       # Upload the zip file into the application S3 bucket.
       File.open(zip_pathname, "r") do |file|
-        # upload_file will automatically use the multipart API for files larger
-        # than 15 MB. (S3 has a 5 GB limit when not using the multipart API,
-        # which we are unlikely to reach, but you never know.)
-        s3 = Aws::S3::Resource.new(S3Client.client_options)
-        s3.bucket(::Configuration.instance.storage[:bucket]).
-          object(dest_key).
-          upload_file(file)
+        PersistentStore.instance.put_object(key:             dest_key,
+                                            institution_key: bitstreams.first.institution.key,
+                                            file:            file)
       end
     end
   end
@@ -321,17 +317,12 @@ class Bitstream < ApplicationRecord
   # @return [IO] New instance for reading.
   #
   def data
-    config = ::Configuration.instance
-    bucket = config.storage[:bucket]
-    key    = self.effective_key
-    S3Client.instance.get_object(bucket: bucket, key: key).body
+    PersistentStore.instance.get_object(key: self.effective_key)
   end
 
   def delete_derivatives
     begin
-      config = ::Configuration.instance
-      S3Client.instance.delete_objects(bucket:     config.storage[:bucket],
-                                       key_prefix: derivative_key_prefix)
+      PersistentStore.instance.delete_objects(key_prefix: derivative_key_prefix)
     rescue Aws::S3::Errors::NoSuchBucket
       # This would hopefully only happen because of a test environment
       # misconfiguration. In any case, it's safe to assume that if the bucket
@@ -362,8 +353,7 @@ class Bitstream < ApplicationRecord
   #
   def delete_from_permanent_storage
     return if self.permanent_key.blank?
-    S3Client.instance.delete_object(bucket: ::Configuration.instance.storage[:bucket],
-                                    key:    self.permanent_key)
+    PersistentStore.instance.delete_object(key: self.permanent_key)
     self.update!(permanent_key: nil)
   rescue Aws::S3::Errors::NotFound
     self.update!(permanent_key: nil)
@@ -375,8 +365,7 @@ class Bitstream < ApplicationRecord
   #
   def delete_from_staging
     return if self.staging_key.blank?
-    S3Client.instance.delete_object(bucket: ::Configuration.instance.storage[:bucket],
-                                    key:    self.staging_key)
+    PersistentStore.instance.delete_object(key: self.staging_key)
     self.update!(staging_key: nil)
   rescue Aws::S3::Errors::NotFound
     self.update!(staging_key: nil)
@@ -398,10 +387,9 @@ class Bitstream < ApplicationRecord
     unless has_representative_image?
       raise "Derivatives are not supported for this format."
     end
-    client       = S3Client.instance
-    bucket       = ::Configuration.instance.storage[:bucket]
-    key          = derivative_key(region: region, size: size, format: :jpg)
-    unless client.object_exists?(bucket: bucket, key: key)
+    store = PersistentStore.instance
+    key   = derivative_key(region: region, size: size, format: :jpg)
+    unless store.object_exists?(key: key)
       if generate_async
         GenerateDerivativeImageJob.perform_later(self, region, size, :jpg)
         return nil
@@ -409,13 +397,7 @@ class Bitstream < ApplicationRecord
         generate_derivative(region: region, size: size, format: :jpg)
       end
     end
-
-    aws_client = client.send(:get_client)
-    signer     = Aws::S3::Presigner.new(client: aws_client)
-    signer.presigned_url(:get_object,
-                         bucket:     bucket,
-                         key:        key,
-                         expires_in: 1.hour.to_i)
+    store.presigned_url(key: key, expires_in: 1.hour.to_i)
   end
 
   ##
@@ -429,13 +411,10 @@ class Bitstream < ApplicationRecord
   # @return [Tempfile]
   #
   def download_to_temp_file
-    config        = Configuration.instance
-    source_bucket = config.storage[:bucket]
-    source_key    = self.effective_key
-    tempfile      = Tempfile.new("#{self.class}-#{self.id}")
-    S3Client.instance.get_object(bucket:          source_bucket,
-                                 key:             source_key,
-                                 response_target: tempfile.path)
+    source_key = self.effective_key
+    tempfile   = Tempfile.new("#{self.class}-#{self.id}")
+    PersistentStore.instance.get_object(key:             source_key,
+                                        response_target: tempfile.path)
     tempfile
   end
 
@@ -527,15 +506,13 @@ class Bitstream < ApplicationRecord
   end
 
   def move_into_permanent_storage
-    client        = S3Client.instance
-    bucket        = ::Configuration.instance.storage[:bucket]
+    store         = PersistentStore.instance
     permanent_key = self.class.permanent_key(institution_key: self.institution.key,
                                              item_id:         self.item_id,
                                              filename:        self.original_filename)
     transaction do
-      client.copy_object(copy_source: "/#{bucket}/#{self.staging_key}", # source bucket+key
-                         bucket:      bucket,                           # destination bucket
-                         key:         permanent_key)                    # destination key
+      store.copy_object(source_key: self.staging_key,
+                        target_key: permanent_key)
       self.update!(permanent_key: permanent_key,
                    staging_key:   nil)
       self.delete_from_staging
@@ -547,21 +524,15 @@ class Bitstream < ApplicationRecord
   # @return [String]
   #
   def presigned_url(content_disposition: "attachment")
-    config = ::Configuration.instance
-    bucket = config.storage[:bucket]
-    key    = self.effective_key
+    key = self.effective_key
     unless key
       raise IOError, "This bitstream has no corresponding storage object."
     end
-    client       = S3Client.instance.send(:get_client)
-    signer       = Aws::S3::Presigner.new(client: client)
     content_type = self.format&.media_types&.first || "application/octet-stream"
-    signer.presigned_url(:get_object,
-                         bucket:                       bucket,
-                         key:                          key,
-                         response_content_type:        content_type,
-                         response_content_disposition: content_disposition,
-                         expires_in:                   900)
+    PersistentStore.instance.presigned_url(key:                          key,
+                                           expires_in:                   900,
+                                           response_content_type:        content_type,
+                                           response_content_disposition: content_disposition)
   end
 
   ##
@@ -614,17 +585,12 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # For use by the `dspace:bitstreams:copy` rake task.
-  #
   # @param file [String]
   #
   def upload_to_permanent(file)
-    # upload_file will automatically use the multipart API for files larger
-    # than 15 MB. (S3 has a 5 GB limit when not using the multipart API.)
-    s3 = Aws::S3::Resource.new(S3Client.client_options)
-    s3.bucket(::Configuration.instance.storage[:bucket]).
-      object(self.permanent_key).
-      upload_file(file)
+    PersistentStore.instance.put_object(key:             self.permanent_key,
+                                        institution_key: self.institution.key,
+                                        path:            file)
   end
 
   ##
@@ -634,10 +600,9 @@ class Bitstream < ApplicationRecord
   # @param io [IO]
   #
   def upload_to_staging(io)
-    config = ::Configuration.instance
-    S3Client.instance.put_object(bucket: config.storage[:bucket],
-                                 key:    self.staging_key,
-                                 body:   io)
+    PersistentStore.instance.put_object(key:             self.staging_key,
+                                        institution_key: self.institution.key,
+                                        io:              io)
   end
 
 
@@ -673,8 +638,6 @@ class Bitstream < ApplicationRecord
   # @param format [Symbol]
   #
   def generate_derivative(region:, size:, format:)
-    config          = Configuration.instance
-    target_bucket   = config.storage[:bucket]
     target_key      = derivative_key(region: region, size: size, format: format)
     source_tempfile = nil
     deriv_path      = nil
@@ -688,9 +651,9 @@ class Bitstream < ApplicationRecord
         deriv_path = File.join(File.dirname(source_tempfile.path),
                                "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
         File.open(deriv_path, "rb") do |file|
-          S3Client.instance.put_object(bucket: target_bucket,
-                                       key:    target_key,
-                                       body:   file)
+          PersistentStore.instance.put_object(key:             target_key,
+                                              institution_key: self.institution.key,
+                                              file:            file)
         end
       end
     rescue => e

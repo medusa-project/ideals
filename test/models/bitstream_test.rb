@@ -249,9 +249,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "data() raises an error when an object does not exist in either the
   staging or permanent area" do
-    config = ::Configuration.instance
-    S3Client.instance.delete_object(bucket: config.storage[:bucket],
-                                    key:    @instance.staging_key)
+    PersistentStore.instance.delete_object(key: @instance.staging_key)
     assert_raises Aws::S3::Errors::NoSuchKey do
       @instance.data
     end
@@ -275,8 +273,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # delete_derivatives()
 
   test "delete_derivatives() deletes all derivatives" do
-    client = S3Client.instance
-    bucket = ::Configuration.instance.storage[:bucket]
+    store = PersistentStore.instance
 
     # upload the source image to the staging area of the application S3 bucket
     File.open(file_fixture("escher_lego.jpg"), "r") do |file|
@@ -290,15 +287,15 @@ class BitstreamTest < ActiveSupport::TestCase
     # check that they exist
     key1 = @instance.send(:derivative_key, region: :full, size: 45, format: :jpg)
     key2 = @instance.send(:derivative_key, region: :full, size: 50, format: :jpg)
-    assert client.object_exists?(bucket: bucket, key: key1)
-    assert client.object_exists?(bucket: bucket, key: key2)
+    assert store.object_exists?(key: key1)
+    assert store.object_exists?(key: key2)
 
     # delete them
     @instance.delete_derivatives
 
     # assert that no derivatives exist
-    assert !client.object_exists?(bucket: bucket, key: key1)
-    assert !client.object_exists?(bucket: bucket, key: key2)
+    assert !store.object_exists?(key: key1)
+    assert !store.object_exists?(key: key2)
   end
 
   # delete_from_medusa()
@@ -329,7 +326,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "delete_from_permanent_storage() deletes the corresponding object" do
-    config = ::Configuration.instance
+    store = PersistentStore.instance
 
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
@@ -344,15 +341,11 @@ class BitstreamTest < ActiveSupport::TestCase
     permanent_key = @instance.permanent_key
 
     # Check that the file exists in the bucket.
-    assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
-                                            key:    permanent_key)
-
+    assert store.object_exists?(key: permanent_key)
     # Delete it.
     @instance.delete_from_permanent_storage
-
     # Check that it has been deleted.
-    assert !S3Client.instance.object_exists?(bucket: config.storage[:bucket],
-                                             key:    permanent_key)
+    assert !store.object_exists?(key: permanent_key)
   end
 
   test "delete_from_permanent_storage() updates the instance properties" do
@@ -367,13 +360,9 @@ class BitstreamTest < ActiveSupport::TestCase
     end
 
     # Check that the file exists in the bucket.
-    config = ::Configuration.instance
-    assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
-                                            key:    @instance.permanent_key)
-
+    assert PersistentStore.instance.object_exists?(key: @instance.permanent_key)
     # Delete it.
     @instance.delete_from_permanent_storage
-
     # Check that the properties have been updated.
     assert_nil @instance.permanent_key
   end
@@ -386,7 +375,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "delete_from_staging() deletes the corresponding object" do
-    config = ::Configuration.instance
+    store = PersistentStore.instance
 
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.jpg")
@@ -400,15 +389,11 @@ class BitstreamTest < ActiveSupport::TestCase
     staging_key = @instance.staging_key
 
     # Check that the file exists in the bucket.
-    assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
-                                            key:    staging_key)
-
+    assert store.object_exists?(key: staging_key)
     # Delete it.
     @instance.delete_from_staging
-
     # Check that it has been deleted.
-    assert !S3Client.instance.object_exists?(bucket: config.storage[:bucket],
-                                             key:    staging_key)
+    assert !store.object_exists?(key: staging_key)
   end
 
   test "delete_from_staging() updates the instance properties" do
@@ -422,13 +407,9 @@ class BitstreamTest < ActiveSupport::TestCase
     end
 
     # Check that the file exists in the bucket.
-    config = ::Configuration.instance
-    assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
-                                            key:    @instance.staging_key)
-
+    assert PersistentStore.instance.object_exists?(key: @instance.staging_key)
     # Delete it.
     @instance.delete_from_staging
-
     # Check that the properties have been updated.
     assert_nil @instance.staging_key
   end
@@ -461,46 +442,37 @@ class BitstreamTest < ActiveSupport::TestCase
   test "destroy() deletes the corresponding file from the staging area of the
   application bucket" do
     @instance = bitstreams(:submitted_in_staging)
-    client = S3Client.instance
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = Bitstream.staging_key(institution_key: @instance.institution.key,
-                                   item_id:         @instance.item_id,
-                                   filename:        @instance.original_filename)
-
-    assert client.object_exists?(bucket: bucket, key: key)
-
+    store     = PersistentStore.instance
+    key       = Bitstream.staging_key(institution_key: @instance.institution.key,
+                                      item_id:         @instance.item_id,
+                                      filename:        @instance.original_filename)
+    assert store.object_exists?(key: key)
     @instance.destroy!
-    assert !client.object_exists?(bucket: bucket, key: key)
+    assert !store.object_exists?(key: key)
   end
 
   test "destroy() deletes the corresponding file from the permanent area of the
   application bucket" do
     @instance = bitstreams(:approved_in_permanent)
-    client    = S3Client.instance
-    bucket    = ::Configuration.instance.storage[:bucket]
+    store     = PersistentStore.instance
     key       = Bitstream.permanent_key(institution_key: @instance.institution.key,
                                         item_id:         @instance.item_id,
                                         filename:        @instance.original_filename)
-
-    assert client.object_exists?(bucket: bucket, key: key)
-
+    assert store.object_exists?(key: key)
     @instance.destroy!
-    assert !client.object_exists?(bucket: bucket, key: key)
+    assert !store.object_exists?(key: key)
   end
 
   test "destroy() deletes corresponding derivatives" do
     @instance  = bitstreams(:submitted_in_staging)
-    client     = S3Client.instance
-    bucket     = ::Configuration.instance.storage[:bucket]
+    store      = PersistentStore.instance
     key_prefix = @instance.send(:derivative_key_prefix)
     @instance.derivative_url(size: 256) # generate a derivative
 
-    assert client.objects(bucket:     bucket,
-                          key_prefix: key_prefix).count > 0
+    assert store.objects(key_prefix: key_prefix).count > 0
 
     @instance.destroy!
-    assert_equal 0, client.objects(bucket:     bucket,
-                                   key_prefix: key_prefix).count
+    assert_equal 0, store.objects(key_prefix: key_prefix).count
   end
 
   test "destroy() does not send a delete message to Medusa if medusa_uuid is
@@ -669,7 +641,7 @@ class BitstreamTest < ActiveSupport::TestCase
     AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
       config = ::Configuration.instance
       assert_equal "ingest", message['operation']
-      assert_equal "#{@instance.id}/escher_lego.jpg", message['staging_key']
+      assert_equal "#{@instance.item.id}/escher_lego.jpg", message['staging_key']
       assert_equal "#{config.handles[:prefix]}/#{@instance.item.handle.suffix}/escher_lego.jpg",
                    message['target_key']
       assert_equal @instance.class.to_s, message['pass_through']['class']
@@ -773,9 +745,7 @@ class BitstreamTest < ActiveSupport::TestCase
       end
 
       # Check that the file exists in the bucket.
-      config = ::Configuration.instance
-      assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
-                                              key:    @instance.permanent_key)
+      assert PersistentStore.instance.object_exists?(key: @instance.permanent_key)
     ensure
       @instance.delete_from_staging
       @instance.delete_from_permanent_storage
@@ -1061,9 +1031,7 @@ class BitstreamTest < ActiveSupport::TestCase
       @instance.upload_to_permanent(fixture)
 
       # Check that the file exists in the bucket.
-      config = ::Configuration.instance
-      assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
-                                              key:    @instance.permanent_key)
+      assert PersistentStore.instance.object_exists?(key: @instance.permanent_key)
     ensure
       @instance.delete_from_permanent_storage
     end
@@ -1083,9 +1051,7 @@ class BitstreamTest < ActiveSupport::TestCase
       end
 
       # Check that the file exists in the bucket.
-      config = ::Configuration.instance
-      assert S3Client.instance.object_exists?(bucket: config.storage[:bucket],
-                                              key:    @instance.staging_key)
+      assert PersistentStore.instance.object_exists?(key: @instance.staging_key)
     ensure
       @instance.delete_from_staging
     end

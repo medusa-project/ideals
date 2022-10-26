@@ -168,15 +168,10 @@ class Institution < ApplicationRecord
   #
   def banner_image_url
     return nil if self.banner_image_filename.blank?
-    bucket     = ::Configuration.instance.storage[:bucket]
-    key        = [self.class.image_key_prefix(self.key),
-                  self.banner_image_filename].join
-    aws_client = S3Client.instance.send(:get_client)
-    signer     = Aws::S3::Presigner.new(client: aws_client)
-    signer.presigned_url(:get_object,
-                         bucket:     bucket,
-                         key:        key,
-                         expires_in: 1.week.to_i)
+    key = [self.class.image_key_prefix(self.key),
+           self.banner_image_filename].join
+    PersistentStore.instance.presigned_url(key:        key,
+                                           expires_in: 1.week.to_i)
   end
 
   def breadcrumb_label
@@ -258,15 +253,10 @@ class Institution < ApplicationRecord
   #
   def footer_image_url
     return nil if self.footer_image_filename.blank?
-    bucket     = ::Configuration.instance.storage[:bucket]
-    key        = [self.class.image_key_prefix(self.key),
-                  self.footer_image_filename].join
-    aws_client = S3Client.instance.send(:get_client)
-    signer     = Aws::S3::Presigner.new(client: aws_client)
-    signer.presigned_url(:get_object,
-                         bucket:     bucket,
-                         key:        key,
-                         expires_in: 1.week.to_i)
+    key = [self.class.image_key_prefix(self.key),
+           self.footer_image_filename].join
+    PersistentStore.instance.presigned_url(key:        key,
+                                           expires_in: 1.week.to_i)
   end
 
   ##
@@ -274,15 +264,10 @@ class Institution < ApplicationRecord
   #
   def header_image_url
     return nil if self.header_image_filename.blank?
-    bucket     = ::Configuration.instance.storage[:bucket]
-    key        = [self.class.image_key_prefix(self.key),
-                  self.header_image_filename].join
-    aws_client = S3Client.instance.send(:get_client)
-    signer     = Aws::S3::Presigner.new(client: aws_client)
-    signer.presigned_url(:get_object,
-                         bucket:     bucket,
-                         key:        key,
-                         expires_in: 1.week.to_i)
+    key = [self.class.image_key_prefix(self.key),
+           self.header_image_filename].join
+    PersistentStore.instance.presigned_url(key:        key,
+                                           expires_in: 1.week.to_i)
   end
 
   ##
@@ -500,10 +485,8 @@ class Institution < ApplicationRecord
   # @param filename [String]
   #
   def upload_theme_image(io:, filename:)
-    client = S3Client.instance
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = self.class.image_key_prefix(self.key) + filename
-    client.put_object(bucket: bucket, key: key, body: io)
+    key = self.class.image_key_prefix(self.key) + filename
+    PersistentStore.instance.put_object(key: key, io: io)
   end
 
   def validate_css_colors
