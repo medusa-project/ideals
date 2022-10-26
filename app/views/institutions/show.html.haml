@@ -37,6 +37,14 @@
                                  "aria-selected": "false"}
           %i.fa.fa-cog
           Settings
+      - if policy(@institution).show_preservation?
+        %a#preservation-tab.nav-link{href:            "#preservation-tab-content",
+                                     "data-toggle":   "pill",
+                                     role:            "tab",
+                                     "aria-controls": "preservation-tab-content",
+                                     "aria-selected": "false"}
+          %i.fa.fa-box-open
+          Preservation
       - if policy(@institution).show_theme?
         %a#theme-tab.nav-link{href:                   "#theme-tab-content",
                               "data-toggle":          "pill",
@@ -51,7 +59,7 @@
                               "data-toggle":   "pill",
                               role:            "tab",
                               "aria-controls": "users-tab-content",
-                              "aria-selected": "true"}
+                              "aria-selected": "false"}
           = icon_for(User)
           Users
       - if policy(@institution).show_statistics?
@@ -84,6 +92,11 @@
                                           "aria-labelledby": "settings-tab"}
         = spinner
 
+    - if policy(@institution).show_preservation?
+      #preservation-tab-content.tab-pane.fade{role: "tabpanel",
+                                              "aria-labelledby": "preservation-tab"}
+        = spinner
+
     - if policy(@institution).show_theme?
       #theme-tab-content.tab-pane.fade{role: "tabpanel",
                                        "aria-labelledby": "theme-tab"}
@@ -104,6 +117,8 @@
                                         "aria-labelledby": "access-tab"}
         = spinner
 
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-preservation-modal", title: "Edit Preservation" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-properties-modal", title: "Edit Properties" }
 = render partial: "shared/ajax_modal",

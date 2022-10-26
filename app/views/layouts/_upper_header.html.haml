@@ -76,11 +76,6 @@
               = link_to(messages_path, class: "dropdown-item") do
                 = icon_for(Message)
                 Medusa Messages
-              - config = ::Configuration.instance
-              = link_to("#{config.medusa[:base_url]}/file_groups/#{config.medusa[:file_group_id]}",
-                        class: "dropdown-item", target: "_blank") do
-                %i.fa.fa-database
-                Medusa File Group
 
         - if current_user.effective_institution_admin?(current_institution)
           -# Institution Administration menu

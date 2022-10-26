@@ -23,6 +23,10 @@ class InstitutionPolicy < ApplicationPolicy
     edit_settings
   end
 
+  def edit_preservation
+    update_preservation
+  end
+
   def edit_properties
     update_properties
   end
@@ -55,6 +59,10 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
+  def show_preservation
+    effective_sysadmin(user, role)
+  end
+
   def show_properties
     show
   end
@@ -77,6 +85,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def statistics_by_range
     show_statistics
+  end
+
+  def update_preservation
+    effective_sysadmin(user, role)
   end
 
   def update_properties

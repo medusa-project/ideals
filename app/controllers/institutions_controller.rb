@@ -54,6 +54,14 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /institutions/:key/edit-preservation`
+  #
+  def edit_preservation
+    render partial: "institutions/preservation_form",
+           locals: { institution: @institution }
+  end
+
+  ##
   # Responds to `GET /institutions/:key/edit-properties`
   #
   def edit_properties
@@ -156,6 +164,16 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the preservation tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/preservation` (XHR only)
+  #
+  def show_preservation
+    @file_group = @institution.medusa_file_group
+    render partial: "show_preservation_tab"
+  end
+
+  ##
   # Renders HTML for the properties tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/properties` (XHR only)
@@ -249,6 +267,24 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Responds to `PATCH /institutions/:key/preservation`
+  #
+  def update_preservation
+    begin
+      ActiveRecord::Base.transaction do
+        @institution.update!(preservation_params)
+      end
+    rescue => e
+      render partial: "shared/validation_messages",
+             locals:  { object: @institution.errors.any? ? @institution : e },
+             status:  :bad_request
+    else
+      flash['success'] = "Institution \"#{@institution.name}\" updated."
+      render "shared/reload"
+    end
+  end
+
+  ##
   # Responds to `PATCH /institutions/:key/properties`
   #
   def update_properties
@@ -317,6 +353,10 @@ class InstitutionsController < ApplicationController
 
   def authorize_institution
     @institution ? authorize(@institution) : skip_authorization
+  end
+
+  def preservation_params
+    params.require(:institution).permit(:medusa_file_group_id)
   end
 
   ##

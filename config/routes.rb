@@ -65,11 +65,15 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-administrators", to: "institutions#edit_administrators", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/edit-preservation", to: "institutions#edit_preservation", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "institutions#edit_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-settings", to: "institutions#edit_settings", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-theme", to: "institutions#edit_theme", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/preservation", to: "institutions#show_preservation", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -83,6 +87,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
 
     match "/item-download-counts", to: "institutions#item_download_counts", via: :get
+    match "/preservation", to: "institutions#update_preservation", via: [:patch, :post]
     match "/properties", to: "institutions#update_properties", via: [:patch, :post]
     match "/settings", to: "institutions#update_settings", via: [:patch, :post]
     match "/statistics-by-range", to: "institutions#statistics_by_range", via: :get

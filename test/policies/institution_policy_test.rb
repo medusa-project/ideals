@@ -122,6 +122,39 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_administrators?
   end
 
+  # edit_preservation?()
+
+  test "edit_preservation?() returns false with a nil request context" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.edit_preservation?
+  end
+
+  test "edit_preservation?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_preservation?
+  end
+
+  test "edit_preservation?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_preservation?
+  end
+
+  test "edit_preservation?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_preservation?
+  end
+
   # edit_properties?()
 
   test "edit_properties?() returns false with a nil request context" do
@@ -447,6 +480,39 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_access?
   end
 
+  # show_preservation?()
+
+  test "show_preservation?() returns false with a nil request context" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.show_preservation?
+  end
+
+  test "show_preservation?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_preservation?
+  end
+
+  test "show_preservation?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_preservation?
+  end
+
+  test "show_preservation?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_preservation?
+  end
+
   # show_properties?()
 
   test "show_properties?() returns false with a nil request context" do
@@ -745,6 +811,39 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.statistics_by_range?
+  end
+
+  # update_preservation?()
+
+  test "update_preservation?() returns false with a nil request context" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.update_preservation?
+  end
+
+  test "update_preservation?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.update_preservation?
+  end
+
+  test "update_preservation?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.update_preservation?
+  end
+
+  test "update_preservation?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.update_preservation?
   end
 
   # update_properties?()

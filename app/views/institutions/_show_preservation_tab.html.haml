@@ -1,0 +1,22 @@
+- if policy(@institution).edit_preservation?
+  .btn-group.float-right{role: "group"}
+    -# Edit button
+    %button.btn.btn-light.edit-preservation{"data-target":          "#edit-preservation-modal",
+                                            "data-toggle":          "modal",
+                                            type:                   "button",
+                                            "data-institution-key": @institution.key }
+      %i.fa.fa-pencil-alt
+      Edit
+
+.clearfix.mb-3
+
+%dl
+  %dt Medusa File Group
+  %dd
+    - if @file_group
+      - begin
+        = link_to(@file_group.title, @file_group.url, target: "_blank")
+      - rescue Medusa::NotFoundError
+        = boolean(false, style: :word, false_value: "Invalid")
+    - else
+      = boolean(false, style: :word, false_value: "Not Set")

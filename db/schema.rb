@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_26_150327) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_26_183254) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -280,9 +280,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_26_150327) do
     t.string "service_name", null: false
     t.string "about_url"
     t.text "about_html"
+    t.integer "medusa_file_group_id"
     t.index ["default"], name: "index_institutions_on_default"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true
+    t.index ["medusa_file_group_id"], name: "index_institutions_on_medusa_file_group_id", unique: true
     t.index ["name"], name: "index_institutions_on_name", unique: true
   end
 

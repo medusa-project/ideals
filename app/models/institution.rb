@@ -32,6 +32,8 @@
 # * `link_color`              Theme hyperlink color.
 # * `link_hover_color`        Theme hover-over-hyperlink color.
 # * `main_website_url`        URL of the institution's main website.
+# * `medusa_file_group_id`    ID of the Medusa file group in which the
+#                             institution's content is stored.
 # * `name`                    Institution name.
 # * `org_dn`                  Value of an `eduPersonOrgDN` attribute from the
 #                             Shibboleth SP.
@@ -74,6 +76,10 @@ class Institution < ApplicationRecord
 
   # uniqueness enforced by database constraints
   validates :key, presence: true
+
+  # uniqueness enforced by database constraints
+  validates :medusa_file_group_id, allow_nil: true,
+            numericality: { only_integer: true }
 
   # uniqueness enforced by database constraints
   validates :name, presence: true
@@ -268,6 +274,14 @@ class Institution < ApplicationRecord
            self.header_image_filename].join
     PersistentStore.instance.presigned_url(key:        key,
                                            expires_in: 1.week.to_i)
+  end
+
+  ##
+  # @return [Medusa::FileGroup, nil]
+  #
+  def medusa_file_group
+    self.medusa_file_group_id ?
+      Medusa::FileGroup.with_id(self.medusa_file_group_id) : nil
   end
 
   ##

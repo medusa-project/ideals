@@ -331,6 +331,33 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # medusa_file_group()
+
+  test "medusa_file_group() returns an instance when medusa_file_group_id is set" do
+    @instance.medusa_file_group_id = 50
+    assert_equal @instance.medusa_file_group_id, @instance.medusa_file_group.id
+  end
+
+  test "medusa_file_group() returns nil when medusa_file_group_id is not set" do
+    assert_nil @instance.medusa_file_group
+  end
+
+  # medusa_file_group_id
+
+  test "medusa_file_group_id must be an integer" do
+    @instance.medusa_file_group_id = 3
+    assert @instance.valid?
+    @instance.medusa_file_group_id = "string"
+    assert !@instance.valid?
+  end
+
+  test "medusa_file_group_id must be unique" do
+    @instance.update!(medusa_file_group_id: 3)
+    assert_raises do
+      institutions(:northeast).update!(medusa_file_group_id: 3)
+    end
+  end
+
   # name
 
   test "name must be present" do

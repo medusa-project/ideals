@@ -1,0 +1,14 @@
+-# @param institution [Institution]
+
+= form_for(institution, url: institution_preservation_path(institution), remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :medusa_file_group_id, "Medusa File Group ID"
+    = f.text_field :medusa_file_group_id, class: 'form-control'
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Save Changes", class: "btn btn-primary")
