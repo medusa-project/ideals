@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_26_183254) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_27_143431) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -621,6 +621,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_26_183254) do
     t.datetime "last_logged_in_at"
     t.text "auth_hash"
     t.bigint "institution_id"
+    t.boolean "enabled", default: true, null: false
     t.index ["affiliation_id"], name: "index_users_on_affiliation_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["institution_id"], name: "index_users_on_institution_id"

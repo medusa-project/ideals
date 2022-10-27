@@ -16,12 +16,22 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to "http://www.example.com/auth/failure?message=invalid_credentials&strategy=identity"
   end
 
-  test "create() with non-activated user responds with HTTP 401" do
+  test "create() with a non-activated user responds with HTTP 401" do
     user = users(:norights)
     user.identity.update_attribute(:activated, false)
     post "/auth/identity/callback", params: {
         auth_key: user.email,
         password: "password"
+    }
+    assert_response :unauthorized
+  end
+
+  test "create() with a disabled user responds with HTTP 401" do
+    user = users(:norights)
+    user.update!(enabled: false)
+    post "/auth/identity/callback", params: {
+      auth_key: user.email,
+      password: "password"
     }
     assert_response :unauthorized
   end

@@ -12,6 +12,7 @@ local_sysadmin:
   name:        admin
   email:       admin@example.edu
   phone:       (888) 555-1234
+  enabled:     true
   identity:    local_sysadmin
   institution: example
   user_groups:
@@ -23,6 +24,7 @@ collection1_collection1_manager:
   name:        Collection1 Collection1 Manager
   email:       collection1_collection1_manager@example.edu
   phone:       (888) 555-1234
+  enabled:     true
   identity:    collection1_collection1_manager
   institution: example
 
@@ -32,6 +34,7 @@ collection1_collection1_submitter:
   name:        phil
   email:       phil@example.edu
   phone:       (888) 555-1234
+  enabled:     true
   identity:    collection1_collection1_submitter
   institution: example
 
@@ -42,6 +45,7 @@ norights:
   name:        I have no rights
   email:       norights@example.edu
   phone:       (888) 555-1234
+  enabled:     true
   institution: example
 
 norights2:
@@ -51,6 +55,7 @@ norights2:
   name:        I have no rights
   email:       norights2@example.edu
   phone:       (888) 555-1234
+  enabled:     true
   institution: example
 
 uiuc:
@@ -59,6 +64,7 @@ uiuc:
   name:        Shib Boleth, Esq.
   email:       shib@illinois.edu
   phone:       (888) 555-1234
+  enabled:     true
   org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
   institution: uiuc
 
@@ -68,6 +74,7 @@ uiuc_admin:
   name:        UIUC Institution Admin
   email:       instadmin@illinois.edu
   phone:       (888) 555-1235
+  enabled:     true
   org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
   institution: uiuc
   user_groups:
@@ -79,6 +86,7 @@ uiuc_sysadmin:
   name:        UIUC Sysadmin
   email:       sysadmin@illinois.edu
   phone:       (888) 555-1235
+  enabled:     true
   org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
   institution: uiuc
   user_groups:
@@ -90,6 +98,7 @@ northeast:
   name:        Northeast University Normal User
   email:       user@northeast.edu
   phone:       (888) 555-1234
+  enabled:     true
   org_dn:      o=Northeast University,dc=southwest,dc=edu
   institution: northeast
 
@@ -99,6 +108,7 @@ northeast_admin:
   name:        Northeast.edu Institution Administrator
   email:       admin@northeast.edu
   phone:       (888) 555-1235
+  enabled:     true
   org_dn:      o=Northeast University,dc=northeast,dc=edu
   institution: northeast
   user_groups:
@@ -110,6 +120,7 @@ southwest:
   name:        Southwest University Normal User
   email:       name@southwest.edu
   phone:       (888) 555-1234
+  enabled:     true
   org_dn:      o=Southwest University,dc=southwest,dc=edu
   institution: southwest
 
@@ -119,6 +130,7 @@ southwest_admin:
   name:        Southwest University Institution Administrator
   email:       admin@southwest.edu
   phone:       (888) 555-1235
+  enabled:     true
   org_dn:      o=Southwest University,dc=southwest,dc=edu
   institution: southwest
   user_groups:
@@ -130,6 +142,7 @@ unit1_admin:
   name:        Unit1 Admin
   email:       unit1_admin@example.edu
   phone:       (888) 555-1234
+  enabled:     true
   identity:    unit1_admin
   org_dn:      o=Example University,dc=example,dc=edu
   institution: example
@@ -140,6 +153,7 @@ unit1_unit2_unit1_admin:
   name:        Unit1 Unit2 Unit1 Admin
   email:       unit1_unit2_unit1_admin@example.edu
   phone:       (888) 555-1234
+  enabled:     true
   identity:    unit1_unit2_unit1_admin
   org_dn:      o=Example University,dc=example,dc=edu
   institution: example

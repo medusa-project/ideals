@@ -22,6 +22,7 @@
 #                       login, composed of information from the Shibboleth IdP.
 # * `created_at`        Managed by ActiveRecord.
 # * `email`             Email address.
+# * `enabled`           Whether the user is able to log in.
 # * `institution_id`    Foreign key to [Institution] representing the
 #                       institution of which the instance is a member.
 # * `last_logged_in_at` Date/time of last login.

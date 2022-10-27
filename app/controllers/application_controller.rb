@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
   rescue_from GoneError, with: :rescue_gone
   rescue_from NotAuthorizedError, with: :rescue_unauthorized
 
-  before_action :redirect_to_default_institution
+  before_action :redirect_to_default_institution, :log_out_disabled_user
   after_action :copy_flash_to_response_headers
 
   ##
@@ -315,6 +315,21 @@ class ApplicationController < ActionController::Base
         response.headers['X-Ideals-Message-Type'] = 'success'
         response.headers['X-Ideals-Message']      = flash['success']
       end
+    end
+  end
+
+  ##
+  # When a user account is disabled, the user is prevented from logging in (via
+  # {SessionsController}). But if they are already logged in, we don't want to
+  # let them keep roaming around. Hence this before_action which verifies their
+  # account per-request.
+  #
+  def log_out_disabled_user
+    user = current_user
+    if user && !user.enabled
+      reset_session
+      flash['error'] = "Your account has been disabled."
+      redirect_to root_path
     end
   end
 

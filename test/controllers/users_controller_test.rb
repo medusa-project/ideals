@@ -39,6 +39,66 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  # disable()
+
+  test "disable() redirects for logged-out users" do
+    patch user_disable_path(users(:local_sysadmin))
+    assert_redirected_to login_path
+  end
+
+  test "disable() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    patch user_disable_path(users(:local_sysadmin))
+    assert_response :forbidden
+  end
+
+  test "disable() redirects to the show-user page for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    user = users(:local_sysadmin)
+    patch user_disable_path(user)
+    assert_redirected_to user_path(user)
+  end
+
+  test "disable() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    user = users(:norights)
+    patch user_disable_path(user)
+    assert_redirected_to user_path(user)
+
+    patch user_disable_path(user, role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
+  # enable()
+
+  test "enable() redirects for logged-out users" do
+    patch user_enable_path(users(:local_sysadmin))
+    assert_redirected_to login_path
+  end
+
+  test "enable() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    patch user_enable_path(users(:local_sysadmin))
+    assert_response :forbidden
+  end
+
+  test "enable() redirects to the show-user page for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    user = users(:local_sysadmin)
+    patch user_enable_path(user)
+    assert_redirected_to user_path(user)
+  end
+
+  test "enable() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    user = users(:norights)
+    patch user_enable_path(user)
+    assert_redirected_to user_path(user)
+
+    patch user_enable_path(user, role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # index()
 
   test "index() redirects to login page for logged-out users" do
