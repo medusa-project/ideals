@@ -20,6 +20,14 @@
 #                           tombstone record. The burial is not reversible.
 # * `created_at`            Managed by ActiveRecord.
 # * `description`           Full description string. See {short_description}.
+# * `institution_id`        Foreign key to {Institution}. A collection's owning
+#                           institution is the same as that of its
+#                           {effective_primary_unit effective primary unit},
+#                           but there is an ActiveRecord callback that creates
+#                           a corresponding handle before this relationship is
+#                           established. The rest of the time, this attribute is
+#                           just a shortcut to avoid having to navigate the
+#                           {unit} relationship.
 # * `introduction`          Introduction string. May contain HTML.
 # * `metadata_profile_id`   Foreign key to {MetadataProfile}. Instances without
 #                           this set will fall back to the primary unit's
@@ -102,7 +110,7 @@ class Collection < ApplicationRecord
            dependent: :restrict_with_exception
   has_one :handle
   has_many :collection_item_memberships
-  has_one :institution, through: :units
+  belongs_to :institution
   has_many :items, through: :collection_item_memberships
   belongs_to :metadata_profile, inverse_of: :collections, optional: true
   has_many :manager_groups
@@ -383,13 +391,6 @@ class Collection < ApplicationRecord
   #
   def exhume!
     update!(buried: false) if buried
-  end
-
-  ##
-  # @return [Institution]
-  #
-  def institution
-    primary_unit&.institution || units.first&.institution
   end
 
   ##

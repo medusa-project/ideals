@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_27_201618) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_28_182209) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -109,7 +109,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_201618) do
     t.text "rights"
     t.text "provenance"
     t.boolean "buried", default: false, null: false
+    t.bigint "institution_id", null: false
     t.index ["buried"], name: "index_collections_on_buried"
+    t.index ["institution_id"], name: "index_collections_on_institution_id"
     t.index ["metadata_profile_id"], name: "index_collections_on_metadata_profile_id"
     t.index ["parent_id"], name: "index_collections_on_parent_id"
     t.index ["submission_profile_id"], name: "index_collections_on_submission_profile_id"
@@ -645,6 +647,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_27_201618) do
   add_foreign_key "collection_item_memberships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_item_memberships", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections", "collections", column: "parent_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "collections", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "departments", "user_groups", on_update: :cascade, on_delete: :cascade

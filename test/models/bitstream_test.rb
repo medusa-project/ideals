@@ -593,7 +593,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "ingest_into_medusa() raises an error if preservation is not active for
   the owning institution" do
     @instance = bitstreams(:awaiting_ingest_into_medusa)
-    @instance.institution.medusa_file_group_id = nil
+    @instance.institution.outgoing_message_queue = nil
     assert_raises ArgumentError do
       @instance.ingest_into_medusa
     end

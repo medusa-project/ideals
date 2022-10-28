@@ -206,7 +206,8 @@ class Unit < ApplicationRecord
   def create_default_collection
     return if self.unit_collection_memberships.where(unit_default: true).count > 0
     transaction do
-      collection = Collection.create!(title:       "Default collection for #{self.title}",
+      collection = Collection.create!(institution: self.institution,
+                                      title:       "Default collection for #{self.title}",
                                       description: "This collection was "\
                                       "created automatically along with its parent unit.")
       self.unit_collection_memberships.build(unit:         self,

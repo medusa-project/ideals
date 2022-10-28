@@ -126,9 +126,11 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
 
   test "sum_for_unit() returns a correct count when including children" do
     unit          = units(:unit1)
-    collection    = Collection.create!(title:        "Root Collection",
+    collection    = Collection.create!(institution:  unit.institution,
+                                       title:        "Root Collection",
                                        primary_unit: unit)
-    subcollection = collection.collections.build(primary_unit: unit)
+    subcollection = collection.collections.build(institution:  unit.institution,
+                                                 primary_unit: unit)
     subcollection.save!
     year        = 2022
     start_month = 1
@@ -161,9 +163,11 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
 
   test "sum_for_unit() returns a correct count when not including children" do
     unit          = units(:unit1)
-    collection    = Collection.create!(title:        "Root Collection",
+    collection    = Collection.create!(institution:  unit.institution,
+                                       title:        "Root Collection",
                                        primary_unit: unit)
-    subcollection = collection.collections.build(primary_unit: unit)
+    subcollection = collection.collections.build(institution:  unit.institution,
+                                                 primary_unit: unit)
     subcollection.save!
     year        = 2022
     start_month = 1

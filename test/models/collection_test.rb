@@ -386,12 +386,6 @@ class CollectionTest < ActiveSupport::TestCase
     @instance.exhume!
   end
 
-  # institution()
-
-  test "institution() returns the primary unit's institution" do
-    assert_equal @instance.primary_unit.institution, @instance.institution
-  end
-
   # parent_id
 
   test "parent_id cannot be set to the instance ID" do

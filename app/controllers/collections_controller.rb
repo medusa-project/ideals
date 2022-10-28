@@ -40,6 +40,7 @@ class CollectionsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         @collection              = Collection.new(collection_params)
+        @collection.institution  = current_institution
         @collection.primary_unit = Unit.find_by_id(params[:primary_unit_id])
         # We need to save now in order to assign the collection an ID which
         # many of the authorization methods will need. If authorization fails,
@@ -396,9 +397,11 @@ class CollectionsController < ApplicationController
 
   def assign_primary_unit
     if params[:primary_unit_id]
+      unit = Unit.find(params[:primary_unit_id])
       @collection.unit_collection_memberships.destroy_all
-      @collection.unit_collection_memberships.build(unit_id: params[:primary_unit_id],
+      @collection.unit_collection_memberships.build(unit_id: unit.id,
                                                     primary: true)
+      @collection.update!(institution_id: unit.institution_id)
     end
   end
 

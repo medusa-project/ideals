@@ -1,6 +1,7 @@
 ################################ northeast ##################################
 
 northeast_unit1_collection1:
+  institution:          northeast
   metadata_profile:     northeast_default
   submission_profile:   northeast_default
   submissions_reviewed: true
@@ -9,12 +10,14 @@ northeast_unit1_collection1:
 ################################## uiuc #####################################
 
 uiuc_collection1:
+  institution:          uiuc
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
   buried:               false
 
 uiuc_collection1_collection1:
+  institution:          uiuc
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
@@ -22,6 +25,7 @@ uiuc_collection1_collection1:
   buried:               false
 
 uiuc_collection1_collection1_collection1:
+  institution:          uiuc
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
@@ -29,18 +33,21 @@ uiuc_collection1_collection1_collection1:
   buried:               false
 
 uiuc_collection2:
+  institution:          uiuc
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
   buried:               false
 
 uiuc_unit1_unit2_unit1_collection1:
+  institution:          uiuc
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
   buried:               false
 
 uiuc_described:
+  institution:          uiuc
   title:                Some title
   description:          Some description
   metadata_profile:     uiuc_default
@@ -49,18 +56,21 @@ uiuc_described:
   buried:               false
 
 uiuc_empty:
+  institution:          uiuc
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
   buried:               false
 
 uiuc_undescribed:
+  institution:          uiuc
   metadata_profile:     uiuc_default
   submission_profile:   uiuc_default
   submissions_reviewed: true
   buried:               false
 
 uiuc_buried:
+  institution:          uiuc
   title:                Some title
   description:          Some description
   metadata_profile:     uiuc_default
