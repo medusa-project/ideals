@@ -8,8 +8,8 @@ empty:
   org_dn:                 empty
   main_website_url:       https://empty.edu
   feedback_email:         feedback@empty.edu
-  outgoing_message_queue:
-  incoming_message_queue:
+  outgoing_message_queue: empty_to_nowhere
+  incoming_message_queue: nowhere_to_empty
   default:                false
 
 example:
@@ -20,8 +20,8 @@ example:
   org_dn:                 o=Example University,dc=example,dc=edu
   main_website_url:       https://example.edu
   feedback_email:         feedback@example.edu
-  outgoing_message_queue:
-  incoming_message_queue:
+  outgoing_message_queue: example_to_nowhere
+  incoming_message_queue: nowhere_to_example
   default:                false
 
 northeast:
@@ -32,8 +32,8 @@ northeast:
   org_dn:                 o=Northeast University,dc=northeast,dc=edu
   main_website_url:       https://northeast.edu
   feedback_email:         feedback@northeast.edu
-  outgoing_message_queue:
-  incoming_message_queue:
+  outgoing_message_queue: northeast_to_nowhere
+  incoming_message_queue: nowhere_to_northeast
   default:                false
   administering_groups:
     - northeast_admins
@@ -46,8 +46,8 @@ southwest:
   org_dn:                 o=Southwest University,dc=southwest,dc=edu
   main_website_url:       https://southwest.edu
   feedback_email:         feedback@southwest.edu
-  outgoing_message_queue:
-  incoming_message_queue:
+  outgoing_message_queue: southwest_to_nowhere
+  incoming_message_queue: nowhere_to_southwest
   default:                false
   administering_groups:
     - southwest_admins

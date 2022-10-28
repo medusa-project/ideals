@@ -45,7 +45,7 @@
                                      "aria-selected": "false"}
           %i.fa.fa-box-open
           Preservation
-          - unless @institution.preservation_active?
+          - if @institution.outgoing_message_queue.blank?
             %i.fa.fa-exclamation-triangle.text-danger
       - if policy(@institution).show_theme?
         %a#theme-tab.nav-link{href:                   "#theme-tab-content",

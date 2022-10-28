@@ -287,17 +287,6 @@ class Institution < ApplicationRecord
   end
 
   ##
-  # @return [Boolean]
-  #
-  def preservation_active?
-    begin
-      self.medusa_file_group&.exists? && self.outgoing_message_queue.present?
-    rescue
-      false
-    end
-  end
-
-  ##
   # @param start_time [Time]   Optional beginning of a time range.
   # @param end_time [Time]     Optional end of a time range.
   # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`

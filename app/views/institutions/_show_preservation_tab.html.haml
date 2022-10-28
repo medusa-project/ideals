@@ -10,7 +10,7 @@
 
 .clearfix.mb-3
 
-- unless @institution.preservation_active?
+- if @institution.outgoing_message_queue.blank?
   .alert.alert-warning
     = icon_for(:warning)
     Preservation is currently inactive for this institution due to missing or

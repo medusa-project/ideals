@@ -112,7 +112,7 @@ class Bitstream < ApplicationRecord
       saved_change_to_permanent_key? &&
       !submitted_for_ingest &&
       item.handle.present? &&
-      institution.preservation_active? }
+      institution.outgoing_message_queue.present? }
   after_save :read_full_text_async, if: -> {
     bundle == Bundle::CONTENT &&
     can_read_full_text? &&
@@ -465,7 +465,7 @@ class Bitstream < ApplicationRecord
     raise ArgumentError, "Instance has not been saved yet" if self.id.blank?
     raise ArgumentError, "Permanent key is not set" if self.permanent_key.blank?
     raise ArgumentError, "Owning item does not have a handle" if !self.item.handle || self.item.handle&.suffix&.blank?
-    raise ArgumentError, "Owning institution does not have an outgoing message queue set" unless self.institution.preservation_active?
+    raise ArgumentError, "Owning institution does not have an outgoing message queue set" if self.institution.outgoing_message_queue.blank?
     unless force
       raise AlreadyExistsError, "Already submitted for ingest" if self.submitted_for_ingest
       raise AlreadyExistsError, "Already exists in Medusa" if self.medusa_uuid.present?
