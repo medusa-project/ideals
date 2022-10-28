@@ -54,8 +54,10 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   test "activation_url() returns a correct URL" do
     @instance.create_activation_digest
-    base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    expected = "#{base_url}/identities/#{@instance.id}/activate?token=#{@instance.activation_token}"
+    expected = sprintf("https://%s/identities/%d/activate?token=%s",
+                       @instance.invitee.institution.fqdn,
+                       @instance.id,
+                       @instance.activation_token)
     assert_equal expected, @instance.activation_url
   end
 
@@ -129,8 +131,10 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   test "password_reset_url() returns a correct URL" do
     @instance.create_reset_digest
-    base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    expected = "#{base_url}/identities/#{@instance.id}/reset-password?token=#{@instance.reset_token}"
+    expected = sprintf("https://%s/identities/%d/reset-password?token=%s",
+                       @instance.invitee.institution.fqdn,
+                       @instance.id,
+                       @instance.reset_token)
     assert_equal expected, @instance.password_reset_url
   end
 
@@ -144,8 +148,10 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   test "registration_url() returns a correct URL" do
     @instance.create_registration_digest
-    base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    expected = "#{base_url}/identities/#{@instance.id}/register?token=#{@instance.registration_token}"
+    expected = sprintf("https://%s/identities/%d/register?token=%s",
+                       @instance.invitee.institution.fqdn,
+                       @instance.id,
+                       @instance.registration_token)
     assert_equal expected, @instance.registration_url
   end
 

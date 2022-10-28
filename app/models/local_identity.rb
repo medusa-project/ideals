@@ -97,8 +97,10 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   #
   def activation_url
     raise "Activation token is not set." if self.activation_token.blank?
-    base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    "#{base_url}/identities/#{self.id}/activate?token=#{self.activation_token}"
+    sprintf("https://%s/identities/%d/activate?token=%s",
+            self.invitee.institution.fqdn,
+            self.id,
+            self.activation_token)
   end
 
   ##
@@ -149,8 +151,10 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   #
   def password_reset_url
     raise "Reset token is not set." if self.reset_token.blank?
-    base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    "#{base_url}/identities/#{self.id}/reset-password?token=#{self.reset_token}"
+    sprintf("https://%s/identities/%d/reset-password?token=%s",
+            self.invitee.institution.fqdn,
+            self.id,
+            self.reset_token)
   end
 
   ##
@@ -160,8 +164,10 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   #
   def registration_url
     raise "Registration token is not set." if self.registration_token.blank?
-    base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    "#{base_url}/identities/#{self.id}/register?token=#{self.registration_token}"
+    sprintf("https://%s/identities/%d/register?token=%s",
+            self.invitee.institution.fqdn,
+            self.id,
+            self.registration_token)
   end
 
   ##

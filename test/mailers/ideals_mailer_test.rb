@@ -67,19 +67,20 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_request_action_required()
 
   test "account_request_action_required() sends the expected email" do
-    invitee = invitees(:pending)
+    invitee     = invitees(:pending)
+    institution = institutions(:example)
 
     email = IdealsMailer.account_request_action_required(invitee).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
-    config = Configuration.instance
-    assert_equal [institutions(:example).feedback_email], email.from
-    assert_equal [institutions(:example).feedback_email], email.to
+    assert_equal [institution.feedback_email], email.from
+    assert_equal [institution.feedback_email], email.to
     assert_equal "[TEST: IDEALS] Action required on a new IDEALS user",
                  email.subject
 
-    invitee_url = "#{config.website[:base_url]}/invitees/#{invitee.id}"
-
+    invitee_url = sprintf("https://%s/invitees/%d",
+                          institution.fqdn,
+                          invitee.id)
     assert_equal render_template("account_request_action_required.txt", url: invitee_url),
                  email.text_part.body.raw_source
     assert_equal render_template("account_request_action_required.html", url: invitee_url),
@@ -148,10 +149,10 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal "A new IDEALS item requires review", email.subject
 
     assert_equal render_template("item_submitted.txt",
-                                 item_url: "http://localhost:3000/items/#{item.id}"),
+                                 item_url: "https://localhost:3000/items/#{item.id}"),
                  email.text_part.body.raw_source
     assert_equal render_template("item_submitted.html",
-                                 item_url: "http://localhost:3000/items/#{item.id}"),
+                                 item_url: "https://localhost:3000/items/#{item.id}"),
                  email.html_part.body.raw_source
   end
 

@@ -79,10 +79,9 @@ class IdealsMailer < ApplicationMailer
   # @param invitee [Invitee]
   #
   def account_request_action_required(invitee)
-    config       = ::Configuration.instance
+    @institution = invitee.institution
     @invitee     = invitee
-    @invitee_url = "#{config.website[:base_url]}/invitees/#{invitee.id}"
-    @institution = @invitee.institution
+    @invitee_url = "https://#{@institution.fqdn}/invitees/#{invitee.id}"
     mail(from:    @institution.feedback_email,
          to:      [@institution.feedback_email],
          subject: "#{subject_prefix} Action required on a new "\
@@ -134,9 +133,8 @@ class IdealsMailer < ApplicationMailer
   # @param item [Item]
   #
   def item_submitted(item)
-    config       = ::Configuration.instance
-    @item_url    = item_url(item, host: config.website[:base_url])
     @institution = item.institution
+    @item_url    = item_url(item, host: "https://#{@institution.fqdn}")
     if item.primary_collection&.managing_users&.any?
       recipients = item.primary_collection.managing_users.map(&:email)
       mail(from:     item.institution.feedback_email,

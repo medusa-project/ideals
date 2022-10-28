@@ -54,7 +54,7 @@ southwest:
 
 uiuc:
   key:                    uiuc
-  fqdn:                   www.ideals.illinois.edu
+  fqdn:                   localhost:3000
   name:                   University of Illinois at Urbana-Champaign
   service_name:           IDEALS
   org_dn:                 o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
