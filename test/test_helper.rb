@@ -12,6 +12,14 @@ class ActiveSupport::TestCase
     @@seeding
   end
 
+  def clear_message_queues
+    Institution.
+      where.not(outgoing_message_queue: nil).
+      pluck(:outgoing_message_queue).each do |queue|
+      AmqpHelper::Connector[:ideals].clear_queues(queue)
+    end
+  end
+
   ##
   # Seeded bitstreams have an invalid staging_key and/or permanent_key
   # property (because an item ID is needed to compute one). This method fixes
@@ -75,10 +83,6 @@ class ActiveSupport::TestCase
     user.user_groups << user_groups(:sysadmin)
     user.save!
     user
-  end
-
-  def clear_message_queue
-    AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
   end
 
   def refresh_elasticsearch

@@ -45,6 +45,8 @@
                                      "aria-selected": "false"}
           %i.fa.fa-box-open
           Preservation
+          - unless @institution.preservation_active?
+            %i.fa.fa-exclamation-triangle.text-danger
       - if policy(@institution).show_theme?
         %a#theme-tab.nav-link{href:                   "#theme-tab-content",
                               "data-toggle":          "pill",

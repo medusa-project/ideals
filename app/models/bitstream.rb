@@ -1,9 +1,7 @@
 ##
-# Binary file/object associated with an [Item]. The "bitstream" terminology
-# comes from DSpace, which is what IDEALS used to be built on.
-#
-# The term "bitstream" is not exposed in the user interface. Throughout the UI,
-# bitstreams are called files. (IR-109)
+# Binary file/object associated with an {Item}. The "bitstream" terminology
+# comes from DSpace, which is what IDEALS used to be built on, but "file" is
+# used instead in the user interface.
 #
 # # Storage locations
 #
@@ -20,15 +18,19 @@
 # The `Content-Type` header supplied by the client during the submission/upload
 # process cannot be relied on to contain a useful, specific media type.
 # Instead, the {original_filename} extension is used by {format} to infer a
-# [FileFormat], which may have one or more associated media types.
+# {FileFormat}, which may have one or more associated media types.
 #
 # Later, the S3 object in staging is ingested into Medusa, and Medusa will
 # perform its own media type management, which is not very reliable. Again,
 # {original_filename} is the "source of truth."
 #
 # When a format cannot be inferred, {format} will return `nil.` In this case it
-# may be necessary to update the format database; see [FileFormat] for more
-# information.
+# may be necessary to update the {FileFormat format database}.
+#
+# # Preservation
+#
+# Bitstreams are ingested into Medusa automatically depending on several
+# conditions--see the `ingest_into_medusa` `after_save` callback.
 #
 # # Derivative images
 #
@@ -40,18 +42,18 @@
 #
 # # Full text
 #
-# See [FullText].
+# See {FullText}.
 #
 # # Download statistics
 #
-# See [BitstreamsController] documentation.
+# See {BitstreamsController} documentation.
 #
 # # Attributes
 #
-# * `bundle`                One of the [Bundle] constant values.
+# * `bundle`                One of the {Bundle} constant values.
 # * `bundle_position`       Zero-based position (order) of the bitstream
 #                           relative to other bitstreams in the same bundle and
-#                           attached to the same [Item].
+#                           attached to the same {Item}.
 # * `created_at`:           Managed by ActiveRecord.
 # * `description`:          Description.
 # * `dspace_id`:            `bitstream.internal_id` column value from
@@ -64,7 +66,7 @@
 #                           when it's not set, it certainly doesn't. Only
 #                           bitstreams in the {Bundle#CONTENT content bundle}
 #                           in a supported format typically get checked.
-# * `item_id`:              Foreign key to [Item].
+# * `item_id`:              Foreign key to {Item}.
 # * `length`:               Size in bytes.
 # * `medusa_key`:           Full object key within the Medusa S3 bucket. Set
 #                           only once the bitstream has been ingested into
@@ -74,11 +76,11 @@
 #                           has been ingested.
 # * `original_filename`:    Filename of the bitstream as submitted by the user.
 # * `permanent_key`:        Object key in the application S3 bucket, which is
-#                           set after the owning [Item] has been approved.
+#                           set after the owning {Item} has been approved.
 # * `primary`               Whether the instance is the primary bitstream of
-#                           the owning [Item]. An item may have zero or one
+#                           the owning {Item}. An item may have zero or one
 #                           primary bitstreams.
-# * `role`:                 One of the [Role] constant values indicating the
+# * `role`:                 One of the {Role} constant values indicating the
 #                           minimum-privileged role required to access the
 #                           instance.
 # * `staging_key`:          Object key in the application S3 bucket, which is
@@ -106,8 +108,11 @@ class Bitstream < ApplicationRecord
 
   before_save :ensure_primary_uniqueness
   after_save :ingest_into_medusa, if: -> {
-    item.handle.present? && permanent_key.present? &&
-      saved_change_to_permanent_key? && !submitted_for_ingest }
+    permanent_key.present? &&
+      saved_change_to_permanent_key? &&
+      !submitted_for_ingest &&
+      item.handle.present? &&
+      institution.preservation_active? }
   after_save :read_full_text_async, if: -> {
     bundle == Bundle::CONTENT &&
     can_read_full_text? &&
@@ -450,22 +455,25 @@ class Bitstream < ApplicationRecord
   ##
   # @param force [Boolean] If true, the ingest occurs even if the instance has
   #                        already been submitted or already exists in Medusa.
-  # @raises [ArgumentError] if the bitstream does not have an ID, permanent key,
-  #                         or handle.
+  # @raises [ArgumentError] if the bitstream does not have an ID or permanent
+  #                         key, or if its owning item does not have a handle,
+  #                         or if its owning institution does not
+  #                         {Institution#preservation_active? support preservation}.
   # @raises [AlreadyExistsError] if the bitstream already has a Medusa UUID.
   #
   def ingest_into_medusa(force: false)
     raise ArgumentError, "Instance has not been saved yet" if self.id.blank?
     raise ArgumentError, "Permanent key is not set" if self.permanent_key.blank?
     raise ArgumentError, "Owning item does not have a handle" if !self.item.handle || self.item.handle&.suffix&.blank?
+    raise ArgumentError, "Owning institution does not have an outgoing message queue set" unless self.institution.preservation_active?
     unless force
       raise AlreadyExistsError, "Already submitted for ingest" if self.submitted_for_ingest
       raise AlreadyExistsError, "Already exists in Medusa" if self.medusa_uuid.present?
     end
 
     # The staging key (this is Medusa AMQP interface terminology, not
-    # Bitstream terminology) is relative to PERMANENT_KEY_PREFIX because Medusa
-    # is configured to look only within that prefix.
+    # Bitstream terminology) is relative to the permanent key prefix because
+    # Medusa is configured to look only within that prefix.
     staging_key = [self.item_id, self.original_filename].join("/")
     target_key  = self.class.medusa_key(self.item.handle.handle,
                                         self.original_filename)
@@ -537,7 +545,7 @@ class Bitstream < ApplicationRecord
 
   ##
   # Scans the bitstream content for full text, assigns it to {full_text},
-  # updates {full_text_checked_at}, and reindexes the owning [Item].
+  # updates {full_text_checked_at}, and reindexes the owning {Item}.
   #
   # @param force [Boolean] Whether to read full text even if it has already
   #                        been checked for.
@@ -666,7 +674,7 @@ class Bitstream < ApplicationRecord
 
   ##
   # Increments the bundle positions of all bitstreams attached to the owning
-  # [Item] that are greater than or equal to the position of this instance, in
+  # {Item} that are greater than or equal to the position of this instance, in
   # order to make room for it.
   #
   def shift_bundle_positions_before_create
@@ -683,7 +691,7 @@ class Bitstream < ApplicationRecord
 
   ##
   # Updates the bundle positions of all bitstreams attached to the owning
-  # [Item] to ensure that they are sequential.
+  # {Item} to ensure that they are sequential.
   #
   def shift_bundle_positions_before_update
     if self.bundle_position_changed? && self.item
@@ -705,7 +713,7 @@ class Bitstream < ApplicationRecord
 
   ##
   # Updates the bundle positions of all bitstreams attached to the owning
-  # [Item] to ensure that they are sequential and zero-based.
+  # {Item} to ensure that they are sequential and zero-based.
   #
   def shift_bundle_positions_after_destroy
     if self.item && self.destroyed?

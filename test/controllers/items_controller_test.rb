@@ -431,7 +431,8 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
              verb: "approve"
          }
     item.bitstreams.each do
-      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+      queue = item.institution.outgoing_message_queue
+      AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
         assert message.present?
       end
     end

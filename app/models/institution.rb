@@ -280,8 +280,21 @@ class Institution < ApplicationRecord
   # @return [Medusa::FileGroup, nil]
   #
   def medusa_file_group
-    self.medusa_file_group_id ?
-      Medusa::FileGroup.with_id(self.medusa_file_group_id) : nil
+    if !@file_group && self.medusa_file_group_id
+      @file_group = Medusa::FileGroup.with_id(self.medusa_file_group_id)
+    end
+    @file_group
+  end
+
+  ##
+  # @return [Boolean]
+  #
+  def preservation_active?
+    begin
+      self.medusa_file_group&.exists? && self.outgoing_message_queue.present?
+    rescue
+      false
+    end
   end
 
   ##

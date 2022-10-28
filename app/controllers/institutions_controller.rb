@@ -356,7 +356,9 @@ class InstitutionsController < ApplicationController
   end
 
   def preservation_params
-    params.require(:institution).permit(:medusa_file_group_id)
+    params.require(:institution).permit(:incoming_message_queue,
+                                        :medusa_file_group_id,
+                                        :outgoing_message_queue)
   end
 
   ##

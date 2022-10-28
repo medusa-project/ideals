@@ -367,6 +367,29 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # preservation_active?()
+
+  test "preservation_active?() returns false when the Medusa file group ID is
+  not set" do
+    @instance.medusa_file_group_id   = nil
+    @instance.outgoing_message_queue = "something"
+    assert !@instance.preservation_active?
+  end
+
+  test "preservation_active?() returns false when the outgoing message queue is
+  not set" do
+    @instance.medusa_file_group_id   = 50
+    @instance.outgoing_message_queue = nil
+    assert !@instance.preservation_active?
+  end
+
+  test "preservation_active?() returns true when all conditions are met" do
+    skip # there is no way to get this to pass in test because it requires Medusa to be running
+    @instance.medusa_file_group_id   = 50
+    @instance.outgoing_message_queue = "something"
+    assert @instance.preservation_active?
+  end
+
   # primary_color
 
   test "primary_color must contain a valid CSS color" do

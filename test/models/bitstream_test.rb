@@ -35,7 +35,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   setup do
     setup_s3
-    clear_message_queue
+    clear_message_queues
     @instance = bitstreams(:item1_in_staging)
     assert @instance.valid?
   end
@@ -302,7 +302,8 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "delete_from_medusa() does nothing if medusa_uuid is not set" do
     @instance.delete_from_medusa
-    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+    queue = @instance.institution.outgoing_message_queue
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
       assert_nil message
     end
   end
@@ -310,7 +311,8 @@ class BitstreamTest < ActiveSupport::TestCase
   test "delete_from_medusa() sends a correct message if medusa_uuid is set" do
     @instance = bitstreams(:item2_in_medusa)
     @instance.delete_from_medusa
-    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+    queue = @instance.institution.outgoing_message_queue
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
       assert_equal "delete", message['operation']
       assert_equal @instance.medusa_uuid, message['uuid']
       assert_equal @instance.class.to_s, message['pass_through']['class']
@@ -479,7 +481,8 @@ class BitstreamTest < ActiveSupport::TestCase
   not set" do
     @instance = bitstreams(:submitted_in_staging)
     @instance.destroy!
-    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+    queue = @instance.institution.outgoing_message_queue
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
       assert_nil message
     end
   end
@@ -488,7 +491,8 @@ class BitstreamTest < ActiveSupport::TestCase
     Message.destroy_all
     @instance = bitstreams(:item2_in_medusa)
     @instance.destroy!
-    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+    queue = @instance.institution.outgoing_message_queue
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
       assert_not_nil message
     end
   end
@@ -586,6 +590,15 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  test "ingest_into_medusa() raises an error if preservation is not active for
+  the owning institution" do
+    @instance = bitstreams(:awaiting_ingest_into_medusa)
+    @instance.institution.medusa_file_group_id = nil
+    assert_raises ArgumentError do
+      @instance.ingest_into_medusa
+    end
+  end
+
   test "ingest_into_medusa() raises an error if the owning item's handle does
   not have a suffix" do
     @instance = bitstreams(:approved_in_permanent)
@@ -614,7 +627,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "ingest_into_medusa() does not raise an error if the instance has
   already been submitted for ingest but the force argument is true" do
-    @instance.permanent_key = "cats"
+    @instance.permanent_key        = "cats"
     @instance.submitted_for_ingest = true
     @instance.ingest_into_medusa(force: true)
   end
@@ -638,7 +651,8 @@ class BitstreamTest < ActiveSupport::TestCase
   test "ingest_into_medusa() sends a message to the queue" do
     @instance = bitstreams(:awaiting_ingest_into_medusa)
     @instance.ingest_into_medusa
-    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+    queue     = @instance.institution.outgoing_message_queue
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
       config = ::Configuration.instance
       assert_equal "ingest", message['operation']
       assert_equal "#{@instance.item.id}/escher_lego.jpg", message['staging_key']
@@ -908,7 +922,19 @@ class BitstreamTest < ActiveSupport::TestCase
   is not set" do
     @instance = bitstreams(:submitted_in_staging)
     @instance.save!
-    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+    queue     = @instance.institution.outgoing_message_queue
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
+      assert_nil message
+    end
+  end
+
+  test "save() does not send an ingest message to Medusa if preservation is not
+  active on the owning institution" do
+    @instance = bitstreams(:submitted_in_staging)
+    @instance.institution.medusa_file_group_id = nil
+    @instance.save!
+    queue     = @instance.institution.outgoing_message_queue
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
       assert_nil message
     end
   end
@@ -917,7 +943,8 @@ class BitstreamTest < ActiveSupport::TestCase
   has not changed" do
     @instance = bitstreams(:awaiting_ingest_into_medusa)
     @instance.save!
-    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+    queue = @instance.institution.outgoing_message_queue
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
       assert_nil message
     end
   end
@@ -930,7 +957,8 @@ class BitstreamTest < ActiveSupport::TestCase
                                       @instance.institution.key,
                                       "storage",
                                       "new_key"].join("/"))
-    AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+    queue = @instance.institution.outgoing_message_queue
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
       assert_not_nil message
     end
   end

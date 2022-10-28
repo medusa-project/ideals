@@ -11,7 +11,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   teardown do
-    AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
+    clear_message_queues
   end
 
   # Stages

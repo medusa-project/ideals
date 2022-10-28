@@ -26,14 +26,16 @@ namespace :medusa do
 
     desc "Fetch Medusa RabbitMQ messages"
     task :fetch => :environment do
-      loop  = true
-      count = 0
-      while loop
-        AmqpHelper::Connector[:ideals].with_message(Message.incoming_queue) do |payload|
-          loop = payload.present?
-          if loop
-            count += 1
-            MessageHandler.handle(payload)
+      Institution.where.not(incoming_message_queue: nil).each do |institution|
+        loop        = true
+        count       = 0
+        while loop
+          AmqpHelper::Connector[:ideals].with_message(institution.incoming_message_queue) do |payload|
+            loop = payload.present?
+            if loop
+              count += 1
+              MessageHandler.handle(payload)
+            end
           end
         end
       end
