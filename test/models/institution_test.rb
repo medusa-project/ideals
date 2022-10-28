@@ -248,15 +248,6 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
-  test "fqdn must be a valid FQDN" do
-    @instance.fqdn = "-invalid_"
-    assert !@instance.valid?
-    @instance.fqdn = "host-name.example.org"
-    assert @instance.valid?
-    @instance.fqdn = "host-name.example.org:3000" # we need a port in development
-    assert @instance.valid?
-  end
-
   # header_background_color
 
   test "header_background_color must contain a valid CSS color" do

@@ -69,11 +69,6 @@ class Institution < ApplicationRecord
   # uniqueness enforced by database constraints
   validates :fqdn, presence: true
 
-  validates_format_of :fqdn,
-                      # Rough but good enough
-                      # Credit: https://stackoverflow.com/a/20204811
-                      with: /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}(:\d+)?$)/
-
   # uniqueness enforced by database constraints
   validates :key, presence: true
 
