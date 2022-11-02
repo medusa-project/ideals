@@ -393,7 +393,7 @@ class Institution < ApplicationRecord
                                    label:            "Sponsor/Grant No.")
     self.registered_elements.build(name:             "dc:identifier",
                                    label:            "Identifier",
-                                   vocabulary_key:   Vocabulary::Key::DEGREE_NAMES,
+                                   vocabulary:       Vocabulary.find_by_name("Degree Names"),
                                    highwire_mapping: "citation_id")
     self.registered_elements.build(name:             "dc:identifier:bibliographicCitation",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
@@ -402,7 +402,7 @@ class Institution < ApplicationRecord
                                    label:            "Identifiers: URI or URL")
     self.registered_elements.build(name:             "dc:language",
                                    label:            "Language",
-                                   vocabulary_key:   Vocabulary::Key::COMMON_ISO_LANGUAGES,
+                                   vocabulary:       Vocabulary.find_by_name("Common ISO Languages"),
                                    highwire_mapping: "citation_language")
     self.registered_elements.build(name:             "dc:publisher",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
@@ -427,10 +427,10 @@ class Institution < ApplicationRecord
                                    highwire_mapping: "citation_title")
     self.registered_elements.build(name:             "dc:type",
                                    label:            "Type of Resource",
-                                   vocabulary_key:   Vocabulary::Key::COMMON_TYPES)
+                                   vocabulary:       Vocabulary.find_by_name("Common Types"))
     self.registered_elements.build(name:             "dc:type:genre",
                                    label:            "Genre of Resource",
-                                   vocabulary_key:   Vocabulary::Key::COMMON_GENRES)
+                                   vocabulary:       Vocabulary.find_by_name("Common Genres"))
     self.registered_elements.build(name:             "thesis:degree:department",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
                                    label:            "Dissertation/Thesis Degree Department")
@@ -442,7 +442,7 @@ class Institution < ApplicationRecord
                                    label:            "Degree Granting Institution")
     self.registered_elements.build(name:             "thesis:degree:level",
                                    label:            "Dissertation or Thesis",
-                                   vocabulary_key:   Vocabulary::Key::DISSERTATION_THESIS)
+                                   vocabulary:       Vocabulary.find_by_name("Dissertation Thesis"))
     self.registered_elements.build(name:             "thesis:degree:name",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
                                    label:            "Degree")
@@ -467,8 +467,7 @@ class Institution < ApplicationRecord
   end
 
   def add_default_vocabularies
-    vocab = self.vocabularies.build(key:  "common_genres",
-                                    name: "Common Genres")
+    vocab = self.vocabularies.build(name: "Common Genres")
     vocab.vocabulary_terms.build(stored_value:    "article",
                                  displayed_value: "Article")
     vocab.vocabulary_terms.build(stored_value:    "bibliography",
@@ -527,8 +526,7 @@ class Institution < ApplicationRecord
                                  displayed_value: "Other")
     vocab.save!
 
-    vocab = self.vocabularies.build(key:  "common_iso_languages",
-                                    name: "Common ISO Languages")
+    vocab = self.vocabularies.build(name: "Common ISO Languages")
     vocab.vocabulary_terms.build(stored_value:    "en",
                                  displayed_value: "English")
     vocab.vocabulary_terms.build(stored_value:    "zh",
@@ -549,8 +547,7 @@ class Institution < ApplicationRecord
                                  displayed_value: "Other")
     vocab.save!
 
-    vocab = self.vocabularies.build(key:  "common_types",
-                                    name: "Common Types")
+    vocab = self.vocabularies.build(name: "Common Types")
     vocab.vocabulary_terms.build(stored_value:    "sound",
                                  displayed_value: "Audio")
     vocab.vocabulary_terms.build(stored_value:    "dataset",
@@ -565,8 +562,7 @@ class Institution < ApplicationRecord
                                  displayed_value: "Other")
     vocab.save!
 
-    vocab = self.vocabularies.build(key:  "degree_names",
-                                    name: "Degree Names")
+    vocab = self.vocabularies.build(name: "Degree Names")
     vocab.vocabulary_terms.build(stored_value:    "B.A. (bachelor's)",
                                  displayed_value: "B.A. (bachelor's)")
     vocab.vocabulary_terms.build(stored_value:    "B.S. (bachelor's)",
@@ -601,8 +597,7 @@ class Institution < ApplicationRecord
                                  displayed_value: "Ph.D. (doctoral)")
     vocab.save!
 
-    vocab = self.vocabularies.build(key:  "dissertation_thesis",
-                                    name: "Dissertation Thesis")
+    vocab = self.vocabularies.build(name: "Dissertation Thesis")
     vocab.vocabulary_terms.build(stored_value:    "Dissertation",
                                  displayed_value: "Dissertation (Doctoral level only)")
     vocab.vocabulary_terms.build(stored_value:    "Thesis",

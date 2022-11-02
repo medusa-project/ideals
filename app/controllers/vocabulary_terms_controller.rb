@@ -52,7 +52,7 @@ class VocabularyTermsController < ApplicationController
   #
   def new
     @term = VocabularyTerm.new
-    authorize(@term)
+    authorize @term, policy_class: VocabularyPolicy
     render partial: "form", locals: { vocabulary: @vocabulary,
                                       term:       @term }
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_31_143729) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_02_154021) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -470,12 +470,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_31_143729) do
     t.string "uri"
     t.string "label", null: false
     t.bigint "institution_id", null: false
-    t.string "vocabulary_key"
     t.string "input_type"
     t.string "highwire_mapping"
+    t.bigint "vocabulary_id"
     t.index ["institution_id", "uri"], name: "index_registered_elements_on_institution_id_and_uri", unique: true
     t.index ["institution_id"], name: "index_registered_elements_on_institution_id"
     t.index ["name", "institution_id"], name: "index_registered_elements_on_name_and_institution_id", unique: true
+    t.index ["vocabulary_id"], name: "index_registered_elements_on_vocabulary_id"
   end
 
   create_table "settings", force: :cascade do |t|
@@ -638,11 +639,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_31_143729) do
 
   create_table "vocabularies", force: :cascade do |t|
     t.bigint "institution_id", null: false
-    t.string "key", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["institution_id", "key"], name: "index_vocabularies_on_institution_id_and_key", unique: true
     t.index ["institution_id", "name"], name: "index_vocabularies_on_institution_id_and_name", unique: true
   end
 
@@ -704,6 +703,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_31_143729) do
   add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :nullify
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "registered_elements", "vocabularies", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitter_groups", "collections", on_update: :cascade, on_delete: :cascade

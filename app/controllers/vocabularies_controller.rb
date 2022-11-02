@@ -109,7 +109,7 @@ class VocabulariesController < ApplicationController
   end
 
   def vocabulary_params
-    params.require(:vocabulary).permit(:key, :name)
+    params.require(:vocabulary).permit(:name)
   end
 
 end

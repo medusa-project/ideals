@@ -19,7 +19,6 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            vocabulary: {
-             key:  "new",
              name: "New"
            }
          }
@@ -33,7 +32,6 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            vocabulary: {
-             key:  "new",
              name: "New"
            }
          }
@@ -220,7 +218,6 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             vocabulary: {
-              key:  "new",
               name: "New"
             }
           }
@@ -235,7 +232,6 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             vocabulary: {
-              key:  "cats",
               name: "Cats"
             }
           }
@@ -249,7 +245,6 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             vocabulary: {
-              key: "key",
               name: "" # invalid
             }
           }

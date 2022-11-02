@@ -4,7 +4,7 @@ class VocabularyTest < ActiveSupport::TestCase
 
   setup do
     @instance = Vocabulary.find_by(institution: institutions(:southwest),
-                                   key:         "vocab1")
+                                   name:        "Vocabulary 1")
   end
 
   # vocabulary
