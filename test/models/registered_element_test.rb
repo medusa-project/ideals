@@ -178,7 +178,8 @@ class RegisteredElementTest < ActiveSupport::TestCase
 
   test "vocabulary() returns the Vocabulary corresponding to vocabulary_key" do
     @instance.vocabulary_key = :common_types
-    assert_equal Vocabulary.with_key(@instance.vocabulary_key),
+    assert_equal Vocabulary.find_by(institution: @instance.institution,
+                                    key:         @instance.vocabulary_key),
                  @instance.vocabulary
   end
 

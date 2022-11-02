@@ -1,17 +1,19 @@
 ##
-# Term in a {Vocabulary}.
+# Term within a {Vocabulary}.
 #
-class VocabularyTerm
+# When advanced-searching and entering metadata, terms appear in a `select`
+# menu. The {displayed_value} is what the user sees in the menu. The
+# {stored_value} is stored in an {AscribedElement}'s
+# {AscribedElement#string string}.
+#
+class VocabularyTerm < ApplicationRecord
 
-  attr_reader :stored_value, :displayed_value
+  belongs_to :vocabulary, touch: true
 
-  ##
-  # @param stored_value [String]
-  # @param displayed_value [String]
-  #
-  def initialize(stored_value, displayed_value)
-    @stored_value    = stored_value
-    @displayed_value = displayed_value
-  end
+  # uniqueness enforced by database constraints
+  validates :displayed_value, presence: true
+
+  # uniqueness enforced by database constraints
+  validates :stored_value, presence: true
 
 end

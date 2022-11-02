@@ -1,13 +1,23 @@
 ##
-# Controlled vocabulary backed by {Vocabulary#TERMS_PATHNAME}. Obtain instances
-# from {with_key}.
+# Controlled vocabulary associated with a {RegisteredElement}.
 #
-class Vocabulary
+# When {RegisteredElement}s are associated with a vocabulary, their
+# {RegisteredElement#input_type input type} is overridden as a select menu,
+# which appears in the submission interface and advanced search form, among
+# potentially other places.
+#
+# # Attributes
+#
+# * `created_at`     Managed by ActiveRecord.
+# * `institution_id` Foreign key to the owning {Institution}.
+# * `key`            Unique key within the institution. TODO: get rid of this
+# * `name`           Name of the vocabulary.
+# * `updated_at`     Managed by ActiveRecord.
+#
+class Vocabulary < ApplicationRecord
 
-  ##
-  # Contains constants for all available vocabulary keys, which correspond to
-  # the keys in {TERMS_PATHNAME}.
-  #
+  include Breadcrumb
+
   class Key
     COMMON_GENRES         = :common_genres
     COMMON_ISO_LANGUAGES  = :common_iso_languages
@@ -16,64 +26,21 @@ class Vocabulary
     DISSERTATION_THESIS   = :dissertation_thesis
   end
 
-  TERMS_PATHNAME = File.join(Rails.root, "config", "vocabulary_terms.yml")
+  belongs_to :institution
+  has_many :vocabulary_terms
 
-  ##
-  # Cache of instances created by {with_key}. Not for public use.
-  #
-  VOCABULARIES = {}
+  # uniqueness (within an institution) enforced by database constraints
+  validates :key, presence: true
 
-  attr_reader :key
+  # uniqueness (within an institution) enforced by database constraints
+  validates :name, presence: true
 
-  ##
-  # @return [Enumerable<Vocabulary>]
-  #
-  def self.all
-    Key.constants.map{ |k| with_key(Key.const_get(k)) }
+  def breadcrumb_label
+    self.name
   end
 
-  ##
-  # @param key [String,Symbol]
-  # @return [Vocabulary]
-  #
-  def self.with_key(key)
-    key = key.to_sym
-    VOCABULARIES[key] = Vocabulary.new(key) unless VOCABULARIES.has_key?(key)
-    VOCABULARIES[key]
-  end
-
-  ##
-  # @return [String]
-  #
-  def name
-    @vocab_file[@key]['name']
-  end
-
-  ##
-  # @return [Enumerable<VocabularyTerm>]
-  #
-  def terms
-    unless @terms
-      @terms = @vocab_file[@key]['terms'].map do |term|
-        VocabularyTerm.new(term['stored_value'], term['displayed_value'])
-      end
-    end
-    @terms
-  end
-
-  private
-
-  ##
-  # @param key [String,Symbol]
-  # @raises [ArgumentError] if there is no vocabulary with the given key.
-  #
-  def initialize(key)
-    @key        = key.to_s
-    @terms      = nil
-    @vocab_file = YAML::load_file(TERMS_PATHNAME)
-    unless @vocab_file.has_key?(@key)
-      raise ArgumentError, "Invalid vocabulary key"
-    end
+  def breadcrumb_parent
+    Vocabulary
   end
 
 end

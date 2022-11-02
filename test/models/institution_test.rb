@@ -94,6 +94,17 @@ class InstitutionTest < ActiveSupport::TestCase
     assert profile.elements.count > 0
   end
 
+  test "create() adds default vocabularies" do
+    institution = Institution.create!(name:             "New Institution",
+                                      service_name:     "New",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      main_website_url: "https://example.net")
+    assert_equal 5, institution.vocabularies.count
+    vocab = institution.vocabularies.first
+    assert vocab.vocabulary_terms.count > 0
+  end
+
   test "create() adds a defining user group" do
     institution = Institution.create!(name:             "New Institution",
                                       service_name:     "New",

@@ -17,7 +17,7 @@ module ItemsHelper
       html <<   '<div class="col-sm-9">'
       reg_e = mp_e.registered_element
       if reg_e.vocabulary
-        options = [["Any", nil]] + reg_e.vocabulary.terms.map{ |t| [t.displayed_value, t.stored_value] }
+        options = [["Any", nil]] + reg_e.vocabulary.vocabulary_terms.map{ |t| [t.displayed_value, t.stored_value] }
         html << select_tag("elements[#{mp_e.name}]",
                            options_for_select(options),
                            class: "custom-select") # TODO: selected

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_28_182209) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_31_143729) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -636,6 +636,27 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_28_182209) do
     t.index ["uid"], name: "index_users_on_uid", unique: true
   end
 
+  create_table "vocabularies", force: :cascade do |t|
+    t.bigint "institution_id", null: false
+    t.string "key", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution_id", "key"], name: "index_vocabularies_on_institution_id_and_key", unique: true
+    t.index ["institution_id", "name"], name: "index_vocabularies_on_institution_id_and_name", unique: true
+  end
+
+  create_table "vocabulary_terms", force: :cascade do |t|
+    t.bigint "vocabulary_id", null: false
+    t.string "stored_value", null: false
+    t.string "displayed_value", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["vocabulary_id", "displayed_value"], name: "index_vocabulary_terms_on_vocabulary_id_and_displayed_value", unique: true
+    t.index ["vocabulary_id", "stored_value"], name: "index_vocabulary_terms_on_vocabulary_id_and_stored_value", unique: true
+    t.index ["vocabulary_id"], name: "index_vocabulary_terms_on_vocabulary_id"
+  end
+
   add_foreign_key "ad_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "affiliations_user_groups", "affiliations", on_update: :cascade, on_delete: :cascade
   add_foreign_key "affiliations_user_groups", "user_groups", on_update: :cascade, on_delete: :cascade
@@ -706,4 +727,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_28_182209) do
   add_foreign_key "users", "affiliations", on_update: :cascade, on_delete: :nullify
   add_foreign_key "users", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "users", "local_identities", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "vocabularies", "institutions", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "vocabulary_terms", "vocabularies", on_update: :cascade, on_delete: :cascade
 end

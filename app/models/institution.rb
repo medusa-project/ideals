@@ -65,35 +65,33 @@ class Institution < ApplicationRecord
   has_many :units
   has_many :user_groups
   has_many :users
+  has_many :vocabularies
 
   # uniqueness enforced by database constraints
   validates :fqdn, presence: true
 
   # uniqueness enforced by database constraints
-  validates :key, presence: true
-
-  # uniqueness enforced by database constraints
   validates :medusa_file_group_id, allow_nil: true,
             numericality: { only_integer: true }
-
-  # uniqueness enforced by database constraints
-  validates :name, presence: true
-
-  validates :service_name, presence: true
 
   validates :active_link_color, presence: true
   validates :footer_background_color, presence: true
   validates :header_background_color, presence: true
+  validates :key, presence: true
   validates :link_color, presence: true
   validates :link_hover_color, presence: true
+  validates :name, presence: true
   validates :primary_color, presence: true
   validates :primary_hover_color, presence: true
+  validates :service_name, presence: true
 
   validate :disallow_key_changes, :validate_css_colors
 
   before_save :ensure_default_uniqueness
-  after_create :add_default_elements, :add_default_metadata_profile,
-               :add_default_submission_profile, :add_defining_user_group
+  # N.B.: elements must be added AFTER vocabularies!
+  after_create :add_default_vocabularies, :add_default_elements,
+               :add_default_metadata_profile, :add_default_submission_profile,
+               :add_defining_user_group
 
   ##
   # @param extension [String]
@@ -466,6 +464,150 @@ class Institution < ApplicationRecord
                                              default: true)
     profile.save!
     profile.add_default_elements
+  end
+
+  def add_default_vocabularies
+    vocab = self.vocabularies.build(key:  "common_genres",
+                                    name: "Common Genres")
+    vocab.vocabulary_terms.build(stored_value:    "article",
+                                 displayed_value: "Article")
+    vocab.vocabulary_terms.build(stored_value:    "bibliography",
+                                 displayed_value: "Bibliography")
+    vocab.vocabulary_terms.build(stored_value:    "book",
+                                 displayed_value: "Book")
+    vocab.vocabulary_terms.build(stored_value:    "book_chapter",
+                                 displayed_value: "Book Chapter")
+    vocab.vocabulary_terms.build(stored_value:    "book_review",
+                                 displayed_value: "Book Review")
+    vocab.vocabulary_terms.build(stored_value:    "editorial",
+                                 displayed_value: "Editorial")
+    vocab.vocabulary_terms.build(stored_value:    "essay",
+                                 displayed_value: "Essay")
+    vocab.vocabulary_terms.build(stored_value:    "conference_paper",
+                                 displayed_value: "Conference Paper / Presentation")
+    vocab.vocabulary_terms.build(stored_value:    "conference_poster",
+                                 displayed_value: "Conference Poster")
+    vocab.vocabulary_terms.build(stored_value:    "conference_proceeding",
+                                 displayed_value: "Conference Proceeding (whole)")
+    vocab.vocabulary_terms.build(stored_value:    "data",
+                                 displayed_value: "Data")
+    vocab.vocabulary_terms.build(stored_value:    "dissertation/thesis",
+                                 displayed_value: "Dissertation / Thesis")
+    vocab.vocabulary_terms.build(stored_value:    "drawing",
+                                 displayed_value: "Drawing")
+    vocab.vocabulary_terms.build(stored_value:    "fiction",
+                                 displayed_value: "Fiction")
+    vocab.vocabulary_terms.build(stored_value:    "journal",
+                                 displayed_value: "Journal (whole)")
+    vocab.vocabulary_terms.build(stored_value:    "newsletter",
+                                 displayed_value: "Newsletter")
+    vocab.vocabulary_terms.build(stored_value:    "performance",
+                                 displayed_value: "Performance")
+    vocab.vocabulary_terms.build(stored_value:    "photograph",
+                                 displayed_value: "Photograph")
+    vocab.vocabulary_terms.build(stored_value:    "poetry",
+                                 displayed_value: "Poetry")
+    vocab.vocabulary_terms.build(stored_value:    "presentation/lecture/speech",
+                                 displayed_value: "Presentation / Lecture / Speech")
+    vocab.vocabulary_terms.build(stored_value:    "proposal",
+                                 displayed_value: "Proposal")
+    vocab.vocabulary_terms.build(stored_value:    "oral history",
+                                 displayed_value: "Oral History")
+    vocab.vocabulary_terms.build(stored_value:    "report",
+                                 displayed_value: "Report (Grant or Annual)")
+    vocab.vocabulary_terms.build(stored_value:    "score",
+                                 displayed_value: "Score")
+    vocab.vocabulary_terms.build(stored_value:    "technical report",
+                                 displayed_value: "Technical Report")
+    vocab.vocabulary_terms.build(stored_value:    "website",
+                                 displayed_value: "Website")
+    vocab.vocabulary_terms.build(stored_value:    "working paper",
+                                 displayed_value: "Working / Discussion Paper")
+    vocab.vocabulary_terms.build(stored_value:    "other",
+                                 displayed_value: "Other")
+    vocab.save!
+
+    vocab = self.vocabularies.build(key:  "common_iso_languages",
+                                    name: "Common ISO Languages")
+    vocab.vocabulary_terms.build(stored_value:    "en",
+                                 displayed_value: "English")
+    vocab.vocabulary_terms.build(stored_value:    "zh",
+                                 displayed_value: "Chinese")
+    vocab.vocabulary_terms.build(stored_value:    "fr",
+                                 displayed_value: "French")
+    vocab.vocabulary_terms.build(stored_value:    "de",
+                                 displayed_value: "German")
+    vocab.vocabulary_terms.build(stored_value:    "it",
+                                 displayed_value: "Italian")
+    vocab.vocabulary_terms.build(stored_value:    "ja",
+                                 displayed_value: "Japanese")
+    vocab.vocabulary_terms.build(stored_value:    "es",
+                                 displayed_value: "Spanish")
+    vocab.vocabulary_terms.build(stored_value:    "tr",
+                                 displayed_value: "Turkish")
+    vocab.vocabulary_terms.build(stored_value:    "other",
+                                 displayed_value: "Other")
+    vocab.save!
+
+    vocab = self.vocabularies.build(key:  "common_types",
+                                    name: "Common Types")
+    vocab.vocabulary_terms.build(stored_value:    "sound",
+                                 displayed_value: "Audio")
+    vocab.vocabulary_terms.build(stored_value:    "dataset",
+                                 displayed_value: "Dataset / Spreadsheet")
+    vocab.vocabulary_terms.build(stored_value:    "still image",
+                                 displayed_value: "Image")
+    vocab.vocabulary_terms.build(stored_value:    "text",
+                                 displayed_value: "Text")
+    vocab.vocabulary_terms.build(stored_value:    "moving image",
+                                 displayed_value: "Video")
+    vocab.vocabulary_terms.build(stored_value:    "other",
+                                 displayed_value: "Other")
+    vocab.save!
+
+    vocab = self.vocabularies.build(key:  "degree_names",
+                                    name: "Degree Names")
+    vocab.vocabulary_terms.build(stored_value:    "B.A. (bachelor's)",
+                                 displayed_value: "B.A. (bachelor's)")
+    vocab.vocabulary_terms.build(stored_value:    "B.S. (bachelor's)",
+                                 displayed_value: "B.S. (bachelor's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.A. (master's)",
+                                 displayed_value: "M.A. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.Arch. (master's)",
+                                 displayed_value: "M.Arch. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.F.A. (master's)",
+                                 displayed_value: "M.F.A. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.H.R.I.R. (master's)",
+                                 displayed_value: "M.H.R.I.R. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.L.A. (master's)",
+                                 displayed_value: "M.L.A. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.Mus. (master's)",
+                                 displayed_value: "M.Mus. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.S. (master's)",
+                                 displayed_value: "M.S. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.S.P.H. (master's)",
+                                 displayed_value: "M.S.P.H. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.U.P. (master's)",
+                                 displayed_value: "M.U.P. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "A.Mus.D. (doctoral)",
+                                 displayed_value: "A.Mus.D. (doctoral)")
+    vocab.vocabulary_terms.build(stored_value:    "Au.D. (doctoral)",
+                                 displayed_value: "Au.D. (doctoral)")
+    vocab.vocabulary_terms.build(stored_value:    "Ed.D. (doctoral)",
+                                 displayed_value: "Ed.D. (doctoral)")
+    vocab.vocabulary_terms.build(stored_value:    "J.S.D. (doctoral)",
+                                 displayed_value: "J.S.D. (doctoral)")
+    vocab.vocabulary_terms.build(stored_value:    "Ph.D. (doctoral)",
+                                 displayed_value: "Ph.D. (doctoral)")
+    vocab.save!
+
+    vocab = self.vocabularies.build(key:  "dissertation_thesis",
+                                    name: "Dissertation Thesis")
+    vocab.vocabulary_terms.build(stored_value:    "Dissertation",
+                                 displayed_value: "Dissertation (Doctoral level only)")
+    vocab.vocabulary_terms.build(stored_value:    "Thesis",
+                                 displayed_value: "Thesis (Bachelor's or Master's level)")
+    vocab.save!
   end
 
   def add_defining_user_group

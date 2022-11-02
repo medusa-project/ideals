@@ -1,0 +1,6 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+southwest_one_one:
+  vocabulary:      southwest_one
+  stored_value:    value
+  displayed_value: Value

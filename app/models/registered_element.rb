@@ -140,7 +140,8 @@ class RegisteredElement < ApplicationRecord
   #
   def vocabulary
     self.vocabulary_key.present? ?
-      Vocabulary.with_key(self.vocabulary_key) : nil
+      Vocabulary.find_by(institution: self.institution, key: self.vocabulary_key) :
+      nil
   end
 
 

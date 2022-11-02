@@ -21,7 +21,7 @@
     = f.text_field :label, class: "form-control"
   .form-group
     = f.label :vocabulary_key, "Vocabulary"
-    = f.select(:vocabulary_key, options_for_select(Vocabulary::all.map{ |v| [v.name, v.key] },
+    = f.select(:vocabulary_key, options_for_select(Vocabulary.where(institution: current_institution).order(:name).map{ |v| [v.name, v.key] },
                                                    f.object.vocabulary_key),
                { include_blank: true }, class: "custom-select")
   .form-group

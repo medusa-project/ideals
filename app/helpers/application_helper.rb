@@ -72,20 +72,23 @@ module ApplicationHelper
     loop do
       break unless object
       if crumbs.any?
-        if object.to_s == "Institution"
+        case object.to_s
+        when "Institution"
           crumbs.unshift({label: "All Institutions", url: institutions_path})
-        elsif object.to_s == "Invitee"
+        when "Invitee"
           crumbs.unshift({label: "Invitees", url: invitees_path})
-        elsif object.to_s == "MetadataProfile"
+        when "MetadataProfile"
           crumbs.unshift({label: "Metadata Profiles", url: metadata_profiles_path})
-        elsif object.to_s == "SubmissionProfile"
+        when "SubmissionProfile"
           crumbs.unshift({label: "Submission Profiles", url: submission_profiles_path})
-        elsif object.to_s == "Unit"
+        when "Unit"
           crumbs.unshift({label: "Academic Units", url: units_path})
-        elsif object.to_s == "User"
+        when "User"
           crumbs.unshift({label: "Users", url: users_path})
-        elsif object.to_s == "UserGroup"
+        when "UserGroup"
           crumbs.unshift({label: "User Groups", url: user_groups_path})
+        when "Vocabulary"
+          crumbs.unshift({label: "Vocabularies", url: vocabularies_path})
         else
           crumbs.unshift({label: object.breadcrumb_label, url: url_for(object)})
         end
@@ -358,6 +361,8 @@ module ApplicationHelper
       icon = "fa fa-building"
     when "User", "LocalUser", "ShibbolethUser"
       icon = "fa fa-user"
+    when "Vocabulary"
+      icon = "far fa-font"
     end
     icon = "fa fa-cube" if icon.nil?
     raw("<i class=\"#{icon}\"></i>")
