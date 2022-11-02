@@ -289,10 +289,30 @@ class InstitutionTest < ActiveSupport::TestCase
   # key
 
   test "key must be present" do
-    @instance.key = nil
-    assert !@instance.valid?
-    @instance.key = ""
-    assert !@instance.valid?
+    assert_raises ActiveRecord::RecordInvalid do
+      Institution.create!(name:         "Valid",
+                          fqdn:         "example.net",
+                          service_name: "Valid")
+    end
+    assert_raises ActiveRecord::RecordInvalid do
+      Institution.create!(key:          "",
+                          name:         "Valid",
+                          fqdn:         "example.net",
+                          service_name: "Valid")
+    end
+  end
+
+  test "key must be alphanumeric" do
+    assert_raises ActiveRecord::RecordInvalid do
+      Institution.create!(key:          "invalid!",
+                          name:         "Invalid",
+                          fqdn:         "example.org",
+                          service_name: "Invalid")
+    end
+    Institution.create!(key:          "valid",
+                        name:         "Valid",
+                        fqdn:         "example.net",
+                        service_name: "Valid")
   end
 
   test "key cannot be changed" do

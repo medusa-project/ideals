@@ -77,7 +77,7 @@ class Institution < ApplicationRecord
   validates :active_link_color, presence: true
   validates :footer_background_color, presence: true
   validates :header_background_color, presence: true
-  validates :key, presence: true
+  validates_format_of :key, with: /\A[A-Za-z0-9]+\Z/, allow_blank: false
   validates :link_color, presence: true
   validates :link_hover_color, presence: true
   validates :name, presence: true
