@@ -38,6 +38,20 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "create() creates a correct vocabulary" do
+    user = users(:uiuc_admin)
+    log_in_as(user)
+    post vocabularies_path,
+         xhr: true,
+         params: {
+           vocabulary: {
+             name: "New"
+           }
+         }
+    vocab = Vocabulary.order(created_at: :desc).limit(1).first
+    assert_equal user.institution, vocab.institution
+  end
+
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:local_sysadmin))
     post vocabularies_path,

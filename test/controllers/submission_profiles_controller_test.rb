@@ -84,6 +84,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
     end
     profile = SubmissionProfile.order(created_at: :desc).limit(1).first
     assert profile.elements.count > 0
+    assert_equal user.institution, profile.institution
   end
 
   test "create() returns HTTP 400 for illegal arguments" do

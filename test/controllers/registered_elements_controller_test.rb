@@ -43,7 +43,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "create() creates an element" do
+  test "create() creates a correct element" do
     user = users(:uiuc_admin)
     log_in_as(user)
     assert_difference "RegisteredElement.count" do
@@ -58,6 +58,8 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
                }
            }
     end
+    element = RegisteredElement.order(created_at: :desc).limit(1).first
+    assert_equal user.institution, element.institution
   end
 
   test "create() returns HTTP 400 for illegal arguments" do

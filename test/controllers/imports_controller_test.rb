@@ -50,7 +50,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "create() creates an instance" do
+  test "create() creates a correct instance" do
     user = users(:uiuc_admin)
     log_in_as(user)
     assert_difference "Import.count" do
@@ -62,6 +62,9 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
              }
            }
     end
+    import = Import.order(created_at: :desc).limit(1).first
+    assert_equal user.institution, import.institution
+    assert_equal user, import.user
   end
 
   # delete_all_files()

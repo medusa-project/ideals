@@ -69,7 +69,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "create() creates a profile with some default elements ascribed to it" do
+  test "create() creates a correct profile" do
     user = users(:uiuc_admin)
     log_in_as(user)
     assert_difference "MetadataProfile.count" do
@@ -84,6 +84,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     end
     profile = MetadataProfile.order(created_at: :desc).limit(1).first
     assert profile.elements.count > 0
+    assert_equal user.institution, profile.institution
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
