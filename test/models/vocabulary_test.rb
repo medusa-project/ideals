@@ -14,13 +14,6 @@ class VocabularyTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
-  # key
-
-  test "key must not be nil" do
-    @instance.key = nil
-    assert !@instance.valid?
-  end
-
   # name
 
   test "name must not be nil" do
