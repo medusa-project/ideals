@@ -132,6 +132,35 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # edit()
+
+  test "edit() redirects to login page for logged-out users" do
+    get edit_metadata_profile_path(metadata_profiles(:uiuc_default))
+    assert_redirected_to login_path
+  end
+
+  test "edit() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get edit_metadata_profile_path(metadata_profiles(:uiuc_default))
+    assert_response :forbidden
+  end
+
+  test "edit() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get edit_metadata_profile_path(metadata_profiles(:uiuc_default))
+    assert_response :ok
+  end
+
+  test "edit() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get edit_metadata_profile_path(metadata_profiles(:uiuc_default))
+    assert_response :ok
+
+    get edit_metadata_profile_path(metadata_profiles(:uiuc_default),
+                                   role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # index()
 
   test "index() redirects to login page for logged-out users" do
