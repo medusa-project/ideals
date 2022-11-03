@@ -570,7 +570,7 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "collection cannot be added to multiple instances of the same unit" do
     @instance.units = []
-    unit = units(:unit1)
+    unit = units(:uiuc_unit1)
     @instance.units << unit
     assert_raises ActiveRecord::RecordNotUnique do
       @instance.units << unit

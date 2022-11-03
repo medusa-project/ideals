@@ -8,61 +8,61 @@ northeast_unit1_collection1:
 
 ################################## uiuc #####################################
 
-unit1_collection1:
-  unit:         unit1
+uiuc_unit1_collection1:
+  unit:         uiuc_unit1
   collection:   uiuc_collection1
   primary:      true
   unit_default: true
 
-unit1_collection1_collection1:
-  unit:         unit1
+uiuc_unit1_collection1_collection1:
+  unit:         uiuc_unit1
   collection:   uiuc_collection1_collection1
   primary:      true
   unit_default: false
 
-unit1_collection1_collection1_collection1:
-  unit:         unit1
+uiuc_unit1_collection1_collection1_collection1:
+  unit:         uiuc_unit1
   collection:   uiuc_collection1_collection1_collection1
   primary:      true
   unit_default: false
 
-unit1_unit2_unit1_collection1:
-  unit:         unit1_unit2_unit1
+uiuc_unit1_unit2_unit1_collection1:
+  unit:         uiuc_unit1_unit2_unit1
   collection:   uiuc_unit1_unit2_unit1_collection1
   primary:      true
   unit_default: true
 
-unit2_collection1:
-  unit:         unit2
+uiuc_unit2_collection1:
+  unit:         uiuc_unit2
   collection:   uiuc_collection1
   primary:      false
   unit_default: false
 
-unit1_described:
-  unit:         unit1
+uiuc_unit1_described:
+  unit:         uiuc_unit1
   collection:   uiuc_described
   unit_default: false
   primary:      true
 
-unit1_empty:
-  unit:         unit1
+uiuc_unit1_empty:
+  unit:         uiuc_unit1
   collection:   uiuc_empty
   unit_default: false
   primary:      true
 
-unit1_undescribed:
-  unit:         unit1
+uiuc_unit1_undescribed:
+  unit:         uiuc_unit1
   collection:   uiuc_undescribed
   unit_default: false
 
-unit2_collection2:
-  unit:         unit2
+uiuc_unit2_collection2:
+  unit:         uiuc_unit2
   collection:   uiuc_collection2
   primary:      true
   unit_default: false
 
-buried_buried:
-  unit:         buried
+uiuc_buried_buried:
+  unit:         uiuc_buried
   collection:   uiuc_buried
   primary:      true
   unit_default: true

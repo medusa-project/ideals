@@ -3,14 +3,14 @@ require 'test_helper'
 class UnitCollectionMembershipTest < ActiveSupport::TestCase
 
   setup do
-    @instance = unit_collection_memberships(:unit1_collection1)
+    @instance = unit_collection_memberships(:uiuc_unit1_collection1)
   end
 
   # unit_default
 
   test "setting an instance as the unit default sets all other instances to
   not-unit-default" do
-    unit = units(:unit1)
+    unit = units(:uiuc_unit1)
 
     # assert the initial unit-default membership
     memberships = unit.unit_collection_memberships.where(unit_default: true)

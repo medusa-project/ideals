@@ -215,7 +215,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
 
   test "unit_download_counts_by_item() returns correct results with no
   arguments" do
-    unit = units(:unit1)
+    unit = units(:uiuc_unit1)
     MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
                                      unit_id:        unit.id,
                                      collection_id:  99999, # fake but doesn't matter
@@ -238,7 +238,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
 
   test "unit_download_counts_by_item() returns correct results when
   supplying start and end times" do
-    unit = units(:unit1)
+    unit = units(:uiuc_unit1)
     MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
                                      unit_id:        unit.id,
                                      collection_id:  99999, # fake but doesn't matter

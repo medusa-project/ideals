@@ -15,7 +15,7 @@ class CsvExporterTest < ActiveSupport::TestCase
   end
 
   test "export() respects the units argument" do
-    unit       = units(:unit1)
+    unit       = units(:uiuc_unit1)
     all_units  = [unit]
     all_units += unit.all_children
     all_items  = all_units.map(&:items).flatten
@@ -68,7 +68,7 @@ class CsvExporterTest < ActiveSupport::TestCase
   # export_unit()
 
   test "export_unit() includes child units in the CSV" do
-    unit      = units(:unit1)
+    unit      = units(:uiuc_unit1)
     all_items = unit.collections.map(&:items).flatten
     csv       = @instance.export_unit(unit)
     rows      = CSV.parse(csv)
@@ -77,7 +77,7 @@ class CsvExporterTest < ActiveSupport::TestCase
   end
 
   test "export_unit() respects the elements argument" do
-    unit = units(:unit1)
+    unit = units(:uiuc_unit1)
     csv  = @instance.export_unit(unit,
                                  elements: %w(dc:creator dc:description))
     rows = CSV.parse(csv)

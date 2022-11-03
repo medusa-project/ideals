@@ -197,13 +197,13 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_unit_admin?() returns true when the user is a sysadmin" do
     @user = users(:local_sysadmin)
-    unit      = units(:unit1)
+    unit      = units(:uiuc_unit1)
     assert @user.effective_unit_admin?(unit)
   end
 
   test "effective_unit_admin?() returns true when the user is an administrator
   of the given unit's institution" do
-    unit = units(:unit1)
+    unit = units(:uiuc_unit1)
     @user.administering_institutions << unit.institution
     @user.save!
     assert @user.effective_unit_admin?(unit)
@@ -211,8 +211,8 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_unit_admin?() returns true when the user is an administrator
   of the given unit's parent" do
-    parent = units(:unit1)
-    child  = units(:unit1_unit1)
+    parent = units(:uiuc_unit1)
+    child  = units(:uiuc_unit1_unit1)
     parent.administering_users << @user
     parent.save!
     assert @user.effective_unit_admin?(child)
@@ -220,7 +220,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_unit_admin?() returns true when the user is an administrator
   of the given unit" do
-    unit = units(:unit1)
+    unit = units(:uiuc_unit1)
     unit.administering_users << @user
     unit.save!
     assert @user.effective_unit_admin?(unit)
@@ -228,7 +228,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_unit_admin?() returns false when the user is not an
   administrator of the given unit" do
-    assert !@user.effective_unit_admin?(units(:unit1))
+    assert !@user.effective_unit_admin?(units(:uiuc_unit1))
   end
 
   # email
@@ -360,7 +360,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "unit_admin?() returns true when the user is a directly assigned
   administrator of the given unit" do
-    unit = units(:unit1)
+    unit = units(:uiuc_unit1)
     unit.administering_users << @user
     unit.save!
     assert @user.unit_admin?(unit)
@@ -370,14 +370,14 @@ class UserTest < ActiveSupport::TestCase
   is allowed to administer the given unit" do
     group = user_groups(:temp)
     @user.user_groups << group
-    unit = units(:unit1)
+    unit = units(:uiuc_unit1)
     unit.administering_groups << group
     assert @user.unit_admin?(unit)
   end
 
   test "unit_admin?() returns false when the user is not an administrator of
   the given unit" do
-    assert !@user.unit_admin?(units(:unit1))
+    assert !@user.unit_admin?(units(:uiuc_unit1))
   end
 
 end

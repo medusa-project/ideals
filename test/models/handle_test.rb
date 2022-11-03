@@ -72,7 +72,7 @@ class HandleTest < ActiveSupport::TestCase
 
   test "institution() returns the associated unit's institution if set" do
     @instance.collection = @instance.item = nil
-    @instance.unit = units(:unit1)
+    @instance.unit = units(:uiuc_unit1)
     assert_equal @instance.unit.institution, @instance.institution
   end
 
@@ -134,7 +134,7 @@ class HandleTest < ActiveSupport::TestCase
 
   test "validate() ensures that the instance is not associated with more than one entity" do
     assert @instance.validate
-    @instance.unit = units(:unit1)
+    @instance.unit = units(:uiuc_unit1)
     assert !@instance.validate
   end
 

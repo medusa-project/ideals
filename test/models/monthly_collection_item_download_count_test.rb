@@ -125,7 +125,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "sum_for_unit() returns a correct count when including children" do
-    unit          = units(:unit1)
+    unit          = units(:uiuc_unit1)
     collection    = Collection.create!(institution:  unit.institution,
                                        title:        "Root Collection",
                                        primary_unit: unit)
@@ -162,7 +162,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "sum_for_unit() returns a correct count when not including children" do
-    unit          = units(:unit1)
+    unit          = units(:uiuc_unit1)
     collection    = Collection.create!(institution:  unit.institution,
                                        title:        "Root Collection",
                                        primary_unit: unit)

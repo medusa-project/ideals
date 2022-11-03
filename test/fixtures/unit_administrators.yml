@@ -1,14 +1,14 @@
-unit1_admin:
-  unit: unit1
-  user: unit1_admin
+uiuc_unit1_admin:
+  unit:    uiuc_unit1
+  user:    unit1_admin
   primary: true
 
-unit2_admin:
-  unit: unit2
-  user: local_sysadmin
+uiuc_unit2_admin:
+  unit:    uiuc_unit2
+  user:    local_sysadmin
   primary: true
 
-unit1_unit2_unit1:
-  unit: unit1_unit2_unit1
-  user: unit1_unit2_unit1_admin
+uiuc_unit1_unit2_unit1:
+  unit:    uiuc_unit1_unit2_unit1
+  user:    unit1_unit2_unit1_admin
   primary: true
