@@ -150,7 +150,6 @@ class SafImporter
 
   ##
   # @param import [Import]
-  # @param task [Task] Optional; supply to receive progress updates.
   # @return [void]
   # @raises [StandardError] Various error types depending on all of the things
   #                         that can go wrong. If this occurs, the
@@ -158,15 +157,15 @@ class SafImporter
   #                         with an inventory of items that were imported
   #                         successfully prior to the error occurring.
   #
-  def import_from_s3(import, task: nil)
+  def import_from_s3(import)
     store             = PersistentStore.instance
     item_key_prefixes = import.item_key_prefixes
     imported_items    = import.imported_items || []
     item_key_prefixes.reject!{ |k| imported_items.select{ |i| k.end_with?(i['item_id']) }.any? }
 
-    import.update!(kind:   Import::Kind::SAF,
-                   files:  import.object_keys,
-                   status: Import::Status::RUNNING)
+    import.update!(kind:  Import::Kind::SAF,
+                   files: import.object_keys)
+    import.task&.update!(status: Task::Status::RUNNING)
 
     # Iterate through each item pseudo-directory.
     item = nil
@@ -214,21 +213,17 @@ class SafImporter
         }
         import.progress(index / item_key_prefixes.length.to_f,
                         imported_items)
-        task&.progress(index / item_key_prefixes.length.to_f,
-                       status_text: "Importing #{item_key_prefixes.length} items from SAF package")
+        import.task&.progress(index / item_key_prefixes.length.to_f,
+                              status_text: "Importing #{item_key_prefixes.length} items from SAF package")
       end
     end
   rescue => e
     item&.destroy!
-    import.update!(status:             Import::Status::FAILED,
-                   last_error_message: e.message)
-    task&.fail(backtrace: e.backtrace,
-               detail:    e.message)
+    import.task&.fail(backtrace: e.backtrace,
+                      detail:    e.message)
     raise e
   else
-    import.update!(status:             Import::Status::SUCCEEDED,
-                   last_error_message: nil)
-    task&.succeed
+    import.task&.succeed
   end
 
 

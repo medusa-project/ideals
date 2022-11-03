@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_02_154021) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_03_160801) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -221,19 +221,17 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_02_154021) do
   create_table "imports", force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "user_id", null: false
-    t.integer "status", default: 0, null: false
-    t.float "percent_complete", default: 0.0, null: false
     t.text "files"
     t.text "imported_items"
-    t.string "last_error_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "kind"
     t.bigint "institution_id", null: false
+    t.bigint "task_id"
     t.index ["collection_id"], name: "index_imports_on_collection_id"
     t.index ["institution_id"], name: "index_imports_on_institution_id"
     t.index ["kind"], name: "index_imports_on_kind"
-    t.index ["status"], name: "index_imports_on_status"
+    t.index ["task_id"], name: "index_imports_on_task_id", unique: true
     t.index ["user_id"], name: "index_imports_on_user_id"
   end
 
@@ -688,6 +686,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_02_154021) do
   add_foreign_key "hosts", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "imports", "collections", on_update: :cascade, on_delete: :nullify
   add_foreign_key "imports", "institutions", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "imports", "tasks", on_update: :cascade, on_delete: :restrict
   add_foreign_key "imports", "users", on_update: :cascade, on_delete: :nullify
   add_foreign_key "institution_administrators", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "institution_administrators", "users", on_update: :cascade, on_delete: :cascade

@@ -83,6 +83,7 @@ class Task < ApplicationRecord
   end
 
   has_one :download
+  has_one :import
   belongs_to :institution, optional: true
   belongs_to :user, optional: true
 

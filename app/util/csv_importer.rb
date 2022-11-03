@@ -1,5 +1,5 @@
 ##
-# Imports [Item]s in CSV format.
+# Imports {Item}s in CSV format.
 #
 # # CSV Format
 #
@@ -52,7 +52,6 @@ class CsvImporter
   #                               `handle` keys will be added.
   # @param print_progress [Boolean] Whether to print progress updates to
   #                                 stdout.
-  # @param task [Task] Optional; supply to receive progress updates.
   # @return [void]
   #
   def import(csv:,
@@ -105,35 +104,30 @@ class CsvImporter
   #
   # @param import [Import]
   # @param submitter [User]
-  # @param task [Task] Optional; supply to receive progress updates.
   # @return [void]
   #
-  def import_from_s3(import, submitter, task: nil)
+  def import_from_s3(import, submitter)
     object_keys    = import.object_keys
     csv_object_key = object_keys.first
     imported_items = []
     import.update!(kind:           Import::Kind::CSV,
                    files:          [csv_object_key],
-                   status:         Import::Status::RUNNING,
                    imported_items: imported_items)
+    import.task&.update!(status: Task::Status::RUNNING)
 
     csv = PersistentStore.instance.get_object(key: csv_object_key).read
     import(csv:                csv,
            submitter:          submitter,
            primary_collection: import.collection,
            imported_items:     imported_items,
-           task:               task)
+           task:               import.task)
   rescue => e
-    import.update!(status:             Import::Status::FAILED,
-                   last_error_message: e.message)
-    task&.fail(detail:    e.message,
-               backtrace: e.backtrace)
+    import.task&.fail(detail:    e.message,
+                      backtrace: e.backtrace)
     raise e
   else
-    import.update!(status:             Import::Status::SUCCEEDED,
-                   imported_items:     imported_items,
-                   last_error_message: nil)
-    task&.succeed
+    import.update!(imported_items: imported_items)
+    import.task&.succeed
   end
 
 
@@ -143,7 +137,7 @@ class CsvImporter
     item = CreateItemCommand.new(submitter:          submitter,
                                  institution:        primary_collection.institution,
                                  primary_collection: primary_collection,
-                                 stage:              Item::Stages::SUBMITTED,
+                                 stage:              Item::Stages::APPROVED,
                                  event_description:  "Item imported from CSV.").execute
     item.assign_handle
     ascribe_metadata(item:       item,
