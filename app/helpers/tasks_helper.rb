@@ -22,7 +22,7 @@ module TasksHelper
     when ::Task::Status::FAILED
       class_ = "badge-danger"
     end
-    raw("<span class=\"badge #{class_}\">#{Task::Status::to_s(task.status)}</span>")
+    raw("<span class=\"badge #{class_}\">#{Task::Status::to_s(status)}</span>")
   end
 
 end
