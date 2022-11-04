@@ -74,7 +74,7 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     # We need to fetch a LocalIdentity and update its email to a non-UofI
     # address, but the process is a little bit convoluted.
     email    = "MixedCaseTest@example.edu"
-    password = "password"
+    password = "MyPassword123!"
     invitee  = Invitee.create!(email:       email,
                                note:        "Note",
                                institution: institutions(:example),

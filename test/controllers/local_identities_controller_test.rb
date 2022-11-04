@@ -165,8 +165,8 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     post local_identity_reset_password_path(identity),
          params: {
              local_identity: {
-                 password: "MyNewPassword123",
-                 password_confirmation: "MyNewPassword123"
+                 password: "MyNewPassword123!",
+                 password_confirmation: "MyNewPassword123!"
              }
          }
     assert_equal "Invalid password reset link.", flash['error']
@@ -179,8 +179,8 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
          params: {
              token: "bogus",
              local_identity: {
-                 password: "MyNewPassword123",
-                 password_confirmation: "MyNewPassword123"
+                 password: "MyNewPassword123!",
+                 password_confirmation: "MyNewPassword123!"
              }
          }
     assert_equal "Invalid password reset link.", flash['error']
@@ -197,8 +197,8 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
          params: {
              token: token,
              local_identity: {
-                 password: "MyNewPassword123",
-                 password_confirmation: "MyNewPassword123"
+                 password: "MyNewPassword123!",
+                 password_confirmation: "MyNewPassword123!"
              }
          }
     assert_equal "This password reset link has expired. Please try again.",
@@ -215,8 +215,8 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
          params: {
              token: token,
              local_identity: {
-                 password: "MyNewPassword123",
-                 password_confirmation: "ThisDoesNotMatch123"
+                 password:              LocalIdentity.random_password,
+                 password_confirmation: LocalIdentity.random_password
              }
          }
     assert flash['error'].include?("Password confirmation doesn't match")
@@ -226,13 +226,13 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     identity = local_identities(:norights)
     identity.create_reset_digest
     token    = identity.reset_token
-    password = "MyNewPassword123"
+    password = LocalIdentity.random_password
 
     post local_identity_reset_password_path(identity),
          params: {
              token: token,
              local_identity: {
-                 password: password,
+                 password:              password,
                  password_confirmation: password
              }
          }
@@ -253,8 +253,8 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     patch local_identity_path(identity),
           params: {
               local_identity: {
-                  password: "MyNewPassword123",
-                  password_confirmation: "MyNewPassword123",
+                  password: "MyNewPassword123!",
+                  password_confirmation: "MyNewPassword123!",
                   user_attributes: {
                       name: "New Name",
                       phone: "555-555-5555"
@@ -271,8 +271,8 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
           params: {
               token: "bogus",
               local_identity: {
-                  password: "MyNewPassword123",
-                  password_confirmation: "MyNewPassword123",
+                  password: "MyNewPassword123!",
+                  password_confirmation: "MyNewPassword123!",
                   user_attributes: {
                       name: "New Name",
                       phone: "555-555-5555"
@@ -292,8 +292,8 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
           params: {
               token: token,
               local_identity: {
-                  password: "MyNewPassword123",
-                  password_confirmation: "ThisDoesNotMatch123",
+                  password: "MyNewPassword123!",
+                  password_confirmation: "ThisDoesNotMatch123!",
                   user_attributes: {
                       name: "New Name",
                       phone: "555-555-5555"
@@ -310,7 +310,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     token    = identity.registration_token
     name     = "New Name"
     phone    = "555-555-5555"
-    password = "MyNewPassword123"
+    password = LocalIdentity.random_password
 
     assert_emails 1 do
       patch local_identity_path(identity),
@@ -337,16 +337,16 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     identity = local_identities(:approved)
     identity.create_registration_digest
     token    = identity.registration_token
-    password = "MyNewPassword123"
+    password = LocalIdentity.random_password
 
     patch local_identity_path(identity),
           params: {
               token: token,
               local_identity: {
-                  password: password,
+                  password:              password,
                   password_confirmation: password,
                   user_attributes: {
-                      name: "New Name",
+                      name:  "New Name",
                       phone: "555-555-5555"
                   }
               }
@@ -373,7 +373,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   test "update_password() returns HTTP 400 if the current password is not supplied" do
     log_in_as(users(:local_sysadmin))
     identity = local_identities(:local_sysadmin)
-    password = "MyNewPassword123"
+    password = LocalIdentity.random_password
     patch local_identity_update_password_path(identity),
           xhr: true,
           params: {
@@ -388,7 +388,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   test "update_password() returns HTTP 400 if the current password is incorrect" do
     log_in_as(users(:local_sysadmin))
     identity = local_identities(:local_sysadmin) # password is `password`
-    password = "MyNewPassword123"
+    password = LocalIdentity.random_password
     patch local_identity_update_password_path(identity),
           xhr: true,
           params: {
@@ -411,7 +411,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
           params: {
               current_password: "password",
               local_identity: {
-                  password: "MyNewPassword123",
+                  password: "MyNewPassword123!",
                   password_confirmation: "wrong"
               }
           }
@@ -421,7 +421,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   test "update_password() updates the password and returns HTTP 200" do
     log_in_as(users(:norights))
     identity = local_identities(:norights)
-    password = "MyNewPassword123"
+    password = LocalIdentity.random_password
     patch local_identity_update_password_path(identity),
           xhr: true,
           params: {

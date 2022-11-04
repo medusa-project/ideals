@@ -11,7 +11,7 @@ class LocalUserTest < ActiveSupport::TestCase
   test "create_manually() creates a correct instance" do
     email       = "test@example.org"
     name        = "Testy Test"
-    password    = "password"
+    password    = LocalIdentity.random_password
     institution = institutions(:southwest)
     user        = LocalUser.create_manually(email:       email,
                                             name:        name,
