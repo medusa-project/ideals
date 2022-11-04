@@ -13,11 +13,9 @@
   %dt Status
   %dd
     - if @import.task
-      %span.badge{class: bootstrap_class_for_task_status(@import.task.status)}
-        = Task::Status::to_s(@import.task.status)
+      = task_status_badge(@import.task)
     - else
-      %span.badge{class: bootstrap_class_for_task_status(Task::Status::PENDING)}
-        = Task::Status::to_s(Task::Status::PENDING)
+      = task_status_badge(Task::Status::PENDING)
   %dt Progress
   %dd= "#{((@import.task&.percent_complete || 0) * 100).round(1)}%"
   %dt Created

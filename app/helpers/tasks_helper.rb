@@ -1,24 +1,28 @@
 module TasksHelper
 
   ##
-  # @param status [Integer] One of the [Task::Status] constant values.
-  # @return [String]
+  # @param task [Task, Integer] Either a {Task} instance or one of the
+  #                             {Task::Status} constant values.
+  # @return [String] HTML string.
   #
-  def bootstrap_class_for_task_status(status)
+  def task_status_badge(task)
+    class_ = nil
+    status = task.kind_of?(Integer) ? task : task.status
     case status
     when ::Task::Status::PENDING
-      "badge-light"
+      class_ = "badge-light"
     when ::Task::Status::PAUSED
-      "badge-warning"
+      class_ = "badge-warning"
     when ::Task::Status::RUNNING
-      "badge-primary"
+      class_ = "badge-primary"
     when ::Task::Status::STOPPED
-      "badge-secondary"
+      class_ = "badge-secondary"
     when ::Task::Status::SUCCEEDED
-      "badge-success"
+      class_ = "badge-success"
     when ::Task::Status::FAILED
-      "badge-danger"
+      class_ = "badge-danger"
     end
+    raw("<span class=\"badge #{class_}\">#{Task::Status::to_s(task.status)}</span>")
   end
 
 end

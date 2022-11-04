@@ -15,8 +15,7 @@
                                                      'target': '#show-task-modal',
                                                      'task-id': task.id })
           %td
-            %span{class: "badge #{bootstrap_class_for_task_status(task.status)}"}
-              = Task::Status::to_s(task.status)
+            = task_status_badge(task)
           %td
             = (task.indeterminate && task.percent_complete < 1) ? |
               'Indeterminate' :                                    |
