@@ -57,7 +57,7 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
             uniqueness: {case_sensitive: false}
   validates :name, presence: true
   validates :password, presence: true, length: {minimum: 6}
-  validate :validate_invited, on: :create
+  validate :validate_invitee_expiration, on: :create
 
   accepts_nested_attributes_for :user, update_only: true
 
@@ -219,10 +219,11 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
     update_attribute(:reset_sent_at, nil)
   end
 
+
   private
 
-  def validate_invited
-    if !invitee || invitee.expired?
+  def validate_invitee_expiration
+    if invitee&.expired?
       errors.add(:base, "Identity does not have a current invitation.")
     end
   end

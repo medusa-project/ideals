@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_03_160801) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_04_150846) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -328,7 +328,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_03_160801) do
     t.string "activation_digest"
     t.boolean "activated", default: false
     t.string "reset_digest"
-    t.bigint "invitee_id"
+    t.bigint "invitee_id", null: false
     t.datetime "reset_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
