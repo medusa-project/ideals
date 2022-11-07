@@ -88,6 +88,7 @@ class Collection < ApplicationRecord
     CLASS             = OpenSearchIndex::StandardFields::CLASS
     CREATED           = OpenSearchIndex::StandardFields::CREATED
     DESCRIPTION       = "t_description"
+    HANDLE            = "k_handle"
     ID                = OpenSearchIndex::StandardFields::ID
     INSTITUTION_KEY   = OpenSearchIndex::StandardFields::INSTITUTION_KEY
     INTRODUCTION      = "t_introduction"
@@ -241,6 +242,7 @@ class Collection < ApplicationRecord
     doc[IndexFields::CLASS]             = self.class.to_s
     doc[IndexFields::CREATED]           = self.created_at.utc.iso8601
     doc[IndexFields::DESCRIPTION]       = self.description
+    doc[IndexFields::HANDLE]            = self.handle&.handle
     doc[IndexFields::INSTITUTION_KEY]   = self.institution&.key
     doc[IndexFields::INTRODUCTION]      = self.introduction
     doc[IndexFields::LAST_INDEXED]      = Time.now.utc.iso8601

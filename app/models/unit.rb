@@ -45,6 +45,7 @@ class Unit < ApplicationRecord
     BURIED                = "b_buried"
     CLASS                 = OpenSearchIndex::StandardFields::CLASS
     CREATED               = OpenSearchIndex::StandardFields::CREATED
+    HANDLE                = "k_handle"
     ID                    = OpenSearchIndex::StandardFields::ID
     INSTITUTION_KEY       = OpenSearchIndex::StandardFields::INSTITUTION_KEY
     INTRODUCTION          = "t_introduction"
@@ -160,6 +161,7 @@ class Unit < ApplicationRecord
     doc[IndexFields::BURIED]                = self.buried
     doc[IndexFields::CLASS]                 = self.class.to_s
     doc[IndexFields::CREATED]               = self.created_at.utc.iso8601
+    doc[IndexFields::HANDLE]                = self.handle&.handle
     doc[IndexFields::INSTITUTION_KEY]       = self.institution&.key
     doc[IndexFields::INTRODUCTION]          = self.introduction
     doc[IndexFields::LAST_INDEXED]          = Time.now.utc.iso8601
