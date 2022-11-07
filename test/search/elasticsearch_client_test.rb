@@ -1,10 +1,10 @@
 require 'test_helper'
 
-class ElasticsearchClientTest < ActiveSupport::TestCase
+class OpenSearchClientTest < ActiveSupport::TestCase
 
   setup do
-    @instance   = ElasticsearchClient.instance
-    @test_index = Configuration.instance.elasticsearch[:index]
+    @instance   = OpenSearchClient.instance
+    @test_index = Configuration.instance.opensearch[:index]
     @instance.delete_index(@test_index) if @instance.index_exists?(@test_index)
   end
 
@@ -202,7 +202,7 @@ class ElasticsearchClientTest < ActiveSupport::TestCase
   test "set_refresh_interval() updates the refresh interval" do
     @instance.create_index(@test_index)
     @instance.set_refresh_interval(7)
-    index_name = ::Configuration.instance.elasticsearch[:index]
+    index_name = ::Configuration.instance.opensearch[:index]
     assert_equal "7s", @instance.settings[index_name]['settings']['index']['refresh_interval']
   end
 

@@ -3,7 +3,7 @@ require 'test_helper'
 class UnitTest < ActiveSupport::TestCase
 
   setup do
-    setup_elasticsearch
+    setup_opensearch
     @instance = units(:uiuc_unit1)
   end
 
@@ -24,12 +24,12 @@ class UnitTest < ActiveSupport::TestCase
     institution = institutions(:uiuc)
     units       = Unit.where(institution: institution)
     units.each(&:reindex)
-    refresh_elasticsearch
+    refresh_opensearch
     count = Unit.search.institution(institution).count
     assert count > 0
 
     Unit.delete_document(units.first.index_id)
-    refresh_elasticsearch
+    refresh_opensearch
     assert_equal count - 1, Unit.search.institution(institution).count
   end
 
@@ -42,7 +42,7 @@ class UnitTest < ActiveSupport::TestCase
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all units" do
-    setup_elasticsearch
+    setup_opensearch
     institution = institutions(:uiuc)
     assert_equal 0, Unit.search.
       institution(institution).
@@ -50,7 +50,7 @@ class UnitTest < ActiveSupport::TestCase
       count
 
     Unit.reindex_all
-    refresh_elasticsearch
+    refresh_opensearch
 
     actual = Unit.search.
       institution(institution).
@@ -374,7 +374,7 @@ class UnitTest < ActiveSupport::TestCase
         count
 
     @instance.reindex
-    refresh_elasticsearch
+    refresh_opensearch
 
     assert_equal 1, Unit.search.
         institution(institutions(:uiuc)).

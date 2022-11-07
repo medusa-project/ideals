@@ -435,7 +435,7 @@ module ApplicationHelper
 
   ##
   # @param count [Integer] Total number of results. Note that this will be
-  #              limited internally to {ElasticsearchIndex::MAX_RESULT_WINDOW}
+  #              limited internally to {OpenSearchIndex::MAX_RESULT_WINDOW}
   #              to avoid overwhelming the search server.
   # @param page [Integer]
   # @param per_page [Integer]
@@ -447,7 +447,7 @@ module ApplicationHelper
                per_page:,
                permitted_params:,
                max_links: MAX_PAGINATION_LINKS)
-    count = [count, ElasticsearchIndex::MAX_RESULT_WINDOW].min
+    count = [count, OpenSearchIndex::MAX_RESULT_WINDOW].min
     return '' if count <= per_page
     num_pages  = (count / per_page.to_f).ceil
     first_page = [1, page - (max_links / 2.0).floor].max

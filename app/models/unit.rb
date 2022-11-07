@@ -43,13 +43,13 @@ class Unit < ApplicationRecord
   class IndexFields
     ADMINISTRATORS        = "i_administrator_id"
     BURIED                = "b_buried"
-    CLASS                 = ElasticsearchIndex::StandardFields::CLASS
-    CREATED               = ElasticsearchIndex::StandardFields::CREATED
-    ID                    = ElasticsearchIndex::StandardFields::ID
-    INSTITUTION_KEY       = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
+    CLASS                 = OpenSearchIndex::StandardFields::CLASS
+    CREATED               = OpenSearchIndex::StandardFields::CREATED
+    ID                    = OpenSearchIndex::StandardFields::ID
+    INSTITUTION_KEY       = OpenSearchIndex::StandardFields::INSTITUTION_KEY
     INTRODUCTION          = "t_introduction"
-    LAST_INDEXED          = ElasticsearchIndex::StandardFields::LAST_INDEXED
-    LAST_MODIFIED         = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    LAST_INDEXED          = OpenSearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED         = OpenSearchIndex::StandardFields::LAST_MODIFIED
     PARENT                = "i_parent_id"
     PRIMARY_ADMINISTRATOR = "i_primary_administrator_id"
     RIGHTS                = "t_rights"

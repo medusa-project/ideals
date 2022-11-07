@@ -20,7 +20,7 @@ class ItemsController < ApplicationController
   #
   def approve
     approve_item(@item)
-    ElasticsearchClient.instance.refresh
+    OpenSearchClient.instance.refresh
     redirect_back fallback_location: item_path(@item)
   end
 
@@ -41,7 +41,7 @@ class ItemsController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      ElasticsearchClient.instance.refresh
+      OpenSearchClient.instance.refresh
       flash['success'] = "Item deleted."
     ensure
       redirect_to collection || root_url
@@ -240,7 +240,7 @@ class ItemsController < ApplicationController
         flash['error'] = "Unrecognized verb (this is probably a bug)"
         redirect_back fallback_location: items_review_path and return
       end
-      ElasticsearchClient.instance.refresh
+      OpenSearchClient.instance.refresh
     end
     redirect_back fallback_location: items_review_path
   end
@@ -274,7 +274,7 @@ class ItemsController < ApplicationController
   #
   def reject
     reject_item(@item)
-    ElasticsearchClient.instance.refresh
+    OpenSearchClient.instance.refresh
     redirect_back fallback_location: item_path(@item)
   end
 
@@ -330,7 +330,7 @@ class ItemsController < ApplicationController
   rescue => e
     flash['error'] = "#{e}"
   else
-    ElasticsearchClient.instance.refresh
+    OpenSearchClient.instance.refresh
     flash['success'] = "This item has been undeleted."
   ensure
     redirect_to @item
@@ -369,7 +369,7 @@ class ItemsController < ApplicationController
              locals: { object: @item.errors.any? ? @item : e },
              status: :bad_request
     else
-      ElasticsearchClient.instance.refresh
+      OpenSearchClient.instance.refresh
       flash['success'] = "Item \"#{@item.title}\" updated."
       render "shared/reload"
     end
@@ -396,7 +396,7 @@ class ItemsController < ApplicationController
                           description: "Item was withdrawn.").execute do
       @item.update!(stage: Item::Stages::WITHDRAWN)
     end
-    ElasticsearchClient.instance.refresh
+    OpenSearchClient.instance.refresh
     redirect_back fallback_location: item_path(@item)
   end
 

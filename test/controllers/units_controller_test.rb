@@ -3,7 +3,7 @@ require 'test_helper'
 class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    setup_elasticsearch
+    setup_opensearch
   end
 
   teardown do

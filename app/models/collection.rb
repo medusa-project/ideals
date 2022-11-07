@@ -85,14 +85,14 @@ class Collection < ApplicationRecord
 
   class IndexFields
     BURIED            = "b_buried"
-    CLASS             = ElasticsearchIndex::StandardFields::CLASS
-    CREATED           = ElasticsearchIndex::StandardFields::CREATED
+    CLASS             = OpenSearchIndex::StandardFields::CLASS
+    CREATED           = OpenSearchIndex::StandardFields::CREATED
     DESCRIPTION       = "t_description"
-    ID                = ElasticsearchIndex::StandardFields::ID
-    INSTITUTION_KEY   = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
+    ID                = OpenSearchIndex::StandardFields::ID
+    INSTITUTION_KEY   = OpenSearchIndex::StandardFields::INSTITUTION_KEY
     INTRODUCTION      = "t_introduction"
-    LAST_INDEXED      = ElasticsearchIndex::StandardFields::LAST_INDEXED
-    LAST_MODIFIED     = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    LAST_INDEXED      = OpenSearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED     = OpenSearchIndex::StandardFields::LAST_MODIFIED
     MANAGERS          = "i_manager_id"
     PARENT            = "i_parent_id"
     PRIMARY_UNIT      = "i_primary_unit_id"

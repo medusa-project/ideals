@@ -36,7 +36,7 @@
 # N.B. 1: components can be in any order, but the separators (colons and bars)
 # are important.
 #
-# N.B. 2: Elasticsearch does not cope well when using offset/limit with large
+# N.B. 2: OpenSearch does not cope well when using offset/limit with large
 # offsets. Instead, `lsv` (last sort value) uses its `search_after` feature for
 # efficient deep paging.
 #

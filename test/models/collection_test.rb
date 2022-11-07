@@ -3,7 +3,7 @@ require 'test_helper'
 class CollectionTest < ActiveSupport::TestCase
 
   setup do
-    setup_elasticsearch
+    setup_opensearch
     @instance = collections(:uiuc_collection1)
     assert @instance.valid?
   end
@@ -17,12 +17,12 @@ class CollectionTest < ActiveSupport::TestCase
       joins("LEFT JOIN units u ON u.id = ucm.unit_id").
       where("u.institution_id": institution.id)
     collections.each(&:reindex)
-    refresh_elasticsearch
+    refresh_opensearch
     count = Collection.search.institution(institution).count
     assert count > 0
 
     Collection.delete_document(collections.first.index_id)
-    refresh_elasticsearch
+    refresh_opensearch
     assert_equal count - 1, Collection.search.institution(institution).count
   end
 
@@ -74,12 +74,12 @@ class CollectionTest < ActiveSupport::TestCase
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all collections" do
-    setup_elasticsearch
+    setup_opensearch
     institution = institutions(:uiuc)
     assert_equal 0, Collection.search.institution(institution).count
 
     Collection.reindex_all
-    refresh_elasticsearch
+    refresh_opensearch
 
     actual = Collection.search.institution(institution).count
     assert actual > 0
@@ -419,7 +419,7 @@ class CollectionTest < ActiveSupport::TestCase
         filter(Collection::IndexFields::ID, @instance.index_id).count
 
     @instance.reindex
-    refresh_elasticsearch
+    refresh_opensearch
 
     assert_equal 1, Collection.search.
         institution(institutions(:uiuc)).

@@ -85,19 +85,19 @@ class Item < ApplicationRecord
   # metadata fields may also be present.
   #
   class IndexFields
-    CLASS              = ElasticsearchIndex::StandardFields::CLASS
+    CLASS              = OpenSearchIndex::StandardFields::CLASS
     COLLECTION_TITLES  = "k_collection_titles"
     COLLECTIONS        = "i_collection_ids"
-    CREATED            = ElasticsearchIndex::StandardFields::CREATED
+    CREATED            = OpenSearchIndex::StandardFields::CREATED
     EMBARGOES          = "o_embargoes"
     FILENAMES          = "t_filenames"
-    FULL_TEXT          = ElasticsearchIndex::StandardFields::FULL_TEXT
+    FULL_TEXT          = OpenSearchIndex::StandardFields::FULL_TEXT
     GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY = "k_unit_collection_sort_key"
     HANDLE             = "k_handle"
-    ID                 = ElasticsearchIndex::StandardFields::ID
-    INSTITUTION_KEY    = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
-    LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
-    LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    ID                 = OpenSearchIndex::StandardFields::ID
+    INSTITUTION_KEY    = OpenSearchIndex::StandardFields::INSTITUTION_KEY
+    LAST_INDEXED       = OpenSearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED      = OpenSearchIndex::StandardFields::LAST_MODIFIED
     PRIMARY_COLLECTION = "i_primary_collection_id"
     PRIMARY_UNIT       = "i_primary_unit_id"
     STAGE              = "i_stage"
@@ -392,7 +392,7 @@ class Item < ApplicationRecord
       # to get normalized as ISO 8601.
       if reg_e.input_type == RegisteredElement::InputType::DATE
         date = asc_e.date
-        if date && date.year < ElasticsearchIndex::MAX_YEAR
+        if date && date.year < OpenSearchIndex::MAX_YEAR
           doc[field] << date.iso8601
         else
           field = reg_e.indexed_text_field
@@ -400,7 +400,7 @@ class Item < ApplicationRecord
           doc[field] << asc_e.string
         end
       else
-        doc[field] << asc_e.string[0..ElasticsearchIndex::MAX_KEYWORD_FIELD_LENGTH]
+        doc[field] << asc_e.string[0..OpenSearchIndex::MAX_KEYWORD_FIELD_LENGTH]
       end
     end
 

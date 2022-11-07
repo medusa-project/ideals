@@ -3,7 +3,7 @@ require 'test_helper'
 class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    setup_elasticsearch
+    setup_opensearch
     setup_s3
   end
 

@@ -1,5 +1,5 @@
 #
-# Application Elasticsearch schema.
+# Application OpenSearch schema.
 #
 # All fields are dynamic. Most metadata elements are indexed as text
 # (t_element_*) except for those with a date input type, which are indexed as
@@ -17,17 +17,17 @@
 # text.
 #
 # When this file is changed, a new index has to be created (see the
-# elasticsearch:indexes:* rake tasks) and then either the old index must be
-# copied into it ("reindexed" in ES terminology--if possible) or else all
-# documents must be resubmitted to it.
+# OpenSearch:indexes:* rake tasks) and then either the old index must be copied
+# into it ("reindexed" in ES terminology--if possible) or else all documents
+# must be resubmitted to it.
 #
-# Requires Elasticsearch >= 7.0 with the ICU Analysis plugin
+# Requires OpenSearch >= 1.0 with the analysis-icu plugin
 #
 settings:
   index:
     query:
       default_field: search_all
-    max_result_window: 10000 # must match ElasticsearchIndex::MAX_RESULT_WINDOW
+    max_result_window: 10000 # must match OpenSearchIndex::MAX_RESULT_WINDOW
     refresh_interval: 30s
   analysis:
     filter:

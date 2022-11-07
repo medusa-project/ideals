@@ -5,7 +5,7 @@ class ItemTest < ActiveSupport::TestCase
   include ActionMailer::TestHelper
 
   setup do
-    setup_elasticsearch
+    setup_opensearch
     setup_s3
     @instance = items(:uiuc_item1)
   end
@@ -26,12 +26,12 @@ class ItemTest < ActiveSupport::TestCase
     institution = institutions(:uiuc)
     items = Item.where(institution_id: institution.id)
     items.each(&:reindex)
-    refresh_elasticsearch
+    refresh_opensearch
     count = Item.search.institution(institution).count
     assert count > 0
 
     Item.delete_document(items.first.index_id)
-    refresh_elasticsearch
+    refresh_opensearch
     assert_equal count - 1, Item.search.institution(institution).count
   end
 
@@ -44,12 +44,12 @@ class ItemTest < ActiveSupport::TestCase
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
-    setup_elasticsearch
+    setup_opensearch
     institution = institutions(:uiuc)
     assert_equal 0, Item.search.institution(institution).count
 
     Item.reindex_all
-    refresh_elasticsearch
+    refresh_opensearch
 
     expected = Item.distinct.
       where(institution_id: institution.id).
@@ -636,7 +636,7 @@ class ItemTest < ActiveSupport::TestCase
       count
 
     @instance.reindex
-    refresh_elasticsearch
+    refresh_opensearch
 
     assert_equal 1, Item.search.
       institution(institutions(:uiuc)).

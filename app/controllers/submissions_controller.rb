@@ -85,7 +85,7 @@ class SubmissionsController < ApplicationController
   rescue => e
     flash['error'] = "#{e}"
   else
-    ElasticsearchClient.instance.refresh
+    OpenSearchClient.instance.refresh
     flash['success'] = "Your submission has been canceled."
   ensure
     redirect_to root_path

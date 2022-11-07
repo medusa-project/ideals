@@ -3,7 +3,7 @@ require 'test_helper'
 class WelcomeControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    setup_elasticsearch
+    setup_opensearch
   end
 
   teardown do
@@ -30,9 +30,9 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() includes only approved items in the count" do
-    setup_elasticsearch
+    setup_opensearch
     Item.reindex_all
-    refresh_elasticsearch
+    refresh_opensearch
 
     get root_path
     # TODO: this fails intermittently

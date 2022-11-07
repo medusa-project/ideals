@@ -85,14 +85,14 @@ class ActiveSupport::TestCase
     user
   end
 
-  def refresh_elasticsearch
-    client = ElasticsearchClient.instance
-    client.refresh(Configuration.instance.elasticsearch[:index])
+  def refresh_opensearch
+    client = OpenSearchClient.instance
+    client.refresh(Configuration.instance.opensearch[:index])
   end
 
-  def setup_elasticsearch
-    index = Configuration.instance.elasticsearch[:index]
-    client = ElasticsearchClient.instance
+  def setup_opensearch
+    index = Configuration.instance.opensearch[:index]
+    client = OpenSearchClient.instance
     client.delete_index(index, false)
     client.create_index(index)
   end

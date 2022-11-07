@@ -16,12 +16,10 @@ This is a getting-started guide for developers.
 # Dependencies
 
 * PostgreSQL >= 9.x
-* Elasticsearch 7.x with the
-  [ICU analysis plugin](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html)
-  installed
+* OpenSearch 1.x with the `analysis-icu` plugin installed
 * An S3 storage service, such as AWS S3 or [Minio Server](https://min.io)
 * VIPS
-* Poppler
+* Poppler or xpdf (for the `pdftotext` tool)
 * RabbitMQ
 * A Handle.net server (see the
   [SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally)
@@ -37,8 +35,8 @@ Docker. The working copy is mounted in the app container, so changes to
 application files will be reflected without restarting.
 
 With that running, skip to the [Migrate Content](#Migrate-content-from-DSpace)
-section. The `rails` in the commands must be changed to `./docker-run.sh`, so
-`rails <task>` becomes `./docker-run.sh <task>`.
+section, if you want to do that. The `rails` in the commands must be changed to
+`./docker-run.sh`, so `rails <task>` becomes `./docker-run.sh <task>`.
 
 # Installation (without Docker)
 
@@ -73,34 +71,34 @@ $ cp template.yml test.yml
 Edit both as necessary. See `template.yml` for documentation of the
 configuration format.
 
-## Create the Elasticsearch indexes
+## Create the OpenSearch indexes
 
 ```sh
-rails elasticsearch:indexes:create[ideals_development]
-rails elasticsearch:indexes:create[ideals_test]
+rails opensearch:indexes:create[ideals_development]
+rails opensearch:indexes:create[ideals_test]
 ```
 Note: the index schema may change from time to time. Index schemas can't
 generally be changed in place, so a new index has to be created with the new
 schema, and then either existing documents migrated into it ("reindexed" in
-Elasticsearch terminology), which is fairly quick, or new documents loaded into
+OpenSearch terminology), which is fairly quick, or new documents loaded into
 it, which is very slow. For the development index, you may prefer to have
 separate "blue" and "green" indexes and to switch back-and-forth between them
 as needed:
 
 ```sh
-rails elasticsearch:indexes:create[ideals_blue_development]
-rails elasticsearch:indexes:create_alias[ideals_blue_development,ideals_development]
+rails opensearch:indexes:create[ideals_blue_development]
+rails opensearch:indexes:create_alias[ideals_blue_development,ideals_development]
 ```
 
 Then when you need to create a new index, you can switch to the other color:
 
 ```sh
-rails elasticsearch:indexes:create[ideals_green_development]
-rails elasticsearch:indexes:copy[ideals_blue_development,ideals_green_development]
-rails elasticsearch:indexes:delete_alias[ideals_blue_development,ideals_development]
-rails elasticsearch:indexes:create_alias[ideals_green_development,ideals_development]
+rails opensearch:indexes:create[ideals_green_development]
+rails opensearch:indexes:copy[ideals_blue_development,ideals_green_development]
+rails opensearch:indexes:delete_alias[ideals_blue_development,ideals_development]
+rails opensearch:indexes:create_alias[ideals_green_development,ideals_development]
 ```
-(Instead of using aliases, you could also change the `elasticsearch/index` key
+(Instead of using aliases, you could also change the `opensearch/index` key
 in your `development.yml`.)
 
 Note 2: the above does not apply to the test index. This index will be
@@ -184,46 +182,28 @@ Then, you can access
 [http://ideals-ins2.local:3000](http://ideals-ins2.local:3000) in order to play
 around with multi-tenancy.
 
-# Elasticsearch Schema Migration
+# OpenSearch Schema Migration
 
 From time to time, the index schema may have to change to accommodate new
 features. This requires creating a new index using the
-`elasticsearch:indexes:create` rake task, changing the index name in the
-application configuration (or changing the index alias on the ES side using
-the `elasticsearch:indexes:create_alias`/`delete_alias` rake tasks), and then
-reindexing all database content using the `elasticsearch:reindex` rake task.
+`opensearch:indexes:create` rake task, changing the index name in the
+application configuration (or changing the index alias on the OpenSearch side
+using the `opensearch:indexes:create_alias`/`delete_alias` rake tasks), and
+then reindexing all database content using the `opensearch:reindex` rake task.
 
 # Branches & Environments
 
-There are five main Git branches, which correspond to the environments in
-which the application runs: locally, CARLI demo, CARLI production, UIUC demo,
-and UIUC production. Here is how branching works:
+There are three main Git branches, which correspond to the environments in
+which the application runs: locally, in demo, and in production. Branching
+generally happens like this:
 
 ```
---------------   ---------------------
-|            |   |                   |
-|            V   V                   |
-|           develop                  |
-|         /         \                |
-|        /           \               |
-|       V             V              |
-|    demo <---------> carli_demo     |  (merge these two often)
-|      | \             /  |          |
-|      |  \           /   |          |
-|      |   \         /    |          |
-|      |    \       /     |          |
-|      |     \     /      |          |
-|      |      \   /       |          |
-|      |       \ /        |          |
-|      |        X         |          |
-|      |       / \        |          |
-|      |      /   \       |          |
-|      |     /     \      |          |
-|      V    V       V     V          |
-|  production <--> carli_production  |  (merge these two often)
-|      |                   |         |
---------                   -----------
+develop -----> demo -----> production
+   ^                           |
+   |                           |
+   |---------------------------|
 ```
+
 
 | Rails Environment      | Git Branch              | Machine                    | Configuration File                            |
 |------------------------|-------------------------|----------------------------|-----------------------------------------------|
@@ -232,9 +212,7 @@ and UIUC production. Here is how branching works:
 | `test`                 | any                     | Local & GitHub Actions     | `config/credentials/test.yml` & `ci.yml`      |
 | `test` (Docker)        | any                     | Docker                     | `config/credentials/test-docker.yml`          |
 | `demo`                 | `demo`                  | aws-ideals-demo            | `config/credentials/demo.yml.enc`             |
-| `carli_demo`           | `carli_demo`            | aws-scholarship-demo       | `config/credentials/carli_demo.yml.enc`       |
 | `production`           | `production`            | aws-ideals-production      | `config/credentials/production.yml.enc`       |
-| `carli_production`     | `carli_production`      | aws-scholarship-production | `config/credentials/carli_production.yml.enc` |
 
 Files that end in `.enc` are encrypted. Obtain the encryption key from a
 project team member and then use `rails credentials:edit -e <environment>`
@@ -258,7 +236,7 @@ invokes YARD to generate HTML documentation for the code base.
 
 Minitest is used for model and controller tests. `rails test` runs the tests.
 
-Tests may depend on any or all of the dependent services (Elasticsearch,
+Tests may depend on any or all of the dependent services (OpenSearch,
 RabbitMQ, etc.). It's perfectly legitimate to install all of that stuff on your
 local machine and run the tests there. You can also use `docker compose`, which
 will initialize a container, copy the code base into it, spin up all of the

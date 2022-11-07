@@ -79,7 +79,7 @@ class RegisteredElement < ApplicationRecord
   def self.sortable_field(name)
     [TEXT_FIELD_PREFIX,
      "element",
-     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join("_") +
+     name.gsub(OpenSearchClient::RESERVED_CHARACTERS, "_")].join("_") +
       SORTABLE_FIELD_SUFFIX
   end
 
@@ -100,7 +100,7 @@ class RegisteredElement < ApplicationRecord
     # reindexing.
     [(self.input_type == InputType::DATE) ? DATE_FIELD_PREFIX : TEXT_FIELD_PREFIX,
      "element",
-     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join("_")
+     name.gsub(OpenSearchClient::RESERVED_CHARACTERS, "_")].join("_")
   end
 
   ##
@@ -119,7 +119,7 @@ class RegisteredElement < ApplicationRecord
   def indexed_text_field
     [TEXT_FIELD_PREFIX,
      "element",
-     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join("_")
+     name.gsub(OpenSearchClient::RESERVED_CHARACTERS, "_")].join("_")
   end
 
   ##

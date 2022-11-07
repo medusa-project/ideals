@@ -56,7 +56,7 @@ class CollectionsController < ApplicationController
              locals: { object: @collection.errors.any? ? @collection : e },
              status: :bad_request
     else
-      ElasticsearchClient.instance.refresh
+      OpenSearchClient.instance.refresh
       flash['success'] = "Collection \"#{@collection.title}\" created."
       render 'shared/reload'
     end
@@ -81,7 +81,7 @@ class CollectionsController < ApplicationController
       flash['error'] = "#{e}"
       redirect_to @collection
     else
-      ElasticsearchClient.instance.refresh
+      OpenSearchClient.instance.refresh
       flash['success'] = "Collection \"#{title}\" deleted."
       redirect_to(parent || primary_unit)
     end
@@ -359,7 +359,7 @@ class CollectionsController < ApplicationController
   rescue => e
     flash['error'] = "#{e}"
   else
-    ElasticsearchClient.instance.refresh
+    OpenSearchClient.instance.refresh
     flash['success'] = "Collection \"#{@collection.title}\" undeleted."
   ensure
     redirect_to @collection
@@ -386,7 +386,7 @@ class CollectionsController < ApplicationController
              locals: { object: @collection.errors.any? ? @collection : e },
              status: :bad_request
     else
-      ElasticsearchClient.instance.refresh
+      OpenSearchClient.instance.refresh
       flash['success'] = "Collection \"#{@collection.title}\" updated."
       render 'shared/reload'
     end

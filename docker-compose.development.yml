@@ -6,11 +6,11 @@ services:
       dockerfile: docker/ideals/Dockerfile-development
     depends_on: # N.B: docker-compose will NOT actually wait for these to start, hence the `sleep` in the command
       - postgres
-      - elasticsearch
+      - opensearch
       - handle
       - minio
     ports:
       - 3000:3000
     volumes:
       - .:/app
-    command: bash -c "sleep 30 && bin/rails db:prepare && bin/rails elasticsearch:indexes:create[ideals-development] && bin/rails server -b 0.0.0.0"
+    command: bash -c "sleep 30 && bin/rails db:prepare && bin/rails opensearch:indexes:create[ideals-development] && bin/rails server -b 0.0.0.0"

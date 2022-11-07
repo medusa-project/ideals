@@ -6,7 +6,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
   setup do
     setup_s3
-    setup_elasticsearch
+    setup_opensearch
     @instance = SafImporter.new
   end
 
