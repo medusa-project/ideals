@@ -84,8 +84,8 @@ class Handle < ApplicationRecord
   def permanent_url
     config = ::Configuration.instance
     host   = config.handles[:use_ghr] ?
-               "https://hdl.handle.net/" : config.handles[:base_url]
-    [host, self.handle].join
+               "https://hdl.handle.net" : config.handles[:base_url].chomp("/")
+    [host, self.handle].join("/")
   end
 
   ##
