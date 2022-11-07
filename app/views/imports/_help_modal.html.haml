@@ -1,0 +1,117 @@
+#help-modal.modal.fade{"aria-labelledby": "help-modal-label",
+                       role: "dialog", tabindex: "-1"}
+  .modal-dialog.modal-lg.modal-dialog-centered{role: "document"}
+    .modal-content
+      .modal-header
+        %h4#help-modal-label.modal-title Help
+        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+          %span{"aria-hidden": "true"} &times;
+      .modal-body
+        %h3 CSV Format
+        %hr
+
+        %h4 Header Row
+        %p
+          The header row defines the metadata values contained in succeeding rows.
+          The first column, <code>id</code>, refers to an item's internal
+          database ID. Remaining columns contain the names of elements in the
+          element registry. Every element name in the header row must be unique.
+
+        %h4 Non-Header Rows
+        %p
+          Each non-header row corresponds to a particular item. The first cell
+          contains either a database ID (for items that already
+          exist), or a plus sign (<code>+</code>) for new items to be created.
+          Each remaining cell specifies a metadata element value. Multiple
+          values for the same element can be separated with a double pipe (<code>||</code>).
+
+        %h4 Element Processing
+        %p
+          During an import, the item metadata for the item/element combination represented by
+          each cell is changed to reflect the contents of the CSV. Note that this means
+          that if there are multiple values for a given element in the same cell (separated by a
+          double pipe) and a change is only needed for some of the values, the
+          unchanged values must still appear in the cell, or else they will be deleted.
+        %p
+          Leaving a cell empty will cause that item's corresponding element to be deleted.
+        %p
+          If an element does not appear as a column in the CSV, the values of that
+          element are ignored and are unaffected by the importing process.
+
+        %h3 SAF Format
+        %hr
+        %p SAF is a DSpace package format containing a batch of things to import.
+
+        %h4 Package Structure
+        %p
+          At the root of a SAF package is a directory known as the "archive directory."
+          Each subdirectory within it represents a particular item.
+          Each item directory contains a file named <code>content</code>, which is a manifest of
+          files that compose the item. These files are all present in the item
+          directory. The format of the content file is described below.
+
+        %p
+          The item directory also contains an XML file that encodes the item's
+          metadata.
+
+        %h4 Content File Format
+
+        %p
+          The content file is a plain text file containing a newline-separated list
+          of files associated with an item. A filename may optionally be followed by
+          any combination of the following (where <code>\t</code> is a tab character):
+
+        %dl
+          %dt
+            %code \tbundle:BUNDLENAME
+          %dd
+            The name of the bundle to which the bitstream should be added. Without
+            specifying the bundle, items will go into the default "content" bundle.
+          %dt
+            %code \tdescription:DESCRIPTION
+          %dd
+            Text of the file's description.
+          %dt
+            %code \tprimary:true
+          %dd
+            Specifies the primary bitstream.
+
+        %h4 Metadata File Format
+
+        %p
+          DSpace was created with qualified Dublin Core in mind, so at a minimum there
+          exists one file named <code>dublin_core.xml</code>, which contains a form like:
+
+        %pre
+          %code
+            &lt;dublin_core&gt;
+            &nbsp;&nbsp;&lt;dcvalue element="title" qualifier="none"&gt;A Tale of Two Cities&lt;/dcvalue&gt;
+            &nbsp;&nbsp;&lt;dcvalue element="date" qualifier="issued"&gt;1990&lt;/dcvalue&gt;
+            &lt;/dublin_core&gt;
+
+        %p
+          There is no schema validation, but it keeps this basic structure. This would
+          create values for the elements <code>dc:title</code> (if qualifier is
+          <code>none</code> then the qualifier is simply omitted) and
+          <code>dc:date:issued</code>. In this default file the schema prefix
+          will always be <code>dc</code>.
+
+        %p
+          For each additional schema, a file named like <code>metadata_{prefix}.xml</code>
+          exists. Even though the schema may not be related to Dublin Core, the XML is
+          formatted identically to <code>dublin_core.xml</code> with the exception that
+          the root element receives an attribute that identifies the schema prefix.
+
+        %h4 Error Recovery
+        %p
+          Any error encountered during the import will terminate the import. As each
+          item is imported, it is written to a "mapfile" which is a plain text file in
+          the following format:
+
+        %p
+          %code {directory_name}\t{item_handle}
+
+        %p
+          (With <code>\t</code> representing the tab character and the directory name being the
+          name of the directory in the SAF package representing the new item.) When the
+          import is re-run, any items already present in the mapfile are skipped.

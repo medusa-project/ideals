@@ -8,12 +8,18 @@
                                      role:          "button"}
       %i.fa.fa-plus
       New Import&hellip;
+    %button.btn.btn-light{"data-target": "#help-modal",
+                          "data-toggle": "modal",
+                          role:          "button"}
+      %i.fa.fa-question-circle
+      Help&hellip;
 
 %h1 Import Items
 
 #import-list
   = render partial: "imports"
 
+= render partial: "help_modal"
 = render partial: "shared/ajax_modal",
          locals: { id: "new-import-modal",
                    title: "New Import" }
