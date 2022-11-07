@@ -80,8 +80,10 @@
 #                         belongs.
 #
 class Collection < ApplicationRecord
+
   include Breadcrumb
   include Indexed
+  include Handled
 
   class IndexFields
     BURIED            = "b_buried"
@@ -141,7 +143,6 @@ class Collection < ApplicationRecord
   validate :validate_buried, if: -> { buried }
   validate :validate_exhumed, if: -> { !buried }
 
-  after_save :assign_handle, if: -> { handle.nil? }
   before_destroy :validate_empty
 
   ##
@@ -477,13 +478,6 @@ class Collection < ApplicationRecord
 
 
   private
-
-  ##
-  # @return [void]
-  #
-  def assign_handle
-    self.handle = Handle.create!(collection: self) if self.handle.nil?
-  end
 
   ##
   # Ensures that a buried collection does not contain any sub-collections or

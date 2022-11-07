@@ -102,7 +102,8 @@ class CollectionTest < ActiveSupport::TestCase
     assert_not_empty doc[Collection::IndexFields::CREATED]
     assert_equal @instance.description,
                  doc[Collection::IndexFields::DESCRIPTION]
-    assert_nil doc[Collection::IndexFields::HANDLE]
+    assert_equal @instance.handle.handle,
+                 doc[Collection::IndexFields::HANDLE]
     assert_equal @instance.institution.key,
                  doc[Collection::IndexFields::INSTITUTION_KEY]
     assert_equal @instance.introduction,

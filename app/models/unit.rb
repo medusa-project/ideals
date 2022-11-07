@@ -37,7 +37,9 @@
 # * `updated_at`          Managed by ActiveRecord.
 #
 class Unit < ApplicationRecord
+
   include Breadcrumb
+  include Handled
   include Indexed
 
   class IndexFields
@@ -84,7 +86,6 @@ class Unit < ApplicationRecord
   validate :validate_buried, if: -> { buried }
   validate :validate_parent, :validate_primary_administrator
 
-  after_save :assign_handle, if: -> { handle.nil? }
   after_create :create_default_collection
   before_destroy :validate_empty
 
@@ -410,13 +411,6 @@ class Unit < ApplicationRecord
 
 
   private
-
-  ##
-  # @return [void]
-  #
-  def assign_handle
-    self.handle = Handle.create!(unit: self) if self.handle.nil?
-  end
 
   ##
   # Ensures that a buried unit does not contain any collections.

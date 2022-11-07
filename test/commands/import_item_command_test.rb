@@ -11,12 +11,10 @@ class ImportItemCommandTest < ActiveSupport::TestCase
   end
 
   test "execute() creates an associated Event" do
-    Event.destroy_all
-
     command = ImportItemCommand.new(primary_collection: collections(:uiuc_collection1))
     item    = command.execute
 
-    event = Event.all.first
+    event = Event.order(updated_at: :desc).first
     assert_equal Event::Type::CREATE, event.event_type
     assert_equal item, event.item
     assert_equal item.as_change_hash, event.after_changes

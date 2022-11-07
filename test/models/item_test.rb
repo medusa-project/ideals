@@ -318,24 +318,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal e.registered_element.institution, item.institution
   end
 
-  test "complete_submission() does not assign a handle if the collection is
-  reviewing submissions" do
-    item = items(:uiuc_described)
-    item.primary_collection.submissions_reviewed = true
-    item.complete_submission
-    assert_nil item.handle
-  end
-
-  test "complete_submission() assigns a handle if the collection is not
-  reviewing submissions" do
-    item = items(:uiuc_described)
-    item.primary_collection.submissions_reviewed = false
-    item.complete_submission
-    assert_not_nil item.handle.suffix
-    assert_equal item.handle.permanent_url,
-                 item.element("dcterms:identifier").uri
-  end
-
   test "complete_submission() does not move any associated Bitstreams into
   permanent storage if the collection is reviewing submissions" do
     item    = items(:uiuc_described)
@@ -647,7 +629,7 @@ class ItemTest < ActiveSupport::TestCase
   # representative_bitstream()
 
   test "representative_bitstream() returns the primary bitstream if one exists" do
-    @instance = Item.create
+    @instance = Item.create(institution: institutions(:southwest))
     b1 = @instance.bitstreams.build(primary: true,
                                     bundle: Bitstream::Bundle::CONTENT,
                                     original_filename: "image.jpg")
@@ -660,7 +642,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "representative_bitstream() returns a bitstream in the content bundle if
   a primary bitstream does not exist" do
-    @instance = Item.create
+    @instance = Item.create(institution: institutions(:southwest))
     b1 = @instance.bitstreams.build(primary:           false,
                                     bundle:            Bitstream::Bundle::CONTENT,
                                     original_filename: "image.jpg")
@@ -673,7 +655,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "representative_bitstream() returns nil if no representative bitstream
   exists" do
-    @instance = Item.create
+    @instance = Item.create(institution: institutions(:southwest))
     @instance.bitstreams.build(primary:           false,
                                bundle:            Bitstream::Bundle::NOTES,
                                original_filename: "notes.txt")
