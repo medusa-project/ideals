@@ -177,14 +177,7 @@ class ItemsController < ApplicationController
     if [Item::Stages::BURIED, Item::Stages::WITHDRAWN].include?(@item.stage)
       render plain: "410 Gone", status: :gone and return
     end
-    @content_bitstreams  = @item.bitstreams.
-      where(bundle: Bitstream::Bundle::CONTENT).
-      order("bitstreams.bundle_position", "LOWER(original_filename)").
-      select{ |b| policy(b).show? }
-    @other_bitstreams    = @item.bitstreams.
-      where("bundle != ?", Bitstream::Bundle::CONTENT).
-      order("bitstreams.bundle_position", "LOWER(original_filename)").
-      select{ |b| policy(b).show? }
+    set_item_bitstreams
     render partial: "items/file_navigator"
   end
 
@@ -304,10 +297,11 @@ class ItemsController < ApplicationController
     @collections = @item.collections
     case @item.stage
     when Item::Stages::BURIED
-      render "show_buried", status: :gone
+      render "show_buried", status: :gone and return
     when Item::Stages::WITHDRAWN
-      render "show_withdrawn", status: :gone
+      render "show_withdrawn", status: :gone and return
     end
+    set_item_bitstreams
   end
 
   ##
@@ -456,6 +450,17 @@ class ItemsController < ApplicationController
                           description: "Item was rejected.").execute do
       item.update!(stage: Item::Stages::REJECTED)
     end
+  end
+
+  def set_item_bitstreams
+    @content_bitstreams  = @item.bitstreams.
+      where(bundle: Bitstream::Bundle::CONTENT).
+      order("bitstreams.bundle_position", "LOWER(original_filename)").
+      select{ |b| policy(b).show? }
+    @other_bitstreams    = @item.bitstreams.
+      where("bundle != ?", Bitstream::Bundle::CONTENT).
+      order("bitstreams.bundle_position", "LOWER(original_filename)").
+      select{ |b| policy(b).show? }
   end
 
 end

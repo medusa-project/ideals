@@ -21,7 +21,7 @@
   .alert.alert-secondary
     %i.fa.fa-lock
     = result[:reason]
-- else
+- elsif @content_bitstreams.any? || @other_bitstreams.any?
   #file-navigator
     = spinner
     -# items/_file_navigator is inserted here via XHR
