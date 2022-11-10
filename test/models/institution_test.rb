@@ -26,6 +26,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal institutions(:uiuc), Institution.default
   end
 
+  # file_sizes()
+
+  test "file_sizes() returns a correct value" do
+    sizes = Institution.file_sizes
+    assert_equal 1, sizes.count
+  end
+
   # footer_image_filename()
 
   test "footer_image_filename() returns a correct key" do
@@ -57,6 +64,13 @@ class InstitutionTest < ActiveSupport::TestCase
   test "image_key_prefix() returns a correct key" do
     assert_equal "institutions/test/theme/",
                  Institution.image_key_prefix("test")
+  end
+
+  # item_counts()
+
+  test "item_counts() returns a correct value" do
+    counts = Institution.item_counts
+    assert_equal 2, counts.count
   end
 
   # create()

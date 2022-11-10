@@ -1,0 +1,14 @@
+%table.table
+  %thead
+    %th Institution
+    %th Total Items
+    %th % of Total
+  %tbody
+    - @item_counts.each do |row|
+      %tr
+        %td= link_to(row['name'], institution_path(row['id']))
+        %td= number_with_delimiter(row['count'])
+        %td= ((row['count'] / @total_item_count.to_f) * 100).round(1)
+    %tr
+      %td Total
+      %td= number_with_delimiter(@total_item_count)

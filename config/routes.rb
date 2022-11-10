@@ -45,6 +45,7 @@ Rails.application.routes.draw do
     match "/submit", to: "submissions#new", via: :get
     match "/undelete", to: "collections#undelete", via: :post
   end
+  match "/custom-styles", to: "stylesheets#show", via: :get
   # This is an old DSpace route.
   match "/dspace-oai/request", to: redirect('/oai-pmh', status: 301), via: :all
   resources :downloads, only: :show, param: :key do
@@ -157,7 +158,11 @@ Rails.application.routes.draw do
   resources :registered_elements, param: :name, path: "elements"
   match "/settings", to: "settings#index", via: :get
   match "/settings", to: "settings#update", via: :patch
-  match "/custom-styles", to: "stylesheets#show", via: :get
+  match "/statistics", to: "statistics#index", via: :get
+  match "/statistics/files", to: "statistics#files", via: :get,
+        constraints: lambda { |request| request.xhr? }
+  match "/statistics/items", to: "statistics#items", via: :get,
+        constraints: lambda { |request| request.xhr? }
   resources :submission_profiles, path: "submission-profiles" do
     match "/clone", to: "submission_profiles#clone", via: :post
     resources :submission_profile_elements, path: "elements", except: [:new, :index, :show]

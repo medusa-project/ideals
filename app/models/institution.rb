@@ -119,6 +119,20 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<Hash>]
+  #
+  def self.file_sizes
+    sql = "SELECT ins.id, ins.name, SUM(length)
+      FROM bitstreams b
+      LEFT JOIN items i on b.item_id = i.id
+      LEFT JOIN institutions ins on i.institution_id = ins.id
+      WHERE ins.name IS NOT NULL
+      GROUP BY ins.id
+      ORDER BY ins.name;"
+    connection.execute(sql)
+  end
+
+  ##
   # @param extension [String]
   # @return [String]
   #
@@ -160,6 +174,19 @@ class Institution < ApplicationRecord
   #
   def self.image_key_prefix(institution_key)
     ["institutions", institution_key, "theme"].join("/") + "/"
+  end
+
+  ##
+  # @return [Enumerable<Hash>]
+  #
+  def self.item_counts
+    sql = "SELECT ins.id, ins.name, COUNT(i.id) AS count
+      FROM items i
+      LEFT JOIN institutions ins ON i.institution_id = ins.id
+      WHERE ins.id IS NOT NULL
+      GROUP BY ins.id
+      ORDER BY ins.name;"
+    connection.execute(sql)
   end
 
   ##
