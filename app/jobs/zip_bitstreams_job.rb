@@ -13,16 +13,19 @@ class ZipBitstreamsJob < ApplicationJob
   # @raises [ArgumentError]
   #
   def perform(*args)
-    bitstreams = args[0]
-    download   = args[1]
-    item_id    = args[2]
+    bitstreams  = args[0]
+    download    = args[1]
+    item_id     = args[2]
+    institution = nil
     if item_id
-      filename = "item-#{item_id}.zip"
+      filename    = "item-#{item_id}.zip"
+      institution = Item.find(item_id)
     else
       filename = "#{SecureRandom.hex[0..15]}.zip"
     end
     task       = Task.create!(name:          self.class.name,
                               download:      download,
+                              institution:   institution,
                               indeterminate: false,
                               started_at:    Time.now,
                               status_text:   "Creating zip file")

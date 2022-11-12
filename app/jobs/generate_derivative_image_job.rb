@@ -16,6 +16,7 @@ class GenerateDerivativeImageJob < ApplicationJob
 
     task = Task.create!(name:          self.class.name,
                         indeterminate: true,
+                        institution:   bs.institution,
                         started_at:    Time.now,
                         status_text:   "Generating #{region}/#{size} #{format} "\
                                        "derivative image for #{bs.original_filename}")
