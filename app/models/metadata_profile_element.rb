@@ -13,7 +13,7 @@
 # * `registered_element_id` ID of the associated [RegisteredElement]. Foreign
 #                           key.
 # * `relevance_weight`      Weight of the element when computing a result
-#                           relevance score. These are Elasticsearch weights
+#                           relevance score. These are OpenSearch weights
 #                           with a default and minimum of 1 and a maximum of
 #                           10.
 # * `searchable`            Whether users can search on the element.

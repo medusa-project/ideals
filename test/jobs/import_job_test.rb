@@ -21,4 +21,14 @@ class ImportJobTest < ActiveSupport::TestCase
     assert_equal Import::Kind::SAF, kind
   end
 
+  test "perform() assigns a new Task to the import" do
+    import = imports(:csv_new)
+    import.update!(task: nil)
+    import.upload_file(relative_path: "new.csv",
+                       io:            file_fixture("csv/new.csv"))
+    ImportJob.new.perform(import, nil)
+    import.reload
+    assert_not_nil import.task
+  end
+
 end

@@ -102,6 +102,108 @@ class UserPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_properties?
   end
 
+  # enable?()
+
+  test "enable?() returns false with a nil request context" do
+    policy = UserPolicy.new(nil, User)
+    assert !policy.enable?
+  end
+
+  test "enable?() does not authorize non-sysadmins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserPolicy.new(context, User)
+    assert !policy.enable?
+  end
+
+  test "enable?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UserPolicy.new(context, User)
+    assert policy.enable?
+  end
+
+  test "enable?() authorizes administrators of the same institution" do
+    subject_user = users(:southwest_admin)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserPolicy.new(context, User)
+    assert policy.enable?
+  end
+
+  test "enable?() does not authorize administrators of a different
+  institution" do
+    subject_user = users(:southwest_admin)
+    object_user  = users(:northeast)
+    context      = RequestContext.new(user:        subject_user,
+                                      institution: object_user.institution)
+    policy       = UserPolicy.new(context, User)
+    assert !policy.enable?
+  end
+
+  test "enable?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UserPolicy.new(context, User)
+    assert !policy.enable?
+  end
+
+  # disable?()
+
+  test "disable?() returns false with a nil request context" do
+    policy = UserPolicy.new(nil, User)
+    assert !policy.disable?
+  end
+
+  test "disable?() does not authorize non-sysadmins" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserPolicy.new(context, User)
+    assert !policy.disable?
+  end
+
+  test "disable?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UserPolicy.new(context, User)
+    assert policy.disable?
+  end
+
+  test "disable?() authorizes administrators of the same institution" do
+    subject_user = users(:southwest_admin)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserPolicy.new(context, User)
+    assert policy.disable?
+  end
+
+  test "disable?() does not authorize administrators of a different
+  institution" do
+    subject_user = users(:southwest_admin)
+    object_user  = users(:northeast)
+    context      = RequestContext.new(user:        subject_user,
+                                      institution: object_user.institution)
+    policy       = UserPolicy.new(context, User)
+    assert !policy.disable?
+  end
+
+  test "disable?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UserPolicy.new(context, User)
+    assert !policy.disable?
+  end  
+
   # index?()
 
   test "index?() returns false with a nil request context" do

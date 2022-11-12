@@ -22,9 +22,9 @@ class WelcomeController < ApplicationController
           order(updated_at: :desc)
     end
   rescue Errno::ECONNREFUSED
-    # Elasticsearch is inaccessible. This is a major problem, but not in this
-    # view specifically. Other views that depend more strongly on ES will not
-    # rescue this error.
+    # OpenSearch is inaccessible. This is a major problem, but not in this
+    # view specifically. Other views that depend more strongly on OpenSearch
+    # will not rescue this error.
   end
 
   def on_failed_registration; end

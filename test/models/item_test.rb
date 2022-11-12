@@ -5,13 +5,13 @@ class ItemTest < ActiveSupport::TestCase
   include ActionMailer::TestHelper
 
   setup do
-    setup_elasticsearch
+    setup_opensearch
     setup_s3
     @instance = items(:uiuc_item1)
   end
 
   teardown do
-    AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
+    clear_message_queues
   end
 
   # Stages
@@ -26,12 +26,12 @@ class ItemTest < ActiveSupport::TestCase
     institution = institutions(:uiuc)
     items = Item.where(institution_id: institution.id)
     items.each(&:reindex)
-    refresh_elasticsearch
+    refresh_opensearch
     count = Item.search.institution(institution).count
     assert count > 0
 
     Item.delete_document(items.first.index_id)
-    refresh_elasticsearch
+    refresh_opensearch
     assert_equal count - 1, Item.search.institution(institution).count
   end
 
@@ -44,12 +44,12 @@ class ItemTest < ActiveSupport::TestCase
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
-    setup_elasticsearch
+    setup_opensearch
     institution = institutions(:uiuc)
     assert_equal 0, Item.search.institution(institution).count
 
     Item.reindex_all
-    refresh_elasticsearch
+    refresh_opensearch
 
     expected = Item.distinct.
       where(institution_id: institution.id).
@@ -316,24 +316,6 @@ class ItemTest < ActiveSupport::TestCase
     e = item.element("dcterms:available")
     assert_not_nil e.string
     assert_equal e.registered_element.institution, item.institution
-  end
-
-  test "complete_submission() does not assign a handle if the collection is
-  reviewing submissions" do
-    item = items(:uiuc_described)
-    item.primary_collection.submissions_reviewed = true
-    item.complete_submission
-    assert_nil item.handle
-  end
-
-  test "complete_submission() assigns a handle if the collection is not
-  reviewing submissions" do
-    item = items(:uiuc_described)
-    item.primary_collection.submissions_reviewed = false
-    item.complete_submission
-    assert_not_nil item.handle.suffix
-    assert_equal item.handle.permanent_url,
-                 item.element("dcterms:identifier").uri
   end
 
   test "complete_submission() does not move any associated Bitstreams into
@@ -636,7 +618,7 @@ class ItemTest < ActiveSupport::TestCase
       count
 
     @instance.reindex
-    refresh_elasticsearch
+    refresh_opensearch
 
     assert_equal 1, Item.search.
       institution(institutions(:uiuc)).
@@ -647,7 +629,7 @@ class ItemTest < ActiveSupport::TestCase
   # representative_bitstream()
 
   test "representative_bitstream() returns the primary bitstream if one exists" do
-    @instance = Item.create
+    @instance = Item.create(institution: institutions(:southwest))
     b1 = @instance.bitstreams.build(primary: true,
                                     bundle: Bitstream::Bundle::CONTENT,
                                     original_filename: "image.jpg")
@@ -660,7 +642,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "representative_bitstream() returns a bitstream in the content bundle if
   a primary bitstream does not exist" do
-    @instance = Item.create
+    @instance = Item.create(institution: institutions(:southwest))
     b1 = @instance.bitstreams.build(primary:           false,
                                     bundle:            Bitstream::Bundle::CONTENT,
                                     original_filename: "image.jpg")
@@ -673,7 +655,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "representative_bitstream() returns nil if no representative bitstream
   exists" do
-    @instance = Item.create
+    @instance = Item.create(institution: institutions(:southwest))
     @instance.bitstreams.build(primary:           false,
                                bundle:            Bitstream::Bundle::NOTES,
                                original_filename: "notes.txt")

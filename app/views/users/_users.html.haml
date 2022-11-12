@@ -21,6 +21,7 @@
       - if institution_column
         %th Institution
       %th Authentication Type
+      %th
   %tbody
     - @users.each do |user|
       %tr
@@ -29,6 +30,9 @@
         - if institution_column
           %td= user.institution ? link_to(user.institution.name, user.institution) : "None"
         %td= user.type.chomp("User")
+        %td
+          - unless user.enabled
+            = boolean(user.enabled, style: :word, true_value: "ENABLED", false_value: "DISABLED")
 
 .row.justify-content-md-center
   .col-md-auto

@@ -25,7 +25,8 @@ class SubmissionProfilesController < ApplicationController
   # Responds to `POST /submission-profiles` (XHR only)
   #
   def create
-    @profile = SubmissionProfile.new(submission_profile_params)
+    @profile             = SubmissionProfile.new(submission_profile_params)
+    @profile.institution = current_institution
     authorize @profile
     begin
       @profile.add_default_elements
@@ -103,7 +104,7 @@ class SubmissionProfilesController < ApplicationController
   private
 
   def submission_profile_params
-    params.require(:submission_profile).permit(:default, :institution_id, :name)
+    params.require(:submission_profile).permit(:default, :name)
   end
 
   def set_profile

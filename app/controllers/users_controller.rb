@@ -14,6 +14,22 @@ class UsersController < ApplicationController
   end
 
   ##
+  # Responds to `PATCH /users/:id/enable`
+  #
+  def enable
+    @user.update!(enabled: true)
+    redirect_back fallback_location: user_path(@user)
+  end
+
+  ##
+  # Responds to `PATCH /users/:id/disable`
+  #
+  def disable
+    @user.update!(enabled: false)
+    redirect_back fallback_location: user_path(@user)
+  end
+
+  ##
   # Responds to `GET /users`
   #
   # @see index_all

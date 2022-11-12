@@ -21,8 +21,8 @@ class ConfigurationTest < ActiveSupport::TestCase
   end
 
   test "get() indifferent hash access" do
-    assert_not_nil @config.get(:elasticsearch)["endpoint"]
-    assert_not_nil @config.get(:elasticsearch)[:endpoint]
+    assert_not_nil @config.get(:opensearch)["endpoint"]
+    assert_not_nil @config.get(:opensearch)[:endpoint]
   end
 
   # method_missing()

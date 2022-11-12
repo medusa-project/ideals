@@ -37,19 +37,22 @@
 # * `updated_at`          Managed by ActiveRecord.
 #
 class Unit < ApplicationRecord
+
   include Breadcrumb
+  include Handled
   include Indexed
 
   class IndexFields
     ADMINISTRATORS        = "i_administrator_id"
     BURIED                = "b_buried"
-    CLASS                 = ElasticsearchIndex::StandardFields::CLASS
-    CREATED               = ElasticsearchIndex::StandardFields::CREATED
-    ID                    = ElasticsearchIndex::StandardFields::ID
-    INSTITUTION_KEY       = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
+    CLASS                 = OpenSearchIndex::StandardFields::CLASS
+    CREATED               = OpenSearchIndex::StandardFields::CREATED
+    HANDLE                = "k_handle"
+    ID                    = OpenSearchIndex::StandardFields::ID
+    INSTITUTION_KEY       = OpenSearchIndex::StandardFields::INSTITUTION_KEY
     INTRODUCTION          = "t_introduction"
-    LAST_INDEXED          = ElasticsearchIndex::StandardFields::LAST_INDEXED
-    LAST_MODIFIED         = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    LAST_INDEXED          = OpenSearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED         = OpenSearchIndex::StandardFields::LAST_MODIFIED
     PARENT                = "i_parent_id"
     PRIMARY_ADMINISTRATOR = "i_primary_administrator_id"
     RIGHTS                = "t_rights"
@@ -83,7 +86,6 @@ class Unit < ApplicationRecord
   validate :validate_buried, if: -> { buried }
   validate :validate_parent, :validate_primary_administrator
 
-  after_save :assign_handle, if: -> { handle.nil? }
   after_create :create_default_collection
   before_destroy :validate_empty
 
@@ -160,6 +162,7 @@ class Unit < ApplicationRecord
     doc[IndexFields::BURIED]                = self.buried
     doc[IndexFields::CLASS]                 = self.class.to_s
     doc[IndexFields::CREATED]               = self.created_at.utc.iso8601
+    doc[IndexFields::HANDLE]                = self.handle&.handle
     doc[IndexFields::INSTITUTION_KEY]       = self.institution&.key
     doc[IndexFields::INTRODUCTION]          = self.introduction
     doc[IndexFields::LAST_INDEXED]          = Time.now.utc.iso8601
@@ -206,7 +209,8 @@ class Unit < ApplicationRecord
   def create_default_collection
     return if self.unit_collection_memberships.where(unit_default: true).count > 0
     transaction do
-      collection = Collection.create!(title:       "Default collection for #{self.title}",
+      collection = Collection.create!(institution: self.institution,
+                                      title:       "Default collection for #{self.title}",
                                       description: "This collection was "\
                                       "created automatically along with its parent unit.")
       self.unit_collection_memberships.build(unit:         self,
@@ -407,13 +411,6 @@ class Unit < ApplicationRecord
 
 
   private
-
-  ##
-  # @return [void]
-  #
-  def assign_handle
-    self.handle = Handle.create!(unit: self) if self.handle.nil?
-  end
 
   ##
   # Ensures that a buried unit does not contain any collections.

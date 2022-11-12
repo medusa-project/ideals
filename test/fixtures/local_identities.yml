@@ -1,11 +1,12 @@
 ##
 # N.B.: every identity in this file MUST have a corresponding User in
-# `users.yml`.
+# `users.yml`, AND an Invitee in invitees.yml.
 #
 
 local_sysadmin:
   email:           admin@example.edu
   name:            Admin
+  invitee:         local_sysadmin
   activated:       true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
@@ -19,12 +20,14 @@ approved:
 collection1_collection1_manager:
   email:           collection1_collection1_manager@example.edu
   name:            Collection1 Collection1 Manager
+  invitee:         collection1_collection1_manager
   activated:       true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 collection1_collection1_submitter:
   email:           collection1_collection1_submitter@example.edu
   name:            Collection1 Collection1 Submitter
+  invitee:         collection1_collection1_submitter
   activated:       true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
@@ -80,11 +83,13 @@ southwest_admin:
 unit1_admin:
   email:           unit1_admin@example.edu
   name:            Unit1 Admin
+  invitee:         unit1_admin
   activated:       true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 unit1_unit2_unit1_admin:
   email:           unit1_unit2_unit1_admin@example.edu
   name:            Unit1 Unit2 Unit1 Admin
+  invitee:         unit1_unit2_unit1_admin
   activated:       true
   password_digest: <%= BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>

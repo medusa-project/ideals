@@ -15,10 +15,8 @@ class GenerateDerivativeImageJobTest < ActiveSupport::TestCase
 
     GenerateDerivativeImageJob.perform_now(bs, :full, 512, :jpg)
 
-    config = ::Configuration.instance
-    bucket = config.storage[:bucket]
-    key    = bs.send(:derivative_key, region: :full, size: 512, format: :jpg)
-    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+    key = bs.send(:derivative_key, region: :full, size: 512, format: :jpg)
+    assert PersistentStore.instance.object_exists?(key: key)
   end
 
 end

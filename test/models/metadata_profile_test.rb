@@ -10,7 +10,7 @@ class MetadataProfileTest < ActiveSupport::TestCase
 
   test "instances with dependent units cannot be destroyed" do
     @instance = metadata_profiles(:uiuc_unused)
-    unit = units(:unit1)
+    unit = units(:uiuc_unit1)
     unit.update!(metadata_profile: @instance)
     assert_raises ActiveRecord::DeleteRestrictionError do
       @instance.destroy!

@@ -4,7 +4,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   setup do
     setup_s3
-    setup_elasticsearch
+    setup_opensearch
     @instance = CsvImporter.new
   end
 
@@ -56,7 +56,7 @@ class CsvImporterTest < ActiveSupport::TestCase
                      submitter:          users(:local_sysadmin),
                      primary_collection: collections(:uiuc_empty))
     item = Item.order(created_at: :desc).limit(1).first
-    assert_equal Item::Stages::SUBMITTED, item.stage
+    assert_equal Item::Stages::APPROVED, item.stage
     assert_equal "New Item", item.title
   end
 
@@ -140,7 +140,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_equal "Some subject", item.element("dc:subject").string # existing value
   end
 
-  test "import() succeeds the provided Task object upon success" do
+  test "import() succeeds the import's task upon success" do
     item = items(:uiuc_described)
     csv = CSV.generate do |row|
       row << ["id", "dc:title"]
@@ -155,7 +155,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_equal 1, task.percent_complete
   end
 
-  test "import() fails the provided Task object upon error" do
+  test "import() fails the import's task upon error" do
     item = items(:uiuc_described)
     csv = CSV.generate do |row|
       row << ["id", "bogus"]
@@ -192,7 +192,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     # Test the created item's immediate properties
     item = Item.order(created_at: :desc).limit(1).first
     assert_not_nil item.handle
-    assert_equal Item::Stages::SUBMITTED, item.stage
+    assert_equal Item::Stages::APPROVED, item.stage
 
     # Test metadata
     assert_equal 4, item.elements.length
@@ -200,17 +200,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_equal "New CSV Item", item.element("dc:title").string
   end
 
-  test "import_from_s3() sets the import status to succeeded upon success" do
-    csv    = file_fixture("csv/new.csv")
-    import = imports(:csv_new)
-    upload_to_s3(csv, import)
-    @instance.import_from_s3(import, users(:local_sysadmin))
-
-    import.reload
-    assert_equal Import::Status::SUCCEEDED, import.status
-  end
-
-  test "import_from_s3() sets the import status to failed upon error" do
+  test "import_from_s3() fails the import's task upon error" do
     csv    = file_fixture("csv/illegal_element.csv")
     import = imports(:csv_new)
     upload_to_s3(csv, import)
@@ -219,44 +209,25 @@ class CsvImporterTest < ActiveSupport::TestCase
       @instance.import_from_s3(import, users(:local_sysadmin))
     end
 
-    import.reload
-    assert_equal Import::Status::FAILED, import.status
+    assert_equal Task::Status::FAILED, import.task.status
   end
 
-  test "import_from_s3() succeeds the provided Task object upon success" do
+  test "import_from_s3() succeeds the import's task upon success" do
     csv    = file_fixture("csv/new.csv")
     import = imports(:csv_new)
     upload_to_s3(csv, import)
-    task   = Task.create(name:        "TestTask",
-                         status_text: "Hi")
 
-    @instance.import_from_s3(import, users(:local_sysadmin),
-                             task: task)
+    @instance.import_from_s3(import, users(:local_sysadmin))
 
-    assert_equal Task::Status::SUCCEEDED, task.status
+    assert_equal Task::Status::SUCCEEDED, import.task.status
   end
 
-  test "import_from_s3() succeeds the provided Task object upon error" do
-    csv    = file_fixture("csv/illegal_element.csv")
-    import = imports(:csv_new)
-    upload_to_s3(csv, import)
-    task   = Task.create(name:        "TestTask",
-                         status_text: "Hi")
-
-    assert_raises do
-      @instance.import_from_s3(import, users(:local_sysadmin),
-                               task: task)
-    end
-
-    assert_equal Task::Status::FAILED, task.status
-  end
 
   private
 
   def upload_to_s3(file, import)
-    S3Client.instance.put_object(bucket: ::Configuration.instance.storage[:bucket],
-                                 key:    import.root_key_prefix + file.basename.to_s,
-                                 body:   file.read)
+    PersistentStore.instance.put_object(key:  import.root_key_prefix + file.basename.to_s,
+                                        file: file)
   end
 
 end

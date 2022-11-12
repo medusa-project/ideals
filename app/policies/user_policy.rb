@@ -32,6 +32,14 @@ class UserPolicy < ApplicationPolicy
     institution_admin_or_same_user
   end
 
+  def enable
+    effective_institution_admin(subject_user, institution, role)
+  end
+
+  def disable
+    self.enable
+  end
+
   def index
     effective_institution_admin(subject_user, institution, role)
   end

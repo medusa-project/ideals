@@ -45,6 +45,7 @@ Rails.application.routes.draw do
     match "/submit", to: "submissions#new", via: :get
     match "/undelete", to: "collections#undelete", via: :post
   end
+  match "/custom-styles", to: "stylesheets#show", via: :get
   # This is an old DSpace route.
   match "/dspace-oai/request", to: redirect('/oai-pmh', status: 301), via: :all
   resources :downloads, only: :show, param: :key do
@@ -65,11 +66,15 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-administrators", to: "institutions#edit_administrators", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/edit-preservation", to: "institutions#edit_preservation", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "institutions#edit_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-settings", to: "institutions#edit_settings", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-theme", to: "institutions#edit_theme", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/preservation", to: "institutions#show_preservation", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -83,6 +88,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
 
     match "/item-download-counts", to: "institutions#item_download_counts", via: :get
+    match "/preservation", to: "institutions#update_preservation", via: [:patch, :post]
     match "/properties", to: "institutions#update_properties", via: [:patch, :post]
     match "/settings", to: "institutions#update_settings", via: [:patch, :post]
     match "/statistics-by-range", to: "institutions#statistics_by_range", via: :get
@@ -152,7 +158,11 @@ Rails.application.routes.draw do
   resources :registered_elements, param: :name, path: "elements"
   match "/settings", to: "settings#index", via: :get
   match "/settings", to: "settings#update", via: :patch
-  match "/custom-styles", to: "stylesheets#show", via: :get
+  match "/statistics", to: "statistics#index", via: :get
+  match "/statistics/files", to: "statistics#files", via: :get,
+        constraints: lambda { |request| request.xhr? }
+  match "/statistics/items", to: "statistics#items", via: :get,
+        constraints: lambda { |request| request.xhr? }
   resources :submission_profiles, path: "submission-profiles" do
     match "/clone", to: "submission_profiles#clone", via: :post
     resources :submission_profile_elements, path: "elements", except: [:new, :index, :show]
@@ -206,6 +216,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
   end
   resources :users, only: [:index, :show] do
+    match "/disable", to: "users#disable", via: :patch
+    match "/enable", to: "users#enable", via: :patch
     match "/submitted-item-results", to: "users#submitted_item_results", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/privileges", to: "users#show_privileges", via: :get,
@@ -222,6 +234,9 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/update-properties", to: "users#update_properties", via: [:patch, :post],
           constraints: lambda { |request| request.xhr? }
+  end
+  resources :vocabularies do
+    resources :vocabulary_terms, path: "terms", except: [:index, :show]
   end
 
   # catch unknown routes, but ignore datatables and progress-job routes, which

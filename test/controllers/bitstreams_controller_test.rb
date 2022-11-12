@@ -7,7 +7,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
+    clear_message_queues
     log_out
   end
 

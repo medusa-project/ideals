@@ -5,52 +5,39 @@ csv_new:
   institution:        uiuc
   collection:         uiuc_collection1
   kind:               <%= Import::Kind::CSV %>
-  status:             <%= Import::Status::NEW %>
-  percent_complete:   0
   files:              "[]"
   imported_items:     "[]"
-  last_error_message:
+  task:               csv_import
 
 saf_new:
   user:               uiuc_admin
   institution:        uiuc
   collection:         uiuc_collection1
   kind:               <%= Import::Kind::SAF %>
-  status:             <%= Import::Status::NEW %>
-  percent_complete:   0
   files:              "[]"
   imported_items:     "[]"
-  last_error_message:
+  task:               saf_import
 
 saf_running:
   user:               uiuc_admin
   institution:        uiuc
   collection:         uiuc_collection1
   kind:               <%= Import::Kind::SAF %>
-  status:             <%= Import::Status::RUNNING %>
-  percent_complete:   0.5
   files:              "[]"
   imported_items:     "[]"
-  last_error_message:
 
 saf_succeeded:
   user:               uiuc_admin
   institution:        uiuc
   collection:         uiuc_collection1
   kind:               <%= Import::Kind::SAF %>
-  status:             <%= Import::Status::SUCCEEDED %>
-  percent_complete:   0.5
   files:              "[]"
   imported_items:     "[]"
-  last_error_message:
 
 saf_failed:
   user:               uiuc_admin
   institution:        uiuc
   collection:         uiuc_collection1
   kind:               <%= Import::Kind::SAF %>
-  status:             <%= Import::Status::FAILED %>
-  percent_complete:   0.5
   files:              "[]"
   imported_items:     "[]"
-  last_error_message: Uh-oh spaghetti-o

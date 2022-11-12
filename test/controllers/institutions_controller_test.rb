@@ -3,7 +3,7 @@ require 'test_helper'
 class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    setup_elasticsearch
+    setup_opensearch
   end
 
   teardown do
@@ -143,6 +143,28 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     institution = institutions(:uiuc)
     get institution_edit_administrators_path(institution), xhr: true
+    assert_response :ok
+  end
+
+  # edit_preservation()
+
+  test "edit_preservation() returns HTTP 403 for logged-out users" do
+    institution = institutions(:southwest)
+    get institution_edit_preservation_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_preservation() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    institution = institutions(:southwest)
+    get institution_edit_preservation_path(institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_preservation() returns HTTP 200" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:southwest)
+    get institution_edit_preservation_path(institution), xhr: true
     assert_response :ok
   end
 
@@ -346,6 +368,25 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_select(".edit-administrators", false)
   end
 
+  # show_preservation()
+
+  test "show_preservation() returns HTTP 403 for logged-out users" do
+    get institution_preservation_path(institutions(:southwest)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_preservation() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get institution_preservation_path(institutions(:southwest)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_preservation() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get institution_preservation_path(institutions(:southwest)), xhr: true
+    assert_response :ok
+  end
+
   # show_properties()
 
   test "show_properties() returns HTTP 403 for logged-out users" do
@@ -463,6 +504,69 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
       to_month:   12
     }
     assert_response :ok
+  end
+
+  # update_preservation()
+
+  test "update_preservation() redirects to login page for logged-out users" do
+    institution = institutions(:southwest)
+    patch institution_preservation_path(institution)
+    assert_redirected_to login_path
+  end
+
+  test "update_preservation() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    institution = institutions(:southwest)
+    patch institution_preservation_path(institution)
+    assert_response :forbidden
+  end
+
+  test "update_preservation() updates an institution's properties" do
+    user = users(:uiuc_sysadmin)
+    log_in_as(user)
+    institution = user.institution
+    patch institution_preservation_path(institution),
+          xhr: true,
+          params: {
+            institution: {
+              medusa_file_group_id: 34
+            }
+          }
+    institution.reload
+    assert_equal 34, institution.medusa_file_group_id
+  end
+
+  test "update_preservation() returns HTTP 200" do
+    user = users(:uiuc_sysadmin)
+    log_in_as(user)
+    institution = user.institution
+    patch institution_preservation_path(institution),
+          xhr: true,
+          params: {
+            institution: {
+              medusa_file_group_id: 34
+            }
+          }
+    assert_response :ok
+  end
+
+  test "update_preservation() returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:local_sysadmin))
+    institution = institutions(:southwest)
+    patch institution_preservation_path(institution),
+          xhr: true,
+          params: {
+            institution: {
+              medusa_file_group_id: "not a number" # invalid
+            }
+          }
+    assert_response :bad_request
+  end
+
+  test "update_preservation() returns HTTP 404 for nonexistent institutions" do
+    log_in_as(users(:local_sysadmin))
+    patch "/institutions/bogus/preservation"
+    assert_response :not_found
   end
 
   # update_properties()

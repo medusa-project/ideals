@@ -2,7 +2,12 @@
 # Wraps an {Aws::S3::Client}, adding some convenience methods and forwarding
 # all other method calls to it.
 #
+# N.B.: there is a higher-level interface to the application S3 bucket in
+# {PersistentStore}. It is recommended to use that instead where possible--
+# especially when writing to the bucket.
+#
 # @see https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/S3/Client.html
+# @see PersistentStore
 #
 class S3Client
 
@@ -74,21 +79,22 @@ class S3Client
   end
 
   ##
-  # Uploads every file in a directory tree to a bucket under the given key
-  # prefix.
+  # Places the given tag key/value on an object, replacing any tags that
+  # already exist.
   #
-  # @param root_path [String] Root path on the file system.
-  # @param bucket [String] Bucket to upload to.
-  # @param key_prefix [String] Key prefix of uploaded objects.
-  #
-  def upload_path(root_path:, bucket:, key_prefix:)
-    key_prefix = key_prefix[0..-2] if key_prefix.end_with?("/")
-    Dir.glob(root_path + "/**/*").select{ |p| File.file?(p) }.each do |path|
-      rel_path = path.gsub(root_path, "")
-      S3Client.instance.put_object(bucket: bucket,
-                                   key:    key_prefix + rel_path,
-                                   body:   File.read(path))
-    end
+  def set_tag(bucket:, key:, tag_key:, tag_value:)
+    put_object_tagging(
+      bucket: bucket,
+      key:    key,
+      tagging: {
+        tag_set: [
+          {
+            key:   tag_key,
+            value: tag_value,
+          }
+        ]
+      }
+    )
   end
 
 

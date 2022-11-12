@@ -182,7 +182,7 @@ class Invitee < ApplicationRecord
       else
         # A password is required, so just set a random one. It will be updated
         # during registration.
-        password = SecureRandom.hex
+        password = LocalIdentity.random_password
         LocalIdentity.create!(email:                 self.email,
                               name:                  self.email,
                               password:              password,

@@ -22,14 +22,13 @@
 # * `created_at`       Managed by ActiveRecord.
 # * `highwire_mapping` Name of an equivalent element in the Highwire Press
 #                      meta tag vocabulary.
-# * `input_type`       One of the [InputType] constant values.
+# * `input_type`       One of the {InputType} constant values.
 # * `label`            Element label. Often overrides {name} for end-user
 #                      display.
 # * `name`             Element name. Must be unique within an institution.
 # * `updated_at`       Managed by ActiveRecord.
 # * `uri`              Linked Data URI. Must be unique within an institution.
-# * `vocabulary_key`   One of the vocabulary key constant values in
-#                      [Vocabulary].
+# * `vocabulary_id`    Foreign key tp {Vocabulary}.
 #
 class RegisteredElement < ApplicationRecord
 
@@ -55,6 +54,7 @@ class RegisteredElement < ApplicationRecord
   TEXT_FIELD_PREFIX        = "t"
 
   belongs_to :institution
+  belongs_to :vocabulary, optional: true
 
   has_many :metadata_profile_elements, inverse_of: :registered_element
   has_many :submission_profile_elements, inverse_of: :registered_element
@@ -79,7 +79,7 @@ class RegisteredElement < ApplicationRecord
   def self.sortable_field(name)
     [TEXT_FIELD_PREFIX,
      "element",
-     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join("_") +
+     name.gsub(OpenSearchClient::RESERVED_CHARACTERS, "_")].join("_") +
       SORTABLE_FIELD_SUFFIX
   end
 
@@ -100,7 +100,7 @@ class RegisteredElement < ApplicationRecord
     # reindexing.
     [(self.input_type == InputType::DATE) ? DATE_FIELD_PREFIX : TEXT_FIELD_PREFIX,
      "element",
-     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join("_")
+     name.gsub(OpenSearchClient::RESERVED_CHARACTERS, "_")].join("_")
   end
 
   ##
@@ -119,7 +119,7 @@ class RegisteredElement < ApplicationRecord
   def indexed_text_field
     [TEXT_FIELD_PREFIX,
      "element",
-     name.gsub(ElasticsearchClient::RESERVED_CHARACTERS, "_")].join("_")
+     name.gsub(OpenSearchClient::RESERVED_CHARACTERS, "_")].join("_")
   end
 
   ##
@@ -132,15 +132,6 @@ class RegisteredElement < ApplicationRecord
 
   def to_param
     name
-  end
-
-  ##
-  # @return [Vocabulary] Instance corresponding to {vocabulary_key}, if set;
-  #                      otherwise `nil`.
-  #
-  def vocabulary
-    self.vocabulary_key.present? ?
-      Vocabulary.with_key(self.vocabulary_key) : nil
   end
 
 

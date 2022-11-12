@@ -12,6 +12,14 @@ class ActiveSupport::TestCase
     @@seeding
   end
 
+  def clear_message_queues
+    Institution.
+      where.not(outgoing_message_queue: nil).
+      pluck(:outgoing_message_queue).each do |queue|
+      AmqpHelper::Connector[:ideals].clear_queues(queue)
+    end
+  end
+
   ##
   # Seeded bitstreams have an invalid staging_key and/or permanent_key
   # property (because an item ID is needed to compute one). This method fixes
@@ -77,18 +85,14 @@ class ActiveSupport::TestCase
     user
   end
 
-  def clear_message_queue
-    AmqpHelper::Connector[:ideals].clear_queues(Message.outgoing_queue)
+  def refresh_opensearch
+    client = OpenSearchClient.instance
+    client.refresh(Configuration.instance.opensearch[:index])
   end
 
-  def refresh_elasticsearch
-    client = ElasticsearchClient.instance
-    client.refresh(Configuration.instance.elasticsearch[:index])
-  end
-
-  def setup_elasticsearch
-    index = Configuration.instance.elasticsearch[:index]
-    client = ElasticsearchClient.instance
+  def setup_opensearch
+    index = Configuration.instance.opensearch[:index]
+    client = OpenSearchClient.instance
     client.delete_index(index, false)
     client.create_index(index)
   end
@@ -107,9 +111,8 @@ class ActiveSupport::TestCase
     Bitstream.where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").each do |bs|
       fix_bitstream_keys(bs)
       File.open(file_fixture(bs.original_filename), "r") do |file|
-        client.put_object(bucket: bucket,
-                          key:    bs.effective_key,
-                          body:   file)
+        PersistentStore.instance.put_object(key:  bs.effective_key,
+                                            file: file)
       end
     end
     @@seeding = false

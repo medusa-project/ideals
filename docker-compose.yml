@@ -10,11 +10,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     hostname: postgres
-  elasticsearch:
+  opensearch:
     build:
       context: .
-      dockerfile: docker/elasticsearch/Dockerfile
-    hostname: elasticsearch
+      dockerfile: docker/opensearch/Dockerfile
+    hostname: opensearch
   handle:
     build:
       context: .

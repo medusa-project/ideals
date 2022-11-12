@@ -15,20 +15,20 @@
   %dd= @institution.service_name
   %dt Main Website URL
   %dd
-    - if @institution.main_website_url
+    - if @institution.main_website_url.present?
       = link_to(@institution.main_website_url, @institution.main_website_url)
     - else
       Not Set
   %dt Feedback Email
   %dd
-    - if @institution.feedback_email
+    - if @institution.feedback_email.present?
       = @institution.feedback_email
     - else
       .badge.badge-danger
         Not Set
   %dt Welcome HTML
   %dd
-    - if @institution.welcome_html
+    - if @institution.welcome_html.present?
       .badge.badge-success
         Present
     - else
@@ -36,7 +36,7 @@
         Not Set
   %dt About
   %dd
-    - if @institution.about_html || @institution.about_url
+    - if @institution.about_html.present? || @institution.about_url.present?
       .badge.badge-success
         Present
     - else
@@ -44,7 +44,7 @@
         Not Set
   %dt Copyright Notice
   %dd
-    - if @institution.copyright_notice
+    - if @institution.copyright_notice.present?
       = @institution.copyright_notice
     - else
       .badge.badge-danger

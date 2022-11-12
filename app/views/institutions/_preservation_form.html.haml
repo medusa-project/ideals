@@ -1,0 +1,32 @@
+-# @param institution [Institution]
+
+= form_for(institution, url: institution_preservation_path(institution), remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :medusa_file_group_id, "Medusa File Group ID"
+    = f.text_field :medusa_file_group_id, class: "form-control"
+    %p.text-muted
+      = icon_for(:info)
+      Every institution should have its own bit-level file group within its own
+      collection.
+
+  .form-group
+    = f.label :outgoing_message_queue, "Outgoing Message Queue"
+    = f.text_field :outgoing_message_queue, class: "form-control"
+    %p.text-muted
+      = icon_for(:info)
+      A queue with this name must exist in RabbitMQ.
+
+  .form-group
+    = f.label :incoming_message_queue, "Incoming Message Queue"
+    = f.text_field :incoming_message_queue, class: "form-control"
+    %p.text-muted
+      = icon_for(:info)
+      A queue with this name must exist in RabbitMQ.
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Save Changes", class: "btn btn-primary")

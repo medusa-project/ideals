@@ -20,6 +20,14 @@
 #                           tombstone record. The burial is not reversible.
 # * `created_at`            Managed by ActiveRecord.
 # * `description`           Full description string. See {short_description}.
+# * `institution_id`        Foreign key to {Institution}. A collection's owning
+#                           institution is the same as that of its
+#                           {effective_primary_unit effective primary unit},
+#                           but there is an ActiveRecord callback that creates
+#                           a corresponding handle before this relationship is
+#                           established. The rest of the time, this attribute is
+#                           just a shortcut to avoid having to navigate the
+#                           {unit} relationship.
 # * `introduction`          Introduction string. May contain HTML.
 # * `metadata_profile_id`   Foreign key to {MetadataProfile}. Instances without
 #                           this set will fall back to the primary unit's
@@ -72,19 +80,22 @@
 #                         belongs.
 #
 class Collection < ApplicationRecord
+
   include Breadcrumb
   include Indexed
+  include Handled
 
   class IndexFields
     BURIED            = "b_buried"
-    CLASS             = ElasticsearchIndex::StandardFields::CLASS
-    CREATED           = ElasticsearchIndex::StandardFields::CREATED
+    CLASS             = OpenSearchIndex::StandardFields::CLASS
+    CREATED           = OpenSearchIndex::StandardFields::CREATED
     DESCRIPTION       = "t_description"
-    ID                = ElasticsearchIndex::StandardFields::ID
-    INSTITUTION_KEY   = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
+    HANDLE            = "k_handle"
+    ID                = OpenSearchIndex::StandardFields::ID
+    INSTITUTION_KEY   = OpenSearchIndex::StandardFields::INSTITUTION_KEY
     INTRODUCTION      = "t_introduction"
-    LAST_INDEXED      = ElasticsearchIndex::StandardFields::LAST_INDEXED
-    LAST_MODIFIED     = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    LAST_INDEXED      = OpenSearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED     = OpenSearchIndex::StandardFields::LAST_MODIFIED
     MANAGERS          = "i_manager_id"
     PARENT            = "i_parent_id"
     PRIMARY_UNIT      = "i_primary_unit_id"
@@ -102,7 +113,7 @@ class Collection < ApplicationRecord
            dependent: :restrict_with_exception
   has_one :handle
   has_many :collection_item_memberships
-  has_one :institution, through: :units
+  belongs_to :institution
   has_many :items, through: :collection_item_memberships
   belongs_to :metadata_profile, inverse_of: :collections, optional: true
   has_many :manager_groups
@@ -132,7 +143,6 @@ class Collection < ApplicationRecord
   validate :validate_buried, if: -> { buried }
   validate :validate_exhumed, if: -> { !buried }
 
-  after_save :assign_handle, if: -> { handle.nil? }
   before_destroy :validate_empty
 
   ##
@@ -233,6 +243,7 @@ class Collection < ApplicationRecord
     doc[IndexFields::CLASS]             = self.class.to_s
     doc[IndexFields::CREATED]           = self.created_at.utc.iso8601
     doc[IndexFields::DESCRIPTION]       = self.description
+    doc[IndexFields::HANDLE]            = self.handle&.handle
     doc[IndexFields::INSTITUTION_KEY]   = self.institution&.key
     doc[IndexFields::INTRODUCTION]      = self.introduction
     doc[IndexFields::LAST_INDEXED]      = Time.now.utc.iso8601
@@ -386,13 +397,6 @@ class Collection < ApplicationRecord
   end
 
   ##
-  # @return [Institution]
-  #
-  def institution
-    primary_unit&.institution || units.first&.institution
-  end
-
-  ##
   # @param start_time [Time]          Optional beginning of a time range.
   # @param end_time [Time]            Optional end of a time range.
   # @param include_children [Boolean] Whether to include child collections in
@@ -474,13 +478,6 @@ class Collection < ApplicationRecord
 
 
   private
-
-  ##
-  # @return [void]
-  #
-  def assign_handle
-    self.handle = Handle.create!(collection: self) if self.handle.nil?
-  end
 
   ##
   # Ensures that a buried collection does not contain any sub-collections or

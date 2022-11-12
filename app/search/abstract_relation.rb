@@ -1,25 +1,25 @@
 ##
 # Abstract base class for type-specific "relations." These are inspired by, and
-# conceptually the same as, [ActiveRecord::Relation], and serve the dual
-# purpose of simplifying Elasticsearch querying (which can be pretty
+# conceptually the same as, {ActiveRecord::Relation}, and serve the dual
+# purpose of simplifying OpenSearch querying (which can be pretty
 # complicated and awkward) by wrapping it up into an ActiveRecord-style Builder
 # pattern, and marshalling the results into an object that behaves the same as
 # the one returned from ActiveRecord's querying methods.
 #
-# TLDR: it makes interacting with Elasticsearch more like ActiveRecord.
+# TLDR: it makes interacting with OpenSearch more like ActiveRecord.
 #
-# See [Indexed] for an overview of how Elasticsearch interaction works in the
+# See {Indexed} for an overview of how OpenSearch interaction works in the
 # application.
 #
 # The normal way of obtaining an instance is via {Indexed#search}. That method
 # expects every searchable model to define its own subclass of this class.
 # It's possible that the subclass may not even need to override anything (i.e.
 # it may be empty). Otherwise, it may need to override {facet_elements}, if it
-# doesn't want to use only the faceted [MetadataProfileElement]s in the
-# default [MetadataProfile].
+# doesn't want to use only the faceted {MetadataProfileElement}s in the
+# default {MetadataProfile}.
 #
 # For more extensive customizations, it can override {build_query}, which
-# grants it full control over the query that gets sent to Elasticsearch.
+# grants it full control over the query that gets sent to OpenSearch.
 #
 # The request and response communications are logged and are also available via
 # {request_json} and {response_json}.
@@ -35,21 +35,21 @@ class AbstractRelation
   attr_reader :request_json, :response_json
 
   def initialize
-    @client = ElasticsearchClient.instance
+    @client = OpenSearchClient.instance
 
     @aggregations     = false
     @bucket_limit     = DEFAULT_BUCKET_LIMIT
     @exists_field     = nil
     @filter_ranges    = [] # Array<Hash<Symbol,String>> with :field, :op, and :value keys
     @filters          = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
-    @limit            = ElasticsearchIndex::MAX_RESULT_WINDOW
+    @limit            = OpenSearchIndex::MAX_RESULT_WINDOW
     @metadata_profile = nil
     @multi_queries    = [] # Array<Hash<Symbol,String>> with :field and :term keys
     @must_nots        = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @must_not_ranges  = [] # Array<Hash<Symbol,String>> with :field, :op, and :value keys
     @orders           = [] # Array<Hash<Symbol,String>> with :field and :direction keys
     # Note to subclass implementations: the raw term should not be passed to
-    # Elasticsearch. Use {sanitize}.
+    # OpenSearch. Use {sanitize}.
     @query            = nil # Hash<Symbol,String> Hash with :fields and :term keys
     @search_after     = nil
     @shoulds          = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
@@ -158,7 +158,7 @@ class AbstractRelation
   #
   def institution(institution)
     if institution
-      filter(ElasticsearchIndex::StandardFields::INSTITUTION_KEY,
+      filter(OpenSearchIndex::StandardFields::INSTITUTION_KEY,
              institution.key)
       @metadata_profile ||= institution.default_metadata_profile
     end
@@ -193,8 +193,7 @@ class AbstractRelation
   # search form. Unlike {query}, this method can be called multiple times to
   # add multiple queries in different fields.
   #
-  # This uses an Elasticsearch `match` query which does not support Field
-  # weights.
+  # This uses a `match` query which does not support Field weights.
   #
   # @param field [String, Symbol] Field name, which may have a weight suffix,
   #                               e.g. `title^5`.
@@ -269,12 +268,12 @@ class AbstractRelation
       @orders = [] # reset them
       if orders.respond_to?(:keys)
         field = orders.keys.first
-        field = field.present? ? field : ElasticsearchIndex::StandardFields::SCORE
+        field = field.present? ? field : OpenSearchIndex::StandardFields::SCORE
         @orders << { field:     field,
                      direction: orders[orders.keys.first] }
       else
         field = orders.to_s
-        field = field.present? ? field : ElasticsearchIndex::StandardFields::SCORE
+        field = field.present? ? field : OpenSearchIndex::StandardFields::SCORE
         @orders << { field: field, direction: :asc }
       end
       @loaded = false
@@ -333,7 +332,7 @@ class AbstractRelation
   # @see multi_query
   #
   def query_all(query)
-    query(ElasticsearchIndex::StandardFields::SEARCH_ALL, query)
+    query(OpenSearchIndex::StandardFields::SEARCH_ALL, query)
     self
   end
 
@@ -352,7 +351,7 @@ class AbstractRelation
     fields = @metadata_profile.elements.
       select(&:searchable).
       map(&:indexed_field)
-    fields << ElasticsearchIndex::StandardFields::FULL_TEXT
+    fields << OpenSearchIndex::StandardFields::FULL_TEXT
     fields << Item::IndexFields::FILENAMES if self.kind_of?(ItemRelation)
     query(fields, query)
     self
@@ -399,15 +398,14 @@ class AbstractRelation
   end
 
   ##
-  # Used to iterate over a large result set using Elasticsearch's
-  # `search_after` API. This works around the
-  # {ElasticsearchIndex#MAX_RESULT_WINDOW} constraint inherent in using
-  # {start}/{limit}.
+  # Used to iterate over a large result set using OpenSearch's `search_after`
+  # API. This works around the {OpenSearchIndex#MAX_RESULT_WINDOW} constraint
+  # inherent in using {start}/{limit}.
   #
   def each_id_in_batches(&block)
     @start = nil
     @limit = nil
-    order(ElasticsearchIndex::StandardFields::ID)
+    order(OpenSearchIndex::StandardFields::ID)
     to_id_a.each(&block)
     loop do
       lsv = last_sort_value
@@ -465,7 +463,7 @@ class AbstractRelation
   def to_id_a
     load
     @response_json['hits']['hits']
-        .map{ |r| r[ElasticsearchIndex::StandardFields::ID] }
+        .map{ |r| r[OpenSearchIndex::StandardFields::ID] }
   end
 
 
@@ -616,7 +614,7 @@ class AbstractRelation
               j.must do
                 j.child! do
                   j.term do
-                    j.set! ElasticsearchIndex::StandardFields::CLASS, get_class.to_s
+                    j.set! OpenSearchIndex::StandardFields::CLASS, get_class.to_s
                   end
                 end
                 if @exists_field
@@ -715,7 +713,7 @@ class AbstractRelation
             j.child! do
               j.set! order[:field] do
                 j.order order[:direction]
-                j.unmapped_type "keyword" unless order[:field] == ElasticsearchIndex::StandardFields::SCORE
+                j.unmapped_type "keyword" unless order[:field] == OpenSearchIndex::StandardFields::SCORE
               end
             end
           end
@@ -793,14 +791,14 @@ class AbstractRelation
 
   ##
   # @param query [String] Query string.
-  # @return [String] String that is safe to pass to Elasticsearch.
+  # @return [String] String that is safe to pass to OpenSearch.
   #
   def sanitize(query)
     query.gsub(/[\[\]\(\)]/, "").gsub("/", " ")
   end
 
   def weighted_field(field)
-    if [ElasticsearchIndex::StandardFields::FULL_TEXT,
+    if [OpenSearchIndex::StandardFields::FULL_TEXT,
         Item::IndexFields::FILENAMES].include?(field)
       weight = MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT
     else

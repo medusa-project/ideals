@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_19_195226) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_04_150846) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -109,7 +109,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_19_195226) do
     t.text "rights"
     t.text "provenance"
     t.boolean "buried", default: false, null: false
+    t.bigint "institution_id", null: false
     t.index ["buried"], name: "index_collections_on_buried"
+    t.index ["institution_id"], name: "index_collections_on_institution_id"
     t.index ["metadata_profile_id"], name: "index_collections_on_metadata_profile_id"
     t.index ["parent_id"], name: "index_collections_on_parent_id"
     t.index ["submission_profile_id"], name: "index_collections_on_submission_profile_id"
@@ -219,19 +221,17 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_19_195226) do
   create_table "imports", force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "user_id", null: false
-    t.integer "status", default: 0, null: false
-    t.float "percent_complete", default: 0.0, null: false
     t.text "files"
     t.text "imported_items"
-    t.string "last_error_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "kind"
     t.bigint "institution_id", null: false
+    t.bigint "task_id"
     t.index ["collection_id"], name: "index_imports_on_collection_id"
     t.index ["institution_id"], name: "index_imports_on_institution_id"
     t.index ["kind"], name: "index_imports_on_kind"
-    t.index ["status"], name: "index_imports_on_status"
+    t.index ["task_id"], name: "index_imports_on_task_id", unique: true
     t.index ["user_id"], name: "index_imports_on_user_id"
   end
 
@@ -280,10 +280,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_19_195226) do
     t.string "service_name", null: false
     t.string "about_url"
     t.text "about_html"
+    t.integer "medusa_file_group_id"
+    t.string "outgoing_message_queue"
+    t.string "incoming_message_queue"
     t.index ["default"], name: "index_institutions_on_default"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
+    t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true
+    t.index ["medusa_file_group_id"], name: "index_institutions_on_medusa_file_group_id", unique: true
     t.index ["name"], name: "index_institutions_on_name", unique: true
+    t.index ["outgoing_message_queue"], name: "index_institutions_on_outgoing_message_queue", unique: true
   end
 
   create_table "invitees", force: :cascade do |t|
@@ -322,7 +328,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_19_195226) do
     t.string "activation_digest"
     t.boolean "activated", default: false
     t.string "reset_digest"
-    t.bigint "invitee_id"
+    t.bigint "invitee_id", null: false
     t.datetime "reset_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -462,11 +468,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_19_195226) do
     t.string "uri"
     t.string "label", null: false
     t.bigint "institution_id", null: false
-    t.string "vocabulary_key"
     t.string "input_type"
     t.string "highwire_mapping"
+    t.bigint "vocabulary_id"
+    t.index ["institution_id", "uri"], name: "index_registered_elements_on_institution_id_and_uri", unique: true
     t.index ["institution_id"], name: "index_registered_elements_on_institution_id"
     t.index ["name", "institution_id"], name: "index_registered_elements_on_name_and_institution_id", unique: true
+    t.index ["vocabulary_id"], name: "index_registered_elements_on_vocabulary_id"
   end
 
   create_table "settings", force: :cascade do |t|
@@ -618,12 +626,32 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_19_195226) do
     t.datetime "last_logged_in_at"
     t.text "auth_hash"
     t.bigint "institution_id"
+    t.boolean "enabled", default: true, null: false
     t.index ["affiliation_id"], name: "index_users_on_affiliation_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["institution_id"], name: "index_users_on_institution_id"
     t.index ["local_identity_id"], name: "index_users_on_local_identity_id"
     t.index ["name"], name: "index_users_on_name"
     t.index ["uid"], name: "index_users_on_uid", unique: true
+  end
+
+  create_table "vocabularies", force: :cascade do |t|
+    t.bigint "institution_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution_id", "name"], name: "index_vocabularies_on_institution_id_and_name", unique: true
+  end
+
+  create_table "vocabulary_terms", force: :cascade do |t|
+    t.bigint "vocabulary_id", null: false
+    t.string "stored_value", null: false
+    t.string "displayed_value", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["vocabulary_id", "displayed_value"], name: "index_vocabulary_terms_on_vocabulary_id_and_displayed_value", unique: true
+    t.index ["vocabulary_id", "stored_value"], name: "index_vocabulary_terms_on_vocabulary_id_and_stored_value", unique: true
+    t.index ["vocabulary_id"], name: "index_vocabulary_terms_on_vocabulary_id"
   end
 
   add_foreign_key "ad_groups", "user_groups", on_update: :cascade, on_delete: :cascade
@@ -637,6 +665,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_19_195226) do
   add_foreign_key "collection_item_memberships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_item_memberships", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections", "collections", column: "parent_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "collections", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "departments", "user_groups", on_update: :cascade, on_delete: :cascade
@@ -657,6 +686,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_19_195226) do
   add_foreign_key "hosts", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "imports", "collections", on_update: :cascade, on_delete: :nullify
   add_foreign_key "imports", "institutions", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "imports", "tasks", on_update: :cascade, on_delete: :restrict
   add_foreign_key "imports", "users", on_update: :cascade, on_delete: :nullify
   add_foreign_key "institution_administrators", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "institution_administrators", "users", on_update: :cascade, on_delete: :cascade
@@ -672,6 +702,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_19_195226) do
   add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :nullify
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "registered_elements", "vocabularies", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitter_groups", "collections", on_update: :cascade, on_delete: :cascade
@@ -695,4 +726,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_19_195226) do
   add_foreign_key "users", "affiliations", on_update: :cascade, on_delete: :nullify
   add_foreign_key "users", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "users", "local_identities", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "vocabularies", "institutions", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "vocabulary_terms", "vocabularies", on_update: :cascade, on_delete: :cascade
 end

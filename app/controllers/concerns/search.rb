@@ -2,7 +2,7 @@
 # Concern to be included by controllers that receive user input from search
 # forms.
 #
-# See [Indexed] for an overview of how Elasticsearch interaction works.
+# See {Indexed} for an overview of how OpenSearch interaction works.
 #
 module Search
 
@@ -19,7 +19,7 @@ module Search
   end
 
   ##
-  # Mutates the given [ItemRelation] to reflect input from a simple or advanced
+  # Mutates the given {ItemRelation} to reflect input from a simple or advanced
   # search form.
   #
   # @param relation [ItemRelation] The {ItemRelation#metadata_profile()

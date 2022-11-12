@@ -68,6 +68,13 @@ class Handle < ApplicationRecord
   end
 
   ##
+  # @return [Institution]
+  #
+  def institution
+    self.unit&.institution || self.collection&.institution || self.item&.institution
+  end
+
+  ##
   # Permanent URL. In production, this will be a Global Handle Registry
   # (`hdl.handle.net`) URL. Elsewhere, it may use the hostname of the handle
   # server (which may not be registered with the GHR).
@@ -77,8 +84,8 @@ class Handle < ApplicationRecord
   def permanent_url
     config = ::Configuration.instance
     host   = config.handles[:use_ghr] ?
-               "https://hdl.handle.net/" : config.handles[:base_url]
-    [host, self.handle].join
+               "https://hdl.handle.net" : config.handles[:base_url].chomp("/")
+    [host, self.handle].join("/")
   end
 
   ##
@@ -94,12 +101,11 @@ class Handle < ApplicationRecord
   #
   # @return [void]
   # @raises [RuntimeError] if the instance's prefix is not supported by the
-  #         handle server.
+  #                        handle server.
   #
   def put_to_server
     self.reload # the prefix is auto-incrementing
-    config   = ::Configuration.instance
-    base_url = config.website[:base_url]
+    base_url = "https://#{self.institution.fqdn}"
     helpers  = Rails.application.routes.url_helpers
     if self.unit
       entity_url = helpers.unit_url(self.unit, host: base_url)

@@ -25,11 +25,12 @@ class MetadataProfilesController < ApplicationController
   # Responds to `POST /metadata-profiles` (XHR only)
   #
   def create
-    @profile = MetadataProfile.new(metadata_profile_params)
+    @profile             = MetadataProfile.new(metadata_profile_params)
+    @profile.institution = current_institution
     authorize @profile
     begin
-      @profile.save!
       @profile.add_default_elements
+      @profile.save!
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @profile.errors.any? ? @profile : e },
@@ -105,7 +106,7 @@ class MetadataProfilesController < ApplicationController
   def metadata_profile_params
     params.require(:metadata_profile).permit(:default,
                                              :full_text_relevance_weight,
-                                             :institution_id, :name)
+                                             :name)
   end
 
   def set_profile

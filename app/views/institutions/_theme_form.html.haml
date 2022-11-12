@@ -46,7 +46,7 @@
     = f.text_field :active_link_color, class: "form-control"
 
   -# UIUC is using custom responsive images
-  - if current_institution.key != "uiuc"
+  - if f.object.key != "uiuc"
     .form-group
       = f.label :header_image, "Header Image"
       %br

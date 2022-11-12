@@ -72,20 +72,23 @@ module ApplicationHelper
     loop do
       break unless object
       if crumbs.any?
-        if object.to_s == "Institution"
+        case object.to_s
+        when "Institution"
           crumbs.unshift({label: "All Institutions", url: institutions_path})
-        elsif object.to_s == "Invitee"
+        when "Invitee"
           crumbs.unshift({label: "Invitees", url: invitees_path})
-        elsif object.to_s == "MetadataProfile"
+        when "MetadataProfile"
           crumbs.unshift({label: "Metadata Profiles", url: metadata_profiles_path})
-        elsif object.to_s == "SubmissionProfile"
+        when "SubmissionProfile"
           crumbs.unshift({label: "Submission Profiles", url: submission_profiles_path})
-        elsif object.to_s == "Unit"
+        when "Unit"
           crumbs.unshift({label: "Academic Units", url: units_path})
-        elsif object.to_s == "User"
+        when "User"
           crumbs.unshift({label: "Users", url: users_path})
-        elsif object.to_s == "UserGroup"
+        when "UserGroup"
           crumbs.unshift({label: "User Groups", url: user_groups_path})
+        when "Vocabulary"
+          crumbs.unshift({label: "Vocabularies", url: vocabularies_path})
         else
           crumbs.unshift({label: object.breadcrumb_label, url: url_for(object)})
         end
@@ -358,6 +361,8 @@ module ApplicationHelper
       icon = "fa fa-building"
     when "User", "LocalUser", "ShibbolethUser"
       icon = "fa fa-user"
+    when "Vocabulary"
+      icon = "far fa-font"
     end
     icon = "fa fa-cube" if icon.nil?
     raw("<i class=\"#{icon}\"></i>")
@@ -430,7 +435,7 @@ module ApplicationHelper
 
   ##
   # @param count [Integer] Total number of results. Note that this will be
-  #              limited internally to {ElasticsearchIndex::MAX_RESULT_WINDOW}
+  #              limited internally to {OpenSearchIndex::MAX_RESULT_WINDOW}
   #              to avoid overwhelming the search server.
   # @param page [Integer]
   # @param per_page [Integer]
@@ -442,7 +447,7 @@ module ApplicationHelper
                per_page:,
                permitted_params:,
                max_links: MAX_PAGINATION_LINKS)
-    count = [count, ElasticsearchIndex::MAX_RESULT_WINDOW].min
+    count = [count, OpenSearchIndex::MAX_RESULT_WINDOW].min
     return '' if count <= per_page
     num_pages  = (count / per_page.to_f).ceil
     first_page = [1, page - (max_links / 2.0).floor].max

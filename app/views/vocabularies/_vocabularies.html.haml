@@ -1,0 +1,23 @@
+- pagination = paginate(count:            @count,
+                        page:             @current_page,
+                        per_page:         @window,
+                        permitted_params: @permitted_params)
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
+
+%table.table
+  %thead
+    %tr
+      %th Name
+      %th Terms
+  %tbody
+    - @vocabularies.each do |vocab|
+      %tr
+        %td= link_to(vocab.name, vocab)
+        %td= number_with_delimiter(vocab.vocabulary_terms.count)
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination

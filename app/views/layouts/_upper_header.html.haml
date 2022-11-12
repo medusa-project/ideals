@@ -67,20 +67,19 @@
               = link_to(settings_path, class: "dropdown-item") do
                 = icon_for(Setting)
                 Settings
+              .dropdown-divider
               = link_to(all_tasks_path, class: "dropdown-item") do
                 = icon_for(Task)
                 All Tasks
+              = link_to(statistics_path, class: "dropdown-item") do
+                %i.fa.fa-chart-bar
+                Statistics
               = link_to(file_formats_path, class: "dropdown-item") do
                 = icon_for(FileFormat)
                 File Formats
               = link_to(messages_path, class: "dropdown-item") do
                 = icon_for(Message)
                 Medusa Messages
-              - config = ::Configuration.instance
-              = link_to("#{config.medusa[:base_url]}/file_groups/#{config.medusa[:file_group_id]}",
-                        class: "dropdown-item", target: "_blank") do
-                %i.fa.fa-database
-                Medusa File Group
 
         - if current_user.effective_institution_admin?(current_institution)
           -# Institution Administration menu
@@ -110,6 +109,9 @@
               = link_to(submission_profiles_path, class: "dropdown-item") do
                 = icon_for(SubmissionProfile)
                 Submission Profiles
+              = link_to(vocabularies_path, class: "dropdown-item") do
+                = icon_for(Vocabulary)
+                Vocabularies
               .dropdown-divider
               = link_to(imports_path, class: "dropdown-item") do
                 = icon_for(Import)

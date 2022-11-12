@@ -1,5 +1,5 @@
 ##
-# Concern to be included by models that get indexed in Elasticsearch. Provides
+# Concern to be included by models that get indexed in OpenSearch. Provides
 # almost all of the functionality they need except for {as_indexed_json}, which
 # must be overridden.
 #
@@ -15,13 +15,13 @@
 #
 # # Querying
 #
-# A low-level interface to Elasticsearch is provided by [ElasticsearchClient],
+# A low-level interface to OpenSearch is provided by {OpenSearchClient},
 # but in most cases, it's easier to use the higher-level query interface
-# provided by the various [AbstractRelation] subclasses.
+# provided by the various {AbstractRelation} subclasses.
 #
 # # Persistence callbacks
 #
-# Documents are automatically submitted to Elasticsearch (see
+# Documents are automatically submitted to OpenSearch (see
 # {as_indexed_json}) upon transaction commit. They are **not** sent upon save
 # or destroy. Whenever creating, updating, or deleting outside of a
 # transaction, you must {reindex reindex} or {delete_document delete} the
@@ -35,31 +35,30 @@
 # all loaded instances to get cached in memory. Transactions, therefore, tend
 # to be a bad idea when batch-processing.
 #
-# # How Elasticsearch interaction works in the application
+# # How OpenSearch interaction works in the application
 #
-# There are two layers of Elasticsearch interaction:
+# There are two layers of OpenSearch interaction:
 #
-# 1. [ElasticsearchClient] handles all of the HTTP communication. Although this
-#    alone would be enough to communicate with Elasticsearch, the queries that
+# 1. {OpenSearchClient} handles all of the HTTP communication. Although this
+#    alone would be enough to communicate with OpenSearch, the queries that
 #    are needed tend to be quite complex, so another layer exists to help with
 #    that:
-# 2. [AbstractRelation] subclasses enable query construction and results
-#    marshaling in the manner of [ActiveRecord::Relation] on model objects
-#    that include this module. They use [ElasticsearchClient] behind the
+# 2. {AbstractRelation} subclasses enable query construction and results
+#    marshaling in the manner of {ActiveRecord::Relation} on model objects
+#    that include this module. They use {OpenSearchClient} behind the
 #    scenes.
 #
 # # Author's note
 #
 # Why is a custom client solution used instead of the official Elastic Ruby
 # gems? This application needs fine-grained control over searching, and I am
-# worried about obscuring the communication between it and Elasticsearch behind
+# worried about obscuring the communication between it and OpenSearch behind
 # a complicated and perhaps poorly documented & supported glue layer. This
 # system also provides a nicer interface to ES than Elastic's gems, which
 # require clients to understand ES concepts to construct their queries, which
 # are hardly trivial. Also, this application is hosted in AWS, which has
 # recently forked ES into its own OpenSearch product, which is not guaranteed
-# to remain compatible with Elastic's gems and does not have a friendly gem of
-# its own.
+# to remain compatible with Elastic's gems.
 #
 module Indexed
   extend ActiveSupport::Concern
@@ -77,14 +76,14 @@ module Indexed
                   filter: [
                       {
                           term: {
-                              ElasticsearchIndex::StandardFields::ID => id
+                              OpenSearchIndex::StandardFields::ID => id
                           }
                       }
                   ]
               }
           }
       }
-      ElasticsearchClient.instance.delete_by_query(JSON.generate(query))
+      OpenSearchClient.instance.delete_by_query(JSON.generate(query))
     end
 
     ##
@@ -117,8 +116,8 @@ module Indexed
     ##
     # Reindexes all of the class' indexed documents. Multi-threaded indexing is
     # supported to potentially make this go faster, but care must be taken not
-    # to overwhelm the Elasticsearch cluster, which will knock it into a
-    # read-only mode.
+    # to overwhelm the OpenSearch cluster, which will knock it into a read-only
+    # mode.
     #
     # N.B. 1: Cursory testing suggests that benefit diminishes rapidly beyond 2
     # threads.
@@ -165,7 +164,7 @@ module Indexed
     ##
     # @return [Hash] Indexable representation of the instance to be serialized
     #                as JSON. Most importantly, a
-    #                {ElasticsearchIndex::StandardFields::CLASS} key is
+    #                {OpenSearchIndex::StandardFields::CLASS} key is
     #                included.
     #
     def as_indexed_json
@@ -183,8 +182,8 @@ module Indexed
     # @return [Hash] The currently indexed document.
     #
     def indexed_document
-      index ||= Configuration.instance.elasticsearch[:index]
-      ElasticsearchClient.instance.get_document(index,
+      index ||= Configuration.instance.opensearch[:index]
+      OpenSearchClient.instance.get_document(index,
                                                 self.index_id)
     end
 
@@ -193,8 +192,8 @@ module Indexed
     # @return [void]
     #
     def reindex(index = nil)
-      index ||= Configuration.instance.elasticsearch[:index]
-      ElasticsearchClient.instance.index_document(index,
+      index ||= Configuration.instance.opensearch[:index]
+      OpenSearchClient.instance.index_document(index,
                                                   self.index_id,
                                                   self.as_indexed_json)
     end

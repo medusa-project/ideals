@@ -9,7 +9,8 @@ class RegisteredElementsController < ApplicationController
   # Responds to `POST /elements` (XHR only)
   #
   def create
-    @element = RegisteredElement.new(registered_element_params)
+    @element             = RegisteredElement.new(registered_element_params)
+    @element.institution = current_institution
     authorize @element
     begin
       @element.save!
@@ -79,9 +80,8 @@ class RegisteredElementsController < ApplicationController
 
   def registered_element_params
     params.require(:registered_element).permit(:highwire_mapping, :input_type,
-                                               :institution_id, :label, :name,
-                                               :scope_note, :uri,
-                                               :vocabulary_key)
+                                               :label, :name, :scope_note, :uri,
+                                               :vocabulary_id)
   end
 
   def set_element

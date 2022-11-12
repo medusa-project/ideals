@@ -1,0 +1,33 @@
+- provide :body_id, "statistics"
+- provide :title, "Statistics"
+
+%h1 Statistics
+
+.row
+  .col-sm-5.col-md-4.col-lg-3
+    .nav.flex-column.nav-pills{role:               "tablist",
+                               "aria-orientation": "vertical"}
+      %a#items-tab.nav-link.active{href:            "#items-tab-content",
+                                   "data-toggle":   "pill",
+                                   role:            "tab",
+                                   "aria-controls": "items-tab-content",
+                                   "aria-selected": "true"}
+        = icon_for(Item)
+        Items
+
+      %a#files-tab.nav-link{href:            "#files-tab-content",
+                            "data-toggle":   "pill",
+                            role:            "tab",
+                            "aria-controls": "files-tab-content",
+                            "aria-selected": "false"}
+        %i.fa.fa-file
+        Files
+
+  .tab-content.col-sm-7.col-md-8.col-lg-9
+    #items-tab-content.tab-pane.fade.show.active{role:              "tabpanel",
+                                                 "aria-labelledby": "properties-tab"}
+      = spinner
+
+    #files-tab-content.tab-pane.fade{role:              "tabpanel",
+                                     "aria-labelledby": "settings-tab"}
+      = spinner

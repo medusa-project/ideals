@@ -5,23 +5,23 @@
 #
 # # Creating, updating, and deleting
 #
-# Creates generally happen via [CreateItemCommand], updates via
-# [UpdateItemCommand]. This will ensure that an appropriate [Event] is created
+# Creates generally happen via {CreateItemCommand}, updates via
+# {UpdateItemCommand}. This will ensure that an appropriate {Event} is created
 # and associated with the instance. Deleting can still be done directly on the
-# instance without use of a [Command]--although {Stages::BURIED burial} is
+# instance without use of a {Command}--although {Stages::BURIED burial} is
 # often used instead.
 #
 # # Lifecycle
 #
 # An item may proceed through several "life stages", indicated by the {stage}
-# attribute and documented in the [Stages] class. {Stages::APPROVED} is where
+# attribute and documented in the {Stages} class. {Stages::APPROVED} is where
 # most items spend most of their lives, but note that an approved item may
 # still be embargoed. (An embargo is basically an access limit, which may be
 # perpetual or timed.)
 #
 # # Indexing
 #
-# See the documentation of [Indexed] for a detailed explanation of how indexing
+# See the documentation of {Indexed} for a detailed explanation of how indexing
 # works.
 #
 # # Attributes
@@ -37,19 +37,19 @@
 #                             just a shortcut to avoid having to navigate that
 #                             relationship.
 # * `stage`                   Lifecycle stage, whose value is one of the
-#                             [Stages] constant values.
+#                             {Stages} constant values.
 # * `stage_reason`            Reason for setting the {stage} attribute to its
 #                             current value.
 # * `submitter_id`            Foreign key to {User}.
 # * `temp_embargo_kind`       Temporarily holds the embargo kind during the
 #                             submission process. When the item is submitted, a
-#                             full-fledged [Embargo] instance is attached to
+#                             full-fledged {Embargo} instance is attached to
 #                             the {embargoes} relationship and this value is
 #                             nullified. These temporary embargo-related
 #                             columns are needed because the submission form
 #                             saves an item after every form element change,
 #                             whether or not enough information has been input
-#                             to construct a complete/valid [Embargo] instance.
+#                             to construct a complete/valid {Embargo} instance.
 # * `temp_embargo_expires_at` Temporarily holds the embargo lift date during
 #                             the submission process. (See
 #                             {temp_embargo_kind}.)
@@ -58,26 +58,28 @@
 # * `temp_embargo_type`       Temporarily holds the embargo type during the
 #                             submission process. This corresponds to the radio
 #                             buttons in the access section of the submission
-#                             form, and not with any property of [Embargo].
+#                             form, and not with any property of {Embargo}.
 #                             (See {temp_embargo_kind}.)
 # * `updated_at`              Managed by ActiveRecord.
 #
 # # Relationships
 #
-# * `bitstreams`         References all associated [Bitstream]s.
-# * `collections`        References all owning [Collections].
-# * `current_embargoes`  References zero-to-many [Embargo]es.
-# * `elements`           References zero-to-many [AscribedElement]s used to
+# * `bitstreams`         References all associated {Bitstream}s.
+# * `collections`        References all owning {Collections}.
+# * `current_embargoes`  References zero-to-many {Embargo}es.
+# * `elements`           References zero-to-many {AscribedElement}s used to
 #                        describe an instance.
-# * `embargoes`          References zero-to-many [Embargo]es. (Some may be
+# * `embargoes`          References zero-to-many {Embargo}es. (Some may be
 #                        expired; see {current_embargoes}.)
-# * `primary_collection` References the primary [Collection] in which the
+# * `primary_collection` References the primary {Collection} in which the
 #                        instance resides.
 #
 class Item < ApplicationRecord
+
   include Auditable
   include Breadcrumb
   include Describable
+  include Handled
   include Indexed
 
   ##
@@ -85,19 +87,19 @@ class Item < ApplicationRecord
   # metadata fields may also be present.
   #
   class IndexFields
-    CLASS              = ElasticsearchIndex::StandardFields::CLASS
+    CLASS              = OpenSearchIndex::StandardFields::CLASS
     COLLECTION_TITLES  = "k_collection_titles"
     COLLECTIONS        = "i_collection_ids"
-    CREATED            = ElasticsearchIndex::StandardFields::CREATED
+    CREATED            = OpenSearchIndex::StandardFields::CREATED
     EMBARGOES          = "o_embargoes"
     FILENAMES          = "t_filenames"
-    FULL_TEXT          = ElasticsearchIndex::StandardFields::FULL_TEXT
+    FULL_TEXT          = OpenSearchIndex::StandardFields::FULL_TEXT
     GROUP_BY_UNIT_AND_COLLECTION_SORT_KEY = "k_unit_collection_sort_key"
     HANDLE             = "k_handle"
-    ID                 = ElasticsearchIndex::StandardFields::ID
-    INSTITUTION_KEY    = ElasticsearchIndex::StandardFields::INSTITUTION_KEY
-    LAST_INDEXED       = ElasticsearchIndex::StandardFields::LAST_INDEXED
-    LAST_MODIFIED      = ElasticsearchIndex::StandardFields::LAST_MODIFIED
+    ID                 = OpenSearchIndex::StandardFields::ID
+    INSTITUTION_KEY    = OpenSearchIndex::StandardFields::INSTITUTION_KEY
+    LAST_INDEXED       = OpenSearchIndex::StandardFields::LAST_INDEXED
+    LAST_MODIFIED      = OpenSearchIndex::StandardFields::LAST_MODIFIED
     PRIMARY_COLLECTION = "i_primary_collection_id"
     PRIMARY_UNIT       = "i_primary_unit_id"
     STAGE              = "i_stage"
@@ -198,7 +200,7 @@ class Item < ApplicationRecord
   validate :validate_primary_bitstream
 
   ##
-  # Convenience method that returns all non-embargoed [Item]s, excluding
+  # Convenience method that returns all non-embargoed {Item}s, excluding
   # download embargoes.
   #
   # @return [ActiveRecord::Relation<Item>]
@@ -392,7 +394,7 @@ class Item < ApplicationRecord
       # to get normalized as ISO 8601.
       if reg_e.input_type == RegisteredElement::InputType::DATE
         date = asc_e.date
-        if date && date.year < ElasticsearchIndex::MAX_YEAR
+        if date && date.year < OpenSearchIndex::MAX_YEAR
           doc[field] << date.iso8601
         else
           field = reg_e.indexed_text_field
@@ -400,7 +402,7 @@ class Item < ApplicationRecord
           doc[field] << asc_e.string
         end
       else
-        doc[field] << asc_e.string[0..ElasticsearchIndex::MAX_KEYWORD_FIELD_LENGTH]
+        doc[field] << asc_e.string[0..OpenSearchIndex::MAX_KEYWORD_FIELD_LENGTH]
       end
     end
 
@@ -408,8 +410,10 @@ class Item < ApplicationRecord
   end
 
   ##
-  # Creates a new [Handle], assigns it to the instance, and creates an
-  # associated `dcterms:identifier` [AscribedElement] with a URI value of the
+  # Overrides parent.
+  #
+  # Creates a new {Handle}, assigns it to the instance, and creates an
+  # associated `dcterms:identifier` {AscribedElement} with a URI value of the
   # handle URI.
   #
   # @return [void]
@@ -472,7 +476,6 @@ class Item < ApplicationRecord
       self.update!(stage: Stages::SUBMITTED)
     else
       self.approve
-      self.assign_handle
       self.move_into_permanent_storage
     end
   end

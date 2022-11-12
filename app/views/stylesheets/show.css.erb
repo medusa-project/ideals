@@ -24,6 +24,10 @@
 .btn-outline-primary {
     border-color: <%= h @institution.primary_color %>;
 }
+.btn-outline-primary.active {
+    border-color: <%= h @institution.primary_color %> !important;
+    background-color: <%= h @institution.primary_color %> !important;
+}
 .nav-pills .nav-link.active {
     background-color: <%= h @institution.primary_color %>;
     color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %>;

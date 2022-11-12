@@ -1,26 +1,25 @@
 ##
-# Represents a batch import of [Item]s, such as via [CsvImporter] or
-# [SafImporter].
+# Represents a batch import of {Item}s, such as via {CsvImporter} or
+# {SafImporter}.
 #
 # # Attributes
 #
-# * `collection_id`      ID of the [Collection] into which new items are to be
+# * `collection_id`      ID of the {Collection} into which new items are to be
 #                        imported.
 # * `created_at`         Managed by ActiveRecord.
 # * `files`              JSON array of all files to import.
 # * `imported_items`     JSON array of objects with `item_id` and `handle` keys.
 #                        This is analogous to the contents of a mapfile (see
-#                        [SafImporter]) and can be used to reconstruct one.
-# * `institution_id`     Foreign key to [Institution] representing the
+#                        {SafImporter}) and can be used to reconstruct one.
+# * `institution_id`     Foreign key to {Institution} representing the
 #                        institution into which items are being imported.
-# * `kind`               One of the [Import::Kind] constant values. This may be
+# * `kind`               One of the {Import::Kind} constant values. This may be
 #                        null in the case of a newly created instance to which
 #                        files have not been uploaded yet.
-# * `last_error_message` Last error message emitted by the importer.
-# * `percent_complete`   Float in the range 0-1.
-# * `status`             One of the [Import::Status] constant values.
+# * `task_id`            Foreign key to {Task} which can be used for status
+#                        reports.
 # * `updated_at`         Managed by ActiveRecord.
-# * `user_id`            ID of the [User] who initiated the import.
+# * `user_id`            ID of the {User} who initiated the import.
 #
 class Import < ApplicationRecord
 
@@ -40,34 +39,19 @@ class Import < ApplicationRecord
     end
   end
 
-  class Status
-    NEW       = 0
-    RUNNING   = 1
-    SUCCEEDED = 2
-    FAILED    = 3
-
-    def self.all
-      self.constants.map{ |c| self.const_get(c) }
-    end
-  end
-
   belongs_to :collection
   belongs_to :institution
+  belongs_to :task, optional: true
   belongs_to :user
 
   serialize :files, JSON
   serialize :imported_items, JSON
 
-  before_save :update_percent_complete_upon_success,
-              :delete_all_files_upon_success
+  before_save :delete_all_files_upon_success
   before_destroy :delete_all_files
 
-  validates :status, inclusion: { in: Status.all }
-
   def delete_all_files
-    config = ::Configuration.instance
-    S3Client.instance.delete_objects(bucket:     config.storage[:bucket],
-                                     key_prefix: self.root_key_prefix)
+    PersistentStore.instance.delete_objects(key_prefix: self.root_key_prefix)
   end
 
   ##
@@ -79,7 +63,7 @@ class Import < ApplicationRecord
 
   ##
   # Returns an object key within the application bucket for the file with the
-  # given name. This file is used by the [SafImporter] and should be deleted
+  # given name. This file is used by the {SafImporter} and should be deleted
   # following the import.
   #
   # @param relative_path [String] Pathname of a file contained within an SAF
@@ -95,9 +79,7 @@ class Import < ApplicationRecord
   # @return [Enumerable<String>] All object keys in the package.
   #
   def object_keys
-    config = ::Configuration.instance
-    S3Client.instance.objects(bucket:     config.storage[:bucket],
-                              key_prefix: root_key_prefix).map(&:key)
+    PersistentStore.instance.objects(key_prefix: root_key_prefix).map(&:key)
   end
 
   ##
@@ -110,8 +92,8 @@ class Import < ApplicationRecord
   #
   def progress(progress, imported_items = [])
     self.class.connection_pool.with_connection do
-      self.update!(percent_complete: progress,
-                   imported_items:   imported_items)
+      self.task&.progress(progress)
+      self.update!(imported_items: imported_items)
     end
   end
 
@@ -134,20 +116,19 @@ class Import < ApplicationRecord
     Tempfile.open("import") do |tempfile|
       IO.copy_stream(io, tempfile)
       tempfile.close
-      client = S3Client.instance
-      bucket = ::Configuration.instance.storage[:bucket]
-      key    = object_key(relative_path)
+      store = PersistentStore.instance
+      key   = object_key(relative_path)
       # When used to simply upload the IO argument, put_object() fails randomly
       # and silently as of AWS SDK 1.111.0/Rails 7. Here is a workaround
       # whereby we retry the upload as many times as necessary, pausing in
       # between attempts. Don't ask me why the pausing works. (Is this only a
       # problem with Minio?)
       20.times do
-        client.put_object(bucket: bucket,
-                          key:    key,
-                          body:   tempfile)
+        store.put_object(key:             key,
+                         institution_key: self.institution.key,
+                         path:            tempfile.path)
         sleep 1
-        break if client.object_exists?(bucket: bucket, key: key)
+        break if store.object_exists?(key: key)
       end
     end
   end
@@ -156,11 +137,7 @@ class Import < ApplicationRecord
   private
 
   def delete_all_files_upon_success
-    self.delete_all_files if status == Status::SUCCEEDED
-  end
-
-  def update_percent_complete_upon_success
-    self.percent_complete = 1 if status == Status::SUCCEEDED
+    self.delete_all_files if self.task&.succeeded?
   end
 
   def validate_imported_items

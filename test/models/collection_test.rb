@@ -3,7 +3,7 @@ require 'test_helper'
 class CollectionTest < ActiveSupport::TestCase
 
   setup do
-    setup_elasticsearch
+    setup_opensearch
     @instance = collections(:uiuc_collection1)
     assert @instance.valid?
   end
@@ -17,12 +17,12 @@ class CollectionTest < ActiveSupport::TestCase
       joins("LEFT JOIN units u ON u.id = ucm.unit_id").
       where("u.institution_id": institution.id)
     collections.each(&:reindex)
-    refresh_elasticsearch
+    refresh_opensearch
     count = Collection.search.institution(institution).count
     assert count > 0
 
     Collection.delete_document(collections.first.index_id)
-    refresh_elasticsearch
+    refresh_opensearch
     assert_equal count - 1, Collection.search.institution(institution).count
   end
 
@@ -74,12 +74,12 @@ class CollectionTest < ActiveSupport::TestCase
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all collections" do
-    setup_elasticsearch
+    setup_opensearch
     institution = institutions(:uiuc)
     assert_equal 0, Collection.search.institution(institution).count
 
     Collection.reindex_all
-    refresh_elasticsearch
+    refresh_opensearch
 
     actual = Collection.search.institution(institution).count
     assert actual > 0
@@ -102,6 +102,8 @@ class CollectionTest < ActiveSupport::TestCase
     assert_not_empty doc[Collection::IndexFields::CREATED]
     assert_equal @instance.description,
                  doc[Collection::IndexFields::DESCRIPTION]
+    assert_equal @instance.handle.handle,
+                 doc[Collection::IndexFields::HANDLE]
     assert_equal @instance.institution.key,
                  doc[Collection::IndexFields::INSTITUTION_KEY]
     assert_equal @instance.introduction,
@@ -386,12 +388,6 @@ class CollectionTest < ActiveSupport::TestCase
     @instance.exhume!
   end
 
-  # institution()
-
-  test "institution() returns the primary unit's institution" do
-    assert_equal @instance.primary_unit.institution, @instance.institution
-  end
-
   # parent_id
 
   test "parent_id cannot be set to the instance ID" do
@@ -425,7 +421,7 @@ class CollectionTest < ActiveSupport::TestCase
         filter(Collection::IndexFields::ID, @instance.index_id).count
 
     @instance.reindex
-    refresh_elasticsearch
+    refresh_opensearch
 
     assert_equal 1, Collection.search.
         institution(institutions(:uiuc)).
@@ -576,7 +572,7 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "collection cannot be added to multiple instances of the same unit" do
     @instance.units = []
-    unit = units(:unit1)
+    unit = units(:uiuc_unit1)
     @instance.units << unit
     assert_raises ActiveRecord::RecordNotUnique do
       @instance.units << unit

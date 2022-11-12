@@ -150,7 +150,6 @@ class SafImporter
 
   ##
   # @param import [Import]
-  # @param task [Task] Optional; supply to receive progress updates.
   # @return [void]
   # @raises [StandardError] Various error types depending on all of the things
   #                         that can go wrong. If this occurs, the
@@ -158,16 +157,15 @@ class SafImporter
   #                         with an inventory of items that were imported
   #                         successfully prior to the error occurring.
   #
-  def import_from_s3(import, task: nil)
-    client            = S3Client.instance
-    bucket            = ::Configuration.instance.storage[:bucket]
+  def import_from_s3(import)
+    store             = PersistentStore.instance
     item_key_prefixes = import.item_key_prefixes
     imported_items    = import.imported_items || []
     item_key_prefixes.reject!{ |k| imported_items.select{ |i| k.end_with?(i['item_id']) }.any? }
 
-    import.update!(kind:   Import::Kind::SAF,
-                   files:  import.object_keys,
-                   status: Import::Status::RUNNING)
+    import.update!(kind:  Import::Kind::SAF,
+                   files: import.object_keys)
+    import.task&.update!(status: Task::Status::RUNNING)
 
     # Iterate through each item pseudo-directory.
     item = nil
@@ -179,11 +177,10 @@ class SafImporter
 
         # Add bitstreams corresponding to each line in the content file.
         content_file_key = item_dir + "/content"
-        unless client.object_exists?(bucket: bucket, key: content_file_key)
+        unless store.object_exists?(key: content_file_key)
           raise IOError, "Missing content file for item #{item_dir}"
         end
-        content = client.get_object(bucket: bucket,
-                                    key:    content_file_key).body.read
+        content = store.get_object(key: content_file_key).read
         add_bitstreams_from_s3(item:                 item,
                                item_key_prefix:      item_dir,
                                content_file_key:     content_file_key,
@@ -191,20 +188,18 @@ class SafImporter
 
         # Add metadata corresponding to the Dublin Core metadata file.
         dc_key = item_dir + "/dublin_core.xml"
-        unless client.object_exists?(bucket: bucket, key: dc_key)
+        unless store.object_exists?(key: dc_key)
           raise IOError, "Missing dublin_core.xml file for item #{item_dir}"
         end
-        content = client.get_object(bucket: bucket, key: dc_key).body.read
+        content = store.get_object(key: dc_key).read
         add_metadata(item:                   item,
                      metadata_relative_path: dc_key,
                      metadata_file_content:  content)
 
         # Add metadata corresponding to any other metadata files.
-        item_object_keys = client.objects(bucket:     bucket,
-                                          key_prefix: item_dir)
+        item_object_keys = store.objects(key_prefix: item_dir)
         item_object_keys.map(&:key).select{ |k| k.match(/\/metadata_.+.xml$/) }.each do |metadata_key|
-          content = client.get_object(bucket: bucket,
-                                      key:    metadata_key).body.read
+          content = store.get_object(key: metadata_key).read
           add_metadata(item:                   item,
                        metadata_relative_path: metadata_key,
                        metadata_file_content:  content)
@@ -218,21 +213,17 @@ class SafImporter
         }
         import.progress(index / item_key_prefixes.length.to_f,
                         imported_items)
-        task&.progress(index / item_key_prefixes.length.to_f,
-                       status_text: "Importing #{item_key_prefixes.length} items from SAF package")
+        import.task&.progress(index / item_key_prefixes.length.to_f,
+                              status_text: "Importing #{item_key_prefixes.length} items from SAF package")
       end
     end
   rescue => e
     item&.destroy!
-    import.update!(status:             Import::Status::FAILED,
-                   last_error_message: e.message)
-    task&.fail(backtrace: e.backtrace,
-               detail:    e.message)
+    import.task&.fail(backtrace: e.backtrace,
+                      detail:    e.message)
     raise e
   else
-    import.update!(status:             Import::Status::SUCCEEDED,
-                   last_error_message: nil)
-    task&.succeed
+    import.task&.succeed
   end
 
 
@@ -299,6 +290,7 @@ class SafImporter
                              item_key_prefix:,
                              content_file_key:,
                              content_file_content:)
+    store  = PersistentStore.instance
     client = S3Client.instance
     bucket = Configuration.instance.storage[:bucket]
     content_file_content.split("\n").each_with_index do |line, line_index|
@@ -328,14 +320,14 @@ class SafImporter
         raise IOError, "No file on line #{line_index + 1} of "\
                        "#{content_file_key}"
       end
-      unless client.object_exists?(bucket: bucket, key: file_key)
+      unless store.object_exists?(key: file_key)
         raise IOError, "File on line #{line_index + 1} of "\
                        "#{content_file_key} does not exist: "\
                        "#{file_key}"
       end
 
       length        = client.head_object(bucket: bucket,
-                                         key: file_key).content_length
+                                         key:    file_key).content_length
       permanent_key = Bitstream.permanent_key(institution_key: item.institution.key,
                                               item_id:         item.id,
                                               filename:        filename)
@@ -346,9 +338,8 @@ class SafImporter
                             primary:           primary,
                             description:       description,
                             length:            length)
-      client.copy_object(copy_source: "/#{bucket}/#{file_key}",
-                         bucket:      bucket,
-                         key:         bs.permanent_key)
+      store.copy_object(source_key: file_key,
+                        target_key: bs.permanent_key)
     end
   end
 

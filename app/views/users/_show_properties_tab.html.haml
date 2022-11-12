@@ -15,8 +15,26 @@
                                           type:               "button"}
       %i.fas.fa-key
       Change Password
+  - if policy(@user.becomes(User)).enable?
+    -# Enable/disable button
+    - if @user.enabled
+      = link_to(user_disable_path(@user),
+                class: "btn btn-danger",
+                method: :patch,
+                data: { confirm: "Are you sure you want to disable this account? This user will no longer be able to log in." }) do
+        %i.fa.fa-ban
+        Disable
+    - else
+      = link_to(user_enable_path(@user),
+                class: "btn btn-success",
+                method: :patch,
+                data: { confirm: "Are you sure you want to enable this account?" }) do
+        %i.fa.fa-check-circle
+        Enable
 
 %dl
+  %dt Account
+  %dd= boolean(@user.enabled, style: :word, true_value: "ENABLED", false_value: "DISABLED")
   %dt Name
   %dd= @user.name
   %dt Email
@@ -32,16 +50,17 @@
         = @user.institution.name
     - else
       None
-  %dt Organization DN
-  %dd
-    - if @user.org_dn # should always be true
-      %code= @user.org_dn
-    - else
-      None
-  %dt Affiliation
-  %dd= @user.affiliation ? @user.affiliation.name : "None"
-  %dt Department
-  %dd= @user.department ? @user.department : "None"
+  - if current_institution.key == "uiuc"
+    %dt Organization DN
+    %dd
+      - if @user.org_dn
+        %code= @user.org_dn
+      - else
+        None
+    %dt Affiliation
+    %dd= @user.affiliation ? @user.affiliation.name : "None"
+    %dt Department
+    %dd= @user.department ? @user.department : "None"
   %dt Account Type
   %dd= @user.type.chomp('User')
   %dt Account Created

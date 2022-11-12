@@ -169,17 +169,4 @@ class RegisteredElementTest < ActiveSupport::TestCase
     end
   end
 
-  # vocabulary()
-
-  test "vocabulary() returns nil when vocabulary_key is nil" do
-    @instance.vocabulary_key = nil
-    assert_nil @instance.vocabulary
-  end
-
-  test "vocabulary() returns the Vocabulary corresponding to vocabulary_key" do
-    @instance.vocabulary_key = :common_types
-    assert_equal Vocabulary.with_key(@instance.vocabulary_key),
-                 @instance.vocabulary
-  end
-
 end

@@ -32,6 +32,8 @@
 # * `link_color`              Theme hyperlink color.
 # * `link_hover_color`        Theme hover-over-hyperlink color.
 # * `main_website_url`        URL of the institution's main website.
+# * `medusa_file_group_id`    ID of the Medusa file group in which the
+#                             institution's content is stored.
 # * `name`                    Institution name.
 # * `org_dn`                  Value of an `eduPersonOrgDN` attribute from the
 #                             Shibboleth SP.
@@ -63,36 +65,33 @@ class Institution < ApplicationRecord
   has_many :units
   has_many :user_groups
   has_many :users
+  has_many :vocabularies
 
   # uniqueness enforced by database constraints
   validates :fqdn, presence: true
 
-  validates_format_of :fqdn,
-                      # Rough but good enough
-                      # Credit: https://stackoverflow.com/a/20204811
-                      with: /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}(:\d+)?$)/
-
   # uniqueness enforced by database constraints
-  validates :key, presence: true
-
-  # uniqueness enforced by database constraints
-  validates :name, presence: true
-
-  validates :service_name, presence: true
+  validates :medusa_file_group_id, allow_nil: true,
+            numericality: { only_integer: true }
 
   validates :active_link_color, presence: true
   validates :footer_background_color, presence: true
   validates :header_background_color, presence: true
+  validates_format_of :key, with: /\A[A-Za-z0-9]+\Z/, allow_blank: false
   validates :link_color, presence: true
   validates :link_hover_color, presence: true
+  validates :name, presence: true
   validates :primary_color, presence: true
   validates :primary_hover_color, presence: true
+  validates :service_name, presence: true
 
   validate :disallow_key_changes, :validate_css_colors
 
   before_save :ensure_default_uniqueness
-  after_create :add_default_elements, :add_default_metadata_profile,
-               :add_default_submission_profile, :add_defining_user_group
+  # N.B.: elements must be added AFTER vocabularies!
+  after_create :add_default_vocabularies, :add_default_elements,
+               :add_default_metadata_profile, :add_default_submission_profile,
+               :add_defining_user_group
 
   ##
   # @param extension [String]
@@ -117,6 +116,20 @@ class Institution < ApplicationRecord
   #
   def self.default
     Institution.find_by_default(true)
+  end
+
+  ##
+  # @return [Enumerable<Hash>]
+  #
+  def self.file_sizes
+    sql = "SELECT ins.id, ins.name, SUM(length)
+      FROM bitstreams b
+      LEFT JOIN items i on b.item_id = i.id
+      LEFT JOIN institutions ins on i.institution_id = ins.id
+      WHERE ins.name IS NOT NULL
+      GROUP BY ins.id
+      ORDER BY ins.name;"
+    connection.execute(sql)
   end
 
   ##
@@ -164,19 +177,27 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<Hash>]
+  #
+  def self.item_counts
+    sql = "SELECT ins.id, ins.name, COUNT(i.id) AS count
+      FROM items i
+      LEFT JOIN institutions ins ON i.institution_id = ins.id
+      WHERE ins.id IS NOT NULL
+      GROUP BY ins.id
+      ORDER BY ins.name;"
+    connection.execute(sql)
+  end
+
+  ##
   # @return [String] Presigned S3 URL.
   #
   def banner_image_url
     return nil if self.banner_image_filename.blank?
-    bucket     = ::Configuration.instance.storage[:bucket]
-    key        = [self.class.image_key_prefix(self.key),
-                  self.banner_image_filename].join
-    aws_client = S3Client.instance.send(:get_client)
-    signer     = Aws::S3::Presigner.new(client: aws_client)
-    signer.presigned_url(:get_object,
-                         bucket:     bucket,
-                         key:        key,
-                         expires_in: 1.week.to_i)
+    key = [self.class.image_key_prefix(self.key),
+           self.banner_image_filename].join
+    PersistentStore.instance.presigned_url(key:        key,
+                                           expires_in: 1.week.to_i)
   end
 
   def breadcrumb_label
@@ -258,15 +279,10 @@ class Institution < ApplicationRecord
   #
   def footer_image_url
     return nil if self.footer_image_filename.blank?
-    bucket     = ::Configuration.instance.storage[:bucket]
-    key        = [self.class.image_key_prefix(self.key),
-                  self.footer_image_filename].join
-    aws_client = S3Client.instance.send(:get_client)
-    signer     = Aws::S3::Presigner.new(client: aws_client)
-    signer.presigned_url(:get_object,
-                         bucket:     bucket,
-                         key:        key,
-                         expires_in: 1.week.to_i)
+    key = [self.class.image_key_prefix(self.key),
+           self.footer_image_filename].join
+    PersistentStore.instance.presigned_url(key:        key,
+                                           expires_in: 1.week.to_i)
   end
 
   ##
@@ -274,15 +290,20 @@ class Institution < ApplicationRecord
   #
   def header_image_url
     return nil if self.header_image_filename.blank?
-    bucket     = ::Configuration.instance.storage[:bucket]
-    key        = [self.class.image_key_prefix(self.key),
-                  self.header_image_filename].join
-    aws_client = S3Client.instance.send(:get_client)
-    signer     = Aws::S3::Presigner.new(client: aws_client)
-    signer.presigned_url(:get_object,
-                         bucket:     bucket,
-                         key:        key,
-                         expires_in: 1.week.to_i)
+    key = [self.class.image_key_prefix(self.key),
+           self.header_image_filename].join
+    PersistentStore.instance.presigned_url(key:        key,
+                                           expires_in: 1.week.to_i)
+  end
+
+  ##
+  # @return [Medusa::FileGroup, nil]
+  #
+  def medusa_file_group
+    if !@file_group && self.medusa_file_group_id
+      @file_group = Medusa::FileGroup.with_id(self.medusa_file_group_id)
+    end
+    @file_group
   end
 
   ##
@@ -399,7 +420,7 @@ class Institution < ApplicationRecord
                                    label:            "Sponsor/Grant No.")
     self.registered_elements.build(name:             "dc:identifier",
                                    label:            "Identifier",
-                                   vocabulary_key:   Vocabulary::Key::DEGREE_NAMES,
+                                   vocabulary:       Vocabulary.find_by_name("Degree Names"),
                                    highwire_mapping: "citation_id")
     self.registered_elements.build(name:             "dc:identifier:bibliographicCitation",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
@@ -408,7 +429,7 @@ class Institution < ApplicationRecord
                                    label:            "Identifiers: URI or URL")
     self.registered_elements.build(name:             "dc:language",
                                    label:            "Language",
-                                   vocabulary_key:   Vocabulary::Key::COMMON_ISO_LANGUAGES,
+                                   vocabulary:       Vocabulary.find_by_name("Common ISO Languages"),
                                    highwire_mapping: "citation_language")
     self.registered_elements.build(name:             "dc:publisher",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
@@ -433,10 +454,10 @@ class Institution < ApplicationRecord
                                    highwire_mapping: "citation_title")
     self.registered_elements.build(name:             "dc:type",
                                    label:            "Type of Resource",
-                                   vocabulary_key:   Vocabulary::Key::COMMON_TYPES)
+                                   vocabulary:       Vocabulary.find_by_name("Common Types"))
     self.registered_elements.build(name:             "dc:type:genre",
                                    label:            "Genre of Resource",
-                                   vocabulary_key:   Vocabulary::Key::COMMON_GENRES)
+                                   vocabulary:       Vocabulary.find_by_name("Common Genres"))
     self.registered_elements.build(name:             "thesis:degree:department",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
                                    label:            "Dissertation/Thesis Degree Department")
@@ -448,7 +469,7 @@ class Institution < ApplicationRecord
                                    label:            "Degree Granting Institution")
     self.registered_elements.build(name:             "thesis:degree:level",
                                    label:            "Dissertation or Thesis",
-                                   vocabulary_key:   Vocabulary::Key::DISSERTATION_THESIS)
+                                   vocabulary:       Vocabulary.find_by_name("Dissertation Thesis"))
     self.registered_elements.build(name:             "thesis:degree:name",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
                                    label:            "Degree")
@@ -470,6 +491,145 @@ class Institution < ApplicationRecord
                                              default: true)
     profile.save!
     profile.add_default_elements
+  end
+
+  def add_default_vocabularies
+    vocab = self.vocabularies.build(name: "Common Genres")
+    vocab.vocabulary_terms.build(stored_value:    "article",
+                                 displayed_value: "Article")
+    vocab.vocabulary_terms.build(stored_value:    "bibliography",
+                                 displayed_value: "Bibliography")
+    vocab.vocabulary_terms.build(stored_value:    "book",
+                                 displayed_value: "Book")
+    vocab.vocabulary_terms.build(stored_value:    "book_chapter",
+                                 displayed_value: "Book Chapter")
+    vocab.vocabulary_terms.build(stored_value:    "book_review",
+                                 displayed_value: "Book Review")
+    vocab.vocabulary_terms.build(stored_value:    "editorial",
+                                 displayed_value: "Editorial")
+    vocab.vocabulary_terms.build(stored_value:    "essay",
+                                 displayed_value: "Essay")
+    vocab.vocabulary_terms.build(stored_value:    "conference_paper",
+                                 displayed_value: "Conference Paper / Presentation")
+    vocab.vocabulary_terms.build(stored_value:    "conference_poster",
+                                 displayed_value: "Conference Poster")
+    vocab.vocabulary_terms.build(stored_value:    "conference_proceeding",
+                                 displayed_value: "Conference Proceeding (whole)")
+    vocab.vocabulary_terms.build(stored_value:    "data",
+                                 displayed_value: "Data")
+    vocab.vocabulary_terms.build(stored_value:    "dissertation/thesis",
+                                 displayed_value: "Dissertation / Thesis")
+    vocab.vocabulary_terms.build(stored_value:    "drawing",
+                                 displayed_value: "Drawing")
+    vocab.vocabulary_terms.build(stored_value:    "fiction",
+                                 displayed_value: "Fiction")
+    vocab.vocabulary_terms.build(stored_value:    "journal",
+                                 displayed_value: "Journal (whole)")
+    vocab.vocabulary_terms.build(stored_value:    "newsletter",
+                                 displayed_value: "Newsletter")
+    vocab.vocabulary_terms.build(stored_value:    "performance",
+                                 displayed_value: "Performance")
+    vocab.vocabulary_terms.build(stored_value:    "photograph",
+                                 displayed_value: "Photograph")
+    vocab.vocabulary_terms.build(stored_value:    "poetry",
+                                 displayed_value: "Poetry")
+    vocab.vocabulary_terms.build(stored_value:    "presentation/lecture/speech",
+                                 displayed_value: "Presentation / Lecture / Speech")
+    vocab.vocabulary_terms.build(stored_value:    "proposal",
+                                 displayed_value: "Proposal")
+    vocab.vocabulary_terms.build(stored_value:    "oral history",
+                                 displayed_value: "Oral History")
+    vocab.vocabulary_terms.build(stored_value:    "report",
+                                 displayed_value: "Report (Grant or Annual)")
+    vocab.vocabulary_terms.build(stored_value:    "score",
+                                 displayed_value: "Score")
+    vocab.vocabulary_terms.build(stored_value:    "technical report",
+                                 displayed_value: "Technical Report")
+    vocab.vocabulary_terms.build(stored_value:    "website",
+                                 displayed_value: "Website")
+    vocab.vocabulary_terms.build(stored_value:    "working paper",
+                                 displayed_value: "Working / Discussion Paper")
+    vocab.vocabulary_terms.build(stored_value:    "other",
+                                 displayed_value: "Other")
+    vocab.save!
+
+    vocab = self.vocabularies.build(name: "Common ISO Languages")
+    vocab.vocabulary_terms.build(stored_value:    "en",
+                                 displayed_value: "English")
+    vocab.vocabulary_terms.build(stored_value:    "zh",
+                                 displayed_value: "Chinese")
+    vocab.vocabulary_terms.build(stored_value:    "fr",
+                                 displayed_value: "French")
+    vocab.vocabulary_terms.build(stored_value:    "de",
+                                 displayed_value: "German")
+    vocab.vocabulary_terms.build(stored_value:    "it",
+                                 displayed_value: "Italian")
+    vocab.vocabulary_terms.build(stored_value:    "ja",
+                                 displayed_value: "Japanese")
+    vocab.vocabulary_terms.build(stored_value:    "es",
+                                 displayed_value: "Spanish")
+    vocab.vocabulary_terms.build(stored_value:    "tr",
+                                 displayed_value: "Turkish")
+    vocab.vocabulary_terms.build(stored_value:    "other",
+                                 displayed_value: "Other")
+    vocab.save!
+
+    vocab = self.vocabularies.build(name: "Common Types")
+    vocab.vocabulary_terms.build(stored_value:    "sound",
+                                 displayed_value: "Audio")
+    vocab.vocabulary_terms.build(stored_value:    "dataset",
+                                 displayed_value: "Dataset / Spreadsheet")
+    vocab.vocabulary_terms.build(stored_value:    "still image",
+                                 displayed_value: "Image")
+    vocab.vocabulary_terms.build(stored_value:    "text",
+                                 displayed_value: "Text")
+    vocab.vocabulary_terms.build(stored_value:    "moving image",
+                                 displayed_value: "Video")
+    vocab.vocabulary_terms.build(stored_value:    "other",
+                                 displayed_value: "Other")
+    vocab.save!
+
+    vocab = self.vocabularies.build(name: "Degree Names")
+    vocab.vocabulary_terms.build(stored_value:    "B.A. (bachelor's)",
+                                 displayed_value: "B.A. (bachelor's)")
+    vocab.vocabulary_terms.build(stored_value:    "B.S. (bachelor's)",
+                                 displayed_value: "B.S. (bachelor's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.A. (master's)",
+                                 displayed_value: "M.A. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.Arch. (master's)",
+                                 displayed_value: "M.Arch. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.F.A. (master's)",
+                                 displayed_value: "M.F.A. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.H.R.I.R. (master's)",
+                                 displayed_value: "M.H.R.I.R. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.L.A. (master's)",
+                                 displayed_value: "M.L.A. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.Mus. (master's)",
+                                 displayed_value: "M.Mus. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.S. (master's)",
+                                 displayed_value: "M.S. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.S.P.H. (master's)",
+                                 displayed_value: "M.S.P.H. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "M.U.P. (master's)",
+                                 displayed_value: "M.U.P. (master's)")
+    vocab.vocabulary_terms.build(stored_value:    "A.Mus.D. (doctoral)",
+                                 displayed_value: "A.Mus.D. (doctoral)")
+    vocab.vocabulary_terms.build(stored_value:    "Au.D. (doctoral)",
+                                 displayed_value: "Au.D. (doctoral)")
+    vocab.vocabulary_terms.build(stored_value:    "Ed.D. (doctoral)",
+                                 displayed_value: "Ed.D. (doctoral)")
+    vocab.vocabulary_terms.build(stored_value:    "J.S.D. (doctoral)",
+                                 displayed_value: "J.S.D. (doctoral)")
+    vocab.vocabulary_terms.build(stored_value:    "Ph.D. (doctoral)",
+                                 displayed_value: "Ph.D. (doctoral)")
+    vocab.save!
+
+    vocab = self.vocabularies.build(name: "Dissertation Thesis")
+    vocab.vocabulary_terms.build(stored_value:    "Dissertation",
+                                 displayed_value: "Dissertation (Doctoral level only)")
+    vocab.vocabulary_terms.build(stored_value:    "Thesis",
+                                 displayed_value: "Thesis (Bachelor's or Master's level)")
+    vocab.save!
   end
 
   def add_defining_user_group
@@ -500,10 +660,8 @@ class Institution < ApplicationRecord
   # @param filename [String]
   #
   def upload_theme_image(io:, filename:)
-    client = S3Client.instance
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = self.class.image_key_prefix(self.key) + filename
-    client.put_object(bucket: bucket, key: key, body: io)
+    key = self.class.image_key_prefix(self.key) + filename
+    PersistentStore.instance.put_object(key: key, io: io)
   end
 
   def validate_css_colors

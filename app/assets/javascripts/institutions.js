@@ -7,6 +7,19 @@ const InstitutionView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
     const institutionKey = $("[name=institution_key]").val();
 
+    $("#preservation-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/preservation";
+        $.get(url, function (data) {
+            $("#preservation-tab-content").html(data);
+            $('button.edit-preservation').on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-preservation";
+                $.get(url, function(data) {
+                    $("#edit-preservation-modal .modal-body").html(data);
+                });
+            });
+        });
+    }).trigger("show.bs.tab");
+
     $("#properties-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/properties";
         $.get(url, function (data) {

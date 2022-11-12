@@ -1,0 +1,19 @@
+- provide :body_id, "vocabularies"
+- provide :title, "Vocabularies"
+
+-if policy(Vocabulary).new?
+  .btn-group.float-right{role: "group"}
+    -# Add button
+    %button.btn.btn-light.add-vocabulary{"data-target": "#add-vocabulary-modal",
+                                         "data-toggle": "modal",
+                                         type:          "button"}
+      %i.fa.fa-plus
+      Add Vocabulary
+
+%h1 Vocabularies
+
+#vocabularies-list
+  = render partial: "vocabularies"
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "add-vocabulary-modal", title: "Add Vocabulary" }

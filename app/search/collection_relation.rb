@@ -69,7 +69,7 @@ class CollectionRelation < AbstractRelation
               j.must do
                 j.child! do
                   j.term do
-                    j.set! ElasticsearchIndex::StandardFields::CLASS, get_class.to_s
+                    j.set! OpenSearchIndex::StandardFields::CLASS, get_class.to_s
                   end
                 end
 

@@ -3,7 +3,7 @@ require 'test_helper'
 class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    setup_elasticsearch
+    setup_opensearch
   end
 
   teardown do
@@ -39,7 +39,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     post collections_path,
          xhr: true,
          params: {
-             primary_unit_id: units(:unit1).id,
+             primary_unit_id: units(:uiuc_unit1).id,
              collection: {
                  metadata_profile_id: metadata_profiles(:uiuc_empty).id
              },
@@ -55,7 +55,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     post collections_path,
          xhr: true,
          params: {
-             primary_unit_id: units(:unit1).id,
+             primary_unit_id: units(:uiuc_unit1).id,
              collection: {
                  manager_id: users(:local_sysadmin).id
              },
@@ -72,7 +72,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
       post collections_path,
            xhr: true,
            params: {
-               primary_unit_id: units(:unit1).id,
+               primary_unit_id: units(:uiuc_unit1).id,
                collection: {
                    manager_id: users(:local_sysadmin).id
                },

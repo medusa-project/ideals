@@ -69,7 +69,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "create() creates a profile with some default elements ascribed to it" do
+  test "create() creates a correct profile" do
     user = users(:uiuc_admin)
     log_in_as(user)
     assert_difference "MetadataProfile.count" do
@@ -84,6 +84,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     end
     profile = MetadataProfile.order(created_at: :desc).limit(1).first
     assert profile.elements.count > 0
+    assert_equal user.institution, profile.institution
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
@@ -130,6 +131,35 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     delete "/metadata-profiles/99999"
     assert_response :not_found
+  end
+
+  # edit()
+
+  test "edit() redirects to login page for logged-out users" do
+    get edit_metadata_profile_path(metadata_profiles(:uiuc_default))
+    assert_redirected_to login_path
+  end
+
+  test "edit() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    get edit_metadata_profile_path(metadata_profiles(:uiuc_default))
+    assert_response :forbidden
+  end
+
+  test "edit() returns HTTP 200 for authorized users" do
+    log_in_as(users(:local_sysadmin))
+    get edit_metadata_profile_path(metadata_profiles(:uiuc_default))
+    assert_response :ok
+  end
+
+  test "edit() respects role limits" do
+    log_in_as(users(:local_sysadmin))
+    get edit_metadata_profile_path(metadata_profiles(:uiuc_default))
+    assert_response :ok
+
+    get edit_metadata_profile_path(metadata_profiles(:uiuc_default),
+                                   role: Role::LOGGED_OUT)
+    assert_response :forbidden
   end
 
   # index()

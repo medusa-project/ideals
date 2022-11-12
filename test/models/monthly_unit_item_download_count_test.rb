@@ -50,7 +50,7 @@ class MonthlyUnitItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "for_unit() returns a correct value" do
-    unit        = units(:unit1)
+    unit        = units(:uiuc_unit1)
     start_year  = 2018
     start_month = 1
     end_year    = 2020
@@ -87,7 +87,7 @@ class MonthlyUnitItemDownloadCountTest < ActiveSupport::TestCase
   # increment()
 
   test "increment() increments the count of an existing row" do
-    unit  = units(:unit1)
+    unit  = units(:uiuc_unit1)
     now   = Time.now
     year  = now.year
     month = now.month
@@ -99,7 +99,7 @@ class MonthlyUnitItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "increment() adds a new row if necessary" do
-    unit  = units(:unit1)
+    unit  = units(:uiuc_unit1)
     now   = Time.now
     year  = now.year
     month = now.month

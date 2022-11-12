@@ -38,9 +38,8 @@ class DownloadsControllerTest < ActionDispatch::IntegrationTest
       download = Download.create!(filename:    "file.txt",
                                   ip_address:  "127.0.0.1",
                                   institution: institution)
-      S3Client.instance.put_object(bucket: ::Configuration.instance.storage[:bucket],
-                                   key:    download.object_key,
-                                   body:   file)
+      PersistentStore.instance.put_object(key:  download.object_key,
+                                          file: file)
       get download_file_path(download)
       assert_response :see_other
     end

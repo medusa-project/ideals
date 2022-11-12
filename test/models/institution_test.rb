@@ -26,6 +26,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal institutions(:uiuc), Institution.default
   end
 
+  # file_sizes()
+
+  test "file_sizes() returns a correct value" do
+    sizes = Institution.file_sizes
+    assert_equal 1, sizes.count
+  end
+
   # footer_image_filename()
 
   test "footer_image_filename() returns a correct key" do
@@ -57,6 +64,13 @@ class InstitutionTest < ActiveSupport::TestCase
   test "image_key_prefix() returns a correct key" do
     assert_equal "institutions/test/theme/",
                  Institution.image_key_prefix("test")
+  end
+
+  # item_counts()
+
+  test "item_counts() returns a correct value" do
+    counts = Institution.item_counts
+    assert_equal 2, counts.count
   end
 
   # create()
@@ -92,6 +106,17 @@ class InstitutionTest < ActiveSupport::TestCase
     profile = institution.submission_profiles.first
     assert profile.default
     assert profile.elements.count > 0
+  end
+
+  test "create() adds default vocabularies" do
+    institution = Institution.create!(name:             "New Institution",
+                                      service_name:     "New",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      main_website_url: "https://example.net")
+    assert_equal 5, institution.vocabularies.count
+    vocab = institution.vocabularies.first
+    assert vocab.vocabulary_terms.count > 0
   end
 
   test "create() adds a defining user group" do
@@ -248,15 +273,6 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
-  test "fqdn must be a valid FQDN" do
-    @instance.fqdn = "-invalid_"
-    assert !@instance.valid?
-    @instance.fqdn = "host-name.example.org"
-    assert @instance.valid?
-    @instance.fqdn = "host-name.example.org:3000" # we need a port in development
-    assert @instance.valid?
-  end
-
   # header_background_color
 
   test "header_background_color must contain a valid CSS color" do
@@ -287,10 +303,30 @@ class InstitutionTest < ActiveSupport::TestCase
   # key
 
   test "key must be present" do
-    @instance.key = nil
-    assert !@instance.valid?
-    @instance.key = ""
-    assert !@instance.valid?
+    assert_raises ActiveRecord::RecordInvalid do
+      Institution.create!(name:         "Valid",
+                          fqdn:         "example.net",
+                          service_name: "Valid")
+    end
+    assert_raises ActiveRecord::RecordInvalid do
+      Institution.create!(key:          "",
+                          name:         "Valid",
+                          fqdn:         "example.net",
+                          service_name: "Valid")
+    end
+  end
+
+  test "key must be alphanumeric" do
+    assert_raises ActiveRecord::RecordInvalid do
+      Institution.create!(key:          "invalid!",
+                          name:         "Invalid",
+                          fqdn:         "example.org",
+                          service_name: "Invalid")
+    end
+    Institution.create!(key:          "valid",
+                        name:         "Valid",
+                        fqdn:         "example.net",
+                        service_name: "Valid")
   end
 
   test "key cannot be changed" do
@@ -329,6 +365,33 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.link_hover_color = nil
     assert !@instance.valid?
+  end
+
+  # medusa_file_group()
+
+  test "medusa_file_group() returns an instance when medusa_file_group_id is set" do
+    @instance.medusa_file_group_id = 50
+    assert_equal @instance.medusa_file_group_id, @instance.medusa_file_group.id
+  end
+
+  test "medusa_file_group() returns nil when medusa_file_group_id is not set" do
+    assert_nil @instance.medusa_file_group
+  end
+
+  # medusa_file_group_id
+
+  test "medusa_file_group_id must be an integer" do
+    @instance.medusa_file_group_id = 3
+    assert @instance.valid?
+    @instance.medusa_file_group_id = "string"
+    assert !@instance.valid?
+  end
+
+  test "medusa_file_group_id must be unique" do
+    @instance.update!(medusa_file_group_id: 3)
+    assert_raises do
+      institutions(:northeast).update!(medusa_file_group_id: 3)
+    end
   end
 
   # name
@@ -397,9 +460,8 @@ class InstitutionTest < ActiveSupport::TestCase
     File.open(file_fixture("escher_lego.jpg"), "r") do |file|
       @instance.upload_banner_image(io: file, extension: "jpg")
     end
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = Institution.banner_image_key(@instance.key, "jpg")
-    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+    key = Institution.banner_image_key(@instance.key, "jpg")
+    assert PersistentStore.instance.object_exists?(key: key)
   end
 
   test "upload_banner_image() updates the footer_image_filename attribute" do
@@ -417,9 +479,8 @@ class InstitutionTest < ActiveSupport::TestCase
     File.open(file_fixture("escher_lego.jpg"), "r") do |file|
       @instance.upload_footer_image(io: file, extension: "jpg")
     end
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = Institution.footer_image_key(@instance.key, "jpg")
-    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+    key = Institution.footer_image_key(@instance.key, "jpg")
+    assert PersistentStore.instance.object_exists?(key: key)
   end
 
   test "upload_footer_image() updates the footer_image_filename attribute" do
@@ -437,9 +498,8 @@ class InstitutionTest < ActiveSupport::TestCase
     File.open(file_fixture("escher_lego.jpg"), "r") do |file|
       @instance.upload_header_image(io: file, extension: "jpg")
     end
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = Institution.header_image_key(@instance.key, "jpg")
-    assert S3Client.instance.object_exists?(bucket: bucket, key: key)
+    key = Institution.header_image_key(@instance.key, "jpg")
+    assert PersistentStore.instance.object_exists?(key: key)
   end
 
   test "upload_header_image() updates the header_image_filename attribute" do

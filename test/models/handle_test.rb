@@ -68,11 +68,37 @@ class HandleTest < ActiveSupport::TestCase
                  @instance.handle
   end
 
+  # institution()
+
+  test "institution() returns the associated unit's institution if set" do
+    @instance.collection = @instance.item = nil
+    @instance.unit = units(:uiuc_unit1)
+    assert_equal @instance.unit.institution, @instance.institution
+  end
+
+  test "institution() returns the associated collection's institution if set" do
+    @instance.unit = @instance.item = nil
+    @instance.collection = collections(:uiuc_collection1)
+    assert_equal @instance.collection.institution, @instance.institution
+  end
+
+  test "institution() returns the associated item's institution if set" do
+    @instance.unit = @instance.collection = nil
+    @instance.item = items(:uiuc_item1)
+    assert_equal @instance.item.institution, @instance.institution
+  end
+
+  test "institution() returns nil if there is no associated unit, collection,
+  or item" do
+    @instance.unit = @instance.collection = @instance.item = nil
+    assert_nil @instance.institution
+  end
+
   # permanent_url()
 
   test "permanent_url() returns a correct value" do
-    expected = [::Configuration.instance.handles[:base_url],
-                @instance.handle].join
+    expected = [::Configuration.instance.handles[:base_url].chomp("/"),
+                @instance.handle].join("/")
     assert_equal expected, @instance.permanent_url
   end
 
@@ -108,7 +134,7 @@ class HandleTest < ActiveSupport::TestCase
 
   test "validate() ensures that the instance is not associated with more than one entity" do
     assert @instance.validate
-    @instance.unit = units(:unit1)
+    @instance.unit = units(:uiuc_unit1)
     assert !@instance.validate
   end
 

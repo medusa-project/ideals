@@ -23,6 +23,7 @@ class CreateItemCommand < Command
   # @return [Item]
   #
   def execute
+    item = nil
     Item.transaction do
       item = Item.create!(submitter:          @submitter,
                           institution:        @institution,
@@ -38,14 +39,15 @@ class CreateItemCommand < Command
                             string:             sp_element.placeholder_text)
       end
       item.save!
-
-      Event.create!(event_type:    Event::Type::CREATE,
-                    item:          item,
-                    user:          @submitter,
-                    after_changes: item.as_change_hash,
-                    description:   @event_description)
-      item
     end
+    # Do this outside of the transaction block because some properties of the
+    # instance don't get set until commit.
+    Event.create!(event_type:    Event::Type::CREATE,
+                  item:          item,
+                  user:          @submitter,
+                  after_changes: item.as_change_hash,
+                  description:   @event_description)
+    item
   end
 
 end

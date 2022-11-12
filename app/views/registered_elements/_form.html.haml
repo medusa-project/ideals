@@ -4,8 +4,6 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  = f.hidden_field :institution_id, value: f.object.institution_id
-
   .form-group
     = f.label :name
     - if f.object.new_record?
@@ -20,9 +18,9 @@
     = f.label :label
     = f.text_field :label, class: "form-control"
   .form-group
-    = f.label :vocabulary_key, "Vocabulary"
-    = f.select(:vocabulary_key, options_for_select(Vocabulary::all.map{ |v| [v.name, v.key] },
-                                                   f.object.vocabulary_key),
+    = f.label :vocabulary_id, "Vocabulary"
+    = f.select(:vocabulary_id, options_for_select(Vocabulary.where(institution: current_institution).order(:name).map{ |v| [v.name, v.id] },
+                                                  f.object.vocabulary_id),
                { include_blank: true }, class: "custom-select")
   .form-group
     = f.label :input_type, "Input Type"

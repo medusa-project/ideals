@@ -3,7 +3,7 @@ require 'test_helper'
 class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    setup_elasticsearch
+    setup_opensearch
     setup_s3
   end
 
@@ -363,7 +363,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   items by default" do
     skip # TODO: this fails intermittently
     Item.reindex_all
-    ElasticsearchClient.instance.refresh
+    OpenSearchClient.instance.refresh
 
     expected_count = Item.non_embargoed.
         where.not(stage: [Item::Stages::SUBMITTING,
@@ -431,7 +431,8 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
              verb: "approve"
          }
     item.bitstreams.each do
-      AmqpHelper::Connector[:ideals].with_parsed_message(Message.outgoing_queue) do |message|
+      queue = item.institution.outgoing_message_queue
+      AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
         assert message.present?
       end
     end

@@ -71,7 +71,7 @@ class UnitsController < ApplicationController
              locals: { object: @unit.errors.any? ? @unit : e },
              status: :bad_request
     else
-      ElasticsearchClient.instance.refresh
+      OpenSearchClient.instance.refresh
       flash['success'] = "Unit \"#{@unit.title}\" created."
       render "create", locals: { unit: @unit }
     end
@@ -92,7 +92,7 @@ class UnitsController < ApplicationController
     flash['error'] = "#{e}"
     redirect_to @unit
   else
-    ElasticsearchClient.instance.refresh
+    OpenSearchClient.instance.refresh
     flash['success'] = "Unit \"#{@unit.title}\" deleted."
     redirect_to(@unit.parent || units_path)
   end
@@ -330,7 +330,7 @@ class UnitsController < ApplicationController
   rescue => e
     flash['error'] = "#{e}"
   else
-    ElasticsearchClient.instance.refresh
+    OpenSearchClient.instance.refresh
     flash['success'] = "Unit \"#{@unit.title}\" undeleted."
   ensure
     redirect_to @unit
@@ -355,7 +355,7 @@ class UnitsController < ApplicationController
              locals: { object: @unit.errors.any? ? @unit : e },
              status: :bad_request
     else
-      ElasticsearchClient.instance.refresh
+      OpenSearchClient.instance.refresh
       flash['success'] = "Unit \"#{@unit.title}\" updated."
       render 'shared/reload'
     end

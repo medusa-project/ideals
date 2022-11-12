@@ -3,13 +3,13 @@ require 'test_helper'
 class UnitPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @unit = units(:unit1)
+    @unit = units(:uiuc_unit1)
   end
 
   # change_parent?()
 
   test "change_parent?() returns false with a nil user" do
-    unit2 = units(:unit2)
+    unit2 = units(:uiuc_unit2)
     policy = UnitPolicy.new(nil, @unit)
     assert !policy.change_parent?(unit2.id)
   end
@@ -18,7 +18,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    unit2   = units(:unit2)
+    unit2   = units(:uiuc_unit2)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.change_parent?(unit2.id)
   end
@@ -27,7 +27,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    unit2   = units(:unit2)
+    unit2   = units(:uiuc_unit2)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.change_parent?(unit2.id)
   end
@@ -38,7 +38,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    unit2   = units(:unit2)
+    unit2   = units(:uiuc_unit2)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.change_parent?(unit2.id)
   end

@@ -47,17 +47,24 @@
 #
 class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
 
+  PASSWORD_MIN_LENGTH             = 8
+  PASSWORD_MIN_UPPERCASE_LETTERS  = 1
+  PASSWORD_MIN_LOWERCASE_LETTERS  = 1
+  PASSWORD_MIN_NUMBERS            = 1
+  PASSWORD_MIN_SPECIAL_CHARACTERS = 1
+  PASSWORD_SPECIAL_CHARACTERS     = "!@#$%^&*"
+
   attr_accessor :activation_token, :registration_token, :reset_token
 
   belongs_to :invitee, inverse_of: :identity
   has_one :user, inverse_of: :identity
 
-  validates :email, presence: true, length: {maximum: 255},
-            format: {with: StringUtils::EMAIL_REGEX},
-            uniqueness: {case_sensitive: false}
+  validates :email, presence: true, length: { maximum: 255 },
+            format: { with: StringUtils::EMAIL_REGEX },
+            uniqueness: { case_sensitive: false }
   validates :name, presence: true
-  validates :password, presence: true, length: {minimum: 6}
-  validate :validate_invited, on: :create
+  validate :validate_password_strength
+  validate :validate_invitee_expiration, on: :create
 
   accepts_nested_attributes_for :user, update_only: true
 
@@ -83,6 +90,19 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
     SecureRandom.urlsafe_base64
   end
 
+  ##
+  # @return [String] Random valid password.
+  #
+  def self.random_password
+    charset   = Array("A".."Z")
+    uppercase = Array.new(6) { charset.sample }.join
+    charset   = Array("a".."z")
+    lowercase = Array.new(6) { charset.sample }.join
+    charset   = Array(1..9)
+    numbers   = Array.new(6) { charset.sample }.join
+    uppercase + lowercase + numbers + "!"
+  end
+
   def activate
     self.update_attribute(:activated, true)
     self.update_attribute(:activated_at, Time.zone.now)
@@ -97,8 +117,10 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   #
   def activation_url
     raise "Activation token is not set." if self.activation_token.blank?
-    base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    "#{base_url}/identities/#{self.id}/activate?token=#{self.activation_token}"
+    sprintf("https://%s/identities/%d/activate?token=%s",
+            self.invitee.institution.fqdn,
+            self.id,
+            self.activation_token)
   end
 
   ##
@@ -149,8 +171,10 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   #
   def password_reset_url
     raise "Reset token is not set." if self.reset_token.blank?
-    base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    "#{base_url}/identities/#{self.id}/reset-password?token=#{self.reset_token}"
+    sprintf("https://%s/identities/%d/reset-password?token=%s",
+            self.invitee.institution.fqdn,
+            self.id,
+            self.reset_token)
   end
 
   ##
@@ -160,8 +184,10 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   #
   def registration_url
     raise "Registration token is not set." if self.registration_token.blank?
-    base_url = ::Configuration.instance.website[:base_url].chomp("/")
-    "#{base_url}/identities/#{self.id}/register?token=#{self.registration_token}"
+    sprintf("https://%s/identities/%d/register?token=%s",
+            self.invitee.institution.fqdn,
+            self.id,
+            self.registration_token)
   end
 
   ##
@@ -213,11 +239,28 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
     update_attribute(:reset_sent_at, nil)
   end
 
+
   private
 
-  def validate_invited
-    if !invitee || invitee.expired?
+  def validate_invitee_expiration
+    if invitee&.expired?
       errors.add(:base, "Identity does not have a current invitation.")
+    end
+  end
+
+  def validate_password_strength
+    if self.password
+      if self.password.length < PASSWORD_MIN_LENGTH
+        errors.add(:password, "must be at least #{PASSWORD_MIN_LENGTH} characters")
+      elsif self.password.gsub(/[^A-Z]/, "").length < PASSWORD_MIN_UPPERCASE_LETTERS
+        errors.add(:password, "must contain at least #{PASSWORD_MIN_UPPERCASE_LETTERS} uppercase letter")
+      elsif self.password.gsub(/[^a-z]/, "").length < PASSWORD_MIN_LOWERCASE_LETTERS
+        errors.add(:password, "must contain at least #{PASSWORD_MIN_LOWERCASE_LETTERS} lowercase letter")
+      elsif self.password.gsub(/[^\d]/, "").length < PASSWORD_MIN_NUMBERS
+        errors.add(:password, "must contain at least #{PASSWORD_MIN_NUMBERS} number")
+      elsif self.password.gsub(/[^#{PASSWORD_SPECIAL_CHARACTERS}]/, "").length < PASSWORD_MIN_SPECIAL_CHARACTERS
+        errors.add(:password, "must contain at least #{PASSWORD_MIN_SPECIAL_CHARACTERS} special character (#{PASSWORD_SPECIAL_CHARACTERS})")
+      end
     end
   end
 

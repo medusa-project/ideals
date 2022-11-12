@@ -40,6 +40,7 @@ class CollectionsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         @collection              = Collection.new(collection_params)
+        @collection.institution  = current_institution
         @collection.primary_unit = Unit.find_by_id(params[:primary_unit_id])
         # We need to save now in order to assign the collection an ID which
         # many of the authorization methods will need. If authorization fails,
@@ -55,7 +56,7 @@ class CollectionsController < ApplicationController
              locals: { object: @collection.errors.any? ? @collection : e },
              status: :bad_request
     else
-      ElasticsearchClient.instance.refresh
+      OpenSearchClient.instance.refresh
       flash['success'] = "Collection \"#{@collection.title}\" created."
       render 'shared/reload'
     end
@@ -80,7 +81,7 @@ class CollectionsController < ApplicationController
       flash['error'] = "#{e}"
       redirect_to @collection
     else
-      ElasticsearchClient.instance.refresh
+      OpenSearchClient.instance.refresh
       flash['success'] = "Collection \"#{title}\" deleted."
       redirect_to(parent || primary_unit)
     end
@@ -358,7 +359,7 @@ class CollectionsController < ApplicationController
   rescue => e
     flash['error'] = "#{e}"
   else
-    ElasticsearchClient.instance.refresh
+    OpenSearchClient.instance.refresh
     flash['success'] = "Collection \"#{@collection.title}\" undeleted."
   ensure
     redirect_to @collection
@@ -385,7 +386,7 @@ class CollectionsController < ApplicationController
              locals: { object: @collection.errors.any? ? @collection : e },
              status: :bad_request
     else
-      ElasticsearchClient.instance.refresh
+      OpenSearchClient.instance.refresh
       flash['success'] = "Collection \"#{@collection.title}\" updated."
       render 'shared/reload'
     end
@@ -396,9 +397,11 @@ class CollectionsController < ApplicationController
 
   def assign_primary_unit
     if params[:primary_unit_id]
+      unit = Unit.find(params[:primary_unit_id])
       @collection.unit_collection_memberships.destroy_all
-      @collection.unit_collection_memberships.build(unit_id: params[:primary_unit_id],
+      @collection.unit_collection_memberships.build(unit_id: unit.id,
                                                     primary: true)
+      @collection.update!(institution_id: unit.institution_id)
     end
   end
 

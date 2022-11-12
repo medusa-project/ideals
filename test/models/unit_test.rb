@@ -3,8 +3,8 @@ require 'test_helper'
 class UnitTest < ActiveSupport::TestCase
 
   setup do
-    setup_elasticsearch
-    @instance = units(:unit1)
+    setup_opensearch
+    @instance = units(:uiuc_unit1)
   end
 
   # create()
@@ -24,12 +24,12 @@ class UnitTest < ActiveSupport::TestCase
     institution = institutions(:uiuc)
     units       = Unit.where(institution: institution)
     units.each(&:reindex)
-    refresh_elasticsearch
+    refresh_opensearch
     count = Unit.search.institution(institution).count
     assert count > 0
 
     Unit.delete_document(units.first.index_id)
-    refresh_elasticsearch
+    refresh_opensearch
     assert_equal count - 1, Unit.search.institution(institution).count
   end
 
@@ -42,7 +42,7 @@ class UnitTest < ActiveSupport::TestCase
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all units" do
-    setup_elasticsearch
+    setup_opensearch
     institution = institutions(:uiuc)
     assert_equal 0, Unit.search.
       institution(institution).
@@ -50,7 +50,7 @@ class UnitTest < ActiveSupport::TestCase
       count
 
     Unit.reindex_all
-    refresh_elasticsearch
+    refresh_opensearch
 
     actual = Unit.search.
       institution(institution).
@@ -64,41 +64,41 @@ class UnitTest < ActiveSupport::TestCase
   # all_administrators()
 
   test "all_administrators() returns the correct users" do
-    admins = units(:unit1_unit2_unit1).all_administrators
+    admins = units(:uiuc_unit1_unit2_unit1).all_administrators
     assert_equal 2, admins.length
   end
 
   # all_administrator_groups()
 
   test "all_administrator_groups() returns the correct users" do
-    groups = units(:unit1_unit2_unit1).all_administrator_groups
+    groups = units(:uiuc_unit1_unit2_unit1).all_administrator_groups
     assert_equal 0, groups.length
   end
 
   # all_children()
 
   test "all_children() returns the correct units" do
-    assert_equal 3, units(:unit1).all_children.count
+    assert_equal 3, units(:uiuc_unit1).all_children.count
   end
 
   # all_parents()
 
   test "all_parents() returns the parents" do
-    result = units(:unit1_unit2_unit1).all_parents
+    result = units(:uiuc_unit1_unit2_unit1).all_parents
     assert_equal 2, result.count
-    assert_equal units(:unit1_unit2), result[0]
-    assert_equal units(:unit1), result[1]
+    assert_equal units(:uiuc_unit1_unit2), result[0]
+    assert_equal units(:uiuc_unit1), result[1]
   end
 
   # as_indexed_json()
 
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
-    assert_equal 13, doc.length
     assert_not_empty doc[Unit::IndexFields::ADMINISTRATORS]
     assert !doc[Unit::IndexFields::BURIED]
     assert_equal "Unit", doc[Unit::IndexFields::CLASS]
     assert_not_empty doc[Unit::IndexFields::CREATED]
+    assert_nil doc[Unit::IndexFields::HANDLE]
     assert_equal @instance.institution.key, doc[Unit::IndexFields::INSTITUTION_KEY]
     assert_equal @instance.introduction, doc[Unit::IndexFields::INTRODUCTION]
     assert_not_empty doc[Unit::IndexFields::LAST_INDEXED]
@@ -187,7 +187,7 @@ class UnitTest < ActiveSupport::TestCase
   end
 
   test "child?() returns true for child units" do
-    assert units(:unit1_unit2).child?
+    assert units(:uiuc_unit1_unit2).child?
   end
 
   # create_default_collection()
@@ -208,7 +208,7 @@ class UnitTest < ActiveSupport::TestCase
   end
 
   test "default_collection() returns nil when there is no  default collection" do
-    @instance = units(:empty)
+    @instance = units(:uiuc_empty)
     assert_nil @instance.default_collection
   end
 
@@ -216,7 +216,7 @@ class UnitTest < ActiveSupport::TestCase
 
   test "destroy() raises an error when there are dependent units" do
     assert_raises ActiveRecord::DeleteRestrictionError do
-      units(:unit1_unit2).destroy!
+      units(:uiuc_unit1_unit2).destroy!
     end
   end
 
@@ -227,7 +227,7 @@ class UnitTest < ActiveSupport::TestCase
   end
 
   test "destroy() succeeds when there are no dependent units or collections" do
-    assert units(:empty).destroy
+    assert units(:uiuc_empty).destroy
   end
 
   # download_count_by_month()
@@ -304,7 +304,7 @@ class UnitTest < ActiveSupport::TestCase
   # exhume!()
 
   test "exhume!() exhumes a buried unit" do
-    @instance = units(:buried)
+    @instance = units(:uiuc_buried)
     @instance.exhume!
     assert !@instance.buried
   end
@@ -358,7 +358,7 @@ class UnitTest < ActiveSupport::TestCase
   end
 
   test "primary_administrator cannot be set on child units" do
-    unit = units(:unit1_unit2)
+    unit = units(:uiuc_unit1_unit2)
     assert unit.valid?
     unit.primary_administrator = users(:local_sysadmin)
     unit.reload
@@ -374,7 +374,7 @@ class UnitTest < ActiveSupport::TestCase
         count
 
     @instance.reindex
-    refresh_elasticsearch
+    refresh_opensearch
 
     assert_equal 1, Unit.search.
         institution(institutions(:uiuc)).
@@ -389,7 +389,7 @@ class UnitTest < ActiveSupport::TestCase
   end
 
   test "root_parent() returns the root parent for child units" do
-    assert_equal @instance, units(:unit1_unit2).root_parent
+    assert_equal @instance, units(:uiuc_unit1_unit2).root_parent
   end
 
   # save()

@@ -9,9 +9,9 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @valid_identifier = "oai:www.example.com:" + items(:uiuc_item1).handle.handle
-    setup_elasticsearch
+    setup_opensearch
     Item.reindex_all
-    refresh_elasticsearch
+    refresh_opensearch
   end
 
   # 2.5.1

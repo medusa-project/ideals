@@ -1,0 +1,48 @@
+- if policy(@institution).edit_preservation?
+  .btn-group.float-right{role: "group"}
+    -# Edit button
+    %button.btn.btn-light.edit-preservation{"data-target":          "#edit-preservation-modal",
+                                            "data-toggle":          "modal",
+                                            type:                   "button",
+                                            "data-institution-key": @institution.key }
+      %i.fa.fa-pencil-alt
+      Edit
+
+.clearfix.mb-3
+
+- if @institution.outgoing_message_queue.blank?
+  .alert.alert-warning
+    = icon_for(:warning)
+    Preservation is currently inactive for this institution due to missing or
+    invalid information below.
+
+%dl
+  %dt Medusa File Group
+  %dd
+    - if @file_group
+      - begin
+        = link_to(@file_group.title, @file_group.url, target: "_blank")
+      - rescue
+        = boolean(false, style: :word, false_value: "Invalid")
+    - else
+      = boolean(false, style: :word, false_value: "Not Set")
+  %dt Outgoing Message Queue
+  %dd
+    - if @institution.outgoing_message_queue
+      %code= @institution.outgoing_message_queue
+    - else
+      = boolean(false, style: :word, false_value: "Not Set")
+  %dt Incoming Message Queue
+  %dd
+    - if @institution.incoming_message_queue
+      %code= @institution.incoming_message_queue
+    - else
+      = boolean(false, style: :word, false_value: "Not Set")
+
+.alert.alert-light
+  = icon_for(:info)
+  Medusa's configuration must contain an entry for this institution in the
+  %code amqp_accrual
+  section, as well as in the
+  %code storage.amqp
+  section.

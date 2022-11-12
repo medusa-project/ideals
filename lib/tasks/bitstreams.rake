@@ -54,7 +54,6 @@ namespace :bitstreams do
   task sync_with_medusa: :environment do
     config           = Configuration.instance
     file_group       = Medusa::FileGroup.with_id(config.medusa[:file_group_id])
-    target_bucket    = config.medusa[:bucket]
     num_in_bucket    = 0
     num_in_medusa_db = 0
     num_updated      = 0
@@ -68,8 +67,7 @@ namespace :bitstreams do
         Bitstream.medusa_key(bs.item.handle.handle,
                              bs.original_filename)
 
-      exists_in_bucket = S3Client.instance.object_exists?(bucket: target_bucket,
-                                                          key:    target_key)
+      exists_in_bucket = PersistentStore.instance.object_exists?(key: target_key)
       num_in_bucket += 1 if exists_in_bucket
 
       exists_in_medusa_db = false

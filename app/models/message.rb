@@ -41,22 +41,6 @@ class Message < ApplicationRecord
                                      message: "%{value} is not a valid operation" }
 
   ##
-  # @return [String] Name of the incoming message queue from the application
-  #                  configuration.
-  #
-  def self.incoming_queue
-    ::Configuration.instance.medusa[:incoming_queue]
-  end
-
-  ##
-  # @return [String] Name of the outgoing message queue from the application
-  #                  configuration.
-  #
-  def self.outgoing_queue
-    ::Configuration.instance.medusa[:outgoing_queue]
-  end
-
-  ##
   # @return [String] Console representation of the instance.
   #
   def as_console
@@ -102,8 +86,8 @@ class Message < ApplicationRecord
     else
       message = ingest_message
     end
-    AmqpHelper::Connector[:ideals].send_message(self.class.outgoing_queue,
-                                                message)
+    queue = self.bitstream.institution.outgoing_message_queue
+    AmqpHelper::Connector[:ideals].send_message(queue, message)
   end
 
 
@@ -114,12 +98,12 @@ class Message < ApplicationRecord
   #
   def delete_message
     {
-        operation: Operation::DELETE,
-        uuid:      self.medusa_uuid,
-        pass_through: {
-            class:      Bitstream.to_s,
-            identifier: self.bitstream_id
-        }
+      operation: Operation::DELETE,
+      uuid:      self.medusa_uuid,
+      pass_through: {
+        class:      Bitstream.to_s,
+        identifier: self.bitstream_id
+      }
     }
   end
 
@@ -128,13 +112,13 @@ class Message < ApplicationRecord
   #
   def ingest_message
     {
-        operation:    Operation::INGEST,
-        staging_key:  self.staging_key,
-        target_key:   self.target_key,
-        pass_through: {
-            class:      Bitstream.to_s,
-            identifier: self.bitstream_id
-        }
+      operation:    Operation::INGEST,
+      staging_key:  self.staging_key,
+      target_key:   self.target_key,
+      pass_through: {
+        class:      Bitstream.to_s,
+        identifier: self.bitstream_id
+      }
     }
   end
 

@@ -6,8 +6,8 @@ services:
       dockerfile: docker/ideals/Dockerfile-test
     depends_on: # N.B: docker-compose will NOT actually wait for these to start, hence the `sleep` in the command
       - postgres
-      - elasticsearch
+      - opensearch
       - handle
       - minio
       - rabbitmq
-    command: bash -c "sleep 30 && bin/rails db:prepare && bin/rails elasticsearch:indexes:create[ideals-test] && bin/rails test && bin/rails zeitwerk:check"
+    command: bash -c "sleep 30 && bin/rails db:prepare && bin/rails opensearch:indexes:create[ideals-test] && bin/rails test && bin/rails zeitwerk:check"
