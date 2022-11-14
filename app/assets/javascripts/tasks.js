@@ -17,7 +17,12 @@ const TasksView = function() {
             const currentPage = $('.pagination li.active > a:first')
                 .text().replace(/[/\D]/g, '');
             const start = (currentPage - 1) * $('[name=limit]').val();
-            const url   = ROOT_URL + "/tasks?start=" + start;
+
+            let path = "/tasks";
+            if (window.location.href.match(/all-tasks/)) {
+                path = "/all-tasks";
+            }
+            const url = ROOT_URL + path + "?start=" + start;
 
             $.ajax({
                 url: url,
