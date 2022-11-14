@@ -7,8 +7,8 @@
     - @file_sizes.each do |row|
       %tr
         %td= link_to(row['name'], institution_path(row['id']))
-        %td= number_to_human_size(row['sum'])
-        %td= ((row['sum'] / @total_file_size.to_f) * 100).round(1)
+        %td= number_to_human_size(row['sum'].to_i)
+        %td= ((row['sum'].to_i / @total_file_size.to_f) * 100).round(1)
     %tr
       %td Total
       %td= number_to_human_size(@total_file_size)

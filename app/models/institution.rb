@@ -122,11 +122,10 @@ class Institution < ApplicationRecord
   # @return [Enumerable<Hash>]
   #
   def self.file_sizes
-    sql = "SELECT ins.id, ins.name, SUM(length)
-      FROM bitstreams b
-      LEFT JOIN items i on b.item_id = i.id
-      LEFT JOIN institutions ins on i.institution_id = ins.id
-      WHERE ins.name IS NOT NULL
+    sql = "SELECT ins.id, ins.name, SUM(b.length)
+      FROM institutions ins
+      LEFT JOIN items i ON i.institution_id = ins.id
+      LEFT JOIN bitstreams b ON b.item_id = i.id
       GROUP BY ins.id
       ORDER BY ins.name;"
     connection.execute(sql)
@@ -181,9 +180,8 @@ class Institution < ApplicationRecord
   #
   def self.item_counts
     sql = "SELECT ins.id, ins.name, COUNT(i.id) AS count
-      FROM items i
-      LEFT JOIN institutions ins ON i.institution_id = ins.id
-      WHERE ins.id IS NOT NULL
+      FROM institutions ins
+      LEFT JOIN items i ON ins.id = i.institution_id
       GROUP BY ins.id
       ORDER BY ins.name;"
     connection.execute(sql)

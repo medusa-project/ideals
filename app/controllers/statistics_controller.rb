@@ -11,7 +11,7 @@ class StatisticsController < ApplicationController
   #
   def files
     @file_sizes      = Institution.file_sizes
-    @total_file_size = @file_sizes.map{ |r| r['sum'] }.sum
+    @total_file_size = @file_sizes.map{ |r| r['sum'].to_i }.sum
     render partial: "files"
   end
 
