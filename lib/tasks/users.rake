@@ -4,19 +4,23 @@ namespace :users do
 
   desc "Create a local-identity user"
   task :create_local, [:email, :password, :name, :institution_key] => :environment do |task, args|
+    institution = Institution.find_by_key(args[:institution_key])
+    raise ArgumentError, "Institution not found: #{institution}" unless institution
     user = LocalUser.create_manually(email:       args[:email],
                                      password:    args[:password],
                                      name:        args[:name],
-                                     institution: Institution.find_by_key(args[:institution_key]))
+                                     institution: institution)
     user.save!
   end
 
   desc "Create a local-identity sysadmin user"
   task :create_local_sysadmin, [:email, :password, :name, :institution_key] => :environment do |task, args|
+    institution = Institution.find_by_key(args[:institution_key])
+    raise ArgumentError, "Institution not found: #{institution}" unless institution
     user = LocalUser.create_manually(email:       args[:email],
                                      password:    args[:password],
                                      name:        args[:name],
-                                     institution: Institution.find_by_key(args[:institution_key]))
+                                     institution: institution)
     user.user_groups << UserGroup.sysadmin
     user.save!
   end
