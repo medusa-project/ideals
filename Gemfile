@@ -65,10 +65,6 @@ group :development do
   gem "capistrano-bundler"
   gem "capistrano-rails"
   gem "capistrano-rbenv"
-  # use rubocop linter to support consistent style
-  gem "rubocop", require: false
-  gem "rubocop-performance"
-  gem "rubocop-rails"
   gem 'yard'
 end
 
