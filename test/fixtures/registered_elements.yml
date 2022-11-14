@@ -18,6 +18,7 @@ uiuc_unused:
   name:             unused
   label:            Unused
   uri:              http://example.org/unused
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:       This element is not attached to any resources.
 
@@ -26,6 +27,7 @@ uiuc_dc_contributor:
   name:             dc:contributor
   label:            Contributor
   uri:              http://purl.org/dc/contributor
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -34,6 +36,7 @@ uiuc_dc_contributor_advisor:
   name:             dc:contributor:advisor
   label:            Advisor
   uri:              http://purl.org/dc/advisor
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -42,6 +45,7 @@ uiuc_dc_contributor_committeeChair:
   name:             dc:contributor:committeeChair
   label:            Committee Chair
   uri:              http://purl.org/dc/committeeChair
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -50,6 +54,7 @@ uiuc_dc_coverage_spatial:
   name:             dc:coverage:spatial
   label:            Spatial Coverage
   uri:              http://purl.org/dc/coverageSpatial
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -58,6 +63,7 @@ uiuc_dc_creator:
   name:             dc:creator
   label:            Creator
   uri:              http://purl.org/dc/creator
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -93,6 +99,7 @@ uiuc_dc_description_abstract:
   name:             dc:description:abstract
   label:            Abstract
   uri:              http://purl.org/dc/abstract
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -101,6 +108,7 @@ uiuc_dc_description_sponsorship:
   name:             dc:description:sponsorship
   label:            Sponsorship
   uri:              http://purl.org/dc/sponsorship
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -109,6 +117,7 @@ uiuc_dc_identifier:
   name:             dc:identifier
   label:            Identifier
   uri:              http://purl.org/dc/identifier
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -117,6 +126,7 @@ uiuc_dc_identifier_bibliographicCitation:
   name:             dc:identifier:bibliographicCitation
   label:            Bibliographic Citation
   uri:              http://purl.org/dc/bibliographicCitation
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -125,6 +135,7 @@ uiuc_dc_identifier_uri:
   name:             dc:identifier:uri
   label:            URI
   uri:              http://purl.org/dc/identifierURI
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -133,6 +144,7 @@ uiuc_dc_language:
   name:             dc:language
   label:            Language
   uri:              http://purl.org/dc/language
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -141,6 +153,7 @@ uiuc_dc_publisher:
   name:             dc:publisher
   label:            Publisher
   uri:              http://purl.org/dc/publisher
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -149,6 +162,7 @@ uiuc_dc_relation_ispartof:
   name:             dc:relation:ispartof
   label:            Is Part Of
   uri:              http://purl.org/dc/ispartof
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -157,6 +171,7 @@ uiuc_dc_rights:
   name:             dc:rights
   label:            Rights
   uri:              http://purl.org/dc/rights
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -183,6 +198,7 @@ uiuc_dc_type:
   name:             dc:type
   label:            Type
   uri:              http://purl.org/dc/type
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -191,6 +207,7 @@ uiuc_dc_type_genre:
   name:             dc:type:genre
   label:            Genre
   uri:              http://purl.org/dc/typeGenre
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -199,6 +216,7 @@ uiuc_dcterms_available:
   name:             dcterms:available
   label:            Date Available
   uri:              http://purl.org/dc/terms/available
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -207,6 +225,7 @@ uiuc_dcterms_identifier:
   name:             dcterms:identifier
   label:            Identifier
   uri:              http://purl.org/dc/terms/identifier
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -215,6 +234,7 @@ uiuc_thesis_degree_department:
   name:             thesis:degree:department
   label:            Degree Department
   uri:              http://example.org/degree/department
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
@@ -223,6 +243,7 @@ uiuc_thesis_degree_discipline:
   name:             thesis:degree:discipline
   label:            Degree Discipline
   uri:              http://example.org/degree/discipline
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -231,6 +252,7 @@ uiuc_thesis_degree_grantor:
   name:             thesis:degree:grantor
   label:            Degree Grantor
   uri:              http://example.org/degree/grantor
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
@@ -239,6 +261,7 @@ uiuc_thesis_degree_level:
   name:             thesis:degree:level
   label:            Degree Level
   uri:              http://example.org/degree/level
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
@@ -247,6 +270,7 @@ uiuc_thesis_degree_name:
   name:             thesis:degree:name
   label:            Degree Name
   uri:              http://example.org/degree/name
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
 
@@ -255,5 +279,6 @@ uiuc_thesis_degree_program:
   name:             thesis:degree:program
   label:            Degree Program
   uri:              http://example.org/degree/program
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_04_150846) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_14_152753) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -468,7 +468,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_150846) do
     t.string "uri"
     t.string "label", null: false
     t.bigint "institution_id", null: false
-    t.string "input_type"
+    t.string "input_type", default: "text_field", null: false
     t.string "highwire_mapping"
     t.bigint "vocabulary_id"
     t.index ["institution_id", "uri"], name: "index_registered_elements_on_institution_id_and_uri", unique: true

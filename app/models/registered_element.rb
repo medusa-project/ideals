@@ -59,7 +59,7 @@ class RegisteredElement < ApplicationRecord
   has_many :metadata_profile_elements, inverse_of: :registered_element
   has_many :submission_profile_elements, inverse_of: :registered_element
 
-  # input_type
+  # input_type (we allow blank because the database will assign a default value)
   validates :input_type, inclusion: { in: InputType.all }, allow_blank: true
 
   # label
@@ -68,6 +68,7 @@ class RegisteredElement < ApplicationRecord
   # name
   validates_format_of :name, with: /\A[A-Za-z0-9_\-:]+\z/, allow_blank: false
 
+  before_save :assign_default_input_type
   before_save :restrict_changes_to_required_elements
   before_destroy :restrict_changes_to_required_elements
 
@@ -136,6 +137,10 @@ class RegisteredElement < ApplicationRecord
 
 
   private
+
+  def assign_default_input_type
+    self.input_type ||= InputType::TEXT_FIELD
+  end
 
   def restrict_changes_to_required_elements
     if SYSTEM_REQUIRED_ELEMENTS.include?(self.name_was)

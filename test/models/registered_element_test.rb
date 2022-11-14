@@ -99,8 +99,10 @@ class RegisteredElementTest < ActiveSupport::TestCase
     end
   end
 
-  test "input_type is allowed to be blank" do
+  test "input_type is assigned a default value before save" do
     @instance.update!(input_type: nil)
+    @instance.reload
+    assert_equal RegisteredElement::InputType::TEXT_FIELD, @instance.input_type
   end
 
   # label
