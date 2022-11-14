@@ -19,11 +19,12 @@ This is a getting-started guide and brief technical manual for developers.
     * [Dependencies](#Dependencies)
     * [Installation (with Docker)](#Installation (with Docker))
     * [Installation (without Docker)](#Installation (without Docker))
-* [High-Level Design](#High-Level Design)
+* [Design Concepts](#Design Concepts)
     * [Authorization](#Authorization) 
     * [Content Storage](#Content Storage)
     * [OpenSearch](#OpenSearch)
     * [JavaScript](#JavaScript)
+    * [Modal Windows](#Modal Windows)
     * [Handles](#Handles)
     * [File Format Support](#File Format Support)
     * [Multi-Tenancy](#Multi-Tenancy)
@@ -165,7 +166,7 @@ kind:
 rails users:create_local_sysadmin[email,password,name,institution_key]
 ```
 
-# High-Level Design
+# Design Concepts
 
 ## Authorization
 
@@ -283,6 +284,46 @@ $(document).ready(function() {
     }
 });
 ```
+
+## Modal Windows
+
+The web application makes heavy use of modal windows, mainly for contextual
+forms. The content for most modals is loaded on-demand via XHR which enables
+the rest of the page to load faster. The basic idea is, from a template, to
+require `shared/ajax_modal`:
+
+```haml
+= render partial: "shared/ajax_modal",
+         locals:  { id:    "add-child-unit-modal",
+                    title: "Add Child Unit" }
+```
+
+This will give you nothing more than an empty, hidden modal. Next, we add a
+button (in the same template) to open it:
+
+```haml
+%button.btn.btn-light.add-child-unit{"data-unit-id": @unit.id,
+                                     "data-target":  "#add-child-unit-modal",
+                                     "data-toggle":  "modal",
+                                     role:           "button"}
+  %i.fa.fa-plus
+  Add Child Unit
+```
+
+Now the modal can open, but it's still empty. So we add some JavaScript to fill
+in its body (the div with class `modal-body`) when it opens (or when the button
+that opens it is clicked):
+
+```javascript
+$(".add-child-unit").on("click", function() {
+    const url = "/units/new?parent_id=" + unitID;
+    $.get(url, function(data) {
+        $("#add-child-unit-modal .modal-body").html(data);
+    });
+});
+```
+
+Of course, the `/units/new` route here must supply the necessary form partial.
 
 ## Handles
 
