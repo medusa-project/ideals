@@ -38,13 +38,14 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
 
   test "perform() assigns a correct filename to the zip file when an item ID
   argument is provided" do
-    filename   = "item-1234.zip"
     bitstreams = [bitstreams(:approved_in_permanent),
                   bitstreams(:license_bundle)]
+    item_id    = bitstreams[0].item.id
+    filename   = "item-#{item_id}.zip"
     download   = Download.create(institution: institutions(:uiuc),
                                  filename: filename)
 
-    ZipBitstreamsJob.new.perform(bitstreams, download, 1234)
+    ZipBitstreamsJob.new.perform(bitstreams, download, item_id)
 
     download.reload
     assert_equal filename, download.filename

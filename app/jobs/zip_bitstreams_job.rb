@@ -19,7 +19,7 @@ class ZipBitstreamsJob < ApplicationJob
     institution = nil
     if item_id
       filename    = "item-#{item_id}.zip"
-      institution = Item.find(item_id)
+      institution = Item.find(item_id).institution
     else
       filename = "#{SecureRandom.hex[0..15]}.zip"
     end
