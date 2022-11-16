@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_14_152753) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_15_145146) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -283,6 +283,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_14_152753) do
     t.integer "medusa_file_group_id"
     t.string "outgoing_message_queue"
     t.string "incoming_message_queue"
+    t.boolean "has_favicon", default: false, null: false
     t.index ["default"], name: "index_institutions_on_default"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true

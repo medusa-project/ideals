@@ -378,14 +378,27 @@ class InstitutionsController < ApplicationController
                                         :feedback_email,
                                         :footer_background_color,
                                         :header_background_color, :link_color,
-                                        :link_hover_color,
-                                        :main_website_url, :primary_color,
-                                        :primary_hover_color, :service_name,
-                                        :welcome_html)
+                                        :link_hover_color, :main_website_url,
+                                        :primary_color, :primary_hover_color,
+                                        :service_name, :welcome_html)
   end
 
   def upload_images
     p = params[:institution]
+    if p[:favicon]
+      tempfile = Tempfile.new([SecureRandom.hex,
+                               ".#{p[:favicon].original_filename.split(".").last}"])
+      tempfile.close
+      # We need to pass the temp file's path to an asynchronous job. But our
+      # reference to it here will get garbage collected, causing it to get
+      # deleted before the job runs, so we have to prevent that from happening.
+      # (The job will be responsible for deleting it.)
+      ObjectSpace.undefine_finalizer(tempfile)
+      File.open(tempfile, "wb") do |file|
+        file.write(p[:favicon].read)
+      end
+      UploadFaviconsJob.perform_later(tempfile.path, @institution)
+    end
     if p[:banner_image]
       @institution.upload_banner_image(io:        p[:banner_image],
                                        extension: p[:banner_image].original_filename.split(".").last)

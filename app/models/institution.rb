@@ -23,6 +23,10 @@
 # * `footer_image_filename`   Filename of the footer image, which is expected
 #                             to exist in the application S3 bucket under
 #                             {image_key_prefix}.
+# * `has_favicon`             Whether the instance has a favicon, i.e. whether
+#                             an institution admin has uploaded one. Unlike the
+#                             other image-related attributes, the favicon's
+#                             filenames are fixed.
 # * `header_background_color` Theme background color of the header.
 # * `header_image_filename`   Filename of the header image, which is expected
 #                             to exist in the application S3 bucket under
@@ -116,6 +120,14 @@ class Institution < ApplicationRecord
   #
   def self.default
     Institution.find_by_default(true)
+  end
+
+  ##
+  # @param size [Integer]
+  # @return [String]
+  #
+  def self.favicon_filename(size:)
+    "favicon-#{size}x#{size}.png"
   end
 
   ##
@@ -273,6 +285,19 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @param size [Integer] One of the sizes defined in
+  #                       {InstitutionsHelper#FAVICONS}.
+  # @return [String] Presigned S3 URL.
+  #
+  def favicon_url(size:)
+    return nil unless self.has_favicon
+    key = [self.class.image_key_prefix(self.key),
+           self.class.favicon_filename(size: size)].join
+    PersistentStore.instance.presigned_url(key:        key,
+                                           expires_in: 1.week.to_i)
+  end
+
+  ##
   # @return [String] Presigned S3 URL.
   #
   def footer_image_url
@@ -347,6 +372,58 @@ class Institution < ApplicationRecord
     filename = self.class.banner_image_filename(extension)
     upload_theme_image(io: io, filename: filename)
     self.update!(banner_image_filename: filename)
+  end
+
+  ##
+  # Uploads a favicon image to the application bucket, generates several
+  # resized derivatives of it, and uploads those too.
+  #
+  # The original or master favicon is saved in the bucket as
+  # `favicon-original.png`. The resized derivatives are saved as
+  # `favicon-WxH.png`.
+  #
+  # It is recommended to **not** invoke this from a controller action, and
+  # instead invoke {UploadFaviconsJob} asynchronously.
+  #
+  # @param io [IO]
+  # @param task [Task] Optional.
+  # @see UploadFaviconsJob
+  #
+  def upload_favicon(io:, task: nil)
+    # This method works differently than the other image upload methods,
+    # because we are not simply putting contents of the io argument into the
+    # bucket. Instead we are writing it to a temp file, making a bunch of
+    # different sized derivatives of it, and uploading those.
+    Dir.mktmpdir do |tmpdir|
+      tempfile = Tempfile.new(["#{self.class}-#{self.key}-favicon", ".png"])
+      begin
+        tempfile.write(io.read)
+        tempfile.close
+        # Upload the "master favicon"
+        key_prefix = self.class.image_key_prefix(self.key)
+        dest_key   = key_prefix + "favicon-original.png"
+        PersistentStore.instance.put_object(key:             dest_key,
+                                            institution_key: self.key,
+                                            path:            tempfile.path)
+        # Generate a bunch of resized derivatives and upload them
+        InstitutionsHelper::FAVICONS.each_with_index do |icon, index|
+          dest_path = "#{tmpdir}/favicon-#{icon[:size]}x#{icon[:size]}.png"
+          `vipsthumbnail #{tempfile.path} --smartcrop=centre --size=#{icon[:size]}x#{icon[:size]} -o #{dest_path}`
+          dest_key  = "#{key_prefix}favicon-#{icon[:size]}x#{icon[:size]}.png"
+          PersistentStore.instance.put_object(key:             dest_key,
+                                              institution_key: self.key,
+                                              path:            dest_path)
+          task&.progress(index / InstitutionsHelper::FAVICONS.length.to_f)
+        end
+      rescue => e
+        task&.fail(detail: e.message, backtrace: e.backtrace)
+        raise e
+      ensure
+        tempfile.unlink
+      end
+    end
+    self.update!(has_favicon: true)
+    task&.succeed
   end
 
   ##

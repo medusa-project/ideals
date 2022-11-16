@@ -26,6 +26,12 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal institutions(:uiuc), Institution.default
   end
 
+  # favicon_filename()
+
+  test "favicon_filename() returns a correct filename" do
+    assert_equal "favicon-128x128.png", Institution.favicon_filename(size: 128)
+  end
+
   # file_sizes()
 
   test "file_sizes() returns a correct value" do
@@ -35,7 +41,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   # footer_image_filename()
 
-  test "footer_image_filename() returns a correct key" do
+  test "footer_image_filename() returns a correct filename" do
     assert_equal "footer.png", Institution.footer_image_filename("png")
   end
 
@@ -48,7 +54,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   # header_image_filename()
 
-  test "header_image_filename() returns a correct key" do
+  test "header_image_filename() returns a correct filename" do
     assert_equal "header.png", Institution.header_image_filename("png")
   end
 
@@ -235,6 +241,18 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal 3, actual.length
     assert_kind_of Time, actual[0]['month']
     assert_equal expected, actual[1]['dl_count']
+  end
+
+  # favicon_url()
+
+  test "favicon_url() returns a correct URL when the instance has a favicon" do
+    @instance.has_favicon = true
+    assert @instance.favicon_url(size: 128).start_with?("http://")
+  end
+
+  test "favicon_url() returns nil when the instance does not have a favicon" do
+    @instance.has_favicon = false
+    assert_nil @instance.favicon_url(size: 128)
   end
 
   # footer_background_color
@@ -470,6 +488,36 @@ class InstitutionTest < ActiveSupport::TestCase
       @instance.upload_banner_image(io: file, extension: "jpg")
     end
     assert_equal "banner.jpg", @instance.banner_image_filename
+  end
+
+  # upload_favicon()
+
+  test "upload_favicon() uploads favicons" do
+    setup_s3
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_favicon(io: file)
+    end
+    key = "institutions/#{@instance.key}/theme/favicon-original.png"
+    assert PersistentStore.instance.object_exists?(key: key)
+
+    InstitutionsHelper::FAVICONS.each do |icon|
+      key = "institutions/#{@instance.key}/theme/favicon-#{icon[:size]}x#{icon[:size]}.png"
+      assert PersistentStore.instance.object_exists?(key: key)
+    end
+  end
+
+  test "upload_favicon() succeeds the given Task" do
+    setup_s3
+    task = Task.create!(name:          self.class.name,
+                        institution:   @instance,
+                        indeterminate: false,
+                        started_at:    Time.now,
+                        status_text:   "Processing favicons")
+    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+      @instance.upload_favicon(io: file, task: task)
+    end
+    task.reload
+    assert task.succeeded?
   end
 
   # upload_footer_image()

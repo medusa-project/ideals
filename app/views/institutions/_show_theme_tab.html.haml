@@ -37,24 +37,33 @@
         = @institution.primary_hover_color
 
 .row.mb-3
-  .col-sm-4
+  .col-sm-3
     .card
       .card-header Link Color
       .card-body{style: "background-color: #{@institution.link_color}; "\
                         "color: #{ColorUtils.optimize_text_contrast(@institution.link_color)}"}
         = @institution.link_color
-  .col-sm-4
+  .col-sm-3
     .card
       .card-header Link Hover Color
       .card-body{style: "background-color: #{@institution.link_hover_color}; "\
                         "color: #{ColorUtils.optimize_text_contrast(@institution.link_hover_color)}"}
         = @institution.link_hover_color
-  .col-sm-4
+  .col-sm-3
     .card
       .card-header Active Link Color
       .card-body{style: "background-color: #{@institution.active_link_color}; "\
                         "color: #{ColorUtils.optimize_text_contrast(@institution.active_link_color)}"}
         = @institution.active_link_color
+  .col-sm-3
+    .card
+      .card-header Master Favicon
+      .card-body
+        - if @institution.has_favicon
+          - size = InstitutionsHelper::FAVICONS.sort{ |a,b| a[:size] <=> b[:size] }.last[:size]
+          = image_tag(@institution.favicon_url(size: size))
+        - else
+          No favicon set.
 
 .row
   .col-sm-4

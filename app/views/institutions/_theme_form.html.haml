@@ -45,6 +45,16 @@
     = f.label :active_link_color, "Active Link Color"
     = f.text_field :active_link_color, class: "form-control"
 
+  .form-group
+    = f.label :favicon, "Master Favicon"
+    %br
+    = f.file_field :favicon, directory: false
+    %p.text-muted
+      = icon_for(:info)
+      Multiple downscaled copies of this image will be made automatically to
+      suit different devices. It should be square and at least 192 pixels on a
+      side. PNG format is recommended.
+
   -# UIUC is using custom responsive images
   - if f.object.key != "uiuc"
     .form-group

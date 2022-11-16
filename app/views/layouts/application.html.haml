@@ -11,6 +11,7 @@
       = yield :title
       |
       = current_institution.service_name
+    = institution_favicon_tags
     = stylesheet_link_tag 'application', media: 'all'
     %link{rel: "stylesheet", href: custom_styles_path}
     = javascript_include_tag 'application'
