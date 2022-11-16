@@ -36,7 +36,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "file_sizes() returns a correct value" do
     sizes = Institution.file_sizes
-    assert_equal 1, sizes.count
+    assert_equal Institution.count, sizes.count
   end
 
   # footer_image_filename()
@@ -76,7 +76,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "item_counts() returns a correct value" do
     counts = Institution.item_counts
-    assert_equal 2, counts.count
+    assert_equal Institution.count, counts.count
   end
 
   # create()
