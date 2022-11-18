@@ -20,7 +20,7 @@ module CollectionsHelper
     end
     collections = Collection.search.
         institution(current_institution).
-        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+        order("#{Collection::IndexFields::TITLE}.sort").
         limit(999)
     if unit
       collections.primary_unit(unit)

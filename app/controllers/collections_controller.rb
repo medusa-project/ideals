@@ -28,7 +28,7 @@ class CollectionsController < ApplicationController
         institution(current_institution).
         filter(Collection::IndexFields::PARENT, @collection.id).
         filter(Collection::IndexFields::UNIT_DEFAULT, false).
-        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+        order("#{Collection::IndexFields::TITLE}.sort").
         limit(999)
     render partial: "children"
   end
@@ -155,7 +155,7 @@ class CollectionsController < ApplicationController
         institution(current_institution).
         aggregations(false).
         query_searchable_fields(@permitted_params[:q]).
-        order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+        order("#{Collection::IndexFields::TITLE}.sort").
         start(@start).
         limit(@window)
     @count            = @collections.count
@@ -239,7 +239,7 @@ class CollectionsController < ApplicationController
       institution(current_institution).
       parent_collection(@collection).
       include_children(true).
-      order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+      order("#{Collection::IndexFields::TITLE}.sort").
       limit(999)
     render partial: "show_about_tab"
   end

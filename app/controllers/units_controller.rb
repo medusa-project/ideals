@@ -220,7 +220,7 @@ class UnitsController < ApplicationController
     @collections = Collection.search.
       institution(current_institution).
       filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
-      order(RegisteredElement.sortable_field(::Configuration.instance.elements[:title])).
+      order("#{Collection::IndexFields::TITLE}.sort").
       limit(999)
     @subunits = Unit.search.
       institution(current_institution).
