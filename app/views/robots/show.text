@@ -1,8 +1,10 @@
 User-agent: *
 Disallow: /auth
+Disallow: /health
 Disallow: /identities
 Disallow: /invitees
 Disallow: /login
 Disallow: /logout
 Disallow: /netid-login
+Disallow: /oai-pmh
 Disallow: /reset-password

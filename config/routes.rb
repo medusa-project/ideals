@@ -157,6 +157,7 @@ Rails.application.routes.draw do
   match "/reset-password", to: "password_resets#get", via: :get
   match "/reset-password", to: "password_resets#post", via: :post
   resources :registered_elements, param: :name, path: "elements"
+  match "/robots", to: "robots#show", via: :get
   match "/settings", to: "settings#index", via: :get
   match "/settings", to: "settings#update", via: :patch
   match "/statistics", to: "statistics#index", via: :get
