@@ -61,6 +61,7 @@ class Institution < ApplicationRecord
            class_name: "UserGroup", source: :user_group
   has_many :downloads
   has_many :imports
+  has_many :index_pages
   has_many :invitees
   has_many :metadata_profiles
   has_many :registered_elements
@@ -95,7 +96,7 @@ class Institution < ApplicationRecord
   # N.B.: elements must be added AFTER vocabularies!
   after_create :add_default_vocabularies, :add_default_elements,
                :add_default_metadata_profile, :add_default_submission_profile,
-               :add_defining_user_group
+               :add_default_index_pages, :add_defining_user_group
 
   ##
   # @param extension [String]
@@ -552,6 +553,17 @@ class Institution < ApplicationRecord
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
                                    label:            "Dissertation/Thesis Degree Program")
     self.save!
+  end
+
+  ##
+  # N.B.: this must be invoked AFTER add_default_elements().
+  #
+  def add_default_index_pages
+    page    = self.index_pages.build(name: "Creators")
+    element = self.registered_elements.find_by_name("dc:creator")
+    raise "No creator element (this is a bug)" unless element
+    page.registered_elements << element
+    page.save!
   end
 
   def add_default_metadata_profile

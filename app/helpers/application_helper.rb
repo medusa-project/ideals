@@ -73,6 +73,8 @@ module ApplicationHelper
       break unless object
       if crumbs.any?
         case object.to_s
+        when "IndexPage"
+          crumbs.unshift({label: "Index Pages", url: index_pages_path})
         when "Institution"
           crumbs.unshift({label: "All Institutions", url: institutions_path})
         when "Invitee"
@@ -322,6 +324,8 @@ module ApplicationHelper
       icon = "fa fa-file"
     when "Import"
       icon = "fa fa-upload"
+    when "IndexPage"
+      icon = "far fa-file-alt"
     when "Institution"
       icon = "fa fa-university"
     when "Item"

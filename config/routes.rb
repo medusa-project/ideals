@@ -60,6 +60,7 @@ Rails.application.routes.draw do
     match "/delete-all-files", to: "imports#delete_all_files", via: :post
     match "/upload-file", to: "imports#upload_file", via: :post
   end
+  resources :index_pages, path: "index-pages"
   resources :institutions, except: [:edit, :update], param: :key do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/access", to: "institutions#show_access", via: :get,

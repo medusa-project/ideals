@@ -90,6 +90,17 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal 28, institution.registered_elements.count
   end
 
+  test "create() adds a default index page" do
+    institution = Institution.create!(name:             "New Institution",
+                                      service_name:     "New",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      main_website_url: "https://example.net")
+    assert_equal 1, institution.index_pages.count
+    page = institution.index_pages.first
+    assert page.registered_elements.count > 0
+  end
+
   test "create() adds a default metadata profile" do
     institution = Institution.create!(name:             "New Institution",
                                       service_name:     "New",

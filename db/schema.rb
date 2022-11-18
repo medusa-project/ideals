@@ -235,6 +235,21 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_15_145146) do
     t.index ["user_id"], name: "index_imports_on_user_id"
   end
 
+  create_table "index_pages", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "institution_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution_id"], name: "index_index_pages_on_institution_id"
+    t.index ["name", "institution_id"], name: "index_index_pages_on_name_and_institution_id", unique: true
+  end
+
+  create_table "index_pages_registered_elements", id: false, force: :cascade do |t|
+    t.bigint "index_page_id", null: false
+    t.bigint "registered_element_id", null: false
+    t.index ["index_page_id", "registered_element_id"], name: "index_index_pages_r_es_on_index_page_id_and_r_e_id", unique: true
+  end
+
   create_table "institution_administrator_groups", force: :cascade do |t|
     t.bigint "institution_id"
     t.bigint "user_group_id"

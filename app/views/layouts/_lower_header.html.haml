@@ -30,6 +30,11 @@
               = link_to "Items By Publication Date",
                         items_path(sort: re.indexed_sort_field,
                                    direction: "desc"), class: "dropdown-item"
+            - index_pages = current_institution.index_pages
+            - if index_pages.any?
+              .dropdown-divider
+              - index_pages.order(:name).each do |index_page|
+                = link_to index_page.name, index_page, class: "dropdown-item"
         - if current_institution.about_url || current_institution.about_html
           %li#policies-nav.nav-item
             - if current_institution.about_url.present?
