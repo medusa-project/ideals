@@ -15,25 +15,27 @@ This is a getting-started guide and brief technical manual for developers.
 
 # Table of Contents
 
-* [Getting Started](#Getting Started)
+* [GettingStarted](#GettingStarted)
     * [Dependencies](#Dependencies)
-    * [Installation (with Docker)](#Installation (with Docker))
-    * [Installation (without Docker)](#Installation (without Docker))
-* [Design Concepts](#Design Concepts)
+    * [InstallationWithDocker](#InstallationWithDocker)
+    * [InstallationWithoutDocker](#InstallationWithoutDocker)
+* [DesignConcepts](#DesignConcepts)
     * [Authorization](#Authorization) 
-    * [Content Storage](#Content Storage)
+    * [ContentStorage](#ContentStorage)
     * [OpenSearch](#OpenSearch)
+    * [AsynchronousJobs](#AsynchronousJobs)
     * [JavaScript](#JavaScript)
-    * [Modal Windows](#Modal Windows)
+    * [ModalWindows](#ModalWindows)
     * [Handles](#Handles)
-    * [File Format Support](#File Format Support)
+    * [FileFormatSupport](#FileFormatSupport)
     * [Multi-Tenancy](#Multi-Tenancy)
-* [Branches & Environments](#Branches & Environments)
-* [OpenSearch Schema Migration](#OpenSearch Schema Migration)
-* [Code Documentation](#Code Documentation)
-* [Tests & Continuous Integration](#Tests & Continuous Integration)
+    * [Stylesheets](#Stylesheets)
+* [BranchesAndEnvironments](#BranchesAndEnvironments)
+* [OpenSearchSchemaMigration](#OpenSearchSchemaMigration)
+* [CodeDocumentation](#CodeDocumentation)
+* [TestsAndContinuousIntegration](#TestsAndContinuousIntegration)
 
-# Getting Started
+# GettingStarted
 
 ## Dependencies
 
@@ -50,7 +52,7 @@ This is a getting-started guide and brief technical manual for developers.
 The following sections explain how to get the application working alongside all
 of these dependencies, with and without Docker.
 
-## Installation (with Docker)
+## InstallationWithDocker
 
 `./docker-run.sh` will start the application stack in development mode in
 Docker. The working copy is mounted in the app container, so changes to
@@ -60,7 +62,7 @@ With that running, skip to the [Migrate Content](#Migrate-content-from-DSpace)
 section, if you want to do that. The `rails` in the commands must be changed to
 `./docker-run.sh`, so `rails <task>` becomes `./docker-run.sh <task>`.
 
-## Installation (without Docker)
+## InstallationWithoutDocker
 
 ### Install everything
 
@@ -166,7 +168,7 @@ kind:
 rails users:create_local_sysadmin[email,password,name,institution_key]
 ```
 
-# Design Concepts
+# DesignConcepts
 
 ## Authorization
 
@@ -205,7 +207,7 @@ failure reasons.
 
 See the ApplicationPolicy class for more information.
 
-## Content Storage
+## ContentStorage
 
 Within the application S3 bucket, content is laid out in the following
 structure:
@@ -260,6 +262,23 @@ OpenSearch.
 There are also several OpenSearch-related rake tasks under the `opensearch:`
 prefix that can assist with index management and reindexing.
 
+## AsynchronousJobs
+
+In order to keep the web server responsive, all operations that would take more
+than a small fraction of a second to complete need to run asynchronously. This
+is accomplished using Rails' ActiveJob feature.
+
+The async adapter is used to run jobs. This adapter simply runs them in a
+separate thread within one of the web server's worker processes, with no fancy
+features like retrying failed jobs etc. The jobs that IDEALS runs are trivial
+enough that this works well without adding the complexity of another
+dependency like Redis, beanstalkd, etc. that many other adapters require.
+
+Examining the job classes in `app/jobs`, one will notice that most of their
+`perform()` methods create a Task instance before doing anything. This object
+enables progress reporting from the institution-scoped `/tasks` or global-
+scoped `/all-tasks` views.
+
 ## JavaScript
 
 The JavaScript system uses Sprockets, which was the default in earlier versions
@@ -285,7 +304,7 @@ $(document).ready(function() {
 });
 ```
 
-## Modal Windows
+## ModalWindows
 
 The web application makes heavy use of modal windows, mainly for contextual
 forms. The content for most modals is loaded on-demand via XHR which enables
@@ -332,7 +351,7 @@ created on the Handle.net server and a record of this handle is saved in the
 `handles` table. In production, this enables these entities to be resolved
 using the [hdl.handle.net](https://hdl.handle.net) service.
 
-## File Format Support
+## FileFormatSupport
 
 The `config/formats.yml` file defines all of the file formats recognized by the
 application.
@@ -375,7 +394,19 @@ Then, you can access
 [http://ideals-ins2.local:3000](http://ideals-ins2.local:3000) in order to play
 around with multi-tenancy.
 
-# Branches & Environments
+## Stylesheets
+
+IDEALS is a Sprockets-based app, like apps of earlier Rails versions used to
+be. There is a Bootstrap gem specified in the Gemfile and the stylesheet from
+that is imported into the `application.scss`. There are some other global,
+non-institution-specific style overrides in the same folder.
+
+Institution-specific styles are handled differently: an institution can choose
+various colors etc. through the UI, which are injected into its own custom
+stylesheet provided by StylesheetsController. This gets overlaid onto the base
+Bootstrap+global custom styles mentioned above.
+
+# BranchesAndEnvironments
 
 There are three main Git branches, which correspond to the environments in
 which the application runs: locally, in demo, and in production. Branching
@@ -411,7 +442,7 @@ structure that all config files must use.
 See the class documentation in `app/config/configuration.rb` for a detailed
 explanation of how the configuration system works.
 
-# OpenSearch Schema Migration
+# OpenSearchSchemaMigration
 
 From time to time, the index schema may have to change to accommodate new
 features. This requires creating a new index using the
@@ -420,12 +451,12 @@ application configuration (or changing the index alias on the OpenSearch side
 using the `opensearch:indexes:create_alias`/`delete_alias` rake tasks), and
 then reindexing all database content using the `opensearch:reindex` rake task.
 
-# Code Documentation
+# CodeDocumentation
 
 Code documentation uses YARD/Markdown syntax. The `rails doc:generate` command
 invokes YARD to generate HTML documentation for the code base.
 
-# Tests & Continuous Integration
+# TestsAndContinuousIntegration
 
 Minitest is used for model and controller tests. `rails test` runs the tests.
 
