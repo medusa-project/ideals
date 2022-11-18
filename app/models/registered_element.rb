@@ -59,6 +59,8 @@ class RegisteredElement < ApplicationRecord
   has_many :metadata_profile_elements, inverse_of: :registered_element
   has_many :submission_profile_elements, inverse_of: :registered_element
 
+  has_and_belongs_to_many :index_pages
+
   # input_type (we allow blank because the database will assign a default value)
   validates :input_type, inclusion: { in: InputType.all }, allow_blank: true
 

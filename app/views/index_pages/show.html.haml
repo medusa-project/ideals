@@ -1,0 +1,69 @@
+- provide :body_id, "show_index_page"
+- provide :title, @index_page.name
+
+- active_letter = nil
+- can_edit      = policy(@index_page).edit?
+
+- if @breadcrumbable && can_edit
+  = breadcrumbs(@breadcrumbable)
+
+.btn-group.float-right{role: "group"}
+  -if can_edit
+    -# Edit button
+    %button.btn.btn-light.edit-index-page{"data-target": "#edit-index-page-modal",
+                                          "data-toggle": "modal",
+                                          "data-id":     @index_page.id,
+                                          type:          "button"}
+      %i.fa.fa-pencil-alt
+      Edit
+  - if policy(@index_page).destroy?
+    -# Delete button
+    = link_to(index_page_path(@index_page), class:  "btn btn-danger",
+                                            role:   "button",
+                                            method: :delete,
+                                            data:   { confirm: "Are you sure you want to delete this index page?" }) do
+      %i.fa.fa-trash
+      Delete
+
+%h1
+  = @index_page.name
+
+- pagination = paginate(count:            @count, |
+                        page:             @current_page, |
+                        per_page:         @window, |
+                        permitted_params: @permitted_params, |
+                        max_links:        9) |
+
+- if @starting_letters.any?
+  .card.mb-3
+    .card-body.p-0.pt-3
+      %ul.nav.nav-pills.justify-content-md-center
+        %li.nav-item
+          = link_to("All", @index_page, class: "nav-link #{params[:letter].blank? ? "active" : ""}")
+        - @starting_letters.each do |row|
+          %li.nav-item
+            - if params[:letter]&.upcase == row['alpha']
+              - active_letter = row['alpha']
+            = link_to(row['alpha'], index_page_path(@index_page, letter: row['alpha']),
+                      class: "nav-link #{params[:letter]&.upcase == row['alpha'] ? "active" : ""}")
+- else
+  %p There are no terms in this index yet.
+
+- if active_letter
+  %h2= active_letter
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
+
+%ul
+  - @terms.each do |term|
+    %li= link_to(term, items_path(q: term))
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-index-page-modal",
+                   title: "Edit Index Page" }

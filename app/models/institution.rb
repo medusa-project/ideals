@@ -61,6 +61,7 @@ class Institution < ApplicationRecord
            class_name: "UserGroup", source: :user_group
   has_many :downloads
   has_many :imports
+  has_many :index_pages
   has_many :invitees
   has_many :metadata_profiles
   has_many :registered_elements
@@ -95,7 +96,7 @@ class Institution < ApplicationRecord
   # N.B.: elements must be added AFTER vocabularies!
   after_create :add_default_vocabularies, :add_default_elements,
                :add_default_metadata_profile, :add_default_submission_profile,
-               :add_defining_user_group
+               :add_default_index_pages, :add_defining_user_group
 
   ##
   # @param extension [String]
@@ -330,6 +331,43 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # Recreates derivative favicons from the master favicon present in the
+  # bucket.
+  #
+  # @param task [Task] Optional.
+  # @return [void]
+  # @raises [RuntimeError] if the instance does not have a master favicon.
+  #
+  def regenerate_favicons(task: nil)
+    raise "This institution does not have a master favicon" unless has_favicon
+    begin
+      Dir.mktmpdir do |tmpdir|
+        key_prefix  = self.class.image_key_prefix(self.key)
+        master_key  = key_prefix + "favicon-original.png"
+        master_path = File.join(tmpdir, "favicon-original.png")
+        # Download the master favicon.
+        PersistentStore.instance.get_object(key:             master_key,
+                                            response_target: master_path)
+        # Generate a bunch of resized derivatives and upload them.
+        InstitutionsHelper::FAVICONS.each_with_index do |icon, index|
+          deriv_path = "#{tmpdir}/favicon-#{icon[:size]}x#{icon[:size]}.png"
+          `vipsthumbnail #{master_path} --size=#{icon[:size]}x#{icon[:size]} -o #{deriv_path}.v`
+          `vips gravity #{deriv_path}.v #{deriv_path} centre #{icon[:size]} #{icon[:size]} --background "0, 0, 0, 0"`
+          dest_key  = "#{key_prefix}favicon-#{icon[:size]}x#{icon[:size]}.png"
+          PersistentStore.instance.put_object(key:             dest_key,
+                                              institution_key: self.key,
+                                              path:            deriv_path)
+          task&.progress(index / InstitutionsHelper::FAVICONS.length.to_f)
+        end
+      end
+    rescue => e
+      task&.fail(detail: e.message, backtrace: e.backtrace)
+      raise e
+    end
+    task&.succeed
+  end
+
+  ##
   # @param start_time [Time]   Optional beginning of a time range.
   # @param end_time [Time]     Optional end of a time range.
   # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`
@@ -394,36 +432,25 @@ class Institution < ApplicationRecord
     # because we are not simply putting contents of the io argument into the
     # bucket. Instead we are writing it to a temp file, making a bunch of
     # different sized derivatives of it, and uploading those.
-    Dir.mktmpdir do |tmpdir|
-      tempfile = Tempfile.new(["#{self.class}-#{self.key}-favicon", ".png"])
-      begin
-        tempfile.write(io.read)
-        tempfile.close
-        # Upload the "master favicon"
-        key_prefix = self.class.image_key_prefix(self.key)
-        dest_key   = key_prefix + "favicon-original.png"
-        PersistentStore.instance.put_object(key:             dest_key,
-                                            institution_key: self.key,
-                                            path:            tempfile.path)
-        # Generate a bunch of resized derivatives and upload them
-        InstitutionsHelper::FAVICONS.each_with_index do |icon, index|
-          dest_path = "#{tmpdir}/favicon-#{icon[:size]}x#{icon[:size]}.png"
-          `vipsthumbnail #{tempfile.path} --size=#{icon[:size]}x#{icon[:size]} -o #{dest_path}`
-          dest_key  = "#{key_prefix}favicon-#{icon[:size]}x#{icon[:size]}.png"
-          PersistentStore.instance.put_object(key:             dest_key,
-                                              institution_key: self.key,
-                                              path:            dest_path)
-          task&.progress(index / InstitutionsHelper::FAVICONS.length.to_f)
-        end
-      rescue => e
-        task&.fail(detail: e.message, backtrace: e.backtrace)
-        raise e
-      ensure
-        tempfile.unlink
-      end
+    tempfile = Tempfile.new(["#{self.class}-#{self.key}-favicon", ".png"])
+    begin
+      tempfile.write(io.read)
+      tempfile.close
+      # Upload the "master favicon"
+      key_prefix = self.class.image_key_prefix(self.key)
+      dest_key   = key_prefix + "favicon-original.png"
+      PersistentStore.instance.put_object(key:             dest_key,
+                                          institution_key: self.key,
+                                          path:            tempfile.path)
+      self.update!(has_favicon: true)
+      regenerate_favicons(task: task)
+      task&.succeed
+    rescue => e
+      task&.fail(detail: e.message, backtrace: e.backtrace)
+      raise e
+    ensure
+      tempfile.unlink
     end
-    self.update!(has_favicon: true)
-    task&.succeed
   end
 
   ##
@@ -552,6 +579,17 @@ class Institution < ApplicationRecord
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
                                    label:            "Dissertation/Thesis Degree Program")
     self.save!
+  end
+
+  ##
+  # N.B.: this must be invoked AFTER add_default_elements().
+  #
+  def add_default_index_pages
+    page    = self.index_pages.build(name: "Creators")
+    element = self.registered_elements.find_by_name("dc:creator")
+    raise "No creator element (this is a bug)" unless element
+    page.registered_elements << element
+    page.save!
   end
 
   def add_default_metadata_profile

@@ -1,0 +1,22 @@
+= form_for(@index_page, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .form-group
+    = f.label :name, "Name"
+    = f.text_field :name, class: 'form-control'
+
+  .form-group
+    - current_institution.registered_elements.order(:label).each do |re|
+      .form-check
+        = check_box_tag "registered_element_ids[]", re.id,
+          f.object.registered_elements.find_by_id(re.id),
+          { id: "registered_element_ids_#{re.id}", class: "form-check-input" }
+        = label_tag "registered_element_ids_#{re.id}", re.label,
+          class: "form-check-label"
+
+  .clearfix
+    .float-right
+      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+      = f.submit(f.object.new_record? ? "Create Index Page" : "Save Changes",
+                 class: "btn btn-primary")

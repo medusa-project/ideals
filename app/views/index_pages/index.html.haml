@@ -1,0 +1,31 @@
+- provide :body_id, "index_pages"
+- provide :title, "Index Pages"
+
+-if policy(IndexPage).new?
+  .btn-group.float-right{role: "group"}
+    -# Add Index Page button
+    %button.btn.btn-light.add-index-page{"data-target": "#add-index-page-modal",
+                                         "data-toggle": "modal",
+                                         type:          "button"}
+      %i.fa.fa-plus
+      Add Index Page
+
+%h1 Index Pages
+
+- if @index_pages.any?
+  %table.table
+    %thead
+      %tr
+        %th Name
+        %th Elements
+    %tbody
+      - @index_pages.each do |index_page|
+        %tr
+          %td= link_to(index_page.name, index_page)
+          %td= raw(index_page.registered_elements.order(:label).pluck(:label).join(", "))
+- else
+  %p No index pages have been created yet.
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "add-index-page-modal",
+                   title: "Add Index Page" }

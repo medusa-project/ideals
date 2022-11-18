@@ -90,6 +90,17 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal 28, institution.registered_elements.count
   end
 
+  test "create() adds a default index page" do
+    institution = Institution.create!(name:             "New Institution",
+                                      service_name:     "New",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      main_website_url: "https://example.net")
+    assert_equal 1, institution.index_pages.count
+    page = institution.index_pages.first
+    assert page.registered_elements.count > 0
+  end
+
   test "create() adds a default metadata profile" do
     institution = Institution.create!(name:             "New Institution",
                                       service_name:     "New",
@@ -464,6 +475,43 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal @instance, Institution.find_by_default(true)
   end
 
+  # regenerate_favicons()
+
+  test "regenerate_favicons()" do
+    setup_s3
+    # Upload a favicon and all of its derivatives.
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
+      @instance.upload_favicon(io: file)
+    end
+    # Delete its derivatives.
+    InstitutionsHelper::FAVICONS.each do |icon|
+      key = "institutions/#{@instance.key}/theme/favicon-#{icon[:size]}x#{icon[:size]}.png"
+      PersistentStore.instance.delete_object(key: key)
+    end
+    # Regenerate them.
+    @instance.regenerate_favicons
+    # Assert that they have all been generated.
+    InstitutionsHelper::FAVICONS.each do |icon|
+      key = "institutions/#{@instance.key}/theme/favicon-#{icon[:size]}x#{icon[:size]}.png"
+      assert PersistentStore.instance.object_exists?(key: key)
+    end
+  end
+
+  test "regenerate_favicons() succeeds the given Task" do
+    setup_s3
+    task = Task.create!(name:          self.class.name,
+                        institution:   @instance,
+                        indeterminate: false,
+                        started_at:    Time.now,
+                        status_text:   "Regenerating favicons")
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
+      @instance.upload_favicon(io: file)
+      @instance.regenerate_favicons(task: task)
+    end
+    task.reload
+    assert task.succeeded?
+  end
+
   # service_name
 
   test "service_name is required" do
@@ -494,7 +542,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "upload_favicon() uploads favicons" do
     setup_s3
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_favicon(io: file)
     end
     key = "institutions/#{@instance.key}/theme/favicon-original.png"
@@ -513,7 +561,7 @@ class InstitutionTest < ActiveSupport::TestCase
                         indeterminate: false,
                         started_at:    Time.now,
                         status_text:   "Processing favicons")
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_favicon(io: file, task: task)
     end
     task.reload
