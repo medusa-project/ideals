@@ -22,7 +22,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
     log_in_as(users(:local_sysadmin))
     post item_bitstreams_path(items(:uiuc_item1)),
-         file_fixture("escher_lego.jpg")
+         file_fixture("escher_lego.png")
     assert_response :ok
   end
 
@@ -31,7 +31,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:local_sysadmin))
     assert_difference "Bitstream.count" do
       post item_bitstreams_path(items(:uiuc_item1)),
-           file_fixture("escher_lego.jpg")
+           file_fixture("escher_lego.png")
     end
   end
 

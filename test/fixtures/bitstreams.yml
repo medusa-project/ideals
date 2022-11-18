@@ -9,8 +9,8 @@ item1_in_staging:
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -23,8 +23,8 @@ submitting_in_staging:
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -37,8 +37,8 @@ submitted_in_staging:
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -51,8 +51,8 @@ awaiting_ingest_into_medusa:
   submitted_for_ingest: false
   staging_key:
   permanent_key:        <%= SecureRandom.hex %>
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -79,9 +79,9 @@ item2_in_medusa:
   submitted_for_ingest: true
   staging_key:
   permanent_key:        <%= SecureRandom.hex %>
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego.jpg
-  medusa_key:           test/test/escher_lego.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
+  medusa_key:           test/test/escher_lego.png
   medusa_uuid:          3d2a99d5-2f5b-401e-80c1-864a95e3acf7
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
@@ -121,8 +121,8 @@ embargoed_in_staging:
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -135,8 +135,8 @@ withdrawn_in_staging:
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -149,8 +149,8 @@ multiple_bitstreams_1:
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -191,8 +191,8 @@ collection1_collection1_item1_in_staging:
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
   permanent_key:
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")) %>
-  original_filename:    escher_lego.jpg
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>

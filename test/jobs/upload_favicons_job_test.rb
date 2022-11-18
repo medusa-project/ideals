@@ -8,8 +8,8 @@ class UploadFaviconsJobTest < ActiveSupport::TestCase
 
   test "perform() uploads favicons" do
     Dir.mktmpdir do |tmpdir|
-      path = File.join(tmpdir, "escher_lego.jpg")
-      FileUtils.cp(file_fixture("escher_lego.jpg"), path)
+      path = File.join(tmpdir, "escher_lego.png")
+      FileUtils.cp(file_fixture("escher_lego.png"), path)
 
       institution = institutions(:southwest)
       UploadFaviconsJob.new.perform(path, institution)

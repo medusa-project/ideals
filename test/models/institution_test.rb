@@ -523,7 +523,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "upload_banner_image() uploads an image" do
     setup_s3
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_banner_image(io: file, extension: "jpg")
     end
     key = Institution.banner_image_key(@instance.key, "jpg")
@@ -532,7 +532,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "upload_banner_image() updates the footer_image_filename attribute" do
     setup_s3
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_banner_image(io: file, extension: "jpg")
     end
     assert_equal "banner.jpg", @instance.banner_image_filename
@@ -572,7 +572,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "upload_footer_image() uploads an image" do
     setup_s3
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_footer_image(io: file, extension: "jpg")
     end
     key = Institution.footer_image_key(@instance.key, "jpg")
@@ -581,7 +581,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "upload_footer_image() updates the footer_image_filename attribute" do
     setup_s3
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_footer_image(io: file, extension: "jpg")
     end
     assert_equal "footer.jpg", @instance.footer_image_filename
@@ -591,7 +591,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "upload_header_image() uploads an image" do
     setup_s3
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_header_image(io: file, extension: "jpg")
     end
     key = Institution.header_image_key(@instance.key, "jpg")
@@ -600,7 +600,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "upload_header_image() updates the header_image_filename attribute" do
     setup_s3
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_header_image(io: file, extension: "jpg")
     end
     assert_equal "header.jpg", @instance.header_image_filename

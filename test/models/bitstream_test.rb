@@ -256,14 +256,14 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "data() returns the data when an object exists in the staging area" do
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_to_staging(file)
     end
     assert_not_nil @instance.data
   end
 
   test "data() returns the data when an object exists in the permanent area" do
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_to_staging(file)
       @instance.move_into_permanent_storage
     end
@@ -276,7 +276,7 @@ class BitstreamTest < ActiveSupport::TestCase
     store = PersistentStore.instance
 
     # upload the source image to the staging area of the application S3 bucket
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_to_staging(file)
     end
 
@@ -331,7 +331,7 @@ class BitstreamTest < ActiveSupport::TestCase
     store = PersistentStore.instance
 
     # Write a file to the bucket.
-    fixture = file_fixture("escher_lego.jpg")
+    fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                            filename: File.basename(fixture),
@@ -352,7 +352,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "delete_from_permanent_storage() updates the instance properties" do
     # Write a file to the bucket.
-    fixture = file_fixture("escher_lego.jpg")
+    fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                            filename: File.basename(fixture),
@@ -380,7 +380,7 @@ class BitstreamTest < ActiveSupport::TestCase
     store = PersistentStore.instance
 
     # Write a file to the bucket.
-    fixture = file_fixture("escher_lego.jpg")
+    fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                            filename: File.basename(fixture),
@@ -400,7 +400,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "delete_from_staging() updates the instance properties" do
     # Write a file to the bucket.
-    fixture = file_fixture("escher_lego.jpg")
+    fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                            filename: File.basename(fixture),
@@ -427,7 +427,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "derivative_url() generates a correct URL" do
     # upload the source image to the staging area of the application S3 bucket
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_to_staging(file)
     end
 
@@ -436,7 +436,7 @@ class BitstreamTest < ActiveSupport::TestCase
     client   = HTTPClient.new
     response = client.get(url)
     assert_equal 200, response.code
-    assert response.headers['Content-Length'].to_i > 10000
+    assert response.headers['Content-Length'].to_i > 1000
   end
 
   # destroy()
@@ -545,7 +545,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # format()
 
   test "format() returns the correct format" do
-    assert_equal "image/jpeg", @instance.format.media_types[0]
+    assert_equal "image/png", @instance.format.media_types[0]
   end
 
   test "format() returns nil for an unknown format" do
@@ -655,8 +655,8 @@ class BitstreamTest < ActiveSupport::TestCase
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
       config = ::Configuration.instance
       assert_equal "ingest", message['operation']
-      assert_equal "#{@instance.item.id}/escher_lego.jpg", message['staging_key']
-      assert_equal "#{config.handles[:prefix]}/#{@instance.item.handle.suffix}/escher_lego.jpg",
+      assert_equal "#{@instance.item.id}/escher_lego.png", message['staging_key']
+      assert_equal "#{config.handles[:prefix]}/#{@instance.item.handle.suffix}/escher_lego.png",
                    message['target_key']
       assert_equal @instance.class.to_s, message['pass_through']['class']
       assert_equal @instance.id, message['pass_through']['identifier']
@@ -726,7 +726,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "move_into_permanent_storage() updates instance properties" do
     begin
-      fixture = file_fixture("escher_lego.jpg")
+      fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                              filename: File.basename(fixture),
@@ -749,7 +749,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "move_into_permanent_storage() moves a staging object into permanent
   storage" do
     begin
-      fixture = file_fixture("escher_lego.jpg")
+      fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                              filename: File.basename(fixture),
@@ -1053,7 +1053,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "upload_to_permanent() uploads a file to the application bucket" do
     begin
-      fixture = file_fixture("escher_lego.jpg")
+      fixture = file_fixture("escher_lego.png")
       key     = %w[institutions uiuc storage file].join("/")
       @instance.update!(permanent_key: key)
       @instance.upload_to_permanent(fixture)
@@ -1070,7 +1070,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "upload_to_staging() uploads a file to the application bucket" do
     begin
       # Write a file to the bucket.
-      fixture = file_fixture("escher_lego.jpg")
+      fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
                                              filename: File.basename(fixture),

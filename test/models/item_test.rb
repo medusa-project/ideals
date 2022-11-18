@@ -170,8 +170,8 @@ class ItemTest < ActiveSupport::TestCase
     # test bitstreams
     @instance = items(:uiuc_item1)
     hash = @instance.as_change_hash
-    assert_equal "escher_lego.jpg",
-                 hash['bitstream:escher_lego.jpg:original_filename']
+    assert_equal "escher_lego.png",
+                 hash['bitstream:escher_lego.png:original_filename']
   end
 
   # as_indexed_json()
@@ -322,7 +322,7 @@ class ItemTest < ActiveSupport::TestCase
   permanent storage if the collection is reviewing submissions" do
     item    = items(:uiuc_described)
     item.primary_collection.submissions_reviewed = true
-    fixture = file_fixture("escher_lego.jpg")
+    fixture = file_fixture("escher_lego.png")
     @instance.bitstreams.each do |bs|
       File.open(fixture, "r") do |file|
         bs.upload_to_staging(file)
@@ -338,7 +338,7 @@ class ItemTest < ActiveSupport::TestCase
   test "complete_submission() moves all associated Bitstreams into
   permanent storage if the collection is not reviewing submissions" do
     item    = items(:uiuc_described)
-    fixture = file_fixture("escher_lego.jpg")
+    fixture = file_fixture("escher_lego.png")
     @instance.bitstreams.each do |bs|
       File.open(fixture, "r") do |file|
         bs.upload_to_staging(file)
@@ -355,7 +355,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "delete_from_permanent_storage() deletes all associated Bitstreams from
   permanent storage" do
-    filename = "escher_lego.jpg"
+    filename = "escher_lego.png"
     fixture  = file_fixture(filename)
     @instance.bitstreams.each do |bs|
       bs.update!(permanent_key: Bitstream.permanent_key(institution_key: @instance.institution.key,
@@ -575,7 +575,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "move_into_permanent_storage() moves all associated Bitstreams into
   permanent storage" do
-    fixture = file_fixture("escher_lego.jpg")
+    fixture = file_fixture("escher_lego.png")
     @instance.bitstreams.each do |bs|
       File.open(fixture, "r") do |file|
         bs.upload_to_staging(file)

@@ -31,7 +31,7 @@ class S3ClientTest < ActiveSupport::TestCase
   test "delete_objects() deletes all intended objects" do
     bucket = ::Configuration.instance.storage[:bucket]
     client = S3Client.instance
-    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")
+    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     client.put_object(bucket: bucket,
                       key:   "cats/siamese",
                       body:   file)
@@ -54,7 +54,7 @@ class S3ClientTest < ActiveSupport::TestCase
   test "num_objects() returns a correct count" do
     bucket = ::Configuration.instance.storage[:bucket]
     client = S3Client.instance
-    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")
+    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     client.put_object(bucket: bucket,
                       key:   "cats/siamese",
                       body:   file)
@@ -74,7 +74,7 @@ class S3ClientTest < ActiveSupport::TestCase
     begin
       client.put_object(bucket: bucket,
                         key:    key,
-                        body:   File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg"))
+                        body:   File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png"))
       assert client.object_exists?(bucket: bucket, key: key)
     ensure
       client.delete_object(bucket: bucket, key: key)
@@ -95,7 +95,7 @@ class S3ClientTest < ActiveSupport::TestCase
   test "objects() returns a correct value" do
     bucket = ::Configuration.instance.storage[:bucket]
     client = S3Client.instance
-    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")
+    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     client.put_object(bucket: bucket,
                       key:   "cats/siamese",
                       body:   file)
@@ -111,7 +111,7 @@ class S3ClientTest < ActiveSupport::TestCase
     bucket = ::Configuration.instance.storage[:bucket]
     key    = "cats/siamese"
     client = S3Client.instance
-    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.jpg")
+    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     client.put_object(bucket: bucket,
                       key:    key,
                       body:   file)

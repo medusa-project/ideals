@@ -3,7 +3,7 @@ require "test_helper"
 class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    @bulkfile = fixture_file_upload(file_fixture("escher_lego.jpg"), 'image/jpeg')
+    @bulkfile = fixture_file_upload(file_fixture("escher_lego.png"), 'image/jpeg')
     @import   = imports(:saf_new)
     setup_s3
   end
@@ -93,7 +93,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(user)
 
     @import = imports(:saf_new)
-    File.open(file_fixture("escher_lego.jpg"), "r") do |file|
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
       @import.upload_file(relative_path: "item1/image.jpg", io: file)
     end
     assert_equal 1, @import.object_keys.length
