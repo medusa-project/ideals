@@ -652,10 +652,10 @@ class Bitstream < ApplicationRecord
     begin
       source_tempfile = download_to_temp_file
       if source_tempfile
-        crop = (region == :square) ? "--crop centre" : ""
+        crop = (region == :square) ? "--smartcrop=centre" : ""
         # ruby-vips gem is also an option here, but I experienced hanging on
         # some images, so vipsthumbnail will do just as well.
-        `vipsthumbnail #{source_tempfile.path} #{crop} --size #{size}x#{size} -o %s-#{region}-#{size}.#{format}`
+        `vipsthumbnail #{source_tempfile.path} #{crop} --size=#{size}x#{size} -o %s-#{region}-#{size}.#{format}`
         deriv_path = File.join(File.dirname(source_tempfile.path),
                                "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
         File.open(deriv_path, "rb") do |file|
