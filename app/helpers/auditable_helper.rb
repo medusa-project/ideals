@@ -85,7 +85,7 @@ module AuditableHelper
       html <<   '</td>'
       html <<   "<td class=\"#{class_}\">"
       html <<     '<code>'
-      html <<       row[:before_value]
+      html <<       sanitize(row[:before_value].to_s)
       html <<     '</code>'
       html <<   '</td>'
       html <<   "<td class=\"#{class_}\" style=\"width:1px\">"
@@ -93,7 +93,7 @@ module AuditableHelper
       html <<   '</td>'
       html <<   "<td class=\"#{class_}\">"
       html <<     '<code>'
-      html <<       row[:after_value]
+      html <<       sanitize(row[:after_value].to_s)
       html <<     '</code>'
       html <<   '</td>'
       html << '</tr>'
