@@ -55,14 +55,6 @@ demo:
   username: <%= db ? db[:username] : nil %>
   password: <%= db ? db[:password] : nil%>
 
-carli_demo:
-  <<: *default
-  host:     <%= db ? db[:host] : nil %>
-  port:     <%= db ? db[:port] : nil %>
-  database: <%= db ? db[:database] : nil %>
-  username: <%= db ? db[:username] : nil %>
-  password: <%= db ? db[:password] : nil %>
-
 production:
   <<: *default
   host:     <%= db ? db[:host] : nil %>
