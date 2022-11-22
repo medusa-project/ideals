@@ -2,7 +2,7 @@
 # High-level interface to the application's persistent store (currently an S3
 # bucket). It is recommended to use this class instead of {S3Client} especially
 # when writing to the bucket, to ensure that the resulting objects receive the
-# correct tags and metadata etc.
+# correct tags, ACLs, metadata, etc.
 #
 class PersistentStore
 
@@ -85,6 +85,7 @@ class PersistentStore
   # @param response_content_type [String]
   # @param response_content_disposition [String]
   # @return [String]
+  # @see public_url
   #
   def presigned_url(key:,
                     expires_in:,
@@ -98,6 +99,25 @@ class PersistentStore
                          expires_in:                   expires_in,
                          response_content_type:        response_content_type,
                          response_content_disposition: response_content_disposition)
+  end
+
+  ##
+  # @param key [String]
+  # @return [String] Non-presigned public object URL. (The object must of
+  #                  course be public for this to work.)
+  # @see presigned_url
+  #
+  def public_url(key:)
+    # TODO: remove this once storage:make_all_objects_public has been run
+    unless Rails.env.development? || Rails.env.test?
+      S3Client.instance.put_object_acl(
+        acl:    "public-read",
+        bucket: BUCKET,
+        key:    key
+      )
+    end
+    s3 = Aws::S3::Resource.new(S3Client.client_options)
+    s3.bucket(BUCKET).object(key).public_url
   end
 
   ##
@@ -138,6 +158,14 @@ class PersistentStore
       s3.bucket(BUCKET).
         object(key).
         upload_file(path || file)
+      # MinIO (used in development & test) doesn't support ACLs
+      unless Rails.env.development? || Rails.env.test?
+        S3Client.instance.put_object_acl(
+          acl:    "public-read",
+          bucket: BUCKET,
+          key:    key
+        )
+      end
       if institution_key
         S3Client.instance.set_tag(bucket:    BUCKET,
                                   key:       key,
@@ -147,6 +175,7 @@ class PersistentStore
     else
       S3Client.instance.put_object(bucket:  BUCKET,
                                    key:     key,
+                                   acl:     "public-read",
                                    body:    data || io,
                                    tagging: tagging)
     end
