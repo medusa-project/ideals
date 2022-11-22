@@ -207,8 +207,7 @@ class Institution < ApplicationRecord
     return nil if self.banner_image_filename.blank?
     key = [self.class.image_key_prefix(self.key),
            self.banner_image_filename].join
-    PersistentStore.instance.presigned_url(key:        key,
-                                           expires_in: 1.week.to_i)
+    PersistentStore.instance.public_url(key: key)
   end
 
   def breadcrumb_label
@@ -294,8 +293,7 @@ class Institution < ApplicationRecord
     return nil unless self.has_favicon
     key = [self.class.image_key_prefix(self.key),
            self.class.favicon_filename(size: size)].join
-    PersistentStore.instance.presigned_url(key:        key,
-                                           expires_in: 1.week.to_i)
+    PersistentStore.instance.public_url(key: key)
   end
 
   ##
@@ -305,8 +303,7 @@ class Institution < ApplicationRecord
     return nil if self.footer_image_filename.blank?
     key = [self.class.image_key_prefix(self.key),
            self.footer_image_filename].join
-    PersistentStore.instance.presigned_url(key:        key,
-                                           expires_in: 1.week.to_i)
+    PersistentStore.instance.public_url(key: key)
   end
 
   ##
@@ -316,8 +313,7 @@ class Institution < ApplicationRecord
     return nil if self.header_image_filename.blank?
     key = [self.class.image_key_prefix(self.key),
            self.header_image_filename].join
-    PersistentStore.instance.presigned_url(key:        key,
-                                           expires_in: 1.week.to_i)
+    PersistentStore.instance.public_url(key: key)
   end
 
   ##

@@ -402,7 +402,7 @@ class Bitstream < ApplicationRecord
         generate_derivative(region: region, size: size, format: :jpg)
       end
     end
-    store.presigned_url(key: key, expires_in: 1.hour.to_i)
+    store.public_url(key: key)
   end
 
   ##
@@ -530,6 +530,7 @@ class Bitstream < ApplicationRecord
   ##
   # @param content_disposition [String]
   # @return [String]
+  # @see public_url
   #
   def presigned_url(content_disposition: "attachment")
     key = self.effective_key
@@ -541,6 +542,18 @@ class Bitstream < ApplicationRecord
                                            expires_in:                   900,
                                            response_content_type:        content_type,
                                            response_content_disposition: content_disposition)
+  end
+
+  ##
+  # @return [String]
+  # @see presigned_url
+  #
+  def public_url
+    key = self.effective_key
+    unless key
+      raise IOError, "This bitstream has no corresponding storage object."
+    end
+    PersistentStore.instance.public_url(key: key)
   end
 
   ##

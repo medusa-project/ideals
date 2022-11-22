@@ -802,6 +802,29 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  # public_url()
+
+  test "public_url() returns a URL for an object in staging" do
+    @instance.staging_key   = "key"
+    @instance.permanent_key = nil
+    assert_not_nil @instance.public_url
+  end
+
+  test "public_url() returns a URL for an object in permanent storage" do
+    @instance.staging_key   = nil
+    @instance.permanent_key = "key"
+    assert_not_nil @instance.public_url
+  end
+
+  test "public_url() raises an IOError if the instance has no corresponding
+  object" do
+    @instance.staging_key   = nil
+    @instance.permanent_key = nil
+    assert_raises IOError do
+      @instance.public_url
+    end
+  end
+
   # read_full_text()
 
   test "read_full_text() works when full_text_checked_at is not set and force
