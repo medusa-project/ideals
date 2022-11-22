@@ -74,8 +74,7 @@ class ShibbolethUser < User
       groups = Configuration.instance.ad.dig(:groups, self.uid)
       return groups&.include?(group)
     end
-
-    cache_key = Digest::MD5.hexdigest("#{self.netid} ismemberof #{group}")
+    cache_key = Digest::MD5.hexdigest("#{self.institution.key} #{self.netid} ismemberof #{group}")
     Rails.cache.fetch(cache_key, expires_in: 12.hours) do
       begin
         user = UiucLibAd::User.new(cn: self.netid)
