@@ -108,7 +108,7 @@ class PersistentStore
   # @see presigned_url
   #
   def public_url(key:)
-    # TODO: remove this once bitstreams:make_all_objects_public has been run
+    # TODO: remove this once storage:make_all_objects_public has been run
     unless Rails.env.development? || Rails.env.test?
       S3Client.instance.put_object_acl(
         acl:    "public-read",
