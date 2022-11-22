@@ -144,8 +144,18 @@ class PersistentStoreTest < ActiveSupport::TestCase
   test "presigned_url() raises an error when the object does not exist" do
     store = PersistentStore.instance
     assert_raises do
-      store.presigned_url("bogus")
+      store.presigned_url(key: "bogus")
     end
+  end
+
+  # public_url()
+
+  test "public_url() returns a URL" do
+    store = PersistentStore.instance
+    file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
+    key   = "cats/siamese"
+    store.put_object(key: key, path: file)
+    assert_not_empty store.public_url(key: key)
   end
 
   # put_object()
@@ -180,6 +190,10 @@ class PersistentStoreTest < ActiveSupport::TestCase
     key   = "cats/siamese"
     store.put_object(key: key, data: "some data")
     assert store.object_exists?(key: key)
+  end
+
+  test "put_object() sets the ACL of the uploaded object" do
+    skip # we can't test this because MinIO doesn't support ACLs
   end
 
   test "put_object() sets tags on the uploaded object" do
