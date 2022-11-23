@@ -24,7 +24,7 @@ class DownloadPolicy < ApplicationPolicy
                reason:     "This download is expired." }
     elsif effective_sysadmin?(user, role)
       return AUTHORIZED_RESULT
-    elsif download.ip_address != @client_ip
+    elsif download.ip_address.present? && download.ip_address != @client_ip
       return { authorized: false,
                reason:     "You are not authorized to access this download." }
     end

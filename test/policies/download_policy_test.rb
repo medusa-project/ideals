@@ -78,4 +78,12 @@ class DownloadPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  test "show?() authorizes everyone to downloads with no IP address set" do
+    @download.update!(ip_address: nil)
+    context = RequestContext.new(user:      nil,
+                                 client_ip: "9.9.9.9")
+    policy  = DownloadPolicy.new(context, @download)
+    assert policy.show?
+  end
+
 end
