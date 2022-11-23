@@ -445,7 +445,7 @@ class AbstractRelation
   # @return [ActiveRecord::Relation<Object>]
   #
   def to_a
-    ids = to_id_a.map{ |id| get_class.to_model_id(id) }
+    ids = to_id_a
     @result_instances = get_class.
       where(id: ids).
       in_order_of(:id, ids)
@@ -458,12 +458,12 @@ class AbstractRelation
   end
 
   ##
-  # @return [Enumerable<String>] Enumerable of entity IDs.
+  # @return [Enumerable<Integer>] Enumerable of entity IDs.
   #
   def to_id_a
     load
     @response_json['hits']['hits']
-        .map{ |r| r[OpenSearchIndex::StandardFields::ID] }
+        .map{ |r| get_class.to_model_id(r[OpenSearchIndex::StandardFields::ID]) }
   end
 
 
