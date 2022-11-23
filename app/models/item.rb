@@ -207,13 +207,18 @@ class Item < ApplicationRecord
   #
   # @param item_ids [Enumerable<Integer>]
   # @param dest_key [String] Destination key within the application bucket.
+  # @param print_progress [Boolean]
   # @param task [Task] Optional.
   #
-  def self.create_zip_file(item_ids:, dest_key:, task: nil)
+  def self.create_zip_file(item_ids:,
+                           dest_key:,
+                           print_progress: false,
+                           task:           nil)
     now         = Time.now
     count       = item_ids.count
     raise ArgumentError, "No items provided" if count < 1
     institution = nil
+    progress    = print_progress ? Progress.new(count) : nil
     status_text = "Generating a zip file for #{count} items"
     task&.update!(indeterminate: false,
                   started_at:    now,
@@ -236,6 +241,7 @@ class Item < ApplicationRecord
               PersistentStore.instance.get_object(key:             bs.permanent_key,
                                                   response_target: dest_path)
               task&.progress(index / count.to_f)
+              progress&.report(index, "Downloading files")
               index += 1
             end
           end
