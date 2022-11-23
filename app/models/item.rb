@@ -200,6 +200,66 @@ class Item < ApplicationRecord
   validate :validate_primary_bitstream
 
   ##
+  # Creates a zip file containing all of the bitstreams of all the given items
+  # and uploads it to the application bucket under the given key.
+  #
+  # All of the given items should be of the same institution.
+  #
+  # @param item_ids [Enumerable<Integer>]
+  # @param dest_key [String] Destination key within the application bucket.
+  # @param task [Task] Optional.
+  #
+  def self.create_zip_file(item_ids:, dest_key:, task: nil)
+    now         = Time.now
+    count       = item_ids.count
+    raise ArgumentError, "No items provided" if count < 1
+    institution = nil
+    status_text = "Generating a zip file for #{count} items"
+    task&.update!(indeterminate: false,
+                  started_at:    now,
+                  status_text:   status_text)
+    begin
+      uncached do
+        Dir.mktmpdir do |tmpdir|
+          stuffdir = File.join(tmpdir, "items-#{now.to_i}")
+          index    = 0
+          item_ids.each do |item_id|
+            item        = Item.find(item_id)
+            institution = item.institution
+            item.bitstreams.where.not(permanent_key: nil).each do |bs|
+              dest_dir = File.join(stuffdir, item.handle&.handle || "#{item.id}")
+              FileUtils.mkdir_p(dest_dir)
+              dest_path = File.join(dest_dir, bs.original_filename)
+              PersistentStore.instance.get_object(key:             bs.permanent_key,
+                                                  response_target: dest_path)
+              task&.progress(index / count.to_f)
+              index += 1
+            end
+          end
+
+          # Zip them all up
+          zip_filename = "Item_create_zip_file-#{SecureRandom.hex}.zip"
+          zip_pathname = File.join(tmpdir, zip_filename)
+          `cd #{tmpdir} && zip -r #{zip_filename} .`
+
+          # Upload the zip file into the application S3 bucket.
+          File.open(zip_pathname, "r") do |file|
+            PersistentStore.instance.put_object(key:             dest_key,
+                                                institution_key: institution.key,
+                                                file:            file)
+          end
+        end
+      end
+    rescue => e
+      task&.fail(detail:    e.message,
+                 backtrace: e.backtrace)
+      raise e
+    else
+      task&.succeed
+    end
+  end
+
+  ##
   # Convenience method that returns all non-embargoed {Item}s, excluding
   # download embargoes.
   #

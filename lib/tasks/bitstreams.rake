@@ -7,8 +7,10 @@ namespace :bitstreams do
     collection = Collection.find(args[:collection_id])
     download   = Download.create!(institution: collection.institution,
                                   filename:    "collection-#{collection.id}-#{Time.now.to_i}.zip")
-    collection.create_zip_file(dest_key: download.object_key)
-    puts "File is ready at the following URL:\n\nhttps://#{collection.institution.fqdn}/downloads/#{download.key}/file"
+    Item.create_zip_file(item_ids: collection.items.where(stage: Item::Stages::APPROVED).pluck(:id),
+                         dest_key: download.object_key)
+    scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
+    puts "File is ready at the following URL:\n\n#{scheme}://#{collection.institution.fqdn}/downloads/#{download.key}/file"
   end
 
   desc "Read the full text of bitstreams for which this has not been done yet"

@@ -281,65 +281,6 @@ class Collection < ApplicationRecord
   end
 
   ##
-  # Creates a zip file containing all of the bitstreams of all the
-  # {Item#Stage#APPROVED approved} items in the collection and uploads it to
-  # the application bucket under the given key.
-  #
-  # @param dest_key [String] Destination key within the application bucket.
-  # @param task [Task] Optional.
-  #
-  def create_zip_file(dest_key:, task: nil)
-    # Count the bitstreams in order to be able to calculate progress.
-    count = 0
-    self.items.where(stage: Item::Stages::APPROVED).find_each do |item|
-      count += item.bitstreams.where.not(permanent_key: nil).count
-    end
-
-    status_text = "Generating a zip file for collection \"#{self.title}\""
-    task&.update!(indeterminate: false,
-                  started_at:    Time.now,
-                  status_text:   status_text)
-
-    begin
-      self.class.uncached do
-        Dir.mktmpdir do |tmpdir|
-          stuffdir = File.join(tmpdir, "collection-#{self.id}")
-          index    = 0
-          self.items.where(stage: Item::Stages::APPROVED).find_each do |item|
-            item.bitstreams.where.not(permanent_key: nil).each do |bs|
-              dest_dir = File.join(stuffdir, item.handle&.handle || "#{item.id}")
-              FileUtils.mkdir_p(dest_dir)
-              dest_path = File.join(dest_dir, bs.original_filename)
-              PersistentStore.instance.get_object(key:             bs.permanent_key,
-                                                  response_target: dest_path)
-              task&.progress(index / count.to_f)
-              index += 1
-            end
-          end
-
-          # Zip them all up
-          zip_filename = "collection-#{self.id}.zip"
-          zip_pathname = File.join(tmpdir, zip_filename)
-          `cd #{tmpdir} && zip -r #{zip_filename} .`
-
-          # Upload the zip file into the application S3 bucket.
-          File.open(zip_pathname, "r") do |file|
-            PersistentStore.instance.put_object(key:             dest_key,
-                                                institution_key: self.institution.key,
-                                                file:            file)
-          end
-        end
-      end
-    rescue => e
-      task&.fail(detail:    e.message,
-                 backtrace: e.backtrace)
-      raise e
-    else
-      task&.succeed
-    end
-  end
-
-  ##
   # Compiles monthly download counts for a given time span by querying the
   # `events` table.
   #

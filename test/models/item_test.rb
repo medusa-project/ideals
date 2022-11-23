@@ -66,6 +66,19 @@ class ItemTest < ActiveSupport::TestCase
     assert_kind_of ItemRelation, Item.search.institution(institutions(:uiuc))
   end
 
+  # create_zip_file()
+
+  test "create_zip_file() creates a zip file" do
+    setup_s3
+    item_ids = [items(:uiuc_approved).id, items(:uiuc_multiple_bitstreams).id]
+    dest_key   = "institutions/test/downloads/file.zip"
+    Item.create_zip_file(item_ids: item_ids, dest_key: dest_key)
+
+    bucket = ::Configuration.instance.storage[:bucket]
+    assert S3Client.instance.head_object(bucket: bucket,
+                                         key:    dest_key).content_length > 0
+  end
+
   # all_access_embargoes()
 
   test "all_access_embargoes() returns all all-access embargoes" do
