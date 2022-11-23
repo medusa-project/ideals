@@ -13,6 +13,10 @@ class CollectionPolicy < ApplicationPolicy
     @collection = collection
   end
 
+  def all_files
+    export_items
+  end
+
   ##
   # Invoked from {CollectionsController#update} to ensure that a user cannot
   # move a collection to another collection of which s/he is not an effective

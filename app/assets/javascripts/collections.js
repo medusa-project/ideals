@@ -115,6 +115,19 @@ const CollectionView = function() {
             directionRadios.on("change", function() {
                 refreshResults();
             });
+
+            $(".download-files").on("click", function() {
+                const modal         = $("#download-files-modal")
+                const modal_body    = modal.find(".modal-body");
+                const collection_id = $(this).data("collection-id");
+                // Initiate the download on the server. This will redirect to a
+                // download status page which will get inserted into the modal body.
+                const url = "/collections/" + collection_id + "/all-files.zip";
+                $.get(url, function(data) {
+                    new IDEALS.DownloadPanel(modal_body, data);
+                });
+            });
+
             showOrHideDirectionRadios();
             attachResultsEventListeners();
             refreshResults();

@@ -10,7 +10,45 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
-  # chlldren()
+  # all_files()
+
+  test "all_files() redirects to login page for logged-out users" do
+    collection = collections(:uiuc_empty)
+    get collection_all_files_path(collection, format: :zip)
+    assert_redirected_to login_path
+  end
+
+  test "all_files() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:norights))
+    collection = collections(:uiuc_empty)
+    get collection_all_files_path(collection, format: :zip)
+    assert_response :forbidden
+  end
+
+  test "all_files() returns HTTP 415 for an unsupported media type" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:uiuc_empty)
+    get collection_all_files_path(collection)
+    assert_response :unsupported_media_type
+  end
+
+  test "all_files() with no results returns HTTP 204" do
+    log_in_as(users(:local_sysadmin))
+    collection = collections(:uiuc_empty)
+    get collection_all_files_path(collection, format: :zip)
+    assert_response :no_content
+  end
+
+  test "all_files() redirects to a Download" do
+    Item.reindex_all
+    refresh_opensearch
+    log_in_as(users(:uiuc_admin))
+    collection = collections(:uiuc_collection1)
+    get collection_all_files_path(collection, format: :zip)
+    assert_response 302
+  end
+
+  # children()
 
   test "children() returns HTTP 200 for XHR requests" do
     get collection_children_path(collections(:uiuc_collection1)), xhr: true

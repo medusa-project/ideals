@@ -4,7 +4,7 @@ class CollectionsController < ApplicationController
 
   include Search
 
-  before_action :ensure_logged_in, only: [:create, :delete,
+  before_action :ensure_logged_in, only: [:all_files, :create, :delete,
                                           :edit_collection_membership,
                                           :edit_managers, :edit_properties,
                                           :edit_submitters,
@@ -16,6 +16,26 @@ class CollectionsController < ApplicationController
   before_action :check_buried, except: [:create, :index, :show, :undelete]
   before_action :authorize_collection, except: [:create, :index]
   before_action :store_location, only: [:index, :show]
+
+  ##
+  # Responds to `GET /collections/:collection_id/all-files`
+  #
+  def all_files
+    respond_to do |format|
+      format.zip do
+        item_ids = policy_scope(Item.search.filter(Item::IndexFields::COLLECTIONS, @collection),
+                                policy_scope_class: ItemPolicy::Scope).to_id_a
+        if item_ids.any?
+          download = Download.create!(institution: @collection.institution,
+                                      ip_address:  request.remote_ip)
+          ZipItemsJob.perform_later(item_ids, download)
+          redirect_to download_url(download)
+        else
+          head :no_content
+        end
+      end
+    end
+  end
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the

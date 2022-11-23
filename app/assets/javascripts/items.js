@@ -261,26 +261,7 @@ const ItemView = function() {
             // download status page which will get inserted into the modal body.
             const url = ROOT_URL + "/items/" + item_id + "/bitstreams.zip";
             $.get(url, function(data) {
-                modal_body.html(data);
-                // Repeatedly check the download status, updating the modal
-                // body HTML. Stop checking when the HTML contains a
-                // `download_ready` input value of `true` or when the modal is
-                // closed.
-                const status_check_interval = setInterval(function() {
-                    const download_ready = modal_body.find("[name=download_ready]").val();
-                    if (download_ready !== "true") {
-                        const download_key = modal_body.find("[name=download_key]").val();
-                        const url          = ROOT_URL + "/downloads/" + download_key;
-                        $.get(url, function(data) {
-                            modal_body.html(data);
-                        });
-                    } else {
-                        clearInterval(status_check_interval);
-                    }
-                }, 4000);
-                modal_body.on("hide.bs.modal", function() {
-                    clearInterval(status_check_interval);
-                });
+                new IDEALS.DownloadPanel(modal_body, data);
             });
         });
     });

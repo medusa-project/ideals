@@ -3,7 +3,7 @@
     = link_to(collection_submit_path(@collection), class: "btn btn-light", role: "button") do
       %i.fas.fa-plus
       Submit Item To This Collection
-  - if policy(@collection).export_items?
+  - if @items.count > 0 && policy(@collection).export_items?
     .dropdown
       %button#export-button.btn.btn-light.dropdown-toggle{type:            "button",
                                                           "data-toggle":   "dropdown",
@@ -13,6 +13,11 @@
       .dropdown-menu.dropdown-menu-right{"aria-labelledby": "export-button"}
         = link_to(collection_items_path(@collection, format: :csv), class: "dropdown-item") do
           All Items As CSV
+        %button.dropdown-item.download-files{"data-collection-id": @collection.id,
+                                             "data-target":        "#download-files-modal",
+                                             "data-toggle":        "modal",
+                                             role:                 "button"}
+          All Files
 
 .clearfix.mb-3
 

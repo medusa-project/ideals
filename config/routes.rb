@@ -18,6 +18,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/access", to: "collections#show_access", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/all-files", to: "collections#all_files", via: :get
     match "/delete", to: "collections#delete", via: :post # different from destroy--see method doc
     match "/items", to: "collections#show_items", via: :get
     match "/review-submissions", to: "collections#show_review_submissions", via: :get,

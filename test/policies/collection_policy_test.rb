@@ -6,6 +6,50 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     @collection = collections(:uiuc_collection1)
   end
 
+  # all_files?()
+
+  test "all_files?() returns false with a nil user" do
+    policy = CollectionPolicy.new(nil, @collection)
+    assert !policy.all_files?
+  end
+
+  test "all_files?() is restrictive by default" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.all_files?
+  end
+
+  test "all_files?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.all_files?
+  end
+
+  test "all_files?() authorizes collection managers" do
+    user = users(:norights)
+    user.managing_collections << @collection
+    user.save!
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.all_files?
+  end
+
+  test "all_files?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.all_files?
+  end
+
   # change_parent?()
 
   test "change_parent?() returns false with a nil user" do

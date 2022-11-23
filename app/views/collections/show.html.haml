@@ -82,6 +82,9 @@
                    parent: @collection,
                    title: "Add Child Collection" }
 = render partial: "shared/ajax_modal",
+         locals: { id: "download-files-modal",
+                   title: "Download All Files" }
+= render partial: "shared/ajax_modal",
          locals: { id: "edit-collection-properties-modal",
                    title: "Edit Properties" }
 = render partial: "shared/ajax_modal",
