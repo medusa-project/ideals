@@ -221,12 +221,15 @@ class Item < ApplicationRecord
     begin
       uncached do
         Dir.mktmpdir do |tmpdir|
-          stuffdir = File.join(tmpdir, "items-#{now.to_i}")
+          stuffdir = File.join(tmpdir, "items")
           index    = 0
           item_ids.each do |item_id|
             item        = Item.find(item_id)
             institution = item.institution
             item.bitstreams.where.not(permanent_key: nil).each do |bs|
+              # N.B.: we could ascribe a download event to the bitstream here,
+              # but we don't, in the expectation that this is more of an
+              # administrative feature
               dest_dir = File.join(stuffdir, item.handle&.handle || "#{item.id}")
               FileUtils.mkdir_p(dest_dir)
               dest_path = File.join(dest_dir, bs.original_filename)
