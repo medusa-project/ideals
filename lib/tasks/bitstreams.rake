@@ -2,6 +2,15 @@ require 'rake'
 
 namespace :bitstreams do
 
+  desc "Export all bitstreams attached to all items in a collection"
+  task :export_collection, [:collection_id] => :environment do |task, args|
+    collection = Collection.find(args[:collection_id])
+    download   = Download.create!(institution: collection.institution,
+                                  filename:    "collection-#{collection.id}-#{Time.now.to_i}.zip")
+    collection.create_zip_file(dest_key: download.object_key)
+    puts "File is ready at the following URL:\n\nhttps://#{collection.institution.fqdn}/downloads/#{download.key}/file"
+  end
+
   desc "Read the full text of bitstreams for which this has not been done yet"
   task :read_full_text, [:thread_count] => :environment do |task, args|
     num_threads = args[:thread_count].to_i

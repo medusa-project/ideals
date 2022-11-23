@@ -201,6 +201,18 @@ class CollectionTest < ActiveSupport::TestCase
     assert @instance.buried
   end
 
+  # create_zip_file()
+
+  test "create_zip_file() creates a zip file" do
+    setup_s3
+    dest_key   = "institutions/test/downloads/file.zip"
+    @instance.create_zip_file(dest_key: dest_key)
+
+    bucket = ::Configuration.instance.storage[:bucket]
+    assert S3Client.instance.head_object(bucket: bucket,
+                                         key:    dest_key).content_length > 0
+  end
+
   # destroy()
 
   test "destroy() raises an error when there are dependent collections" do
