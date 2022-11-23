@@ -153,7 +153,7 @@ module Indexed
     # @return [Integer] ID of the instance in the database.
     #
     def to_model_id(index_id)
-      index_id.split(":").last
+      index_id.split(":").last.to_i
     end
   end
 
