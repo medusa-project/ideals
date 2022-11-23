@@ -105,6 +105,22 @@ class ActiveSupport::TestCase
     client = S3Client.instance
     bucket = ::Configuration.instance.storage[:bucket]
     client.create_bucket(bucket: bucket) unless client.bucket_exists?(bucket)
+    client.put_bucket_policy(bucket: bucket,
+                             policy: JSON.generate({
+                                                     Version: "2012-10-17",
+                                                     Statement: [
+                                                       {
+                                                         Principal: "*",
+                                                         Effect: "Allow",
+                                                         Action: [
+                                                           "s3:GetObject"
+                                                         ],
+                                                         Resource: [
+                                                           "arn:aws:s3:::#{bucket}/*"
+                                                         ]
+                                                       }
+                                                     ]
+                                                   }))
     client.delete_objects(bucket: bucket)
 
     @@seeding = true
