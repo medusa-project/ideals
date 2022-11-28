@@ -12,11 +12,14 @@
     background-color: <%= h @institution.primary_color %>;
     color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %>;
 }
-.bg-primary .card-header {
+.bg-primary .card-header, .bg-primary .card-body {
     background-color: <%= h @institution.primary_color %>;
     color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %>;
 }
-.btn-primary {
+.bg-primary code {
+    color: inherit;
+}
+.btn-primary, .btn-primary.disabled, .btn-primary:disabled {
   background-color: <%= h @institution.primary_color %>;
   border-color: transparent;
   color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %> !important;
