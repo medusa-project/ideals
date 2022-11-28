@@ -18,8 +18,6 @@
 #                    imported data).
 # * `item_id`        References the {Item} to which the instance relates
 #                    (optional).
-# * `temp_stat_id`   Assists in migrating historical download statistics out of
-#                    DSpace. TODO: remove this after migrating these
 # * `updated_at`     Managed by ActiveRecord.
 # * `user_id`        References the {User} who triggered the event. This may be
 #                    nil if the event was triggered by e.g. an automated
