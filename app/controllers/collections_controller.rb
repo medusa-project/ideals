@@ -23,7 +23,7 @@ class CollectionsController < ApplicationController
   def all_files
     respond_to do |format|
       format.zip do
-        item_ids = policy_scope(Item.search.filter(Item::IndexFields::COLLECTIONS, @collection),
+        item_ids = policy_scope(Item.search.filter(Item::IndexFields::COLLECTIONS, @collection.id),
                                 policy_scope_class: ItemPolicy::Scope).to_id_a
         if item_ids.any?
           download = Download.create!(institution: @collection.institution,
