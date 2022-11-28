@@ -29,7 +29,7 @@ if policy(@item).show?
           json.name element.name
           json.label element.label
           json.uri element.registered_element.uri
-          json.string_value sanitize(element.string, tags: [])
+          json.string_value element.string
           json.uri_value element.uri
         end
       end
