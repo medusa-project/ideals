@@ -1,8 +1,9 @@
 module ApplicationHelper
 
   # These tags will not be filtered out when displaying user-entered HTML.
-  ALLOWED_HTML_TAGS = %w(a h1 h2 h3 h4 h5 h6 li ol p ul)
-  MAX_PAGINATION_LINKS = 5
+  ALLOWED_HTML_TAGS           = %w(a h1 h2 h3 h4 h5 h6 li ol p ul)
+  ALLOWED_HTML_TAG_ATTRIBUTES = %w(href title)
+  MAX_PAGINATION_LINKS        = 5
 
   ##
   # @return [String] The sitewide banner message, in a `div`.

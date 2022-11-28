@@ -12,7 +12,7 @@
 - if current_institution.welcome_html.present?
   = sanitize(current_institution.welcome_html,
              tags: ApplicationHelper::ALLOWED_HTML_TAGS,
-             attributes: %w(href))
+             attributes: ApplicationHelper::ALLOWED_HTML_TAG_ATTRIBUTES)
 - else
   %p
     This institution's welcome text has not been filled in yet. An institution
