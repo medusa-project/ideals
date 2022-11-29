@@ -546,6 +546,9 @@ class Institution < ApplicationRecord
     self.registered_elements.build(name:             "dcterms:available",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
                                    label:            "Available")
+    self.registered_elements.build(name:             "dcterms:identifier",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
+                                   label:            "Handle URI")
     self.registered_elements.build(name:             "dc:title",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
                                    label:            "Title",

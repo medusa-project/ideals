@@ -87,7 +87,7 @@ class InstitutionTest < ActiveSupport::TestCase
                                       key:              "new",
                                       fqdn:             "example.net",
                                       main_website_url: "https://example.net")
-    assert_equal 28, institution.registered_elements.count
+    assert_equal 29, institution.registered_elements.count
   end
 
   test "create() adds a default index page" do
