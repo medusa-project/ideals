@@ -8,12 +8,15 @@ class ZipItemsJob < ApplicationJob
   # zip file are organized by item handle, with the handle prefix as the root
   # directory, and each item's handle suffix as a subdirectory within.
   #
+  # To include bitstreams from only one item, use {ZipBitstreamsJob} instead.
+  #
   # Upon completion, the given {Download} instance's {Download#filename}
-  # attribute is updated to reflect its filename within the bucket.
+  # attribute is updated to reflect its filename within the application bucket.
   #
   # @param args [Array] Array containing an array of integer item IDs at
   #                     position 0 and a {Download} instance at position 1.
   # @raises [ArgumentError]
+  # @see ZipBitstreamsJob
   #
   def perform(*args)
     item_ids = args[0]
@@ -26,10 +29,12 @@ class ZipItemsJob < ApplicationJob
                             started_at:    Time.now,
                             status_text:   "Preparing a #{item_ids.count}-item zip file")
     begin
-      download.update!(filename: filename)
-      Item.create_zip_file(item_ids: item_ids,
-                           dest_key: download.object_key,
-                           task:     task)
+      ActiveRecord::Base.transaction do
+        download.update!(filename: filename)
+        Item.create_zip_file(item_ids: item_ids,
+                             dest_key: download.object_key,
+                             task:     task)
+      end
     rescue => e
       task.fail(detail:    e.message,
                 backtrace: e.backtrace)

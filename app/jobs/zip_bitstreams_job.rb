@@ -4,13 +4,19 @@ class ZipBitstreamsJob < ApplicationJob
 
   ##
   # Creates a zip file containing the given bitstreams and uploads it to the
-  # application bucket. The given [Download] instance's {Download#filename}
-  # attribute is updated to reflect its filename within the bucket.
+  # application bucket. The bitstreams are placed in the root directory of the
+  # zip file, so should all be from one item to avoid naming conflicts. To
+  # include bitstreams from multiple items, use {ZipItemsJob} instead.
+  #
+  # Upon completion, the given {Download} instance's {Download#filename}
+  # attribute is updated to reflect the filename of the zip within the
+  # application bucket.
   #
   # @param args [Array] Array containing an array of [Bitstream]s at position
   #                     0, a [Download] instance at position 1, and, optionally,
   #                     an [Item] ID integer at position 2.
   # @raises [ArgumentError]
+  # @see ZipItemsJob
   #
   def perform(*args)
     bitstreams  = args[0]
