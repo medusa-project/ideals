@@ -38,6 +38,8 @@ module MetadataSubmission
           end
           reg_e = RegisteredElement.where(name:        element[:name],
                                           institution: current_institution).limit(1).first
+          # reg_e should never be nil here, but if it is, it would be better to
+          # error out (and roll back the transaction) than to discard metadata.
           item.elements.build(registered_element: reg_e,
                               string:             element[:string],
                               uri:                element[:uri],
