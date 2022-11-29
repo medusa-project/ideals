@@ -402,12 +402,16 @@ module ApplicationHelper
         html << "<ul>"
         matching_ascribed_elements.each do |asc_e|
           html << "<li>"
-          html <<   sanitize(asc_e.string, tags: [])
+          html <<   sanitize(asc_e.string,
+                             tags:       ApplicationHelper::ALLOWED_HTML_TAGS,
+                             attributes: ApplicationHelper::ALLOWED_HTML_TAG_ATTRIBUTES)
           html << "</li>"
         end
         html << "</ul>"
       else
-        html << sanitize(matching_ascribed_elements.first.string, tags: [])
+        html << sanitize(matching_ascribed_elements.first.string,
+                         tags:       ApplicationHelper::ALLOWED_HTML_TAGS,
+                         attributes: ApplicationHelper::ALLOWED_HTML_TAG_ATTRIBUTES)
       end
       html << "</dd>"
     end
