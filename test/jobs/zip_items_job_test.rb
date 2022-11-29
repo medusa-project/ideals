@@ -18,11 +18,10 @@ class ZipItemsJobTest < ActiveSupport::TestCase
   end
 
   test "perform() assigns a correct filename to the zip file" do
-    bitstreams = [bitstreams(:approved_in_permanent),
-                  bitstreams(:license_bundle)]
+    item_ids = [items(:uiuc_approved).id, items(:uiuc_multiple_bitstreams).id]
     download = Download.create(institution: institutions(:uiuc))
 
-    ZipItemsJob.new.perform(bitstreams, download)
+    ZipItemsJob.new.perform(item_ids, download)
 
     download.reload
     assert download.filename.match?(/^items-[a-z\d]{16}.zip$/)
