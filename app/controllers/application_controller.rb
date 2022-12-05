@@ -238,6 +238,15 @@ class ApplicationController < ActionController::Base
   def to_do_list
     if @list.nil?
       @list = ToDoList.new
+      if current_user&.sysadmin?
+        count = Institution.where("outgoing_message_queue IS NULL OR outgoing_message_queue = ''").count
+        @list.items << {
+          message: "Set up preservation for #{count} #{"institution".pluralize(count)}",
+          url:     institutions_path
+        }
+        @list.total_items += count
+      end
+
       # Pending Invitees (if the user is allowed to act on them)
       if policy(Invitee).approve?
         count = Invitee.where(institution:    current_institution,
