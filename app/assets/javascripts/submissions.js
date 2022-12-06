@@ -359,22 +359,21 @@ const SubmissionForm = function() {
     /**
      * Reads the month & day select menus and year text field of date-type
      * submission profile elements, and sets the corresponding hidden date
-     * input value appropriately (in "Month DD, YYYY" format).
+     * input value appropriately (in ISO 8601 format).
      */
     const wireDateTransformer = function() {
         metadataForm.find("[name=month], [name=day], [name=year]").on("change", function () {
             const hiddenInput = $("#" + $(this).data("for"));
-            const parent = hiddenInput.parent();
-            const month = parent.find("[name=month]").val(); // may be empty
-            const day = parent.find("[name=day]").val();   // may be empty
-            const year = parent.find("[name=year]").val();
-            let date;
-            if (month && day) {
-                date = month + " " + day + ", " + year;
-            } else if (month) {
-                date = month + " " + year;
-            } else {
-                date = year;
+            const parent      = hiddenInput.parent();
+            const month       = parent.find("[name=month]").val(); // may be empty
+            const day         = parent.find("[name=day]").val();   // may be empty
+            const year        = parent.find("[name=year]").val();
+            let date = year
+            if (month) {
+                date += "-" + month;
+                if (day) {
+                    date += "-" + day;
+                }
             }
             hiddenInput.val(date);
         });
@@ -383,6 +382,7 @@ const SubmissionForm = function() {
     // When a "Type of Resource" of "Other" is selected, add a text field next
     // to it. This is a hack for one element only since submission profiles
     // don't support this behavior generically.
+    // TODO: add an input type to support this behavior
     const wireDependentSelects = function() {
         metadataForm.find("select").on("change", function () {
             if ($(this).prev().val() === "dc:type") {
