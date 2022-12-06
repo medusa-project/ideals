@@ -50,6 +50,7 @@ class Unit < ApplicationRecord
     HANDLE                = "k_handle"
     ID                    = OpenSearchIndex::StandardFields::ID
     INSTITUTION_KEY       = OpenSearchIndex::StandardFields::INSTITUTION_KEY
+    INSTITUTION_NAME      = OpenSearchIndex::StandardFields::INSTITUTION_NAME
     INTRODUCTION          = "t_introduction"
     LAST_INDEXED          = OpenSearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED         = OpenSearchIndex::StandardFields::LAST_MODIFIED
@@ -164,6 +165,7 @@ class Unit < ApplicationRecord
     doc[IndexFields::CREATED]               = self.created_at.utc.iso8601
     doc[IndexFields::HANDLE]                = self.handle&.handle
     doc[IndexFields::INSTITUTION_KEY]       = self.institution&.key
+    doc[IndexFields::INSTITUTION_NAME]      = self.institution&.name
     doc[IndexFields::INTRODUCTION]          = self.introduction
     doc[IndexFields::LAST_INDEXED]          = Time.now.utc.iso8601
     doc[IndexFields::LAST_MODIFIED]         = self.updated_at.utc.iso8601

@@ -203,6 +203,8 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal @instance.handle.handle, doc[Item::IndexFields::HANDLE]
     assert_equal @instance.institution.key,
                  doc[Item::IndexFields::INSTITUTION_KEY]
+    assert_equal @instance.institution.name,
+                 doc[Item::IndexFields::INSTITUTION_NAME]
     assert_not_empty doc[Item::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,
                  doc[Item::IndexFields::LAST_MODIFIED]

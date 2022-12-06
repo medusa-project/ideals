@@ -100,6 +100,7 @@ class UnitTest < ActiveSupport::TestCase
     assert_not_empty doc[Unit::IndexFields::CREATED]
     assert_nil doc[Unit::IndexFields::HANDLE]
     assert_equal @instance.institution.key, doc[Unit::IndexFields::INSTITUTION_KEY]
+    assert_equal @instance.institution.name, doc[Unit::IndexFields::INSTITUTION_NAME]
     assert_equal @instance.introduction, doc[Unit::IndexFields::INTRODUCTION]
     assert_not_empty doc[Unit::IndexFields::LAST_INDEXED]
     assert_equal @instance.updated_at.utc.iso8601,

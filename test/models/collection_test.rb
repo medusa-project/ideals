@@ -106,6 +106,8 @@ class CollectionTest < ActiveSupport::TestCase
                  doc[Collection::IndexFields::HANDLE]
     assert_equal @instance.institution.key,
                  doc[Collection::IndexFields::INSTITUTION_KEY]
+    assert_equal @instance.institution.name,
+                 doc[Collection::IndexFields::INSTITUTION_NAME]
     assert_equal @instance.introduction,
                  doc[Collection::IndexFields::INTRODUCTION]
     assert_not_empty doc[Collection::IndexFields::LAST_INDEXED]
