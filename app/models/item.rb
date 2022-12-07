@@ -461,23 +461,22 @@ class Item < ApplicationRecord
       field       = reg_e.indexed_field
       # The fields are all arrays in order to support multiple values.
       doc[field]  = [] unless doc[field]&.respond_to?(:each)
-      # Most element values are indexed as-is. But values of date-type
-      # registered elements (which may be in forms like "Month DD, YYYY") need
-      # to get normalized as ISO 8601.
+      # Most element values are indexed as-is (with HTML tags stripped). But
+      # values of date-type registered elements (which may be in forms like
+      # "Month DD, YYYY") need to be normalized as ISO 8601.
       if reg_e.input_type == RegisteredElement::InputType::DATE
         date = asc_e.date
         if date && date.year < OpenSearchIndex::MAX_YEAR
           doc[field] << date.iso8601
         else
-          field = reg_e.indexed_text_field
+          field       = reg_e.indexed_text_field
           doc[field]  = [] unless doc[field]&.respond_to?(:each)
-          doc[field] << asc_e.string
+          doc[field] << Nokogiri::HTML(asc_e.string).text
         end
       else
-        doc[field] << asc_e.string[0..OpenSearchIndex::MAX_KEYWORD_FIELD_LENGTH]
+        doc[field] << Nokogiri::HTML(asc_e.string).text[0..OpenSearchIndex::MAX_KEYWORD_FIELD_LENGTH]
       end
     end
-
     doc
   end
 
