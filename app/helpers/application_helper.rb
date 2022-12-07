@@ -733,7 +733,7 @@ module ApplicationHelper
       checked          = (permitted_params[:fq]&.include?(term.query)) ? "checked" : nil
       checked_params   = term.removed_from_params(permitted_params.deep_dup).except(:start)
       unchecked_params = term.added_to_params(permitted_params.deep_dup).except(:start)
-      term_label       = truncate(term.label, length: 80)
+      term_label       = truncate(sanitize(term.label, tags: []), length: 80)
 
       panel << '<li class="term">'
       panel <<   '<div class="checkbox">'
