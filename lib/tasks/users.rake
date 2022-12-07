@@ -48,7 +48,7 @@ namespace :users do
     end
   end
 
-  desc "Make a user a unit administrator"
+  desc "Make a user an institution administrator"
   task :make_institution_admin, [:email, :institution_key] => :environment do |task, args|
     user        = User.find_by_email(args[:email])
     institution = Institution.find_by_key(args[:institution_key])
