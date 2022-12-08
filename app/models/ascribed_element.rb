@@ -28,10 +28,7 @@
 class AscribedElement < ApplicationRecord
 
   belongs_to :registered_element
-  # N.B.: in practice, the touching probably doesn't matter much, as instances
-  # are rarely updated (usually they are deleted and replaced during metadata
-  # edits).
-  belongs_to :item, touch: true
+  belongs_to :item
 
   validates :string, presence: true
   validates :position, numericality: { greater_than_or_equal_to: 1 },
