@@ -779,6 +779,9 @@ const IDEALS = {
         const ROOT_URL = $("input[name=root_url]").val();
         const modal    = $("#login-modal");
         const flash    = modal.find(".alert.login-status");
+        modal.find("input[name=password").on("keyup", function() {
+            flash.hide();
+        });
         modal.find("input[name=auth_key]").on("keyup", function() {
             const submitButton = modal.find("button[type=submit]");
             if ($(this).val().endsWith("@illinois.edu")) {
