@@ -439,7 +439,7 @@ structure that all config files must use.
 `config/credentials/ci.yml` is copied to `test.yml` in continuous integration
 (see below).
 
-See the class documentation in `app/config/configuration.rb` for a detailed
+See the class documentation in `app/models/configuration.rb` for a detailed
 explanation of how the configuration system works.
 
 # OpenSearchSchemaMigration
