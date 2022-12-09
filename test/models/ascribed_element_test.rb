@@ -16,19 +16,6 @@ class AscribedElementTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
-  test "instance's owning item is updated when the instance is updated" do
-    item = items(:uiuc_described)
-    original_updated_at = item.updated_at
-
-    sleep 0.1
-    element = item.elements.first
-    element.update!(string: "new string")
-    item.reload
-    new_updated_at = item.updated_at
-
-    assert new_updated_at > original_updated_at
-  end
-
   # date()
 
   test "date() returns a valid instance with a string containing ISO 8601" do
