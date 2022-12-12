@@ -49,6 +49,7 @@ class BitstreamPolicy < ApplicationPolicy
     @user            = request_context&.user
     @role            = request_context&.role_limit
     @bitstream       = bitstream
+    @request_context = request_context
   end
 
   def create
@@ -70,8 +71,7 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def destroy
-    bitstream.item.stage == Item::Stages::SUBMITTING ?
-        update : effective_sysadmin(user, role)
+    ItemPolicy.new(@request_context, bitstream.item).delete_bitstreams
   end
 
   def download

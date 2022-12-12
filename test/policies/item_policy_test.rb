@@ -206,6 +206,138 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.delete?
   end
 
+  # delete_bitstreams?()
+
+  test "delete_bitstreams?() returns false with a nil user" do
+    policy = ItemPolicy.new(nil, @item)
+    assert !policy.delete_bitstreams?
+  end
+
+  test "delete_bitstreams?() authorizes sysadmins" do
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.delete_bitstreams?
+  end
+
+  test "delete_bitstreams?() authorizes admins of the same institution" do
+    user    = users(:uiuc_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.delete_bitstreams?
+  end
+
+  test "delete_bitstreams?() does not authorize admins of a different
+  institution" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.delete_bitstreams?
+  end
+
+  test "delete_bitstreams?() does not authorize the bitstream owner if the item
+  is not submitting" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+
+    @item.update!(submitter: user, stage: Item::Stages::APPROVED)
+
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.delete_bitstreams?
+  end
+
+  test "delete_bitstreams?() authorizes managers of the bitstream's collection
+  to submitting items" do
+    doing_user = users(:norights)
+    context    = RequestContext.new(user:        doing_user,
+                                    institution: doing_user.institution)
+    collection = collections(:uiuc_collection1)
+    collection.managing_users << doing_user
+    collection.save!
+
+    @item.update!(submitter:          users(:norights), # somebody else
+                  stage:              Item::Stages::SUBMITTING,
+                  primary_collection: collection)
+
+    policy = ItemPolicy.new(context, @item)
+    assert policy.delete_bitstreams?
+  end
+
+  test "delete_bitstreams?() does not authorize managers of the bitstream's
+  collection to non-submitting items" do
+    doing_user = users(:norights)
+    context    = RequestContext.new(user:        doing_user,
+                                    institution: doing_user.institution)
+    collection = collections(:uiuc_collection1)
+    collection.managing_users << doing_user
+    collection.save!
+
+    @item.update!(submitter:          users(:norights), # somebody else
+                  stage:              Item::Stages::APPROVED,
+                  primary_collection: collection)
+
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.delete_bitstreams?
+  end
+
+  test "delete_bitstreams?() authorizes admins of the submission's collection's
+  unit to submitting items" do
+    doing_user    = users(:norights)
+    context       = RequestContext.new(user:        doing_user,
+                                       institution: doing_user.institution)
+    collection               = collections(:uiuc_collection1)
+    unit                     = collection.primary_unit
+    unit.administering_users << doing_user
+    unit.save!
+
+    @item.update!(submitter:          users(:norights), # somebody else
+                  stage:              Item::Stages::SUBMITTING,
+                  primary_collection: collection)
+
+    policy = ItemPolicy.new(context, @item)
+    assert policy.delete_bitstreams?
+  end
+
+  test "delete_bitstreams?() does not authorize admins of the submission's
+  collection's unit to non-submitting items" do
+    doing_user    = users(:norights)
+    context       = RequestContext.new(user:        doing_user,
+                                       institution: doing_user.institution)
+    collection               = collections(:uiuc_collection1)
+    unit                     = collection.primary_unit
+    unit.administering_users << doing_user
+    unit.save!
+
+    @item.update!(submitter:          users(:norights), # somebody else
+                  stage:              Item::Stages::APPROVED,
+                  primary_collection: collection)
+
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.delete_bitstreams?
+  end
+
+  test "delete_bitstreams?() does not authorize anyone else" do
+    user    = users(:norights)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.delete_bitstreams?
+  end
+
+  test "delete_bitstreams?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:local_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.delete_bitstreams?
+  end
+
   # download_counts?()
 
   test "download_counts?() returns true with a nil user" do

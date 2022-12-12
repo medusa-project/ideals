@@ -79,6 +79,11 @@ class ItemPolicy < ApplicationPolicy
                   "this item resides." }
   end
 
+  def delete_bitstreams
+    item.stage == Item::Stages::SUBMITTING ?
+      update : effective_institution_admin(user, institution, role)
+  end
+
   def download_counts
     return { authorized: false,
              reason:     "This item has been deleted." } if item.buried?
@@ -305,8 +310,7 @@ class ItemPolicy < ApplicationPolicy
     { authorized: false,
       reason:     "You must be either the submitter of the item, a manager "\
                   "of one of the collections in which it resides, or an "\
-                  "administrator of one of the units in which this it "\
-                  "resides." }
+                  "administrator of one of the units in which it resides." }
   end
 
   def upload_bitstreams

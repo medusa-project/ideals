@@ -10,6 +10,9 @@
 
 -# Read in JavaScript to determine where to upload files to.
 = hidden_field_tag "item_bitstreams_uri", item_bitstreams_url(item)
+-# Read in JavaScript to determine whether to display the remove buttons.
+- can_delete_bitstreams = policy(@item).delete_bitstreams?
+= hidden_field_tag "can_delete_bitstreams", can_delete_bitstreams
 
 -# This table is modified by IDEALS.ItemFileUploader.addFile() (JavaScript).
 -# Its structure must be kept in sync with that code.
@@ -24,11 +27,12 @@
         %td= number_to_human_size(bitstream.length)
         %td
           -# progress bar injected here
-        %td
-          - if bitstream.staging_key.present? && !bitstream.submitted_for_ingest
-            %button.btn.btn-sm.btn-outline-danger.remove
-              %i.fa.fa-minus
-              Remove
+        - if can_delete_bitstreams
+          %td
+            - if bitstream.staging_key.present? && !bitstream.submitted_for_ingest
+              %button.btn.btn-sm.btn-outline-danger.remove
+                %i.fa.fa-minus
+                Remove
 
 -# This input is hidden via CSS. JavaScript sends #file-dropzone click events
 -# to it in order to open a file selection dialog.

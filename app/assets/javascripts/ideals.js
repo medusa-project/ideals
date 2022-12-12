@@ -467,7 +467,7 @@ const IDEALS = {
     },
 
     /**
-     * Manages the file-upload feature. This  consists of a table displaying
+     * Manages the file-upload feature. This consists of a table displaying
      * all of an item's bitstreams along with remove buttons for each, as well
      * as a drop zone for uploading files which, once uploaded, appear in the
      * table.
@@ -484,6 +484,7 @@ const IDEALS = {
         DISALLOWED_LC_FILENAMES.add(".ds_store");
         DISALLOWED_LC_FILENAMES.add("thumbs.db");
 
+        const canDelete       = ($("[name=can_delete_bitstreams]").val() === "true");
         const filesForm       = $("#files-form");
         const filesTable      = filesForm.find("table.files");
         let numUploadingFiles = 0;
@@ -525,8 +526,7 @@ const IDEALS = {
                 "                 aria-valuemin='0' aria-valuemax='100'></div>" +
                 "        </div>" +
                 "    </td>" +
-                "    <td></td>" + // ingest button (admin only)
-                "    <td></td>" + // remove button
+                "    <td></td>" + // remove button (admin only)
                 "</tr>");
             uploadFile(file);
         };
@@ -554,18 +554,20 @@ const IDEALS = {
             row.find(".progress").remove();
 
             // "Remove" button
-            const removalCell = row.find("td:last-child");
-            removalCell.html(
-                "<button class='btn btn-sm btn-outline-danger remove' type='button'>" +
-                "   <i class='fa fa-minus'></i> Remove" +
-                "</button>");
-            removalCell.find("button.remove").on("click", function() {
-                onRemoveFileButtonClicked($(this));
-            });
+            if (canDelete) {
+                const removalCell = row.find("td:last-child");
+                removalCell.html(
+                    "<button class='btn btn-sm btn-outline-danger remove' type='button'>" +
+                    "   <i class='fa fa-minus'></i> Remove" +
+                    "</button>");
+                removalCell.find("button.remove").on("click", function () {
+                    onRemoveFileButtonClicked($(this));
+                });
+            }
         };
 
         /**
-         * To be called when a file upload fails.
+         * Called when a file upload fails.
          *
          * @param row {jQuery}
          */
@@ -574,14 +576,16 @@ const IDEALS = {
             row.find(".progress").remove();
 
             // "Remove" button
-            const removalCell = row.find("td:last-child");
-            removalCell.html(
-                "<button class='btn btn-sm btn-outline-danger remove' type='button'>" +
-                "   <i class='fa fa-minus'></i> Remove" +
-                "</button>");
-            removalCell.find("button.remove").on("click", function() {
-                onRemoveFileButtonClicked($(this));
-            });
+            if (canDelete) {
+                const removalCell = row.find("td:last-child");
+                removalCell.html(
+                    "<button class='btn btn-sm btn-outline-danger remove' type='button'>" +
+                    "   <i class='fa fa-minus'></i> Remove" +
+                    "</button>");
+                removalCell.find("button.remove").on("click", function () {
+                    onRemoveFileButtonClicked($(this));
+                });
+            }
         };
 
         /**
