@@ -43,23 +43,23 @@
 = render partial: "show_indexing_section" if Rails.env.development?
 
 = render partial: "shared/ajax_modal",
-         locals: { id: "upload-item-files-modal",
-                   title: "Upload Files",
-                   size: "lg" }
+         locals: { id:    "manage-item-files-modal",
+                   title: "Manage Files",
+                   size:   "lg" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-item-membership-modal",
+         locals: { id:    "edit-item-membership-modal",
                    title: "Edit Membership",
-                   size: :xl }
+                   size:  :xl }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-item-metadata-modal",
+         locals: { id:    "edit-item-metadata-modal",
                    title: "Edit Metadata",
-                   size: :xl }
+                   size:  :xl }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-item-properties-modal",
+         locals: { id:    "edit-item-properties-modal",
                    title: "Edit Properties" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-item-embargoes-modal",
+         locals: { id:    "edit-item-embargoes-modal",
                    title: "Embargoes",
-                   size: :lg }
+                   size:  :lg }
 
 = include_chart_library

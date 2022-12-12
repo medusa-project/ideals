@@ -388,11 +388,11 @@ const ItemView = function() {
             $("#edit-item-properties-modal .modal-body").html(data);
         });
     });
-    $(".upload-item-files").on("click", function() {
+    $(".manage-item-files").on("click", function() {
         const id  = $(this).data("item-id");
         const url = ROOT_URL + "/items/" + id + "/upload-bitstreams";
         $.get(url, function(data) {
-            const modal = $("#upload-item-files-modal");
+            const modal = $("#manage-item-files-modal");
             modal.find(".modal-body").html(data);
             // Reload the page in order to refresh the file list.
             modal.on("hidden.bs.modal", function() {

@@ -35,14 +35,14 @@
               %i.fa.fa-trash
               Delete
 
-  -# Upload File button
+  -# Manage Files button
   - if policy(@item).upload_bitstreams? && !@item.withdrawn?
-    %button.btn.btn-light.upload-item-files{"data-item-id": @item.id,
-                                            "data-target":  "#upload-item-files-modal",
+    %button.btn.btn-light.manage-item-files{"data-item-id": @item.id,
+                                            "data-target":  "#manage-item-files-modal",
                                             "data-toggle":  "modal",
                                             role:           "button"}
       %i.fas.fa-upload
-      Upload File&hellip;
+      Manage Files&hellip;
 
 = render partial: "shared/ajax_modal",
          locals: { id: "withdraw-modal",
