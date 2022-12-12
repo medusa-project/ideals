@@ -60,6 +60,11 @@ code {
     display: flex;
     align-items: center;
   }
+  .format-icon {
+    color: $gray-600;
+    font-size: 0.9em;
+    padding-left: 0.5em;
+  }
   .icon-thumbnail {
     font-size: 100px;
   }

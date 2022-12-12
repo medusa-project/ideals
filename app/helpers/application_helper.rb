@@ -567,13 +567,20 @@ module ApplicationHelper
   def resource_list_row(resource, primary: false, default: false)
     embargoed_item = resource.kind_of?(Item) &&
       resource.embargoed_for?(current_user)
+    thumb = thumbnail_for(resource)
     html = StringIO.new
     html << "<div class=\"media resource-list mb-3\">"
-    html <<   "<div class=\"icon-thumbnail\">"
     if embargoed_item
-      html <<   '<i class="fa fa-lock"></i>'
+      html <<   "<div class=\"icon-thumbnail\">"
+      html <<     '<i class="fa fa-lock"></i>'
+    elsif thumb
+      html <<   "<div class=\"image-thumbnail\">"
+      html <<     link_to(resource) do
+        thumb
+      end
     else
-      html <<   link_to(resource) do
+      html <<   "<div class=\"icon-thumbnail\">"
+      html <<     link_to(resource) do
         icon_for(resource)
       end
     end
@@ -584,6 +591,9 @@ module ApplicationHelper
       html <<     resource.title
     else
       html <<     link_to(resource.title, resource)
+      html <<     "<span class=\"format-icon\">"
+      html <<       icon_for(resource)
+      html <<     "</span>"
     end
 
     if primary
