@@ -2,7 +2,7 @@
 - provide :title, "Submission Profiles"
 
 .btn-group.float-right{role: "group"}
-  / Add Profile button
+  -# Add Profile button
   %button.btn.btn-light{"data-target": "#add-profile-modal",
                         "data-toggle": "modal", type: "button"}
     %i.fa.fa-plus
@@ -19,7 +19,7 @@
       %tr
         %td
           = link_to(profile.name, profile)
-          - if profile.default
+          - if profile.institution_default
             %span.badge.badge-success DEFAULT
 
 = render partial: 'add_modal'

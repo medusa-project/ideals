@@ -3,11 +3,11 @@
 # labels, and whether they are required, repeatable, etc., for the purposes of
 # submitting an item.
 #
-# One instance is marked as the default, and is used by all submitters across
-# all {Collection}s, but this can be overridden by assigning other profiles to
-# specific collections. Collections without an assigned profile will use the
-# default profile--the single profile whose `default` property is set to
-# `true`.
+# One instance is marked as the default per institution, and is used by all
+# submitters across all {Collection}s, but this can be overridden by assigning
+# other profiles to specific collections. Collections without an assigned
+# profile will use the {SubmissionProfile#institution_default institution's
+# default profile}.
 #
 # A submission profile can be thought of as the "input" counterpart to a
 # {MetadataProfile}, which is used for "output" purposes. It tells users what
@@ -15,16 +15,15 @@
 #
 # # Attributes
 #
-# * `name`                        The name of the submission profile. Must be
-#                                 unique within the same institution.
-# * `created_at`                  Managed by ActiveRecord.
-# * `default`                     Whether the submission profile is used by
-#                                 {Collection}s without a submission profile
-#                                 assigned, or in cross-collection contexts.
-#                                 (Only one submission profile can be marked
-#                                 default--this is enforced by an `after_save`
-#                                 callback.)
-# * `updated_at`                  Managed by ActiveRecord.
+# * `created_at`          Managed by ActiveRecord.
+# * `name`                The name of the submission profile. Must be unique
+#                         within the same institution.
+# * `institution_default` Whether the submission profile is used by
+#                         {Collection}s without a submission profile assigned,
+#                         or in cross-collection contexts. (Only one submission
+#                         profile can be marked as such per institution--this
+#                         is enforced by an `after_save` callback.)
+# * `updated_at`          Managed by ActiveRecord.
 #
 class SubmissionProfile < ApplicationRecord
   include Breadcrumb
@@ -181,9 +180,9 @@ class SubmissionProfile < ApplicationRecord
   # @return [SubmissionProfile]
   #
   def dup
-    clone = super
-    clone.name = "Clone of #{self.name}"
-    clone.default = false
+    clone                     = super
+    clone.name                = "Clone of #{self.name}"
+    clone.institution_default = false
     # The instance requires an ID for SubmissionProfileElement validations.
     clone.save!
     self.elements.each { |e| clone.elements << e.dup }
@@ -198,11 +197,11 @@ class SubmissionProfile < ApplicationRecord
   # default.
   #
   def ensure_default_uniqueness
-    if self.default
+    if self.institution_default
       self.class.all.
         where(institution_id: self.institution_id).
         where('id != ?', self.id).each do |instance|
-        instance.update!(default: false)
+        instance.update!(institution_default: false)
       end
     end
   end

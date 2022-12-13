@@ -55,11 +55,11 @@ class SubmissionProfileTest < ActiveSupport::TestCase
 
   test "setting a profile as the default sets all other instances to not-default" do
     institution = institutions(:uiuc)
-    assert_equal 1, institution.submission_profiles.where(default: true).count
-    SubmissionProfile.create!(name:        "New Profile",
-                              institution: institution,
-                              default:     true)
-    assert_equal 1, institution.submission_profiles.where(default: true).count
+    assert_equal 1, institution.submission_profiles.where(institution_default: true).count
+    SubmissionProfile.create!(name:                "New Profile",
+                              institution:         institution,
+                              institution_default: true)
+    assert_equal 1, institution.submission_profiles.where(institution_default: true).count
   end
 
   # dup()
@@ -67,7 +67,7 @@ class SubmissionProfileTest < ActiveSupport::TestCase
   test "dup() returns a correct clone of an instance" do
     dup = @instance.dup
     assert_equal "Clone of #{@instance.name}", dup.name
-    assert !dup.default
+    assert !dup.institution_default
     assert_equal @instance.elements.length, dup.elements.length
   end
 

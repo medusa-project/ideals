@@ -104,7 +104,7 @@ class SubmissionProfilesController < ApplicationController
   private
 
   def submission_profile_params
-    params.require(:submission_profile).permit(:default, :name)
+    params.require(:submission_profile).permit(:institution_default, :name)
   end
 
   def set_profile

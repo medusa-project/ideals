@@ -36,7 +36,7 @@
       = icon_for(RegisteredElement)
       Elements
       %span.badge.badge-pill.badge-secondary= @profile.elements.count
-  - unless @profile.default
+  - unless @profile.institution_default
     %li.nav-item
       %a#collections-tab.nav-link{href: "#collections", "data-toggle": "tab",
                                   role: "tab", "aria-controls": "collections",
@@ -93,7 +93,7 @@
               %strong Help Text
             .col-sm-9= element.help_text
 
-  - unless @profile.default
+  - unless @profile.institution_default
     #collections.tab-pane.fade{role: "tabpanel",
                                "aria-labelledby": "collections-tab"}
       - if @collections.count > 0

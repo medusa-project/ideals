@@ -121,7 +121,7 @@ class InstitutionTest < ActiveSupport::TestCase
                                       main_website_url: "https://example.net")
     assert_equal 1, institution.submission_profiles.count
     profile = institution.submission_profiles.first
-    assert profile.default
+    assert profile.institution_default
     assert profile.elements.count > 0
   end
 
@@ -181,7 +181,7 @@ class InstitutionTest < ActiveSupport::TestCase
   # default_submission_profile()
 
   test "default_submission_profile() returns the default submission profile" do
-    assert @instance.default_submission_profile.default
+    assert @instance.default_submission_profile.institution_default
   end
 
   # defining_user_group()

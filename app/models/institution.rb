@@ -229,7 +229,7 @@ class Institution < ApplicationRecord
   # @return [SubmissionProfile]
   #
   def default_submission_profile
-    self.submission_profiles.where(default: true).limit(1).first
+    self.submission_profiles.where(institution_default: true).limit(1).first
   end
 
   ##
@@ -599,8 +599,8 @@ class Institution < ApplicationRecord
   end
 
   def add_default_submission_profile
-    profile = self.submission_profiles.build(name:    "Default Submission Profile",
-                                             default: true)
+    profile = self.submission_profiles.build(name:                "Default Submission Profile",
+                                             institution_default: true)
     profile.save!
     profile.add_default_elements
   end
