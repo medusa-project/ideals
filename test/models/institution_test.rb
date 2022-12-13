@@ -109,7 +109,7 @@ class InstitutionTest < ActiveSupport::TestCase
                                       main_website_url: "https://example.net")
     assert_equal 1, institution.metadata_profiles.count
     profile = institution.metadata_profiles.first
-    assert profile.default
+    assert profile.institution_default
     assert profile.elements.count > 0
   end
 
@@ -175,7 +175,7 @@ class InstitutionTest < ActiveSupport::TestCase
   # default_metadata_profile()
 
   test "default_metadata_profile() returns the default metadata profile" do
-    assert @instance.default_metadata_profile.default
+    assert @instance.default_metadata_profile.institution_default
   end
 
   # default_submission_profile()

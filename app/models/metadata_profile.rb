@@ -1,35 +1,29 @@
 ##
 # Defines an ordered list of {RegisteredElement metadata elements}, their
 # labels, and whether they are searchable, sortable, etc. A metadata profile
-# can be assigned to a {Collection} and a {Unit}. Collections without an
-# assigned profile will fall back to the parent unit's profile, and then to the
-# global default profile--the single profile whose `default` property is set to
-# `true`.
+# can be assigned to {Collection}s and {Unit}s. Collections without an assigned
+# profile will fall back to the parent unit's profile, and then to the
+# {MetadataProfile#institution_default institution's default profile}.
 #
 # A metadata profile is like a template or view. Instead of enumerating an
 # {Item}'s metadata elements for public display, for example, we enumerate the
 # elements in its {Collection}'s metadata profile, and display each of the ones
-# that match in profile order.
-#
-# N.B.: the idea for a "metadata profile" comes from
-# [Kumquat](https://github.com/medusa-project/kumquat). As of this writing,
-# this class and Kumquat's same-named equivalent are very similar in both
-# concept and implementation.
+# that match, in profile order.
 #
 # # Attributes
 #
 # * `name`                        The name of the metadata profile. Must be
 #                                 unique within the same institution.
 # * `created_at`                  Managed by ActiveRecord.
-# * `default`                     Whether the metadata profile is used by
-#                                 {Collection}s without a metadata profile
-#                                 assigned, or in cross-collection contexts.
-#                                 (Only one metadata profile can be marked
-#                                 default--this is enforced by an `after_save`
-#                                 callback.)
 # * `full_text_relevance_weight`  Weight of the full text field when computing
 #                                 a result relevance score. See
 #                                 {MetadataProfileElement#relevance_weight}.
+# * `institution_default`         Whether the metadata profile is used by
+#                                 {Collection}s without a metadata profile
+#                                 assigned, or in cross-collection contexts.
+#                                 (Only one metadata profile can be marked as
+#                                 such per institution--this is enforced by an
+#                                 `after_save` callback.)
 # * `updated_at`                  Managed by ActiveRecord.
 #
 class MetadataProfile < ApplicationRecord
@@ -136,9 +130,9 @@ class MetadataProfile < ApplicationRecord
   # @return [MetadataProfile]
   #
   def dup
-    clone = super
-    clone.name = "Clone of #{self.name}"
-    clone.default = false
+    clone                     = super
+    clone.name                = "Clone of #{self.name}"
+    clone.institution_default = false
     # The instance requires an ID for MetadataProfileElement validations.
     clone.save!
     self.elements.each { |e| clone.elements << e.dup }
@@ -156,15 +150,15 @@ class MetadataProfile < ApplicationRecord
   private
 
   ##
-  # Sets all other instances as "not default" if the instance is marked as
-  # default.
+  # Sets all other instances within the same institution as "not default" if
+  # the instance is marked as default.
   #
   def ensure_default_uniqueness
-    if self.default
+    if self.institution_default
       self.class.all.
         where(institution_id: self.institution_id).
         where("id != ?", self.id).each do |instance|
-        instance.update!(default: false)
+        instance.update!(institution_default: false)
       end
     end
   end

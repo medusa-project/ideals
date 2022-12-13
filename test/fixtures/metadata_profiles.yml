@@ -2,30 +2,30 @@
 
 uiuc_default:
   name:                       Default Profile
-  default:                    true
   institution:                uiuc
+  institution_default:        true
   full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 uiuc_empty:
   name:                       Empty Profile
-  default:                    false
   institution:                uiuc
+  institution_default:        false
   full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 uiuc_unused:
   name:                       Unused Profile
-  default:                    false
   institution:                uiuc
+  institution_default:        false
   full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 northeast_default:
   name:                       Default Profile
-  default:                    true
   institution:                northeast
+  institution_default:        true
   full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 southwest_default:
   name:                       Default Profile
-  default:                    true
   institution:                southwest
+  institution_default:        true
   full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>

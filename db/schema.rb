@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_28_225702) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_12_215207) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -408,12 +408,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_28_225702) do
 
   create_table "metadata_profiles", force: :cascade do |t|
     t.string "name", null: false
-    t.boolean "default", default: false, null: false
+    t.boolean "institution_default", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "institution_id", null: false
     t.integer "full_text_relevance_weight", default: 5, null: false
-    t.index ["default"], name: "index_metadata_profiles_on_default"
+    t.index ["institution_default"], name: "index_metadata_profiles_on_institution_default"
     t.index ["institution_id", "name"], name: "index_metadata_profiles_on_institution_id_and_name", unique: true
     t.index ["institution_id"], name: "index_metadata_profiles_on_institution_id"
   end

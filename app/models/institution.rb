@@ -222,7 +222,7 @@ class Institution < ApplicationRecord
   # @return [MetadataProfile]
   #
   def default_metadata_profile
-    self.metadata_profiles.where(default: true).limit(1).first
+    self.metadata_profiles.where(institution_default: true).limit(1).first
   end
 
   ##
@@ -592,8 +592,8 @@ class Institution < ApplicationRecord
   end
 
   def add_default_metadata_profile
-    profile = self.metadata_profiles.build(name:    "Default Metadata Profile",
-                                           default: true)
+    profile = self.metadata_profiles.build(name:                "Default Metadata Profile",
+                                           institution_default: true)
     profile.save!
     profile.add_default_elements
   end

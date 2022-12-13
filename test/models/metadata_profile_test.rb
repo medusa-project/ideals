@@ -60,16 +60,16 @@ class MetadataProfileTest < ActiveSupport::TestCase
     end
   end
 
-  # default
+  # institution_default
 
-  test "setting a profile as the default sets all other instances in the same
-  institution to not-default" do
+  test "setting a profile as the institution default sets all other instances
+  in the same institution to not-default" do
     institution = institutions(:uiuc)
-    assert_equal 1, institution.metadata_profiles.where(default: true).count
-    MetadataProfile.create!(name:        "New Profile",
-                            institution: institution,
-                            default:     true)
-    assert_equal 1, institution.metadata_profiles.where(default: true).count
+    assert_equal 1, institution.metadata_profiles.where(institution_default: true).count
+    MetadataProfile.create!(name:                "New Profile",
+                            institution:         institution,
+                            institution_default: true)
+    assert_equal 1, institution.metadata_profiles.where(institution_default: true).count
   end
 
   # dup()
@@ -77,7 +77,7 @@ class MetadataProfileTest < ActiveSupport::TestCase
   test "dup() returns a correct clone of an instance" do
     dup = @instance.dup
     assert_equal "Clone of #{@instance.name}", dup.name
-    assert !dup.default
+    assert !dup.institution_default
     assert_equal @instance.elements.length, dup.elements.length
   end
 
