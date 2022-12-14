@@ -6,6 +6,11 @@
     have an
     %code @illinois.edu
     email address.
+
+    %a{href:          "#",
+       "data-target": "#login-carousel",
+       "data-slide":  "prev"}
+      (Oops, I do have one)
   .alert.alert-light
     = icon_for(:info)
     IDEALS migrated to a new platform on June 23, 2022. If you created
@@ -22,10 +27,9 @@
     .col-sm-8
       = password_field_tag :password, nil, class: 'form-control'
       = link_to "(I forgot my password)", reset_password_path
-  %button.btn.btn-primary{type: "submit"}
+  %button.btn.btn-primary.mr-3{type: "submit"}
     %i.fa.fa-sign-in-alt
     &nbsp;Log In
 
-%p.mt-3
   New user?
   = link_to("Sign up now.", new_invitee_path)

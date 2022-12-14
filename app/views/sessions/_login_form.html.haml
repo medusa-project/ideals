@@ -1,11 +1,9 @@
-- if current_institution.key == "uiuc"
-  .row
-    .col-md-6
-      = render partial: "sessions/netid_login_form"
-    .col-md-6
-      .card
-        %h5.card-header I don't have a NetID
-        .card-body
-          = render partial: "sessions/local_login_form"
-- else
-  = render partial: "sessions/local_login_form"
+#login-carousel.carousel.slide{"data-ride":     "carousel",
+                               "data-touch":    "false",
+                               "data-interval": "false"}
+  .carousel-inner
+    - if current_institution.key == "uiuc"
+      .carousel-item.active
+        = render partial: "sessions/netid_login_form"
+    .carousel-item.p-1{class: current_institution.key == "uiuc" ? "" : "active"}
+      = render partial: "sessions/local_login_form"
