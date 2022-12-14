@@ -4,10 +4,10 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # approve()
 
-  test "approve() redirects to login page for logged-out users" do
+  test "approve() redirects to root page for logged-out users" do
     invitee = invitees(:pending)
     patch invitee_approve_path(invitee)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "approve() returns HTTP 403 for unauthorized users" do
@@ -147,9 +147,9 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login page for logged-out users" do
+  test "destroy() redirects to root page for logged-out users" do
     delete invitee_path(invitees(:pending))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -179,9 +179,9 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
-  test "index() redirects to login page for logged-out users" do
+  test "index() redirects to root page for logged-out users" do
     get invitees_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -220,10 +220,10 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # reject()
 
-  test "reject() redirects to login page for logged-out users" do
+  test "reject() redirects to root page for logged-out users" do
     invitee = invitees(:pending)
     patch invitee_reject_path(invitee)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "reject() returns HTTP 403 for unauthorized users" do
@@ -255,10 +255,10 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # resend_email()
 
-  test "resend_email() redirects to login page for logged-out users" do
+  test "resend_email() redirects to root page for logged-out users" do
     invitee = invitees(:pending)
     patch invitee_resend_email_path(invitee)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "resend_email() returns HTTP 403 for unauthorized users" do
@@ -285,10 +285,10 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() redirects to login page for logged-out users" do
+  test "show() redirects to root page for logged-out users" do
     invitee = invitees(:pending)
     get invitee_path(invitee)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "show() returns HTTP 403 for unauthorized users" do

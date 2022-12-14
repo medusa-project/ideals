@@ -8,9 +8,9 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() redirects to login page for logged-out users" do
+  test "create() redirects to root page for logged-out users" do
     post user_groups_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -68,9 +68,9 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login page for logged-out users" do
+  test "destroy() redirects to root page for logged-out users" do
     delete "/user-groups/99999"
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -327,9 +327,9 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
-  test "index() redirects to login page for logged-out users" do
+  test "index() redirects to root page for logged-out users" do
     get user_groups_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -355,9 +355,9 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() redirects to login page for logged-out users" do
+  test "show() redirects to root page for logged-out users" do
     get user_group_path(user_groups(:sysadmin))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
@@ -383,9 +383,9 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login page for logged-out users" do
+  test "update() redirects to root page for logged-out users" do
     patch "/user-groups/99999"
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

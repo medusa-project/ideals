@@ -12,10 +12,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # all_files()
 
-  test "all_files() redirects to login page for logged-out users" do
+  test "all_files() redirects to root page for logged-out users" do
     collection = collections(:uiuc_empty)
     get collection_all_files_path(collection, format: :zip)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "all_files() returns HTTP 403 for unauthorized users" do
@@ -67,9 +67,9 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() redirects to login page for logged-out users" do
+  test "create() redirects to root page for logged-out users" do
     post collections_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -135,9 +135,9 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # delete()
 
-  test "delete() redirects to login page for logged-out users" do
+  test "delete() redirects to root page for logged-out users" do
     post collection_delete_path(collections(:uiuc_collection1))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "delete() returns HTTP 403 for unauthorized users" do
@@ -581,9 +581,9 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # undelete()
 
-  test "undelete() redirects to login page for logged-out users" do
+  test "undelete() redirects to root page for logged-out users" do
     post collection_undelete_path(collections(:uiuc_buried))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "undelete() returns HTTP 403 for unauthorized users" do
@@ -623,10 +623,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login page for logged-out users" do
+  test "update() redirects to root page for logged-out users" do
     collection = collections(:uiuc_collection1)
     patch collection_path(collection)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

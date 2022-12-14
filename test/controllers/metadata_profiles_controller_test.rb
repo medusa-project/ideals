@@ -8,10 +8,10 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # clone()
 
-  test "clone() redirects to login page for logged-out users" do
+  test "clone() redirects to root page for logged-out users" do
     profile = metadata_profiles(:uiuc_default)
     post metadata_profile_clone_path(profile)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "clone() returns HTTP 403 for unauthorized users" do
@@ -38,9 +38,9 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() redirects to login page for logged-out users" do
+  test "create() redirects to root page for logged-out users" do
     post metadata_profiles_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -101,9 +101,9 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login page for logged-out users" do
+  test "destroy() redirects to root page for logged-out users" do
     delete metadata_profile_path(metadata_profiles(:uiuc_unused))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -135,9 +135,9 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
-  test "edit() redirects to login page for logged-out users" do
+  test "edit() redirects to root page for logged-out users" do
     get edit_metadata_profile_path(metadata_profiles(:uiuc_default))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -164,9 +164,9 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
-  test "index() redirects to login page for logged-out users" do
+  test "index() redirects to root page for logged-out users" do
     get metadata_profiles_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -192,9 +192,9 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() redirects to login page for logged-out users" do
+  test "show() redirects to root page for logged-out users" do
     get metadata_profile_path(metadata_profiles(:uiuc_default))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
@@ -221,9 +221,9 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login page for logged-out users" do
+  test "update() redirects to root page for logged-out users" do
     patch "/metadata-profiles/99999"
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

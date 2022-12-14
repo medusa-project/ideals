@@ -8,10 +8,10 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # clone()
 
-  test "clone() redirects to login page for logged-out users" do
+  test "clone() redirects to root page for logged-out users" do
     profile = submission_profiles(:uiuc_default)
     post submission_profile_clone_path(profile)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "clone() returns HTTP 403 for unauthorized users" do
@@ -38,9 +38,9 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() redirects to login page for logged-out users" do
+  test "create() redirects to root page for logged-out users" do
     post submission_profiles_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -101,9 +101,9 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login page for logged-out users" do
+  test "destroy() redirects to root page for logged-out users" do
     delete "/submission-profiles/99999"
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -135,10 +135,10 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
-  test "edit() redirects to login page for logged-out users" do
+  test "edit() redirects to root page for logged-out users" do
     profile = submission_profiles(:uiuc_default)
     get edit_submission_profile_path(profile)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -157,9 +157,9 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
-  test "index() redirects to login page for logged-out users" do
+  test "index() redirects to root page for logged-out users" do
     get submission_profiles_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -185,9 +185,9 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() redirects to login page for logged-out users" do
+  test "show() redirects to root page for logged-out users" do
     get submission_profile_path(submission_profiles(:uiuc_default))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
@@ -214,9 +214,9 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login page for logged-out users" do
+  test "update() redirects to root page for logged-out users" do
     patch "/submission-profiles/99999"
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

@@ -12,9 +12,9 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() redirects to login page for logged-out users" do
+  test "create() redirects to root page for logged-out users" do
     post submission_profile_submission_profile_elements_path(@profile)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -76,9 +76,9 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login page for logged-out users" do
+  test "destroy() redirects to root page for logged-out users" do
     delete submission_profile_path(@profile) + "/elements/9999"
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -113,10 +113,10 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
-  test "edit() redirects to login page for logged-out users" do
+  test "edit() redirects to root page for logged-out users" do
     element = submission_profile_elements(:uiuc_default_title)
     get edit_submission_profile_submission_profile_element_path(@profile, element)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -135,9 +135,9 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login page for logged-out users" do
+  test "update() redirects to root page for logged-out users" do
     patch submission_profile_path(@profile) + "/elements/9999"
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

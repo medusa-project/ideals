@@ -4,10 +4,9 @@
                         tabindex:          "-1"}
   .modal-dialog.modal-dialog-centered.modal-md{role: "document"}
     .modal-content
-      = form_tag '/auth/identity/callback' do
-        .modal-header
-          %h5#login-modal-label.modal-title Log In
-          %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
-            %span{"aria-hidden": "true"} &times;
-        .modal-body
-          = render partial: "sessions/login_form"
+      .modal-header
+        %h5#login-modal-label.modal-title Log In
+        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+          %span{"aria-hidden": "true"} &times;
+      .modal-body
+        = render partial: "sessions/login_form"

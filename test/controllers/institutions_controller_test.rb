@@ -12,9 +12,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() redirects to login page for logged-out users" do
+  test "create() redirects to root page for logged-out users" do
     post institutions_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -82,10 +82,10 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login page for logged-out users" do
+  test "destroy() redirects to root page for logged-out users" do
     institution = institutions(:southwest)
     delete institution_path(institution)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -243,9 +243,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
-  test "index() redirects to login page for logged-out users" do
+  test "index() redirects to root page for logged-out users" do
     get institutions_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -262,9 +262,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # item_download_counts()
 
-  test "item_download_counts() redirects to login page for logged-out users" do
+  test "item_download_counts() redirects to root page for logged-out users" do
     get institution_item_download_counts_path(institutions(:southwest))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "item_download_counts() returns HTTP 403 for unauthorized users" do
@@ -281,9 +281,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # new()
 
-  test "new() redirects to login page for logged-out users" do
+  test "new() redirects to root page for logged-out users" do
     get new_institution_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
@@ -300,9 +300,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() redirects to login page for logged-out users" do
+  test "show() redirects to root page for logged-out users" do
     get institution_path(institutions(:southwest))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "show() returns HTTP 403 for non-administrators of the same institution" do
@@ -484,9 +484,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # statistics_by_range()
 
-  test "statistics_by_range() redirects to login page for logged-out users" do
+  test "statistics_by_range() redirects to root page for logged-out users" do
     get institution_statistics_by_range_path(institutions(:southwest))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "statistics_by_range() returns HTTP 403 for unauthorized users" do
@@ -508,10 +508,10 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # update_preservation()
 
-  test "update_preservation() redirects to login page for logged-out users" do
+  test "update_preservation() redirects to root page for logged-out users" do
     institution = institutions(:southwest)
     patch institution_preservation_path(institution)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update_preservation() returns HTTP 403 for unauthorized users" do
@@ -571,10 +571,10 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # update_properties()
 
-  test "update_properties() redirects to login page for logged-out users" do
+  test "update_properties() redirects to root page for logged-out users" do
     institution = institutions(:southwest)
     patch institution_properties_path(institution)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update_properties() returns HTTP 403 for unauthorized users" do
@@ -638,10 +638,10 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # update_settings()
 
-  test "update_settings() redirects to login page for logged-out users" do
+  test "update_settings() redirects to root page for logged-out users" do
     institution = institutions(:southwest)
     patch institution_settings_path(institution)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update_settings() returns HTTP 403 for unauthorized users" do

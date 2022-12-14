@@ -125,7 +125,8 @@ class ApplicationController < ActionController::Base
       if request.xhr?
         render plain: "403 Forbidden", status: :forbidden
       else
-        redirect_to login_path
+        flash['error'] = "Please log in."
+        redirect_to root_path
       end
     end
   end

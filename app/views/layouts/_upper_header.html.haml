@@ -165,7 +165,7 @@
             = link_to(logout_path, method: :delete, class: "dropdown-item") do
               %i.fa.fa-sign-out-alt
               Log Out
-      - elsif request.path != login_path
+      - else
         %button.btn.btn-sm.btn-link{"data-target": "#login-modal",
                                     "data-toggle": "modal",
                                     type:          "button"}

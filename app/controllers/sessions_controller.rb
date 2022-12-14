@@ -5,12 +5,6 @@ class SessionsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: :create
 
   ##
-  # Displays the login page. Responds to `GET /login`.
-  #
-  def new
-  end
-
-  ##
   # Redirects to the Shibboleth login flow. Responds to
   # `GET/POST /netid-login`.
   #

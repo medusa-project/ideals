@@ -23,7 +23,8 @@ class LocalIdentitiesController < ApplicationController
   #
   def activate
     @identity.activate
-    redirect_to login_path
+    flash['success'] = "Your account has been activated. You may now log in."
+    redirect_to root_path
   end
 
   ##

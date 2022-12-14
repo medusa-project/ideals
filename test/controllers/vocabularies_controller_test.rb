@@ -8,9 +8,9 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() redirects to login page for logged-out users" do
+  test "create() redirects to root page for logged-out users" do
     post vocabularies_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -66,9 +66,9 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login page for logged-out users" do
+  test "destroy() redirects to root page for logged-out users" do
     delete vocabulary_path(vocabularies(:southwest_one))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -100,9 +100,9 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
-  test "edit() redirects to login page for logged-out users" do
+  test "edit() redirects to root page for logged-out users" do
     get edit_vocabulary_path(vocabularies(:southwest_one))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -129,9 +129,9 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
-  test "index() redirects to login page for logged-out users" do
+  test "index() redirects to root page for logged-out users" do
     get vocabularies_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -157,9 +157,9 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
   # new()
 
-  test "new() redirects to login page for logged-out users" do
+  test "new() redirects to root page for logged-out users" do
     get new_vocabulary_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
@@ -185,9 +185,9 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() redirects to login page for logged-out users" do
+  test "show() redirects to root page for logged-out users" do
     get vocabulary_path(vocabularies(:southwest_one))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
@@ -214,9 +214,9 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login page for logged-out users" do
+  test "update() redirects to root page for logged-out users" do
     patch vocabulary_path(vocabularies(:southwest_one))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

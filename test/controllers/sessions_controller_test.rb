@@ -86,13 +86,6 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
-  # new()
-
-  test "new() displays the login page" do
-    get login_path
-    assert_response :ok
-  end
-
   # new_netid()
 
   test "new_netid() redirects to netid login path" do

@@ -12,9 +12,9 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() redirects to login page for logged-out users" do
+  test "create() redirects to root page for logged-out users" do
     post metadata_profile_metadata_profile_elements_path(@profile)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -79,10 +79,10 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to login page for logged-out users" do
+  test "destroy() redirects to root page for logged-out users" do
     delete metadata_profile_metadata_profile_element_path(@profile,
                                                           metadata_profile_elements(:uiuc_default_description))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -117,10 +117,10 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
-  test "edit() redirects to login page for logged-out users" do
+  test "edit() redirects to root page for logged-out users" do
     element = metadata_profile_elements(:uiuc_default_title)
     get edit_metadata_profile_metadata_profile_element_path(@profile, element)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -139,10 +139,10 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login page for logged-out users" do
+  test "update() redirects to root page for logged-out users" do
     element = metadata_profile_elements(:uiuc_default_title)
     patch metadata_profile_metadata_profile_element_path(@profile, element)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

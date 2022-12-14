@@ -69,9 +69,9 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # delete_all_files()
 
-  test "delete_all_files() redirects to login page for logged-out users" do
+  test "delete_all_files() redirects to root page for logged-out users" do
     post import_delete_all_files_path(@import)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "delete_all_files() returns HTTP 403 for unauthorized users" do
@@ -104,10 +104,10 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
-  test "edit() redirects to login page for logged-out users" do
+  test "edit() redirects to root page for logged-out users" do
     import = imports(:saf_new)
     get edit_import_path(import)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -126,9 +126,9 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
-  test "index() redirects to login page for logged-out users" do
+  test "index() redirects to root page for logged-out users" do
     get imports_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -154,9 +154,9 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # new()
 
-  test "new() redirects to login page for logged-out users" do
+  test "new() redirects to root page for logged-out users" do
     get new_import_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
@@ -173,9 +173,9 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() redirects to login page for logged-out users" do
+  test "show() redirects to root page for logged-out users" do
     get import_path(@import)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
@@ -201,9 +201,9 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login page for logged-out users" do
+  test "update() redirects to root page for logged-out users" do
     patch "/imports/bogus"
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
@@ -248,9 +248,9 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # upload_file()
 
-  test "upload_file() redirects to login page for logged-out users" do
+  test "upload_file() redirects to root page for logged-out users" do
     post import_upload_file_path(@import)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "upload_file() returns HTTP 403 for unauthorized users" do

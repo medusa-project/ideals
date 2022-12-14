@@ -41,9 +41,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # disable()
 
-  test "disable() redirects for logged-out users" do
+  test "disable() redirects to root page for logged-out users" do
     patch user_disable_path(users(:local_sysadmin))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "disable() returns HTTP 403 for unauthorized users" do
@@ -71,9 +71,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # enable()
 
-  test "enable() redirects for logged-out users" do
+  test "enable() redirects to root page for logged-out users" do
     patch user_enable_path(users(:local_sysadmin))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "enable() returns HTTP 403 for unauthorized users" do
@@ -101,9 +101,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
-  test "index() redirects to login page for logged-out users" do
+  test "index() redirects to root page for logged-out users" do
     get users_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -135,9 +135,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # index_all()
 
-  test "index_all() redirects to login page for logged-out users" do
+  test "index_all() redirects to root page for logged-out users" do
     get all_users_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "index_all() returns HTTP 403 for unauthorized users" do
@@ -169,9 +169,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() redirects to login page for logged-out users" do
+  test "show() redirects to root page for logged-out users" do
     get user_path(users(:local_sysadmin))
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "show() returns HTTP 403 for unauthorized users" do

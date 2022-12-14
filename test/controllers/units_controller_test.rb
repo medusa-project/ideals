@@ -50,9 +50,9 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() redirects to login page for logged-out users" do
+  test "create() redirects to root page for logged-out users" do
     post units_path
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -110,10 +110,10 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # delete()
 
-  test "delete() redirects to login page for logged-out users" do
+  test "delete() redirects to root page for logged-out users" do
     unit = units(:uiuc_unit1)
     post unit_delete_path(unit)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "delete() returns HTTP 403 for unauthorized users" do
@@ -485,10 +485,10 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # undelete()
 
-  test "undelete() redirects to login page for logged-out users" do
+  test "undelete() redirects to root page for logged-out users" do
     unit = units(:uiuc_unit1)
     post unit_undelete_path(unit)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "undelete() returns HTTP 403 for unauthorized users" do
@@ -522,10 +522,10 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
-  test "update() redirects to login page for logged-out users" do
+  test "update() redirects to root page for logged-out users" do
     unit = units(:uiuc_unit1)
     patch unit_path(unit)
-    assert_redirected_to login_path
+    assert_redirected_to root_path
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
