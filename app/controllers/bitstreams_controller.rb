@@ -33,7 +33,9 @@ class BitstreamsController < ApplicationController
   # Accepts raw files (i.e. not `multipart/form-data`) via the file upload
   # feature of the submission form. The accepted files are streamed into the
   # application S3 bucket and associated with new {Bitstream}s which are in
-  # turn associated with a parent {Item}.
+  # turn associated with a parent {Item}. If the item is still in a
+  # {Item#Stages#SUBMITTING submitting} stage, the bitstream is uploaded to the
+  # staging area of the bucket; otherwise it is uploaded to the permanent area.
   #
   # Responds to `POST /items/:item_id/bitstreams`
   #
@@ -50,6 +52,9 @@ class BitstreamsController < ApplicationController
                                               length:   length)
           bs.upload_to_staging(io)
           bs.save!
+          if @item.stage >= Item::Stages::APPROVED
+            bs.move_into_permanent_storage
+          end
         end
       end
     rescue => e
