@@ -545,14 +545,20 @@ module ApplicationHelper
   #                             primary.
   # @param default_id [Integer] ID of a resource in `resources` to indicate as
   #                             default.
+  # @param show_icons [Boolean] Whether to show the type icons following the
+  #                             titles.
   # @return [String] HTML listing.
   #
-  def resource_list(resources, primary_id: nil, default_id: nil)
+  def resource_list(resources,
+                    primary_id: nil,
+                    default_id: nil,
+                    show_icons: true)
     html = StringIO.new
     resources.each do |resource|
       html << resource_list_row(resource,
-                                primary: (primary_id == resource.id),
-                                default: (default_id == resource.id))
+                                primary:    (primary_id == resource.id),
+                                default:    (default_id == resource.id),
+                                show_icons: show_icons)
     end
     raw(html.string)
   end
@@ -564,7 +570,10 @@ module ApplicationHelper
   # @param default [Boolean] Whether to mark the resource as default.
   # @return [String] HTML string.
   #
-  def resource_list_row(resource, primary: false, default: false)
+  def resource_list_row(resource,
+                        primary:    false,
+                        default:    false,
+                        show_icons: true)
     embargoed_item = resource.kind_of?(Item) &&
       resource.embargoed_for?(current_user)
     thumb = thumbnail_for(resource)
@@ -591,9 +600,11 @@ module ApplicationHelper
       html <<     resource.title
     else
       html <<     link_to(resource.title, resource)
-      html <<     "<span class=\"format-icon\">"
-      html <<       icon_for(resource)
-      html <<     "</span>"
+      if show_icons
+        html <<     "<span class=\"format-icon\">"
+        html <<       icon_for(resource)
+        html <<     "</span>"
+      end
     end
 
     if primary
