@@ -19,7 +19,7 @@
         - asc_elements.each do |asc_element|
           %tr
             %td= select_tag "elements[][name]",
-                            options_for_select(RegisteredElement.order(:label).pluck(:label, :name),
+                            options_for_select(RegisteredElement.where(institution: f.object.institution).order(:label).pluck(:label, :name),
                                                asc_element&.name),
                             include_blank: true,
                             class: "custom-select"

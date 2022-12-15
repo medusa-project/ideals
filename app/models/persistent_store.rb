@@ -16,9 +16,11 @@ class PersistentStore
   # @param target_key [String]
   #
   def copy_object(source_key:, target_key:)
-    S3Client.instance.copy_object(copy_source: "/#{BUCKET}/#{source_key}", # source bucket+key
-                                  bucket:      BUCKET,                     # destination bucket
-                                  key:         target_key)                 # destination key
+    client = S3Client.instance
+    client.copy_object(copy_source: "/#{BUCKET}/#{source_key}", # source bucket+key
+                       bucket:      BUCKET,                     # destination bucket
+                       key:         target_key)                 # destination key
+    update_acl(target_key)
   end
 
   ##
@@ -150,14 +152,7 @@ class PersistentStore
       s3.bucket(BUCKET).
         object(key).
         upload_file(path || file)
-      # MinIO (used in development & test) doesn't support ACLs
-      unless Rails.env.development? || Rails.env.test?
-        S3Client.instance.put_object_acl(
-          acl:    "public-read",
-          bucket: BUCKET,
-          key:    key
-        )
-      end
+      update_acl(key)
       if institution_key
         S3Client.instance.set_tag(bucket:    BUCKET,
                                   key:       key,
@@ -185,6 +180,20 @@ class PersistentStore
     Dir.glob(root_path + "/**/*").select{ |p| File.file?(p) }.each do |path|
       rel_path = path.gsub(root_path, "")
       put_object(key: key_prefix + rel_path, path: path)
+    end
+  end
+
+
+  private
+
+  def update_acl(key)
+    # MinIO (used in development & test) doesn't support ACLs
+    unless Rails.env.development? || Rails.env.test?
+      S3Client.instance.put_object_acl(
+        acl:    "public-read",
+        bucket: BUCKET,
+        key:    key
+      )
     end
   end
 
