@@ -25,6 +25,10 @@ class PersistentStoreTest < ActiveSupport::TestCase
     assert store.object_exists?(key: "cats/mainecoon")
   end
 
+  test "copy_object() copies the ACL of the copied object" do
+    skip # we can't test this because MinIO doesn't support ACLs
+  end
+
   # delete_object()
 
   test "delete_object() deletes an object" do
