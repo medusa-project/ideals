@@ -1225,6 +1225,16 @@ vsd:
   category: document
   icon: file-o
   readable_by_vips: false
+warc:
+  short_name: WARC
+  long_name: Web ARChive
+  extensions:
+    - warc
+  media_types:
+    - application/warc
+  category: archive
+  icon: file-archive-o
+  readable_by_vips: false
 wav:
   short_name: WAV
   long_name: Wave Audio
