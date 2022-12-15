@@ -383,7 +383,7 @@ class Bitstream < ApplicationRecord
   #                                 necessary) asynchronously. If true, and the
   #                                 image has not already been generated, nil
   #                                 is returned.
-  # @return [String] Pre-signed URL for a derivative image with the given
+  # @return [String] Public URL for a derivative image with the given
   #                  characteristics. If no such image exists, it is generated
   #                  automatically.
   # @raises [Aws::S3::Errors::NotFound]
@@ -665,10 +665,11 @@ class Bitstream < ApplicationRecord
     begin
       source_tempfile = download_to_temp_file
       if source_tempfile
-        crop = (region == :square) ? "--smartcrop=centre" : ""
-        # ruby-vips gem is also an option here, but I experienced hanging on
-        # some images, so vipsthumbnail will do just as well.
-        `vipsthumbnail #{source_tempfile.path} #{crop} --size=#{size}x#{size} -o %s-#{region}-#{size}.#{format}`
+        crop    = (region == :square) ? "--smartcrop=centre" : ""
+        command = "vipsthumbnail #{source_tempfile.path} #{crop} "\
+                  "--size=#{size}x#{size} "\
+                  "-o %s-#{region}-#{size}.#{format}"
+        raise "Command failed: #{command}" unless system(command)
         deriv_path = File.join(File.dirname(source_tempfile.path),
                                "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
         File.open(deriv_path, "rb") do |file|
@@ -679,6 +680,7 @@ class Bitstream < ApplicationRecord
       end
     rescue => e
       LOGGER.warn("generate_derivative(): #{e}")
+      raise e
     ensure
       source_tempfile&.unlink
       FileUtils.rm(deriv_path) rescue nil
