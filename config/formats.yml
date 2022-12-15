@@ -830,7 +830,7 @@ ps:
   media_types:
     - application/postscript
   category: document
-  icon: file-p
+  icon: file-o
   readable_by_vips: false
 psd:
   short_name: PSD
