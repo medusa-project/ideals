@@ -573,7 +573,7 @@ module ApplicationHelper
   def resource_list_row(resource,
                         primary:    false,
                         default:    false,
-                        show_icons: true)
+                        show_icons: false)
     embargoed_item = resource.kind_of?(Item) &&
       resource.embargoed_for?(current_user)
     thumb = thumbnail_for(resource)
