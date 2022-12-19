@@ -38,7 +38,7 @@
     .form-group
       = f.label :bundle_position, "Position After (Within Bundle)"
       = f.select(:bundle_position,
-        [["Nothing (First)", 0]] + f.object.item.bitstreams.reject{ |b| b.id == f.object.id }.map.with_index { |b, i| [b.original_filename, i + 1] },
+        [["Nothing (First)", 0]] + f.object.item.bitstreams.reject{ |b| b.id == f.object.id }.sort_by(:bundle_position).map.with_index { |b, i| [b.original_filename, i + 1] },
         { selected: f.object.bundle_position },
         class: "custom-select")
 
