@@ -21,31 +21,4 @@ namespace :items do
     puts "Import succeeded."
   end
 
-  desc "Transform dates to ISO 8601"
-  task transform_dates: :environment do # TODO: this can be removed after it has been done in production
-    month_names = %w(January February March April May June July August
-                     September October November December)
-    reg_e_ids   = RegisteredElement.where(input_type: RegisteredElement::InputType::DATE).pluck(:id)
-    asc_es      = AscribedElement.where(registered_element_id: reg_e_ids)
-    asc_e_count = asc_es.count
-    progress    = Progress.new(asc_e_count)
-    num_changed = 0
-    AscribedElement.transaction do
-      asc_es.find_each.with_index do |asc_e, index|
-        month_names.each do |month|
-          if asc_e.string.start_with?(month)
-            iso_str = TimeUtils.iso8601(asc_e.string)
-            if iso_str
-              asc_e.update!(string: iso_str)
-              num_changed += 1
-              break
-            end
-          end
-        end
-        progress.report(index, "Transforming #{asc_e_count} dates")
-      end
-    end
-    puts "#{num_changed} elements changed"
-  end
-
 end
