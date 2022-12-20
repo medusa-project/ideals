@@ -26,6 +26,31 @@ class TimeUtilsTest < ActiveSupport::TestCase
     assert actual - expected < 1
   end
 
+  # iso8601()
+
+  test "iso8601() works with Month YYYY" do
+    assert_equal "2015-02", TimeUtils.iso8601("February 2015")
+    assert_equal "2015-02", TimeUtils.iso8601("February2015")
+    assert_nil TimeUtils.iso8601("February 2015 or 2016")
+  end
+
+  test "iso8601() works with Month, YYYY" do
+    assert_equal "2015-02", TimeUtils.iso8601("February, 2015")
+    assert_nil TimeUtils.iso8601("February, 2015 or 2016")
+  end
+
+  test "iso8601() works with Month DD YYYY" do
+    assert_equal "2015-02-02", TimeUtils.iso8601("February 2 2015")
+    assert_equal "2015-02-26", TimeUtils.iso8601("February 26 2015")
+    assert_nil TimeUtils.iso8601("February 26 2015 or 2016")
+  end
+
+  test "iso8601() works with Month DD, YYYY" do
+    assert_equal "2015-02-02", TimeUtils.iso8601("February 2, 2015")
+    assert_equal "2015-02-26", TimeUtils.iso8601("February 26, 2015")
+    assert_nil TimeUtils.iso8601("February 26, 2015 or 2016")
+  end
+
   # seconds_to_hms()
 
   test "seconds_to_hms() with a nil argument raises an ArgumentError" do

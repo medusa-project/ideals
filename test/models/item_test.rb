@@ -307,6 +307,23 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal item.institution, e.registered_element.institution
   end
 
+  test "complete_submission() sets correct bitstream bundle positions" do
+    item = items(:uiuc_described)
+    item.bitstreams.build(original_filename: "Test 1")
+    item.bitstreams.build(original_filename: "Test 6")
+    item.bitstreams.build(original_filename: "Test 5")
+    item.bitstreams.build(original_filename: "Test 3")
+    item.bitstreams.build(original_filename: "Test 2")
+    item.bitstreams.build(original_filename: "Test 4")
+    item.save!
+    item.complete_submission
+    filenames = item.bitstreams.map(&:original_filename)
+    NaturalSort.sort!(filenames)
+    item.bitstreams.each do |bs|
+      assert_equal filenames.index(bs.original_filename), bs.bundle_position
+    end
+  end
+
   test "complete_submission() sets the stage to submitted if the collection is
   reviewing submissions" do
     item = items(:uiuc_described)

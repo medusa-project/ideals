@@ -417,6 +417,7 @@ class UnitTest < ActiveSupport::TestCase
     item_count = 0
     @instance.collections.each do |collection|
       collection.items.each do |item|
+        item.update!(stage: Item::Stages::SUBMITTED)
         item.events.build(event_type: Event::Type::CREATE).save!
         item_count += 1
       end
@@ -431,6 +432,7 @@ class UnitTest < ActiveSupport::TestCase
     item_count = 0
     @instance.collections.each do |collection|
       collection.items.each do |item|
+        item.update!(stage: Item::Stages::SUBMITTED)
         item.events.build(event_type: Event::Type::CREATE).save!
         item_count += 1
       end
@@ -444,6 +446,7 @@ class UnitTest < ActiveSupport::TestCase
     Event.destroy_all
     @instance.collections.each do |collection|
       collection.items.each do |item|
+        item.update!(stage: Item::Stages::SUBMITTED)
         item.events.build(event_type: Event::Type::CREATE).save!
       end
     end
@@ -499,17 +502,6 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal 3, actual.length
     assert_kind_of Time, actual[0]['month']
     assert_equal expected, actual[1]['count']
-  end
-
-  # submitting_item_count()
-
-  test "submitting_item_count() returns a correct count when not including
-  children" do
-    assert_equal 1, @instance.submitting_item_count(include_children: false)
-  end
-
-  test "submitting_item_count() returns a correct count when including children" do
-    assert_equal 1, @instance.submitting_item_count(include_children: true)
   end
 
   # title

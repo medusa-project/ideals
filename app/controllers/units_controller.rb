@@ -214,15 +214,15 @@ class UnitsController < ApplicationController
   # Responds to `GET /units/:id/about`
   #
   def show_about
-    @metadata_profile     = @unit.effective_metadata_profile
-    @num_downloads        = MonthlyUnitItemDownloadCount.sum_for_unit(unit: @unit)
-    @num_submitting_items = @unit.submitting_item_count
-    @collections = Collection.search.
+    @metadata_profile    = @unit.effective_metadata_profile
+    @num_downloads       = MonthlyUnitItemDownloadCount.sum_for_unit(unit: @unit)
+    @num_submitted_items = @unit.submitted_item_count
+    @collections         = Collection.search.
       institution(current_institution).
       filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
       order("#{Collection::IndexFields::TITLE}.sort").
       limit(999)
-    @subunits = Unit.search.
+    @subunits            = Unit.search.
       institution(current_institution).
       parent_unit(@unit).
       order("#{Unit::IndexFields::TITLE}.sort").

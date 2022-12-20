@@ -23,6 +23,46 @@ class TimeUtils
   end
 
   ##
+  # Converts date strings in one of the following formats to ISO 8601:
+  #
+  # * Month YYYY
+  # * Month, YYYY
+  # * Month DD YYYY
+  # * Month DD, YYYY
+  #
+  # @param string [String, nil] ISO 8601 date, or nil if the argument format is
+  #                             not recognized.
+  #
+  def self.iso8601(string)
+    month_names = %w(January February March April May June July August
+                     September October November December)
+    iso_str = year = month = day = nil
+    # Check for "Month DD YYYY" or "Month DD, YYYY"
+    result = string.match(/(#{month_names.join("|")}) (\d{1,2}),? (\d{4})$/)
+    if result
+      month = (month_names.index(result[1]) + 1).to_s.rjust(2, "0")
+      day   = result[2].rjust(2, "0")
+      year  = result[3]
+    end
+    # Check for "Month YYYY" or "Month, YYYY"
+    result = string.match(/(#{month_names.join("|")}),? ?(\d{4})$/)
+    if result
+      month = (month_names.index(result[1]) + 1).to_s.rjust(2, "0")
+      year  = result[2]
+    end
+    if year
+      iso_str = "#{year}"
+      if month
+        iso_str += "-#{month}"
+        if day
+          iso_str += "-#{day}"
+        end
+      end
+    end
+    iso_str
+  end
+
+  ##
   # @param seconds [Integer] Duration in seconds.
   # @return [String] String in `HH:MM:SS` format.
   #
