@@ -395,22 +395,6 @@ class Unit < ApplicationRecord
     self.class.connection.exec_query(sql, "SQL", values)
   end
 
-  ##
-  # @param include_children [Boolean] Whether to include child units in the
-  #                                   count.
-  # @return [Integer] Total number of submitted items in all of the unit's
-  #                   collections.
-  #
-  def submitting_item_count(include_children: true)
-    count = 0
-    if include_children
-      self.all_children.each do |child|
-        count += child.submitting_item_count(include_children: false)
-      end
-    end
-    self.collections.map{ |c| c.submitting_item_count(include_children: false) }.sum + count
-  end
-
 
   private
 

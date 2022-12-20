@@ -251,11 +251,11 @@ class CollectionsController < ApplicationController
   # Responds to `GET /collections/:id/about`
   #
   def show_about
-    @metadata_profile     = @collection.effective_metadata_profile
-    @submission_profile   = @collection.effective_submission_profile
-    @num_downloads        = MonthlyCollectionItemDownloadCount.sum_for_collection(collection: @collection)
-    @num_submitting_items = @collection.submitting_item_count
-    @subcollections = Collection.search.
+    @metadata_profile    = @collection.effective_metadata_profile
+    @submission_profile  = @collection.effective_submission_profile
+    @num_downloads       = MonthlyCollectionItemDownloadCount.sum_for_collection(collection: @collection)
+    @num_submitted_items = @collection.submitted_item_count
+    @subcollections      = Collection.search.
       institution(current_institution).
       parent_collection(@collection).
       include_children(true).
