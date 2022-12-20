@@ -195,6 +195,7 @@ GEM
     mini_racer (0.6.2)
       libv8-node (~> 16.10.0.0)
     minitest (5.16.3)
+    natural_sort (0.3.0)
     net-imap (0.2.3)
       digest
       net-protocol
@@ -375,6 +376,7 @@ DEPENDENCIES
   local_time
   medusa-client!
   mini_racer
+  natural_sort
   netaddr
   omniauth-identity
   omniauth-rails_csrf_protection

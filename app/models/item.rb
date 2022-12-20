@@ -543,6 +543,7 @@ class Item < ApplicationRecord
                                       institution: self.institution)
     self.elements.build(registered_element: reg_e,
                         string:             Time.now.iso8601) if reg_e
+    natural_sort_bitstreams
     if self.primary_collection&.submissions_reviewed
       self.update!(stage: Stages::SUBMITTED)
     else
@@ -801,6 +802,17 @@ class Item < ApplicationRecord
     if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED &&
         effective_primary_collection&.submissions_reviewed
       IdealsMailer.item_submitted(self).deliver_now
+    end
+  end
+
+  ##
+  # Natural-sorts attached bitstreams by filename.
+  #
+  def natural_sort_bitstreams
+    filenames = self.bitstreams.map(&:original_filename)
+    NaturalSort.sort!(filenames)
+    self.bitstreams.each do |bs|
+      bs.update!(bundle_position: filenames.index(bs.original_filename))
     end
   end
 
