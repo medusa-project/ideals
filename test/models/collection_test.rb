@@ -457,10 +457,12 @@ class CollectionTest < ActiveSupport::TestCase
 
   # submitted_item_count()
 
-  test "submitted_item_count() returns a correct count when not including children" do
+  test "submitted_item_count() returns a correct count when not including
+  children" do
     Event.destroy_all
     item_count = 0
     @instance.items.each do |item|
+      item.update!(stage: Item::Stages::SUBMITTED)
       item.events.build(event_type: Event::Type::CREATE).save!
       item_count += 1
     end
@@ -476,11 +478,13 @@ class CollectionTest < ActiveSupport::TestCase
     assert all_children.length > 1
     all_children.each do |child_collection|
       child_collection.items.each do |item|
+        item.update!(stage: Item::Stages::SUBMITTED)
         item.events.build(event_type: Event::Type::CREATE).save!
         item_count += 1
       end
     end
     @instance.items.each do |item|
+      item.update!(stage: Item::Stages::SUBMITTED)
       item.events.build(event_type: Event::Type::CREATE).save!
       item_count += 1
     end
@@ -493,10 +497,11 @@ class CollectionTest < ActiveSupport::TestCase
   and end times" do
     Event.destroy_all
     @instance.items.each do |item|
+      item.update!(stage: Item::Stages::SUBMITTED)
       item.events.build(event_type: Event::Type::CREATE).save!
     end
-    # Adjust the happened_at property of one of the just-created bitstream
-    # download events to fit inside the time window.
+    # Adjust the happened_at property of one of the just-created events to fit
+    # inside the time window.
     Event.where(event_type: Event::Type::CREATE).all.first.
       update!(happened_at: 90.minutes.ago)
 

@@ -417,11 +417,13 @@ class Collection < ApplicationRecord
                                                        include_children: false)
       end
     end
-    items = self.items.
-        joins("LEFT JOIN events ON items.id = events.item_id").
+    items = self.items.where(stage: Item::Stages::SUBMITTED)
+    if start_time || end_time
+      items = items.joins("LEFT JOIN events ON items.id = events.item_id").
         where("events.event_type": Event::Type::CREATE)
-    items = items.where("events.happened_at >= ?", start_time) if start_time
-    items = items.where("events.happened_at <= ?", end_time) if end_time
+      items = items.where("events.happened_at >= ?", start_time) if start_time
+      items = items.where("events.happened_at <= ?", end_time) if end_time
+    end
     count + items.count
   end
 

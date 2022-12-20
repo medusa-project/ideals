@@ -417,6 +417,7 @@ class UnitTest < ActiveSupport::TestCase
     item_count = 0
     @instance.collections.each do |collection|
       collection.items.each do |item|
+        item.update!(stage: Item::Stages::SUBMITTED)
         item.events.build(event_type: Event::Type::CREATE).save!
         item_count += 1
       end
@@ -431,6 +432,7 @@ class UnitTest < ActiveSupport::TestCase
     item_count = 0
     @instance.collections.each do |collection|
       collection.items.each do |item|
+        item.update!(stage: Item::Stages::SUBMITTED)
         item.events.build(event_type: Event::Type::CREATE).save!
         item_count += 1
       end
@@ -444,6 +446,7 @@ class UnitTest < ActiveSupport::TestCase
     Event.destroy_all
     @instance.collections.each do |collection|
       collection.items.each do |item|
+        item.update!(stage: Item::Stages::SUBMITTED)
         item.events.build(event_type: Event::Type::CREATE).save!
       end
     end
