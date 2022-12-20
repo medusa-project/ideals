@@ -91,7 +91,7 @@ class IndexPagesController < ApplicationController
               registered_element_id:  reg_e_ids).
         order(:string)
       if params[:letter]
-        @terms = @terms.where("LOWER(string) LIKE ?", "#{params[:letter].downcase}%")
+        @terms = @terms.where("UNACCENT(LOWER(string)) LIKE ?", "#{params[:letter].downcase}%")
       end
       @count            = @terms.count
       @terms            = @terms.offset(@start).
@@ -100,7 +100,7 @@ class IndexPagesController < ApplicationController
       @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
       # This may give us a little performance boost
       @starting_letters = Rails.cache.fetch("index_page_#{@index_page.id} starting_letters",
-                                            expires_in: 10.minutes) do
+                                            expires_in: 1.hour) do
         starting_letters(reg_e_ids)
       end
     else
@@ -154,14 +154,14 @@ class IndexPagesController < ApplicationController
     # This query doesn't take embargoes into account because doing so would
     # make it a lot slower. We assume that there are so few embargoed items
     # with distinct starting letters that it's hardly ever going to matter.
-    sql = "SELECT UPPER(SUBSTR(string, 1, 1)) AS alpha, COUNT(ascribed_elements.id)
-    FROM ascribed_elements
-    INNER JOIN items i ON i.id = ascribed_elements.item_id
+    sql = "SELECT DISTINCT(UNACCENT(UPPER(SUBSTR(string, 1, 1)))) AS alpha, COUNT(ae.id)
+    FROM ascribed_elements ae
+    INNER JOIN items i ON i.id = ae.item_id
     WHERE i.institution_id = #{current_institution.id}
       AND i.stage = #{Item::Stages::APPROVED}
-      AND ascribed_elements.registered_element_id IN (#{reg_e_ids.join(",")})
-    GROUP BY UPPER(SUBSTR(string, 1, 1))
-    ORDER BY UPPER(SUBSTR(string, 1, 1));"
+      AND ae.registered_element_id IN (#{reg_e_ids.join(",")})
+    GROUP BY alpha
+    ORDER BY alpha;"
     results = ActiveRecord::Base.connection.execute(sql)
     results.select{ |row| row['count'] > 0 }
   end
