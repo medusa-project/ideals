@@ -29,6 +29,8 @@ class BitstreamsController < ApplicationController
   before_action :authorize_item, only: :index
   before_action :authorize_bitstream, except: [:create, :index]
 
+  rescue_from Aws::S3::Errors::InvalidRange, with: :rescue_invalid_range
+
   ##
   # Accepts raw files (i.e. not `multipart/form-data`) via the file upload
   # feature of the submission form. The accepted files are streamed into the
@@ -281,6 +283,10 @@ class BitstreamsController < ApplicationController
     # literally.
     "attachment; filename=\"#{ascii_filename.gsub('"', "'")}\"; "\
       "filename*=UTF-8''#{ERB::Util.url_encode(utf8_filename)}"
+  end
+
+  def rescue_invalid_range
+    render plain: "Invalid range.", status: :bad_request
   end
 
   def set_bitstream

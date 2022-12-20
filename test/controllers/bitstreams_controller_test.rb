@@ -481,6 +481,13 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "stream() returns HTTP 400 for an invalid range" do
+    bitstream = bitstreams(:approved_in_permanent)
+    get item_bitstream_stream_path(bitstream.item, bitstream),
+        headers: { Range: "bytes=#{bitstream.length}-#{bitstream.length + 100}"}
+    assert_response :bad_request
+  end
+
   test "stream() returns HTTP 403 for submitting items" do
     fixture   = file_fixture("crane.jpg")
     item      = items(:uiuc_submitting)
