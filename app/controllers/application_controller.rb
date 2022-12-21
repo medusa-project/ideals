@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
   rescue_from GoneError, with: :rescue_gone
   rescue_from NotAuthorizedError, with: :rescue_unauthorized
 
-  before_action :redirect_to_default_institution, :log_out_disabled_user
+  before_action :redirect_to_main_host, :log_out_disabled_user
   after_action :copy_flash_to_response_headers
 
   ##
@@ -359,18 +359,16 @@ class ApplicationController < ActionController::Base
   end
 
   ##
-  # Redirects to the default institution's FQDN if none was provided in the
-  # URL, and if not in the test environment (which uses an invalid request host
-  # of `www.example.com`).
+  # Redirects to the main host if there is no institution FQDN matching the
+  # request host
   #
-  def redirect_to_default_institution
-    if Rails.env.production?
-      unless Institution.find_by_fqdn(request.host_with_port)
-        scheme = Rails.env.development? ? "http" : "https"
-        redirect_to scheme + "://" + Institution.find_by_default(true).fqdn,
-                    status: :see_other,
-                    allow_other_host: true
-      end
+  def redirect_to_main_host
+    main_host = ::Configuration.instance.main_host
+    if request.host != main_host && !Institution.find_by_fqdn(request.host_with_port)
+      scheme = Rails.env.development? ? "http" : "https"
+      redirect_to scheme + "://" + main_host,
+                  status: :see_other,
+                  allow_other_host: true
     end
   end
 
