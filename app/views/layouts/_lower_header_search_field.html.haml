@@ -1,0 +1,10 @@
+= form_tag(items_path, method: "get", class: "form-inline") do
+  .input-group.mr-3
+    %input.form-control{name:         "q",
+                        type:         "search",
+                        placeholder:  "Search",
+                        "aria-label": "Search"}
+    .input-group-append
+      %button{type: "submit", class: "btn btn-outline-secondary"}
+        %i.fa.fa-search
+        %span.sr-only Search

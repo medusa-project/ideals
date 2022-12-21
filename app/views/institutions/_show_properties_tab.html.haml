@@ -27,5 +27,21 @@
       %code= @institution.org_dn
     - else
       Not Set
+  %dt Latitude
+  %dd
+    - if @institution.latitude_degrees.present? && @institution.latitude_minutes.present? && @institution.latitude_seconds.present?
+      = raw("#{@institution.latitude_degrees}&deg;")
+      = raw("#{@institution.latitude_minutes}&apos;")
+      = raw("#{@institution.latitude_seconds}&quot;")
+    - else
+      Not Set
+  %dt Longitude
+  %dd
+    - if @institution.longitude_degrees.present? && @institution.longitude_minutes.present? && @institution.longitude_seconds.present?
+      = raw("#{@institution.longitude_degrees}&deg;")
+      = raw("#{@institution.longitude_minutes}&apos;")
+      = raw("#{@institution.longitude_seconds}&quot;")
+    - else
+      Not Set
   %dt Default
   %dd= boolean(@institution.default, style: :word)

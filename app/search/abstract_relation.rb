@@ -42,6 +42,7 @@ class AbstractRelation
     @exists_field     = nil
     @filter_ranges    = [] # Array<Hash<Symbol,String>> with :field, :op, and :value keys
     @filters          = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
+    @institution      = nil
     @limit            = OpenSearchIndex::MAX_RESULT_WINDOW
     @metadata_profile = nil
     @multi_queries    = [] # Array<Hash<Symbol,String>> with :field and :term keys
@@ -158,6 +159,7 @@ class AbstractRelation
   #
   def institution(institution)
     if institution
+      @institution = institution
       filter(OpenSearchIndex::StandardFields::INSTITUTION_KEY,
              institution.key)
       @metadata_profile ||= institution.default_metadata_profile

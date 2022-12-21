@@ -33,8 +33,20 @@
 #                             {image_key_prefix}.
 # * `key`                     Short string that uniquely identifies the
 #                             institution.
+# * `latitude_degrees`        The degrees component of the institution's
+#                             latitude.
+# * `latitude_minutes`        The minutes component of the institution's
+#                             latitude.
+# * `latitude_seconds`        The seconds component of the institution's
+#                             latitude.
 # * `link_color`              Theme hyperlink color.
 # * `link_hover_color`        Theme hover-over-hyperlink color.
+# * `longitude_degrees`       The degrees component of the institution's
+#                             longitude.
+# * `longitude_minutes`       The minutes component of the institution's
+#                             longitude.
+# * `longitude_seconds`       The seconds component of the institution's
+#                             longitude.
 # * `main_website_url`        URL of the institution's main website.
 # * `medusa_file_group_id`    ID of the Medusa file group in which the
 #                             institution's content is stored.
@@ -83,8 +95,14 @@ class Institution < ApplicationRecord
   validates :footer_background_color, presence: true
   validates :header_background_color, presence: true
   validates_format_of :key, with: /\A[A-Za-z0-9]+\Z/, allow_blank: false
+  validates :latitude_degrees,
+            numericality: { greater_than: 36, less_than: 43 }, # Illinois state bounds
+            allow_blank: true
   validates :link_color, presence: true
   validates :link_hover_color, presence: true
+  validates :longitude_degrees,
+            numericality: { greater_than: -92, less_than: -87 }, # Illinois state bounds
+            allow_blank: true
   validates :name, presence: true
   validates :primary_color, presence: true
   validates :primary_hover_color, presence: true
@@ -324,6 +342,18 @@ class Institution < ApplicationRecord
       @file_group = Medusa::FileGroup.with_id(self.medusa_file_group_id)
     end
     @file_group
+  end
+
+  ##
+  # @return [Integer]
+  #
+  def public_item_count
+    Item.search.
+      institution(self).
+      aggregations(false).
+      filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
+      limit(0).
+      count
   end
 
   ##

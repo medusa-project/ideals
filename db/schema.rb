@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_20_214328) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_20_214330) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -298,6 +298,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_20_214328) do
     t.string "outgoing_message_queue"
     t.string "incoming_message_queue"
     t.boolean "has_favicon", default: false, null: false
+    t.integer "latitude_degrees"
+    t.integer "latitude_minutes"
+    t.float "latitude_seconds"
+    t.integer "longitude_degrees"
+    t.integer "longitude_minutes"
+    t.float "longitude_seconds"
     t.index ["default"], name: "index_institutions_on_default"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
@@ -412,7 +418,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_20_214328) do
     t.boolean "institution_default", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "institution_id", null: false
+    t.bigint "institution_id"
     t.integer "full_text_relevance_weight", default: 5, null: false
     t.index ["institution_default"], name: "index_metadata_profiles_on_institution_default"
     t.index ["institution_id", "name"], name: "index_metadata_profiles_on_institution_id_and_name", unique: true
@@ -482,7 +488,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_20_214328) do
     t.datetime "updated_at", null: false
     t.string "uri"
     t.string "label", null: false
-    t.bigint "institution_id", null: false
+    t.bigint "institution_id"
     t.string "input_type", default: "text_field", null: false
     t.string "highwire_mapping"
     t.bigint "vocabulary_id"

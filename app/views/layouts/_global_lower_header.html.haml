@@ -1,0 +1,29 @@
+%header
+  %nav.navbar.navbar-expand-lg{role: "navigation"}
+    = link_to "Illinois Scholarship", root_path, class: 'navbar-brand'
+    %button.navbar-toggler{"aria-controls": "navbar-supported-content",
+                           "aria-expanded": "false",
+                           "aria-label":    "Toggle navigation",
+                           "data-target":   "#navbar-supported-content",
+                           "data-toggle":   "collapse",
+                           type:            "button"}
+      %span.navbar-toggler-icon
+    #navbar-supported-content.collapse.navbar-collapse
+      %ul.navbar-nav.mr-auto
+        %li.nav-item.dropdown
+          = link_to "#", class: 'nav-link' do
+            = icon_for(:info)
+            About
+        %li.nav-item.dropdown
+          %a.nav-link.dropdown-toggle{href:            "#",
+                                      role:            "button",
+                                      "data-toggle":   "dropdown",
+                                      "aria-expanded": false}
+            = icon_for(Institution)
+            Institutions
+          .dropdown-menu
+            - Institution.all.order(:name).each do |institution|
+              = link_to(institution.name,
+                        url_for(controller: "welcome", action: "index", host: institution.fqdn),
+                        class: "dropdown-item")
+      = render partial: "layouts/lower_header_search_field"

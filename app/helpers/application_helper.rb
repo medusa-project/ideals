@@ -126,6 +126,7 @@ module ApplicationHelper
   # instead.
   #
   # @return [Institution]
+  # @see institution_scope?
   #
   def current_institution
     Institution.find_by_fqdn(request.host_with_port) || Institution.find_by_default(true)
@@ -375,6 +376,15 @@ module ApplicationHelper
 
   def include_chart_library
     javascript_include_tag("https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js")
+  end
+
+  ##
+  # @return [Boolean] Whether the current route/view is scoped to an
+  #                   institution.
+  # @see current_institution
+  #
+  def institution_scope?
+    Institution.exists?(fqdn: request.host_with_port)
   end
 
   ##

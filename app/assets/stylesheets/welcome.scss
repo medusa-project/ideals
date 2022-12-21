@@ -1,8 +1,8 @@
-body#welcome {
+body#welcome, body#global-landing { /* TODO: rename welcome to institution-landing */
   overflow-x: hidden;
-  #navbarColor01 {
-    margin-bottom: -14px;
-  }
+}
+
+body#welcome {
   #welcome-image {
     /* may be overridden by the theme */
     background-image: image-url("orange_network.jpg");
@@ -32,9 +32,80 @@ body#welcome {
   .page-content {
     ul {
       line-height: 1.5em;
-
       li {
         margin-bottom: 0.75em;
+      }
+    }
+  }
+}
+
+body#global-landing {
+  #main-image {
+    background-image: image-url("orange_network.jpg");
+    margin: -16px -16px 1em -16px;
+    background-position: center;
+    border-bottom: 3px solid $gray-400;
+    height: 200px;
+    div {
+      background-color: rgba(0, 0, 0, 0.3);
+      font-size: 1.8em;
+      color: white;
+      display: inline-block;
+      margin: 12px;
+      padding: 0.2em 0.5em;
+    }
+  }
+  p {
+    font-size: 1.2em;
+  }
+  .count {
+    color: $gray-600;
+    font-size: 2em;
+    text-align: center;
+    small {
+      font-size: 0.6em;
+    }
+  }
+  #map-section, #map-section .collapse, #map-section .collapsing {
+    $section-color: #f5f5f5;
+    background-color: $section-color;
+    #illinois-map {
+      fill: #84a4d3;
+      stroke: #213e65;
+      stroke-width: 3px;
+      max-width: 100%;
+      height: 600px;
+      .institution-point {
+        stroke: orange;
+        fill: red;
+        fill-opacity: 0.5;
+      }
+      .institution-point.selected {
+        fill: orange;
+        stroke: yellow;
+        fill-opacity: 1;
+      }
+    }
+    #institution-accordion {
+      .card-header {
+        background-color: $section-color;
+        padding: 0;
+        button {
+          color: $gray-600;
+          font-size: 0.65em;
+          padding: 0.5em;
+          text-decoration: none;
+        }
+      }
+      .card-header:hover {
+        background-color: #f0f0f0;
+      }
+      .card-body {
+        a.count {
+          font-size: 1.3em;
+          color: $gray-600;
+          text-decoration: none;
+        }
       }
     }
   }

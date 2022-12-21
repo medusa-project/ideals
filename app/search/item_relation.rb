@@ -32,12 +32,18 @@ class ItemRelation < AbstractRelation
   protected
 
   def facet_elements
-    elements = [
-      {
+    elements = []
+    if @institution
+      elements << {
         label:         "Academic Unit",
         keyword_field: Item::IndexFields::UNIT_TITLES
       }
-    ]
+    else # we are in global scope
+      elements << {
+        label:         "Institution",
+        keyword_field: Item::IndexFields::INSTITUTION_NAME
+      }
+    end
     elements + @metadata_profile.elements.select(&:faceted).map do |e|
       {
         label:         e.label,

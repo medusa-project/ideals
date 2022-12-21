@@ -191,11 +191,15 @@ class ItemsController < ApplicationController
     @start            = @permitted_params[:start].to_i
     @window           = window_size
     @items            = Item.search.
-      institution(current_institution).
       aggregations(true).
       facet_filters(@permitted_params[:fq]).
       start(@start).
       limit(@window)
+    if institution_scope?
+      @items = @items.institution(current_institution)
+    else
+      @items = @items.metadata_profile(MetadataProfile.global)
+    end
     if @permitted_params[:sort].present?
       @items.order(@permitted_params[:sort] =>
                      (@permitted_params[:direction] == "desc") ? :desc : :asc)

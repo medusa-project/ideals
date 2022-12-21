@@ -364,6 +364,17 @@ class InstitutionTest < ActiveSupport::TestCase
     end
   end
 
+  # latitude_degrees
+
+  test "latitude_degrees must be within the Illinois boundaries" do
+    @instance.latitude_degrees = 35
+    assert !@instance.valid?
+    @instance.latitude_degrees = 45
+    assert !@instance.valid?
+    @instance.latitude_degrees = 40
+    assert @instance.valid?
+  end
+
   # link_color
 
   test "link_color must contain a valid CSS color" do
@@ -394,6 +405,17 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.link_hover_color = nil
     assert !@instance.valid?
+  end
+
+  # longitude_degrees
+
+  test "longitude_degrees must be within the Illinois boundaries" do
+    @instance.longitude_degrees = -92
+    assert !@instance.valid?
+    @instance.longitude_degrees = -84
+    assert !@instance.valid?
+    @instance.longitude_degrees = -88
+    assert @instance.valid?
   end
 
   # medusa_file_group()
@@ -462,6 +484,14 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.primary_hover_color = nil
     assert !@instance.valid?
+  end
+
+  # public_item_count()
+
+  test "public_item_count() returns a correct value" do
+    setup_opensearch
+    Item.reindex_all
+    assert_equal 0, @instance.public_item_count
   end
 
   # save()

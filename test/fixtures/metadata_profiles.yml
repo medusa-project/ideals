@@ -1,5 +1,10 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+global:
+  name:                       Global Profile
+  institution_default:        false
+  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+
 uiuc_default:
   name:                       Default Profile
   institution:                uiuc

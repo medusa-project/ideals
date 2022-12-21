@@ -37,8 +37,15 @@ class ApplicationController < ActionController::Base
   end
 
   ##
-  # @return [Institution] The institution whose FQDN corresponds to the
-  #                       X-Forwarded-Host request header.
+  # Returns the institution whose FQDN corresponds to the `X-Forwarded-Host`
+  # request header. Note that in global scope, there will not be such an
+  # institution, in which case the {Institution#default default institution}
+  # will be returned, which won't be what is wanted. Therefore this method
+  # should only be used after the scope is known--either from a controller
+  # action with a known scope, or after using {institution_scope?}.
+  #
+  # @return [Institution]
+  # @see institution_scope?
   #
   def current_institution
     helpers.current_institution
@@ -58,6 +65,14 @@ class ApplicationController < ActionController::Base
       end
     end
     @current_user
+  end
+
+  ##
+  # @return [Boolean]
+  # @see current_institution
+  #
+  def institution_scope?
+    helpers.institution_scope?
   end
 
   def logged_in?
@@ -349,7 +364,7 @@ class ApplicationController < ActionController::Base
   # of `www.example.com`).
   #
   def redirect_to_default_institution
-    unless Rails.env.test?
+    if Rails.env.production?
       unless Institution.find_by_fqdn(request.host_with_port)
         scheme = Rails.env.development? ? "http" : "https"
         redirect_to scheme + "://" + Institution.find_by_default(true).fqdn,

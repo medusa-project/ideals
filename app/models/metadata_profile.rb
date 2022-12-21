@@ -48,6 +48,14 @@ class MetadataProfile < ApplicationRecord
   after_save :ensure_default_uniqueness
 
   ##
+  # @return [MetadataProfile] The global profile, used in cross-institution
+  #                           contexts.
+  #
+  def self.global
+    MetadataProfile.find_by(institution_id: nil)
+  end
+
+  ##
   # Ascribes some baseline [MetadataProfileElement]s to a newly created
   # profile.
   #

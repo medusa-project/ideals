@@ -36,6 +36,32 @@
       who has signed in via Shibboleth.
 
   .form-group
+    = f.label :latitude, "Latitude"
+    .row
+      .col
+        = f.number_field :latitude_degrees, class: "form-control",
+                         placeholder: "Degrees"
+      .col
+        = f.number_field :latitude_minutes, class: "form-control",
+                         placeholder: "Minutes"
+      .col
+        = f.text_field :latitude_seconds, class: "form-control",
+                        placeholder: "Seconds"
+
+  .form-group
+    = f.label :longitude, "Longitude"
+    .row
+      .col
+        = f.number_field :longitude_degrees, class: "form-control",
+                         placeholder: "Degrees"
+      .col
+        = f.number_field :longitude_minutes, class: "form-control",
+                         placeholder: "Minutes"
+      .col
+        = f.text_field :longitude_seconds, class: "form-control",
+                        placeholder: "Seconds"
+
+  .form-group
     .form-check
       = f.check_box :default, class: "form-check-input"
       = f.label :default, class: "form-check-label"

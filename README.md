@@ -370,12 +370,18 @@ but need to be.
 When a request is made to the web app through a reverse proxy server (which is
 always expected to be the case in the demo and production environments), the
 proxy supplies an `X-Forwarded-Host` header that conveys the fully-qualified
-domain name (FQDN) via which the app was accessed. The `current_institution()`
-method of `ApplicationController` (and `ApplicationHelper`) returns the
-`Institution` model associated with this domain in order to scope the content,
-and customize the theme and some other functionality, to a particular
-institution. In this way, multiple institutions can be served by the same
-application instance, which alleviates a lot of IT burden.
+domain name (FQDN) via which the app was accessed. There are two possibilities:
+
+1. This FQDN matches one of the registered Institution FQDNs, in which case
+   the request is considered to be institution-scoped and the current
+   Institution model can be acquired from the the `current_institution()`
+   method of `ApplicationController` (and `ApplicationHelper`). Most routes
+   are scoped like this.
+2. This FQDN does not match a registered institution FQDN, in which case the
+   request is considered to be in global scope. In this case,
+   `ApplicationController.institution_scope?()` returns false and there is no
+   relevant Institution model. (`current_institution()` should not be used.)
+   Only a few routes are globally scoped.
 
 To get this working in development, first add a couple of institutions through
 the UI, giving them FQDNs of `ideals-ins1.local:3000` and
@@ -392,7 +398,9 @@ the UI, giving them FQDNs of `ideals-ins1.local:3000` and
 Then, you can access
 [http://ideals-ins1.local:3000](http://ideals-ins1.local:3000) and
 [http://ideals-ins2.local:3000](http://ideals-ins2.local:3000) in order to play
-around with multi-tenancy.
+around with multi-tenancy. You can still access
+[http://localhost:3000](http://localhost:3000) as usual to see the global
+scope.
 
 ## Stylesheets
 

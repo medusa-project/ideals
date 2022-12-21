@@ -32,6 +32,12 @@ class MetadataProfileTest < ActiveSupport::TestCase
     end
   end
 
+  # global()
+
+  test "global() returns the global profile" do
+    assert_not_nil MetadataProfile.global
+  end
+
   # add_default_elements()
 
   test "add_default_elements() adds default elements to an instance that does
