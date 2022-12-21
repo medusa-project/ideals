@@ -9,7 +9,7 @@ class AddGlobalMetadataProfile < ActiveRecord::Migration[7.0]
                     ('dc:type', 'Type of Resource', 'text_field', NULL, NOW(), NOW())
              ;")
 
-    execute("INSERT INTO metadata_profiles(name, \"default\", institution_id, full_text_relevance_weight, created_at, updated_at)
+    execute("INSERT INTO metadata_profiles(name, \"institution_default\", institution_id, full_text_relevance_weight, created_at, updated_at)
              VALUES('Global Profile', false, NULL, 5, NOW(), NOW());")
     profile_id = execute("SELECT id FROM metadata_profiles WHERE institution_id IS NULL;")[0]['id']
 
