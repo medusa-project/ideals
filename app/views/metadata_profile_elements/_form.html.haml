@@ -7,7 +7,7 @@
     - # populated via ajax by shared/_validation_messages.js.erb
   .form-group
     = f.label :registered_element_id, "Element"
-    = f.select(:registered_element_id, RegisteredElement.all.order(:name).pluck(:name, :id),
+    = f.select(:registered_element_id, RegisteredElement.where(institution: current_institution).order(:name).pluck(:name, :id),
       { selected: f.object.registered_element_id },
       class: "custom-select")
   - if profile.elements.any?
