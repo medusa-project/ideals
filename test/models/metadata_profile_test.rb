@@ -140,10 +140,11 @@ class MetadataProfileTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
-  test "name must be unique" do
-    profile = MetadataProfile.all.first
-    assert_raises ActiveRecord::RecordInvalid do
-      MetadataProfile.create!(name: profile.name)
+  test "name must be unique within an institution" do
+    profile = metadata_profiles(:northeast_default)
+    assert_raises ActiveRecord::RecordNotUnique do
+      MetadataProfile.create!(institution: profile.institution,
+                              name:        profile.name)
     end
   end
 
