@@ -11,7 +11,7 @@ module UsersHelper
     html = StringIO.new
     html << '<div class="card mb-3">'
     html <<   '<div id="user-filter" class="card-body">'
-    html <<     form_tag(request.fullpath, method: :get, class: "form-inline") do
+    html <<     form_tag(request.path, method: :get, class: "form-inline") do
       form = StringIO.new
       form << label_tag("q", "Name or Email", class: "mr-1")
       form << filter_field
