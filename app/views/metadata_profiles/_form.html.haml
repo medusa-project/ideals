@@ -4,16 +4,18 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  .form-group
-    = f.label :name
-    = f.text_field :name, class: 'form-control'
+  - unless f.object.global?
+    .form-group
+      = f.label :name
+      = f.text_field :name, class: 'form-control'
   .form-group
     = f.label :full_text_relevance_weight, "Full Text Relevance Weight (1-10)"
     = f.number_field :full_text_relevance_weight, min: 1, max: 10, class: 'form-control'
-  .form-group
-    .form-check
-      = f.check_box :institution_default, class: 'form-check-input'
-      = f.label :institution_default, "Default", class: "form-check-label"
+  - unless f.object.global?
+    .form-group
+      .form-check
+        = f.check_box :institution_default, class: 'form-check-input'
+        = f.label :institution_default, "Institution Default", class: "form-check-label"
   .clearfix
     .float-right
       %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel

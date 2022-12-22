@@ -113,6 +113,17 @@ class MetadataProfileTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # global?()
+
+  test "global?() returns true for the global profile" do
+    @instance.institution_id = nil
+    assert @instance.global?
+  end
+
+  test "global?() returns false for a non-global profile" do
+    assert !@instance.global?
+  end
+
   # name
 
   test "name must be present" do

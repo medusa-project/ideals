@@ -3,7 +3,6 @@ require 'test_helper'
 class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   setup do
-    @user    = users(:norights)
     @profile = metadata_profiles(:uiuc_default)
   end
 
@@ -14,7 +13,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.clone?
   end
 
-  test "clone?() does not authorize non-sysadmins" do
+  test "clone?() does not authorize non-institution admins" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -22,28 +21,38 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.clone?
   end
 
-  test "clone?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+  test "clone?() authorizes administrators of the same institution" do
+    user = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.clone?
   end
 
-  test "clone?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = MetadataProfilePolicy.new(context, @element)
-    assert policy.clone?
-  end
-
   test "clone?() does not authorize administrators of a different
-  institution" do
+  institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.clone?
+  end
+
+  test "clone?() does not authorize administrators of a different
+  institution than the metadata profile" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.clone?
+  end
+
+  test "clone?() does not allow the global profile to be cloned" do
+    @profile = metadata_profiles(:global)
+    user     = users(:local_sysadmin)
+    context  = RequestContext.new(user:        user,
+                                  institution: user.institution)
+    policy   = MetadataProfilePolicy.new(context, @profile)
     assert !policy.clone?
   end
 
@@ -64,7 +73,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
-  test "create?() does not authorize non-sysadmins" do
+  test "create?() does not authorize non-privileged users" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -72,28 +81,20 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
-  test "create?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+  test "create?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.create?
   end
 
-  test "create?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = MetadataProfilePolicy.new(context, @element)
-    assert policy.create?
-  end
-
   test "create?() does not authorize administrators of a different
-  institution" do
+  institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
     assert !policy.create?
   end
 
@@ -114,7 +115,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  test "destroy?() does not authorize non-sysadmins" do
+  test "destroy?() does not authorize non-privileged users" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -122,28 +123,38 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  test "destroy?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+  test "destroy?() authorizes administrators of the same institution" do
+    user = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.destroy?
   end
 
-  test "destroy?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = MetadataProfilePolicy.new(context, @element)
-    assert policy.destroy?
-  end
-
   test "destroy?() does not authorize administrators of a different
-  institution" do
+  institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() does not authorize administrators of a different
+  institution than the metadata profile" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() does not allow the global profile to be destroyed" do
+    @profile = metadata_profiles(:global)
+    user     = users(:local_sysadmin)
+    context  = RequestContext.new(user:        user,
+                                  institution: user.institution)
+    policy   = MetadataProfilePolicy.new(context, @profile)
     assert !policy.destroy?
   end
 
@@ -164,7 +175,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.edit?
   end
 
-  test "edit?() does not authorize non-sysadmins" do
+  test "edit?() does not authorize non-privileged users" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -172,28 +183,38 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.edit?
   end
 
-  test "edit?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+  test "edit?() authorizes administrators of the same institution" do
+    user = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.edit?
   end
 
-  test "edit?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = MetadataProfilePolicy.new(context, @element)
-    assert policy.edit?
-  end
-
   test "edit?() does not authorize administrators of a different
-  institution" do
+  institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.edit?
+  end
+
+  test "edit?() does not authorize administrators of a different
+  institution than the metadata profile" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.edit?
+  end
+
+  test "edit?() does not authorize non-privileged users to the global profile" do
+    @profile = metadata_profiles(:global)
+    user     = users(:southwest_admin)
+    context  = RequestContext.new(user:        user,
+                                  institution: institutions(:northeast))
+    policy   = MetadataProfilePolicy.new(context, @profile)
     assert !policy.edit?
   end
 
@@ -214,7 +235,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.index?
   end
 
-  test "index?() does not authorize non-sysadmins" do
+  test "index?() does not authorize non-privileged users" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -222,28 +243,20 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.index?
   end
 
-  test "index?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+  test "index?() authorizes institution administrators" do
+    user    = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = MetadataProfilePolicy.new(context, MetadataProfile)
-    assert policy.index?
-  end
-
-  test "index?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.index?
   end
 
   test "index?() does not authorize administrators of a different
-  institution" do
+  institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
     assert !policy.index?
   end
 
@@ -264,7 +277,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
-  test "new?() does not authorize non-sysadmins" do
+  test "new?() does not authorize non-privileged users" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -272,28 +285,20 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
-  test "new?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy = MetadataProfilePolicy.new(context, @profile)
-    assert policy.new?
-  end
-
-  test "new?() authorizes administrators of the same institution" do
+  test "new?() authorizes institution administrators" do
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.new?
   end
 
   test "new?() does not authorize administrators of a different
-  institution" do
+  institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
     assert !policy.new?
   end
 
@@ -314,7 +319,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() does not authorize non-sysadmins" do
+  test "show?() does not authorize non-privileged users" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -322,28 +327,47 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy = MetadataProfilePolicy.new(context, @profile)
-    assert policy.show?
-  end
-
   test "show?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
+    user = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.show?
   end
 
   test "show?() does not authorize administrators of a different
-  institution" do
+  institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.show?
+  end
+
+  test "show?() does not authorize administrators of a different
+  institution than the metadata profile" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.show?
+  end
+
+  test "show?() authorizes sysadmins to the global profile" do
+    @profile = metadata_profiles(:global)
+    user     = users(:local_sysadmin)
+    context  = RequestContext.new(user:        user,
+                                  institution: institutions(:northeast))
+    policy   = MetadataProfilePolicy.new(context, @profile)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize non-privileged users to the global profile" do
+    @profile = metadata_profiles(:global)
+    user     = users(:southwest_admin)
+    context  = RequestContext.new(user:        user,
+                                  institution: institutions(:northeast))
+    policy   = MetadataProfilePolicy.new(context, @profile)
     assert !policy.show?
   end
 
@@ -364,7 +388,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
-  test "update?() does not authorize non-sysadmins" do
+  test "update?() does not authorize non-privileged users" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -372,28 +396,47 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
-  test "update?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy = MetadataProfilePolicy.new(context, @profile)
-    assert policy.update?
-  end
-
   test "update?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
+    user = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
     assert policy.update?
   end
 
   test "update?() does not authorize administrators of a different
-  institution" do
+  institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = MetadataProfilePolicy.new(context, @element)
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.update?
+  end
+
+  test "update?() does not authorize administrators of a different
+  institution than the metadata profile" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = MetadataProfilePolicy.new(context, @profile)
+    assert !policy.update?
+  end
+
+  test "update?() authorizes sysadmins to the global profile" do
+    @profile = metadata_profiles(:global)
+    user     = users(:local_sysadmin)
+    context  = RequestContext.new(user:        user,
+                                  institution: institutions(:northeast))
+    policy   = MetadataProfilePolicy.new(context, @profile)
+    assert policy.update?
+  end
+
+  test "update?() does not authorize non-privileged users to the global profile" do
+    @profile = metadata_profiles(:global)
+    user     = users(:southwest_admin)
+    context  = RequestContext.new(user:        user,
+                                  institution: institutions(:northeast))
+    policy   = MetadataProfilePolicy.new(context, @profile)
     assert !policy.update?
   end
 
@@ -404,7 +447,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = MetadataProfilePolicy.new(context, @profile)
-    assert !policy.show?
+    assert !policy.update?
   end
 
 end

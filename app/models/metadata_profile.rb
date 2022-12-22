@@ -29,7 +29,7 @@
 class MetadataProfile < ApplicationRecord
   include Breadcrumb
 
-  belongs_to :institution
+  belongs_to :institution, optional: true
 
   has_many :collections, inverse_of: :metadata_profile,
            dependent: :restrict_with_exception
@@ -152,6 +152,13 @@ class MetadataProfile < ApplicationRecord
   #
   def faceted_elements
     self.elements.where(faceted: true).order(:position)
+  end
+
+  ##
+  # @return [Boolean] Whether the instance is the global profile.
+  #
+  def global?
+    institution_id.nil?
   end
 
 

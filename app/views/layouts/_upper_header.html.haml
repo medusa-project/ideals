@@ -57,6 +57,10 @@
                 = icon_for(Institution)
                 All Institutions
               .dropdown-divider
+              = link_to(MetadataProfile.find_by(institution_id: nil), class: "dropdown-item") do
+                = icon_for(MetadataProfile)
+                Global Metadata Profile
+              .dropdown-divider
               = link_to(all_users_path, class: "dropdown-item") do
                 %i.fa.fa-user
                 All Users

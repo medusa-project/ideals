@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class MetadataProfilePolicy < ApplicationPolicy
-  attr_reader :user, :institution, :role, :metadata_profile
+  attr_reader :user, :ctx_institution, :role, :metadata_profile
 
   ##
   # @param request_context [RequestContext]
@@ -9,21 +9,35 @@ class MetadataProfilePolicy < ApplicationPolicy
   #
   def initialize(request_context, metadata_profile)
     @user             = request_context&.user
-    @institution      = request_context&.institution
+    @ctx_institution  = request_context&.institution
     @role             = request_context&.role_limit
     @metadata_profile = metadata_profile
   end
 
   def clone
-    create
+    if metadata_profile.global?
+      return { authorized: false,
+               reason:     "The global metadata profile cannot be cloned." }
+    end
+    result = effective_institution_admin(user, ctx_institution, role)
+    result[:authorized] ?
+      effective_institution_admin(user, metadata_profile.institution, role) :
+      result
   end
 
   def create
-    effective_institution_admin(user, institution, role)
+    effective_institution_admin(user, ctx_institution, role)
   end
 
   def destroy
-    create
+    if metadata_profile.global?
+      return { authorized: false,
+               reason:     "The global metadata profile cannot be deleted." }
+    end
+    result = effective_institution_admin(user, ctx_institution, role)
+    result[:authorized] ?
+      effective_institution_admin(user, metadata_profile.institution, role) :
+      result
   end
 
   def edit
@@ -31,7 +45,7 @@ class MetadataProfilePolicy < ApplicationPolicy
   end
 
   def index
-    create
+    effective_institution_admin(user, ctx_institution, role)
   end
 
   def new
@@ -39,10 +53,16 @@ class MetadataProfilePolicy < ApplicationPolicy
   end
 
   def show
-    index
+    update
   end
 
   def update
-    create
+    if metadata_profile.global?
+      return effective_sysadmin(user, role)
+    end
+    result = effective_institution_admin(user, ctx_institution, role)
+    result[:authorized] ?
+      effective_institution_admin(user, metadata_profile.institution, role) :
+      result
   end
 end

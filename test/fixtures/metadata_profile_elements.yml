@@ -1,5 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+global_title:
+  metadata_profile:   global
+  registered_element: global_dc_title
+  position:           0
+  visible:            true
+  faceted:            false
+  searchable:         true
+  sortable:           true
+  relevance_weight:   <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+
 uiuc_default_title:
   metadata_profile:   uiuc_default
   registered_element: uiuc_dc_title
