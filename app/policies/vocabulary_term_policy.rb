@@ -1,31 +1,37 @@
-class TaskPolicy < ApplicationPolicy
-
-  attr_reader :user, :ctx_institution, :role, :task
+class VocabularyTermPolicy < ApplicationPolicy
+  attr_reader :user, :ctx_institution, :role, :term
 
   ##
   # @param request_context [RequestContext]
-  # @param task [Task]
+  # @param term [VocabularyTerm]
   #
-  def initialize(request_context, task)
+  def initialize(request_context, term)
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
     @role            = request_context&.role_limit
-    @task            = task
+    @term            = term
   end
 
-  def index
+  def create
     effective_institution_admin(user, ctx_institution, role)
   end
 
-  def index_all
-    effective_sysadmin(user, role)
+  def destroy
+    update
   end
 
-  def show
+  def edit
+    update
+  end
+
+  def new
+    create
+  end
+
+  def update
     result = effective_institution_admin(user, ctx_institution, role)
     result[:authorized] ?
-      effective_institution_admin(user, task.institution, role) :
+      effective_institution_admin(user, term.vocabulary.institution, role) :
       result
   end
-
 end

@@ -1,6 +1,6 @@
 class SubmissionProfilePolicy < ApplicationPolicy
 
-  attr_reader :user, :institution, :role, :submission_profile
+  attr_reader :user, :ctx_institution, :role, :submission_profile
 
   ##
   # @param request_context [RequestContext]
@@ -8,21 +8,21 @@ class SubmissionProfilePolicy < ApplicationPolicy
   #
   def initialize(request_context, submission_profile)
     @user               = request_context&.user
-    @institution        = request_context&.institution
+    @ctx_institution    = request_context&.institution
     @role               = request_context&.role_limit
     @submission_profile = submission_profile
   end
 
   def clone
-    create
+    destroy
   end
 
   def create
-    effective_institution_admin(user, institution, role)
+    effective_institution_admin(user, ctx_institution, role)
   end
 
   def destroy
-    create
+    update
   end
 
   def edit
@@ -38,10 +38,13 @@ class SubmissionProfilePolicy < ApplicationPolicy
   end
 
   def show
-    index
+    update
   end
 
   def update
-    create
+    result = effective_institution_admin(user, ctx_institution, role)
+    result[:authorized] ?
+      effective_institution_admin(user, submission_profile.institution, role) :
+      result
   end
 end

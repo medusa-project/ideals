@@ -47,4 +47,5 @@ uiuc_admins:
 unused:
   key:                 unused
   name:                Unused Group
+  institution:         southwest
   defines_institution: false

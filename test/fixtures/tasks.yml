@@ -12,6 +12,7 @@ pending:
   backtrace:
 
 running:
+  institution:      southwest
   name:             RunningTask
   status:           <%= Task::Status::RUNNING %>
   status_text:      Running

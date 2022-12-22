@@ -16,19 +16,19 @@ class UserGroupPolicy < ApplicationPolicy
   def create
     if !user
       return LOGGED_OUT_RESULT
-    elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?) ||
-        (role >= Role::INSTITUTION_ADMINISTRATOR && user.institution_administrators.count > 0) ||
-        (role >= Role::UNIT_ADMINISTRATOR && user.unit_administrators.count > 0) ||
-        (role >= Role::COLLECTION_MANAGER && user.managers.count > 0) # IR-67
+    elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?)
+      return AUTHORIZED_RESULT
+    elsif role >= Role::INSTITUTION_ADMINISTRATOR &&
+        user.institution_administrators.count > 0
       return AUTHORIZED_RESULT
     end
     { authorized: false,
-      reason: "You must be an administrator of an institution or unit, or a "\
-              "manager of a collection." }
+      reason: "You must be an administrator of an institution within the "\
+              "same institution as that of the user group." }
   end
 
   def destroy
-    result = create
+    result = update
     if !result[:authorized] || user_group.required?
       return { authorized: false,
                reason:     "This group cannot be deleted." }
@@ -69,7 +69,17 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def index
-    create
+    if !user
+      return LOGGED_OUT_RESULT
+    elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?)
+      return AUTHORIZED_RESULT
+    elsif role >= Role::INSTITUTION_ADMINISTRATOR &&
+        user.institution_administrators.count > 0
+      return AUTHORIZED_RESULT
+    end
+    { authorized: false,
+      reason: "You must be an administrator of an institution within the "\
+              "same institution as that of the user group." }
   end
 
   def index_global
@@ -81,10 +91,20 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def show
-    user_group.institution ? index : index_global
+    user_group.institution ? update : index_global
   end
 
   def update
-    create
+    if !user
+      return LOGGED_OUT_RESULT
+    elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?)
+      return AUTHORIZED_RESULT
+    elsif role >= Role::INSTITUTION_ADMINISTRATOR &&
+      ((user || user_group) && user.institution == user_group.institution)
+      return AUTHORIZED_RESULT
+    end
+    { authorized: false,
+      reason: "You must be an administrator of an institution within the "\
+              "same institution as that of the user group." }
   end
 end

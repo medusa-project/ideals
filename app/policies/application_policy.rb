@@ -50,9 +50,9 @@ class ApplicationPolicy
   # @return [Hash]
   #
   def effective_sysadmin(user, role_limit)
-    if user&.sysadmin?
-      return AUTHORIZED_RESULT if !role_limit ||
-        role_limit >= Role::SYSTEM_ADMINISTRATOR
+    if (!role_limit || role_limit >= Role::SYSTEM_ADMINISTRATOR) &&
+      user&.sysadmin?
+      return AUTHORIZED_RESULT
     end
     {
       authorized: false,

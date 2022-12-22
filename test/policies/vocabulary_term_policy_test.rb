@@ -1,16 +1,15 @@
 require 'test_helper'
 
-class VocabularyPolicyTest < ActiveSupport::TestCase
+class VocabularyTermPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @user  = users(:norights)
-    @vocab = vocabularies(:southwest_one)
+    @term = vocabulary_terms(:southwest_one_one)
   end
 
   # create?()
 
   test "create?() returns false with a nil user" do
-    policy = VocabularyPolicy.new(nil, @vocab)
+    policy = VocabularyTermPolicy.new(nil, @term)
     assert !policy.create?
   end
 
@@ -18,7 +17,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.create?
   end
 
@@ -26,7 +25,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert policy.create?
   end
 
@@ -35,7 +34,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.create?
   end
 
@@ -45,14 +44,14 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.create?
   end
 
   # destroy?()
 
   test "destroy?() returns false with a nil user" do
-    policy = VocabularyPolicy.new(nil, @vocab)
+    policy = VocabularyTermPolicy.new(nil, @term)
     assert !policy.destroy?
   end
 
@@ -60,7 +59,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.destroy?
   end
 
@@ -68,7 +67,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert policy.destroy?
   end
 
@@ -77,7 +76,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.destroy?
   end
 
@@ -86,7 +85,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.destroy?
   end
 
@@ -96,14 +95,14 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.destroy?
   end
 
   # edit?()
 
   test "edit?() returns false with a nil user" do
-    policy = VocabularyPolicy.new(nil, @vocab)
+    policy = VocabularyTermPolicy.new(nil, @term)
     assert !policy.edit?
   end
 
@@ -111,7 +110,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.edit?
   end
 
@@ -119,7 +118,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert policy.edit?
   end
 
@@ -128,7 +127,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.edit?
   end
 
@@ -137,7 +136,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.edit?
   end
 
@@ -147,56 +146,14 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.edit?
-  end
-
-  # index?()
-
-  test "index?() returns false with a nil user" do
-    policy = VocabularyPolicy.new(nil, MetadataProfile)
-    assert !policy.index?
-  end
-
-  test "index?() does not authorize non-privileged users" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = VocabularyPolicy.new(context, MetadataProfile)
-    assert !policy.index?
-  end
-
-  test "index?() authorizes institution administrators" do
-    user = users(:uiuc_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = VocabularyPolicy.new(context, @vocab)
-    assert policy.index?
-  end
-
-  test "index?() does not authorize administrators of a different institution
-  than in the request context" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: institutions(:northeast))
-    policy  = VocabularyPolicy.new(context, @vocab)
-    assert !policy.index?
-  end
-
-  test "index?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = VocabularyPolicy.new(context, @vocab)
-    assert !policy.index?
   end
 
   # new()
 
   test "new?() returns false with a nil user" do
-    policy = VocabularyPolicy.new(nil, @vocab)
+    policy = VocabularyTermPolicy.new(nil, @term)
     assert !policy.new?
   end
 
@@ -204,7 +161,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy = VocabularyPolicy.new(context, @vocab)
+    policy = VocabularyTermPolicy.new(context, @term)
     assert !policy.new?
   end
 
@@ -212,7 +169,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert policy.new?
   end
 
@@ -221,7 +178,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.new?
   end
 
@@ -231,65 +188,14 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.new?
-  end
-
-  # show?()
-
-  test "show?() returns false with a nil user" do
-    policy = VocabularyPolicy.new(nil, @vocab)
-    assert !policy.show?
-  end
-
-  test "show?() does not authorize non-privileged users" do
-    user    = users(:norights)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy = VocabularyPolicy.new(context, @vocab)
-    assert !policy.show?
-  end
-
-  test "show?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = VocabularyPolicy.new(context, @vocab)
-    assert policy.show?
-  end
-
-  test "show?() does not authorize administrators of a different institution
-  than in the request context" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: institutions(:northeast))
-    policy  = VocabularyPolicy.new(context, @vocab)
-    assert !policy.show?
-  end
-
-  test "show?() does not authorize administrators of a different institution
-  than the vocabulary" do
-    user    = users(:northeast_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: institutions(:northeast))
-    policy  = VocabularyPolicy.new(context, @vocab)
-    assert !policy.show?
-  end
-
-  test "show?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = VocabularyPolicy.new(context, @vocab)
-    assert !policy.show?
   end
 
   # update?()
 
   test "update?() returns false with a nil user" do
-    policy = VocabularyPolicy.new(nil, @vocab)
+    policy = VocabularyTermPolicy.new(nil, @term)
     assert !policy.update?
   end
 
@@ -297,7 +203,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy = VocabularyPolicy.new(context, @vocab)
+    policy = VocabularyTermPolicy.new(context, @term)
     assert !policy.update?
   end
 
@@ -305,7 +211,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert policy.update?
   end
 
@@ -314,7 +220,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.update?
   end
 
@@ -323,7 +229,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.update?
   end
 
@@ -333,7 +239,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = VocabularyPolicy.new(context, @vocab)
+    policy  = VocabularyTermPolicy.new(context, @term)
     assert !policy.update?
   end
 

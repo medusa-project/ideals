@@ -80,9 +80,7 @@ class SubmissionProfileElementsController < ApplicationController
   end
 
   def authorize_element
-    @element ?
-        authorize(@element, policy_class: SubmissionProfilePolicy) :
-        skip_authorization
+    @element ? authorize(@element) : skip_authorization
   end
 
 end

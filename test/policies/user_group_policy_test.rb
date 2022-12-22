@@ -13,27 +13,6 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
-  test "create?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.create?
-  end
-
-  test "create?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    subject_user = users(:norights)
-    context      = RequestContext.new(user:        subject_user,
-                                      institution: subject_user.institution)
-    policy       = UserGroupPolicy.new(context, @user_group)
-    assert policy.create?
-  end
-
   test "create?() authorizes administrators of any institution" do
     subject_user = users(:norights)
     subject_user.institution_administrators.build(institution: subject_user.institution)
@@ -78,32 +57,30 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  test "destroy?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.destroy?
-  end
-
-  test "destroy?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.destroy?
-  end
-
   test "destroy?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.destroy?
+  end
+
+  test "destroy?() authorizes administrators of the same institution as the
+  user group" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.destroy?
+  end
+
+  test "destroy?() does not authorize administrators of a different institution
+  than that of the user group" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.destroy?
   end
 
   test "destroy?() does not authorize anybody else" do
@@ -139,32 +116,30 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.edit?
   end
 
-  test "edit?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit?
-  end
-
-  test "edit?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit?
-  end
-
   test "edit?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.edit?
+  end
+
+  test "edit?() authorizes administrators of the same institution as the
+  user group" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit?
+  end
+
+  test "edit?() does not authorize administrators of a different institution
+  than that of the user group" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit?
   end
 
   test "edit?() does not authorize anybody else" do
@@ -192,32 +167,30 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_ad_groups?
   end
 
-  test "edit_ad_groups?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_ad_groups?
-  end
-
-  test "edit_ad_groups?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_ad_groups?
-  end
-
   test "edit_ad_groups?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.edit_ad_groups?
+  end
+
+  test "edit_ad_groups?() authorizes administrators of the same institution as the
+  user group" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_ad_groups?
+  end
+
+  test "edit_ad_groups?() does not authorize administrators of a different institution
+  than that of the user group" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_ad_groups?
   end
 
   test "edit_ad_groups?() does not authorize anybody else" do
@@ -245,32 +218,30 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_affiliations?
   end
 
-  test "edit_affiliations?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_affiliations?
-  end
-
-  test "edit_affiliations?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_affiliations?
-  end
-
   test "edit_affiliations?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.edit_affiliations?
+  end
+
+  test "edit_affiliations?() authorizes administrators of the same institution as the
+  user group" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_affiliations?
+  end
+
+  test "edit_affiliations?() does not authorize administrators of a different institution
+  than that of the user group" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_affiliations?
   end
 
   test "edit_affiliations?() does not authorize anybody else" do
@@ -298,32 +269,30 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_departments?
   end
 
-  test "edit_departments?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_departments?
-  end
-
-  test "edit_departments?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_departments?
-  end
-
   test "edit_departments?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.edit_departments?
+  end
+
+  test "edit_departments?() authorizes administrators of the same institution
+  as the user group" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_departments?
+  end
+
+  test "edit_departments?() does not authorize administrators of a different
+  institution than that of the user group" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_departments?
   end
 
   test "edit_departments?() does not authorize anybody else" do
@@ -351,32 +320,30 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_email_patterns?
   end
 
-  test "edit_email_patterns?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_email_patterns?
-  end
-
-  test "edit_email_patterns?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_email_patterns?
-  end
-
   test "edit_email_patterns?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.edit_email_patterns?
+  end
+
+  test "edit_email_patterns?() authorizes administrators of the same institution as the
+  user group" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_email_patterns?
+  end
+
+  test "edit_email_patterns?() does not authorize administrators of a different institution
+  than that of the user group" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_email_patterns?
   end
 
   test "edit_email_patterns?() does not authorize anybody else" do
@@ -404,32 +371,30 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_hosts?
   end
 
-  test "edit_hosts?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_hosts?
-  end
-
-  test "edit_hosts?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_hosts?
-  end
-
   test "edit_hosts?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.edit_hosts?
+  end
+
+  test "edit_hosts?() authorizes administrators of the same institution as the
+  user group" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_hosts?
+  end
+
+  test "edit_hosts?() does not authorize administrators of a different
+  institution than that of the user group" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_hosts?
   end
 
   test "edit_hosts?() does not authorize anybody else" do
@@ -457,32 +422,30 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_local_users?
   end
 
-  test "edit_local_users?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_local_users?
-  end
-
-  test "edit_local_users?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_local_users?
-  end
-
   test "edit_local_users?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.edit_local_users?
+  end
+
+  test "edit_local_users?() authorizes administrators of the same institution
+  as the user group" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_local_users?
+  end
+
+  test "edit_local_users?() does not authorize administrators of a different
+  institution than that of the user group" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_local_users?
   end
 
   test "edit_local_users?() does not authorize anybody else" do
@@ -510,32 +473,30 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_netid_users?
   end
 
-  test "edit_netid_users?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_netid_users?
-  end
-
-  test "edit_netid_users?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_netid_users?
-  end
-
   test "edit_netid_users?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.edit_netid_users?
+  end
+
+  test "edit_netid_users?() authorizes administrators of the same institution
+  as the user group" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.edit_netid_users?
+  end
+
+  test "edit_netid_users?() does not authorize administrators of a different
+  institution than that of the user group" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.edit_netid_users?
   end
 
   test "edit_netid_users?() does not authorize anybody else" do
@@ -561,26 +522,6 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   test "index?() returns false with a nil user" do
     policy = UserGroupPolicy.new(nil, UserGroup)
     assert !policy.index?
-  end
-
-  test "index?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, UserGroup)
-    assert policy.index?
-  end
-
-  test "index?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, UserGroup)
-    assert policy.index?
   end
 
   test "index?() authorizes sysadmins" do
@@ -649,26 +590,6 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
-  test "new?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.new?
-  end
-
-  test "new?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.new?
-  end
-
   test "new?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
@@ -702,34 +623,30 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() authorizes managers of any collection in the same institution" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    @user_group.update!(institution: subject_user.institution)
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.show?
-  end
-
-  test "show?() authorizes administrators of any unit in the same institution" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    @user_group.update!(institution: subject_user.institution)
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.show?
-  end
-
   test "show?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.show?
+  end
+
+  test "show?() authorizes administrators of the same institution as the user
+  group" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize administrators of a different institution
+  than that of the user group" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.show?
   end
 
   test "show?() does not authorize anybody else" do
@@ -757,32 +674,30 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
-  test "update?() authorizes managers of any collection" do
-    subject_user = users(:norights)
-    subject_user.managers.build(collection: collections(:uiuc_collection1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.update?
-  end
-
-  test "update?() authorizes administrators of any unit" do
-    subject_user = users(:norights)
-    subject_user.unit_administrators.build(unit: units(:uiuc_unit1))
-    subject_user.save!
-    context = RequestContext.new(user:        subject_user,
-                                 institution: subject_user.institution)
-    policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.update?
-  end
-
   test "update?() authorizes sysadmins" do
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
     assert policy.update?
+  end
+
+  test "update?() authorizes administrators of the same institution as the
+  user group" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.update?
+  end
+
+  test "update?() does not authorize administrators of a different institution
+  than that of the user group" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.update?
   end
 
   test "update?() does not authorize anybody else" do

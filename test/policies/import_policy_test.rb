@@ -336,11 +336,20 @@ class ImportPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
-  test "show?() does not authorize administrators of a different
-  institution" do
+  test "show?() does not authorize administrators of a different institution
+  than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.show?
+  end
+
+  test "show?() does not authorize administrators of a different institution
+  than the import" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:uiuc))
     policy  = ImportPolicy.new(context, @import)
     assert !policy.show?
   end

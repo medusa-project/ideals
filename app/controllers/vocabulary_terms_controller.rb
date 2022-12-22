@@ -89,9 +89,7 @@ class VocabularyTermsController < ApplicationController
   end
 
   def authorize_term
-    @term ?
-      authorize(@term, policy_class: VocabularyPolicy) :
-      skip_authorization
+    @term ? authorize(@term) : skip_authorization
   end
 
 end

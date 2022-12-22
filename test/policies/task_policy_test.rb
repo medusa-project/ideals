@@ -3,7 +3,7 @@ require 'test_helper'
 class TaskPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @user = users(:norights)
+    @task = tasks(:running)
   end
 
   # index?()
@@ -93,7 +93,7 @@ class TaskPolicyTest < ActiveSupport::TestCase
   # show?()
 
   test "show?() returns false with a nil user" do
-    policy = TaskPolicy.new(nil, @profile)
+    policy = TaskPolicy.new(nil, @task)
     assert !policy.show?
   end
 
@@ -101,7 +101,7 @@ class TaskPolicyTest < ActiveSupport::TestCase
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = TaskPolicy.new(context, @profile)
+    policy  = TaskPolicy.new(context, @task)
     assert !policy.show?
   end
 
@@ -109,8 +109,26 @@ class TaskPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = TaskPolicy.new(context, @profile)
+    policy  = TaskPolicy.new(context, @task)
     assert policy.show?
+  end
+
+  test "show?() does not authorize administrators of a different institution
+  than in the request context" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = TaskPolicy.new(context, @task)
+    assert !policy.show?
+  end
+
+  test "show?() does not authorize administrators of a different institution
+  than the task" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = TaskPolicy.new(context, @task)
+    assert !policy.show?
   end
 
   test "show?() respects role limits" do
@@ -119,7 +137,7 @@ class TaskPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = TaskPolicy.new(context, @profile)
+    policy  = TaskPolicy.new(context, @task)
     assert !policy.show?
   end
 

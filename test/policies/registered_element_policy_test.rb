@@ -13,7 +13,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
-  test "create?() does not authorize non-sysadmins" do
+  test "create?() does not authorize users with no privileges" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -30,15 +30,15 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
+    user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.create?
   end
 
-  test "create?() does not authorize administrators of a different
-  institution" do
+  test "create?() does not authorize administrators of a different institution
+  as in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
@@ -63,7 +63,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  test "destroy?() does not authorize non-sysadmins" do
+  test "destroy?() does not authorize users with no privileges" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -80,16 +80,25 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
+    user    = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.destroy?
   end
 
-  test "destroy?() does not authorize administrators of a different
-  institution" do
+  test "destroy?() does not authorize administrators of a different institution
+  as in the request context" do
     user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = RegisteredElementPolicy.new(context, @element)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() does not authorize administrators of a different institution
+  than that of the element" do
+    user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -113,7 +122,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     assert !policy.edit?
   end
 
-  test "edit?() does not authorize non-sysadmins" do
+  test "edit?() does not authorize users with no privileges" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -125,21 +134,30 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     user    = users(:local_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy = RegisteredElementPolicy.new(context, @element)
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.edit?
   end
 
   test "edit?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
+    user    = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.edit?
   end
 
-  test "edit?() does not authorize administrators of a different
-  institution" do
+  test "edit?() does not authorize administrators of a different institution as
+  in the request context" do
     user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = RegisteredElementPolicy.new(context, @element)
+    assert !policy.edit?
+  end
+
+  test "edit?() does not authorize administrators of a different institution
+  than that of the element" do
+    user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -163,7 +181,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     assert !policy.index?
   end
 
-  test "index?() does not authorize non-sysadmins" do
+  test "index?() does not authorize users with no privileges" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -204,7 +222,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
-  test "new?() does not authorize non-sysadmins" do
+  test "new?() does not authorize users with no privileges" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -228,6 +246,15 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     assert policy.new?
   end
 
+  test "new?() does not authorize administrators of a different institution
+  than the request context" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = RegisteredElementPolicy.new(context, RegisteredElement)
+    assert !policy.edit?
+  end
+
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:local_sysadmin)
@@ -245,7 +272,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() does not authorize non-sysadmins" do
+  test "show?() does not authorize users with no privileges" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -262,16 +289,25 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
+    user    = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.show?
   end
 
-  test "show?() does not authorize administrators of a different
-  institution" do
+  test "show?() does not authorize administrators of a different institution
+  than the request context" do
     user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = RegisteredElementPolicy.new(context, @element)
+    assert !policy.show?
+  end
+
+  test "show?() does not authorize administrators of a different institution
+  than that of the element" do
+    user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -295,7 +331,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
-  test "update?() does not authorize non-sysadmins" do
+  test "update?() does not authorize users with no privileges" do
     user    = users(:norights)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -312,7 +348,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes administrators of the same institution" do
-    user = users(:southwest_admin)
+    user = users(:uiuc_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -320,8 +356,17 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() does not authorize administrators of a different
-  institution" do
+  institution than the request context" do
     user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = RegisteredElementPolicy.new(context, @element)
+    assert !policy.update?
+  end
+
+  test "update?() does not authorize administrators of a different institution
+  than that of the element" do
+    user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
     policy  = RegisteredElementPolicy.new(context, @element)

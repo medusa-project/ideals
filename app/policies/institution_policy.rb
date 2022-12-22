@@ -1,14 +1,15 @@
 class InstitutionPolicy < ApplicationPolicy
-  attr_reader :user, :role, :institution
+  attr_reader :user, :ctx_institution, :role, :institution
 
   ##
   # @param request_context [RequestContext]
   # @param institution [Institution]
   #
   def initialize(request_context, institution)
-    @user        = request_context&.user
-    @role        = request_context&.role_limit
-    @institution = institution
+    @user            = request_context&.user
+    @ctx_institution = request_context&.institution
+    @role            = request_context&.role_limit
+    @institution     = institution
   end
 
   def create
@@ -52,7 +53,10 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show
-    effective_institution_admin(user, institution, role)
+    result = effective_institution_admin(user, ctx_institution, role)
+    result[:authorized] ?
+      effective_institution_admin(user, institution, role) :
+      result
   end
 
   def show_access
@@ -96,7 +100,7 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def update_settings
-    effective_institution_admin(user, institution, role)
+    show
   end
 
 end

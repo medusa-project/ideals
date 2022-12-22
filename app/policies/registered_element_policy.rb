@@ -1,6 +1,6 @@
 class RegisteredElementPolicy < ApplicationPolicy
 
-  attr_reader :user, :institution, :role, :registered_element
+  attr_reader :user, :ctx_institution, :role, :registered_element
 
   ##
   # @param request_context [RequestContext]
@@ -8,17 +8,17 @@ class RegisteredElementPolicy < ApplicationPolicy
   #
   def initialize(request_context, registered_element)
     @user               = request_context&.user
-    @institution        = request_context&.institution
+    @ctx_institution    = request_context&.institution
     @role               = request_context&.role_limit
     @registered_element = registered_element
   end
 
   def create
-    effective_institution_admin(user, institution, role)
+    effective_institution_admin(user, ctx_institution, role)
   end
 
   def destroy
-    create
+    update
   end
 
   def edit
@@ -38,6 +38,9 @@ class RegisteredElementPolicy < ApplicationPolicy
   end
 
   def update
-    create
+    result = effective_institution_admin(user, ctx_institution, role)
+    result[:authorized] ?
+      effective_institution_admin(user, registered_element.institution, role) :
+      result
   end
 end

@@ -1,16 +1,16 @@
 class ImportPolicy < ApplicationPolicy
 
-  attr_reader :user, :institution, :role, :import
+  attr_reader :user, :ctx_institution, :role, :import
 
   ##
   # @param request_context [RequestContext]
   # @param import [Import]
   #
   def initialize(request_context, import)
-    @user        = request_context&.user
-    @institution = request_context&.institution
-    @role        = request_context&.role_limit
-    @import      = import
+    @user            = request_context&.user
+    @ctx_institution = request_context&.institution
+    @role            = request_context&.role_limit
+    @import          = import
   end
 
   def create
@@ -26,7 +26,7 @@ class ImportPolicy < ApplicationPolicy
   end
 
   def index
-    effective_institution_admin(user, institution, role)
+    effective_institution_admin(user, ctx_institution, role)
   end
 
   def new
@@ -34,7 +34,10 @@ class ImportPolicy < ApplicationPolicy
   end
 
   def show
-    effective_institution_admin(user, import.institution, role)
+    result = effective_institution_admin(user, ctx_institution, role)
+    result[:authorized] ?
+      effective_institution_admin(user, import.institution, role) :
+      result
   end
 
   def update
