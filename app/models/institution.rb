@@ -345,6 +345,18 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # Totally destroys an institution as well as all of its dependent entities.
+  # This is strictly a convenience for testing and will raise an error in all
+  # other environments.
+  #
+  def nuke!
+    raise "You maniac, you can only nuke an institution in test!" unless Rails.env.test?
+    self.invitees.delete_all
+    self.users.delete_all
+    self.destroy!
+  end
+
+  ##
   # @return [Integer]
   #
   def public_item_count
@@ -391,6 +403,13 @@ class Institution < ApplicationRecord
       raise e
     end
     task&.succeed
+  end
+
+  ##
+  # @return [String]
+  #
+  def scope_url
+    "https://#{self.fqdn}"
   end
 
   ##

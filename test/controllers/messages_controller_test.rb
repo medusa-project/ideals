@@ -10,7 +10,7 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
 
   test "index() redirects to root page for logged-out users" do
     get messages_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -37,8 +37,9 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
   # show()
 
   test "show() redirects to root page for logged-out users" do
-    get message_path(messages(:ingest_no_response))
-    assert_redirected_to root_path
+    message = messages(:ingest_no_response)
+    get message_path(message)
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "show() returns HTTP 403 for unauthorized users" do

@@ -3,6 +3,7 @@ require 'test_helper'
 class UsersControllerTest < ActionDispatch::IntegrationTest
 
   setup do
+    @user = users(:uiuc_sysadmin)
     setup_opensearch
   end
 
@@ -13,54 +14,52 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # edit_properties()
 
   test "edit_properties() returns HTTP 403 for logged-out users" do
-    get user_edit_properties_path(users(:local_sysadmin)), xhr: true
+    get user_edit_properties_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get user_edit_properties_path(users(:local_sysadmin)), xhr: true
+    get user_edit_properties_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
-    get user_edit_properties_path(users(:local_sysadmin)), xhr: true
+    log_in_as(users(:uiuc_sysadmin))
+    get user_edit_properties_path(@user), xhr: true
     assert_response :ok
   end
 
   test "edit_properties() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    get user_edit_properties_path(users(:local_sysadmin)), xhr: true
+    log_in_as(users(:uiuc_sysadmin))
+    get user_edit_properties_path(@user), xhr: true
     assert_response :ok
 
-    get user_edit_properties_path(users(:local_sysadmin),
-                                  role: Role::LOGGED_OUT), xhr: true
+    get user_edit_properties_path(@user, role: Role::LOGGED_OUT), xhr: true
     assert_response :forbidden
   end
 
   # disable()
 
   test "disable() redirects to root page for logged-out users" do
-    patch user_disable_path(users(:local_sysadmin))
-    assert_redirected_to root_path
+    patch user_disable_path(@user)
+    assert_redirected_to @user.institution.scope_url
   end
 
   test "disable() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch user_disable_path(users(:local_sysadmin))
+    patch user_disable_path(@user)
     assert_response :forbidden
   end
 
   test "disable() redirects to the show-user page for authorized users" do
-    log_in_as(users(:local_sysadmin))
-    user = users(:local_sysadmin)
-    patch user_disable_path(user)
-    assert_redirected_to user_path(user)
+    log_in_as(@user)
+    patch user_disable_path(@user)
+    assert_redirected_to user_path(@user)
   end
 
   test "disable() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(@user)
     user = users(:norights)
     patch user_disable_path(user)
     assert_redirected_to user_path(user)
@@ -72,25 +71,24 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # enable()
 
   test "enable() redirects to root page for logged-out users" do
-    patch user_enable_path(users(:local_sysadmin))
-    assert_redirected_to root_path
+    patch user_enable_path(@user)
+    assert_redirected_to @user.institution.scope_url
   end
 
   test "enable() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    patch user_enable_path(users(:local_sysadmin))
+    patch user_enable_path(@user)
     assert_response :forbidden
   end
 
   test "enable() redirects to the show-user page for authorized users" do
-    log_in_as(users(:local_sysadmin))
-    user = users(:local_sysadmin)
-    patch user_enable_path(user)
-    assert_redirected_to user_path(user)
+    log_in_as(users(:uiuc_sysadmin))
+    patch user_enable_path(@user)
+    assert_redirected_to user_path(@user)
   end
 
   test "enable() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(@user)
     user = users(:norights)
     patch user_enable_path(user)
     assert_redirected_to user_path(user)
@@ -103,7 +101,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "index() redirects to root page for logged-out users" do
     get users_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -113,19 +111,19 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() returns HTTP 200 for authorized users for HTML" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(@user)
     get users_path
     assert_response :ok
   end
 
   test "index() returns HTTP 200 for authorized users for JSON" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(@user)
     get users_path(format: :json)
     assert_response :ok
   end
 
   test "index() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(@user)
     get users_path
     assert_response :ok
 
@@ -137,7 +135,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "index_all() redirects to root page for logged-out users" do
     get all_users_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "index_all() returns HTTP 403 for unauthorized users" do
@@ -147,19 +145,19 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index_all() returns HTTP 200 for authorized users for HTML" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(@user)
     get all_users_path
     assert_response :ok
   end
 
   test "index_all() returns HTTP 200 for authorized users for JSON" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(@user)
     get all_users_path(format: :json)
     assert_response :ok
   end
 
   test "index_all() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(@user)
     get all_users_path
     assert_response :ok
 
@@ -170,218 +168,216 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # show()
 
   test "show() redirects to root page for logged-out users" do
-    get user_path(users(:local_sysadmin))
-    assert_redirected_to root_path
+    get user_path(@user)
+    assert_redirected_to @user.institution.scope_url
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get user_path(users(:local_sysadmin))
+    get user_path(@user)
     assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
-    get user_path(users(:local_sysadmin))
+    log_in_as(@user)
+    get user_path(@user)
     assert_response :ok
   end
 
   test "show() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    get user_path(users(:local_sysadmin))
+    log_in_as(@user)
+    get user_path(@user)
     assert_response :ok
 
-    get user_path(users(:local_sysadmin), role: Role::LOGGED_OUT)
+    get user_path(@user, role: Role::LOGGED_OUT)
     assert_response :forbidden
   end
 
   # show_properties()
 
   test "show_properties() returns HTTP 403 for logged-out users" do
-    get user_properties_path(users(:local_sysadmin)), xhr: true
+    get user_properties_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "show_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get user_properties_path(users(:local_sysadmin)), xhr: true
+    get user_properties_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "show_properties() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:norights))
-    get user_properties_path(users(:local_sysadmin))
+    get user_properties_path(@user)
     assert_response :not_found
   end
 
   test "show_properties() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
-    get user_properties_path(users(:local_sysadmin)), xhr: true
+    log_in_as(@user)
+    get user_properties_path(@user), xhr: true
     assert_response :ok
   end
 
   test "show_properties() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    get user_properties_path(users(:local_sysadmin)), xhr: true
+    log_in_as(@user)
+    get user_properties_path(@user), xhr: true
     assert_response :ok
 
-    get user_properties_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
+    get user_properties_path(@user, role: Role::LOGGED_OUT), xhr: true
     assert_response :forbidden
   end
 
   # show_submittable_collections()
 
   test "show_submittable_collections() returns HTTP 403 for logged-out users" do
-    get user_submittable_collections_path(users(:local_sysadmin)), xhr: true
+    get user_submittable_collections_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "show_submittable_collections() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get user_submittable_collections_path(users(:local_sysadmin)), xhr: true
+    get user_submittable_collections_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "show_submittable_collections() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:norights))
-    get user_submittable_collections_path(users(:local_sysadmin))
+    get user_submittable_collections_path(@user)
     assert_response :not_found
   end
 
   test "show_submittable_collections() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
-    get user_submittable_collections_path(users(:local_sysadmin)), xhr: true
+    log_in_as(users(:uiuc_sysadmin))
+    get user_submittable_collections_path(@user), xhr: true
     assert_response :ok
   end
 
   test "show_submittable_collections() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    get user_submittable_collections_path(users(:local_sysadmin)), xhr: true
+    log_in_as(users(:uiuc_sysadmin))
+    get user_submittable_collections_path(@user), xhr: true
     assert_response :ok
 
-    get user_submittable_collections_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
+    get user_submittable_collections_path(@user, role: Role::LOGGED_OUT), xhr: true
     assert_response :forbidden
   end
 
   # show_submitted_items()
 
   test "show_submitted_items() returns HTTP 403 for logged-out users" do
-    get user_submitted_items_path(users(:local_sysadmin)), xhr: true
+    get user_submitted_items_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "show_submitted_items() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get user_submitted_items_path(users(:local_sysadmin)), xhr: true
+    get user_submitted_items_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "show_submitted_items() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:norights))
-    get user_submitted_items_path(users(:local_sysadmin))
+    get user_submitted_items_path(@user)
     assert_response :not_found
   end
 
   test "show_submitted_items() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
-    get user_submitted_items_path(users(:local_sysadmin)), xhr: true
+    log_in_as(users(:uiuc_sysadmin))
+    get user_submitted_items_path(@user), xhr: true
     assert_response :ok
   end
 
   test "show_submitted_items() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    get user_submitted_items_path(users(:local_sysadmin)), xhr: true
+    log_in_as(users(:uiuc_sysadmin))
+    get user_submitted_items_path(@user), xhr: true
     assert_response :ok
 
-    get user_submitted_items_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
+    get user_submitted_items_path(@user, role: Role::LOGGED_OUT), xhr: true
     assert_response :forbidden
   end
 
   # show_submissions_in_progress()
 
   test "show_submissions_in_progress() returns HTTP 403 for logged-out users" do
-    get user_submissions_in_progress_path(users(:local_sysadmin)), xhr: true
+    get user_submissions_in_progress_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "show_submissions_in_progress() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get user_submissions_in_progress_path(users(:local_sysadmin)), xhr: true
+    get user_submissions_in_progress_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "show_submissions_in_progress() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:norights))
-    get user_submissions_in_progress_path(users(:local_sysadmin))
+    get user_submissions_in_progress_path(@user)
     assert_response :not_found
   end
 
   test "show_submissions_in_progress() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
-    get user_submissions_in_progress_path(users(:local_sysadmin)), xhr: true
+    log_in_as(@user)
+    get user_submissions_in_progress_path(@user), xhr: true
     assert_response :ok
   end
 
   test "show_submissions_in_progress() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    get user_submissions_in_progress_path(users(:local_sysadmin)), xhr: true
+    log_in_as(@user)
+    get user_submissions_in_progress_path(@user), xhr: true
     assert_response :ok
 
-    get user_submissions_in_progress_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
+    get user_submissions_in_progress_path(@user, role: Role::LOGGED_OUT), xhr: true
     assert_response :forbidden
   end
 
   # submitted_item_results()
 
   test "submitted_item_results() returns HTTP 403 for logged-out users" do
-    get user_submitted_item_results_path(users(:local_sysadmin)), xhr: true
+    get user_submitted_item_results_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "submitted_item_results() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    get user_submitted_item_results_path(users(:local_sysadmin)), xhr: true
+    get user_submitted_item_results_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "submitted_item_results() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:norights))
-    get user_submitted_item_results_path(users(:local_sysadmin))
+    get user_submitted_item_results_path(@user)
     assert_response :not_found
   end
 
   test "submitted_item_results() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
-    get user_submitted_item_results_path(users(:local_sysadmin)), xhr: true
+    log_in_as(users(:uiuc_sysadmin))
+    get user_submitted_item_results_path(@user), xhr: true
     assert_response :ok
   end
 
   test "submitted_item_results() respects role limits" do
-    log_in_as(users(:local_sysadmin))
-    get user_submitted_item_results_path(users(:local_sysadmin)), xhr: true
+    log_in_as(users(:uiuc_sysadmin))
+    get user_submitted_item_results_path(@user), xhr: true
     assert_response :ok
 
-    get user_submitted_item_results_path(users(:local_sysadmin), role: Role::LOGGED_OUT), xhr: true
+    get user_submitted_item_results_path(@user, role: Role::LOGGED_OUT), xhr: true
     assert_response :forbidden
   end
 
   # update_properties()
 
   test "update_properties() returns HTTP 403 for logged-out users" do
-    user = users(:local_sysadmin)
-    patch user_update_properties_path(user), xhr: true
+    patch user_update_properties_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "update_properties() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    user = users(:local_sysadmin)
-    patch user_update_properties_path(user), xhr: true
+    patch user_update_properties_path(@user), xhr: true
     assert_response :forbidden
   end
 
   test "update_properties() updates a user" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(@user)
     user = users(:norights)
     patch user_update_properties_path(user),
           xhr: true,
@@ -395,9 +391,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update_properties() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
-    user = users(:local_sysadmin)
-    patch user_update_properties_path(user),
+    log_in_as(@user)
+    patch user_update_properties_path(@user),
           xhr: true,
           params: {
               user: {
@@ -408,9 +403,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update_properties() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
-    user = users(:local_sysadmin)
-    patch user_update_properties_path(user),
+    log_in_as(@user)
+    patch user_update_properties_path(@user),
           xhr: true,
           params: {
               user: {
@@ -421,7 +415,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update_properties() returns HTTP 404 for nonexistent users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(@user)
     patch "/users/99999999/update-properties", xhr: true
     assert_response :not_found
   end

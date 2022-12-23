@@ -10,7 +10,7 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
   test "index() redirects to root page for logged-out users" do
     get tasks_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -38,7 +38,7 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
   test "index_all() redirects to root page for logged-out users" do
     get all_tasks_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "index_all() returns HTTP 403 for unauthorized users" do

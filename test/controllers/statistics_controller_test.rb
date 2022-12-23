@@ -44,7 +44,7 @@ class StatisticsControllerTest < ActionDispatch::IntegrationTest
 
   test "index() redirects to root page for logged-out users" do
     get statistics_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do

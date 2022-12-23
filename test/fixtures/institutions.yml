@@ -1,5 +1,8 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
+#
+# PRO TIP: every FQDN here needs to also be present in config.hosts in
+# config/environments/test.rb.
+#
 empty:
   key:                    empty
   fqdn:                   empty.edu
@@ -54,7 +57,7 @@ southwest:
 
 uiuc:
   key:                    uiuc
-  fqdn:                   localhost:3000
+  fqdn:                   illinois.edu
   name:                   University of Illinois at Urbana-Champaign
   service_name:           IDEALS
   org_dn:                 o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu

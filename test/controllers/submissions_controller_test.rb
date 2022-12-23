@@ -16,7 +16,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   test "complete() redirects to root page for logged-out users" do
     item = items(:uiuc_submitting)
     post submission_complete_path(item)
-    assert_redirected_to root_path
+    assert_redirected_to item.institution.scope_url
   end
 
   test "complete() returns HTTP 302 for logged-in users" do
@@ -172,7 +172,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to root page for logged-out users" do
     post submissions_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "create() creates an item" do
@@ -194,8 +194,9 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   # destroy()
 
   test "destroy() redirects to root page for logged-out users" do
-    delete submission_path(items(:uiuc_submitting))
-    assert_redirected_to root_path
+    item = items(:uiuc_submitting)
+    delete submission_path(item)
+    assert_redirected_to item.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -237,7 +238,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   test "edit() redirects to root page for logged-out users" do
     item = items(:uiuc_submitting)
     get edit_submission_path(item)
-    assert_redirected_to root_path
+    assert_redirected_to item.institution.scope_url
   end
 
   test "edit() returns HTTP 200 for logged-in users" do
@@ -258,7 +259,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "new() redirects to root page for logged-out users" do
     get submit_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "new() returns HTTP 200 for logged-in users" do
@@ -272,7 +273,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   test "status() redirects to root page for logged-out users" do
     item = items(:uiuc_submitted)
     get submission_status_path(item)
-    assert_redirected_to root_path
+    assert_redirected_to item.institution.scope_url
   end
 
   test "status() returns HTTP 200 for logged-in users" do
@@ -294,7 +295,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   test "update() redirects to root page for logged-out users" do
     item = items(:uiuc_submitting)
     patch submission_path(item)
-    assert_redirected_to root_path
+    assert_redirected_to item.institution.scope_url
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

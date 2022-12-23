@@ -2,6 +2,10 @@ require 'test_helper'
 
 class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
+  setup do
+    host! institutions(:southwest).fqdn
+  end
+
   teardown do
     log_out
   end
@@ -10,7 +14,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to root page for logged-out users" do
     post index_pages_path
-    assert_redirected_to root_path
+    assert_redirected_to institutions(:southwest).scope_url
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -26,7 +30,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    user = users(:uiuc_admin)
+    user = users(:southwest_admin)
     log_in_as(user)
     post index_pages_path,
          xhr: true,
@@ -39,7 +43,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates a correct index page" do
-    user = users(:uiuc_admin)
+    user = users(:southwest_admin)
     log_in_as(user)
     assert_difference "IndexPage.count" do
       post index_pages_path,
@@ -69,8 +73,9 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   # destroy()
 
   test "destroy() redirects to root page for logged-out users" do
-    delete index_page_path(index_pages(:southwest_creators))
-    assert_redirected_to root_path
+    page = index_pages(:southwest_creators)
+    delete index_page_path(page)
+    assert_redirected_to page.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -103,8 +108,9 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   # edit()
 
   test "edit() redirects to root page for logged-out users" do
-    get edit_index_page_path(index_pages(:southwest_creators))
-    assert_redirected_to root_path
+    page = index_pages(:southwest_creators)
+    get edit_index_page_path(page)
+    assert_redirected_to page.institution.scope_url
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -133,7 +139,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   test "index() redirects to root page for logged-out users" do
     get index_pages_path
-    assert_redirected_to root_path
+    assert_redirected_to institutions(:southwest).scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -161,7 +167,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   test "new() redirects to root page for logged-out users" do
     get new_import_path
-    assert_redirected_to root_path
+    assert_redirected_to institutions(:southwest).scope_url
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
@@ -171,7 +177,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "new() returns HTTP 200 for authorized users" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southwest_admin))
     get new_import_path
     assert_response :ok
   end
@@ -180,13 +186,13 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   test "show() returns HTTP 200 for a page in a different institution" do
     log_in_as(users(:local_sysadmin))
-    get index_page_path(index_pages(:southwest_creators))
+    get index_page_path(index_pages(:northeast_creators))
     assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for a page in the same institution" do
     page = index_pages(:southwest_creators)
-    page.update!(institution: Institution.default)
+    page.update!(institution: institutions(:southwest))
     log_in_as(users(:local_sysadmin))
     get index_page_path(page)
     assert_response :ok
@@ -196,7 +202,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() redirects to root page for logged-out users" do
     patch "/index-pages/99999"
-    assert_redirected_to root_path
+    assert_redirected_to institutions(:southwest).scope_url
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

@@ -2,6 +2,10 @@ require 'test_helper'
 
 class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
+  setup do
+    host! institutions(:southwest).fqdn
+  end
+
   teardown do
     log_out
   end
@@ -10,7 +14,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to root page for logged-out users" do
     post vocabularies_path
-    assert_redirected_to root_path
+    assert_redirected_to institutions(:southwest).scope_url
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -26,7 +30,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    user = users(:uiuc_admin)
+    user = users(:southwest_admin)
     log_in_as(user)
     post vocabularies_path,
          xhr: true,
@@ -39,7 +43,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates a correct vocabulary" do
-    user = users(:uiuc_admin)
+    user = users(:southwest_admin)
     log_in_as(user)
     post vocabularies_path,
          xhr: true,
@@ -53,7 +57,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     post vocabularies_path,
          xhr: true,
          params: {
@@ -67,8 +71,9 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   # destroy()
 
   test "destroy() redirects to root page for logged-out users" do
-    delete vocabulary_path(vocabularies(:southwest_one))
-    assert_redirected_to root_path
+    vocab = vocabularies(:southwest_one)
+    delete vocabulary_path(vocab)
+    assert_redirected_to vocab.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -101,8 +106,9 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   # edit()
 
   test "edit() redirects to root page for logged-out users" do
-    get edit_vocabulary_path(vocabularies(:southwest_one))
-    assert_redirected_to root_path
+    vocab = vocabularies(:southwest_one)
+    get edit_vocabulary_path(vocab)
+    assert_redirected_to vocab.institution.scope_url
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -131,7 +137,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
   test "index() redirects to root page for logged-out users" do
     get vocabularies_path
-    assert_redirected_to root_path
+    assert_redirected_to institutions(:southwest).scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -159,7 +165,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
   test "new() redirects to root page for logged-out users" do
     get new_vocabulary_path
-    assert_redirected_to root_path
+    assert_redirected_to institutions(:southwest).scope_url
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
@@ -186,8 +192,9 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   # show()
 
   test "show() redirects to root page for logged-out users" do
-    get vocabulary_path(vocabularies(:southwest_one))
-    assert_redirected_to root_path
+    vocab = vocabularies(:southwest_one)
+    get vocabulary_path(vocab)
+    assert_redirected_to vocab.institution.scope_url
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
@@ -215,8 +222,9 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to root page for logged-out users" do
-    patch vocabulary_path(vocabularies(:southwest_one))
-    assert_redirected_to root_path
+    vocab = vocabularies(:southwest_one)
+    patch vocabulary_path(vocab)
+    assert_redirected_to vocab.institution.scope_url
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
@@ -226,7 +234,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() updates a vocabulary" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     vocab = vocabularies(:southwest_one)
     patch vocabulary_path(vocab),
           xhr: true,
@@ -240,7 +248,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     vocab = vocabularies(:southwest_one)
     patch vocabulary_path(vocab),
           xhr: true,
@@ -253,7 +261,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     vocab = vocabularies(:southwest_one)
     patch vocabulary_path(vocab),
           xhr: true,

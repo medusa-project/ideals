@@ -149,10 +149,10 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal "A new IDEALS item requires review", email.subject
 
     assert_equal render_template("item_submitted.txt",
-                                 item_url: "https://localhost:3000/items/#{item.id}"),
+                                 item_url: "#{item.institution.scope_url}/items/#{item.id}"),
                  email.text_part.body.raw_source
     assert_equal render_template("item_submitted.html",
-                                 item_url: "https://localhost:3000/items/#{item.id}"),
+                                 item_url: "#{item.institution.scope_url}/items/#{item.id}"),
                  email.html_part.body.raw_source
   end
 

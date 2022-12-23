@@ -10,7 +10,7 @@ class SettingControllerTest < ActionDispatch::IntegrationTest
 
   test "index() redirects to root page for logged-out users" do
     get settings_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -38,7 +38,7 @@ class SettingControllerTest < ActionDispatch::IntegrationTest
 
   test "update() redirects to root page for logged-out users" do
     patch settings_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

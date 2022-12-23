@@ -4,6 +4,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @vocab = vocabularies(:southwest_one)
+    host! @vocab.institution.fqdn
   end
 
   teardown do
@@ -14,7 +15,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to root page for logged-out users" do
     post vocabulary_vocabulary_terms_path(@vocab)
-    assert_redirected_to root_path
+    assert_redirected_to @vocab.institution.scope_url
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -79,7 +80,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   test "destroy() redirects to root page for logged-out users" do
     delete vocabulary_vocabulary_term_path(@vocab,
                                            vocabulary_terms(:southwest_one_one))
-    assert_redirected_to root_path
+    assert_redirected_to @vocab.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -115,7 +116,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   test "edit() redirects to root page for logged-out users" do
     term = vocabulary_terms(:southwest_one_one)
     get edit_vocabulary_vocabulary_term_path(@vocab, term)
-    assert_redirected_to root_path
+    assert_redirected_to @vocab.institution.scope_url
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -136,7 +137,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
 
   test "new() redirects to root page for logged-out users" do
     get new_vocabulary_vocabulary_term_path(@vocab)
-    assert_redirected_to root_path
+    assert_redirected_to @vocab.institution.scope_url
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
@@ -165,7 +166,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   test "update() redirects to root page for logged-out users" do
     term = vocabulary_terms(:southwest_one_one)
     patch vocabulary_vocabulary_term_path(@vocab, term)
-    assert_redirected_to root_path
+    assert_redirected_to @vocab.institution.scope_url
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

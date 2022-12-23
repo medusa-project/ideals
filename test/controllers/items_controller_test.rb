@@ -16,7 +16,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "approve() redirects to root page for logged-out users" do
     item = items(:uiuc_submitted)
     patch item_approve_path(item)
-    assert_redirected_to root_path
+    assert_redirected_to item.institution.scope_url
   end
 
   test "approve() returns HTTP 403 for unauthorized users" do
@@ -63,8 +63,9 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # delete()
 
   test "delete() redirects to root page for logged-out users" do
-    post item_delete_path(items(:uiuc_item1))
-    assert_redirected_to root_path
+    item = items(:uiuc_item1)
+    post item_delete_path(item)
+    assert_redirected_to item.institution.scope_url
   end
 
   test "delete() returns HTTP 403 for unauthorized users" do
@@ -100,7 +101,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "download_counts() redirects to root page for logged-out users" do
     item = items(:uiuc_item1)
     get item_download_counts_path(item)
-    assert_redirected_to root_path
+    assert_redirected_to item.institution.scope_url
   end
 
   test "download_counts() returns HTTP 200 for HTML" do
@@ -269,7 +270,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "export() via GET redirects to root page for logged-out users" do
     get items_export_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "export() via GET returns HTTP 403 for unauthorized users" do
@@ -381,7 +382,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "process_review() redirects to root page for logged-out users" do
     post items_process_review_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "process_review() returns HTTP 403 for unauthorized users" do
@@ -463,7 +464,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "reject() redirects to root page for logged-out users" do
     item = items(:uiuc_submitted)
     patch item_reject_path(item)
-    assert_redirected_to root_path
+    assert_redirected_to item.institution.scope_url
   end
 
   test "reject() returns HTTP 403 for unauthorized users" do
@@ -492,7 +493,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "review() redirects to root page for logged-out users" do
     get items_review_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "review() returns HTTP 403 for unauthorized users" do
@@ -571,8 +572,9 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   # undelete()
 
   test "undelete() redirects to root page for logged-out users" do
-    post item_undelete_path(items(:uiuc_buried))
-    assert_redirected_to root_path
+    item = items(:uiuc_buried)
+    post item_undelete_path(item)
+    assert_redirected_to item.institution.scope_url
   end
 
   test "undelete() returns HTTP 403 for unauthorized users" do
@@ -640,7 +642,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "withdraw() redirects to root page for logged-out users" do
     item = items(:uiuc_submitted)
     patch item_withdraw_path(item)
-    assert_redirected_to root_path
+    assert_redirected_to item.institution.scope_url
   end
 
   test "withdraw() returns HTTP 403 for unauthorized users" do

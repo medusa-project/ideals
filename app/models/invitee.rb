@@ -126,7 +126,7 @@ class Invitee < ApplicationRecord
 
   def send_approval_email
     unless approved?
-      raise "An approval email cannot be sent to an approved invitee."
+      raise "An approval email can only be sent to an approved invitee."
     end
     associate_or_create_identity
     self.identity.create_registration_digest

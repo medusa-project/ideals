@@ -2,39 +2,40 @@ require 'test_helper'
 
 class InviteesControllerTest < ActionDispatch::IntegrationTest
 
+  setup do
+    @invitee = invitees(:pending)
+    host! @invitee.institution.fqdn
+  end
+
   # approve()
 
   test "approve() redirects to root page for logged-out users" do
-    invitee = invitees(:pending)
-    patch invitee_approve_path(invitee)
-    assert_redirected_to root_path
+    patch invitee_approve_path(@invitee)
+    assert_redirected_to @invitee.institution.scope_url
   end
 
   test "approve() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    invitee = invitees(:pending)
-    patch invitee_approve_path(invitee)
+    patch invitee_approve_path(@invitee)
     assert_response :forbidden
   end
 
   test "approve() approves an invitee and sends an email" do
     log_in_as(users(:local_sysadmin))
-    invitee = invitees(:pending)
-    assert !invitee.approved?
+    assert !@invitee.approved?
 
     assert_emails 1 do
-      patch invitee_approve_path(invitee)
-      invitee.reload
-      assert invitee.approved?
+      patch invitee_approve_path(@invitee)
+      @invitee.reload
+      assert @invitee.approved?
     end
   end
 
   test "approve() sets the flash and redirects upon success" do
     log_in_as(users(:local_sysadmin))
-    invitee = invitees(:pending)
-    patch invitee_approve_path(invitee)
+    patch invitee_approve_path(@invitee)
     assert_redirected_to invitees_path
-    assert flash['success'].start_with?("Invitee #{invitee.email} has been approved")
+    assert flash['success'].start_with?("Invitee #{@invitee.email} has been approved")
   end
 
   # create()
@@ -148,26 +149,26 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   # destroy()
 
   test "destroy() redirects to root page for logged-out users" do
-    delete invitee_path(invitees(:pending))
-    assert_redirected_to root_path
+    delete invitee_path(@invitee)
+    assert_redirected_to @invitee.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    delete invitee_path(invitees(:pending))
+    delete invitee_path(@invitee)
     assert_response :forbidden
   end
 
   test "destroy() destroys the invitee" do
     log_in_as(users(:local_sysadmin))
     assert_difference "Invitee.count", -1 do
-      delete invitee_path(invitees(:pending))
+      delete invitee_path(@invitee)
     end
   end
 
   test "destroy() returns HTTP 302 for an existing invitee" do
     log_in_as(users(:local_sysadmin))
-    delete invitee_path(invitees(:pending))
+    delete invitee_path(@invitee)
     assert_redirected_to invitees_path
   end
 
@@ -181,7 +182,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   test "index() redirects to root page for logged-out users" do
     get invitees_path
-    assert_redirected_to root_path
+    assert_redirected_to @invitee.institution.scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -221,94 +222,83 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   # reject()
 
   test "reject() redirects to root page for logged-out users" do
-    invitee = invitees(:pending)
-    patch invitee_reject_path(invitee)
-    assert_redirected_to root_path
+    patch invitee_reject_path(@invitee)
+    assert_redirected_to @invitee.institution.scope_url
   end
 
   test "reject() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    invitee = invitees(:pending)
-    patch invitee_reject_path(invitee)
+    patch invitee_reject_path(@invitee)
     assert_response :forbidden
   end
 
   test "reject() rejects an invitee and sends an email" do
     log_in_as(users(:local_sysadmin))
-    invitee = invitees(:pending)
-    assert !invitee.rejected?
+    assert !@invitee.rejected?
 
     assert_emails 1 do
-      patch invitee_reject_path(invitee)
-      invitee.reload
-      assert invitee.rejected?
+      patch invitee_reject_path(@invitee)
+      @invitee.reload
+      assert @invitee.rejected?
     end
   end
 
   test "reject() sets the flash and redirects upon success" do
     log_in_as(users(:local_sysadmin))
-    invitee = invitees(:pending)
-    patch invitee_reject_path(invitee)
+    patch invitee_reject_path(@invitee)
     assert_redirected_to invitees_path
-    assert flash['success'].start_with?("Invitee #{invitee.email} has been rejected")
+    assert flash['success'].start_with?("Invitee #{@invitee.email} has been rejected")
   end
 
   # resend_email()
 
   test "resend_email() redirects to root page for logged-out users" do
-    invitee = invitees(:pending)
-    patch invitee_resend_email_path(invitee)
-    assert_redirected_to root_path
+    patch invitee_resend_email_path(@invitee)
+    assert_redirected_to @invitee.institution.scope_url
   end
 
   test "resend_email() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    invitee = invitees(:pending)
-    patch invitee_resend_email_path(invitee)
+    patch invitee_resend_email_path(@invitee)
     assert_response :forbidden
   end
 
   test "resend_email() redirects to the invitees path upon success" do
     log_in_as(users(:local_sysadmin))
-    invitee = invitees(:approved)
-    patch invitee_resend_email_path(invitee)
+    patch invitee_resend_email_path(@invitee)
     assert_redirected_to invitees_path
   end
 
   test "resend_email() emails an invitee" do
     log_in_as(users(:local_sysadmin))
-    invitee = invitees(:approved)
+    @invitee = invitees(:approved)
     assert_emails 1 do
-      patch invitee_resend_email_path(invitee)
+      patch invitee_resend_email_path(@invitee)
     end
   end
 
   # show()
 
   test "show() redirects to root page for logged-out users" do
-    invitee = invitees(:pending)
-    get invitee_path(invitee)
-    assert_redirected_to root_path
+    get invitee_path(@invitee)
+    assert_redirected_to @invitee.institution.scope_url
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:norights))
-    invitee = invitees(:pending)
-    get invitee_path(invitee)
+    get invitee_path(@invitee)
     assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
     log_in_as(users(:local_sysadmin))
-    invitee = invitees(:pending)
-    get invitee_path(invitee)
+    get invitee_path(@invitee)
     assert_response :ok
   end
 
   test "show() respects role limits" do
     log_in_as(users(:local_sysadmin))
-    invitee = invitees(:pending)
-    get invitee_path(invitee)
+    get invitee_path(@invitee)
     assert_response :ok
 
     get invitees_path(role: Role::LOGGED_OUT)

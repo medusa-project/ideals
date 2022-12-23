@@ -454,6 +454,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # nuke!()
+
+  test "nuke!() nukes an instance" do
+    @instance.nuke!
+    assert @instance.destroyed?
+  end
+
   # primary_color
 
   test "primary_color must contain a valid CSS color" do
@@ -540,6 +547,12 @@ class InstitutionTest < ActiveSupport::TestCase
     end
     task.reload
     assert task.succeeded?
+  end
+
+  # scope_url()
+
+  test "scope_url() returns a correct value" do
+    assert_equal "https://#{@instance.fqdn}", @instance.scope_url
   end
 
   # service_name

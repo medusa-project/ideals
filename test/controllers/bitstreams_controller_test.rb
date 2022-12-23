@@ -14,8 +14,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() redirects to root page for logged-out users" do
-    post item_bitstreams_path(items(:uiuc_item1))
-    assert_redirected_to root_path
+    item = items(:uiuc_item1)
+    post item_bitstreams_path(item)
+    assert_redirected_to item.institution.scope_url
   end
 
   test "create() returns HTTP 200" do
@@ -45,8 +46,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   # destroy()
 
   test "destroy() redirects to root page for logged-out users" do
-    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
-    assert_redirected_to root_path
+    item = items(:uiuc_item1)
+    delete item_bitstream_path(item, bitstreams(:item1_in_staging))
+    assert_redirected_to item.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -143,8 +145,9 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   # ingest()
 
   test "ingest() redirects to root page for logged-out users" do
-    post item_bitstream_ingest_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
-    assert_redirected_to root_path
+    item = items(:uiuc_item1)
+    post item_bitstream_ingest_path(item, bitstreams(:item1_in_staging))
+    assert_redirected_to item.institution.scope_url
   end
 
   test "ingest() returns HTTP 403 for unauthorized users" do
@@ -607,7 +610,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "update() redirects to root page for logged-out users" do
     bitstream = bitstreams(:item1_in_staging)
     patch item_bitstream_path(bitstream.item, bitstream)
-    assert_redirected_to root_path
+    assert_redirected_to bitstream.institution.scope_url
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

@@ -14,7 +14,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to root page for logged-out users" do
     post metadata_profile_metadata_profile_elements_path(@profile)
-    assert_redirected_to root_path
+    assert_redirected_to @profile.institution.scope_url
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -82,7 +82,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   test "destroy() redirects to root page for logged-out users" do
     delete metadata_profile_metadata_profile_element_path(@profile,
                                                           metadata_profile_elements(:uiuc_default_description))
-    assert_redirected_to root_path
+    assert_redirected_to @profile.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
@@ -120,7 +120,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   test "edit() redirects to root page for logged-out users" do
     element = metadata_profile_elements(:uiuc_default_title)
     get edit_metadata_profile_metadata_profile_element_path(@profile, element)
-    assert_redirected_to root_path
+    assert_redirected_to @profile.institution.scope_url
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
@@ -142,7 +142,7 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   test "update() redirects to root page for logged-out users" do
     element = metadata_profile_elements(:uiuc_default_title)
     patch metadata_profile_metadata_profile_element_path(@profile, element)
-    assert_redirected_to root_path
+    assert_redirected_to @profile.institution.scope_url
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

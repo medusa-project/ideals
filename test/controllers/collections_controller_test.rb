@@ -15,7 +15,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "all_files() redirects to root page for logged-out users" do
     collection = collections(:uiuc_empty)
     get collection_all_files_path(collection, format: :zip)
-    assert_redirected_to root_path
+    assert_redirected_to collection.institution.scope_url
   end
 
   test "all_files() returns HTTP 403 for unauthorized users" do
@@ -69,7 +69,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to root page for logged-out users" do
     post collections_path
-    assert_redirected_to root_path
+    assert_redirected_to Institution.default.scope_url
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -136,8 +136,9 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # delete()
 
   test "delete() redirects to root page for logged-out users" do
-    post collection_delete_path(collections(:uiuc_collection1))
-    assert_redirected_to root_path
+    collection = collections(:uiuc_collection1)
+    post collection_delete_path(collection)
+    assert_redirected_to collection.institution.scope_url
   end
 
   test "delete() returns HTTP 403 for unauthorized users" do
@@ -582,8 +583,9 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   # undelete()
 
   test "undelete() redirects to root page for logged-out users" do
-    post collection_undelete_path(collections(:uiuc_buried))
-    assert_redirected_to root_path
+    collection = collections(:uiuc_buried)
+    post collection_undelete_path(collection)
+    assert_redirected_to collection.institution.scope_url
   end
 
   test "undelete() returns HTTP 403 for unauthorized users" do
@@ -626,7 +628,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "update() redirects to root page for logged-out users" do
     collection = collections(:uiuc_collection1)
     patch collection_path(collection)
-    assert_redirected_to root_path
+    assert_redirected_to collection.institution.scope_url
   end
 
   test "update() returns HTTP 403 for unauthorized users" do

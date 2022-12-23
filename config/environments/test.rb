@@ -66,11 +66,10 @@ Rails.application.configure do
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 
-  config.hosts += %w(
-      ideals-host1.local
-      ideals-host2.local
-      ideals-uiuc.local
-      www.example.com) # used in controller tests
+  # These correspond to the FQDNs in the institutions.yml seed file.
+  config.hosts += %w(empty.edu example.edu illinois.edu northeast.edu
+                     southwest.edu www.example.com)
+
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
 end
