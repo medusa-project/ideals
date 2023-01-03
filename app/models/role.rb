@@ -51,7 +51,7 @@ class Role
     when 0
       "Logged Out"
     else
-      "Default"
+      "No Limit"
     end
   end
 
