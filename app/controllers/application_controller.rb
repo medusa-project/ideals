@@ -367,9 +367,19 @@ class ApplicationController < ActionController::Base
   # request host
   #
   def redirect_to_main_host
+    # In production, IDEALS has two domains: ideals.illinois.edu and
+    # www.ideals.illinois.edu. The latter is the correct one that the former
+    # should redirect to, but our Institution model only supports one FQDN, so
+    # we have to handle this situation manually here.
+    if request.host == "ideals.illinois.edu"
+      redirect_to "https://www.#{request.host}",
+                  status: :moved_permanently,
+                  allow_other_host: true
+      return
+    end
     main_host = ::Configuration.instance.main_host
     if request.host != main_host && !Institution.find_by_fqdn(request.host_with_port)
-      scheme = Rails.env.development? ? "http" : "https"
+      scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
       redirect_to scheme + "://" + main_host,
                   status: :see_other,
                   allow_other_host: true
