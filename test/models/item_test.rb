@@ -500,6 +500,12 @@ class ItemTest < ActiveSupport::TestCase
                  @instance.effective_metadata_profile
   end
 
+  test "effective_metadata_profile() returns the global metadata profile if the
+  item has no primary collection" do
+    @instance.primary_collection = nil
+    assert_equal MetadataProfile.global, @instance.effective_metadata_profile
+  end
+
   # effective_primary_collection()
 
   test "effective_primary_collection() returns the primary collection when set" do

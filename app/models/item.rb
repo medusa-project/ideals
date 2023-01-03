@@ -601,11 +601,14 @@ class Item < ApplicationRecord
   end
 
   ##
-  # @return [MetadataProfile] The effective primary collection's metadata
-  #                           profile.
+  # @return [MetadataProfile] The effective primary collection's effective
+  #         metadata profile. If there is no such profile, as in the case of
+  #         e.g. a {Stages#SUBMITTING submitting item} that has not yet been
+  #         assigned to a collection, the global metadata profile is returned.
   #
   def effective_metadata_profile
-    self.effective_primary_collection&.effective_metadata_profile
+    self.effective_primary_collection&.effective_metadata_profile ||
+      MetadataProfile.global
   end
 
   ##
