@@ -413,11 +413,14 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # N.B. The returned instance must be unlinked/deleted manually.
+  #
   # @return [Tempfile]
   #
   def download_to_temp_file
     source_key = self.effective_key
     tempfile   = Tempfile.new("#{self.class}-#{self.id}")
+    ObjectSpace.undefine_finalizer(tempfile)
     PersistentStore.instance.get_object(key:             source_key,
                                         response_target: tempfile.path)
     tempfile
