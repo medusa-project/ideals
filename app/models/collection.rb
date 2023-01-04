@@ -115,6 +115,7 @@ class Collection < ApplicationRecord
   has_one :handle
   has_many :collection_item_memberships
   belongs_to :institution
+  has_many :imports
   has_many :items, through: :collection_item_memberships
   belongs_to :metadata_profile, inverse_of: :collections, optional: true
   has_many :manager_groups

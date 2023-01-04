@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_20_214330) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_04_195103) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -705,7 +705,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_20_214330) do
   add_foreign_key "handles", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "handles", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "hosts", "user_groups", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "imports", "collections", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "imports", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "imports", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "imports", "tasks", on_update: :cascade, on_delete: :restrict
   add_foreign_key "imports", "users", on_update: :cascade, on_delete: :nullify
