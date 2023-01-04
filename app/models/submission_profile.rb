@@ -30,12 +30,10 @@ class SubmissionProfile < ApplicationRecord
 
   belongs_to :institution
 
-  has_many :collections, inverse_of: :submission_profile,
-           dependent: :restrict_with_exception
+  has_many :collections, inverse_of: :submission_profile
   has_many :elements, -> { order(:position) },
            class_name: "SubmissionProfileElement",
-           inverse_of: :submission_profile,
-           dependent: :destroy
+           inverse_of: :submission_profile
   validates :name, presence: true, length: { minimum: 2 }
 
   after_save :ensure_default_uniqueness

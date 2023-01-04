@@ -687,8 +687,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_04_195103) do
   add_foreign_key "collection_item_memberships", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections", "collections", column: "parent_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "institutions", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :nullify
   add_foreign_key "departments", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "departments", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "downloads", "institutions", on_update: :cascade, on_delete: :cascade

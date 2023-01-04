@@ -31,8 +31,7 @@ class MetadataProfile < ApplicationRecord
 
   belongs_to :institution, optional: true
 
-  has_many :collections, inverse_of: :metadata_profile,
-           dependent: :restrict_with_exception
+  has_many :collections, inverse_of: :metadata_profile
   has_many :elements, -> { order(:position) },
            class_name: "MetadataProfileElement", inverse_of: :metadata_profile,
            dependent: :destroy
