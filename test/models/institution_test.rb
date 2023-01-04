@@ -266,6 +266,22 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_nil @instance.favicon_url(size: 128)
   end
 
+  # feedback_email
+
+  test "feedback_email can be blank" do
+    @instance.feedback_email = nil
+    assert @instance.valid?
+    @instance.feedback_email = ""
+    assert @instance.valid?
+  end
+
+  test "feedback_email must be a valid email address" do
+    @instance.feedback_email = "invalid"
+    assert !@instance.valid?
+    @instance.feedback_email = "user@example.org"
+    assert @instance.valid?
+  end
+
   # footer_background_color
 
   test "footer_background_color must contain a valid CSS color" do
