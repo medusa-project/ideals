@@ -3,6 +3,8 @@ require 'test_helper'
 class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
+    @institution = institutions(:uiuc)
+    host! @institution.fqdn
     setup_opensearch
   end
 
@@ -10,7 +12,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
-  # chlldren()
+  # children()
 
   test "children() returns HTTP 404 for non-XHR requests" do
     collections(:uiuc_described).reindex # this is needed to fully initialize the schema
@@ -52,7 +54,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to root page for logged-out users" do
     post units_path
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -97,7 +99,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post units_path,
          xhr: true,
          params: {
@@ -117,21 +119,21 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "delete() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     unit = units(:uiuc_unit1)
     post unit_delete_path(unit)
     assert_response :forbidden
   end
 
   test "delete() returns HTTP 410 for a buried unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_buried)
     post unit_delete_path(unit)
     assert_response :gone
   end
 
   test "delete() buries the unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     # choose a unit with no dependent collections or units to make setup easier
     unit = units(:uiuc_empty)
     post unit_delete_path(unit)
@@ -140,7 +142,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "delete() redirects to the unit when the delete fails" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     post unit_delete_path(unit)
     assert_redirected_to unit_path(unit)
@@ -148,7 +150,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "delete() redirects to the parent unit, if available, if the delete
   succeeds" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1_unit1)
     post unit_delete_path(unit)
     assert_redirected_to unit_path(unit.parent)
@@ -156,14 +158,14 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "delete() redirects to the units path if there is no parent unit and
   the delete succeeds" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_empty)
     post unit_delete_path(unit)
     assert_redirected_to units_path
   end
 
   test "delete() returns HTTP 404 for a missing unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post "/units/bogus/delete"
     assert_response :not_found
   end
@@ -177,28 +179,28 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_administrators() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     unit = units(:uiuc_unit1)
     get unit_edit_administrators_path(unit), xhr: true
     assert_response :forbidden
   end
 
   test "edit_administrators() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     get unit_edit_administrators_path(unit)
     assert_response :not_found
   end
 
   test "edit_administrators() returns HTTP 410 for a buried unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_buried)
     get unit_edit_administrators_path(unit), xhr: true
     assert_response :gone
   end
 
   test "edit_administrators() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     get unit_edit_administrators_path(unit), xhr: true
     assert_response :ok
@@ -213,28 +215,28 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_membership() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     unit = units(:uiuc_unit1)
     get unit_edit_membership_path(unit), xhr: true
     assert_response :forbidden
   end
 
   test "edit_membership() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     get unit_edit_membership_path(unit)
     assert_response :not_found
   end
 
   test "edit_membership() returns HTTP 404 for a buried unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_buried)
     get unit_edit_membership_path(unit), xhr: true
     assert_response :gone
   end
 
   test "edit_membership() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     get unit_edit_membership_path(unit), xhr: true
     assert_response :ok
@@ -256,21 +258,21 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_properties() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     get unit_edit_properties_path(unit)
     assert_response :not_found
   end
 
   test "edit_properties() returns HTTP 404 for a buried unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_buried)
     get unit_edit_properties_path(unit), xhr: true
     assert_response :gone
   end
 
   test "edit_properties() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     get unit_edit_properties_path(unit), xhr: true
     assert_response :ok
@@ -342,7 +344,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get unit_path(units(:uiuc_unit1))
     assert_select("#access-tab")
 
@@ -376,35 +378,35 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show_access() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     unit = units(:uiuc_unit1)
     get unit_access_path(unit), xhr: true
     assert_response :forbidden
   end
 
   test "show_access() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     get unit_access_path(unit)
     assert_response :not_found
   end
 
   test "show_access() returns HTTP 410 for a buried unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_buried)
     get unit_access_path(unit), xhr: true
     assert_response :gone
   end
 
   test "show_access() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     get unit_access_path(unit), xhr: true
     assert_response :ok
   end
 
   test "show_access() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get unit_access_path(units(:uiuc_unit1)), xhr: true
     assert_select(".edit-administrators")
 
@@ -425,7 +427,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show_items() returns HTTP 200 for CSV for unit administrators" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get unit_items_path(units(:uiuc_unit1), format: :csv)
     assert_response :ok
   end
@@ -448,7 +450,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show_statistics() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get unit_statistics_path(units(:uiuc_unit1)), xhr: true
     assert_response :ok
   end
@@ -456,7 +458,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   # statistics_by_range()
 
   test "statistics_by_range() returns HTTP 200 for HTML" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get unit_statistics_by_range_path(units(:uiuc_unit1)), params: {
       from_year:  2008,
       from_month: 1,
@@ -478,7 +480,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "statistics_by_range() returns HTTP 410 for a buried unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get unit_statistics_by_range_path(units(:uiuc_buried)), xhr: true
     assert_response :gone
   end
@@ -492,14 +494,14 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "undelete() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     unit = units(:uiuc_unit1)
     post unit_undelete_path(unit)
     assert_response :forbidden
   end
 
   test "undelete() exhumes the unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     # choose a unit with no dependent collections or units to make setup easier
     unit = units(:uiuc_buried)
     post unit_undelete_path(unit)
@@ -508,14 +510,14 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "undelete() redirects to the unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1_unit1)
     post unit_undelete_path(unit)
     assert_redirected_to unit
   end
 
   test "undelete() returns HTTP 404 for a missing unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post "/units/bogus/undelete"
     assert_response :not_found
   end
@@ -529,7 +531,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     unit = units(:uiuc_unit1)
     patch unit_path(unit)
     assert_response :forbidden
@@ -551,14 +553,14 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 410 for a buried unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_buried)
     patch unit_path(unit)
     assert_response :gone
   end
 
   test "update() updates a unit" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     patch unit_path(unit),
           xhr: true,
@@ -572,7 +574,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     patch unit_path(unit),
           xhr: true,
@@ -585,7 +587,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
     patch unit_path(unit),
           xhr: true,
@@ -598,7 +600,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent units" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     patch "/units/bogus"
     assert_response :not_found
   end

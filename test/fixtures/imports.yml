@@ -1,5 +1,18 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+################################ southwest ##################################
+
+southwest_saf_new:
+  user:               southwest_admin
+  institution:        southwest
+  collection:         southwest_unit1_collection1
+  kind:               <%= Import::Kind::SAF %>
+  files:              "[]"
+  imported_items:     "[]"
+  task:               southwest_saf_import
+
+################################## uiuc #####################################
+
 csv_new:
   user:               uiuc_admin
   institution:        uiuc

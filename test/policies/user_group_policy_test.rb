@@ -3,7 +3,7 @@ require 'test_helper'
 class UserGroupPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @user_group = user_groups(:unused)
+    @user_group = user_groups(:southwest_unused)
   end
 
   # create?()

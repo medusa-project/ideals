@@ -37,7 +37,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() with user of different institution responds with HTTP 401" do
-    skip # this is not currently testable--see inline comment in create()
+    host! institutions(:southwest).fqdn
     user = users(:northeast)
     post "/auth/identity/callback", params: {
       auth_key: user.email,

@@ -10,9 +10,21 @@ northeast_admins:
   name:                Northeast University Administrators
   defines_institution: false
 
+southwest:
+  key:                 institution
+  name:                Southwest University Users
+  institution:         southwest
+  defines_institution: true
+
 southwest_admins:
   key:                 southwest_admins
   name:                Southwest University Administrators
+  defines_institution: false
+
+southwest_unused:
+  key:                 unused
+  name:                Unused Group
+  institution:         southwest
   defines_institution: false
 
 sysadmin:
@@ -26,12 +38,6 @@ temp:
   defines_institution: false
   users:
 
-southwest:
-  key:                 institution
-  name:                Southwest University Users
-  institution:         southwest
-  defines_institution: true
-
 uiuc:
   key:                 uiuc
   name:                U of I Users
@@ -44,8 +50,8 @@ uiuc_admins:
   institution:         uiuc
   defines_institution: false
 
-unused:
+uiuc_unused:
   key:                 unused
   name:                Unused Group
-  institution:         southwest
+  institution:         uiuc
   defines_institution: false

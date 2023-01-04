@@ -2,8 +2,12 @@ require 'test_helper'
 
 class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
+  setup do
+    host! institutions(:southwest).fqdn
+  end
+
   test "disabled users are logged out" do
-    user = users(:norights)
+    user = users(:southwest)
     log_in_as(user)
     get root_path
     assert_response :ok

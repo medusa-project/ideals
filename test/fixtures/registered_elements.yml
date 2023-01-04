@@ -21,6 +21,278 @@ northeast_dc_title:
   highwire_mapping:
   scope_note:
 
+################################### southwest ####################################
+
+southwest_unused:
+  institution:      southwest
+  name:             unused
+  label:            Unused
+  uri:              http://example.org/unused
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:       This element is not attached to any resources.
+
+southwest_dc_contributor:
+  institution:      southwest
+  name:             dc:contributor
+  label:            Contributor
+  uri:              http://purl.org/dc/contributor
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_contributor_advisor:
+  institution:      southwest
+  name:             dc:contributor:advisor
+  label:            Advisor
+  uri:              http://purl.org/dc/advisor
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_contributor_committeeChair:
+  institution:      southwest
+  name:             dc:contributor:committeeChair
+  label:            Committee Chair
+  uri:              http://purl.org/dc/committeeChair
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_coverage_spatial:
+  institution:      southwest
+  name:             dc:coverage:spatial
+  label:            Spatial Coverage
+  uri:              http://purl.org/dc/coverageSpatial
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_creator:
+  institution:      southwest
+  name:             dc:creator
+  label:            Creator
+  uri:              http://purl.org/dc/creator
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_date_issued:
+  institution:      southwest
+  name:             dc:date:issued
+  label:            Date Issued
+  uri:              http://purl.org/dc/dateIssued
+  input_type:       <%= RegisteredElement::InputType::DATE %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_date_submitted:
+  institution:      southwest
+  name:             dc:date:submitted
+  label:            Date Submitted
+  uri:              http://purl.org/dc/dateSubmitted
+  input_type:       <%= RegisteredElement::InputType::DATE %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_description:
+  institution:      southwest
+  name:             dc:description
+  label:            Description
+  uri:              http://purl.org/dc/description
+  input_type:       <%= RegisteredElement::InputType::TEXT_AREA %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_description_abstract:
+  institution:      southwest
+  name:             dc:description:abstract
+  label:            Abstract
+  uri:              http://purl.org/dc/abstract
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_description_sponsorship:
+  institution:      southwest
+  name:             dc:description:sponsorship
+  label:            Sponsorship
+  uri:              http://purl.org/dc/sponsorship
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_identifier:
+  institution:      southwest
+  name:             dc:identifier
+  label:            Identifier
+  uri:              http://purl.org/dc/identifier
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_identifier_bibliographicCitation:
+  institution:      southwest
+  name:             dc:identifier:bibliographicCitation
+  label:            Bibliographic Citation
+  uri:              http://purl.org/dc/bibliographicCitation
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_identifier_uri:
+  institution:      southwest
+  name:             dc:identifier:uri
+  label:            URI
+  uri:              http://purl.org/dc/identifierURI
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_language:
+  institution:      southwest
+  name:             dc:language
+  label:            Language
+  uri:              http://purl.org/dc/language
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_publisher:
+  institution:      southwest
+  name:             dc:publisher
+  label:            Publisher
+  uri:              http://purl.org/dc/publisher
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_relation_ispartof:
+  institution:      southwest
+  name:             dc:relation:ispartof
+  label:            Is Part Of
+  uri:              http://purl.org/dc/ispartof
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_rights:
+  institution:      southwest
+  name:             dc:rights
+  label:            Rights
+  uri:              http://purl.org/dc/rights
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_subject:
+  institution:      southwest
+  name:             dc:subject
+  label:            Subject
+  uri:              http://purl.org/dc/subject
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_title:
+  institution:      southwest
+  name:             dc:title
+  label:            Title
+  uri:              http://purl.org/dc/title
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_type:
+  institution:      southwest
+  name:             dc:type
+  label:            Type
+  uri:              http://purl.org/dc/type
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dc_type_genre:
+  institution:      southwest
+  name:             dc:type:genre
+  label:            Genre
+  uri:              http://purl.org/dc/typeGenre
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dcterms_available:
+  institution:      southwest
+  name:             dcterms:available
+  label:            Date Available
+  uri:              http://purl.org/dc/terms/available
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_dcterms_identifier:
+  institution:      southwest
+  name:             dcterms:identifier
+  label:            Identifier
+  uri:              http://purl.org/dc/terms/identifier
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_thesis_degree_department:
+  institution:      southwest
+  name:             thesis:degree:department
+  label:            Degree Department
+  uri:              http://example.org/degree/department
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:       Used by SafImporterTest
+
+southwest_thesis_degree_discipline:
+  institution:      southwest
+  name:             thesis:degree:discipline
+  label:            Degree Discipline
+  uri:              http://example.org/degree/discipline
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_thesis_degree_grantor:
+  institution:      southwest
+  name:             thesis:degree:grantor
+  label:            Degree Grantor
+  uri:              http://example.org/degree/grantor
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:       Used by SafImporterTest
+
+southwest_thesis_degree_level:
+  institution:      southwest
+  name:             thesis:degree:level
+  label:            Degree Level
+  uri:              http://example.org/degree/level
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:       Used by SafImporterTest
+
+southwest_thesis_degree_name:
+  institution:      southwest
+  name:             thesis:degree:name
+  label:            Degree Name
+  uri:              http://example.org/degree/name
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_thesis_degree_program:
+  institution:      southwest
+  name:             thesis:degree:program
+  label:            Degree Program
+  uri:              http://example.org/degree/program
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
 ################################### uiuc ####################################
 
 uiuc_unused:

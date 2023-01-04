@@ -3,6 +3,7 @@ require 'test_helper'
 class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
+    host! institutions(:uiuc).fqdn
     @profile = submission_profiles(:uiuc_empty)
   end
 
@@ -18,7 +19,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     post submission_profile_submission_profile_elements_path(@profile),
          xhr: true,
          params: {
@@ -32,7 +33,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post submission_profile_submission_profile_elements_path(@profile),
          xhr: true,
          params: {
@@ -46,7 +47,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates an element" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     assert_difference "SubmissionProfileElement.count" do
       post submission_profile_submission_profile_elements_path(@profile),
            xhr: true,
@@ -61,7 +62,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post submission_profile_submission_profile_elements_path(@profile),
          xhr: true,
          params: {
@@ -82,14 +83,14 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     delete submission_profile_submission_profile_element_path(@profile,
                                                               submission_profile_elements(:uiuc_default_subject))
     assert_response :forbidden
   end
 
   test "destroy() destroys the element" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     element = submission_profile_elements(:uiuc_default_title)
     assert_difference "SubmissionProfileElement.count", -1 do
       delete submission_profile_submission_profile_element_path(element.submission_profile,
@@ -98,7 +99,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing element" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     element = submission_profile_elements(:uiuc_default_title)
     delete submission_profile_submission_profile_element_path(element.submission_profile,
                                                               element)
@@ -106,7 +107,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 404 for a missing element" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     delete submission_profile_path(@profile) + "/elements/9999"
     assert_response :not_found
   end
@@ -120,14 +121,14 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     element = submission_profile_elements(:uiuc_default_title)
     get edit_submission_profile_submission_profile_element_path(@profile, element)
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     element = submission_profile_elements(:uiuc_default_title)
     get edit_submission_profile_submission_profile_element_path(@profile, element)
     assert_response :ok
@@ -141,14 +142,14 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     element = submission_profile_elements(:uiuc_default_title)
     patch submission_profile_submission_profile_element_path(@profile, element)
     assert_response :forbidden
   end
 
   test "update() updates an element" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     element = submission_profile_elements(:uiuc_default_title)
     patch submission_profile_submission_profile_element_path(@profile, element),
           xhr: true,
@@ -164,7 +165,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     element = submission_profile_elements(:uiuc_default_title)
     patch submission_profile_submission_profile_element_path(@profile, element),
           xhr: true,
@@ -179,7 +180,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     element = submission_profile_elements(:uiuc_default_title)
     patch submission_profile_submission_profile_element_path(@profile, element),
           xhr: true,
@@ -194,7 +195,7 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent elements" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     patch submission_profile_path(@profile) + "/elements/9999"
     assert_response :not_found
   end

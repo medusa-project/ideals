@@ -1378,8 +1378,8 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   test "show_file_navigator?() authorizes users belonging to an exempted user
   group on an embargo" do
-    user              = users(:norights)
-    user_group        = user_groups(:unused)
+    user              = users(:southwest)
+    user_group        = user_groups(:southwest_unused)
     user_group.users << user
     user_group.save!
     @item.embargoes.build(kind:        Embargo::Kind::DOWNLOAD,

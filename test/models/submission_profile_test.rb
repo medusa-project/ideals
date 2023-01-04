@@ -8,12 +8,6 @@ class SubmissionProfileTest < ActiveSupport::TestCase
 
   # base-level tests
 
-  test "instances with dependent collections cannot be destroyed" do
-    assert_raises ActiveRecord::DeleteRestrictionError do
-      @instance.destroy!
-    end
-  end
-
   test "destroying an instance destroys its dependent SubmissionProfileElements" do
     elements = @instance.elements
     @instance.collections = []

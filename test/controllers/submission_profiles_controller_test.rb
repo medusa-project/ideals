@@ -3,7 +3,9 @@ require 'test_helper'
 class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    @profile = submission_profiles(:uiuc_default)
+    @institution = institutions(:southwest)
+    host! @institution.fqdn
+    @profile = submission_profiles(:southwest_default)
   end
 
   teardown do
@@ -18,19 +20,19 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "clone() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     post submission_profile_clone_path(@profile)
     assert_response :forbidden
   end
 
   test "clone() redirects to the clone upon success" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     post submission_profile_clone_path(@profile)
     assert_redirected_to submission_profile_path(SubmissionProfile.order(created_at: :desc).first)
   end
 
   test "clone() clones a profile" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     assert_difference "SubmissionProfile.count" do
       post submission_profile_clone_path(@profile)
     end
@@ -40,11 +42,11 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to root page for logged-out users" do
     post submission_profiles_path
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     post submission_profiles_path,
          xhr: true,
          params: {
@@ -56,7 +58,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    user = users(:uiuc_admin)
+    user = users(:southwest_admin)
     log_in_as(user)
     post submission_profiles_path,
          xhr: true,
@@ -70,7 +72,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates a profile and adds default elements to it" do
-    user = users(:uiuc_admin)
+    user = users(:southwest_admin)
     log_in_as(user)
     assert_difference "SubmissionProfile.count" do
       post submission_profiles_path,
@@ -88,7 +90,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     post submission_profiles_path,
          xhr: true,
          params: {
@@ -103,33 +105,33 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() redirects to root page for logged-out users" do
     delete "/submission-profiles/99999"
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    @profile = submission_profiles(:uiuc_unused)
+    log_in_as(users(:southwest))
+    @profile = submission_profiles(:southwest_default)
     delete submission_profile_path(@profile)
     assert_response :forbidden
   end
 
   test "destroy() destroys the profile" do
-    log_in_as(users(:local_sysadmin))
-    @profile = submission_profiles(:uiuc_unused)
+    log_in_as(users(:southwest_admin))
+    @profile = submission_profiles(:southwest_default)
     assert_difference "SubmissionProfile.count", -1 do
       delete submission_profile_path(@profile)
     end
   end
 
   test "destroy() returns HTTP 302 for an existing profile" do
-    log_in_as(users(:local_sysadmin))
-    @profile = submission_profiles(:uiuc_unused)
+    log_in_as(users(:southwest_admin))
+    @profile = submission_profiles(:southwest_default)
     delete submission_profile_path(@profile)
     assert_redirected_to submission_profiles_path
   end
 
   test "destroy() returns HTTP 404 for a missing profile" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     delete "/submission-profiles/99999"
     assert_response :not_found
   end
@@ -142,13 +144,13 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get edit_submission_profile_path(@profile)
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get edit_submission_profile_path(@profile)
     assert_response :ok
   end
@@ -157,23 +159,23 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "index() redirects to root page for logged-out users" do
     get submission_profiles_path
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get submission_profiles_path
     assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get submission_profiles_path
     assert_response :ok
   end
 
   test "index() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get submission_profiles_path
     assert_response :ok
 
@@ -189,19 +191,19 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get submission_profile_path(@profile)
     assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get submission_profile_path(@profile)
     assert_response :ok
   end
 
   test "show() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get submission_profile_path(@profile)
     assert_response :ok
 
@@ -213,17 +215,17 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() redirects to root page for logged-out users" do
     patch "/submission-profiles/99999"
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
-    patch submission_profile_path(submission_profiles(:uiuc_unused))
+    log_in_as(users(:southwest))
+    patch submission_profile_path(submission_profiles(:southwest_default))
     assert_response :forbidden
   end
 
   test "update() updates a profile" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     patch submission_profile_path(@profile),
           xhr: true,
           params: {
@@ -236,7 +238,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     patch submission_profile_path(@profile),
           xhr: true,
           params: {
@@ -248,7 +250,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     patch submission_profile_path(@profile),
           xhr: true,
           params: {
@@ -260,7 +262,7 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent profiles" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     patch "/submission-profiles/99999"
     assert_response :not_found
   end

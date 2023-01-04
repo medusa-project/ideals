@@ -18,7 +18,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     post index_pages_path,
          xhr: true,
          params: {
@@ -59,7 +59,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     post index_pages_path,
          xhr: true,
          params: {
@@ -79,13 +79,13 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     delete index_page_path(index_pages(:southwest_creators))
     assert_response :forbidden
   end
 
   test "destroy() destroys the index page" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     page = index_pages(:southwest_creators)
     assert_difference "IndexPage.count", -1 do
       delete index_page_path(page)
@@ -93,14 +93,14 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing index page" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     page = index_pages(:southwest_creators)
     delete index_page_path(page)
     assert_redirected_to index_pages_path
   end
 
   test "destroy() returns HTTP 404 for a missing index page" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     delete "/index-pages/99999"
     assert_response :not_found
   end
@@ -114,19 +114,19 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get edit_index_page_path(index_pages(:southwest_creators))
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get edit_index_page_path(index_pages(:southwest_creators))
     assert_response :ok
   end
 
   test "edit() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get edit_index_page_path(index_pages(:southwest_creators))
     assert_response :ok
 
@@ -143,19 +143,19 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get index_pages_path
     assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get index_pages_path
     assert_response :ok
   end
 
   test "index() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get index_pages_path
     assert_response :ok
 
@@ -171,7 +171,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get new_import_path
     assert_response :forbidden
   end
@@ -185,7 +185,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   # show()
 
   test "show() returns HTTP 200 for a page in a different institution" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get index_page_path(index_pages(:northeast_creators))
     assert_response :forbidden
   end
@@ -193,7 +193,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   test "show() returns HTTP 200 for a page in the same institution" do
     page = index_pages(:southwest_creators)
     page.update!(institution: institutions(:southwest))
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get index_page_path(page)
     assert_response :ok
   end
@@ -206,13 +206,13 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     patch index_page_path(index_pages(:southwest_creators))
     assert_response :forbidden
   end
 
   test "update() updates an index page" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     page = index_pages(:southwest_creators)
     patch index_page_path(page),
           xhr: true,
@@ -226,7 +226,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     page = index_pages(:southwest_creators)
     patch index_page_path(page),
           xhr: true,
@@ -239,7 +239,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     page = index_pages(:southwest_creators)
     patch index_page_path(page),
           xhr: true,
@@ -252,7 +252,7 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent index pages" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     patch "/index-pages/99999"
     assert_response :not_found
   end

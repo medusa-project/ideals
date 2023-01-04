@@ -35,11 +35,12 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << ["+", "Bob||Susan||Chris"]
     end
     @instance.import(csv:                csv,
-                     submitter:          users(:local_sysadmin),
+                     submitter:          users(:uiuc_admin),
                      primary_collection: collections(:uiuc_empty))
     item     = Item.order(created_at: :desc).limit(1).first
     creators = item.elements.
-      where(registered_element: RegisteredElement.find_by_name("dc:creator")).
+      where(registered_element: RegisteredElement.find_by(institution: institutions(:uiuc),
+                                                          name:        "dc:creator")).
       order(:position).
       pluck(:position)
     assert_equal 1, creators[0]

@@ -19,7 +19,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     post vocabulary_vocabulary_terms_path(@vocab),
          xhr: true,
          params: {
@@ -33,7 +33,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     post vocabulary_vocabulary_terms_path(@vocab),
          xhr: true,
          params: {
@@ -47,7 +47,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates a term" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     assert_difference "VocabularyTerm.count" do
       post vocabulary_vocabulary_terms_path(@vocab),
            xhr: true,
@@ -62,7 +62,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     post vocabulary_vocabulary_terms_path(@vocab),
          xhr: true,
          params: {
@@ -84,14 +84,14 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     delete vocabulary_vocabulary_term_path(@vocab,
                                            vocabulary_terms(:southwest_one_one))
     assert_response :forbidden
   end
 
   test "destroy() destroys the term" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     term = vocabulary_terms(:southwest_one_one)
     assert_difference "VocabularyTerm.count", -1 do
       delete vocabulary_vocabulary_term_path(term.vocabulary, term)
@@ -99,14 +99,14 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing term" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     term = vocabulary_terms(:southwest_one_one)
     delete vocabulary_vocabulary_term_path(term.vocabulary, term)
     assert_redirected_to term.vocabulary
   end
 
   test "destroy() returns HTTP 404 for a missing term" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     delete vocabulary_path(@vocab) + "/terms/9999"
     assert_response :not_found
   end
@@ -120,14 +120,14 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     term = vocabulary_terms(:southwest_one_one)
     get edit_vocabulary_vocabulary_term_path(@vocab, term)
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     term = vocabulary_terms(:southwest_one_one)
     get edit_vocabulary_vocabulary_term_path(@vocab, term)
     assert_response :ok
@@ -141,19 +141,19 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get new_vocabulary_vocabulary_term_path(@vocab)
     assert_response :forbidden
   end
 
   test "new() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get new_vocabulary_vocabulary_term_path(@vocab)
     assert_response :ok
   end
 
   test "new() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get new_vocabulary_vocabulary_term_path(@vocab)
     assert_response :ok
 
@@ -170,14 +170,14 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     term = vocabulary_terms(:southwest_one_one)
     patch vocabulary_vocabulary_term_path(@vocab, term)
     assert_response :forbidden
   end
 
   test "update() updates a term" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     term = vocabulary_terms(:southwest_one_one)
     patch vocabulary_vocabulary_term_path(@vocab, term),
           xhr: true,
@@ -193,7 +193,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     term = vocabulary_terms(:southwest_one_one)
     patch vocabulary_vocabulary_term_path(@vocab, term),
           xhr: true,
@@ -208,7 +208,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     term = vocabulary_terms(:southwest_one_one)
     patch vocabulary_vocabulary_term_path(@vocab, term),
           xhr: true,
@@ -223,7 +223,7 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent terms" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     patch vocabulary_path(@vocab) + "/terms/9999"
     assert_response :not_found
   end

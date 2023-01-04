@@ -75,6 +75,41 @@ southwest_admin:
   expires_at:     <%= Time.now + Invitee::EXPIRATION %>
   institution:    southwest
 
+southwest_sysadmin:
+  email:          sysadmin@southwest.edu
+  approval_state: <%= ApprovalState::APPROVED %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    southwest
+
+uiuc:
+  email:          shib@illinois.edu
+  approval_state: <%= ApprovalState::APPROVED %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    uiuc
+
+uiuc2:
+  email:          user2@illinois.edu
+  approval_state: <%= ApprovalState::APPROVED %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    uiuc
+
+uiuc_admin:
+  email:          instadmin@illinois.edu
+  approval_state: <%= ApprovalState::APPROVED %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    uiuc
+
+uiuc_sysadmin:
+  email:          sysadmin@illinois.edu
+  approval_state: <%= ApprovalState::APPROVED %>
+  note:           Sample note
+  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:    uiuc
+
 unit1_admin:
   email:          unit1_admin@example.edu
   approval_state: <%= ApprovalState::APPROVED %>

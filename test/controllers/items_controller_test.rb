@@ -3,6 +3,7 @@ require 'test_helper'
 class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
+    host! institutions(:uiuc).fqdn
     setup_opensearch
     setup_s3
   end
@@ -20,21 +21,21 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "approve() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     item = items(:uiuc_submitted)
     patch item_approve_path(item)
     assert_response :forbidden
   end
 
   test "approve() redirects to the item page for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_submitted)
     patch item_approve_path(item)
     assert_redirected_to item_path(item)
   end
 
   test "approve() approves an item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_submitted)
     patch item_approve_path(item)
     item.reload
@@ -42,7 +43,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "approve() moves an item's bitstreams into permanent storage" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_submitted)
     patch item_approve_path(item)
 
@@ -54,7 +55,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "approve() creates an associated handle" do
     item = items(:uiuc_submitted)
     assert_nil item.handle
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     patch item_approve_path(item)
     item.reload
     assert_not_nil item.handle
@@ -69,13 +70,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "delete() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     post item_delete_path(items(:uiuc_item1))
     assert_response :forbidden
   end
 
   test "delete() buries the item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_submitting)
     post item_delete_path(item)
     item.reload
@@ -83,7 +84,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "delete() returns HTTP 302 for an existing item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     submission = items(:uiuc_item1)
     expected   = submission.primary_collection
     post item_delete_path(submission)
@@ -91,7 +92,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "delete() returns HTTP 404 for a missing item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post item_delete_path "/items/99999"
     assert_response :not_found
   end
@@ -105,19 +106,23 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "download_counts() returns HTTP 200 for HTML" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get item_download_counts_path(items(:uiuc_item1),
-                                  from_year: 2022, from_month: 1,
-                                  to_year: 2022, to_month: 2)
+                                  from_year:  2022,
+                                  from_month: 1,
+                                  to_year:    2022,
+                                  to_month:   2)
     assert_response :ok
   end
 
   test "download_counts() returns HTTP 200 for CSV" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get item_download_counts_path(items(:uiuc_item1),
-                                  from_year: 2022, from_month: 1,
-                                  to_year: 2022, to_month: 2,
-                                  format: :csv)
+                                  from_year:  2022,
+                                  from_month: 1,
+                                  to_year:    2022,
+                                  to_month:   2,
+                                  format:     :csv)
     assert_response :ok
   end
 
@@ -144,7 +149,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_embargoes() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_item1)
     get item_edit_embargoes_path(item), xhr: true
     assert_response :ok
@@ -173,7 +178,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_membership() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_item1)
     get item_edit_membership_path(item), xhr: true
     assert_response :ok
@@ -202,7 +207,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_metadata() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_item1)
     get item_edit_metadata_path(item), xhr: true
     assert_response :ok
@@ -231,7 +236,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_properties() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_item1)
     get item_edit_properties_path(item), xhr: true
     assert_response :ok
@@ -260,7 +265,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_withdrawal() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_item1)
     get item_edit_withdrawal_path(item), xhr: true
     assert_response :ok
@@ -274,19 +279,19 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "export() via GET returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     get items_export_path
     assert_response :forbidden
   end
 
   test "export() via GET returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get items_export_path
     assert_response :ok
   end
 
   test "export() via POST returns HTTP 400 for an empty handles argument" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post items_export_path, params: {
       handles: "",
       elements: ["dc:title"]
@@ -295,7 +300,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "export() via POST returns HTTP 400 for an empty elements argument" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post items_export_path, params: {
       handles: "1/2",
       elements: []
@@ -304,7 +309,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "export() via POST exports CSV" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post items_export_path, params: {
       handles: handles(:collection1_handle).to_s,
       elements: ["dc:title"]
@@ -386,19 +391,19 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "process_review() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     post items_process_review_path
     assert_response :forbidden
   end
 
   test "process_review() redirects to the review page for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post items_process_review_path
     assert_redirected_to items_review_path
   end
 
   test "process_review() approves items" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_submitted)
     post items_process_review_path,
          params: {
@@ -413,7 +418,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "process_review() creates an associated handle for approved items" do
     item = items(:uiuc_submitted)
     assert_nil item.handle
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post items_process_review_path,
          params: {
              items: [item.id],
@@ -440,7 +445,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "process_review() rejects items" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_submitted)
     post items_process_review_path,
          params: {
@@ -468,21 +473,21 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "reject() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     item = items(:uiuc_submitted)
     patch item_reject_path(item)
     assert_response :forbidden
   end
 
   test "reject() redirects to the item page for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_submitted)
     patch item_reject_path(item)
     assert_redirected_to item_path(item)
   end
 
   test "reject() rejects an item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_submitted)
     patch item_reject_path(item)
     item.reload
@@ -497,13 +502,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "review() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     get items_review_path
     assert_response :forbidden
   end
 
   test "review() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get items_review_path
     assert_response :ok
   end
@@ -541,7 +546,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get item_path(items(:uiuc_item1))
     assert_select("dl.properties")
 
@@ -564,7 +569,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "statistics() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get item_statistics_path(items(:uiuc_item1)), xhr: true
     assert_response :ok
   end
@@ -578,13 +583,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "undelete() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     post item_undelete_path(items(:uiuc_buried))
     assert_response :forbidden
   end
 
   test "undelete() buries the item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_buried)
     post item_undelete_path(item)
     item.reload
@@ -592,14 +597,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "undelete() returns HTTP 302 for an existing item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_buried)
     post item_undelete_path(item)
     assert_redirected_to item
   end
 
   test "undelete() returns HTTP 404 for a missing item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post "/items/99999/undelete"
     assert_response :not_found
   end
@@ -631,7 +636,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "upload_bitstreams() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_item1)
     get item_upload_bitstreams_path(item), xhr: true
     assert_response :ok
@@ -646,21 +651,21 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "withdraw() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     item = items(:uiuc_submitted)
     patch item_withdraw_path(item)
     assert_response :forbidden
   end
 
   test "withdraw() redirects to the item page for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_submitted)
     patch item_withdraw_path(item)
     assert_redirected_to item_path(item)
   end
 
   test "withdraw() withdraws an item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item = items(:uiuc_submitted)
     patch item_withdraw_path(item)
     item.reload

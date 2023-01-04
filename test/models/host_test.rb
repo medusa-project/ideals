@@ -5,25 +5,25 @@ class HostTest < ActiveSupport::TestCase
   # all_matching_hostname_or_ip()
 
   test 'all_matching_hostname_or_ip() returns an empty set when there are no matches' do
-    Host.create!(user_group: user_groups(:unused),
+    Host.create!(user_group: user_groups(:southwest_unused),
                  pattern:    "*.cats.org\n202.202.*")
-    Host.create!(user_group: user_groups(:unused),
+    Host.create!(user_group: user_groups(:southwest_unused),
                  pattern: "*.dogs.org\n12.12.*")
     assert_empty Host.all_matching_hostname_or_ip('test.org', '123.123.123.123')
   end
 
   test 'all_matching_host_or_ip() returns hosts with matching hostnames' do
-    Host.create!(user_group: user_groups(:unused),
+    Host.create!(user_group: user_groups(:southwest_unused),
                  pattern: "*cats.org\n202.202.*")
-    Host.create!(user_group: user_groups(:unused),
+    Host.create!(user_group: user_groups(:southwest_unused),
                  pattern: "*dogs.org\n12.12.*")
     assert_equal 1, Host.all_matching_hostname_or_ip('cats.org', '123.123.123.123').length
   end
 
   test 'all_matching_host_or_ip() returns hosts with matching IP addresses' do
-    Host.create!(user_group: user_groups(:unused),
+    Host.create!(user_group: user_groups(:southwest_unused),
                  pattern: "*.cats.org\n202.202.*")
-    Host.create!(user_group: user_groups(:unused),
+    Host.create!(user_group: user_groups(:southwest_unused),
                  pattern: "*.dogs.org\n12.12.*")
     assert_equal 1, Host.all_matching_hostname_or_ip('test.org', '12.12.12.12').length
   end
@@ -112,13 +112,13 @@ class HostTest < ActiveSupport::TestCase
   # validate()
 
   test 'validate() checks for the presence of a pattern' do
-    host = Host.new(user_group: user_groups(:unused),
+    host = Host.new(user_group: user_groups(:southwest_unused),
                     pattern: '')
     assert !host.valid?
   end
 
   test 'validate() rejects invalid general patterns' do
-    host = Host.new(user_group: user_groups(:unused),
+    host = Host.new(user_group: user_groups(:southwest_unused),
                     pattern: '# only a comment')
     assert !host.valid?
 
@@ -130,7 +130,7 @@ class HostTest < ActiveSupport::TestCase
   end
 
   test 'validate() rejects invalid host patterns' do
-    host = Host.new(user_group: user_groups(:unused),
+    host = Host.new(user_group: user_groups(:southwest_unused),
                     pattern: 'host.example.*')
     assert !host.valid?
 
@@ -142,13 +142,13 @@ class HostTest < ActiveSupport::TestCase
   end
 
   test 'validate() rejects invalid IP patterns' do
-    host = Host.new(user_group: user_groups(:unused),
+    host = Host.new(user_group: user_groups(:southwest_unused),
                     pattern: '1234.2342.2342.2342')
     assert !host.valid?
   end
 
   test 'validate() allows valid host patterns' do
-    host = Host.new(user_group: user_groups(:unused),
+    host = Host.new(user_group: user_groups(:southwest_unused),
                     pattern: 'CATS-dogs-123.example.org # comment')
     assert host.valid?
 
@@ -157,7 +157,7 @@ class HostTest < ActiveSupport::TestCase
   end
 
   test 'validate() allows valid IP patterns' do
-    host = Host.new(user_group: user_groups(:unused),
+    host = Host.new(user_group: user_groups(:southwest_unused),
                     pattern: '123.123.123.123 # comment')
     assert host.valid?
 

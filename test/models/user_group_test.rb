@@ -54,7 +54,7 @@ class UserGroupTest < ActiveSupport::TestCase
   # destroy()
 
   test "destroy() destroys an ordinary group" do
-    group = user_groups(:unused)
+    group = user_groups(:southwest_unused)
     group.destroy!
     assert group.destroyed?
   end
@@ -163,13 +163,13 @@ class UserGroupTest < ActiveSupport::TestCase
   end
 
   test "required?() returns true for a defining-institution group" do
-    group = user_groups(:unused)
+    group = user_groups(:southwest_unused)
     group.defines_institution = true
     assert group.required?
   end
 
   test "required?() returns false for other groups" do
-    group = user_groups(:unused)
+    group = user_groups(:southwest_unused)
     assert !group.required?
   end
 

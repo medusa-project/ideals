@@ -3,6 +3,7 @@ require 'test_helper'
 class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
+    host! institutions(:uiuc).fqdn
     setup_s3
   end
 
@@ -52,26 +53,26 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
     assert_response :forbidden
   end
 
   test "destroy() destroys the bitstream" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     assert_difference "Bitstream.count", -1 do
       delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
     end
   end
 
   test "destroy() returns HTTP 204 for an existing bitstream" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
     assert_response :no_content
   end
 
   test "destroy() returns HTTP 404 for a missing bitstream" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     delete "/items/#{items(:uiuc_item1).id}/bitstreams/999999"
     assert_response :not_found
   end
@@ -94,7 +95,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item      = items(:uiuc_item1)
     bitstream = item.bitstreams.first
     get edit_item_bitstream_path(item, bitstream)
@@ -102,7 +103,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 200 for XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     item      = items(:uiuc_item1)
     bitstream = item.bitstreams.first
     get edit_item_bitstream_path(item, bitstream), xhr: true
@@ -151,13 +152,13 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "ingest() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     post item_bitstream_ingest_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
     assert_response :forbidden
   end
 
   test "ingest() returns HTTP 400 if the bitstream's staging key is nil" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     bitstream = bitstreams(:item1_in_staging)
     bitstream.update!(staging_key: nil)
     post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
@@ -165,7 +166,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "ingest() returns HTTP 400 if the bitstream's item does not have a handle" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     bitstream = bitstreams(:item1_in_staging)
     item = bitstream.item
     item.handle.destroy!
@@ -174,15 +175,16 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  test "ingest() returns HTTP 409 if the bitstream has already been submitted for ingest" do
-    log_in_as(users(:local_sysadmin))
+  test "ingest() returns HTTP 409 if the bitstream has already been submitted
+  for ingest" do
+    log_in_as(users(:uiuc_admin))
     bitstream = bitstreams(:approved_in_permanent)
     post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
     assert_response :conflict
   end
 
   test "ingest() returns HTTP 409 if the bitstream already exists in Medusa" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     bitstream = bitstreams(:approved_in_permanent)
     bitstream.update!(medusa_uuid: SecureRandom.uuid)
     post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
@@ -190,7 +192,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "ingest() ingests the bitstream" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     bitstream = bitstreams(:awaiting_ingest_into_medusa)
     assert !bitstream.submitted_for_ingest
 
@@ -200,14 +202,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "ingest() returns HTTP 204 for a successful ingest" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post item_bitstream_ingest_path(items(:uiuc_awaiting_ingest_into_medusa),
                                     bitstreams(:awaiting_ingest_into_medusa))
     assert_response :no_content
   end
 
   test "ingest() returns HTTP 404 for a missing bitstream" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post "/items/#{items(:uiuc_item1).id}/bitstreams/999999/ingest"
     assert_response :not_found
   end
@@ -343,7 +345,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       end
 
       # Assert that sysadmins can access it
-      log_in_as(users(:local_sysadmin))
+      log_in_as(users(:uiuc_sysadmin))
       get item_bitstream_object_path(item, bitstream)
       assert_response :temporary_redirect
 
@@ -431,7 +433,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       end
 
       # Assert that sysadmins can access it
-      log_in_as(users(:local_sysadmin))
+      log_in_as(users(:uiuc_sysadmin))
       get item_bitstream_path(item, bitstream)
       assert_response :ok
 
@@ -573,7 +575,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       end
 
       # Assert that sysadmins can access it
-      log_in_as(users(:local_sysadmin))
+      log_in_as(users(:uiuc_sysadmin))
       get item_bitstream_stream_path(item, bitstream)
       assert_response :ok
 
@@ -614,14 +616,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     bitstream = bitstreams(:item1_in_staging)
     patch item_bitstream_path(bitstream.item, bitstream)
     assert_response :forbidden
   end
   
   test "update() updates a bitstream" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     bitstream = bitstreams(:item1_in_staging)
     patch item_bitstream_path(bitstream.item, bitstream),
           xhr: true,
@@ -635,7 +637,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() creates an associated Event" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     bitstream = bitstreams(:item1_in_staging)
     assert_difference "Event.count" do
       patch item_bitstream_path(bitstream.item, bitstream),
@@ -649,7 +651,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     bitstream = bitstreams(:item1_in_staging)
     patch item_bitstream_path(bitstream.item, bitstream),
           xhr: true,
@@ -662,7 +664,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     bitstream = bitstreams(:item1_in_staging)
     patch item_bitstream_path(bitstream.item, bitstream),
           xhr: true,
@@ -675,7 +677,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent collections" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     patch "/items/#{items(:uiuc_item1).id}/bitstreams/bogus"
     assert_response :not_found
   end
@@ -763,7 +765,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       end
 
       # Assert that sysadmins can access it
-      log_in_as(users(:local_sysadmin))
+      log_in_as(users(:uiuc_sysadmin))
       get item_bitstream_viewer_path(item, bitstream), xhr: true
       assert_response :ok
 

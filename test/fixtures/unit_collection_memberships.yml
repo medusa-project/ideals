@@ -6,6 +6,14 @@ northeast_unit1_collection1:
   primary:      true
   unit_default: true
 
+################################ southwest ##################################
+
+southwest_unit1_collection1:
+  unit:         southwest_unit1
+  collection:   southwest_unit1_collection1
+  primary:      true
+  unit_default: true
+
 ################################## uiuc #####################################
 
 uiuc_unit1_collection1:

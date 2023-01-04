@@ -30,12 +30,7 @@ class SessionsController < ApplicationController
       user = LocalUser.from_omniauth(auth)
     end
 
-    # We want users to be able to log in only to their current institution's
-    # site, except in test, where all requests through the test framework are
-    # to www.example.com. TODO: remove the test exception
-    if user&.id &&
-        user.enabled &&
-        (Rails.env.test? || user.institution == current_institution)
+    if user&.id && user.enabled && user.institution == current_institution
       user.update!(auth_hash:         auth,
                    last_logged_in_at: Time.now)
       session[:user_id] = user.id

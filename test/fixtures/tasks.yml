@@ -88,3 +88,14 @@ saf_import:
   indeterminate:    false
   detail:
   backtrace:
+
+southwest_saf_import:
+  name:             ImportTask
+  status:           <%= Task::Status::PENDING %>
+  status_text:      Waiting
+  percent_complete: 0
+  started_at:
+  stopped_at:
+  indeterminate:    false
+  detail:
+  backtrace:

@@ -8,34 +8,34 @@
 
 local_sysadmin:
   type:        LocalUser
+  identity:    local_sysadmin
   uid:         admin@example.edu
   name:        admin
   email:       admin@example.edu
   phone:       (888) 555-1234
   enabled:     true
-  identity:    local_sysadmin
   institution: example
   user_groups:
     - sysadmin
 
 collection1_collection1_manager:
   type:        LocalUser
+  identity:    collection1_collection1_manager
   uid:         collection1_collection1_manager@example.edu
   name:        Collection1 Collection1 Manager
   email:       collection1_collection1_manager@example.edu
   phone:       (888) 555-1234
   enabled:     true
-  identity:    collection1_collection1_manager
   institution: example
 
 collection1_collection1_submitter:
   type:        LocalUser
+  identity:    collection1_collection1_submitter
   uid:         phil@example.edu
   name:        phil
   email:       phil@example.edu
   phone:       (888) 555-1234
   enabled:     true
-  identity:    collection1_collection1_submitter
   institution: example
 
 norights:
@@ -58,52 +58,20 @@ norights2:
   enabled:     true
   institution: example
 
-uiuc:
-  type:        ShibbolethUser
-  uid:         shib@illinois.edu
-  name:        Shib Boleth, Esq.
-  email:       shib@illinois.edu
-  phone:       (888) 555-1234
-  enabled:     true
-  org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
-  institution: uiuc
-
-uiuc_admin:
-  type:        ShibbolethUser
-  uid:         instadmin@illinois.edu
-  name:        UIUC Institution Admin
-  email:       instadmin@illinois.edu
-  phone:       (888) 555-1235
-  enabled:     true
-  org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
-  institution: uiuc
-  user_groups:
-    - uiuc_admins
-
-uiuc_sysadmin:
-  type:        ShibbolethUser
-  uid:         sysadmin@illinois.edu
-  name:        UIUC Sysadmin
-  email:       sysadmin@illinois.edu
-  phone:       (888) 555-1235
-  enabled:     true
-  org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
-  institution: uiuc
-  user_groups:
-    - sysadmin
-
 northeast:
   type:        LocalUser
+  identity:    northeast
   uid:         user@northeast.edu
   name:        Northeast University Normal User
   email:       user@northeast.edu
   phone:       (888) 555-1234
   enabled:     true
-  org_dn:      o=Northeast University,dc=southwest,dc=edu
+  org_dn:      o=Northeast University,dc=northeast,dc=edu
   institution: northeast
 
 northeast_admin:
   type:        LocalUser
+  identity:    northeast
   uid:         admin@northeast.edu
   name:        Northeast.edu Institution Administrator
   email:       admin@northeast.edu
@@ -116,9 +84,10 @@ northeast_admin:
 
 southwest:
   type:        LocalUser
+  identity:    southwest
   uid:         user@southwest.edu
   name:        Southwest University Normal User
-  email:       name@southwest.edu
+  email:       user@southwest.edu
   phone:       (888) 555-1234
   enabled:     true
   org_dn:      o=Southwest University,dc=southwest,dc=edu
@@ -126,6 +95,7 @@ southwest:
 
 southwest_admin:
   type:        LocalUser
+  identity:    southwest_admin
   uid:         admin@southwest.edu
   name:        Southwest University Institution Administrator
   email:       admin@southwest.edu
@@ -136,24 +106,85 @@ southwest_admin:
   user_groups:
     - southwest_admins
 
+southwest_sysadmin:
+  type:        LocalUser
+  identity:    southwest_sysadmin
+  uid:         sysadmin@southwest.edu
+  name:        Southwest University System Administrator
+  email:       sysadmin@southwest.edu
+  phone:       (888) 555-1235
+  enabled:     true
+  org_dn:      o=Southwest University,dc=southwest,dc=edu
+  institution: southwest
+  user_groups:
+    - sysadmin
+
+uiuc:
+  type:        ShibbolethUser
+  identity:    uiuc
+  uid:         shib@illinois.edu
+  name:        Shib Boleth, Esq.
+  email:       shib@illinois.edu
+  phone:       (888) 555-1234
+  enabled:     true
+  org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
+  institution: uiuc
+
+uiuc2:
+  type:        ShibbolethUser
+  identity:    uiuc2
+  uid:         user2@illinois.edu
+  name:        UIUC Normal User 2
+  email:       user2@illinois.edu
+  phone:       (888) 555-1234
+  enabled:     true
+  org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
+  institution: uiuc
+
+uiuc_admin:
+  type:        ShibbolethUser
+  identity:    uiuc_admin
+  uid:         instadmin@illinois.edu
+  name:        UIUC Institution Admin
+  email:       instadmin@illinois.edu
+  phone:       (888) 555-1235
+  enabled:     true
+  org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
+  institution: uiuc
+  user_groups:
+    - uiuc_admins
+
+uiuc_sysadmin:
+  type:        ShibbolethUser
+  identity:    uiuc_sysadmin
+  uid:         sysadmin@illinois.edu
+  name:        UIUC Sysadmin
+  email:       sysadmin@illinois.edu
+  phone:       (888) 555-1235
+  enabled:     true
+  org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
+  institution: uiuc
+  user_groups:
+    - sysadmin
+
 unit1_admin:
   type:        LocalUser
+  identity:    unit1_admin
   uid:         unit1_admin@example.edu
   name:        Unit1 Admin
   email:       unit1_admin@example.edu
   phone:       (888) 555-1234
   enabled:     true
-  identity:    unit1_admin
   org_dn:      o=Example University,dc=example,dc=edu
   institution: example
 
 unit1_unit2_unit1_admin:
   type:        LocalUser
+  identity:    unit1_unit2_unit1_admin
   uid:         unit1_unit2_unit1_admin@example.edu
   name:        Unit1 Unit2 Unit1 Admin
   email:       unit1_unit2_unit1_admin@example.edu
   phone:       (888) 555-1234
   enabled:     true
-  identity:    unit1_unit2_unit1_admin
   org_dn:      o=Example University,dc=example,dc=edu
   institution: example

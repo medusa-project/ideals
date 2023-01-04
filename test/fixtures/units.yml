@@ -5,6 +5,13 @@ northeast_unit1:
   institution: northeast
   buried:      false
 
+################################ southwest ##################################
+
+southwest_unit1:
+  title:       Unit1
+  institution: southwest
+  buried:      false
+
 ################################## uiuc #####################################
 
 uiuc_unit1:

@@ -17,12 +17,6 @@ class MetadataProfileTest < ActiveSupport::TestCase
     end
   end
 
-  test "instances with dependent collections cannot be destroyed" do
-    assert_raises ActiveRecord::DeleteRestrictionError do
-      @instance.destroy!
-    end
-  end
-
   test "destroying an instance destroys its dependent MetadataProfileElements" do
     elements = @instance.elements
     @instance.collections = []

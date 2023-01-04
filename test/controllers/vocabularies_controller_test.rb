@@ -77,13 +77,13 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     delete vocabulary_path(vocabularies(:southwest_one))
     assert_response :forbidden
   end
 
   test "destroy() destroys the vocabulary" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     vocab = vocabularies(:southwest_one)
     assert_difference "Vocabulary.count", -1 do
       delete vocabulary_path(vocab)
@@ -91,14 +91,14 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing vocabulary" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     vocab = vocabularies(:southwest_one)
     delete vocabulary_path(vocab)
     assert_redirected_to vocabularies_path
   end
 
   test "destroy() returns HTTP 404 for a missing vocabulary" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     delete "/vocabularies/99999"
     assert_response :not_found
   end
@@ -112,19 +112,19 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get edit_vocabulary_path(vocabularies(:southwest_one))
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get edit_vocabulary_path(vocabularies(:southwest_one))
     assert_response :ok
   end
 
   test "edit() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get edit_vocabulary_path(vocabularies(:southwest_one))
     assert_response :ok
 
@@ -141,19 +141,19 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get vocabularies_path
     assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get vocabularies_path
     assert_response :ok
   end
 
   test "index() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get vocabularies_path
     assert_response :ok
 
@@ -169,19 +169,19 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get new_vocabulary_path
     assert_response :forbidden
   end
 
   test "new() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get new_vocabulary_path
     assert_response :ok
   end
 
   test "new() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get new_vocabulary_path
     assert_response :ok
 
@@ -198,19 +198,19 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get vocabulary_path(vocabularies(:southwest_one))
     assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get vocabulary_path(vocabularies(:southwest_one))
     assert_response :ok
   end
 
   test "show() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     get vocabulary_path(vocabularies(:southwest_one))
     assert_response :ok
 
@@ -228,7 +228,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     patch vocabulary_path(vocabularies(:southwest_one))
     assert_response :forbidden
   end
@@ -274,7 +274,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for a nonexistent vocabulary" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_admin))
     patch "/vocabularies/99999"
     assert_response :not_found
   end

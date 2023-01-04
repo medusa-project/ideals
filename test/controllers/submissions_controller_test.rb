@@ -3,6 +3,8 @@ require 'test_helper'
 class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
+    @institution = institutions(:uiuc)
+    host! @institution.fqdn
     setup_opensearch
     setup_s3
   end
@@ -172,11 +174,11 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to root page for logged-out users" do
     post submissions_path
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "create() creates an item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc))
     assert_difference "Item.count" do
       post submissions_path
       item = Item.order(created_at: :desc).first
@@ -185,7 +187,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() redirects to item-edit view" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc))
     post submissions_path
     submission = Item.order(created_at: :desc).limit(1).first
     assert_redirected_to edit_submission_path(submission)
@@ -200,37 +202,37 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc2))
     delete submission_path(items(:uiuc_submitting))
     assert_response :forbidden
   end
 
-  test "destroy() destroys the item" do
-    log_in_as(users(:local_sysadmin))
-    item = items(:uiuc_submitting)
-    assert_difference "Item.count", -1 do
-      delete submission_path(item)
-    end
-  end
-
   test "destroy() returns HTTP 302 for an existing item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc))
     submission = items(:uiuc_submitting)
     delete submission_path(submission)
     assert_redirected_to root_path
   end
 
   test "destroy() returns HTTP 404 for a missing item" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc))
     delete "/submissions/99999"
     assert_response :not_found
   end
 
-  test "destroy() redirects back when an item has already been submitted" do
-    log_in_as(users(:local_sysadmin))
+  test "destroy() returns HTTP 403 when an item has already been submitted" do
     item = items(:uiuc_item1)
+    log_in_as(item.submitter)
     delete submission_path(item)
-    assert_redirected_to root_url
+    assert_response :forbidden
+  end
+
+  test "destroy() destroys the item" do
+    log_in_as(users(:uiuc))
+    item = items(:uiuc_submitting)
+    assert_difference "Item.count", -1 do
+      delete submission_path(item)
+    end
   end
 
   # edit()
@@ -259,11 +261,11 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "new() redirects to root page for logged-out users" do
     get submit_path
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "new() returns HTTP 200 for logged-in users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     get submit_path
     assert_response :ok
   end
@@ -299,16 +301,16 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     item = items(:uiuc_submitting)
-    patch submission_path(item)
+    patch submission_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "update() updates an item" do
-    log_in_as(users(:local_sysadmin))
     collection = collections(:uiuc_empty)
     item       = items(:uiuc_submitting)
+    log_in_as(item.submitter)
     patch submission_path(item),
           xhr: true,
           params: {
@@ -321,8 +323,8 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 204" do
-    log_in_as(users(:local_sysadmin))
     item = items(:uiuc_submitting)
+    log_in_as(item.submitter)
     patch submission_path(item),
           xhr: true,
           params: {
@@ -334,8 +336,8 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
     item = items(:uiuc_submitting)
+    log_in_as(item.submitter)
     patch submission_path(item),
           xhr: true,
           params: {
@@ -347,16 +349,16 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent items" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc))
     patch "/submissions/bogus"
     assert_response :not_found
   end
 
-  test "update() redirects back when an item has already been submitted" do
-    log_in_as(users(:local_sysadmin))
+  test "update() returns HTTP 403 when an item has already been submitted" do
     item = items(:uiuc_item1)
+    log_in_as(item.submitter)
     patch submission_path(item)
-    assert_redirected_to root_url
+    assert_response :forbidden
   end
 
 end

@@ -188,7 +188,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "authorized_by?() returns true when the bitstream is authorized by the
   given user group" do
-    group = user_groups(:unused)
+    group = user_groups(:southwest_unused)
     item = @instance.item
     item.bitstream_authorizations.build(user_group: group)
     item.save!
@@ -197,7 +197,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "authorized_by?() returns false when the bitstream is not authorized by
   the given user group" do
-    group = user_groups(:unused)
+    group = user_groups(:southwest_unused)
     assert !@instance.authorized_by?(group)
   end
 

@@ -3,6 +3,7 @@ require 'test_helper'
 class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
+    host! institutions(:uiuc).fqdn
     @element = registered_elements(:uiuc_dc_contributor)
   end
 
@@ -18,7 +19,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     post registered_elements_path,
          xhr: true,
          params: {
@@ -67,7 +68,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     post registered_elements_path,
          xhr: true,
          params: {
@@ -86,13 +87,13 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     delete registered_element_path(registered_elements(:uiuc_unused))
     assert_response :forbidden
   end
 
   test "destroy() destroys the element" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     element = registered_elements(:uiuc_unused)
     assert_difference "RegisteredElement.count", -1 do
       delete registered_element_path(element)
@@ -100,13 +101,13 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing element" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     delete registered_element_path(@element)
     assert_redirected_to registered_elements_path
   end
 
   test "destroy() returns HTTP 404 for a missing element" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     delete "/elements/bogus"
     assert_response :not_found
   end
@@ -119,13 +120,13 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     get edit_registered_element_path(@element)
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get edit_registered_element_path(@element)
     assert_response :ok
   end
@@ -138,19 +139,19 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     get registered_elements_path
     assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get registered_elements_path
     assert_response :ok
   end
 
   test "index() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     get registered_elements_path
     assert_response :ok
 
@@ -166,7 +167,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:uiuc))
     patch registered_element_path(@element)
     assert_response :forbidden
   end
@@ -201,7 +202,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     patch registered_element_path(@element),
           xhr: true,
           params: {
@@ -213,7 +214,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent elements" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:uiuc_admin))
     patch "/elements/bogus"
     assert_response :not_found
   end

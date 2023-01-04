@@ -2,6 +2,10 @@ require 'test_helper'
 
 class FileFormatsControllerTest < ActionDispatch::IntegrationTest
 
+  setup do
+    host! institutions(:southwest).fqdn
+  end
+
   teardown do
     log_out
   end
@@ -10,23 +14,23 @@ class FileFormatsControllerTest < ActionDispatch::IntegrationTest
 
   test "index() redirects to root page for logged-out users" do
     get file_formats_path
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to institutions(:southwest).scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:southwest))
     get file_formats_path
     assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     get file_formats_path
     assert_response :ok
   end
 
   test "index() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     get file_formats_path
     assert_response :ok
 

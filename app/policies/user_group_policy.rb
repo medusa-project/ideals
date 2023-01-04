@@ -100,7 +100,8 @@ class UserGroupPolicy < ApplicationPolicy
     elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?)
       return AUTHORIZED_RESULT
     elsif role >= Role::INSTITUTION_ADMINISTRATOR &&
-      ((user || user_group) && user.institution == user_group.institution)
+      user.institution == user_group.institution &&
+      user.institution_admin?(user_group.institution)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
