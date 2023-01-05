@@ -16,9 +16,7 @@
 #                             information available (like an `X-Forwarded-Host`
 #                             header) to determine which one to use.
 #                             Only one institution has this set to true.
-# * `feedback_email`          Email address for public feedback. This may be a
-#                             plain email address or a name followed by an
-#                             email in angle brackets.
+# * `feedback_email`          Email address for public feedback.
 # * `footer_background_color` Theme background color of the footer.
 # * `footer_image_filename`   Filename of the footer image, which is expected
 #                             to exist in the application S3 bucket under
@@ -83,6 +81,9 @@ class Institution < ApplicationRecord
   has_many :user_groups
   has_many :users
   has_many :vocabularies
+
+  validates :feedback_email, allow_blank: true, length: {maximum: 255},
+            format: {with: StringUtils::EMAIL_REGEX}
 
   # uniqueness enforced by database constraints
   validates :fqdn, presence: true
