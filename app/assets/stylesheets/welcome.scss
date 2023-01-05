@@ -77,13 +77,11 @@ body#global-landing {
       height: 600px;
       .institution-point {
         stroke: orange;
-        fill: red;
-        fill-opacity: 0.5;
+        fill: #941f1f;
       }
       .institution-point.selected {
         fill: orange;
         stroke: yellow;
-        fill-opacity: 1;
       }
     }
     #institution-accordion {
