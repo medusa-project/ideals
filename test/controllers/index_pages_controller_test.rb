@@ -184,22 +184,13 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() returns HTTP 200 for logged-out users" do
-    get index_page_path(index_pages(:southwest_creators))
-    assert_response :ok
-  end
-
   test "show() returns HTTP 200 for a page in a different institution" do
-    log_in_as(users(:southwest_admin))
     get index_page_path(index_pages(:northeast_creators))
     assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for a page in the same institution" do
-    page = index_pages(:southwest_creators)
-    page.update!(institution: institutions(:southwest))
-    log_in_as(users(:southwest_admin))
-    get index_page_path(page)
+    get index_page_path(index_pages(:southwest_creators))
     assert_response :ok
   end
 
