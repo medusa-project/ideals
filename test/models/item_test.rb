@@ -573,8 +573,8 @@ class ItemTest < ActiveSupport::TestCase
 
   test "embargoed_for?() returns false for an item with an all-access embargo to
   which the given user is exempt" do
-    user    = users(:example)
-    group   = user_groups(:temp)
+    user    = users(:southwest)
+    group   = user_groups(:southwest_unused)
     embargo = @instance.embargoes.build(kind:       Embargo::Kind::ALL_ACCESS,
                                         expires_at: Time.now + 1.year)
     group.users         << user

@@ -367,8 +367,8 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   test "download_counts?() does not restrict access to embargoed items when the
   current user is exempt from the embargo" do
-    user         = users(:example)
-    group        = user_groups(:temp)
+    user         = users(:southwest)
+    group        = user_groups(:southwest_unused)
     group.users << user
     context      = RequestContext.new(user:        user,
                                       institution: user.institution)
@@ -748,8 +748,8 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   test "file_navigator?() does not restrict access to embargoed items when the
   current user is exempt from the embargo" do
-    user         = users(:example)
-    group        = user_groups(:temp)
+    user         = users(:southwest)
+    group        = user_groups(:southwest_unused)
     group.users << user
     context      = RequestContext.new(user:        user,
                                       institution: user.institution)
@@ -1020,8 +1020,8 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   test "show?() does not restrict access to embargoed items when the current
   user is exempt from the embargo" do
-    user         = users(:example)
-    group        = user_groups(:temp)
+    user         = users(:southwest)
+    group        = user_groups(:southwest_unused)
     group.users << user
     context      = RequestContext.new(user:        user,
                                       institution: user.institution)

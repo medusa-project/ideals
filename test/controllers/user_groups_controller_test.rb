@@ -108,21 +108,21 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   # edit()
 
   test "edit() returns HTTP 403 for logged-out users" do
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get edit_user_group_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get edit_user_group_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get edit_user_group_path(group), xhr: true
     assert_response :ok
   end
@@ -130,28 +130,28 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   # edit_ad_groups()
 
   test "edit_ad_groups() returns HTTP 403 for logged-out users" do
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_ad_groups_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_ad_groups() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_ad_groups_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_ad_groups() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_ad_groups_path(group)
     assert_response :not_found
   end
 
   test "edit_ad_groups() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_ad_groups_path(group), xhr: true
     assert_response :ok
   end
@@ -159,28 +159,28 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   # edit_affiliations()
 
   test "edit_affiliations() returns HTTP 403 for logged-out users" do
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_affiliations_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_affiliations() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_affiliations_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_affiliations() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_affiliations_path(group)
     assert_response :not_found
   end
 
   test "edit_affiliations() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_affiliations_path(group), xhr: true
     assert_response :ok
   end
@@ -188,28 +188,28 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   # edit_departments()
 
   test "edit_departments() returns HTTP 403 for logged-out users" do
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_departments_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_departments() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_departments_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_departments() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_departments_path(group)
     assert_response :not_found
   end
 
   test "edit_departments() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_departments_path(group), xhr: true
     assert_response :ok
   end
@@ -217,28 +217,28 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   # edit_email_patterns()
 
   test "edit_email_patterns() returns HTTP 403 for logged-out users" do
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_email_patterns_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_email_patterns() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_email_patterns_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_email_patterns() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_email_patterns_path(group)
     assert_response :not_found
   end
 
   test "edit_email_patterns() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_email_patterns_path(group), xhr: true
     assert_response :ok
   end
@@ -246,28 +246,28 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   # edit_hosts()
 
   test "edit_hosts() returns HTTP 403 for logged-out users" do
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_hosts_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_hosts() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_hosts_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_hosts() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_hosts_path(group)
     assert_response :not_found
   end
 
   test "edit_hosts() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_hosts_path(group), xhr: true
     assert_response :ok
   end
@@ -275,28 +275,28 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   # edit_local_users()
 
   test "edit_local_users() returns HTTP 403 for logged-out users" do
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_local_users_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_local_users() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_local_users_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_local_users() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_local_users_path(group)
     assert_response :not_found
   end
 
   test "edit_local_users() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_local_users_path(group), xhr: true
     assert_response :ok
   end
@@ -304,28 +304,28 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   # edit_netid_users()
 
   test "edit_netid_users() returns HTTP 403 for logged-out users" do
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_netid_users_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_netid_users() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_netid_users_path(group), xhr: true
     assert_response :forbidden
   end
 
   test "edit_netid_users() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_netid_users_path(group)
     assert_response :not_found
   end
 
   test "edit_netid_users() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
-    group = user_groups(:temp)
+    group = user_groups(:uiuc)
     get user_group_edit_netid_users_path(group), xhr: true
     assert_response :ok
   end

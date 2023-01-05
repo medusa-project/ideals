@@ -347,8 +347,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
   test "download?() does not restrict bitstreams whose owning items are
   embargoed when the current user is exempt from all embargoes" do
-    user         = users(:example)
-    group        = user_groups(:temp)
+    user         = users(:southwest)
+    group        = user_groups(:southwest_unused)
     group.users << user
 
     context   = RequestContext.new(user:        user,
@@ -621,8 +621,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
   test "object?() does not restrict bitstreams whose owning items are embargoed
   when the current user is exempt from all embargoes" do
-    user         = users(:example)
-    group        = user_groups(:temp)
+    user         = users(:southwest)
+    group        = user_groups(:southwest_unused)
     group.users << user
 
     context   = RequestContext.new(user:        user,
@@ -732,8 +732,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
   test "show?() does not restrict bitstreams whose owning items are embargoed
   when the current user is exempt from all embargoes" do
-    user         = users(:example)
-    group        = user_groups(:temp)
+    user         = users(:southwest)
+    group        = user_groups(:southwest_unused)
     group.users << user
 
     context   = RequestContext.new(user:        user,
@@ -883,8 +883,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
   test "stream?() does not restrict bitstreams whose owning items are embargoed
   when the current user is exempt from all embargoes" do
-    user         = users(:example)
-    group        = user_groups(:temp)
+    user         = users(:southwest)
+    group        = user_groups(:southwest_unused)
     group.users << user
 
     context   = RequestContext.new(user:        user,
@@ -1094,8 +1094,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
   test "viewer?() does not restrict bitstreams whose owning items are embargoed
   when the current user is exempt from all embargoes" do
-    user         = users(:example)
-    group        = user_groups(:temp)
+    user         = users(:southwest)
+    group        = user_groups(:southwest_unused)
     group.users << user
 
     context   = RequestContext.new(user:        user,

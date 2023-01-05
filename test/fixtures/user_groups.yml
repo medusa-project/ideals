@@ -1,30 +1,10 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+################################# global ####################################
+
 hostname:
   key:                 hostname
   name:                Hostname-Based Group
-  defines_institution: false
-
-northeast_admins:
-  key:                 northeast_admins
-  name:                Northeast University Administrators
-  defines_institution: false
-
-southwest:
-  key:                 institution
-  name:                Southwest University Users
-  institution:         southwest
-  defines_institution: true
-
-southwest_admins:
-  key:                 southwest_admins
-  name:                Southwest University Administrators
-  defines_institution: false
-
-southwest_unused:
-  key:                 unused
-  name:                Unused Group
-  institution:         southwest
   defines_institution: false
 
 sysadmin:
@@ -32,26 +12,50 @@ sysadmin:
   name:                System Administrators
   defines_institution: false
 
-temp:
-  key:                 temp
-  name:                Temporary Group
+################################ northeast ##################################
+
+northeast_admins:
+  institution:         northeast
+  key:                 northeast_admins
+  name:                Northeast University Administrators
   defines_institution: false
-  users:
+
+################################ southwest ##################################
+
+southwest:
+  institution:         southwest
+  key:                 institution
+  name:                Southwest University Users
+  defines_institution: true
+
+southwest_admins:
+  institution:         southwest
+  key:                 southwest_admins
+  name:                Southwest University Administrators
+  defines_institution: false
+
+southwest_unused:
+  institution:         southwest
+  key:                 unused
+  name:                Unused Group
+  defines_institution: false
+
+################################### uiuc ####################################
 
 uiuc:
+  institution:         uiuc
   key:                 uiuc
   name:                U of I Users
-  institution:         uiuc
   defines_institution: true
 
 uiuc_admins:
+  institution:         uiuc
   key:                 uiuc_admins
   name:                U of I Administrators
-  institution:         uiuc
   defines_institution: false
 
 uiuc_unused:
+  institution:         uiuc
   key:                 unused
   name:                Unused Group
-  institution:         uiuc
   defines_institution: false

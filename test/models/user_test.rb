@@ -278,7 +278,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "manager?() returns true when the user belongs to a user group that
   is allowed to manage the given unit" do
-    group = user_groups(:temp)
+    group = user_groups(:uiuc_unused)
     @user.user_groups << group
     collection = collections(:uiuc_collection1)
     collection.managing_users << @user
@@ -310,7 +310,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "submitter?() returns true when the user belongs to a user group that
   is allowed to submit to the given unit" do
-    group = user_groups(:temp)
+    group = user_groups(:uiuc_unused)
     @user.user_groups << group
     collection = collections(:uiuc_collection1)
     collection.submitting_users << @user
@@ -368,7 +368,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "unit_admin?() returns true when the user belongs to a user group that
   is allowed to administer the given unit" do
-    group = user_groups(:temp)
+    group = user_groups(:uiuc_unused)
     @user.user_groups << group
     unit = units(:uiuc_unit1)
     unit.administering_groups << group
