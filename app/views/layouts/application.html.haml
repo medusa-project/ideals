@@ -27,7 +27,6 @@
         = render partial: 'layouts/global_lower_header'
       .page-content
         - unless request.path == "/"
-          = banner_message
           = render partial: "shared/flashes"
         -# IndexPagesController.show() is a special case whereby we want to
         -# show the breadcrumbs for admins only, thus this ugly hack.

@@ -15,6 +15,24 @@ html {
   padding-right: 15px;
 }
 
+#sitewide-banner-message {
+  border: 0;
+  border-radius: 0;
+  font-size: 0.9em;
+  margin: 0;
+  padding: 0.3em 0.5em;
+}
+#sitewide-banner-message.alert-info {
+  background-color: #bfdaff;
+}
+#sitewide-banner-message.alert-warning {
+  background-color: #fcd88a;
+}
+#sitewide-banner-message.alert-danger {
+  background-color: #c00000;
+  color: white;
+}
+
 .bg-info {
   background-color: #337ab7 !important;
 }

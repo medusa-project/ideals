@@ -18,7 +18,8 @@ module ApplicationHelper
       else
         icon = "fa fa-exclamation-triangle"
       end
-      html << "<div class=\"alert alert-#{Setting.string(Setting::Key::BANNER_MESSAGE_TYPE)}\">"
+      html << "<div id=\"sitewide-banner-message\" "\
+                "class=\"alert alert-#{Setting.string(Setting::Key::BANNER_MESSAGE_TYPE)}\">"
       html <<   "<i class=\"#{icon}\"></i> "
       html <<   h(message)
       html << "</div>"
