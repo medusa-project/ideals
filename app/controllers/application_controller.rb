@@ -378,7 +378,7 @@ class ApplicationController < ActionController::Base
       return
     end
     main_host = ::Configuration.instance.main_host
-    if request.host != main_host && !Institution.find_by_fqdn(request.host_with_port)
+    if request.host != main_host && !Institution.exists?(fqdn: request.host_with_port)
       scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
       redirect_to scheme + "://" + main_host,
                   status: :see_other,
