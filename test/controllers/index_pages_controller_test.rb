@@ -184,6 +184,11 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
+  test "show() returns HTTP 200 for logged-out users" do
+    get index_page_path(index_pages(:southwest_creators))
+    assert_response :ok
+  end
+
   test "show() returns HTTP 200 for a page in a different institution" do
     log_in_as(users(:local_sysadmin))
     get index_page_path(index_pages(:northeast_creators))
