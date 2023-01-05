@@ -86,7 +86,7 @@ module ApplicationHelper
         when "SubmissionProfile"
           crumbs.unshift({label: "Submission Profiles", url: submission_profiles_path})
         when "Unit"
-          crumbs.unshift({label: "Academic Units", url: units_path})
+          crumbs.unshift({icon: icon_for(object), label: "Academic Units", url: units_path})
         when "User"
           crumbs.unshift({label: "Users", url: users_path})
         when "UserGroup"
@@ -94,10 +94,10 @@ module ApplicationHelper
         when "Vocabulary"
           crumbs.unshift({label: "Vocabularies", url: vocabularies_path})
         else
-          crumbs.unshift({label: object.breadcrumb_label, url: url_for(object)})
+          crumbs.unshift({icon: icon_for(object), label: object.breadcrumb_label, url: url_for(object)})
         end
       else # the last crumb is never hyperlinked
-        crumbs << {label: object.breadcrumb_label}
+        crumbs << {icon: icon_for(object), label: object.breadcrumb_label}
       end
       object = object.respond_to?(:breadcrumb_parent) ?
                  object.breadcrumb_parent : nil
@@ -109,9 +109,17 @@ module ApplicationHelper
     crumbs.each do |crumb|
       html << "<li class=\"breadcrumb-item\">"
       if crumb[:url]
-        html <<   link_to(crumb[:label], crumb[:url])
+        if crumb[:icon]
+          html << link_to(crumb[:url]) do
+            crumb[:icon] + " " + crumb[:label]
+          end
+        else
+          html << link_to(crumb[:label], crumb[:url])
+        end
+      elsif crumb[:icon]
+        html << crumb[:icon] + " " + crumb[:label]
       else
-        html <<   crumb[:label]
+        html << crumb[:label]
       end
       html << "</li>"
     end
