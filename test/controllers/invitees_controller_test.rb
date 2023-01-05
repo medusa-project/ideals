@@ -3,7 +3,7 @@ require 'test_helper'
 class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    @invitee = invitees(:pending)
+    @invitee = invitees(:example_pending)
     host! @invitee.institution.fqdn
   end
 
@@ -271,7 +271,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   test "resend_email() emails an invitee" do
     log_in_as(users(:example_sysadmin))
-    @invitee = invitees(:approved)
+    @invitee = invitees(:example_approved)
     assert_emails 1 do
       patch invitee_resend_email_path(@invitee)
     end

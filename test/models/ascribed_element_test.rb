@@ -3,7 +3,7 @@ require 'test_helper'
 class AscribedElementTest < ActiveSupport::TestCase
 
   setup do
-    @instance = ascribed_elements(:described_title)
+    @instance = ascribed_elements(:uiuc_described_title)
     assert @instance.valid?
   end
 

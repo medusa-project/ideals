@@ -26,13 +26,13 @@ class InviteeTest < ActiveSupport::TestCase
   # approve()
 
   test "approve() updates the approval state" do
-    @instance = invitees(:pending)
+    @instance = invitees(:example_pending)
     @instance.approve
     assert_equal ApprovalState::APPROVED, @instance.approval_state
   end
 
   test "approve() sends an email" do
-    @instance = invitees(:pending)
+    @instance = invitees(:example_pending)
     assert_emails 1 do
       @instance.approve
     end
@@ -106,13 +106,13 @@ class InviteeTest < ActiveSupport::TestCase
   # invite()
 
   test "invite() updates the approval state" do
-    @instance = invitees(:pending)
+    @instance = invitees(:example_pending)
     @instance.invite
     assert_equal ApprovalState::APPROVED, @instance.approval_state
   end
 
   test "invite() sends an email" do
-    @instance = invitees(:pending)
+    @instance = invitees(:example_pending)
     assert_emails 1 do
       @instance.invite
     end
@@ -143,13 +143,13 @@ class InviteeTest < ActiveSupport::TestCase
   # reject()
 
   test "reject() updates the approval state" do
-    @instance = invitees(:pending)
+    @instance = invitees(:example_pending)
     @instance.reject
     assert_equal ApprovalState::REJECTED, @instance.approval_state
   end
 
   test "reject() sends an email" do
-    @instance = invitees(:pending)
+    @instance = invitees(:example_pending)
     assert_emails 1 do
       @instance.reject
     end

@@ -1,43 +1,43 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-described_title:
+uiuc_described_title:
+  item:               uiuc_described
   string:             Some title
   uri:
   registered_element: uiuc_dc_title
-  item:               uiuc_described
   position:           1
 
-described_description:
+uiuc_described_description:
+  item:               uiuc_described
   string:             Some description
   uri:
   registered_element: uiuc_dc_description
-  item:               uiuc_described
   position:           1
 
-described_subject:
+uiuc_described_subject:
+  item:               uiuc_described
   string:             Some subject
   uri:
   registered_element: uiuc_dc_subject
-  item:               uiuc_described
   position:           1
 
-in_medusa_title:
-  string:             Some title
-  uri:
-  registered_element: uiuc_dc_title
+uiuc_in_medusa_title:
   item:               uiuc_in_medusa
-  position:           1
-
-submitting_item_title:
   string:             Some title
   uri:
   registered_element: uiuc_dc_title
+  position:           1
+
+uiuc_submitting_item_title:
   item:               uiuc_submitting
-  position:           1
-
-submitted_item_title:
   string:             Some title
   uri:
   registered_element: uiuc_dc_title
+  position:           1
+
+uiuc_submitted_item_title:
   item:               uiuc_submitted
+  string:             Some title
+  uri:
+  registered_element: uiuc_dc_title
   position:           1

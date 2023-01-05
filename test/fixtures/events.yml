@@ -1,6 +1,6 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-item1_create:
+uiuc_item1_create:
   event_type: <%= Event::Type::CREATE %>
   item: uiuc_item1
   user: example_sysadmin

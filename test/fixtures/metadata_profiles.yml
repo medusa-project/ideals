@@ -1,35 +1,41 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+################################# global ####################################
 
 global:
   name:                       Global Profile
   full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
-uiuc_default:
+################################ northeast ##################################
+
+northeast_default:
+  institution:                northeast
   name:                       Default Profile
+  institution_default:        true
+  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+
+################################ southwest ##################################
+
+southwest_default:
+  institution:                southwest
+  name:                       Default Profile
+  institution_default:        true
+  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+
+################################## uiuc #####################################
+
+uiuc_default:
   institution:                uiuc
+  name:                       Default Profile
   institution_default:        true
   full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 uiuc_empty:
-  name:                       Empty Profile
   institution:                uiuc
+  name:                       Empty Profile
   institution_default:        false
   full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 uiuc_unused:
-  name:                       Unused Profile
   institution:                uiuc
+  name:                       Unused Profile
   institution_default:        false
-  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
-
-northeast_default:
-  name:                       Default Profile
-  institution:                northeast
-  institution_default:        true
-  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
-
-southwest_default:
-  name:                       Default Profile
-  institution:                southwest
-  institution_default:        true
   full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>

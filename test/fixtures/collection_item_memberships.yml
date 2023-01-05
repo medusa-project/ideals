@@ -9,69 +9,69 @@ northeast_unit1_collection1_item1:
 
 # uiuc_collection1 items
 
-collection1_item1:
+uiuc_collection1_item1:
   collection: uiuc_collection1
   item:       uiuc_item1
   primary:    true
 
-collection1_submitting:
+uiuc_collection1_submitting:
   collection: uiuc_collection1
   item:       uiuc_submitting
   primary:    true
 
-collection1_submitted:
+uiuc_collection1_submitted:
   collection: uiuc_collection1
   item:       uiuc_submitted
   primary:    true
 
-collection1_approved:
+uiuc_collection1_approved:
   collection: uiuc_collection1
   item:       uiuc_approved
   primary:    true
 
-collection1_awaiting_ingest_into_medusa:
+uiuc_collection1_awaiting_ingest_into_medusa:
   collection: uiuc_collection1
   item:       uiuc_awaiting_ingest_into_medusa
   primary:    true
 
-collection1_in_medusa:
+uiuc_collection1_in_medusa:
   collection: uiuc_collection1
   item:       uiuc_in_medusa
   primary:    true
 
-collection1_described:
+uiuc_collection1_described:
   collection: uiuc_collection1
   item:       uiuc_described
   primary:    true
 
-collection1_embargoed:
+uiuc_collection1_embargoed:
   collection: uiuc_collection1
   item:       uiuc_embargoed
   primary:    true
 
-collection1_undescribed:
+uiuc_collection1_undescribed:
   collection: uiuc_collection1
   item:       uiuc_undescribed
   primary:    true
 
-collection1_withdrawn:
+uiuc_collection1_withdrawn:
   collection: uiuc_collection1
   item:       uiuc_withdrawn
   primary:    true
 
-collection1_buried:
+uiuc_collection1_buried:
   collection: uiuc_collection1
   item:       uiuc_buried
   primary:    true
 
-collection1_multiple_bitstreams:
+uiuc_collection1_multiple_bitstreams:
   collection: uiuc_collection1
   item:       uiuc_multiple_bitstreams
   primary:    true
 
 # uiuc_collection1_collection1 items
 
-collection1_collection1_item1:
+uiuc_collection1_collection1_item1:
   collection: uiuc_collection1_collection1
   item:       uiuc_collection1_collection1_item1
   primary:    true

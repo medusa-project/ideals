@@ -6,127 +6,127 @@
 <% password_digest = BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
 example_sysadmin:
+  invitee:         example_sysadmin
   email:           admin@example.edu
   name:            Admin
-  invitee:         example_sysadmin
   activated:       true
   password_digest: <%= password_digest %>
 
 approved:
+  invitee:         example_approved
   email:           approved@example.edu
   name:            Approved
-  invitee:         approved
   activated:       false
   password_digest: <%= password_digest %>
 
 uiuc_collection1_collection1_manager:
+  invitee:         uiuc_collection1_collection1_manager
   email:           uiuc_collection1_collection1_manager@example.edu
   name:            Collection1 Collection1 Manager
-  invitee:         uiuc_collection1_collection1_manager
   activated:       true
   password_digest: <%= password_digest %>
 
 uiuc_collection1_collection1_submitter:
+  invitee:         uiuc_collection1_collection1_submitter
   email:           uiuc_collection1_collection1_submitter@example.edu
   name:            Collection1 Collection1 Submitter
-  invitee:         uiuc_collection1_collection1_submitter
   activated:       true
   password_digest: <%= password_digest %>
 
 example:
+  invitee:         example
   email:           example@example.edu
   name:            No Rights
-  invitee:         example
   activated:       true
   password_digest: <%= password_digest %>
 
 example2:
+  invitee:         example2
   email:           example2@example.edu
   name:            No Rights II
-  invitee:         example2
   activated:       true
   password_digest: <%= password_digest %>
 
 northeast:
+  invitee:         northeast
   email:           user@northeast.edu
   name:            Northeast University Normal User
-  invitee:         northeast
   activated:       true
   password_digest: <%= password_digest %>
 
 northeast_admin:
+  invitee:         northeast_admin
   email:           admin@northeast.edu
   name:            Northeast University Institution Administrator
-  invitee:         northeast_admin
   activated:       true
   password_digest: <%= password_digest %>
 
 pending:
+  invitee:         example
   email:           pending@example.edu
   name:            Pending
-  invitee:         example
   activated:       false
   password_digest: <%= password_digest %>
 
 southwest:
+  invitee:         southwest
   email:           user@southwest.edu
   name:            Southwest University Normal User
-  invitee:         southwest
   activated:       true
   password_digest: <%= password_digest %>
 
 southwest_admin:
+  invitee:         southwest_admin
   email:           admin@southwest.edu
   name:            Southwest University Institution Administrator
-  invitee:         southwest_admin
   activated:       true
   password_digest: <%= password_digest %>
 
 southwest_sysadmin:
+  invitee:         southwest_sysadmin
   email:           sysadmin@southwest.edu
   name:            Southwest University System Administrator
-  invitee:         southwest_sysadmin
   activated:       true
   password_digest: <%= password_digest %>
 
 uiuc:
+  invitee:         uiuc
   email:           shib@illinois.edu
   name:            UIUC Normal User
-  invitee:         uiuc
   activated:       true
   password_digest: <%= password_digest %>
 
 uiuc2:
+  invitee:         uiuc2
   email:           uiuc2@illinois.edu
   name:            UIUC Normal User 2
-  invitee:         uiuc2
   activated:       true
   password_digest: <%= password_digest %>
 
 uiuc_admin:
+  invitee:         uiuc_admin
   email:           instadmin@illinois.edu
   name:            UIUC Administrator
-  invitee:         uiuc_admin
   activated:       true
   password_digest: <%= password_digest %>
 
 uiuc_sysadmin:
+  invitee:         uiuc_sysadmin
   email:           sysadmin@illinois.edu
   name:            UIUC System Administrator
-  invitee:         uiuc_sysadmin
   activated:       true
   password_digest: <%= password_digest %>
 
 uiuc_unit1_admin:
+  invitee:         uiuc_unit1_admin
   email:           uiuc_unit1_admin@example.edu
   name:            Unit1 Admin
-  invitee:         uiuc_unit1_admin
   activated:       true
   password_digest: <%= password_digest %>
 
 uiuc_unit1_unit2_unit1_admin:
+  invitee:         uiuc_unit1_unit2_unit1_admin
   email:           uiuc_unit1_unit2_unit1_admin@example.edu
   name:            Unit1 Unit2 Unit1 Admin
-  invitee:         uiuc_unit1_unit2_unit1_admin
   activated:       true
   password_digest: <%= password_digest %>

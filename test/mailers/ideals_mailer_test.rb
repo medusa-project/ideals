@@ -28,7 +28,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_denied()
 
   test "account_denied() sends the expected email" do
-    invitee = invitees(:pending)
+    invitee = invitees(:example_pending)
 
     email = IdealsMailer.account_denied(invitee).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
@@ -67,7 +67,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_request_action_required()
 
   test "account_request_action_required() sends the expected email" do
-    invitee     = invitees(:pending)
+    invitee     = invitees(:example_pending)
     institution = institutions(:example)
 
     email = IdealsMailer.account_request_action_required(invitee).deliver_now
@@ -90,7 +90,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_request_received()
 
   test "account_request_received() sends the expected email" do
-    invitee = invitees(:pending)
+    invitee = invitees(:example_pending)
 
     email = IdealsMailer.account_request_received(invitee).deliver_now
     assert !ActionMailer::Base.deliveries.empty?

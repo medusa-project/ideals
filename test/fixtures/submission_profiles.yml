@@ -1,26 +1,31 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-uiuc_default:
-  name: Default Profile
-  institution_default: true
-  institution: uiuc
-
-uiuc_empty:
-  name: Empty Profile
-  institution_default: false
-  institution: uiuc
-
-uiuc_unused:
-  name: Unused Profile
-  institution_default: false
-  institution: uiuc
+################################ northeast ##################################
 
 northeast_default:
-  name: Default Profile
+  institution:         northeast
+  name:                Default Profile
   institution_default: true
-  institution: northeast
+
+################################ southwest ##################################
 
 southwest_default:
-  name: Default Profile
+  institution:         southwest
+  name:                Default Profile
   institution_default: true
-  institution: southwest
+
+################################## uiuc #####################################
+
+uiuc_default:
+  institution:         uiuc
+  name:                Default Profile
+  institution_default: true
+
+uiuc_empty:
+  institution:         uiuc
+  name:                Empty Profile
+  institution_default: false
+
+uiuc_unused:
+  institution:         uiuc
+  name:                Unused Profile
+  institution_default: false
+

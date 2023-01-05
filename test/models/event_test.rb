@@ -27,7 +27,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   setup do
-    @instance = events(:item1_create)
+    @instance = events(:uiuc_item1_create)
     assert @instance.valid?
   end
 

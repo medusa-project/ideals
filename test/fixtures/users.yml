@@ -10,33 +10,33 @@
 
 example:
   type:        LocalUser
+  institution: example
   identity:    example
   uid:         example@example.edu
   name:        I have no rights
   email:       example@example.edu
   phone:       (888) 555-1234
   enabled:     true
-  institution: example
 
 example2:
   type:        LocalUser
+  institution: example
   identity:    example2
   uid:         example2@example.edu
   name:        I have no rights
   email:       example2@example.edu
   phone:       (888) 555-1234
   enabled:     true
-  institution: example
 
 example_sysadmin:
   type:        LocalUser
+  institution: example
   identity:    example_sysadmin
   uid:         admin@example.edu
   name:        admin
   email:       admin@example.edu
   phone:       (888) 555-1234
   enabled:     true
-  institution: example
   user_groups:
     - sysadmin
 
@@ -44,25 +44,23 @@ example_sysadmin:
 
 northeast:
   type:        LocalUser
+  institution: northeast
   identity:    northeast
   uid:         user@northeast.edu
   name:        Northeast University Normal User
   email:       user@northeast.edu
   phone:       (888) 555-1234
   enabled:     true
-  org_dn:      o=Northeast University,dc=northeast,dc=edu
-  institution: northeast
 
 northeast_admin:
   type:        LocalUser
+  institution: northeast
   identity:    northeast
   uid:         admin@northeast.edu
   name:        Northeast.edu Institution Administrator
   email:       admin@northeast.edu
   phone:       (888) 555-1235
   enabled:     true
-  org_dn:      o=Northeast University,dc=northeast,dc=edu
-  institution: northeast
   user_groups:
     - northeast_admins
 
@@ -70,38 +68,35 @@ northeast_admin:
 
 southwest:
   type:        LocalUser
+  institution: southwest
   identity:    southwest
   uid:         user@southwest.edu
   name:        Southwest University Normal User
   email:       user@southwest.edu
   phone:       (888) 555-1234
   enabled:     true
-  org_dn:      o=Southwest University,dc=southwest,dc=edu
-  institution: southwest
 
 southwest_admin:
   type:        LocalUser
+  institution: southwest
   identity:    southwest_admin
   uid:         admin@southwest.edu
   name:        Southwest University Institution Administrator
   email:       admin@southwest.edu
   phone:       (888) 555-1235
   enabled:     true
-  org_dn:      o=Southwest University,dc=southwest,dc=edu
-  institution: southwest
   user_groups:
     - southwest_admins
 
 southwest_sysadmin:
   type:        LocalUser
+  institution: southwest
   identity:    southwest_sysadmin
   uid:         sysadmin@southwest.edu
   name:        Southwest University System Administrator
   email:       sysadmin@southwest.edu
   phone:       (888) 555-1235
   enabled:     true
-  org_dn:      o=Southwest University,dc=southwest,dc=edu
-  institution: southwest
   user_groups:
     - sysadmin
 
@@ -120,6 +115,7 @@ uiuc:
 
 uiuc2:
   type:        ShibbolethUser
+  institution: uiuc
   identity:    uiuc2
   uid:         user2@illinois.edu
   name:        UIUC Normal User 2
@@ -127,10 +123,10 @@ uiuc2:
   phone:       (888) 555-1234
   enabled:     true
   org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
-  institution: uiuc
 
 uiuc_admin:
   type:        ShibbolethUser
+  institution: uiuc
   identity:    uiuc_admin
   uid:         instadmin@illinois.edu
   name:        UIUC Institution Admin
@@ -138,12 +134,12 @@ uiuc_admin:
   phone:       (888) 555-1235
   enabled:     true
   org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
-  institution: uiuc
   user_groups:
     - uiuc_admins
 
 uiuc_sysadmin:
   type:        ShibbolethUser
+  institution: uiuc
   identity:    uiuc_sysadmin
   uid:         sysadmin@illinois.edu
   name:        UIUC Sysadmin
@@ -151,48 +147,45 @@ uiuc_sysadmin:
   phone:       (888) 555-1235
   enabled:     true
   org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
-  institution: uiuc
   user_groups:
     - sysadmin
 
 uiuc_collection1_collection1_manager:
   type:        LocalUser
+  institution: uiuc
   identity:    uiuc_collection1_collection1_manager
-  uid:         uiuc_collection1_collection1_manager@example.edu
+  uid:         uiuc_collection1_collection1_manager@illinois.edu
   name:        Collection1 Collection1 Manager
-  email:       uiuc_collection1_collection1_manager@example.edu
+  email:       uiuc_collection1_collection1_manager@illinois.edu
   phone:       (888) 555-1234
   enabled:     true
-  institution: example
 
 uiuc_collection1_collection1_submitter:
   type:        LocalUser
+  institution: uiuc
   identity:    uiuc_collection1_collection1_submitter
-  uid:         phil@example.edu
-  name:        phil
-  email:       phil@example.edu
+  uid:         phil@illinois.edu
+  name:        Collection1 Collection1 Submitter
+  email:       phil@illinois.edu
   phone:       (888) 555-1234
   enabled:     true
-  institution: example
 
 uiuc_unit1_admin:
   type:        LocalUser
+  institution: uiuc
   identity:    uiuc_unit1_admin
-  uid:         uiuc_unit1_admin@example.edu
+  uid:         uiuc_unit1_admin@illinois.edu
   name:        Unit1 Admin
-  email:       uiuc_unit1_admin@example.edu
+  email:       uiuc_unit1_admin@illinois.edu
   phone:       (888) 555-1234
   enabled:     true
-  org_dn:      o=Example University,dc=example,dc=edu
-  institution: example
 
 uiuc_unit1_unit2_unit1_admin:
   type:        LocalUser
+  institution: uiuc
   identity:    uiuc_unit1_unit2_unit1_admin
-  uid:         uiuc_unit1_unit2_unit1_admin@example.edu
+  uid:         uiuc_unit1_unit2_unit1_admin@illinois.edu
   name:        Unit1 Unit2 Unit1 Admin
-  email:       uiuc_unit1_unit2_unit1_admin@example.edu
+  email:       uiuc_unit1_unit2_unit1_admin@illinois.edu
   phone:       (888) 555-1234
   enabled:     true
-  org_dn:      o=Example University,dc=example,dc=edu
-  institution: example
