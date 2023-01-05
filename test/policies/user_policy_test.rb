@@ -5,7 +5,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   setup do
     # as in "subject-object" (the user on which operations are performed, not
     # the user performing the operations)
-    @object_user = users(:norights)
+    @object_user = users(:example)
   end
 
   # change_institution?()
@@ -16,7 +16,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "change_institution?() does not authorize non-sysadmins" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -24,7 +24,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "change_institution?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -33,7 +33,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "change_institution?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -58,7 +58,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_properties?() authorizes the same user as the one being edited" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, context.user)
@@ -66,7 +66,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_properties?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserPolicy.new(context, @object_user)
@@ -94,7 +94,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "edit_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -110,7 +110,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "enable?() does not authorize non-sysadmins" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, User)
@@ -118,7 +118,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "enable?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserPolicy.new(context, User)
@@ -145,7 +145,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "enable?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -161,7 +161,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "disable?() does not authorize non-sysadmins" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, User)
@@ -169,7 +169,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "disable?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserPolicy.new(context, User)
@@ -196,7 +196,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "disable?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -212,7 +212,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() does not authorize non-sysadmins" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, User)
@@ -220,7 +220,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserPolicy.new(context, User)
@@ -247,7 +247,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -263,7 +263,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "index_all?() does not authorize non-sysadmins" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, User)
@@ -271,7 +271,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "index_all?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserPolicy.new(context, User)
@@ -280,7 +280,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "index_all?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -296,7 +296,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "invite?() does not authorize non-sysadmins" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -304,7 +304,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "invite?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -321,7 +321,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "invite?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -345,7 +345,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -372,7 +372,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -396,7 +396,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_properties?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -405,7 +405,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "show_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -429,7 +429,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_submittable_collections?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -438,7 +438,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "show_submittable_collections?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -462,7 +462,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_submitted_items?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -471,7 +471,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "show_submitted_items?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -495,7 +495,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_submissions_in_progress?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -504,7 +504,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "show_submissions_in_progress?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -528,7 +528,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "submitted_item_results?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -537,7 +537,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "submitted_item_results?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -561,7 +561,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_properties?() authorizes the same user" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserPolicy.new(context, context.user)
@@ -569,7 +569,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_properties?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserPolicy.new(context, @object_user)
@@ -597,7 +597,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "update_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

@@ -3,7 +3,7 @@ require 'test_helper'
 class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @identity = local_identities(:norights)
+    @identity = local_identities(:example)
   end
 
   # activate?()
@@ -14,7 +14,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
   end
 
   test "activate?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = LocalIdentityPolicy.new(context, @identity)
@@ -30,7 +30,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "edit_password?() does not authorize non-sysadmins other than the user
   being edited" do
-    user    = users(:norights2)
+    user    = users(:example2)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = LocalIdentityPolicy.new(context, @identity)
@@ -39,7 +39,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "edit_password?() does not authorize sysadmins other than the user
   being edited" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = LocalIdentityPolicy.new(context, @identity)
@@ -47,7 +47,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_password?() authorizes the same user as the one being edited" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = LocalIdentityPolicy.new(context, @identity)
@@ -56,7 +56,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "edit_password?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -72,7 +72,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
   end
 
   test "new_password?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = LocalIdentityPolicy.new(context, @identity)
@@ -87,7 +87,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
   end
 
   test "register?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = LocalIdentityPolicy.new(context, @identity)
@@ -102,7 +102,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
   end
 
   test "reset_password?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = LocalIdentityPolicy.new(context, @identity)
@@ -117,7 +117,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = LocalIdentityPolicy.new(context, @identity)
@@ -133,7 +133,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "update_password?() does not authorize non-sysadmins other than the user
   being updated" do
-    user    = users(:norights2)
+    user    = users(:example2)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = LocalIdentityPolicy.new(context, @identity)
@@ -142,7 +142,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "update_password?() does not authorize sysadmins other than the user
   being updated" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = LocalIdentityPolicy.new(context, @identity)
@@ -150,7 +150,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_password?() authorizes the same user" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = LocalIdentityPolicy.new(context, @identity)
@@ -159,7 +159,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "update_password?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = LocalIdentityPolicy.new(context, @identity)

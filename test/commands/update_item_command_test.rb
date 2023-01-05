@@ -5,7 +5,7 @@ class UpdateItemCommandTest < ActiveSupport::TestCase
   test "execute() creates an associated Event" do
     Event.destroy_all
 
-    user        = users(:local_sysadmin)
+    user        = users(:example_sysadmin)
     item        = items(:uiuc_item1)
     description = "I just updated this item"
     command     = UpdateItemCommand.new(item: item,

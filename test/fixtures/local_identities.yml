@@ -5,10 +5,10 @@
 
 <% password_digest = BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
-local_sysadmin:
+example_sysadmin:
   email:           admin@example.edu
   name:            Admin
-  invitee:         local_sysadmin
+  invitee:         example_sysadmin
   activated:       true
   password_digest: <%= password_digest %>
 
@@ -19,31 +19,31 @@ approved:
   activated:       false
   password_digest: <%= password_digest %>
 
-collection1_collection1_manager:
-  email:           collection1_collection1_manager@example.edu
+uiuc_collection1_collection1_manager:
+  email:           uiuc_collection1_collection1_manager@example.edu
   name:            Collection1 Collection1 Manager
-  invitee:         collection1_collection1_manager
+  invitee:         uiuc_collection1_collection1_manager
   activated:       true
   password_digest: <%= password_digest %>
 
-collection1_collection1_submitter:
-  email:           collection1_collection1_submitter@example.edu
+uiuc_collection1_collection1_submitter:
+  email:           uiuc_collection1_collection1_submitter@example.edu
   name:            Collection1 Collection1 Submitter
-  invitee:         collection1_collection1_submitter
+  invitee:         uiuc_collection1_collection1_submitter
   activated:       true
   password_digest: <%= password_digest %>
 
-norights:
-  email:           norights@example.edu
+example:
+  email:           example@example.edu
   name:            No Rights
-  invitee:         norights
+  invitee:         example
   activated:       true
   password_digest: <%= password_digest %>
 
-norights2:
-  email:           norights2@example.edu
+example2:
+  email:           example2@example.edu
   name:            No Rights II
-  invitee:         norights2
+  invitee:         example2
   activated:       true
   password_digest: <%= password_digest %>
 
@@ -64,7 +64,7 @@ northeast_admin:
 pending:
   email:           pending@example.edu
   name:            Pending
-  invitee:         norights
+  invitee:         example
   activated:       false
   password_digest: <%= password_digest %>
 
@@ -117,16 +117,16 @@ uiuc_sysadmin:
   activated:       true
   password_digest: <%= password_digest %>
 
-unit1_admin:
-  email:           unit1_admin@example.edu
+uiuc_unit1_admin:
+  email:           uiuc_unit1_admin@example.edu
   name:            Unit1 Admin
-  invitee:         unit1_admin
+  invitee:         uiuc_unit1_admin
   activated:       true
   password_digest: <%= password_digest %>
 
-unit1_unit2_unit1_admin:
-  email:           unit1_unit2_unit1_admin@example.edu
+uiuc_unit1_unit2_unit1_admin:
+  email:           uiuc_unit1_unit2_unit1_admin@example.edu
   name:            Unit1 Unit2 Unit1 Admin
-  invitee:         unit1_unit2_unit1_admin
+  invitee:         uiuc_unit1_unit2_unit1_admin
   activated:       true
   password_digest: <%= password_digest %>

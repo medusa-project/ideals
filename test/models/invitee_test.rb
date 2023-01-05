@@ -5,7 +5,7 @@ class InviteeTest < ActiveSupport::TestCase
   include ActionMailer::TestHelper
 
   setup do
-    @instance = invitees(:norights)
+    @instance = invitees(:example)
     assert @instance.valid?
   end
 

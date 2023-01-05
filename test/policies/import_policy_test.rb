@@ -14,7 +14,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -22,7 +22,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -51,7 +51,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() works with class objects" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, Import)
@@ -76,7 +76,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "delete_all_files?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -130,7 +130,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -139,7 +139,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "edit?() does not authorize users other than the one who created the
   instance" do
-    user    = users(:local_sysadmin) # instance was created by uiuc_admin
+    user    = users(:example_sysadmin) # instance was created by uiuc_admin
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -193,7 +193,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -201,7 +201,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -247,7 +247,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -255,7 +255,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -284,7 +284,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() works with class objects" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, Collection)
@@ -309,7 +309,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -317,7 +317,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -372,7 +372,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -381,7 +381,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "update?() does not authorize users other than the one who created the
   instance" do
-    user    = users(:local_sysadmin) # instance was created by uiuc_admin
+    user    = users(:example_sysadmin) # instance was created by uiuc_admin
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -435,7 +435,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "upload_file?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -444,7 +444,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "upload_file?() does not authorize users other than the creator of the
   instance" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)

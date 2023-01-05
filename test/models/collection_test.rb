@@ -291,7 +291,7 @@ class CollectionTest < ActiveSupport::TestCase
   # effective_managers()
 
   test "effective_managers() includes sysadmins" do
-    @instance.effective_managers.include?(users(:local_sysadmin))
+    @instance.effective_managers.include?(users(:example_sysadmin))
   end
 
   test "effective_managers() includes unit admins" do
@@ -350,7 +350,7 @@ class CollectionTest < ActiveSupport::TestCase
   # effective_submitters()
 
   test "effective_submitters() includes sysadmins" do
-    @instance.effective_submitters.include?(users(:local_sysadmin))
+    @instance.effective_submitters.include?(users(:example_sysadmin))
   end
 
   test "effective_submitters() includes unit admins" do

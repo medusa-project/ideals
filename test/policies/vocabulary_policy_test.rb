@@ -3,7 +3,7 @@ require 'test_helper'
 class VocabularyPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @user  = users(:norights)
+    @user  = users(:example)
     @vocab = vocabularies(:southwest_one)
   end
 
@@ -15,7 +15,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = VocabularyPolicy.new(context, @vocab)
@@ -41,7 +41,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -57,7 +57,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = VocabularyPolicy.new(context, @vocab)
@@ -92,7 +92,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -108,7 +108,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = VocabularyPolicy.new(context, @vocab)
@@ -143,7 +143,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -159,7 +159,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = VocabularyPolicy.new(context, MetadataProfile)
@@ -185,7 +185,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -201,7 +201,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = VocabularyPolicy.new(context, @vocab)
@@ -227,7 +227,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -243,7 +243,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = VocabularyPolicy.new(context, @vocab)
@@ -278,7 +278,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -294,7 +294,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = VocabularyPolicy.new(context, @vocab)
@@ -329,7 +329,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

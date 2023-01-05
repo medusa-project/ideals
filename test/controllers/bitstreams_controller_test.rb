@@ -22,7 +22,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() returns HTTP 200" do
     skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     post item_bitstreams_path(items(:uiuc_item1)),
          file_fixture("escher_lego.png")
     assert_response :ok
@@ -30,7 +30,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() creates a Bitstream" do
     skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     assert_difference "Bitstream.count" do
       post item_bitstreams_path(items(:uiuc_item1)),
            file_fixture("escher_lego.png")
@@ -39,7 +39,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() returns HTTP 400 for illegal arguments" do
     skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     post item_bitstreams_path(items(:uiuc_item1))
     assert_response :bad_request
   end
@@ -87,7 +87,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     item      = items(:uiuc_item1)
     bitstream = item.bitstreams.first
     get edit_item_bitstream_path(item, bitstream), xhr: true

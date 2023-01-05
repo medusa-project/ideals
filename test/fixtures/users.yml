@@ -6,9 +6,31 @@
 # the config/environments/test.yml file.
 #
 
-local_sysadmin:
+################################# example ###################################
+
+example:
   type:        LocalUser
-  identity:    local_sysadmin
+  identity:    example
+  uid:         example@example.edu
+  name:        I have no rights
+  email:       example@example.edu
+  phone:       (888) 555-1234
+  enabled:     true
+  institution: example
+
+example2:
+  type:        LocalUser
+  identity:    example2
+  uid:         example2@example.edu
+  name:        I have no rights
+  email:       example2@example.edu
+  phone:       (888) 555-1234
+  enabled:     true
+  institution: example
+
+example_sysadmin:
+  type:        LocalUser
+  identity:    example_sysadmin
   uid:         admin@example.edu
   name:        admin
   email:       admin@example.edu
@@ -18,45 +40,7 @@ local_sysadmin:
   user_groups:
     - sysadmin
 
-collection1_collection1_manager:
-  type:        LocalUser
-  identity:    collection1_collection1_manager
-  uid:         collection1_collection1_manager@example.edu
-  name:        Collection1 Collection1 Manager
-  email:       collection1_collection1_manager@example.edu
-  phone:       (888) 555-1234
-  enabled:     true
-  institution: example
-
-collection1_collection1_submitter:
-  type:        LocalUser
-  identity:    collection1_collection1_submitter
-  uid:         phil@example.edu
-  name:        phil
-  email:       phil@example.edu
-  phone:       (888) 555-1234
-  enabled:     true
-  institution: example
-
-norights:
-  type:        LocalUser
-  identity:    norights
-  uid:         norights@example.edu
-  name:        I have no rights
-  email:       norights@example.edu
-  phone:       (888) 555-1234
-  enabled:     true
-  institution: example
-
-norights2:
-  type:        LocalUser
-  identity:    norights2
-  uid:         norights2@example.edu
-  name:        I have no rights
-  email:       norights2@example.edu
-  phone:       (888) 555-1234
-  enabled:     true
-  institution: example
+################################# northeast #################################
 
 northeast:
   type:        LocalUser
@@ -81,6 +65,8 @@ northeast_admin:
   institution: northeast
   user_groups:
     - northeast_admins
+
+################################# southwest #################################
 
 southwest:
   type:        LocalUser
@@ -118,6 +104,8 @@ southwest_sysadmin:
   institution: southwest
   user_groups:
     - sysadmin
+
+################################### uiuc ###################################
 
 uiuc:
   type:        ShibbolethUser
@@ -167,23 +155,43 @@ uiuc_sysadmin:
   user_groups:
     - sysadmin
 
-unit1_admin:
+uiuc_collection1_collection1_manager:
   type:        LocalUser
-  identity:    unit1_admin
-  uid:         unit1_admin@example.edu
+  identity:    uiuc_collection1_collection1_manager
+  uid:         uiuc_collection1_collection1_manager@example.edu
+  name:        Collection1 Collection1 Manager
+  email:       uiuc_collection1_collection1_manager@example.edu
+  phone:       (888) 555-1234
+  enabled:     true
+  institution: example
+
+uiuc_collection1_collection1_submitter:
+  type:        LocalUser
+  identity:    uiuc_collection1_collection1_submitter
+  uid:         phil@example.edu
+  name:        phil
+  email:       phil@example.edu
+  phone:       (888) 555-1234
+  enabled:     true
+  institution: example
+
+uiuc_unit1_admin:
+  type:        LocalUser
+  identity:    uiuc_unit1_admin
+  uid:         uiuc_unit1_admin@example.edu
   name:        Unit1 Admin
-  email:       unit1_admin@example.edu
+  email:       uiuc_unit1_admin@example.edu
   phone:       (888) 555-1234
   enabled:     true
   org_dn:      o=Example University,dc=example,dc=edu
   institution: example
 
-unit1_unit2_unit1_admin:
+uiuc_unit1_unit2_unit1_admin:
   type:        LocalUser
-  identity:    unit1_unit2_unit1_admin
-  uid:         unit1_unit2_unit1_admin@example.edu
+  identity:    uiuc_unit1_unit2_unit1_admin
+  uid:         uiuc_unit1_unit2_unit1_admin@example.edu
   name:        Unit1 Unit2 Unit1 Admin
-  email:       unit1_unit2_unit1_admin@example.edu
+  email:       uiuc_unit1_unit2_unit1_admin@example.edu
   phone:       (888) 555-1234
   enabled:     true
   org_dn:      o=Example University,dc=example,dc=edu

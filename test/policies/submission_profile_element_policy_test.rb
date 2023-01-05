@@ -14,7 +14,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = SubmissionProfileElementPolicy.new(context, @element)
@@ -40,7 +40,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -83,7 +83,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -99,7 +99,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = SubmissionProfileElementPolicy.new(context, @element)
@@ -134,7 +134,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -150,7 +150,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = SubmissionProfileElementPolicy.new(context, @element)
@@ -185,7 +185,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

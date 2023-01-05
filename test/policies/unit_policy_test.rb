@@ -15,7 +15,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "change_parent?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     unit2   = units(:uiuc_unit2)
@@ -24,7 +24,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "change_parent?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     unit2   = units(:uiuc_unit2)
@@ -34,7 +34,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "change_parent?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -51,7 +51,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "children?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -66,7 +66,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "collections_tree_fragment?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -81,7 +81,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -89,7 +89,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -106,7 +106,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -122,7 +122,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "delete?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -130,7 +130,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "delete?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -147,7 +147,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "delete?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -163,7 +163,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_administrators?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -171,7 +171,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_administrators?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -180,7 +180,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "edit_administrators?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -196,7 +196,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_membership?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -204,7 +204,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_membership?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -213,7 +213,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "edit_membership?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -229,7 +229,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_properties?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -237,7 +237,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_properties?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -246,7 +246,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "edit_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -262,7 +262,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "export_items?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -270,7 +270,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "export_items?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UnitPolicy.new(context, @unit)
@@ -279,7 +279,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "export_items?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -295,7 +295,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, Unit)
@@ -310,7 +310,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "item_download_counts?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -325,7 +325,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "item_results?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -340,7 +340,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -348,7 +348,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() returns true when the target object is a Unit" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, Unit)
@@ -356,7 +356,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UnitPolicy.new(context, @unit)
@@ -365,7 +365,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -381,7 +381,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "new_collection?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -389,7 +389,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "new_collection?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UnitPolicy.new(context, @unit)
@@ -397,7 +397,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "new_collection?() authorizes unit admins" do
-    user    = users(:norights)
+    user    = users(:example)
     @unit.administering_users << user
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -407,7 +407,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "new_collection?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -423,7 +423,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -438,7 +438,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_about?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -453,7 +453,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_access?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -461,7 +461,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_access?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UnitPolicy.new(context, @unit)
@@ -470,7 +470,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "show_access?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -486,7 +486,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_collections?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -501,7 +501,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_extended_about?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -509,7 +509,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_extended_about?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UnitPolicy.new(context, @unit)
@@ -518,7 +518,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "show_extended_about?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -534,7 +534,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_items?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -549,7 +549,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_statistics?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -564,7 +564,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_unit_membership?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -579,7 +579,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "statistics_by_range?() authorizes everyone" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -594,7 +594,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "undelete?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -602,7 +602,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "undelete?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -619,7 +619,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "undelete?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -635,7 +635,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
@@ -643,7 +643,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UnitPolicy.new(context, @unit)
@@ -652,7 +652,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

@@ -29,7 +29,7 @@ class UserGroupTest < ActiveSupport::TestCase
   # all_users()
 
   test "all_users() returns associated LocalUsers" do
-    assert @instance.all_users.include?(users(:local_sysadmin))
+    assert @instance.all_users.include?(users(:example_sysadmin))
   end
 
   test "all_users() returns ShibbolethUsers belonging to an associated AD group" do
@@ -69,19 +69,19 @@ class UserGroupTest < ActiveSupport::TestCase
   # includes?()
 
   test "includes?() returns false for a user not associated with the instance" do
-    assert !@instance.includes?(users(:norights))
+    assert !@instance.includes?(users(:example))
   end
 
   test "includes?() returns true for a user directly associated with the
   instance" do
-    user             = users(:norights)
+    user             = users(:example)
     @instance.users << user
     assert @instance.includes?(user)
   end
 
   test "includes?() returns true for a user whose email address matches a
   pattern on the instance" do
-    user = users(:norights)
+    user = users(:example)
     @instance.email_patterns.build(pattern: "example.edu").save!
     assert @instance.includes?(user)
   end
@@ -92,7 +92,7 @@ class UserGroupTest < ActiveSupport::TestCase
     # the NetID contains "sysadmin" and the user group contains an AD group with
     # the string "sysadmin" in it.
     @instance.ad_groups.build(name: "test sysadmin group")
-    user = users(:local_sysadmin)
+    user = users(:example_sysadmin)
     assert @instance.includes?(user)
   end
 

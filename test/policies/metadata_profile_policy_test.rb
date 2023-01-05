@@ -14,7 +14,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "clone?() does not authorize non-institution admins" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
@@ -49,7 +49,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "clone?() does not allow the global profile to be cloned" do
     @profile = metadata_profiles(:global)
-    user     = users(:local_sysadmin)
+    user     = users(:example_sysadmin)
     context  = RequestContext.new(user:        user,
                                   institution: user.institution)
     policy   = MetadataProfilePolicy.new(context, @profile)
@@ -58,7 +58,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "clone?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -74,7 +74,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
@@ -100,7 +100,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -116,7 +116,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
@@ -151,7 +151,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "destroy?() does not allow the global profile to be destroyed" do
     @profile = metadata_profiles(:global)
-    user     = users(:local_sysadmin)
+    user     = users(:example_sysadmin)
     context  = RequestContext.new(user:        user,
                                   institution: user.institution)
     policy   = MetadataProfilePolicy.new(context, @profile)
@@ -160,7 +160,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -176,7 +176,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, @profile)
@@ -220,7 +220,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -236,7 +236,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = MetadataProfilePolicy.new(context, MetadataProfile)
@@ -262,7 +262,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -278,7 +278,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = MetadataProfilePolicy.new(context, @profile)
@@ -304,7 +304,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -320,7 +320,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = MetadataProfilePolicy.new(context, @profile)
@@ -355,7 +355,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "show?() authorizes sysadmins to the global profile" do
     @profile = metadata_profiles(:global)
-    user     = users(:local_sysadmin)
+    user     = users(:example_sysadmin)
     context  = RequestContext.new(user:        user,
                                   institution: institutions(:northeast))
     policy   = MetadataProfilePolicy.new(context, @profile)
@@ -373,7 +373,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -389,7 +389,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() does not authorize non-privileged users" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = MetadataProfilePolicy.new(context, @profile)
@@ -424,7 +424,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "update?() authorizes sysadmins to the global profile" do
     @profile = metadata_profiles(:global)
-    user     = users(:local_sysadmin)
+    user     = users(:example_sysadmin)
     context  = RequestContext.new(user:        user,
                                   institution: institutions(:northeast))
     policy   = MetadataProfilePolicy.new(context, @profile)
@@ -442,7 +442,7 @@ class MetadataProfilePolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

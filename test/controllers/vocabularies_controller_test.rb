@@ -18,7 +18,7 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     post vocabularies_path,
          xhr: true,
          params: {

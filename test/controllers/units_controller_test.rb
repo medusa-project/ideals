@@ -58,7 +58,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     post units_path,
          xhr: true,
          params: {
@@ -251,7 +251,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     unit = units(:uiuc_unit1)
     get unit_edit_properties_path(unit), xhr: true
     assert_response :forbidden
@@ -469,7 +469,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "statistics_by_range() returns HTTP 200 for CSV" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     get unit_statistics_by_range_path(units(:uiuc_unit1), format: :csv), params: {
       from_year:  2008,
       from_month: 1,
@@ -539,7 +539,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 403 when updating the unit parent_id to a unit of
   which the current user is not an effective administrator" do
-    log_in_as(users(:unit1_admin))
+    log_in_as(users(:uiuc_unit1_admin))
     unit = units(:uiuc_unit1)
     unit.update!(primary_administrator: nil) # child units cannot have a primary admin
     patch unit_path(unit),

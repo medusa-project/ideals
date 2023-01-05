@@ -14,10 +14,10 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes administrators of any institution" do
-    subject_user = users(:norights)
+    subject_user = users(:example)
     subject_user.institution_administrators.build(institution: subject_user.institution)
     subject_user.save!
-    subject_user = users(:norights)
+    subject_user = users(:example)
     context      = RequestContext.new(user:        subject_user,
                                       institution: subject_user.institution)
     policy       = UserGroupPolicy.new(context, @user_group)
@@ -25,7 +25,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -33,7 +33,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -42,7 +42,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -58,7 +58,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -84,7 +84,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -93,7 +93,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -102,7 +102,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() does not authorize system-required groups" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -117,7 +117,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -143,7 +143,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -152,7 +152,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -168,7 +168,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_ad_groups?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -194,7 +194,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_ad_groups?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -203,7 +203,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_ad_groups?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -219,7 +219,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_affiliations?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -245,7 +245,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_affiliations?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -254,7 +254,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_affiliations?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -270,7 +270,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_departments?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -296,7 +296,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_departments?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -305,7 +305,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_departments?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -321,7 +321,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_email_patterns?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -347,7 +347,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_email_patterns?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -356,7 +356,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_email_patterns?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -372,7 +372,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_hosts?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -398,7 +398,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_hosts?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -407,7 +407,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_hosts?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -423,7 +423,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_local_users?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -449,7 +449,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_local_users?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -458,7 +458,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_local_users?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -474,7 +474,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_netid_users?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -500,7 +500,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_netid_users?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -509,7 +509,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "edit_netid_users?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -525,7 +525,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, UserGroup)
@@ -533,7 +533,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, UserGroup)
@@ -542,7 +542,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -558,7 +558,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "index_global?() does not authorize non-sysadmins" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -566,7 +566,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "index_global?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -575,7 +575,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "index_global?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -591,7 +591,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -599,7 +599,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -608,7 +608,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -624,7 +624,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -650,7 +650,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
@@ -659,7 +659,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -675,7 +675,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -701,7 +701,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() does not authorize anybody else" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
@@ -710,7 +710,7 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

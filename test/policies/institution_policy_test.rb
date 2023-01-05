@@ -22,7 +22,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -55,7 +55,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -79,7 +79,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_administrators?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -87,7 +87,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_administrators?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -114,7 +114,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "edit_administrators?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -138,7 +138,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_preservation?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -171,7 +171,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_properties?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -196,7 +196,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_settings?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -204,7 +204,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_settings?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -231,7 +231,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "edit_settings?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -247,7 +247,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_theme?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -255,7 +255,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit_theme?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -282,7 +282,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "edit_theme?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -306,7 +306,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -331,7 +331,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "item_download_counts?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -381,7 +381,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -414,7 +414,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -455,7 +455,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_access?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -463,7 +463,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_access?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = InstitutionPolicy.new(context, @institution)
@@ -472,7 +472,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "show_access?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -496,7 +496,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_preservation?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -529,7 +529,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_properties?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -579,7 +579,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_settings?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -629,7 +629,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_statistics?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -679,7 +679,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_theme?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -729,7 +729,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_users?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -770,7 +770,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "statistics_by_range?() is restrictive by default" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -778,7 +778,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "statistics_by_range?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = InstitutionPolicy.new(context, @institution)
@@ -805,7 +805,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "statistics_by_range?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -829,7 +829,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_preservation?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -862,7 +862,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_properties?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)
@@ -895,7 +895,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_settings?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InstitutionPolicy.new(context, @institution)

@@ -15,13 +15,13 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "approve() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     patch invitee_approve_path(@invitee)
     assert_response :forbidden
   end
 
   test "approve() approves an invitee and sends an email" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     assert !@invitee.approved?
 
     assert_emails 1 do
@@ -32,7 +32,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "approve() sets the flash and redirects upon success" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     patch invitee_approve_path(@invitee)
     assert_redirected_to invitees_path
     assert flash['success'].start_with?("Invitee #{@invitee.email} has been approved")
@@ -41,7 +41,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   # create()
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
 
     post invitees_path,
          xhr: true,
@@ -56,7 +56,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   test "create() creates an approved instance and sends an email if all
   arguments are valid" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
 
     email = "new@example.edu"
     assert_nil Invitee.find_by_email(email)
@@ -76,7 +76,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() sets the flash if all arguments are valid" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
 
     post invitees_path,
          xhr: true,
@@ -90,7 +90,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200 if all arguments are valid" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
 
     post invitees_path,
          xhr: true,
@@ -154,26 +154,26 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     delete invitee_path(@invitee)
     assert_response :forbidden
   end
 
   test "destroy() destroys the invitee" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     assert_difference "Invitee.count", -1 do
       delete invitee_path(@invitee)
     end
   end
 
   test "destroy() returns HTTP 302 for an existing invitee" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     delete invitee_path(@invitee)
     assert_redirected_to invitees_path
   end
 
   test "destroy() returns HTTP 404 for a missing invitee" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     delete "/invitees/bogus"
     assert_response :not_found
   end
@@ -186,19 +186,19 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     get invitees_path
     assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     get invitees_path
     assert_response :ok
   end
 
   test "index() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     get invitees_path
     assert_response :ok
 
@@ -209,7 +209,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   # new()
 
   test "new() redirects to root path for logged-in users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     get new_invitee_path
     assert_redirected_to root_path
   end
@@ -227,13 +227,13 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "reject() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     patch invitee_reject_path(@invitee)
     assert_response :forbidden
   end
 
   test "reject() rejects an invitee and sends an email" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     assert !@invitee.rejected?
 
     assert_emails 1 do
@@ -244,7 +244,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "reject() sets the flash and redirects upon success" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     patch invitee_reject_path(@invitee)
     assert_redirected_to invitees_path
     assert flash['success'].start_with?("Invitee #{@invitee.email} has been rejected")
@@ -258,19 +258,19 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "resend_email() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     patch invitee_resend_email_path(@invitee)
     assert_response :forbidden
   end
 
   test "resend_email() redirects to the invitees path upon success" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     patch invitee_resend_email_path(@invitee)
     assert_redirected_to invitees_path
   end
 
   test "resend_email() emails an invitee" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     @invitee = invitees(:approved)
     assert_emails 1 do
       patch invitee_resend_email_path(@invitee)
@@ -285,19 +285,19 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     get invitee_path(@invitee)
     assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     get invitee_path(@invitee)
     assert_response :ok
   end
 
   test "show() respects role limits" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     get invitee_path(@invitee)
     assert_response :ok
 

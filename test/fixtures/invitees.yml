@@ -1,4 +1,4 @@
-local_sysadmin:
+example_sysadmin:
   email:          admin@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
   note:           Sample note
@@ -12,29 +12,29 @@ approved:
   expires_at:     <%= Time.now + Invitee::EXPIRATION %>
   institution:    example
 
-collection1_collection1_manager:
-  email:          collection1_collection1_manager@example.edu
+uiuc_collection1_collection1_manager:
+  email:          uiuc_collection1_collection1_manager@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
   note:           Sample note
   expires_at:     <%= Time.now + Invitee::EXPIRATION %>
   institution:    uiuc
 
-collection1_collection1_submitter:
-  email:          collection1_collection1_submitter@example.edu
+uiuc_collection1_collection1_submitter:
+  email:          uiuc_collection1_collection1_submitter@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
   note:           Sample note
   expires_at:     <%= Time.now + Invitee::EXPIRATION %>
   institution:    uiuc
 
-norights:
-  email:          norights@example.edu
+example:
+  email:          example@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
   note:           Sample note
   expires_at:     <%= Time.now + Invitee::EXPIRATION %>
   institution:    example
 
-norights2:
-  email:          norights2@example.edu
+example2:
+  email:          example2@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
   note:           Sample note
   expires_at:     <%= Time.now + Invitee::EXPIRATION %>
@@ -110,15 +110,15 @@ uiuc_sysadmin:
   expires_at:     <%= Time.now + Invitee::EXPIRATION %>
   institution:    uiuc
 
-unit1_admin:
-  email:          unit1_admin@example.edu
+uiuc_unit1_admin:
+  email:          uiuc_unit1_admin@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
   note:           Sample note
   expires_at:     <%= Time.now + Invitee::EXPIRATION %>
   institution:    uiuc
 
-unit1_unit2_unit1_admin:
-  email:          unit1_unit2_unit1_admin@example.edu
+uiuc_unit1_unit2_unit1_admin:
+  email:          uiuc_unit1_unit2_unit1_admin@example.edu
   approval_state: <%= ApprovalState::APPROVED %>
   note:           Sample note
   expires_at:     <%= Time.now + Invitee::EXPIRATION %>

@@ -3,7 +3,7 @@ require "test_helper"
 class LocalUserTest < ActiveSupport::TestCase
 
   setup do
-    @instance = users(:norights)
+    @instance = users(:example)
   end
 
   # create_manually()
@@ -50,7 +50,7 @@ class LocalUserTest < ActiveSupport::TestCase
         provider: "identity",
         info: {
             name: "I have no rights",
-            email: "norights@example.edu"
+            email: "example@example.edu"
         },
         credentials: ""
     }
@@ -60,7 +60,7 @@ class LocalUserTest < ActiveSupport::TestCase
   test "from_omniauth() returns nil if the auth hash email is missing" do
     hash = {
         provider: "identity",
-        uid: "norights@example.edu",
+        uid: "example@example.edu",
         info: {
             name: "I have no rights"
         },
@@ -70,15 +70,15 @@ class LocalUserTest < ActiveSupport::TestCase
   end
 
   test "from_omniauth() returns nil if the associated LocalIdentity is not activated" do
-    identity = users(:norights).identity
+    identity = users(:example).identity
     identity.update_attribute(:activated, false)
 
     hash = {
         provider: "identity",
-        uid: "norights@example.edu",
+        uid: "example@example.edu",
         info: {
             name: "I have no rights",
-            email: "norights@example.edu"
+            email: "example@example.edu"
         },
         credentials: ""
     }
@@ -89,10 +89,10 @@ class LocalUserTest < ActiveSupport::TestCase
     name = "This is my new name"
     hash = {
         provider: "identity",
-        uid: "norights@example.edu",
+        uid: "example@example.edu",
         info: {
             name: name,
-            email: "norights@example.edu"
+            email: "example@example.edu"
         },
         credentials: ""
     }
@@ -103,14 +103,14 @@ class LocalUserTest < ActiveSupport::TestCase
   test "from_omniauth() returns the relevant LocalUser" do
     hash = {
         provider: "identity",
-        uid: "norights@example.edu",
+        uid: "example@example.edu",
         info: {
             name: "I have no rights",
-            email: "norights@example.edu"
+            email: "example@example.edu"
         },
         credentials: ""
     }
-    assert_equal users(:norights), LocalUser.from_omniauth(hash)
+    assert_equal users(:example), LocalUser.from_omniauth(hash)
   end
 
   # activated?()
@@ -148,7 +148,7 @@ class LocalUserTest < ActiveSupport::TestCase
   # sysadmin?()
 
   test "sysadmin?() returns true when the user belongs to the sysadmin user group" do
-    assert users(:local_sysadmin).sysadmin?
+    assert users(:example_sysadmin).sysadmin?
   end
 
   test "sysadmin?() returns false when the user does not belong to the sysadmin

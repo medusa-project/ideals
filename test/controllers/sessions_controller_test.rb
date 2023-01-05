@@ -17,7 +17,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() with a non-activated user responds with HTTP 401" do
-    user = users(:norights)
+    user = users(:example)
     user.identity.update_attribute(:activated, false)
     post "/auth/identity/callback", params: {
         auth_key: user.email,
@@ -27,7 +27,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() with a disabled user responds with HTTP 401" do
-    user = users(:norights)
+    user = users(:example)
     user.update!(enabled: false)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
@@ -47,7 +47,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() with valid credentials redirects to root URL" do
-    user = users(:norights)
+    user = users(:example)
     user.institution.update!(default: true)
     post "/auth/identity/callback", params: {
         auth_key: user.email,
@@ -57,7 +57,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() with valid credentials sets the user's auth hash" do
-    user = users(:norights)
+    user = users(:example)
     user.institution.update!(default: true)
     user.update!(auth_hash: nil)
     post "/auth/identity/callback", params: {
@@ -69,7 +69,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() with valid credentials sets the user's last-logged-in time" do
-    user = users(:norights)
+    user = users(:example)
     user.institution.update!(default: true)
     post "/auth/identity/callback", params: {
       auth_key: user.email,

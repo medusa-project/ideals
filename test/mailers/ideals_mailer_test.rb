@@ -7,7 +7,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_approved()
 
   test "account_approved() sends the expected email" do
-    identity = local_identities(:norights)
+    identity = local_identities(:example)
     identity.create_registration_digest
 
     email = IdealsMailer.account_approved(identity).deliver_now
@@ -46,7 +46,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_registered()
 
   test "account_registered() sends the expected email" do
-    identity = local_identities(:norights)
+    identity = local_identities(:example)
     identity.create_activation_digest
 
     email = IdealsMailer.account_registered(identity).deliver_now
@@ -121,7 +121,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # invited()
 
   test "invited() sends the expected email" do
-    identity = local_identities(:norights)
+    identity = local_identities(:example)
     identity.create_registration_digest
 
     email = IdealsMailer.invited(identity).deliver_now
@@ -159,7 +159,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # password_reset()
 
   test "password_reset() sends the expected email" do
-    identity = local_identities(:norights)
+    identity = local_identities(:example)
     identity.create_reset_digest
 
     email = IdealsMailer.password_reset(identity).deliver_now

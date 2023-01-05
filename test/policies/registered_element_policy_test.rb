@@ -14,7 +14,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() does not authorize users with no privileges" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -22,7 +22,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -48,7 +48,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -64,7 +64,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() does not authorize users with no privileges" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -72,7 +72,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -107,7 +107,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -123,7 +123,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() does not authorize users with no privileges" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = RegisteredElementPolicy.new(context, @element)
@@ -131,7 +131,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -166,7 +166,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -182,7 +182,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() does not authorize users with no privileges" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, RegisteredElement)
@@ -190,7 +190,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, RegisteredElement)
@@ -207,7 +207,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -223,7 +223,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() does not authorize users with no privileges" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -231,7 +231,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = RegisteredElementPolicy.new(context, @element)
@@ -257,7 +257,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -273,7 +273,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() does not authorize users with no privileges" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -281,7 +281,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -316,7 +316,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -332,7 +332,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() does not authorize users with no privileges" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
@@ -340,7 +340,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "update?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = RegisteredElementPolicy.new(context, @element)
@@ -375,7 +375,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

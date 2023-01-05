@@ -10,7 +10,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
   end
 
   test "files?() does not authorize non-sysadmins" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = StatisticPolicy.new(context, Statistic)
@@ -18,7 +18,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
   end
 
   test "files?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = StatisticPolicy.new(context, Statistic)
@@ -27,7 +27,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
 
   test "files?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -43,7 +43,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() does not authorize non-sysadmins" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = StatisticPolicy.new(context, Statistic)
@@ -51,7 +51,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = StatisticPolicy.new(context, Statistic)
@@ -60,7 +60,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -76,7 +76,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
   end
 
   test "items?() does not authorize non-sysadmins" do
-    user    = users(:norights)
+    user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = StatisticPolicy.new(context, Statistic)
@@ -84,7 +84,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
   end
 
   test "items?() authorizes sysadmins" do
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = StatisticPolicy.new(context, Statistic)
@@ -93,7 +93,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
 
   test "items?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:local_sysadmin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

@@ -74,7 +74,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     post collections_path,
          xhr: true,
          params: {
@@ -96,7 +96,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
          params: {
              primary_unit_id: units(:uiuc_unit1).id,
              collection: {
-                 manager_id: users(:local_sysadmin).id
+                 manager_id: users(:example_sysadmin).id
              },
              elements: {
                  title: "New Collection"
@@ -113,7 +113,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
            params: {
                primary_unit_id: units(:uiuc_unit1).id,
                collection: {
-                   manager_id: users(:local_sysadmin).id
+                   manager_id: users(:example_sysadmin).id
                },
                elements: {
                    title: "New Collection"
@@ -201,14 +201,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_collection_membership() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     collection = collections(:uiuc_collection1)
     get collection_edit_collection_membership_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_collection_membership() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_collection_membership_path(collection)
     assert_response :not_found
@@ -237,14 +237,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_managers() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     collection = collections(:uiuc_collection1)
     get collection_edit_managers_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_managers() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_managers_path(collection)
     assert_response :not_found
@@ -273,14 +273,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     collection = collections(:uiuc_collection1)
     get collection_edit_properties_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_properties_path(collection)
     assert_response :not_found
@@ -309,14 +309,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_submitters() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     collection = collections(:uiuc_collection1)
     get collection_edit_submitters_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_submitters() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_submitters_path(collection)
     assert_response :not_found
@@ -352,14 +352,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_unit_membership() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     collection = collections(:uiuc_collection1)
     get collection_edit_unit_membership_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_unit_membership() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_unit_membership_path(collection)
     assert_response :not_found
@@ -462,7 +462,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show_about() returns HTTP 410 for a buried collection" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     get collection_about_path(collections(:uiuc_buried)), xhr: true
     assert_response :gone
   end
@@ -476,14 +476,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show_access() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:norights))
+    log_in_as(users(:example))
     collection = collections(:uiuc_collection1)
     get collection_access_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "show_access() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:local_sysadmin))
+    log_in_as(users(:example_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_access_path(collection)
     assert_response :not_found
@@ -661,7 +661,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
               collection: {
-                  managing_user_ids: [ users(:local_sysadmin).id ]
+                  managing_user_ids: [ users(:example_sysadmin).id ]
               }
           }
     assert_response :ok
@@ -682,7 +682,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 403 when updating the collection parent_id to a
   collection of which the current user is not an effective manager" do
-    log_in_as(users(:collection1_collection1_manager))
+    log_in_as(users(:uiuc_collection1_collection1_manager))
     collection = collections(:uiuc_collection1_collection1)
     patch collection_path(collection),
           xhr: true,
