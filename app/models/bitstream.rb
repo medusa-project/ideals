@@ -56,10 +56,6 @@
 #                           attached to the same {Item}.
 # * `created_at`:           Managed by ActiveRecord.
 # * `description`:          Description.
-# * `dspace_id`:            `bitstream.internal_id` column value from
-#                           DSpace. This is only relevant during migration out
-#                           of DSpace and can be removed once migration is
-#                           complete.
 # * `full_text_checked_at`  Date/time that the bitstream's content was last
 #                           checked for full text. When this is set,
 #                           {full_text} may or may not contain anything, but
