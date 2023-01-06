@@ -6,7 +6,7 @@
 -#
 = form_for(collection, remote: true) do |f|
   .error-messages
-    - # populated via ajax by shared/_validation_messages.js.erb
+    -# populated via ajax by shared/_validation_messages.js.erb
 
   -# Include this only because `collection` is required in the params.
   = f.hidden_field :id, value: f.object.id
@@ -40,13 +40,13 @@
 
   .form-group
     = f.label :metadata_profile_id, "Metadata Profile"
-    = f.select :metadata_profile_id, MetadataProfile.all.pluck(:name, :id),
-               { include_blank: true }, class: "custom-select"
+    = f.select :metadata_profile_id, MetadataProfile.where(institution: current_institution).order(:name).pluck(:name, :id),
+               { include_blank: true }, class: "form-select"
 
   .form-group
     = f.label :submission_profile_id, "Submission Profile"
-    = f.select :submission_profile_id, SubmissionProfile.all.pluck(:name, :id),
-               { include_blank: true }, class: "custom-select"
+    = f.select :submission_profile_id, SubmissionProfile.where(institution: current_institution).order(:name).pluck(:name, :id),
+               { include_blank: true }, class: "form-select"
 
   .form-group
     .form-check
