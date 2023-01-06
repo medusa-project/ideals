@@ -367,18 +367,31 @@ class ApplicationController < ActionController::Base
   # request host
   #
   def redirect_to_main_host
-    # In production, IDEALS has two domains: ideals.illinois.edu and
-    # www.ideals.illinois.edu. The latter is the correct one that the former
-    # should redirect to, but our Institution model only supports one FQDN, so
-    # we have to handle this situation manually here.
-    if request.host == "ideals.illinois.edu"
-      redirect_to "https://www.#{request.host}",
-                  status: :moved_permanently,
+    # In production, IDEALS has several domains:
+    #
+    # * scholarship.illinois.edu (global landing page, still under development,
+    #   redirects to www.ideals.illinois.edu until it's ready)
+    # * www.ideals.illinois.edu (scoped to UIUC content)
+    # * ideals.illinois.edu (redirects permanently to www.ideals.illinois.edu
+    #   via our ALB)
+    # * <institution>.scholarship.illinois.edu (scoped to a non-UIUC
+    #   institution)
+    #
+    # And in demo:
+    #
+    # * demo.scholarship.illinois.edu (global landing page)
+    # * demo.ideals.illinois.edu (scoped to UIUC content)
+    # * <institution>.demo.scholarship.illinois.edu (scoped to a non-UIUC
+    #   institution)
+    #
+    if request.host == "scholarship.illinois.edu" # this condition will be removed when the global landing page is ready
+      redirect_to "https://www.ideals.illinois.edu",
+                  status: 302,
                   allow_other_host: true
       return
     end
     main_host = ::Configuration.instance.main_host
-    if request.host != main_host && !Institution.find_by_fqdn(request.host_with_port)
+    if request.host != main_host && !Institution.exists?(fqdn: request.host_with_port)
       scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
       redirect_to scheme + "://" + main_host,
                   status: :see_other,
