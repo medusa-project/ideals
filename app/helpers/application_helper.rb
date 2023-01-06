@@ -376,6 +376,8 @@ module ApplicationHelper
       icon = "fa fa-building"
     when "User", "LocalUser", "ShibbolethUser"
       icon = "fa fa-user"
+    when "UserGroup"
+      icon = "fa fa-users"
     when "Vocabulary"
       icon = "far fa-font"
     end
