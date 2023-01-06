@@ -29,11 +29,11 @@
         %td
           - case invitee.approval_state
           - when ApprovalState::PENDING
-            %span.badge.badge-primary PENDING
+            %span.badge.text-bg-primary PENDING
           - when ApprovalState::APPROVED
-            %span.badge.badge-success APPROVED
+            %span.badge.text-bg-success APPROVED
           - when ApprovalState::REJECTED
-            %span.badge.badge-danger REJECTED
+            %span.badge.text-bg-danger REJECTED
         %td= render partial: "invitees/actions_menu",
                     locals: { invitee: invitee, button_class: "btn btn-sm btn-outline-secondary" }
 

@@ -11,7 +11,7 @@
   -# `collection` is required in the params (but this attribute is not permitted)
   = f.hidden_field :id, value: f.object.id
 
-  .form-group
+  .mb-3
     %h5 Managers
     - user_strings = f.object.managing_users.each.map(&:to_autocomplete)
     - user_strings << "" if user_strings.empty?
@@ -20,10 +20,9 @@
         = text_field_tag "managers[]", user_str,
                          autocomplete: "off",
                          class: "form-control"
-        .input-group-append
-          %button.btn.btn-sm.btn-outline-danger.remove{type: "button"}
-            %i.fa.fa-minus
-            Remove
+        %button.btn.btn-sm.btn-outline-danger.remove{type: "button"}
+          %i.fa.fa-minus
+          Remove
         .dropdown-menu
           - # populated by javascript
     %button.btn.btn-sm.btn-outline-success.add
@@ -32,7 +31,7 @@
 
   %hr
 
-  .form-group
+  .mb-3
     %h5 Submitters
     - user_strings = f.object.submitting_users.each.map(&:to_autocomplete)
     - user_strings << "" if user_strings.empty?
@@ -41,10 +40,9 @@
         = text_field_tag "submitters[]", user_str,
                          autocomplete: "off",
                          class: "form-control"
-        .input-group-append
-          %button.btn.btn-sm.btn-outline-danger.remove{type: "button"}
-            %i.fa.fa-minus
-            Remove
+        %button.btn.btn-sm.btn-outline-danger.remove{type: "button"}
+          %i.fa.fa-minus
+          Remove
         .dropdown-menu
           - # populated by javascript
     %button.btn.btn-sm.btn-outline-success.add
@@ -52,6 +50,6 @@
       Add Submitter
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: "btn btn-primary")

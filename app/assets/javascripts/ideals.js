@@ -332,7 +332,7 @@ const IDEALS = {
             document.execCommand("copy");
             temp.remove();
 
-            let copied = $(" <strong><span class=\"text-success\">&check; Copied!</span></strong>");
+            let copied = $(" <span class=\"badge bg-success ms-1\">&check; COPIED</span>");
             button.after(copied);
             setTimeout(function() {
                 copied.fadeOut(400, function() {
@@ -717,7 +717,7 @@ const IDEALS = {
 
     MetadataEditor: function() {
         $("button.add").on("click", function(e) {
-            const last_tr = $(this).parent(".form-group").find("table.metadata > tbody > tr:last-child");
+            const last_tr = $(this).parent(".mb-3").find("table.metadata > tbody > tr:last-child");
             const clone = last_tr.clone();
             clone.find("input, textarea").val("");
             clone.find("select:first > option:first").prop("selected", true);
@@ -761,7 +761,7 @@ const IDEALS = {
 
         function updateEventListeners() {
             $("button.remove").off("click").on("click", function () {
-                const numIGs   = $(this).parents(".form-group").find(".input-group").length;
+                const numIGs   = $(this).parents(".mb-3").find(".input-group").length;
                 const parentIG = $(this).parents(".input-group");
                 if (numIGs > minElements) {
                     // Don't remove the last one, as the add button needs to

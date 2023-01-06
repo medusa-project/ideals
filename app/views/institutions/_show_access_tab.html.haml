@@ -1,9 +1,9 @@
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@institution).edit_administrators?
     %button.btn.btn-light.edit-administrators{"data-institution-key": @institution.key,
-                                              "data-target": "#edit-administrators-modal",
-                                              "data-toggle": "modal",
-                                              role: "button"}
+                                              "data-bs-target":       "#edit-administrators-modal",
+                                              "data-bs-toggle":       "modal",
+                                              role:                   "button"}
       %i.fas.fa-pencil-alt
       Edit Administrators
 

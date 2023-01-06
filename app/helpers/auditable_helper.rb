@@ -11,18 +11,18 @@ module AuditableHelper
     events.each do |event|
       html << '<div class="card">'
       html <<   "<h5 id=\"event-header-#{event.id}\" class=\"card-header\">"
-      html <<     "<div data-toggle=\"collapse\" "\
-                    "data-target=\"#event-#{event.id}\" aria-expanded=\"true\" "\
+      html <<     "<div data-bs-toggle=\"collapse\" "\
+                    "data-bs-target=\"#event-#{event.id}\" aria-expanded=\"true\" "\
                     "aria-controls=\"event-#{event.id}\">"
       case event.event_type
       when Event::Type::CREATE, Event::Type::UNDELETE
-        badge_class = "badge-success"
+        badge_class = "bg-success"
       when Event::Type::UPDATE
-        badge_class = "badge-warning"
+        badge_class = "bg-warning"
       when Event::Type::DELETE
-        badge_class = "badge-danger"
+        badge_class = "bg-danger"
       else
-        badge_class = "badge-primary"
+        badge_class = "bg-primary"
       end
       html <<       "<span class=\"badge #{badge_class}\">"
       html <<         Event::Type.label(event.event_type).upcase

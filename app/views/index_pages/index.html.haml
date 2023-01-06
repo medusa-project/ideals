@@ -2,11 +2,11 @@
 - provide :title, "Index Pages"
 
 -if policy(IndexPage).new?
-  .btn-group.float-right{role: "group"}
+  .btn-group.float-end{role: "group"}
     -# Add Index Page button
-    %button.btn.btn-light.add-index-page{"data-target": "#add-index-page-modal",
-                                         "data-toggle": "modal",
-                                         type:          "button"}
+    %button.btn.btn-light.add-index-page{"data-bs-target": "#add-index-page-modal",
+                                         "data-bs-toggle": "modal",
+                                         type:             "button"}
       %i.fa.fa-plus
       Add Index Page
 

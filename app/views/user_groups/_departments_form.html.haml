@@ -15,13 +15,12 @@
     .input-group.mb-3
       = text_field_tag "user_group[departments][]", department.name,
                        class: "form-control"
-      .input-group-append
-        %button.btn.btn-outline-danger.remove{type: "button"}
-          %i.fa.fa-minus
+      %button.btn.btn-outline-danger.remove{type: "button"}
+        %i.fa.fa-minus
   %button.btn.btn-outline-success.add{type: "button"}
     %i.fa.fa-plus
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: "btn btn-primary")

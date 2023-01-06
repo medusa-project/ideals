@@ -8,24 +8,23 @@
     = icon_for(:info)
     Surround the pattern with slashes (e.g.
     %code /@example.org/
-    ) to use a regular expression. Otherwise, the pattern will be searched for
+    ) to use a regular expression. Otherwise, the pattern will be matched
     literally within an email address.
 
-  .form-group
+  .mb-3
     - patterns = f.object.email_patterns.order(:pattern).to_a
     - patterns << "" if patterns.empty?
     - patterns.each do |pattern|
       .input-group.mb-3
         = text_field_tag "user_group[email_patterns][]", pattern,
                          class: "form-control"
-        .input-group-append
-          %button.btn.btn-outline-danger.remove{type: "button"}
-            %i.fa.fa-minus
+        %button.btn.btn-outline-danger.remove{type: "button"}
+          %i.fa.fa-minus
 
   %button.btn.btn-outline-success.add{type: "button"}
     %i.fa.fa-plus
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: "btn btn-primary")

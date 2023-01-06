@@ -4,37 +4,37 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  .form-group
+  .mb-3
     = f.label :name
     - if f.object.new_record?
       = f.text_field :name, class: "form-control"
     - else
       %br
       %code= element.name
-  .form-group
+  .mb-3
     = f.label :uri, "URI"
     = f.text_field :uri, class: "form-control"
-  .form-group
+  .mb-3
     = f.label :label
     = f.text_field :label, class: "form-control"
-  .form-group
+  .mb-3
     = f.label :vocabulary_id, "Vocabulary"
     = f.select(:vocabulary_id, options_for_select(Vocabulary.where(institution: current_institution).order(:name).map{ |v| [v.name, v.id] },
                                                   f.object.vocabulary_id),
-               { include_blank: true }, class: "custom-select")
-  .form-group
+               { include_blank: true }, class: "form-select")
+  .mb-3
     = f.label :input_type, "Input Type"
     = f.select(:input_type, options_for_select(RegisteredElement::InputType.all.map{ |t| [t.split("_").map(&:capitalize).join(" "), t] }.sort.reverse,
                                                f.object.input_type),
-               {}, class: "custom-select")
-  .form-group
+               {}, class: "form-select")
+  .mb-3
     = f.label :highwire_mapping, "Highwire Mapping"
     = f.text_field :highwire_mapping, class: "form-control"
-  .form-group
+  .mb-3
     = f.label :scope_note
     = f.text_area :scope_note, class: "form-control"
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit(f.object.new_record? ? "Create Element" : "Save Changes",
                  class: "btn btn-primary")

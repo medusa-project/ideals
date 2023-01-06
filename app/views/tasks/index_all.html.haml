@@ -3,6 +3,8 @@
 
 %h1 All Tasks
 
+= hidden_field_tag(:limit, @limit)
+
 #tasks-list
   = render partial: "tasks"
 

@@ -2,11 +2,11 @@
 - provide :title, "Academic Units"
 
 -if policy(Unit).new?
-  .btn-group.float-right{role: "group"}
+  .btn-group.float-end{role: "group"}
     -# Add Unit button
-    %button.btn.btn-light.add-unit{"data-target": "#add-unit-modal",
-                                   "data-toggle": "modal",
-                                   type:          "button"}
+    %button.btn.btn-light.add-unit{"data-bs-target": "#add-unit-modal",
+                                   "data-bs-toggle": "modal",
+                                   type:             "button"}
       %i.fa.fa-plus
       Add Unit
 

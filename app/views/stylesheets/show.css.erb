@@ -53,11 +53,11 @@
 
 <% # link_color %>
 
-a, a.page-link, .btn-outline-primary { color: <%= h @institution.link_color %>; }
+a, a.page-link, .nav-link, .btn-outline-primary { color: <%= h @institution.link_color %>; }
 
 <% # link_hover_color %>
 
-a:hover, a.page-link:hover { color: <%= h @institution.link_hover_color %>; }
+a:hover, .nav-link:hover, a.page-link:hover { color: <%= h @institution.link_hover_color %>; }
 
 <% # active_link_color %>
 

@@ -26,7 +26,7 @@
 
   %h5 Users
 
-  .form-group
+  .mb-3
     = hidden_field_tag "administering_users[]"
     - user_strings = f.object.administering_users.each.map(&:to_autocomplete)
     - user_strings << "" if user_strings.empty?
@@ -35,10 +35,9 @@
         = text_field_tag "administering_users[]", user_str,
                          autocomplete: "off",
                          class: "form-control"
-        .input-group-append
-          %button.btn.btn-outline-danger.remove{type: "button"}
-            %i.fa.fa-minus
-            Remove
+        %button.btn.btn-outline-danger.remove{type: "button"}
+          %i.fa.fa-minus
+          Remove
         .dropdown-menu
           -# populated by javascript
     %button.btn.btn-sm.btn-outline-success.add
@@ -46,6 +45,6 @@
       Add User
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: "btn btn-primary")

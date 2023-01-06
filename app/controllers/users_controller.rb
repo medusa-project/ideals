@@ -210,10 +210,11 @@ class UsersController < ApplicationController
       where("LOWER(name) LIKE ? OR LOWER(uid) LIKE ? OR LOWER(email) LIKE ?", q, q, q).
       where("type LIKE ?", "%#{@permitted_params[:class]}").
       order(:name)
-    if @permitted_params[:institution_id].present?
+    if institution
+      @users          = @users.where(institution_id: institution.id)
+    elsif @permitted_params[:institution_id].present?
       @users          = @users.where(institution_id: @permitted_params[:institution_id])
     end
-    @users            = @users.where(institution_id: institution.id) if institution
     @count            = @users.count
     @users            = @users.limit(@window).offset(@start)
     @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1

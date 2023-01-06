@@ -5,21 +5,21 @@
   = f.hidden_field :metadata_profile_id, value: profile.id
   .error-messages
     - # populated via ajax by shared/_validation_messages.js.erb
-  .form-group
+  .mb-3
     = f.label :registered_element_id, "Element"
     = f.select(:registered_element_id, RegisteredElement.where(institution: current_institution).order(:name).pluck(:name, :id),
       { selected: f.object.registered_element_id },
-      class: "custom-select")
+      class: "form-select")
   - if profile.elements.any?
-    .form-group
+    .mb-3
       = f.label :position, "Position After"
       = f.select(:position,
         [["", 0]] + profile.elements.where("id != ?", element&.id || -1).map.with_index { |e, i| [e.label, i + 1] },
         { selected: element.position },
-        class: "custom-select")
+        class: "form-select")
   - else
     = f.hidden_field :position, value: 0
-  .form-group
+  .mb-3
     .form-check
       = f.check_box :visible, class: "form-check-input"
       = f.label :visible, class: "form-check-label"
@@ -33,12 +33,12 @@
       = f.check_box :faceted, class: "form-check-input"
       = f.label :faceted, class: "form-check-label"
 
-  .form-group
+  .mb-3
     = f.label :relevance_weight, "Relevance Weight (1-10)"
     = f.number_field :relevance_weight, min: 1, max: 10, class: "form-control"
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit(f.object.new_record? ? "Create Element" : "Save Changes",
                  class: 'btn btn-primary')

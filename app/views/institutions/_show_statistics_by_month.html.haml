@@ -1,6 +1,6 @@
 -# Content for the Statistics -> Statistics By Month tab
 
-.float-right
+.float-end
   = link_to(institution_statistics_by_range_path(@institution,
                                                  format: :csv,
                                                  params: params.permit(:from_year, :from_month, :to_year, :to_month)),

@@ -4,7 +4,7 @@
       .col-4
         .input-group.mb-3.filter-field
           = hidden_field_tag("fq[]", "#{Item::IndexFields::SUBMITTER}:#{@user.id}")
-          = filter_field(icon: "fa fa-filter", submit_text: "Filter")
+          = filter_field(submit_text: "Filter")
       .col-4
         .input-group
           = sort_menu

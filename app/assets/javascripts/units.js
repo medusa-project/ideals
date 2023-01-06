@@ -104,7 +104,7 @@ const UnitView = function() {
             });
             // When the search-type tab is changed, clear the input from all
             // sibling tabs.
-            tabContent.find('#search-tabs > li > a[data-toggle="pill"]').on('hidden.bs.tab', function(e) {
+            tabContent.find('#search-tabs > li > a[data-bs-toggle="pill"]').on('hidden.bs.tab', function(e) {
                 const hiddenPane = $($(e.target).attr("href"));
                 hiddenPane.find("input[type=text], input[type=search], textarea").val("");
                 hiddenPane.find("select > option:first-child").prop("selected", "selected");
@@ -112,7 +112,7 @@ const UnitView = function() {
             });
             // When a date search type tab is changed, clear the input from
             // the hidden tab.
-            tabContent.find('.date-search-type > li > a[data-toggle="pill"]').on('hidden.bs.tab', function(e) {
+            tabContent.find('.date-search-type > li > a[data-bs-toggle="pill"]').on('hidden.bs.tab', function(e) {
                 const hiddenPane = $($(e.target).attr("href"));
                 hiddenPane.find("select > option:first-child").prop("selected", "selected");
             });

@@ -1,7 +1,7 @@
 - provide :body_id, "show_item"
 - provide :title, "Deleted Item"
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@item).undelete?
     -# Undelete button
     = link_to(item_undelete_path(@item), class:  "btn btn-danger",

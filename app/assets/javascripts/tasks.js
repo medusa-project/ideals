@@ -13,12 +13,13 @@ const TasksView = function() {
 
         const refresh = function() {
             console.debug('Refreshing task list...');
-
-            const currentPage = $('.pagination li.active > a:first')
+            let currentPage = $('.pagination li.active > a:first')
                 .text().replace(/[/\D]/g, '');
+            if (!currentPage) {
+                currentPage = 1;
+            }
             const start = (currentPage - 1) * $('[name=limit]').val();
-
-            let path = "/tasks";
+            let path    = "/tasks";
             if (window.location.href.match(/all-tasks/)) {
                 path = "/all-tasks";
             }

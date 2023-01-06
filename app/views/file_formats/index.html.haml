@@ -5,22 +5,23 @@
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item{role: "presentation"}
-    %a#accounted-formats-tab.nav-link.active{"data-toggle":   "tab",
-                                             href:            "#accounted-formats",
-                                             role:            "tab",
-                                             "aria-controls": "accounted-formats",
-                                             "aria-selected": "true"}
+    %button#accounted-formats-tab.nav-link.active{"data-bs-toggle": "tab",
+                                                  "data-bs-target": "#accounted-formats",
+                                                  role:             "tab",
+                                                  "aria-controls":  "accounted-formats",
+                                                  "aria-selected":  "true"}
       Accounted Formats
-      %span.badge.badge-pill.badge-secondary
+      %span.badge.rounded-pill.text-bg-secondary
         = @accounted_formats.count
   %li.nav-item{role: "presentation"}
-    %a#unaccounted-formats-tab.nav-link{"data-toggle":   "tab",
-                                        href:            "#unaccounted-formats",
-                                        role:            "tab",
-                                        "aria-controls": "unaccounted-formats",
-                                        "aria-selected": "false"}
+    %button#unaccounted-formats-tab.nav-link{"data-bs-toggle": "tab",
+                                             "data-bs-target": "#unaccounted-formats",
+                                             role:             "tab",
+                                             type:             "button",
+                                             "aria-controls":  "unaccounted-formats",
+                                             "aria-selected":  "false"}
       Unaccounted Formats
-      %span.badge.badge-pill.badge-secondary
+      %span.badge.rounded-pill.text-bg-secondary
         = @unaccounted_formats.count
 
 .tab-content

@@ -9,15 +9,13 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  %hr
-
   %h5 User Groups Allowed to Access Files
 
   .alert.alert-light
     %i.fa.fa-info-circle
     If no boxes are checked, files are unrestricted.
 
-  .form-group
+  .mb-3
     = hidden_field_tag("item_bitstream_authorized_groups[]", nil)
     - UserGroup.order(:name).each do |group|
       .form-check
@@ -30,6 +28,6 @@
                     class: "form-check-label")
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: 'btn btn-primary')

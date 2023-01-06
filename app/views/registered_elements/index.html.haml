@@ -1,10 +1,11 @@
 - provide :body_id, "registered_elements"
 - provide :title, "Element Registry"
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   -# Add Element button
-  %button.btn.btn-light{"data-target": "#add-element-modal",
-                        "data-toggle": "modal", type: "button"}
+  %button.btn.btn-light{"data-bs-target": "#add-element-modal",
+                        "data-bs-toggle": "modal",
+                        type:             "button"}
     %i.fa.fa-plus
     Add Element
 
@@ -20,15 +21,15 @@
   .card.mb-3
     .card-body
       - if element.required?
-        .float-right
-          .badge.badge-pill.badge-warning
+        .float-end
+          .badge.rounded-pill.text-bg-warning
             Required
       - else
-        .btn-group.float-right
+        .btn-group.float-end
           %button.btn.btn-light.btn-sm.edit-element{"data-element-name": element.name,
-                                                    "data-target": "#edit-element-modal",
-                                                    "data-toggle": "modal",
-                                                    type: "button"}
+                                                    "data-bs-target":    "#edit-element-modal",
+                                                    "data-bs-toggle":    "modal",
+                                                    type:                "button"}
             %i.fas.fa-pencil-alt
             Edit
           = link_to(registered_element_path(element), class: 'btn btn-sm btn-danger',

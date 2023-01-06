@@ -321,10 +321,10 @@ This will give you nothing more than an empty, hidden modal. Next, we add a
 button (in the same template) to open it:
 
 ```haml
-%button.btn.btn-light.add-child-unit{"data-unit-id": @unit.id,
-                                     "data-target":  "#add-child-unit-modal",
-                                     "data-toggle":  "modal",
-                                     role:           "button"}
+%button.btn.btn-light.add-child-unit{"data-unit-id":   @unit.id,
+                                     "data-bs-target": "#add-child-unit-modal",
+                                     "data-bs-toggle": "modal",
+                                     role:             "button"}
   %i.fa.fa-plus
   Add Child Unit
 ```

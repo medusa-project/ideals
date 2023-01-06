@@ -2,12 +2,10 @@
   %h2.mt-5
     Owning Collections
     - if policy(@item).edit_membership?
-      %button.btn.btn-light.edit-item-membership{"data-item-id": @item.id,
-                                                 "data-target": "#edit-item-membership-modal",
-                                                 "data-toggle": "modal",
-                                                 role: "button"}
+      %button.btn.btn-light.edit-item-membership{"data-item-id":   @item.id,
+                                                 "data-bs-target": "#edit-item-membership-modal",
+                                                 "data-bs-toggle": "modal",
+                                                 role:             "button"}
         %i.fas.fa-pencil-alt
         Change
-  = resource_list(@collections,
-                  primary_id: @item.primary_collection&.id,
-                  show_icons: false)
+  = resource_list(@collections, primary_id: @item.primary_collection&.id)

@@ -1,6 +1,6 @@
 -# Content for the Statistics -> Downloads By Item tab
 
-.float-right
+.float-end
   = link_to(institution_item_download_counts_path(@institution,
                                                   format: :csv,
                                                   params: params.permit(:from_year, :from_month, :to_year, :to_month)),

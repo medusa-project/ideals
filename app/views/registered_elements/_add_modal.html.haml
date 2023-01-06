@@ -1,10 +1,13 @@
-/ Add-element modal
-#add-element-modal.modal.fade{"aria-labelledby": "dl-add-element-modal-label", role: "dialog", tabindex: "-1"}
-  .modal-dialog{role: "document"}
+-# Add-element modal
+#add-element-modal.modal.fade{"aria-labelledby": "add-element-modal-label",
+                              role:              "dialog",
+                              tabindex:          "-1"}
+  .modal-dialog.modal-dialog-centered{role: "document"}
     .modal-content
       .modal-header
         %h4#add-element-modal-label.modal-title Add Element
-        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
-          %span{"aria-hidden": "true"} &times;
+        %button.btn-close{"aria-label":      "Close",
+                          "data-bs-dismiss": "modal",
+                          type:              "button"}
       .modal-body
         = render partial: 'form', locals: { element: @new_element }

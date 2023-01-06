@@ -2,10 +2,10 @@
   %h2.mt-5
     Embargoes
     - if policy(@item).edit_embargoes?
-      %button.btn.btn-light.edit-item-embargoes{"data-item-id": @item.id,
-                                                "data-target": "#edit-item-embargoes-modal",
-                                                "data-toggle": "modal",
-                                                role: "button"}
+      %button.btn.btn-light.edit-item-embargoes{"data-item-id":   @item.id,
+                                                "data-bs-target": "#edit-item-embargoes-modal",
+                                                "data-bs-toggle": "modal",
+                                                role:             "button"}
         %i.fas.fa-pencil-alt
         Edit
 

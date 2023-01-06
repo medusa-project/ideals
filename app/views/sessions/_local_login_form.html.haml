@@ -7,9 +7,9 @@
     %code @illinois.edu
     email address.
 
-    %a{href:          "#",
-       "data-target": "#login-carousel",
-       "data-slide":  "prev"}
+    %a{href:             "#",
+       "data-bs-target": "#login-carousel",
+       "data-bs-slide":  "prev"}
       (Oops, I do have one)
   .alert.alert-light
     = icon_for(:info)
@@ -18,16 +18,16 @@
     using the forgot-password link below.
 .alert.alert-danger.login-status
 = form_tag "/auth/identity/callback" do
-  .form-group.row
+  .mb-3.row
     %label.col-sm-4.col-form-label{for: :auth_key} Email
     .col-sm-8
       = email_field_tag :auth_key, nil, class: 'form-control'
-  .form-group.row
+  .mb-3.row
     %label.col-sm-4.col-form-label{for: :password} Password
     .col-sm-8
       = password_field_tag :password, nil, class: 'form-control'
       = link_to "(I forgot my password)", reset_password_path
-  %button.btn.btn-primary.mr-3{type: "submit"}
+  %button.btn.btn-primary.me-3{type: "submit"}
     %i.fa.fa-sign-in-alt
     &nbsp;Log In
 

@@ -1,11 +1,11 @@
 - provide :body_id, "metadata_profiles"
 - provide :title, "Metadata Profiles"
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   -# Add Profile button
-  %button.btn.btn-light{"data-target": "#add-profile-modal",
-                        "data-toggle": "modal",
-                        type:          "button"}
+  %button.btn.btn-light{"data-bs-target": "#add-profile-modal",
+                        "data-bs-toggle": "modal",
+                        type:             "button"}
     %i.fa.fa-plus
     Add Profile
 
@@ -21,7 +21,7 @@
         %td
           = link_to(profile.name, profile)
           - if profile.institution_default
-            %span.badge.badge-success DEFAULT
+            %span.badge.text-bg-success DEFAULT
 
 = render partial: 'add_modal'
 = render partial: "shared/ajax_modal",

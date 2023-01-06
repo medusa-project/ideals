@@ -8,14 +8,10 @@ const AgreementView = function() {
     // icon upon click, and vice versa.
     const depositAgreementSection = $('#deposit-agreement');
     depositAgreementSection.on('show.bs.collapse', function () {
-        $(this).find(".card-header i")
-            .removeClass("fa-plus-square")
-            .addClass("fa-minus-square");
+        $(this).find("span.text-info").hide();
     });
     depositAgreementSection.on('hide.bs.collapse', function () {
-        $(this).find(".card-header i")
-            .removeClass("fa-minus-square")
-            .addClass("fa-plus-square");
+        $(this).find("span.text-info").show();
     });
 
     // Show the deposit agreement when the begin-submission button is clicked.
@@ -126,9 +122,9 @@ const SubmissionForm = function() {
     form.on("submit", function(e) {
         e.preventDefault();
         if (lastEditedInput) {
-            const tr             = lastEditedInput.parents("tr");
-            const successMessage = tr.find("td.message > div.text-success");
-            const errorMessage   = tr.find("td.message > div.text-danger");
+            const row            = lastEditedInput.parents(".row");
+            const successMessage = row.find(".message > div.text-success");
+            const errorMessage   = row.find(".message > div.text-danger");
             if (lastEditedInput.is(":valid")) {
                 $.ajax({
                     type: form.attr("method"),
@@ -413,13 +409,13 @@ const SubmissionForm = function() {
      * more of them, and hides them (it) if not.
      */
     const showOrHideRemoveButtons = function() {
-        metadataForm.find("button.remove").each(function() {
-            const button = $(this);
-            const parentInputGroup = button.parents(".input-group");
-            if (parentInputGroup.siblings(".input-group").length > 0) {
-                button.parent().show();
+        metadataForm.find(".col.remove").each(function() {
+            const buttonColumn = $(this);
+            const parentInputGroup = buttonColumn.parents(".value-inputs");
+            if (parentInputGroup.siblings(".value-inputs").length > 0) {
+                buttonColumn.show();
             } else {
-                button.parent().hide();
+                buttonColumn.hide();
             }
         });
     };
@@ -436,9 +432,9 @@ const SubmissionForm = function() {
 
     const wireRemoveButtons = function() {
         metadataForm.find("button.remove").off("click").on("click", function() {
-            const parentInputGroup  = $(this).parents(".input-group");
+            const parentInputGroup  = $(this).parents(".value-inputs");
             // Don't remove the input group if it's the last one remaining
-            const siblings = parentInputGroup.siblings(".input-group");
+            const siblings = parentInputGroup.siblings(".value-inputs");
             if (siblings.length > 0) {
                 parentInputGroup.remove();
                 onElementChanged(siblings.filter(":first"));
@@ -457,8 +453,8 @@ const SubmissionForm = function() {
 
     metadataForm.find("button.add").on("click", function(e) {
         // Show the "remove" button of all adjacent input groups
-        const inputGroups = $(this).parent().find(".input-group");
-        inputGroups.find(".input-group-append").show();
+        const inputGroups = $(this).parent().find(".value-inputs");
+        inputGroups.find(".remove").show();
         // Clone the last input group
         const prevInputGroup = inputGroups.last();
         const clone = prevInputGroup.clone();

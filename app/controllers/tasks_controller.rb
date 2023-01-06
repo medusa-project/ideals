@@ -13,10 +13,11 @@ class TasksController < ApplicationController
   # Responds to `GET /tasks`
   #
   def index
+    @limit = 100
     @tasks = Task.
       where(institution: current_institution).
       order(created_at: :desc).
-      limit(100)
+      limit(@limit)
     respond_to do |format|
       format.js
       format.html

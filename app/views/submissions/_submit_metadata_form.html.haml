@@ -10,118 +10,125 @@
   -# Include this only because `item` is required in the params.
   = f.hidden_field :submitter_id, value: current_user.id
 
-  %table.table.metadata
-    %tbody
-      - @submission_profile.elements.each do |profile_element|
-        - registered_element = profile_element.registered_element
-        %tr
-          %td
-            = registered_element.label
-            - if profile_element.required
-              %span.badge.badge-danger REQUIRED
-            %p.form-text.text-muted.mb-0= profile_element.help_text
-          %td
-            - if f.object.element(registered_element.name.to_sym).nil?
-              - f.object.elements.build(registered_element: registered_element)
-            - f.object.elements.select{ |e| e.registered_element == registered_element }.each do |ascribed_element|
-              .input-group.mb-2
-                = hidden_field_tag "elements[][name]",
-                                   registered_element.name
-                - if registered_element.vocabulary
-                  - show_text_field = profile_element.name == "dc:type" && ascribed_element.string.present? && (!registered_element.vocabulary.vocabulary_terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string == "other")
-                  = select_tag(show_text_field ? "disabled" : "elements[][string]",
-                               options_for_select(registered_element.vocabulary.vocabulary_terms.map{ |t| [t.displayed_value, t.stored_value] },
-                                                  (registered_element.vocabulary.vocabulary_terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string.blank?) ? ascribed_element.string : "other"),
-                               class: "custom-select",
+  - @submission_profile.elements.each do |profile_element|
+    - registered_element = profile_element.registered_element
+    .row.metadata
+      .col-sm-4
+        = registered_element.label
+        - if profile_element.required
+          %span.badge.text-bg-danger REQUIRED
+        %p.form-text.mb-0= profile_element.help_text
+      .col-sm-6
+        - if f.object.element(registered_element.name.to_sym).nil?
+          - f.object.elements.build(registered_element: registered_element)
+        - f.object.elements.select{ |e| e.registered_element == registered_element }.each do |ascribed_element|
+          .row.value-inputs.mb-2
+            = hidden_field_tag "elements[][name]",
+                               registered_element.name
+            - if registered_element.vocabulary
+              .col
+                - show_text_field = profile_element.name == "dc:type" && ascribed_element.string.present? && (!registered_element.vocabulary.vocabulary_terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string == "other")
+                = select_tag(show_text_field ? "disabled" : "elements[][string]",
+                             options_for_select(registered_element.vocabulary.vocabulary_terms.map{ |t| [t.displayed_value, t.stored_value] },
+                                                (registered_element.vocabulary.vocabulary_terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string.blank?) ? ascribed_element.string : "other"),
+                             class: "form-select",
+                             include_blank: true,
+                             required: profile_element.required)
+                - if show_text_field
+                  = text_field_tag("elements[][string]",
+                                   ascribed_element.string == "other" ? "" : ascribed_element.string,
+                                   class: "form-control",
+                                   required: profile_element.required)
+            - else
+              - case registered_element.input_type
+              - when RegisteredElement::InputType::DATE
+                - hidden_input_id = SecureRandom.hex
+                - date            = ascribed_element.date
+                -# This hidden input contains a date in ISO 8601 YYYY-MM-DD format.
+                -# Changes to the year field and M/D select menus below
+                -# cause its value to change (via JS).
+                = hidden_field_tag("elements[][string]",
+                                   ascribed_element.string,
+                                   id: hidden_input_id,
+                                   data: { 'input-type': "date" })
+                .col.pe-0
+                  -# N.B.: these are submitted incidentally as part of the
+                  -# form but not read server-side.
+                  = text_field_tag("year", date&.year,
+                                   size: 4,
+                                   maxlength: 4,
+                                   placeholder: "YYYY",
+                                   data: { for: hidden_input_id },
+                                   required: profile_element.required,
+                                   class: "form-control")
+                .col.pe-0
+                  = select_tag("month",
+                               options_for_select((1..12).map{ |m| [m, m.to_s.rjust(2, "0")] },
+                                                  date&.month&.to_s&.rjust(2, "0")),
                                include_blank: true,
-                               required: profile_element.required)
-                  - if show_text_field
-                    = text_field_tag("elements[][string]",
-                                     ascribed_element.string == "other" ? "" : ascribed_element.string,
-                                     class: "form-control",
-                                     required: profile_element.required)
-                - else
-                  - case registered_element.input_type
-                  - when RegisteredElement::InputType::DATE
-                    - hidden_input_id = SecureRandom.hex
-                    - date            = ascribed_element.date
-                    -# This hidden input contains a date in ISO 8601 YYYY-MM-DD format.
-                    -# Changes to the year field and M/D select menus below
-                    -# cause its value to change (via JS).
-                    = hidden_field_tag("elements[][string]",
-                                       ascribed_element.string,
-                                       id: hidden_input_id,
-                                       data: { 'input-type': "date" })
-                    .form-inline
-                      -# N.B.: these are submitted incidentally as part of the
-                      -# form but not read server-side.
-                      = text_field_tag("year", date&.year,
-                                       size: 4,
-                                       maxlength: 4,
-                                       placeholder: "YYYY",
-                                       data: { for: hidden_input_id },
-                                       required: profile_element.required,
-                                       class: "form-control mr-2")
-                      = select_tag("month",
-                                   options_for_select((1..12).map{ |m| [m, m.to_s.rjust(2, "0")] },
-                                                      date&.month&.to_s&.rjust(2, "0")),
-                                   include_blank: true,
-                                   data: { for: hidden_input_id },
-                                   class: "custom-select mr-2")
-                      = select_tag("day",
-                                   options_for_select((1..31).map{ |d| [d, d.to_s.rjust(2, "0")] },
-                                                      date&.day&.to_s&.rjust(2, "0")),
-                                   include_blank: true,
-                                   data: { for: hidden_input_id },
-                                   class: "custom-select")
-                  - when RegisteredElement::InputType::PERSON
-                    - hidden_input_id = SecureRandom.hex
-                    - person_name     = ascribed_element.person_name || {}
-                    -# This hidden input contains a person name in
-                    -# "Familyname Givenname" format.
-                    -# Changes to the inputs below cause its value to change (via JS).
-                    = hidden_field_tag("elements[][string]",
-                                       ascribed_element.string,
-                                       id: hidden_input_id,
-                                       data: { 'input-type': "person" })
-                    .form-inline
-                      -# N.B.: these are submitted incidentally as part of the
-                      -# form but not read server-side.
-                      = text_field_tag("family_name", person_name[:family_name],
-                                       placeholder: "Family Name/Company",
-                                       data: { for: hidden_input_id },
-                                       class: "form-control mr-2")
-                      = text_field_tag("given_name", person_name[:given_name],
-                                       placeholder: "Given Name",
-                                       data: { for: hidden_input_id },
-                                       class: "form-control")
-                  - when RegisteredElement::InputType::TEXT_AREA
-                    = text_area_tag("elements[][string]",
-                                    ascribed_element.string,
-                                    class: "form-control",
-                                    required: profile_element.required)
-                  - else
-                    = text_field_tag("elements[][string]",
-                                     ascribed_element.string,
-                                     class: "form-control",
-                                     required: profile_element.required)
+                               data: { for: hidden_input_id },
+                               class: "form-select")
+                .col
+                  = select_tag("day",
+                               options_for_select((1..31).map{ |d| [d, d.to_s.rjust(2, "0")] },
+                                                  date&.day&.to_s&.rjust(2, "0")),
+                               include_blank: true,
+                               data: { for: hidden_input_id },
+                               class: "form-select")
 
-                - if !profile_element.required || profile_element.repeatable
-                  .input-group-append
-                    %button.btn.btn-outline-danger.remove{type: "button"}
-                      %i.fa.fa-minus
-                      Remove
-            - if profile_element.repeatable
-              %button.btn.btn-outline-success.btn-sm.mt-1.add{type: "button"}
-                %i.fa.fa-plus
-                Add Another Field
-          %td.message
-            .text-success
-              %i.fa.fa-check
-              Value saved
-            .text-danger
-              %i.fa.fa-times
-              Invalid value
+              - when RegisteredElement::InputType::PERSON
+                - hidden_input_id = SecureRandom.hex
+                - person_name     = ascribed_element.person_name || {}
+                -# This hidden input contains a person name in
+                -# "Familyname Givenname" format.
+                -# Changes to the inputs below cause its value to change (via JS).
+                = hidden_field_tag("elements[][string]",
+                                   ascribed_element.string,
+                                   id: hidden_input_id,
+                                   data: { 'input-type': "person" })
+                .col.pe-0
+                  -# N.B.: these are submitted incidentally as part of the
+                  -# form but not read server-side.
+                  = text_field_tag("family_name", person_name[:family_name],
+                                   placeholder: "Family Name/Company",
+                                   data: { for: hidden_input_id },
+                                   class: "form-control")
+                .col
+                  = text_field_tag("given_name", person_name[:given_name],
+                                   placeholder: "Given Name",
+                                   data: { for: hidden_input_id },
+                                   class: "form-control")
+              - when RegisteredElement::InputType::TEXT_AREA
+                .col
+                  = text_area_tag("elements[][string]",
+                                  ascribed_element.string,
+                                  class: "form-control",
+                                  required: profile_element.required)
+              - else
+                .col
+                  = text_field_tag("elements[][string]",
+                                   ascribed_element.string,
+                                   class: "form-control",
+                                   required: profile_element.required)
+
+            - if !profile_element.required || profile_element.repeatable
+              .col.remove.ps-0.pe-0
+                %button.btn.btn-sm.btn-outline-danger.remove{type: "button"}
+                  %i.fa.fa-minus
+                  Remove
+        - if profile_element.repeatable
+          %button.btn.btn-outline-success.btn-sm.mt-1.add{type: "button"}
+            %i.fa.fa-plus
+            Add Another Field
+      .col-sm-2.message
+        .text-success
+          %i.fa.fa-check
+          Value saved
+        .text-danger
+          %i.fa.fa-times
+          Invalid value
+    %hr
+
   .text-center.mb-3
     .btn-group{role: "group"}
       %button.btn.btn-light.step-3-to-2{type: "button"}

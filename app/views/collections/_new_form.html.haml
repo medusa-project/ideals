@@ -15,16 +15,16 @@
   - if parent
     = f.hidden_field :parent_id, value: parent.id
 
-  .alert.alert-light
+  .mb-3
+    = f.label :title
+    = f.text_field :title, class: "form-control"
+
+  %p.form-text
     %i.fa.fa-info-circle
     Other properties can be set later using the Edit Properties button in the
     collection's About tab.
 
-  .form-group
-    = f.label :title
-    = f.text_field :title, class: "form-control"
-
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Create", class: 'btn btn-primary')

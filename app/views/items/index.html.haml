@@ -6,23 +6,26 @@
     .card-body
       %ul#search-tabs.nav.nav-pills.mb-0{role: "tablist"}
         %li.nav-item{role: "presentation"}
-          %a#all-items-tab.nav-link.active{"data-toggle":   "pill",
-                                           href:            "#all-items",
-                                           role:            "tab",
-                                           "aria-controls": "all-items",
-                                           "aria-selected": "true"} All Items
+          %button#all-items-tab.nav-link.active{"data-bs-toggle": "pill",
+                                                "data-bs-target": "#all-items",
+                                                role:             "tab",
+                                                type:             "button",
+                                                "aria-controls":  "all-items",
+                                                "aria-selected":  "true"} All Items
         %li.nav-item{role: "presentation"}
-          %a#simple-search-tab.nav-link{"data-toggle":   "pill",
-                                        href:            "#simple-search",
-                                        role:            "tab",
-                                        "aria-controls": "simple-search",
-                                        "aria-selected": "true"} Simple Search
+          %button#simple-search-tab.nav-link{"data-bs-toggle": "pill",
+                                             "data-bs-target": "#simple-search",
+                                             role:             "tab",
+                                             type:             "button",
+                                             "aria-controls":  "simple-search",
+                                             "aria-selected":  "true"} Simple Search
         %li.nav-item{role: "presentation"}
-          %a#advanced-search-tab.nav-link{"data-toggle":   "pill",
-                                          href:            "#advanced-search",
-                                          role:            "tab",
-                                          "aria-controls": "advanced-search",
-                                          "aria-selected": "true"} Advanced Search
+          %button#advanced-search-tab.nav-link{"data-bs-toggle": "pill",
+                                               "data-bs-target": "#advanced-search",
+                                               role:              "tab",
+                                               type:             "button",
+                                               "aria-controls":  "advanced-search",
+                                               "aria-selected":  "true"} Advanced Search
       .tab-content
         #all-items.tab-pane.fade.show.active{role:              "tabpanel",
                                              "aria-labelledby": "all-items-tab"}

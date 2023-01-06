@@ -1,11 +1,11 @@
 - provide :body_id, "show_vocabulary"
 - provide :title, @vocabulary.name
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@vocabulary).edit?
     -# Edit button
-    %button.btn.btn-light.edit-vocabulary{"data-target":        "#edit-vocabulary-modal",
-                                          "data-toggle":        "modal",
+    %button.btn.btn-light.edit-vocabulary{"data-bs-target":     "#edit-vocabulary-modal",
+                                          "data-bs-toggle":     "modal",
                                           "data-vocabulary-id": @vocabulary.id,
                                           type:                 "button"}
       %i.fa.fa-pencil-alt
@@ -22,10 +22,10 @@
 %h1= @vocabulary.name
 
 - if policy(@vocabulary).edit?
-  .btn-group.float-right.mb-3{role: "group"}
+  .btn-group.float-end.mb-3{role: "group"}
     -# Add Term button
-    %button.btn.btn-light.add-term{"data-target":        "#add-term-modal",
-                                   "data-toggle":        "modal",
+    %button.btn.btn-light.add-term{"data-bs-target":     "#add-term-modal",
+                                   "data-bs-toggle":     "modal",
                                    "data-vocabulary-id": @vocabulary.id,
                                    type:                 "button"}
       %i.fa.fa-plus
@@ -42,8 +42,8 @@
         %td{style: "width: 1px; white-space: nowrap"}
           .btn-group
             %button.btn.btn-light.btn-sm.edit-term{type:                 "button",
-                                                   "data-toggle":        "modal",
-                                                   "data-target":        "#edit-term-modal",
+                                                   "data-bs-toggle":     "modal",
+                                                   "data-bs-target":     "#edit-term-modal",
                                                    "data-vocabulary-id": @vocabulary.id,
                                                    "data-term-id":       term.id}
               %i.fa.fa-pencil-alt

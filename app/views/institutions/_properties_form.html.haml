@@ -4,22 +4,22 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  .form-group
+  .mb-3
     = f.label :name, "Name"
     = f.text_field :name, class: 'form-control'
 
-  .form-group
+  .mb-3
     = f.label :key, "Key"
     = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
-    %p.text-muted
+    %p.form-text
       %i.fa.fa-info-circle
       A short alphanumeric string that uniquely identifies the institution.
       Used only internally and cannot be changed later.
 
-  .form-group
+  .mb-3
     = f.label :fqdn, "Fully Qualified Domain Name (FQDN)"
     = f.text_field :fqdn, class: 'form-control'
-    %p.text-muted
+    %p.form-text
       %i.fa.fa-info-circle
       This must be present in the
       %code config.hosts
@@ -27,15 +27,15 @@
       %code= "config/environments/#{Rails.env}.rb"
       file.
 
-  .form-group
+  .mb-3
     = f.label :org_dn, "Organization DN"
     = f.text_field :org_dn, class: 'form-control'
-    %p.text-muted
+    %p.form-text
       %i.fa.fa-info-circle
       Copy this value from the properties page of a user of this institution
       who has signed in via Shibboleth.
 
-  .form-group
+  .mb-3
     = f.label :latitude, "Latitude"
     .row
       .col
@@ -48,7 +48,7 @@
         = f.text_field :latitude_seconds, class: "form-control",
                         placeholder: "Seconds"
 
-  .form-group
+  .mb-3
     = f.label :longitude, "Longitude"
     .row
       .col
@@ -61,13 +61,13 @@
         = f.text_field :longitude_seconds, class: "form-control",
                         placeholder: "Seconds"
 
-  .form-group
+  .mb-3
     .form-check
       = f.check_box :default, class: "form-check-input"
       = f.label :default, class: "form-check-label"
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit(f.object.new_record? ? "Create Institution" : "Save Changes",
                  class: "btn btn-primary")

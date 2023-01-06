@@ -2,10 +2,11 @@
 - provide :title, "Users"
 
 -if policy(User).invite?
-  .btn-group.float-right{role: "group"}
+  .btn-group.float-end{role: "group"}
     -# Invite button
-    %button.btn.btn-light{"data-target": "#invite-user-modal",
-                          "data-toggle": "modal", type: "button"}
+    %button.btn.btn-light{"data-bs-target": "#invite-user-modal",
+                          "data-bs-toggle": "modal",
+                          type:             "button"}
       %i.fa.fa-plus
       Invite User
 

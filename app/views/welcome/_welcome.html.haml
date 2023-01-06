@@ -1,10 +1,10 @@
 - if logged_in? && to_do_list.total_items > 0
-  .card.text-white.bg-info.mb-2.ml-2.float-right
+  .card.text-white.bg-info.mb-2.ms-2.float-end
     .card-header
       = icon_for(:info)
       Action required on
       = pluralize(to_do_list.total_items, "item")
-    .card-body.pl-2.pb-2
+    .card-body.ps-2.pb-2
       %ul
         - to_do_list.items.each do |item|
           %li= link_to(item[:message], item[:url])

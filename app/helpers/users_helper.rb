@@ -13,19 +13,28 @@ module UsersHelper
     html <<   '<div id="user-filter" class="card-body">'
     html <<     form_tag(request.path, method: :get, class: "form-inline") do
       form = StringIO.new
-      form << label_tag("q", "Name or Email", class: "mr-1")
-      form << filter_field
+      form << '<div class="row">'
+      form <<   '<div class="col-md-4">'
+      form <<     label_tag("q", "Name or Email", class: "form-label")
+      form <<     filter_field
+      form <<   '</div>'
       if show_institution
-        form << label_tag("institution_id", "Institution", class: "ml-3 mr-1")
-        form << select_tag("institution_id", options_for_select(Institution.all.order(:name).map{ |i| [i.name, i.id] }),
-                           include_blank: true,
-                           class: "custom-select")
+        form << '<div class="col-md-4">'
+        form <<   label_tag("institution_id", "Institution", class: "form-label")
+        form <<   select_tag("institution_id",
+                             options_for_select(Institution.all.order(:name).map{ |i| [i.name, i.id] }),
+                             include_blank: true,
+                             class: "form-select")
+        form << '</div>'
       end
-      form << label_tag("class", "Authentication Type", class: "ml-3 mr-1")
-      form << select_tag("class", options_for_select([["Any", ""],
-                                                      ["Shiboleth", ShibbolethUser.to_s],
-                                                      ["Local", LocalUser.to_s]]),
-                         class: "custom-select")
+      form <<   '<div class="col-md-4">'
+      form <<     label_tag("class", "Authentication Type", class: "form-label")
+      form <<     select_tag("class", options_for_select([["Any", ""],
+                                                          ["Shibboleth", ShibbolethUser.to_s],
+                                                          ["Local", LocalUser.to_s]]),
+                             class: "form-select")
+      form <<   '</div>'
+      form << '</div>'
       raw(form.string)
     end
     html <<   '</div>'

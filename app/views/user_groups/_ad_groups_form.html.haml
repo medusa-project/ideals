@@ -4,21 +4,20 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  .form-group
+  .mb-3
     - names = f.object.ad_groups.order(:name).to_a
     - names << "" if names.empty?
     - names.each do |name|
       .input-group.mb-3
         = text_field_tag "user_group[ad_groups][]", name,
                          class: "form-control"
-        .input-group-append
-          %button.btn.btn-outline-danger.remove{type: "button"}
-            %i.fa.fa-minus
+        %button.btn.btn-outline-danger.remove{type: "button"}
+          %i.fa.fa-minus
 
   %button.btn.btn-outline-success.add{type: "button"}
     %i.fa.fa-plus
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: "btn btn-primary")

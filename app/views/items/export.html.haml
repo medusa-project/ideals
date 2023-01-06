@@ -4,12 +4,12 @@
 %h1 Export Items
 
 = form_tag(method: :post) do |f|
-  .form-group
+  .mb-3
     = label_tag :handles, "Collection/Unit Handles"
     = text_field_tag :handles, nil, class: "form-control"
-    %small.form-text.text-muted Separate multiple handles with commas.
+    %small.form-text Separate multiple handles with commas.
 
-  .form-group
+  .mb-3
     %h4
       Elements
       .btn-group{role: "group"}

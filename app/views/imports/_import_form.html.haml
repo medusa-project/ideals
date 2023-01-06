@@ -12,16 +12,16 @@
     These menus only affect new items. If you will only be updating existing
     items, then just select any collection.
 
-  .form-group
+  .mb-3
     = f.label :unit_id, "Unit"
     = select_tag(:unit_id,
                  options_for_select(unit_tree_options(include_blank: true), f.object&.collection&.primary_unit&.id),
-                 class: "custom-select")
-  .form-group
+                 class: "form-select")
+  .mb-3
     = f.label :collection_id, "Collection"
-    = f.select(:collection_id, [], {}, class: "custom-select")
+    = f.select(:collection_id, [], {}, class: "form-select")
 
   .clearfix
-    .float-right
-      %button.btn.btn-light.cancel{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light.cancel{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Create", class: "btn btn-primary")

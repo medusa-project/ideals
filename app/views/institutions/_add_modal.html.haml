@@ -1,12 +1,13 @@
 -# Add Institution modal
 #add-institution-modal.modal.fade{"aria-labelledby": "add-institution-modal-label",
-                                  role: "dialog",
-                                  tabindex: "-1"}
-  .modal-dialog{role: "document"}
+                                  role:              "dialog",
+                                  tabindex:          "-1"}
+  .modal-dialog.modal-dialog-centered{role: "document"}
     .modal-content
       .modal-header
         %h4#add-institution-modal-label.modal-title Add Institution
-        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
-          %span{"aria-hidden": "true"} &times;
+        %button.btn-close{"aria-label":      "Close",
+                          "data-bs-dismiss": "modal",
+                          type:              "button"}
       .modal-body
         = render partial: "institutions/properties_form", locals: { institution: @new_institution }

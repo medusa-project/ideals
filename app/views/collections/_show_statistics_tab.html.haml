@@ -5,18 +5,20 @@
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item{role: "presentation"}
-    %a#statistics-by-month-tab.nav-link.active{"data-toggle": "tab",
-                                               href: "#statistics-by-month-tab-content",
-                                               role: "tab",
-                                               "aria-controls": "statistics-by-month-tab-content",
-                                               "aria-selected": true} Statistics By Month
+    %button#statistics-by-month-tab.nav-link.active{"data-bs-toggle": "tab",
+                                                    "data-bs-target": "#statistics-by-month-tab-content",
+                                                    role:             "tab",
+                                                    type:             "button",
+                                                    "aria-controls":  "statistics-by-month-tab-content",
+                                                    "aria-selected":  "true"} Statistics By Month
 
   %li.nav-item{role: "presentation"}
-    %a#downloads-by-item-tab.nav-link{"data-toggle": "tab",
-                                      href: "#downloads-by-item-tab-content",
-                                      role: "tab",
-                                      "aria-controls": "downloads-by-item-tab-content",
-                                      "aria-selected": false} Downloads By Item
+    %button#downloads-by-item-tab.nav-link{"data-bs-toggle": "tab",
+                                           "data-bs-target": "#downloads-by-item-tab-content",
+                                           role:             "tab",
+                                           type:             "button",
+                                           "aria-controls":  "downloads-by-item-tab-content",
+                                           "aria-selected":  "false"} Downloads By Item
 
 .tab-content
   #statistics-by-month-tab-content.tab-pane.fade.show.active{role: "tabpanel",

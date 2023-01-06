@@ -1,24 +1,24 @@
 - provide :body_id, "show_submission_profile"
 - provide :title, @profile.name
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@profile).edit?
-    / Edit button
-    %button.btn.btn-light.edit-profile{"data-target": "#edit-profile-modal",
-                                       "data-toggle": "modal",
+    -# Edit button
+    %button.btn.btn-light.edit-profile{"data-bs-target":  "#edit-profile-modal",
+                                       "data-bs-toggle":  "modal",
                                        "data-profile-id": @profile.id,
-                                       type: "button"}
+                                       type:              "button"}
       %i.fa.fa-pencil-alt
       Edit
   - if policy(@profile).clone?
-    / Clone button
+    -# Clone button
     = link_to(submission_profile_clone_path(@profile), method: "post",
                                                        role: "button",
                                                        class: "btn btn-light") do
       %i.fa.fa-copy
       Clone
   - if policy(@profile).destroy?
-    / Delete button
+    -# Delete button
     = link_to(submission_profile_path(@profile), class: "btn btn-danger",
                                                  role: "button",
                                                  method: :delete,
@@ -30,29 +30,36 @@
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item
-    %a#elements-tab.nav-link.active{href: "#elements", "data-toggle": "tab",
-                                    role: "tab", "aria-controls": "elements",
-                                    "aria-selected": "true"}
+    %button#elements-tab.nav-link.active{"data-bs-target": "#elements",
+                                         "data-bs-toggle": "tab",
+                                         role:             "tab",
+                                         type:             "button",
+                                         "aria-controls":  "elements",
+                                         "aria-selected":  "true"}
       = icon_for(RegisteredElement)
       Elements
-      %span.badge.badge-pill.badge-secondary= @profile.elements.count
+      %span.badge.rounded-pill.text-bg-secondary= @profile.elements.count
   - unless @profile.institution_default
     %li.nav-item
-      %a#collections-tab.nav-link{href: "#collections", "data-toggle": "tab",
-                                  role: "tab", "aria-controls": "collections",
-                                  "aria-selected": "false"}
+      %button#collections-tab.nav-link{"data-bs-target": "#collections",
+                                       "data-bs-toggle": "tab",
+                                       role:             "tab",
+                                       type:             "button",
+                                       "aria-controls":  "collections",
+                                       "aria-selected":  "false"}
         = icon_for(Collection)
         Collections
-        %span.badge.badge-pill.badge-secondary= @collections.count
+        %span.badge.rounded-pill.text-bg-secondary= @collections.count
 
 .tab-content
-  #elements.tab-pane.fade.show.active{role: "tabpanel",
+  #elements.tab-pane.fade.show.active{role:              "tabpanel",
                                       "aria-labelledby": "elements-tab"}
     - if policy(@profile).edit?
-      .btn-group.float-right.mb-3{role: "group"}
-        / Add Element button
-        %button.btn.btn-light{"data-target": "#add-element-modal",
-                              "data-toggle": "modal", type: "button"}
+      .btn-group.float-end.mb-3{role: "group"}
+        -# Add Element button
+        %button.btn.btn-light{"data-bs-target": "#add-element-modal",
+                              "data-bs-toggle": "modal",
+                              type:             "button"}
           %i.fa.fa-plus
           Add Element
 
@@ -61,10 +68,10 @@
     - @profile.elements.each do |element|
       .card.mb-3
         .card-body
-          .btn-group.float-right
-            %button.btn.btn-light.btn-sm.edit-element{type: "button",
-                                                      "data-toggle": "modal",
-                                                      "data-target": "#edit-element-modal",
+          .btn-group.float-end
+            %button.btn.btn-light.btn-sm.edit-element{type:              "button",
+                                                      "data-bs-toggle":  "modal",
+                                                      "data-bs-target":  "#edit-element-modal",
                                                       "data-profile-id": @profile.id,
                                                       "data-element-id": element.id}
               %i.fa.fa-pencil-alt

@@ -1,11 +1,11 @@
 - provide :body_id, "show_metadata_profile"
 - provide :title, @profile.name
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@profile).edit?
     -# Edit button
-    %button.btn.btn-light.edit-profile{"data-target":     "#edit-profile-modal",
-                                       "data-toggle":     "modal",
+    %button.btn.btn-light.edit-profile{"data-bs-target":  "#edit-profile-modal",
+                                       "data-bs-toggle":  "modal",
                                        "data-profile-id": @profile.id,
                                        type:              "button"}
       %i.fa.fa-pencil-alt
@@ -30,43 +30,46 @@
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item
-    %a#elements-tab.nav-link.active{href:            "#elements",
-                                    "data-toggle":   "tab",
-                                    role:            "tab",
-                                    "aria-controls": "elements",
-                                    "aria-selected": "true"}
+    %button#elements-tab.nav-link.active{"data-bs-target": "#elements",
+                                         "data-bs-toggle": "tab",
+                                         role:             "tab",
+                                         type:             "button",
+                                         "aria-controls":  "elements",
+                                         "aria-selected":  "true"}
       = icon_for(MetadataProfileElement)
       Elements
-      %span.badge.badge-pill.badge-secondary= @profile.elements.count
+      %span.badge.rounded-pill.text-bg-secondary= @profile.elements.count
   - unless @profile.global?
     %li.nav-item
-      %a#units-tab.nav-link{href:            "#units",
-                            "data-toggle":   "tab",
-                            role:            "tab",
-                            "aria-controls": "units",
-                            "aria-selected": "false"}
+      %button#units-tab.nav-link{"data-bs-target": "#units",
+                                 "data-bs-toggle": "tab",
+                                 role:             "tab",
+                                 type:             "button",
+                                 "aria-controls":  "units",
+                                 "aria-selected":  "false"}
         = icon_for(Unit)
         Directly Assigned Units
-        %span.badge.badge-pill.badge-secondary= @units.count
+        %span.badge.rounded-pill.text-bg-secondary= @units.count
     %li.nav-item
-      %a#collections-tab.nav-link{href:            "#collections",
-                                  "data-toggle":   "tab",
-                                  role:            "tab",
-                                  "aria-controls": "collections",
-                                  "aria-selected": "false"}
+      %button#collections-tab.nav-link{"data-bs-target": "#collections",
+                                       "data-bs-toggle": "tab",
+                                       role:             "tab",
+                                       type:             "button",
+                                       "aria-controls":  "collections",
+                                       "aria-selected":  "false"}
         = icon_for(Collection)
         Directly Assigned Collections
-        %span.badge.badge-pill.badge-secondary= @collections.count
+        %span.badge.rounded-pill.text-bg-secondary= @collections.count
 
 .tab-content
   #elements.tab-pane.fade.show.active{role: "tabpanel",
                                       "aria-labelledby": "elements-tab"}
     - if policy(@profile).edit?
-      .btn-group.float-right.mb-3{role: "group"}
+      .btn-group.float-end.mb-3{role: "group"}
         -# Add Element button
-        %button.btn.btn-light{"data-target": "#add-element-modal",
-                              "data-toggle": "modal",
-                              type:          "button"}
+        %button.btn.btn-light{"data-bs-target": "#add-element-modal",
+                              "data-bs-toggle": "modal",
+                              type:             "button"}
           %i.fa.fa-plus
           Add Element
     %table.table
@@ -82,8 +85,8 @@
         %tr
           %td{style: "width: 1px; white-space: nowrap"}
             .btn-group
-              %button.btn.btn-light.btn-sm.edit-profile{"data-target":     "#edit-profile-modal",
-                                                        "data-toggle":     "modal",
+              %button.btn.btn-light.btn-sm.edit-profile{"data-bs-target":  "#edit-profile-modal",
+                                                        "data-bs-toggle":  "modal",
                                                         "data-profile-id": @profile.id,
                                                         type:              "button"}
                 %i.fa.fa-pencil-alt
@@ -106,8 +109,8 @@
             %td{style: "width: 1px; white-space: nowrap"}
               .btn-group
                 %button.btn.btn-light.btn-sm.edit-element{type:              "button",
-                                                          "data-toggle":     "modal",
-                                                          "data-target":     "#edit-element-modal",
+                                                          "data-bs-toggle":  "modal",
+                                                          "data-bs-target":  "#edit-element-modal",
                                                           "data-profile-id": @profile.id,
                                                           "data-element-id": element.id}
                   %i.fa.fa-pencil-alt

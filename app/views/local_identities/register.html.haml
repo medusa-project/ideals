@@ -9,33 +9,33 @@
   = hidden_field_tag "_method", "patch"
 
   = f.fields_for(:user, @user.becomes(User)) do |u|
-    .row.form-group
+    .row.mb-3
       = u.label :name, class: "col-sm-3 col-form-label"
       .col-sm-9
         = u.text_field :name, class: "form-control", required: true
-    .row.form-group
+    .row.mb-3
       = u.label :phone, class: "col-sm-3 col-form-label"
       .col-sm-9
         = u.phone_field :phone, class: "form-control"
 
-  .row.form-group
+  .row.mb-3
     = f.label :email, class: "col-sm-3 col-form-label"
     .col-sm-9.col-form-label
       = f.object.email
-  .row.form-group
+  .row.mb-3
     = f.label :institution_id, "Institution", class: "col-sm-3 col-form-label"
     .col-sm-9.col-form-label
       = f.object.invitee.institution ? f.object.invitee.institution.name : "None"
-  .row.form-group
+  .row.mb-3
     = f.label :password, class: "col-sm-3 col-form-label"
     .col-sm-9
       = f.password_field :password, class: "form-control", required: true
-  .row.form-group
+  .row.mb-3
     = f.label :password_confirmation, class: "col-sm-3 col-form-label"
     .col-sm-9
       = f.password_field :password_confirmation, class: "form-control", required: true
 
-  .row.form-group
+  .row.mb-3
     .col-sm-3
     .col-sm-9
       = recaptcha_tags

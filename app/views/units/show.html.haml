@@ -9,71 +9,70 @@
   = icon_for(@unit)
   = @unit.title
 
-.row
-  .col-sm-5.col-md-4.col-lg-3
-    %ul.nav.nav-pills.flex-column{role: "tablist",
+.d-flex
+  .nav.nav-pills.flex-column.me-3{role:               "tablist",
                                   "aria-orientation": "vertical"}
-      %li.nav-item{role: "presentation"}
-        %a#items-tab.nav-link.active{href: "#items-tab-content",
-                                     "data-toggle": "pill",
-                                     role: "tab",
-                                     "aria-controls": "items-tab-content",
-                                     "aria-selected": "true"}
-          = icon_for(Item)
-          Items
-      - if policy(@unit).show_about?
-        %li.nav-item
-          %a#about-tab.nav-link{"aria-controls": "about-tab-content",
-                                "aria-selected": "false",
-                                "data-toggle": "pill",
-                                href: "#about-tab-content",
-                                role: "tab"}
-            = icon_for(:info)
-            About This Unit
-      - if policy(@unit).show_statistics?
-        %li.nav-item{role: "presentation"}
-          %a#statistics-tab.nav-link{href: "#statistics-tab-content",
-                                    "data-toggle": "tab",
-                                    role: "tab",
-                                    "aria-controls": "statistics-tab-content",
-                                    "aria-selected": "false"}
-            %i.fa.fa-chart-bar
-            Statistics
-      - if policy(@unit).show_access?
-        %li.nav-item{role: "presentation"}
-          %a#access-tab.nav-link{"aria-controls": "access-tab-content",
-                                 "aria-selected": "false",
-                                 "data-toggle": "pill",
-                                 href: "#access-tab-content",
-                                 role: "tab"}
-            %i.fa.fa-users
-            Access
+    %button#items-tab.nav-link.active{"data-bs-target": "#items-tab-content",
+                                      "data-bs-toggle": "pill",
+                                      role:             "tab",
+                                      type:             "button",
+                                      "aria-controls":  "items-tab-content",
+                                      "aria-selected":  "true"}
+      = icon_for(Item)
+      Items
+    - if policy(@unit).show_about?
+      %button#about-tab.nav-link{"aria-controls":  "about-tab-content",
+                                 "aria-selected":  "false",
+                                 "data-bs-toggle": "pill",
+                                 "data-bs-target": "#about-tab-content",
+                                 role:             "tab",
+                                 type:             "button"}
+        = icon_for(:info)
+        About This Unit
+    - if policy(@unit).show_statistics?
+      %button#statistics-tab.nav-link{"data-bs-target": "#statistics-tab-content",
+                                      "data-bs-toggle": "tab",
+                                      role:             "tab",
+                                      type:             "button",
+                                      "aria-controls":  "statistics-tab-content",
+                                      "aria-selected":  "false"}
+        %i.fa.fa-chart-bar
+        Statistics
+    - if policy(@unit).show_access?
+      %button#access-tab.nav-link{"aria-controls":  "access-tab-content",
+                                  "aria-selected":  "false",
+                                  "data-bs-toggle": "pill",
+                                  "data-bs-target": "#access-tab-content",
+                                  role:             "tab",
+                                  type:             "button"}
+        %i.fa.fa-users
+        Access
 
-  .tab-content.col-sm-7.col-md-8.col-lg-9
+  .tab-content.w-100
     #items-tab-content.tab-pane.fade.show.active{"aria-labelledby": "items-tab",
-                                                 role: "tabpanel"}
+                                                 role:              "tabpanel"}
       = spinner
     - if policy(@unit).show_about?
       #about-tab-content.tab-pane.fade{"aria-labelledby": "about-tab",
-                                       role: "tabpanel"}
+                                       role:              "tabpanel"}
         = spinner
     - if policy(@unit).show_statistics?
-      #statistics-tab-content.tab-pane.fade{role: "tabpanel",
+      #statistics-tab-content.tab-pane.fade{role:              "tabpanel",
                                             "aria-labelledby": "statistics-tab"}
         = spinner
     - if policy(@unit).show_access?
       #access-tab-content.tab-pane.fade{"aria-labelledby": "access-tab",
-                                        role: "tabpanel"}
+                                        role:              "tabpanel"}
         = spinner
 
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-unit-properties-modal",
+         locals: { id:    "edit-unit-properties-modal",
                    title: "Edit Properties" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-unit-membership-modal",
+         locals: { id:    "edit-unit-membership-modal",
                    title: "Change Unit Membership" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "add-child-unit-modal",
+         locals: { id:    "add-child-unit-modal",
                    title: "Add Child Unit" }
 = render partial: "collections/add_modal",
          locals: { primary_unit: @unit,

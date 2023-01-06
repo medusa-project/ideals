@@ -1,15 +1,11 @@
 body#deposit-agreement-body {
+  .accordion-header {
+    .accordion-button {
+      font-size: 0.8em;
+    }
+  }
   #feedback {
     display: none;
-  }
-
-  .card-header {
-    .btn-link {
-      color: black;
-      font-size: 1.3em;
-      padding: 0;
-      text-decoration: none;
-    }
   }
 }
 
@@ -32,17 +28,11 @@ body#edit_submission {
 
   // Metadata section
 
-  table.metadata {
-    td:first-child {
-      width: 40%;
-    }
-    td.message {
-      width: 15%;
-    }
+  .row.metadata {
     textarea {
       height: 10em;
     }
-    .input-group-append {
+    .col.remove {
       display: none;
     }
   }

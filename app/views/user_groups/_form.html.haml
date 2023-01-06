@@ -7,16 +7,16 @@
   -# This value will be cleared via JS if we are on /global-user-groups.
   = f.hidden_field(:institution_id, value: current_institution.id)
 
-  .form-group
+  .mb-3
     = f.label :key
     = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
 
-  .form-group
+  .mb-3
     = f.label :name
     = f.text_field :name, class: 'form-control'
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit(f.object.new_record? ? "Create" : "Save Changes",
                  class: "btn btn-primary")

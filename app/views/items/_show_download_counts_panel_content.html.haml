@@ -1,19 +1,21 @@
 %ul.nav.nav-pills.mt-3{role: "tablist"}
   %li.nav-item{role: "presentation"}
-    %a#download-chart-tab.nav-link.active{"data-toggle": "tab",
-                                          href: "#download-chart-content",
-                                          role: "tab",
-                                          "aria-controls": "download-chart-content",
-                                          "aria-selected": "true"} Chart
+    %button#download-chart-tab.nav-link.active{"data-bs-toggle": "tab",
+                                               "data-bs-target": "#download-chart-content",
+                                               role:             "tab",
+                                               type:             "button",
+                                               "aria-controls":  "download-chart-content",
+                                               "aria-selected":  "true"} Chart
   %li.nav-item{role: "presentation"}
-    %a#download-table-tab.nav-link{"data-toggle": "tab",
-                                   href: "#download-table-content",
-                                   role: "tab",
-                                   "aria-controls": "download-table-content",
-                                   "aria-selected": "true"} Table
+    %button#download-table-tab.nav-link{"data-bs-toggle": "tab",
+                                        "data-bs-target": "#download-table-content",
+                                        role:             "tab",
+                                        type:             "button",
+                                        "aria-controls":  "download-table-content",
+                                        "aria-selected":  "true"} Table
 
 .tab-content
-  #download-chart-content.tab-pane.fade.show.active{role: "tabpanel",
+  #download-chart-content.tab-pane.fade.show.active{role:              "tabpanel",
                                                     "aria-labelledby": "download-chart-tab"}
     -# We will read this data on the client side in order to render the chart.
     = hidden_field_tag("chart-data", JSON.generate(@counts_by_month.to_a))

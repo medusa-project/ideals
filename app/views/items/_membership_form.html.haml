@@ -19,18 +19,18 @@
       = hidden_field_tag "initial_unit_ids[]", membership.collection.primary_unit.id
       = hidden_field_tag "initial_collection_ids[]", membership.collection.id
       .col-sm-9
-        .form-group.row
+        .mb-3.row
           = label_tag :unit_id, "Unit", class: "col-sm-2 col-form-label"
           .col-sm-10
             = select_tag(:unit_id, options_for_select(unit_options, membership.collection.primary_unit.id),
-                         class: "custom-select unit-menu")
-        .form-group.row
+                         class: "form-select unit-menu")
+        .mb-3.row
           = label_tag('collection_item_memberships[][collection_id]', "Collection",
                       class: "col-sm-2 col-form-label")
           .col-sm-10
             -# will by populated via JS
             = select_tag('collection_item_memberships[][collection_id]', options_for_select([]),
-                         class: "custom-select collection-menu",
+                         class: "form-select collection-menu",
                          data: { "unit-id": membership.collection.primary_unit.id })
       .col-sm-1.col-primary
         .form-check{style: "white-space: nowrap"}
@@ -48,6 +48,6 @@
     Add Collection
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: 'btn btn-primary')

@@ -8,16 +8,16 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  .form-group
+  .mb-3
     = f.label :parent_id, "Parent Unit"
     = f.select(:parent_id,
         options_for_select(unit_tree_options(exclude_unit: f.object,
                                              include_root: true,
                                              include_only_admin: true),
         f.object.parent&.id),
-        {}, { class: "custom-select" })
+        {}, { class: "form-select" })
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: "btn btn-primary")

@@ -2,13 +2,13 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  .form-group
+  .mb-3
     = f.label :name, "Name"
     = f.text_field :name, class: 'form-control'
 
   %h5 Elements
 
-  .form-group
+  .mb-3
     - current_institution.registered_elements.order(:label).each do |re|
       .form-check
         = check_box_tag "registered_element_ids[]", re.id,
@@ -18,7 +18,7 @@
           class: "form-check-label"
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit(f.object.new_record? ? "Create Index Page" : "Save Changes",
                  class: "btn btn-primary")

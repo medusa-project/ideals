@@ -7,13 +7,13 @@
 - if @breadcrumbable && can_edit
   = breadcrumbs(@breadcrumbable)
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   -if can_edit
     -# Edit button
-    %button.btn.btn-light.edit-index-page{"data-target": "#edit-index-page-modal",
-                                          "data-toggle": "modal",
-                                          "data-id":     @index_page.id,
-                                          type:          "button"}
+    %button.btn.btn-light.edit-index-page{"data-bs-target": "#edit-index-page-modal",
+                                          "data-bs-toggle": "modal",
+                                          "data-id":        @index_page.id,
+                                          type:             "button"}
       %i.fa.fa-pencil-alt
       Edit
   - if policy(@index_page).destroy?
@@ -36,22 +36,22 @@
 
 - if @starting_letters.any?
   %ul.nav.nav-tabs{role: "tablist"}
-    %li.nav-item{role: "presentation"}
-      %button#browse-tab.nav-link{"data-toggle":   "tab",
-                                  "data-target":   "#browse",
-                                  type:            "button",
-                                  role:            "tab",
-                                  "aria-controls": "browse",
-                                  "aria-selected": "true",
-                                  class:           params[:q].present? ? nil : "active" } Browse
-    %li.nav-item{role: "presentation"}
-      %button#search-tab.nav-link{"data-toggle":   "tab",
-                                  "data-target":   "#search",
-                                  type:            "button",
-                                  role:            "tab",
-                                  "aria-controls": "search",
-                                  "aria-selected": "false",
-                                  class:           params[:q].present? ? "active" : nil} Search
+    %li.nav-item
+      %button#browse-tab.nav-link{"data-bs-toggle": "tab",
+                                  "data-bs-target": "#browse",
+                                  type:             "button",
+                                  role:             "tab",
+                                  "aria-controls":  "browse",
+                                  "aria-selected":  "true",
+                                  class:            params[:q].present? ? nil : "active" } Browse
+    %li.nav-item
+      %button#search-tab.nav-link{"data-bs-toggle": "tab",
+                                  "data-bs-target": "#search",
+                                  type:             "button",
+                                  role:             "tab",
+                                  "aria-controls":  "search",
+                                  "aria-selected":  "false",
+                                  class:            params[:q].present? ? "active" : nil} Search
 
   .tab-content
     #browse.tab-pane.fade{role:              "tabpanel",

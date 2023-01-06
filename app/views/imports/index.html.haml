@@ -1,16 +1,16 @@
 - provide :body_id, "imports"
 - provide :title, "Imports"
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(Import).new?
-    %button.btn.btn-light.new-import{"data-target": "#new-import-modal",
-                                     "data-toggle": "modal",
-                                     role:          "button"}
+    %button.btn.btn-light.new-import{"data-bs-target": "#new-import-modal",
+                                     "data-bs-toggle": "modal",
+                                     role:             "button"}
       %i.fa.fa-plus
       New Import&hellip;
-    %button.btn.btn-light{"data-target": "#help-modal",
-                          "data-toggle": "modal",
-                          role:          "button"}
+    %button.btn.btn-light{"data-bs-target": "#help-modal",
+                          "data-bs-toggle": "modal",
+                          role:             "button"}
       %i.fa.fa-question-circle
       Help&hellip;
 

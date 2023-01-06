@@ -1,26 +1,27 @@
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item{role: "presentation"}
-    %a#managers-tab.nav-link.active{"data-toggle": "tab",
-                                    href: "#managers",
-                                    role: "tab",
-                                    "aria-controls": "managers",
-                                    "aria-selected": true} Managers
+    %button#managers-tab.nav-link.active{"data-bs-toggle": "tab",
+                                         "data-bs-target": "#managers",
+                                         role:             "tab",
+                                         "aria-controls":  "managers",
+                                         "aria-selected":  "true"} Managers
   %li.nav-item{role: "presentation"}
-    %a#submitters-tab.nav-link{"data-toggle": "tab",
-                               href: "#submitters",
-                               role: "tab",
-                               "aria-controls": "submitters",
-                               "aria-selected": false} Submitters
+    %button#submitters-tab.nav-link{"data-bs-toggle": "tab",
+                                    "data-bs-target": "#submitters",
+                                    role:             "tab",
+                                    "aria-controls":  "submitters",
+                                    "aria-selected":  "false"} Submitters
 
 
 .tab-content
-  #managers.tab-pane.fade.show.active{role: "tabpanel", "aria-labelledby": "managers-tab"}
-    .btn-group.float-right{role: "group"}
+  #managers.tab-pane.fade.show.active{role:              "tabpanel",
+                                      "aria-labelledby": "managers-tab"}
+    .btn-group.float-end{role: "group"}
       - if policy(@collection).edit_managers?
         %button.btn.btn-light.edit-collection-managers{"data-collection-id": @collection.id,
-                                                       "data-target": "#edit-collection-managers-modal",
-                                                       "data-toggle": "modal",
-                                                       role: "button"}
+                                                       "data-bs-target":     "#edit-collection-managers-modal",
+                                                       "data-bs-toggle":     "modal",
+                                                       role:                 "button"}
           %i.fas.fa-pencil-alt
           Edit Managers
 
@@ -49,12 +50,12 @@
               None
 
   #submitters.tab-pane.fade{role: "tabpanel", "aria-labelledby": "submitters-tab"}
-    .btn-group.float-right{role: "group"}
+    .btn-group.float-end{role: "group"}
       - if policy(@collection).edit_submitters?
         %button.btn.btn-light.edit-collection-submitters{"data-collection-id": @collection.id,
-                                                         "data-target": "#edit-collection-submitters-modal",
-                                                         "data-toggle": "modal",
-                                                         role: "button"}
+                                                         "data-bs-target":     "#edit-collection-submitters-modal",
+                                                         "data-bs-toggle":     "modal",
+                                                         role:                 "button"}
           %i.fas.fa-pencil-alt
           Edit Submitters
 

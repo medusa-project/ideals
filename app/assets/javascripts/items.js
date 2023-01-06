@@ -68,7 +68,7 @@ const ItemsView = function() {
 
     // When a date search type tab is changed, clear the input from
     // the hidden tab.
-    advSearchContent.find('.date-search-type > li > a[data-toggle="pill"]').on('hidden.bs.tab', function(e) {
+    advSearchContent.find('.date-search-type > li > a[data-bs-toggle="pill"]').on('hidden.bs.tab', function(e) {
         const hiddenPane = $($(e.target).attr("href"));
         hiddenPane.find("select > option:first-child").prop("selected", "selected");
     });
@@ -345,7 +345,7 @@ const ItemView = function() {
             modalBody.find(".add-embargo").on("click", onAddEmbargoClicked);
 
             const onAddUserGroupClicked = function() {
-                const lastUserGroup = $(this).parents(".form-group").find(".user-group:last");
+                const lastUserGroup = $(this).parents(".mb-3").find(".user-group:last");
                 const newUserGroup  = lastUserGroup.clone();
                 lastUserGroup.after(newUserGroup);
                 newUserGroup.show();

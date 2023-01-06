@@ -1,10 +1,11 @@
 - provide :title, "All Institutions"
 
 -if policy(Institution).new?
-  .btn-group.float-right{role: "group"}
+  .btn-group.float-end{role: "group"}
     -# Add Institution button
-    %button.btn.btn-light{"data-target": "#add-institution-modal",
-                          "data-toggle": "modal", type: "button"}
+    %button.btn.btn-light{"data-bs-target": "#add-institution-modal",
+                          "data-bs-toggle": "modal",
+                          type:             "button"}
       %i.fa.fa-plus
       Add Institution
 
@@ -14,7 +15,6 @@
   %thead
     %tr
       %th
-      %th
       %th Name
       %th Service Name
       %th Key
@@ -22,10 +22,10 @@
   %tbody
     - @institutions.each do |institution|
       %tr
-        %td= boolean(institution.default, style: :word, true_value: "DEFAULT", show_false: false)
-        %td
+        %td.text-center
           - if institution.outgoing_message_queue.blank?
             .text-danger= icon_for(:warning)
+          = boolean(institution.default, style: :word, true_value: "DEFAULT", show_false: false)
         %td= link_to(institution.name, institution)
         %td= link_to(institution.service_name, institution)
         %td

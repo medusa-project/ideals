@@ -1,8 +1,8 @@
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@collection).edit_properties?
     %button.btn.btn-light.edit-collection-properties{"data-collection-id": @collection.id,
-                                                     "data-target":        "#edit-collection-properties-modal",
-                                                     "data-toggle":        "modal",
+                                                     "data-bs-target":     "#edit-collection-properties-modal",
+                                                     "data-bs-toggle":        "modal",
                                                      role:                 "button"}
       %i.fas.fa-pencil-alt
       Edit Properties
@@ -62,11 +62,11 @@
 
 %hr
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@collection).edit_unit_membership?
     %button.btn.btn-light.edit-unit-membership{"data-collection-id": @collection.id,
-                                               "data-target":        "#edit-unit-membership-modal",
-                                               "data-toggle":        "modal",
+                                               "data-bs-target":     "#edit-unit-membership-modal",
+                                               "data-bs-toggle":     "modal",
                                                role:                 "button"}
       %i.fas.fa-pencil-alt
       Change Unit Membership
@@ -78,17 +78,17 @@
 
 %hr
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@collection).edit_collection_membership?
     %button.btn.btn-light.edit-collection-membership{"data-collection-id": @collection.id,
-                                                     "data-target":        "#edit-collection-membership-modal",
-                                                     "data-toggle":        "modal",
+                                                     "data-bs-target":     "#edit-collection-membership-modal",
+                                                     "data-bs-toggle":     "modal",
                                                      role:                 "button"}
       %i.fas.fa-pencil-alt
       Change Collection Membership
     %button.btn.btn-light.add-sub-collection{"data-collection-id": @collection.id,
-                                             "data-target":        "#add-collection-modal",
-                                             "data-toggle":        "modal",
+                                             "data-bs-target":     "#add-collection-modal",
+                                             "data-bs-toggle":     "modal",
                                              role:                 "button"}
       %i.fa.fa-plus
       Add Child Collection

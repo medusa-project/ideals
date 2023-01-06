@@ -2,11 +2,11 @@
 - provide :title, "Vocabularies"
 
 -if policy(Vocabulary).new?
-  .btn-group.float-right{role: "group"}
+  .btn-group.float-end{role: "group"}
     -# Add button
-    %button.btn.btn-light.add-vocabulary{"data-target": "#add-vocabulary-modal",
-                                         "data-toggle": "modal",
-                                         type:          "button"}
+    %button.btn.btn-light.add-vocabulary{"data-bs-target": "#add-vocabulary-modal",
+                                         "data-bs-toggle": "modal",
+                                         type:             "button"}
       %i.fa.fa-plus
       Add Vocabulary
 

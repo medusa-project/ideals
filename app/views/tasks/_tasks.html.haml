@@ -11,9 +11,9 @@
       - @tasks.each do |task|
         %tr{"data-id": task.id}
           %td
-            = link_to(task.status_text, '#', data: { 'toggle': 'modal',
-                                                     'target': '#show-task-modal',
-                                                     'task-id': task.id })
+            = link_to(task.status_text, '#', data: { 'bs-toggle': 'modal',
+                                                     'bs-target': '#show-task-modal',
+                                                     'task-id':   task.id })
           %td
             = task_status_badge(task)
           %td

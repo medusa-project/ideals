@@ -1,7 +1,7 @@
 - provide :body_id, "show_unit"
 - provide :title, @unit.title
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@unit).undelete?
     = link_to(unit_undelete_path(@unit), class:          "btn btn-danger",
                                          method:         :post,

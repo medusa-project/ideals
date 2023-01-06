@@ -56,8 +56,8 @@ module ApplicationHelper
     else
       content = boolean ? true_value : false_value
       boolean = !boolean if invert_color
-      class_  = boolean ? 'badge-success' : 'badge-danger'
-      class_  = 'badge-light' if omit_color
+      class_  = boolean ? 'bg-success' : 'bg-danger'
+      class_  = 'bg-light' if omit_color
       html    = "<span class=\"badge #{class_}\">#{content}</span>"
     end
     raw(html)
@@ -173,7 +173,7 @@ module ApplicationHelper
     y_options = (earliest_year..latest_year)
 
     html = StringIO.new
-    attrs = { class: "form-group date-picker" }
+    attrs = { class: "row mb-3 date-picker" }
     extra_attrs.each do |k, v|
       if attrs[k].present?
         attrs[k] = "#{attrs[k]} #{v}"
@@ -182,18 +182,24 @@ module ApplicationHelper
       end
     end
     html << "<div #{attrs.map{ |k,v| "#{k}='#{v}'" }.join(" ")}>"
-    html <<   select_tag(month_select_name,
-                         options_for_select(m_options, selected_month),
-                         include_blank: include_blanks,
-                         class: "custom-select mr-1")
-    html <<   select_tag(day_select_name,
-                         options_for_select(d_options, selected_day),
-                         include_blank: include_blanks,
-                         class: "custom-select mr-1")
-    html <<   select_tag(year_select_name,
-                         options_for_select(y_options, selected_year),
-                         include_blank: include_blanks,
-                         class: "custom-select")
+    html <<   "<div class=\"col\">"
+    html <<     select_tag(month_select_name,
+                           options_for_select(m_options, selected_month),
+                           include_blank: include_blanks,
+                           class: "form-select me-1")
+    html <<   "</div>"
+    html <<   "<div class=\"col\">"
+    html <<     select_tag(day_select_name,
+                           options_for_select(d_options, selected_day),
+                           include_blank: include_blanks,
+                           class: "form-select me-1")
+    html <<   "</div>"
+    html <<   "<div class=\"col\">"
+    html <<     select_tag(year_select_name,
+                           options_for_select(y_options, selected_year),
+                           include_blank: include_blanks,
+                           class: "form-select")
+    html <<   "</div>"
     html << "</div>"
     raw(html.string)
   end
@@ -207,17 +213,27 @@ module ApplicationHelper
     y_options = (Event.order(:happened_at).limit(1).pluck(:happened_at).first.year..now.year)
 
     html = StringIO.new
-    html << "<div class='form-group mr-4 date-range-picker'>From:"
-    html <<   select_tag("from_month", options_for_select(m_options),
-                         class: "custom-select ml-1 mr-1")
-    html <<   select_tag("from_year", options_for_select(y_options, selected: now.year),
-                         class: "custom-select")
+    html << "<div class='row mb-2'>"
+    html <<   '<label class="form-label">From:</label>'
+    html <<   "<div class='col'>"
+    html <<     select_tag("from_month", options_for_select(m_options),
+                           class: "form-select ms-1 me-1")
+    html <<   '</div>'
+    html <<   "<div class='col'>"
+    html <<     select_tag("from_year", options_for_select(y_options, selected: now.year),
+                           class: "form-select")
+    html <<   '</div>'
     html << "</div>"
-    html << "<div class='form-group mr-4 date-range-picker'>To:"
-    html <<   select_tag("to_month", options_for_select(m_options, selected: 12),
-                         class: "custom-select ml-1 mr-1")
-    html <<   select_tag("to_year", options_for_select(y_options, selected: now.year),
-                         class: "custom-select")
+    html << "<div class='row mb-3'>"
+    html <<   '<label class="form-label">To:</label>'
+    html <<   "<div class='col'>"
+    html <<     select_tag("to_month", options_for_select(m_options, selected: 12),
+                           class: "form-select ms-1 me-1")
+    html <<   '</div>'
+    html <<   "<div class='col'>"
+    html <<     select_tag("to_year", options_for_select(y_options, selected: now.year),
+                           class: "form-select")
+    html <<   '</div>'
     html << "</div>"
     html << submit_tag("Go",
                        class: "btn btn-primary",
@@ -271,11 +287,9 @@ module ApplicationHelper
                              'aria-label': "Search",
                              class:        "form-control")
     if submit_text
-      html << "<div class=\"input-group-append\">"
-      html <<   submit_tag(submit_text,
-                           name: "",
-                           class: "btn btn-outline-primary")
-      html << "</div>"
+      html << submit_tag(submit_text,
+                         name: "",
+                         class: "btn btn-outline-primary")
     end
     raw(html.string)
   end
@@ -566,20 +580,16 @@ module ApplicationHelper
   #                             primary.
   # @param default_id [Integer] ID of a resource in `resources` to indicate as
   #                             default.
-  # @param show_icons [Boolean] Whether to show the type icons following the
-  #                             titles.
   # @return [String] HTML listing.
   #
   def resource_list(resources,
                     primary_id: nil,
-                    default_id: nil,
-                    show_icons: true)
+                    default_id: nil)
     html = StringIO.new
     resources.each do |resource|
       html << resource_list_row(resource,
                                 primary:    (primary_id == resource.id),
-                                default:    (default_id == resource.id),
-                                show_icons: show_icons)
+                                default:    (default_id == resource.id))
     end
     raw(html.string)
   end
@@ -593,39 +603,33 @@ module ApplicationHelper
   #
   def resource_list_row(resource,
                         primary:    false,
-                        default:    false,
-                        show_icons: false)
+                        default:    false)
     embargoed_item = resource.kind_of?(Item) &&
       resource.embargoed_for?(current_user)
     thumb = thumbnail_for(resource)
     html = StringIO.new
-    html << "<div class=\"media resource-list mb-3\">"
+    html << "<div class=\"d-flex resource-list mb-3\">"
     if embargoed_item
-      html <<   "<div class=\"icon-thumbnail\">"
+      html <<   "<div class=\"flex-shrink-0 icon-thumbnail\">"
       html <<     '<i class="fa fa-lock"></i>'
     elsif thumb
-      html <<   "<div class=\"image-thumbnail\">"
+      html <<   "<div class=\"flex-shrink-0 image-thumbnail\">"
       html <<     link_to(resource) do
         thumb
       end
     else
-      html <<   "<div class=\"icon-thumbnail\">"
+      html <<   "<div class=\"flex-shrink-0 icon-thumbnail\">"
       html <<     link_to(resource) do
         icon_for(resource)
       end
     end
     html <<   "</div>"
-    html <<   "<div class=\"media-body\">"
+    html <<   "<div class=\"flex-grow-1 ms-3\">"
     html <<     "<h5 class=\"mt-0 mb-0\">"
     if embargoed_item
       html <<     resource.title
     else
       html <<     link_to(resource.title, resource)
-      if show_icons
-        html <<     "<span class=\"format-icon\">"
-        html <<       icon_for(resource)
-        html <<     "</span>"
-      end
     end
 
     if primary
@@ -695,7 +699,7 @@ module ApplicationHelper
     html              = StringIO.new
     if sortable_elements.any?
       # Select menu
-      html << '<select name="sort" class="custom-select">'
+      html << '<select name="sort" class="form-select">'
       html <<   '<optgroup label="Sort By&hellip;">'
       html <<     '<option value="">Relevance</option>'
 
@@ -714,7 +718,7 @@ module ApplicationHelper
 
       # Ascending/descending radios
       desc = results_params[:direction] == "desc"
-      html << '<div class="btn-group btn-group-toggle ml-1" data-toggle="buttons">'
+      html << '<div class="btn-group btn-group-toggle ms-2" data-bs-toggle="buttons">'
       html <<   "<label class=\"btn btn-default btn-outline-primary #{!desc ? "active" : ""}\">"
       html <<     '<input type="radio" name="direction" value="asc" autocomplete="off" checked> &uarr;'
       html <<   '</label>'
@@ -776,20 +780,17 @@ module ApplicationHelper
       checked_params   = term.removed_from_params(permitted_params.deep_dup).except(:start)
       unchecked_params = term.added_to_params(permitted_params.deep_dup).except(:start)
       term_label       = truncate(sanitize(term.label, tags: []), length: 80)
-
       panel << '<li class="term">'
-      panel <<   '<div class="checkbox">'
-      panel <<     '<label>'
-      query =        term.query.gsub('"', '&quot;')
-      panel <<       "<input type=\"checkbox\" name=\"fq[]\" #{checked} "\
-                         "data-query=\"#{query}\" "\
-                         "data-checked-href=\"#{url_for(unchecked_params)}\" "\
-                         "data-unchecked-href=\"#{url_for(checked_params)}\" "\
-                         "value=\"#{query}\"> "
-      panel <<         "<span class=\"term-name\">#{term_label}</span> "
-      panel <<         "<span class=\"count\">#{term.count}</span>"
-      panel <<     '</label>'
-      panel <<   '</div>'
+      panel <<   '<label>'
+      query =      term.query.gsub('"', '&quot;')
+      panel <<     "<input type=\"checkbox\" name=\"fq[]\" #{checked} "\
+                       "data-query=\"#{query}\" "\
+                       "data-checked-href=\"#{url_for(unchecked_params)}\" "\
+                       "data-unchecked-href=\"#{url_for(checked_params)}\" "\
+                       "value=\"#{query}\"> "
+      panel <<       "<span class=\"term-name\">#{term_label}</span> "
+      panel <<       "<span class=\"count\">#{term.count}</span>"
+      panel <<   '</label>'
       panel << '</li>'
     end
     panel <<     '</ul>'

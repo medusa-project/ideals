@@ -4,15 +4,15 @@
 = form_for([vocabulary, term], remote: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
-  .form-group
+  .mb-3
     = f.label :stored_value
     = f.text_field :stored_value, class: 'form-control'
-  .form-group
+  .mb-3
     = f.label :displayed_value
     = f.text_field :displayed_value, class: 'form-control'
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit(f.object.new_record? ? "Create Term" : "Save Changes",
                  class: 'btn btn-primary')

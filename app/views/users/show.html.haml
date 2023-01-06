@@ -7,45 +7,44 @@
   =icon_for(@user)
   = @user.name
 
-.row
-  .col-sm-5.col-md-4.col-lg-3
-    %ul.nav.nav-pills.flex-column{role:               "tablist",
+.d-flex
+  .nav.nav-pills.flex-column.me-3{role:               "tablist",
                                   "aria-orientation": "vertical"}
-      %li.nav-item{role: "presentation"}
-        %a#properties-tab.nav-link.active{"data-toggle":   "pill",
-                                          href:            "#properties-tab-content",
-                                          role:            "tab",
-                                          "aria-controls": "properties-tab-content",
-                                          "aria-selected": "true"} Properties
-      %li.nav-item{role: "presentation"}
-        %a#submittable-collections-tab.nav-link{"data-toggle":   "pill",
-                                                href:            "#submittable-collections-tab-content",
-                                                role:            "tab",
-                                                "aria-controls": "submittable-collections-tab-content",
-                                                "aria-selected": "false"}
-          Submittable Collections
-          %span.badge.badge-pill.badge-secondary
-            = @submittable_collections_count
-      %li.nav-item{role: "presentation"}
-        %a#submitted-items-tab.nav-link{"data-toggle":   "pill",
-                                        href:            "#submitted-items-tab-content",
-                                        role:            "tab",
-                                        "aria-controls": "submitted-items-tab-content",
-                                        "aria-selected": "false"}
-          Submitted Items
-          %span.badge.badge-pill.badge-secondary
-            = @submitted_items_count
-      %li.nav-item{role: "presentation"}
-        %a#submissions-in-progress-tab.nav-link{"data-toggle":   "pill",
-                                                href:            "#submissions-in-progress-tab-content",
-                                                role:            "tab",
-                                                "aria-controls": "submissions-in-progress-tab-content",
-                                                "aria-selected": "false"}
-          Submissions In Progress
-          %span.badge.badge-pill.badge-secondary
-            = @submissions_in_progress_count
+    %button#properties-tab.nav-link.active{"data-bs-toggle": "pill",
+                                           "data-bs-target": "#properties-tab-content",
+                                           role:             "tab",
+                                           type:             "button",
+                                           "aria-controls":  "properties-tab-content",
+                                           "aria-selected":  "true"} Properties
+    %button#submittable-collections-tab.nav-link{"data-bs-toggle": "pill",
+                                                 "data-bs-target": "#submittable-collections-tab-content",
+                                                 role:             "tab",
+                                                 type:             "button",
+                                                 "aria-controls":  "submittable-collections-tab-content",
+                                                 "aria-selected":  "false"}
+      Submittable Collections
+      %span.badge.rounded-pill.text-bg-secondary
+        = @submittable_collections_count
+    %button#submitted-items-tab.nav-link{"data-bs-toggle": "pill",
+                                         "data-bs-target": "#submitted-items-tab-content",
+                                         role:             "tab",
+                                         type:             "button",
+                                         "aria-controls":  "submitted-items-tab-content",
+                                         "aria-selected":  "false"}
+      Submitted Items
+      %span.badge.rounded-pill.text-bg-secondary
+        = @submitted_items_count
+    %button#submissions-in-progress-tab.nav-link{"data-bs-toggle": "pill",
+                                                 "data-bs-target": "#submissions-in-progress-tab-content",
+                                                 role:             "tab",
+                                                 type:             "button",
+                                                 "aria-controls":  "submissions-in-progress-tab-content",
+                                                 "aria-selected":  "false"}
+      Submissions In Progress
+      %span.badge.rounded-pill.text-bg-secondary
+        = @submissions_in_progress_count
 
-  .tab-content.col-sm-7.col-md-8.col-lg-9
+  .tab-content.w-100
     #properties-tab-content.tab-pane.fade.show.active{role:              "tabpanel",
                                                       "aria-labelledby": "properties-tab"}
       = spinner

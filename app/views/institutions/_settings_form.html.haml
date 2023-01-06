@@ -2,46 +2,46 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  .form-group
+  .mb-3
     = f.label :service_name, "Service Name"
     = f.text_field :service_name, class: 'form-control'
 
-  .form-group
+  .mb-3
     = f.label :main_website_url, "Main Website URL"
     = f.text_field :main_website_url, placeholder: "https://", class: 'form-control'
 
-  .form-group
+  .mb-3
     = f.label :feedback_email, "Feedback Email"
     = f.text_field :feedback_email, class: 'form-control'
 
-  .form-group
+  .mb-3
     = f.label :welcome_html, "Welcome HTML"
     = f.text_area :welcome_html, class: 'form-control', rows: 8
-    %p.text-muted
+    %p.form-text
       %i.fa.fa-info-circle
       The following HTML tags are allowed:
       = raw(ApplicationHelper::ALLOWED_HTML_TAGS.map{ |t| "<code>&lt;#{t}&gt;</code>" }.join(", "))
 
-  .form-group
+  .mb-3
     = f.label :about_html, "About HTML"
     = f.text_area :about_html, class: 'form-control', rows: 8
-    %p.text-muted
+    %p.form-text
       %i.fa.fa-info-circle
       The following HTML tags are allowed:
       = raw(ApplicationHelper::ALLOWED_HTML_TAGS.map{ |t| raw("<code>&lt;#{t}&gt;</code>") }.join(", "))
 
-  .form-group
+  .mb-3
     = f.label :about_url, "About URL"
     = f.text_field :about_url, class: 'form-control'
-    %p.text-muted
+    %p.form-text
       %i.fa.fa-info-circle
       If filled in, this will override the About HTML.
 
-  .form-group
+  .mb-3
     = f.label :copyright_notice, "Copyright Notice"
     = f.text_field :copyright_notice, class: 'form-control'
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: "btn btn-primary")

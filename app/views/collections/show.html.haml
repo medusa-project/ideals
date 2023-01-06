@@ -9,54 +9,53 @@
   = icon_for(@collection)
   = @collection.title
 
-.row
-  .col-sm-5.col-md-4.col-lg-3
-    .nav.flex-column.nav-pills{role: "tablist",
-                               "aria-orientation": "vertical"}
-      %a#items-tab.nav-link.active{href: "#items-tab-content",
-                                   "data-toggle": "pill",
-                                   role: "tab",
-                                   "aria-controls": "items-tab-content",
-                                   "aria-selected": "true"}
-        = icon_for(Item)
-        Items
-      - if policy(@collection).show_review_submissions?
-        %a#review-submissions-tab.nav-link{href: "#review-submissions-tab-content",
-                                           "data-toggle": "tab",
-                                           role: "tab",
-                                           "aria-controls": "review-submissions-tab-content",
-                                           "aria-selected": "false"}
-          %i.fa.fa-tasks
-          Review Submissions
-          - if @review_count > 0
-            %small.badge-pill.badge-danger= @review_count
-      - if policy(@collection).show_about?
-        %a#about-tab.nav-link{href: "#about-tab-content",
-                              "data-toggle": "pill",
-                              role: "tab",
-                              "aria-controls": "about-tab-content",
-                              "aria-selected": "false"}
-          = icon_for(:info)
-          About This Collection
-      - if policy(@collection).show_statistics?
-        %a#statistics-tab.nav-link{href: "#statistics-tab-content",
-                                  "data-toggle": "tab",
-                                  "data-collection-id": @collection.id,
-                                  role: "tab",
-                                  "aria-controls": "statistics-tab-content",
-                                  "aria-selected": "false"}
-          %i.fa.fa-chart-bar
-          Statistics
-      - if policy(@collection).show_access?
-        %a#access-tab.nav-link{href: "#access-tab-content",
-                               "data-toggle": "tab",
-                               role: "tab",
-                               "aria-controls": "access-tab-content",
-                               "aria-selected": "false"}
-          %i.fa.fa-users
-          Access
+.d-flex
+  .nav.flex-column.nav-pills.me-3{role:               "tablist",
+                                  "aria-orientation": "vertical"}
+    %button#items-tab.nav-link.active{"data-bs-target": "#items-tab-content",
+                                      "data-bs-toggle": "pill",
+                                      role:             "tab",
+                                      "aria-controls":  "items-tab-content",
+                                      "aria-selected":  "true"}
+      = icon_for(Item)
+      Items
+    - if policy(@collection).show_review_submissions?
+      %button#review-submissions-tab.nav-link{"data-bs-target": "#review-submissions-tab-content",
+                                              "data-bs-toggle": "pill",
+                                              role:             "tab",
+                                              "aria-controls":  "review-submissions-tab-content",
+                                              "aria-selected":  "false"}
+        %i.fa.fa-tasks
+        Review Submissions
+        - if @review_count > 0
+          %small.rounded-pill.badge-danger= @review_count
+    - if policy(@collection).show_about?
+      %button#about-tab.nav-link{"data-bs-target": "#about-tab-content",
+                                 "data-bs-toggle": "pill",
+                                 role:             "tab",
+                                 "aria-controls":  "about-tab-content",
+                                 "aria-selected":  "false"}
+        = icon_for(:info)
+        About This Collection
+    - if policy(@collection).show_statistics?
+      %button#statistics-tab.nav-link{"data-bs-target":     "#statistics-tab-content",
+                                      "data-bs-toggle":     "pill",
+                                      "data-collection-id": @collection.id,
+                                      role:                 "tab",
+                                      "aria-controls":      "statistics-tab-content",
+                                      "aria-selected":      "false"}
+        %i.fa.fa-chart-bar
+        Statistics
+    - if policy(@collection).show_access?
+      %button#access-tab.nav-link{"data-bs-target": "#access-tab-content",
+                                  "data-bs-toggle": "pill",
+                                  role:             "tab",
+                                  "aria-controls":  "access-tab-content",
+                                  "aria-selected":  "false"}
+        %i.fa.fa-users
+        Access
 
-  .tab-content.col-sm-7.col-md-8.col-lg-9
+  .tab-content.w-100
     #items-tab-content.tab-pane.fade.show.active{role: "tabpanel",
                                                  "aria-labelledby": "items-tab"}
       = spinner

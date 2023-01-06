@@ -1,7 +1,7 @@
 - provide :body_id, "show_collection"
 - provide :title, @collection.title
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@collection).undelete?
     = link_to(collection_undelete_path(@collection), class:          "btn btn-danger",
                                                      method:         :post,

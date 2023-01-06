@@ -36,25 +36,25 @@
   - if @item.approved?
     #file-navigator-thumbnail-column-footer
       .btn-group.dropup{role: "group"}
-        %button#download-options{type:            "button",
-                                 class:           "btn btn-dark btn-sm dropdown-toggle",
-                                 "data-toggle":   "dropdown",
-                                 "aria-haspopup": "true",
-                                 "aria-expanded": "false"}
+        %button#download-options{type:             "button",
+                                 class:            "btn btn-dark btn-sm dropdown-toggle",
+                                 "data-bs-toggle": "dropdown",
+                                 "aria-haspopup":  "true",
+                                 "aria-expanded":  "false"}
           %i.fa.fa-download
           Download Options
         .dropdown-menu{"aria-labelledby": "download-options"}
-          %button.dropdown-item.download-all-files{"data-item-id": @item.id,
-                                                   "data-target":  "#download-all-files-modal",
-                                                   "data-toggle":  "modal",
-                                                   role:           "button"}
+          %button.dropdown-item.download-all-files{"data-item-id":   @item.id,
+                                                   "data-bs-target": "#download-all-files-modal",
+                                                   "data-bs-toggle": "modal",
+                                                   role:             "button"}
             %i.fa.fa-download
             Download All Files
           - if policy(@item).download_counts?
-            %button.dropdown-item.download-counts{"data-item-id": @item.id,
-                                                  "data-target":  "#download-counts-modal",
-                                                  "data-toggle":  "modal",
-                                                  role:           "button"}
+            %button.dropdown-item.download-counts{"data-item-id":   @item.id,
+                                                  "data-bs-target": "#download-counts-modal",
+                                                  "data-bs-toggle": "modal",
+                                                  role:             "button"}
               %i.fa.fa-chart-bar
               Download Counts&hellip;
 

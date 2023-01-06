@@ -18,7 +18,7 @@
                       class: "col-xs-12 uiuc banner-image-library",
                       alt:   "Library"
     - else
-      %div.ml-2
+      %div.ms-2
         - if current_institution.header_image_filename
           - if current_institution.main_website_url
             %a.navbar-brand{href: current_institution.main_website_url}
@@ -35,7 +35,7 @@
           .btn-group{role: "group"}
             %button#role-play-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
                                                                               "aria-haspopup": "true",
-                                                                              "data-toggle": "dropdown",
+                                                                              "data-bs-toggle": "dropdown",
                                                                               type: "button"}
               %i.far.fa-eye
               = Role.label(session[:role_limit])
@@ -48,7 +48,7 @@
           .btn-group{role: "group"}
             %button#administration-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
                                                                                    "aria-haspopup": "true",
-                                                                                   "data-toggle": "dropdown",
+                                                                                   "data-bs-toggle": "dropdown",
                                                                                    type: "button"}
               %i.fa.fa-globe
               Global Administration
@@ -56,22 +56,26 @@
               = link_to(institutions_path, class: "dropdown-item") do
                 = icon_for(Institution)
                 All Institutions
-              .dropdown-divider
+              %li
+                %hr.dropdown-divider
               = link_to(MetadataProfile.find_by(institution_id: nil), class: "dropdown-item") do
                 = icon_for(MetadataProfile)
                 Global Metadata Profile
-              .dropdown-divider
+              %li
+                %hr.dropdown-divider
               = link_to(all_users_path, class: "dropdown-item") do
                 %i.fa.fa-user
                 All Users
               = link_to(global_user_groups_path, class: "dropdown-item") do
                 %i.fa.fa-users
                 Global User Groups
-              .dropdown-divider
+              %li
+                %hr.dropdown-divider
               = link_to(settings_path, class: "dropdown-item") do
                 = icon_for(Setting)
                 Settings
-              .dropdown-divider
+              %li
+                %hr.dropdown-divider
               = link_to(all_tasks_path, class: "dropdown-item") do
                 = icon_for(Task)
                 All Tasks
@@ -90,7 +94,7 @@
           .btn-group{role: "group"}
             %button#institution-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
                                                                                 "aria-haspopup": "true",
-                                                                                "data-toggle": "dropdown",
+                                                                                "data-bs-toggle": "dropdown",
                                                                                 type: "button"}
               = icon_for(Institution)
               My Institution
@@ -99,11 +103,13 @@
                         class: "dropdown-item") do
                 = icon_for(Institution)
                 My Institution
-              .dropdown-divider
+              %li
+                %hr.dropdown-divider
               = link_to(items_review_path, class: "dropdown-item") do
                 %i.fa.fa-tasks
                 Review Submissions
-              .dropdown-divider
+              %li
+                %hr.dropdown-divider
               = link_to(registered_elements_path, class: "dropdown-item") do
                 = icon_for(RegisteredElement)
                 Element Registry
@@ -119,14 +125,16 @@
               = link_to(index_pages_path, class: "dropdown-item") do
                 = icon_for(IndexPage)
                 Index Pages
-              .dropdown-divider
+              %li
+                %hr.dropdown-divider
               = link_to(imports_path, class: "dropdown-item") do
                 = icon_for(Import)
                 Import Items
               = link_to(items_export_path, class: "dropdown-item") do
                 %i.fa.fa-download
                 Export Items
-              .dropdown-divider
+              %li
+                %hr.dropdown-divider
               = link_to(invitees_path, class: "dropdown-item") do
                 %i.fa.fa-user-plus
                 Invitees
@@ -136,25 +144,27 @@
               = link_to(user_groups_path, class: "dropdown-item") do
                 %i.fa.fa-users
                 User Groups
-              .dropdown-divider
+              %li
+                %hr.dropdown-divider
               = link_to(tasks_path, class: "dropdown-item") do
                 = icon_for(Task)
                 Tasks
-              .dropdown-divider
+              %li
+                %hr.dropdown-divider
               = link_to(oai_pmh_path(verb: "Identify"), class: "dropdown-item", target: "_blank") do
                 %i.fa.fa-exchange-alt
                 OAI-PMH Endpoint
 
         -# User menu
         .btn-group{role: "group"}
-          %button#user-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
-                                                                       "aria-haspopup": "true",
-                                                                       "data-toggle": "dropdown",
-                                                                       type: "button"}
+          %button#user-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded":  "false",
+                                                                       "aria-haspopup":  "true",
+                                                                       "data-bs-toggle": "dropdown",
+                                                                       type:             "button"}
             = icon_for(current_user)
             = current_user.name
             - if to_do_list.total_items > 0
-              %span.badge.badge-pill.badge-danger= to_do_list.total_items
+              %span.badge.rounded-pill.text-bg-danger= to_do_list.total_items
           .dropdown-menu.dropdown-menu-right{"aria-labelledby": "user-dropdown"}
             - if to_do_list.total_items > 0
               - to_do_list.items.each do |item|
@@ -162,7 +172,8 @@
                   = link_to(item[:url], class: "dropdown-item") do
                     %i.fa.fa-exclamation-triangle.text-danger
                     = item[:message]
-              %li.dropdown-divider
+              %li
+                %hr.dropdown-divider
             = link_to(user_path(current_user), class: "dropdown-item") do
               = icon_for(:info)
               My Account
@@ -170,8 +181,8 @@
               %i.fa.fa-sign-out-alt
               Log Out
       - else
-        %button.btn.btn-sm.btn-link{"data-target": "#login-modal",
-                                    "data-toggle": "modal",
-                                    type:          "button"}
+        %button.btn.btn-sm.btn-link{"data-bs-target": "#login-modal",
+                                    "data-bs-toggle": "modal",
+                                    type:             "button"}
           %i.fa.fa-sign-in-alt
           Log In

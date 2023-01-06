@@ -25,15 +25,15 @@
         %td
           .btn-group{role: "group"}
             %button.btn.btn-sm.btn-light.show-import{"data-import-id": import.id,
-                                                     "data-target":    "#show-import-modal",
-                                                     "data-toggle":    "modal",
+                                                     "data-bs-target": "#show-import-modal",
+                                                     "data-bs-toggle": "modal",
                                                      role:             "button"}
               %i.fa.fa-search
               Details&hellip;
             - if (!import.task || [Task::Status::PENDING, Task::Status::FAILED].include?(import.task&.status)) && policy(import).edit?
               %button.btn.btn-sm.btn-light.edit-import{"data-import-id": import.id,
-                                                       "data-target":    "#edit-import-modal",
-                                                       "data-toggle":    "modal",
+                                                       "data-bs-target": "#edit-import-modal",
+                                                       "data-bs-toggle": "modal",
                                                        role:             "button"}
                 %i.fa.fa-upload
                 Upload&hellip;

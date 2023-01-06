@@ -1,8 +1,8 @@
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@institution).edit_settings?
     -# Edit button
-    %button.btn.btn-light.edit-settings{"data-target":          "#edit-settings-modal",
-                                        "data-toggle":          "modal",
+    %button.btn.btn-light.edit-settings{"data-bs-target":       "#edit-settings-modal",
+                                        "data-bs-toggle":       "modal",
                                         type:                   "button",
                                         "data-institution-key": @institution.key }
       %i.fa.fa-pencil-alt
@@ -24,28 +24,28 @@
     - if @institution.feedback_email.present?
       = @institution.feedback_email
     - else
-      .badge.badge-danger
+      .badge.text-bg-danger
         Not Set
   %dt Welcome HTML
   %dd
     - if @institution.welcome_html.present?
-      .badge.badge-success
+      .badge.text-bg-success
         Present
     - else
-      .badge.badge-danger
+      .badge.text-bg-danger
         Not Set
   %dt About
   %dd
     - if @institution.about_html.present? || @institution.about_url.present?
-      .badge.badge-success
+      .badge.text-bg-success
         Present
     - else
-      .badge.badge-danger
+      .badge.text-bg-danger
         Not Set
   %dt Copyright Notice
   %dd
     - if @institution.copyright_notice.present?
       = @institution.copyright_notice
     - else
-      .badge.badge-danger
+      .badge.text-bg-danger
         Not Set

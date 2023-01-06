@@ -23,19 +23,19 @@
         = current_institution.feedback_email
 
 = form_for(@invitee, url: create_unsolicited_invitees_path) do |f|
-  .row.form-group
+  .row.mb-3
     = f.label :email, class: "col-sm-2 col-form-label"
     .col-sm-10
       = f.text_field :email, class: "form-control", required: true
-  .row.form-group
+  .row.mb-3
     = f.label :note, "Purpose", class: "col-sm-2 col-form-label"
     .col-sm-10
       = f.text_area :note, class: "form-control", required: true
-  .row.form-group
+  .row.mb-3
     .col-sm-2
     .col-sm-10
       = recaptcha_tags
-  .row.form-group
+  .row.mb-3
     .col-sm-2
     .col-sm-10
       = f.submit "Submit Request", class: "btn btn-primary"

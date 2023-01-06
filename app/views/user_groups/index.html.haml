@@ -1,11 +1,11 @@
 - provide :body_id, "user_groups"
 - provide :title, "User Groups"
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   -# Add User Group button
-  %button.btn.btn-light.add-user-group{"data-target": "#add-user-group-modal",
-                                       "data-toggle": "modal",
-                                       type:          "button"}
+  %button.btn.btn-light.add-user-group{"data-bs-target": "#add-user-group-modal",
+                                       "data-bs-toggle": "modal",
+                                       type:             "button"}
     %i.fa.fa-plus
     Add User Group
 

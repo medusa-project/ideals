@@ -10,8 +10,8 @@
   = f.hidden_field :initial_primary_collection_id, value: f.object.primary_collection&.id
 
   - if current_institution.key == "uiuc"
-    %p.text-info
-      %i.fa.fa-info-circle
+    .alert.alert-light
+      = icon_for(:info)
       = current_institution.service_name
       items are organized by academic unit and collection.
       If you are depositing your own research and unsure which collection to
@@ -25,7 +25,7 @@
       .col-sm-10
         -# This element is used only to populate the collection-select menu.
         = select_tag(:unit_id, options_for_select(unit_tree_options(include_blank: f.object&.primary_collection&.primary_unit&.id.blank?)),
-                     class: "custom-select")
+                     class: "form-select")
       .col-sm-2
         .message
           .text-success
@@ -38,7 +38,7 @@
     .row.mb-3
       .col-sm-10
         = select_tag("item[primary_collection_id]", options_for_select([]),
-                     class: "custom-select")
+                     class: "form-select")
       .col-sm-2
         .message
           .text-success

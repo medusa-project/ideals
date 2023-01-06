@@ -10,17 +10,17 @@ module TasksHelper
     status = task.kind_of?(Integer) ? task : task.status
     case status
     when ::Task::Status::PENDING
-      class_ = "badge-light"
+      class_ = "bg-light"
     when ::Task::Status::PAUSED
-      class_ = "badge-warning"
+      class_ = "bg-warning"
     when ::Task::Status::RUNNING
-      class_ = "badge-primary"
+      class_ = "bg-primary"
     when ::Task::Status::STOPPED
-      class_ = "badge-secondary"
+      class_ = "bg-secondary"
     when ::Task::Status::SUCCEEDED
-      class_ = "badge-success"
+      class_ = "bg-success"
     when ::Task::Status::FAILED
-      class_ = "badge-danger"
+      class_ = "bg-danger"
     end
     raw("<span class=\"badge #{class_}\">#{Task::Status::to_s(status)}</span>")
   end

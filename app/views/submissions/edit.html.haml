@@ -1,7 +1,7 @@
 - provide :body_id, "edit_submission"
 - provide :title, "Submit an Item"
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   = link_to(submission_path(@item), class: "btn btn-danger",
                                         role: "button",
                                         method: :delete,
@@ -18,39 +18,43 @@
 
 %ul.nav.nav-pills.nav-justified{role: "tablist"}
   %li.nav-item
-    %a#properties-tab.nav-link.active{"data-toggle":   "tab",
-                                      href:            "#properties",
-                                      role:            "tab",
-                                      "aria-controls": "properties",
-                                      "aria-selected": "true"}
-      %span.badge.badge-pill 1
+    %button#properties-tab.nav-link.active{"data-bs-toggle": "tab",
+                                           "data-bs-target": "#properties",
+                                           role:             "tab",
+                                           type:             "button",
+                                           "aria-controls":  "properties",
+                                           "aria-selected":  "true"}
+      %span.badge.rounded-pill 1
       Pick a Collection
 
   %li.nav-item
-    %a#access-tab.nav-link{"data-toggle":   "tab",
-                           href:            "#access",
-                           role:            "tab",
-                           "aria-controls": "access",
-                           "aria-selected": "true"}
-      %span.badge.badge-pill 2
+    %button#access-tab.nav-link{"data-bs-toggle": "tab",
+                                "data-bs-target": "#access",
+                                role:             "tab",
+                                type:             "button",
+                                "aria-controls":  "access",
+                                "aria-selected":  "true"}
+      %span.badge.rounded-pill 2
       Access
 
   %li.nav-item
-    %a#metadata-tab.nav-link{"data-toggle":   "tab",
-                             href:            "#metadata",
-                             role:            "tab",
-                             "aria-controls": "metadata",
-                             "aria-selected": "true"}
-      %span.badge.badge-pill 3
+    %button#metadata-tab.nav-link{"data-bs-toggle": "tab",
+                                  "data-bs-target": "#metadata",
+                                  role:             "tab",
+                                  type:             "button",
+                                  "aria-controls":  "metadata",
+                                  "aria-selected":  "true"}
+      %span.badge.rounded-pill 3
       Metadata
 
   %li.nav-item
-    %a#files-tab.nav-link{"data-toggle":   "tab",
-                          href:            "#files",
-                          role:            "tab",
-                          "aria-controls": "files",
-                          "aria-selected": "true"}
-      %span.badge.badge-pill 4
+    %button#files-tab.nav-link{"data-bs-toggle": "tab",
+                               "data-bs-target": "#files",
+                               role:             "tab",
+                               type:             "button",
+                               "aria-controls":  "files",
+                               "aria-selected":  "true"}
+      %span.badge.rounded-pill 4
       Files
 
 .tab-content

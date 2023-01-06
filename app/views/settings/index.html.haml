@@ -5,7 +5,7 @@
 
 = form_tag(settings_path, method: :patch) do
 
-  .form-group.row
+  .mb-3.row
     = label_tag("settings[#{Setting::Key::EARLIEST_SEARCH_YEAR}]",
                 "Earliest Search Year",
                 class: "col-sm-3 col-form-label")
@@ -13,7 +13,7 @@
       = number_field_tag("settings[#{Setting::Key::EARLIEST_SEARCH_YEAR}]",
                          Setting::integer(Setting::Key::EARLIEST_SEARCH_YEAR),
                          class: "form-control")
-  .form-group.row
+  .mb-3.row
     = label_tag("settings[#{Setting::Key::BANNER_MESSAGE}]",
                 "Banner Message",
                 class: "col-sm-3 col-form-label")
@@ -21,7 +21,7 @@
       = text_area_tag("settings[#{Setting::Key::BANNER_MESSAGE}]",
                        Setting::string(Setting::Key::BANNER_MESSAGE),
                        class: "form-control")
-  .form-group.row
+  .mb-3.row
     = label_tag("settings[#{Setting::Key::BANNER_MESSAGE_TYPE}]",
                 "Banner Message Type",
                 class: "col-sm-3 col-form-label")
@@ -29,9 +29,9 @@
       = select_tag("settings[#{Setting::Key::BANNER_MESSAGE_TYPE}]",
                    options_for_select([%w(Blue/Info info), %w(Yellow/Warning warning), %w(Red/Danger danger)],
                                       Setting.string(Setting::Key::BANNER_MESSAGE_TYPE)),
-                   class: "custom-select")
+                   class: "form-select")
 
-  .form-group.row
+  .mb-3.row
     .col-sm-3
     .col-sm-9
       = submit_tag 'Save Changes', class: 'btn btn-primary'

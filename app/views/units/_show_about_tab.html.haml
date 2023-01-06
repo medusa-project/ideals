@@ -1,9 +1,9 @@
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@unit).edit_properties?
-    %button.btn.btn-light.edit-unit-properties{"data-unit-id": @unit.id,
-                                               "data-target": "#edit-unit-properties-modal",
-                                               "data-toggle": "modal",
-                                               role: "button"}
+    %button.btn.btn-light.edit-unit-properties{"data-unit-id":   @unit.id,
+                                               "data-bs-target": "#edit-unit-properties-modal",
+                                               "data-bs-toggle": "modal",
+                                               role:             "button"}
       %i.fas.fa-pencil-alt
       Edit Properties
 
@@ -42,18 +42,18 @@
 
 %hr
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@unit).edit_membership?
-    %button.btn.btn-light.edit-unit-membership{"data-unit-id": @unit.id,
-                                               "data-target": "#edit-unit-membership-modal",
-                                               "data-toggle": "modal",
-                                               role: "button"}
+    %button.btn.btn-light.edit-unit-membership{"data-unit-id":   @unit.id,
+                                               "data-bs-target": "#edit-unit-membership-modal",
+                                               "data-bs-toggle": "modal",
+                                               role:             "button"}
       %i.fas.fa-pencil-alt
       Change Unit Membership
-    %button.btn.btn-light.add-child-unit{"data-unit-id": @unit.id,
-                                         "data-target":  "#add-child-unit-modal",
-                                         "data-toggle":  "modal",
-                                         role:           "button"}
+    %button.btn.btn-light.add-child-unit{"data-unit-id":   @unit.id,
+                                         "data-bs-target": "#add-child-unit-modal",
+                                         "data-bs-toggle": "modal",
+                                         role:             "button"}
       %i.fa.fa-plus
       Add Child Unit
 
@@ -72,10 +72,11 @@
 %hr
 
 - if policy(@unit).new_collection?
-  .btn-group.float-right{role: "group"}
+  .btn-group.float-end{role: "group"}
     -# Add Collection button
-    %button.btn.btn-light{"data-target": "#add-collection-modal",
-                            "data-toggle": "modal", type: "button"}
+    %button.btn.btn-light{"data-bs-target": "#add-collection-modal",
+                          "data-bs-toggle": "modal",
+                          type:             "button"}
       %i.fa.fa-plus
       Add Collection
 

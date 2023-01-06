@@ -11,52 +11,52 @@
   -# Include this only because `collection` is required in the params.
   = f.hidden_field :id, value: f.object.id
 
-  .form-group
+  .mb-3
     = f.label :title
     = f.text_field :title, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :description
     = f.text_area :description, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :short_description
     = f.text_area :short_description, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :introduction
     = f.text_area :introduction, class: "form-control"
     %p.text-info
       %i.fa.fa-info-circle
       HTML is allowed.
 
-  .form-group
+  .mb-3
     = f.label :rights
     = f.text_area :rights, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :provenance
     = f.text_area :provenance, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :metadata_profile_id, "Metadata Profile"
     = f.select :metadata_profile_id, MetadataProfile.where(institution: current_institution).order(:name).pluck(:name, :id),
                { include_blank: true }, class: "form-select"
 
-  .form-group
+  .mb-3
     = f.label :submission_profile_id, "Submission Profile"
     = f.select :submission_profile_id, SubmissionProfile.where(institution: current_institution).order(:name).pluck(:name, :id),
                { include_blank: true }, class: "form-select"
 
-  .form-group
+  .mb-3
     .form-check
       = f.check_box :submissions_reviewed, class: 'form-check-input'
       = f.label :submissions_reviewed, "Submissions Reviewed", class: "form-check-label"
-    %span.form-text.text-muted
+    %p.form-text
       %i.fa.fa-info-circle
       Changing this will not affect submitted items that are still in the review queue.
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: 'btn btn-primary')

@@ -1,8 +1,8 @@
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if policy(@institution).edit_theme?
     -# Edit button
-    %button.btn.btn-light.edit-theme{"data-target":          "#edit-theme-modal",
-                                     "data-toggle":          "modal",
+    %button.btn.btn-light.edit-theme{"data-bs-target":       "#edit-theme-modal",
+                                     "data-bs-toggle":       "modal",
                                      type:                   "button",
                                      "data-institution-key": @institution.key }
       %i.fa.fa-pencil-alt

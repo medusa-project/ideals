@@ -10,7 +10,7 @@ module ItemsHelper
     html        = StringIO.new
 
     mp_elements.each do |mp_e|
-      html << '<div class="form-group row">'
+      html << '<div class="mb-3 row">'
       html <<   label_tag("elements[#{mp_e.name}]",
                           mp_e.label,
                           class: "col-sm-3 col-form-label")
@@ -21,21 +21,21 @@ module ItemsHelper
         options = [["Any", nil]] + vocab.vocabulary_terms.map{ |t| [t.displayed_value, t.stored_value] }
         html << select_tag("elements[#{mp_e.name}]",
                            options_for_select(options),
-                           class: "custom-select") # TODO: selected
+                           class: "form-select") # TODO: selected
       elsif reg_e.input_type == RegisteredElement::InputType::DATE
         html << '<ul class="nav nav-pills nav-justified date-search-type" role="tablist">'
         html <<   '<li class="nav-item" role="presentation">'
-        html <<     '<a class="nav-link active" id="exact-date-tab" '\
-                             'data-toggle="pill" href="#exact-date" '\
-                             'role="tab" aria-controls="exact-date" '\
+        html <<     '<button class="nav-link active" id="exact-date-tab" '\
+                             'data-bs-toggle="pill" data-bs-target="#exact-date" '\
+                             'role="tab" type="button" aria-controls="exact-date" '\
                              'aria-selected="true">'
         html <<       'Exact Date'
         html <<     '</a>'
         html <<   '</li>'
         html <<   '<li class="nav-item" role="presentation">'
-        html <<     '<a class="nav-link" id="date-range-tab" '\
-                             'data-toggle="pill" href="#date-range" '\
-                             'role="tab" aria-controls="date-range" '\
+        html <<     '<button class="nav-link" id="date-range-tab" '\
+                             'data-bs-toggle="pill" data-bs-target="#date-range" '\
+                             'role="tab" type="button" aria-controls="date-range" '\
                              'aria-selected="false">'
         html <<       'Date Range'
         html <<     '</a>'
@@ -58,7 +58,8 @@ module ItemsHelper
         html <<   '</div>'
         html <<   '<div class="tab-pane fade" id="date-range" role="tabpanel" '\
                         'aria-labelledby="date-range-tab">'
-        html <<     '<div class="form-inline">From: '
+        html <<     '<div class="form-inline">'
+        html <<       '<label class="form-label">From:</label>'
         html <<       date_picker(month_select_name: "elements[#{mp_e.name}][from_month]",
                                   day_select_name:   "elements[#{mp_e.name}][from_day]",
                                   year_select_name:  "elements[#{mp_e.name}][from_year]",
@@ -67,10 +68,10 @@ module ItemsHelper
                                   selected_year:     0,
                                   earliest_year:     Setting.integer(Setting::Key::EARLIEST_SEARCH_YEAR),
                                   latest_year:       Time.now.year,
-                                  include_blanks:    true,
-                                  extra_attrs:       { class: "ml-2 mb-2"})
+                                  include_blanks:    true)
         html <<     '</div>'
-        html <<     '<div class="form-inline">To:'
+        html <<     '<div class="form-inline">'
+        html <<       '<label class="form-label">To:</label>'
         html <<       date_picker(month_select_name: "elements[#{mp_e.name}][to_month]",
                                   day_select_name:   "elements[#{mp_e.name}][to_day]",
                                   year_select_name:  "elements[#{mp_e.name}][to_year]",
@@ -79,8 +80,7 @@ module ItemsHelper
                                   selected_year:     0,
                                   earliest_year:     Setting.integer(Setting::Key::EARLIEST_SEARCH_YEAR),
                                   latest_year:       Time.now.year,
-                                  include_blanks:    true,
-                                  extra_attrs:       { class: "ml-2 mb-2"})
+                                  include_blanks:    true)
         html <<     '</div>'
         html <<   '</div>'
         html << '</div>'
@@ -94,7 +94,7 @@ module ItemsHelper
     end
 
     # Full Text
-    html << '<div class="form-group row">'
+    html << '<div class="mb-3 row">'
     html <<   label_tag("full_text", "Full Text",
                         class: "col-sm-3 col-form-label")
     html <<   '<div class="col-sm-9">'
@@ -125,7 +125,7 @@ module ItemsHelper
     html <<     '</div>'
     html <<     '<div class="form-inline">'
     html <<       '<div class="form-check">'
-    html <<         '<label class="mr-3">'
+    html <<         '<label class="me-3">'
     html <<           radio_button_tag("embargoes[0][perpetual]", "true",
                                        embargo&.perpetual,
                                        class: 'form-check-input')
@@ -133,7 +133,7 @@ module ItemsHelper
     html <<         '</label>'
     html <<       '</div>'
     html <<       '<div class="form-check">'
-    html <<         '<label class="mr-2">'
+    html <<         '<label class="me-2">'
     html <<           radio_button_tag("embargoes[0][perpetual]", "false",
                                        !embargo&.perpetual,
                                        class: 'form-check-input')
@@ -156,7 +156,7 @@ module ItemsHelper
     html <<   '<div class="card-body">'
     html <<     '<div class="row">'
     html <<       '<div class="col-sm-4">'
-    html <<         '<div class="form-group">'
+    html <<         '<div class="mb-3">'
     html <<           'Restrict'
     html <<           '<div class="form-check">'
     html <<             '<label>'
@@ -177,7 +177,7 @@ module ItemsHelper
     html <<         '</div>'
     html <<       '</div>'
     html <<       '<div class="col-sm-8">'
-    html <<         '<div class="form-group">'
+    html <<         '<div class="mb-3">'
     html <<           'Exempted User Groups'
     if embargo && embargo.user_groups.any?
       embargo.user_groups.each_with_index do |group, index|
@@ -192,7 +192,7 @@ module ItemsHelper
     html <<         '</div>'
     html <<       '</div>'
     html <<     '</div>' # .row
-    html <<     '<div class="form-group">'
+    html <<     '<div class="mb-3">'
     html <<       label_tag("embargoes[#{index}][reason]", "Reason")
     html <<       text_area_tag("embargoes[#{index}][reason]",
                                 embargo&.reason,
@@ -257,17 +257,17 @@ module ItemsHelper
           # Collection heading
           collection = item.effective_primary_collection
           if prev_collection != collection
-            form << "<h3 class=\"ml-3\">"
+            form << "<h3 class=\"ms-3\">"
             form <<   "&#8627; "
             form << icon_for(collection) + ' ' + collection.title
             form << "</h3>"
           end
         end
-        form << "<div class=\"media resource-list mb-3 ml-3\">"
+        form << "<div class=\"media resource-list mb-3 ms-3\">"
         form <<   "<div class=\"check\">"
         form <<     check_box_tag("items[]", item.id)
         form <<   "</div>"
-        form <<   "<div class=\"thumbnail ml-2\">"
+        form <<   "<div class=\"thumbnail ms-2\">"
         form <<     link_to(item) do
           icon_for(item)
         end
@@ -303,9 +303,9 @@ module ItemsHelper
     html <<   select_tag("embargoes[#{index}][user_group_ids][]",
                          options_for_select(UserGroup.all.order(:name).pluck(:name, :id), group&.id),
                          disabled: group.blank?,
-                         class:    "custom-select",
+                         class:    "form-select",
                          style:    "width: 90%")
-    html <<   '<button class="btn btn-outline-danger btn-sm ml-2 remove-user-group" type="button">'
+    html <<   '<button class="btn btn-outline-danger btn-sm ms-2 remove-user-group" type="button">'
     html <<     '<i class="fa fa-minus"></i>'
     html <<   '</button>'
     html << '</div>'

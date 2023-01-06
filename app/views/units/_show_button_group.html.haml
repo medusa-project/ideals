@@ -1,4 +1,4 @@
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if !@unit.buried && policy(@unit).delete?
     = link_to(unit_delete_path(@unit), class: 'btn btn-danger',
                                        method: :post,

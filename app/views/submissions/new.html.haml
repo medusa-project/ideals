@@ -12,7 +12,7 @@
   #submissions-in-progress.card.text-white.bg-info.mb-3
     .card-header
       = icon_for(:info)
-      = "You have #{pluralize(@submissions.length, "submission")} in progress."
+      = "You already have #{pluralize(@submissions.length, "submission")} in progress."
     .card-body.pb-1
       %ol
         - @submissions.each do |item|
@@ -26,29 +26,26 @@
             - else
               = link_to(raw("Started #{local_time_ago(item.created_at)}"),
                         edit_submission_path(item))
-      %p
-        Select a submission above to return to it. Or, continue to the
-        questions below to start a new submission.
+
+.alert.alert-light
+  = icon_for(:info)
+  To start your deposit, please review the deposit agreement and answer the
+  following questions.
 
 #deposit-agreement.accordion.mb-3
-  %p
-    To start your deposit, please review the deposit agreement and answer the
-    following questions.
-
-  .card
-    #deposit-agreement-header.card-header
-      %button.btn.btn-link{type:            "button",
-                           "data-toggle":   "collapse",
-                           "data-target":   "#deposit-agreement-collapse",
-                           "aria-expanded": false,
-                           "aria-controls": "deposit-agreement-collapse"}
-        %i.far.fa-plus-square
+  .accordion-item
+    %h3#deposit-agreement-header.accordion-header
+      %button.accordion-button.collapsed{type:             "button",
+                                         "data-bs-toggle": "collapse",
+                                         "data-bs-target": "#deposit-agreement-collapse",
+                                         "aria-expanded":  "false",
+                                         "aria-controls":  "deposit-agreement-collapse"}
         = current_institution.service_name
-        Deposit Agreement
+        Deposit Agreement&nbsp;
         %span.text-info (expand)
-    #deposit-agreement-collapse.collapse{"aria-labelledby": "deposit-agreement-heading",
-                                         "data-parent":     "#deposit-agreement"}
-      .card-body
+    #deposit-agreement-collapse.accordion-collapse.collapse{"aria-labelledby": "deposit-agreement-heading",
+                                                            "data-bs-parent":  "#deposit-agreement"}
+      .accordion-body
         -# https://wiki.illinois.edu/wiki/display/IDEALS/Deposit+Agreement+-+Non-Exclusive+Distribution+and+Preservation+License
         %p To properly administer the Illinois Digital Environment for Access to Learning and Scholarship (IDEALS) and preserve the contents for future use, the Board of Trustees of the University of Illinois on behalf of its Urbana-Champaign campus (the "University") requires certain permissions and warrants from you, the author(s) and/or copyright owner. If you are the copyright owner, by accepting this license, you still retain copyright to your work and do not give up the right to submit the work to publishers or other repositories. If you are not the copyright owner, you represent that the copyright owner has given you permission to deposit the work.
         %p By accepting (clicking through) this license, you grant to the University the non-exclusive right to reproduce, translate (as described below), and distribute the submission, including the descriptive information (metadata) and abstract, in any format or medium worldwide and royalty-free, including, but not limited to, publication over the Internet, except as provided for by an addendum to this agreement.
@@ -84,7 +81,7 @@
         %input#q1-2.response.form-check-input{type: "radio", name: "q1", value: "No"}
         %label.form-check-label{for: "q1-2"} No
     .col-sm-9
-      %p.mt-2.text-info
+      %p.mt-2.text-secondary
         %i.fa.fa-info-circle
         Deposit into
         = current_institution.service_name
@@ -108,7 +105,7 @@
         %input#q2-3.response.form-check-input{type: "radio", name: "q2", value: "Not applicable"}
         %label.form-check-label{for: "q2-3"} Not Applicable
     .col-sm-9
-      %p.mt-2.text-info
+      %p.mt-2.text-secondary
         %i.fa.fa-info-circle
         Deposit into
         = current_institution.service_name
@@ -135,7 +132,7 @@
         %input#q3-2.response.form-check-input{type: "radio", name: "q3", value: "No"}
         %label.form-check-label{for: "q3-2"} No
     .col-sm-9
-      %p.mt-2.text-info
+      %p.mt-2.text-secondary
         %i.fa.fa-info-circle
         Deposit into
         = current_institution.service_name
@@ -150,7 +147,7 @@
       .col-sm-3
         = submit_tag("Begin Submission", class: "btn btn-secondary btn-lg")
       .col-sm-9
-        #feedback.text-danger.ml-2
+        #feedback.text-danger.ms-2
           = icon_for(:warning)
           The selections you have made indicate that you are not ready to deposit your dataset.
           = current_institution.service_name

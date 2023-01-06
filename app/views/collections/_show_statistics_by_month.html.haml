@@ -2,17 +2,19 @@
 
 %ul.nav.nav-pills{role: "tablist"}
   %li.nav-item{role: "presentation"}
-    %a#chart-tab.nav-link.active{"data-toggle": "pill",
-                                 href: "#chart-tab-content",
-                                 role: "tab",
-                                 "aria-controls": "chart-tab-content",
-                                 "aria-selected": true} Chart
+    %button#chart-tab.nav-link.active{"data-bs-toggle": "pill",
+                                      "data-bs-target": "#chart-tab-content",
+                                      type:             "button",
+                                      role:             "tab",
+                                      "aria-controls":  "chart-tab-content",
+                                      "aria-selected":  true} Chart
   %li.nav-item{role: "presentation"}
-    %a#table-tab.nav-link{"data-toggle": "pill",
-                          href: "#table-tab-content",
-                          role: "tab",
-                          "aria-controls": "table-tab-content",
-                          "aria-selected": false} Table
+    %button#table-tab.nav-link{"data-bs-toggle": "pill",
+                               "data-bs-target": "#table-tab-content",
+                               type:             "button",
+                               role:             "tab",
+                               "aria-controls":  "table-tab-content",
+                               "aria-selected":  false} Table
 
 .tab-content
   #chart-tab-content.tab-pane.fade.show.active{role: "tabpanel",
@@ -23,7 +25,7 @@
 
   #table-tab-content.tab-pane.fade{role: "tabpanel",
                                    "aria-labelledby": "table-tab-content"}
-    .float-right
+    .float-end
       = link_to(collection_statistics_by_range_path(@collection,
                                                     format: :csv,
                                                     params: params.permit(:from_year, :from_month, :to_year, :to_month)),

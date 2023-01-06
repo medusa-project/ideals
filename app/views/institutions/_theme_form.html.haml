@@ -17,39 +17,39 @@
       %li
         %code rgba(128, 72, 9, 0.5)
 
-  .form-group
+  .mb-3
     = f.label :header_background_color, "Header Background Color"
     = f.text_field :header_background_color, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :footer_background_color, "Footer Background Color"
     = f.text_field :footer_background_color, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :primary_color, "Primary Color"
     = f.text_field :primary_color, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :primary_hover_color, "Primary Hover Color"
     = f.text_field :primary_hover_color, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :link_color, "Link Color"
     = f.text_field :link_color, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :link_hover_color, "Link Hover Color"
     = f.text_field :link_hover_color, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :active_link_color, "Active Link Color"
     = f.text_field :active_link_color, class: "form-control"
 
-  .form-group
+  .mb-3
     = f.label :favicon, "Master Favicon"
     %br
-    = f.file_field :favicon, directory: false
-    %p.text-muted
+    = f.file_field :favicon, directory: false, class: "form-control"
+    %p.form-text
       = icon_for(:info)
       Multiple downscaled copies of this image will be made automatically to
       suit different devices. It should be square and at least 192 pixels on a
@@ -57,31 +57,31 @@
 
   -# UIUC is using custom responsive images
   - if f.object.key != "uiuc"
-    .form-group
+    .mb-3
       = f.label :header_image, "Header Image"
       %br
-      = f.file_field :header_image, directory: false
-      %p.text-muted
+      = f.file_field :header_image, directory: false, class: "form-control"
+      %p.form-text
         = icon_for(:info)
         Should be at least 70 pixels tall. PNG format recommended.
 
-  .form-group
+  .mb-3
     = f.label :banner_image, "Banner Image"
     %br
-    = f.file_field :banner_image, directory: false
-    %p.text-muted
+    = f.file_field :banner_image, directory: false, class: "form-control"
+    %p.form-text
       = icon_for(:info)
       Should be at least 1920 pixels wide. PNG format recommended.
 
-  .form-group
+  .mb-3
     = f.label :footer_image, "Footer Image"
     %br
-    = f.file_field :footer_image, directory: false
-    %p.text-muted
+    = f.file_field :footer_image, directory: false, class: "form-control"
+    %p.form-text
       = icon_for(:info)
       Should be at least 400 pixels wide. PNG format recommended.
 
   .clearfix
-    .float-right
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: "btn btn-primary")

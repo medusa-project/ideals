@@ -8,8 +8,7 @@
                          placeholder:  raw("Search across #{number_with_delimiter(@item_count)} items&hellip;"),
                          'aria-label': 'Search',
                          class:        'form-control form-control-lg')
-      .input-group-append
-        %input{type: "submit", value: "Search", class: "btn btn-primary"}
+      %input{type: "submit", value: "Search", class: "btn btn-primary"}
   = link_to("Advanced Search", items_path(tab: "advanced-search"),
             id: "advanced-search-link")
 
@@ -22,8 +21,9 @@
     .col-8
       = render partial: "welcome"
     .col-4
-      %button.btn.btn-lg.btn-primary.btn-block{"data-target": "#login-modal",
-                                               "data-toggle": "modal",
-                                               type:          "button"}
-        %i.fa.fa-sign-in-alt
-        &nbsp;Log In
+      .d-grid{style: "margin-top: 4em"}
+        %button.btn.btn-lg.btn-primary.btn-block{"data-bs-target": "#login-modal",
+                                                 "data-bs-toggle": "modal",
+                                                 type:             "button"}
+          %i.fa.fa-sign-in-alt
+          &nbsp;Log In

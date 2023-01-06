@@ -11,7 +11,7 @@
   -# Include this only because `item` is required in the params.
   = f.hidden_field :id, value: f.object.id
 
-  .form-group
+  .mb-3
     %table.table.metadata
       %tbody
         - asc_elements = f.object.elements.sort_by{ |e| [e.name, e.position] }
@@ -22,7 +22,7 @@
                             options_for_select(RegisteredElement.where(institution: f.object.institution).order(:label).pluck(:label, :name),
                                                asc_element&.name),
                             include_blank: true,
-                            class: "custom-select"
+                            class: "form-select"
             %td
               %table.table-sm.table-borderless
                 %tr
@@ -41,6 +41,6 @@
       Add Element
 
   .clearfix
-    .float-right.mb-3
-      %button.btn.btn-light{"data-dismiss": "modal", type: "button"} Cancel
+    .float-end.mb-3
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
       = f.submit("Save Changes", class: 'btn btn-primary')

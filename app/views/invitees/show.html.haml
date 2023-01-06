@@ -1,6 +1,6 @@
 - provide :title, "Invitee #{@invitee.email}"
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   = render partial: "actions_menu", locals: { invitee: @invitee,
                                               button_class: "btn btn-light" }
 
@@ -19,11 +19,11 @@
       %dd
         - case @invitee.approval_state
         - when ApprovalState::PENDING
-          %span.badge.badge-primary PENDING
+          %span.badge.text-bg-primary PENDING
         - when ApprovalState::APPROVED
-          %span.badge.badge-success APPROVED
+          %span.badge.text-bg-success APPROVED
         - when ApprovalState::REJECTED
-          %span.badge.badge-danger REJECTED
+          %span.badge.text-bg-danger REJECTED
       %dt Created
       %dd= local_time_ago(@invitee.created_at)
       - if @invitee.pending? && @invitee.expires_at?

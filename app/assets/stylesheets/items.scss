@@ -5,6 +5,9 @@ body#list_items, body#list_collections {
   .filter-field {
     width: 18em;
   }
+  input[name=direction] {
+    appearance: none;
+  }
 }
 
 body#show_item {

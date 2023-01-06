@@ -33,6 +33,15 @@ html {
   color: white;
 }
 
+.breadcrumb {
+  background-color: $gray-100;
+  margin: -16px -16px 1em -16px;
+  padding: 0.8em;
+  a {
+    text-decoration: none;
+  }
+}
+
 .bg-info {
   background-color: #337ab7 !important;
 }
@@ -41,11 +50,29 @@ html {
   background-color: $gray-100;
 }
 
+.bg-info, .bg-warning, .bg-danger {
+  a:hover {
+    color: white;
+  }
+}
+
 h1 {
   line-height: 1.1em;
   small {
     font-size: 0.6em;
   }
+}
+
+table a, dl a, ul a, .card a {
+  text-decoration: none;
+}
+
+table a:hover, dl a:hover, ul a:hover, .card a:hover {
+  text-decoration: underline;
+}
+
+a.btn:hover {
+  text-decoration: none;
 }
 
 blockquote {
@@ -56,23 +83,31 @@ code {
   color: black;
 }
 
-.navbar-toggler-icon {
-  background-image: image_url("fontawesome/black/bars.svg");
-}
-
-#navbar-supported-content {
-  .nav-item {
-    margin-bottom: 0;
-    .nav-link {
-      white-space: nowrap;
-    }
+nav.navbar {
+  a {
+    text-decoration: none;
   }
-  input[type=search] {
-    width: 180px;
+  .navbar-toggler-icon {
+    background-image: image_url("fontawesome/black/bars.svg");
+  }
+  #navbar-supported-content {
+    .nav-item {
+      margin-bottom: 0;
+
+      .nav-link {
+        white-space: nowrap;
+      }
+    }
+    input[type=search] {
+      width: 180px;
+    }
   }
 }
 
 .resource-list {
+  a {
+    text-decoration: none;
+  }
   .check {
     height: 80px;
     display: flex;
@@ -81,14 +116,14 @@ code {
   .format-icon {
     color: $gray-600;
     font-size: 0.9em;
-    padding-left: 0.5em;
+    padding-left: 0.4em;
   }
   .icon-thumbnail {
     font-size: 100px;
   }
   .icon-thumbnail, .image-thumbnail {
     $thumb-width: 120px;
-    margin-right: 10px;
+    margin: 0 auto;
     max-height: 120px;
     max-width: $thumb-width;
     width: $thumb-width;
@@ -121,9 +156,10 @@ code {
       padding-left: 0;
     }
     .term {
-      font-size: 0.9em;
-      text-indent: -1.2em;
-      margin-left: 2.4em;
+      font-size: 0.92em;
+      text-indent: -1.15em;
+      margin-left: 2.5em;
+      margin-bottom: 0.3em;
     }
     .count {
       background-color: #808080;
@@ -136,9 +172,16 @@ code {
   }
 }
 
+.nav-pills[aria-orientation=vertical] {
+  button {
+    text-align: left !important;
+    white-space: nowrap;
+  }
+}
+
 .nav-pills .active .badge {
   background: white;
-  color: red;
+  color: black;
 }
 
 .nav {

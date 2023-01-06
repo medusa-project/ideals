@@ -4,13 +4,13 @@
 - can_edit             = policy(@user_group).edit?
 - show_uiuc_dimensions = @user_group.institution&.key == "uiuc"
 
-.btn-group.float-right{role: "group"}
+.btn-group.float-end{role: "group"}
   - if can_edit
     -# Edit button
-    %button.btn.btn-light.edit-user-group{"data-target": "#edit-user-group-modal",
-                                          "data-toggle": "modal",
+    %button.btn.btn-light.edit-user-group{"data-bs-target":     "#edit-user-group-modal",
+                                          "data-bs-toggle":     "modal",
                                           "data-user-group-id": @user_group.id,
-                                          type: "button"}
+                                          type:                 "button"}
       %i.fa.fa-pencil-alt
       Edit
   - if policy(@user_group).destroy?
@@ -35,17 +35,19 @@
 
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item{role: "presentation"}
-    %a#membership-tab.nav-link.active{"data-toggle":   "tab",
-                                      href:            "#membership",
-                                      role:            "tab",
-                                      "aria-controls": "membership",
-                                      "aria-selected": true} Membership
+    %button#membership-tab.nav-link.active{"data-bs-toggle": "tab",
+                                           "data-bs-target": "#membership",
+                                           role:             "tab",
+                                           type:             "button",
+                                           "aria-controls":  "membership",
+                                           "aria-selected":  "true"} Membership
   %li.nav-item{role: "presentation"}
-    %a#usage-tab.nav-link{"data-toggle":   "tab",
-                          href:            "#usage",
-                          role:            "tab",
-                          "aria-controls": "usage",
-                          "aria-selected": true} Usage
+    %button#usage-tab.nav-link{"data-bs-toggle": "tab",
+                               "data-bs-target": "#usage",
+                               role:             "tab",
+                               type:             "button",
+                               "aria-controls":  "usage",
+                               "aria-selected":  "true"} Usage
 
 .tab-content
   #membership.tab-pane.fade.show.active{role:              "tabpanel",
@@ -55,9 +57,9 @@
         .card
           .card-body
             - if can_edit
-              .float-right
-                %button.btn.btn-light.btn-sm.edit-local-users{"data-target":        "#edit-local-users-modal",
-                                                              "data-toggle":        "modal",
+              .float-end
+                %button.btn.btn-light.btn-sm.edit-local-users{"data-bs-target":     "#edit-local-users-modal",
+                                                              "data-bs-toggle":     "modal",
                                                               "data-user-group-id": @user_group.id,
                                                               type:                 "button"}
                   %i.fa.fa-pencil-alt
@@ -74,9 +76,9 @@
         .card
           .card-body
             - if can_edit
-              .float-right
-                %button.btn.btn-light.btn-sm.edit-hosts{"data-target":        "#edit-hosts-modal",
-                                                        "data-toggle":        "modal",
+              .float-end
+                %button.btn.btn-light.btn-sm.edit-hosts{"data-bs-target":     "#edit-hosts-modal",
+                                                        "data-bs-toggle":     "modal",
                                                         "data-user-group-id": @user_group.id,
                                                         type:                 "button"}
                   %i.fa.fa-pencil-alt
@@ -95,11 +97,11 @@
         .card
           .card-body
             - if can_edit
-              .float-right
-                %button.btn.btn-light.btn-sm.edit-email-patterns{"data-target": "#edit-email-patterns-modal",
-                                                                   "data-toggle": "modal",
-                                                                   "data-user-group-id": @user_group.id,
-                                                                   type: "button"}
+              .float-end
+                %button.btn.btn-light.btn-sm.edit-email-patterns{"data-bs-target":     "#edit-email-patterns-modal",
+                                                                 "data-bs-toggle":     "modal",
+                                                                 "data-user-group-id": @user_group.id,
+                                                                 type:                 "button"}
                   %i.fa.fa-pencil-alt
                   Edit
             %h4.card-title Email Address Patterns
@@ -116,11 +118,11 @@
           .card
             .card-body
               - if can_edit
-                .float-right
-                  %button.btn.btn-light.btn-sm.edit-netid-users{"data-target": "#edit-netid-users-modal",
-                                                                "data-toggle": "modal",
+                .float-end
+                  %button.btn.btn-light.btn-sm.edit-netid-users{"data-bs-target":     "#edit-netid-users-modal",
+                                                                "data-bs-toggle":     "modal",
                                                                 "data-user-group-id": @user_group.id,
-                                                                type: "button"}
+                                                                type:                 "button"}
                     %i.fa.fa-pencil-alt
                     Edit
               %h4.card-title NetID Users
@@ -141,11 +143,11 @@
           .card
             .card-body
               - if can_edit
-                .float-right
-                  %button.btn.btn-light.btn-sm.edit-departments{"data-target": "#edit-departments-modal",
-                                                                "data-toggle": "modal",
+                .float-end
+                  %button.btn.btn-light.btn-sm.edit-departments{"data-bs-target":     "#edit-departments-modal",
+                                                                "data-bs-toggle":     "modal",
                                                                 "data-user-group-id": @user_group.id,
-                                                                type: "button"}
+                                                                type:                 "button"}
                     %i.fa.fa-pencil-alt
                     Edit
               %h4.card-title Departments
@@ -160,11 +162,11 @@
           .card
             .card-body
               - if can_edit
-                .float-right
-                  %button.btn.btn-light.btn-sm.edit-affiliations{"data-target": "#edit-affiliations-modal",
-                                                                 "data-toggle": "modal",
+                .float-end
+                  %button.btn.btn-light.btn-sm.edit-affiliations{"data-bs-target":     "#edit-affiliations-modal",
+                                                                 "data-bs-toggle":     "modal",
                                                                  "data-user-group-id": @user_group.id,
-                                                                 type: "button"}
+                                                                 type:                 "button"}
                     %i.fa.fa-pencil-alt
                     Edit
               %h4.card-title Affiliations
@@ -180,11 +182,11 @@
           .card
             .card-body
               - if can_edit
-                .float-right
-                  %button.btn.btn-light.btn-sm.edit-ad-groups{"data-target": "#edit-ad-groups-modal",
-                                                              "data-toggle": "modal",
+                .float-end
+                  %button.btn.btn-light.btn-sm.edit-ad-groups{"data-bs-target":     "#edit-ad-groups-modal",
+                                                              "data-bs-toggle":     "modal",
                                                               "data-user-group-id": @user_group.id,
-                                                              type: "button"}
+                                                              type:                 "button"}
                     %i.fa.fa-pencil-alt
                     Edit
               %h4.card-title AD Groups

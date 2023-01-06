@@ -5,13 +5,16 @@
 -# invitee [Invitee]
 -# token [String]
 -#
-#invite-user-modal.modal.fade{"aria-labelledby": "invite-user-modal-label", role: "dialog", tabindex: "-1"}
-  .modal-dialog{role: "document"}
+#invite-user-modal.modal.fade{"aria-labelledby": "invite-user-modal-label",
+                              role:              "dialog",
+                              tabindex:          "-1"}
+  .modal-dialog.modal-dialog-centered{role: "document"}
     .modal-content
       .modal-header
         %h4#invitee-user-modal-label.modal-title Invite User
-        %button.close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
-          %span{"aria-hidden": "true"} &times;
+        %button.btn-close{"aria-label":      "Close",
+                          "data-bs-dismiss": "modal",
+                          type:              "button"}
       .modal-body
         .alert.alert-light
           = icon_for(:info)
@@ -25,9 +28,9 @@
           = f.hidden_field :inviting_user_id, value: current_user.id
           = f.hidden_field :note, value: "Invited by #{current_user.name}"
 
-          .form-group
+          .mb-3
             = f.label :email, "Email"
             = f.text_field :email, class: "form-control"
 
-          .form-group
+          .mb-3
             = f.submit "Send Invite", class: "btn btn-primary"
