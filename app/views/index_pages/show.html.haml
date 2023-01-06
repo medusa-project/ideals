@@ -35,17 +35,46 @@
                         max_links:        9) |
 
 - if @starting_letters.any?
-  .card.mb-3
-    .card-body.p-0.pt-3
-      %ul.nav.nav-pills.justify-content-md-center
-        %li.nav-item
-          = link_to("All", @index_page, class: "nav-link #{params[:letter].blank? ? "active" : ""}")
-        - @starting_letters.each do |row|
-          %li.nav-item
-            - if params[:letter]&.upcase == row['alpha']
-              - active_letter = row['alpha']
-            = link_to(row['alpha'], index_page_path(@index_page, letter: row['alpha']),
-                      class: "nav-link #{params[:letter]&.upcase == row['alpha'] ? "active" : ""}")
+  %ul.nav.nav-tabs{role: "tablist"}
+    %li.nav-item{role: "presentation"}
+      %button#browse-tab.nav-link{"data-toggle":   "tab",
+                                  "data-target":   "#browse",
+                                  type:            "button",
+                                  role:            "tab",
+                                  "aria-controls": "browse",
+                                  "aria-selected": "true",
+                                  class:           params[:q].present? ? nil : "active" } Browse
+    %li.nav-item{role: "presentation"}
+      %button#search-tab.nav-link{"data-toggle":   "tab",
+                                  "data-target":   "#search",
+                                  type:            "button",
+                                  role:            "tab",
+                                  "aria-controls": "search",
+                                  "aria-selected": "false",
+                                  class:           params[:q].present? ? "active" : nil} Search
+
+  .tab-content
+    #browse.tab-pane.fade{role:              "tabpanel",
+                          "aria-labelledby": "browse-tab",
+                          class:           params[:q].present? ? nil : "show active"}
+      .card.mb-3
+        .card-body
+          %ul.nav.nav-pills.justify-content-md-center.mb-0
+            %li.nav-item
+              = link_to("All", @index_page, class: "nav-link #{(params[:letter].blank? && params[:q].blank?) ? "active" : ""}")
+            - @starting_letters.each do |row|
+              %li.nav-item
+                = link_to(row['alpha'], index_page_path(@index_page, letter: row['alpha']),
+                          class: "nav-link #{params[:letter]&.upcase == row['alpha'] ? "active" : ""}")
+    #search.tab-pane.fade{role:              "tabpanel",
+                          "aria-labelledby": "search-tab",
+                          class:           params[:q].present? ? "show active" : nil}
+      .card.mb-3
+        .card-body
+          = form_tag(request.fullpath, method: :get) do
+            .input-group.filter-field
+              = filter_field(submit_text: "Search")
+
 - else
   %p There are no terms in this index yet.
 

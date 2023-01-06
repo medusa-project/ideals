@@ -74,7 +74,7 @@ class IndexPagesController < ApplicationController
   # Responds to `GET /index-pages/:id`
   #
   def show
-    @permitted_params = params.permit(:letter, :start)
+    @permitted_params = params.permit(:letter, :q, :start)
     @start            = @permitted_params[:start].to_i
     @window           = 50
     reg_e_ids         = @index_page.registered_element_ids
@@ -92,6 +92,8 @@ class IndexPagesController < ApplicationController
         order(:string)
       if params[:letter]
         @terms = @terms.where("UNACCENT(LOWER(string)) LIKE ?", "#{params[:letter].downcase}%")
+      elsif params[:q]
+        @terms = @terms.where("UNACCENT(LOWER(string)) LIKE ?", "%#{params[:q].downcase}%")
       end
       @count            = @terms.count
       @terms            = @terms.offset(@start).
