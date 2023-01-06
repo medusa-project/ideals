@@ -422,7 +422,8 @@ class Institution < ApplicationRecord
   # @return [String]
   #
   def scope_url
-    "https://#{self.fqdn}"
+    scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
+    "#{scheme}://#{self.fqdn}"
   end
 
   ##

@@ -568,7 +568,7 @@ class InstitutionTest < ActiveSupport::TestCase
   # scope_url()
 
   test "scope_url() returns a correct value" do
-    assert_equal "https://#{@instance.fqdn}", @instance.scope_url
+    assert_equal "http://#{@instance.fqdn}", @instance.scope_url
   end
 
   # service_name

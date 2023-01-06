@@ -134,7 +134,7 @@ class IdealsMailer < ApplicationMailer
   #
   def item_submitted(item)
     @institution = item.institution
-    @item_url    = item_url(item, host: "https://#{@institution.fqdn}")
+    @item_url    = item_url(item, host: @institution.scope_url)
     if item.primary_collection&.managing_users&.any?
       recipients = item.primary_collection.managing_users.map(&:email)
       mail(from:     item.institution.feedback_email,

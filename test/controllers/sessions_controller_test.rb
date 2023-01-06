@@ -81,9 +81,17 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to the root URL" do
+  test "destroy() redirects to the root URL in a globally-scoped context" do
+    host! ::Configuration.instance.main_host
     get logout_path
     assert_redirected_to root_url
+  end
+
+  test "destroy() redirects to the root URL in an institution-scoped context" do
+    institution = institutions(:southwest)
+    host! institution.fqdn
+    get logout_path
+    assert_redirected_to institution.scope_url
   end
 
   # new_netid()

@@ -2,7 +2,7 @@
 
 class SessionsController < ApplicationController
 
-  skip_before_action :verify_authenticity_token, only: :create
+  skip_before_action :verify_authenticity_token, except: :new_netid
 
   ##
   # Redirects to the Shibboleth login flow. Responds to
@@ -42,7 +42,8 @@ class SessionsController < ApplicationController
 
   def destroy
     reset_session
-    redirect_back fallback_location: root_url
+    redirect_to(institution_scope? ? current_institution.scope_url : root_url,
+                allow_other_host: true)
   end
 
   def unauthorized
