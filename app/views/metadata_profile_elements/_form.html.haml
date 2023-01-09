@@ -4,10 +4,11 @@
 = form_for([profile, element], remote: true) do |f|
   = f.hidden_field :metadata_profile_id, value: profile.id
   .error-messages
-    - # populated via ajax by shared/_validation_messages.js.erb
-  .form-group
+    -# populated via ajax by shared/_validation_messages.js.erb
+  .mb-3
     = f.label :registered_element_id, "Element"
-    = f.select(:registered_element_id, RegisteredElement.where(institution: current_institution).order(:name).pluck(:name, :id),
+    - institution = profile.global? ? nil : current_institution
+    = f.select(:registered_element_id, RegisteredElement.where(institution: institution).order(:name).pluck(:name, :id),
       { selected: f.object.registered_element_id },
       class: "custom-select")
   - if profile.elements.any?
