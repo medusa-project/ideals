@@ -272,7 +272,7 @@ class UnitsController < ApplicationController
   ##
   # Renders statistics within a date range as HTML and CSV.
   #
-  # Responds to `GET /collections/:id/statistics-by-range`
+  # Responds to `GET /units/:id/statistics-by-range`
   #
   def statistics_by_range
     from_time = TimeUtils.ymd_to_time(params[:from_year],
