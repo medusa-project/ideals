@@ -244,11 +244,12 @@ class Unit < ApplicationRecord
   #                            keys.
   #
   def download_count_by_month(start_time: nil, end_time: nil)
-    start_time = Event.all.order(:happened_at).limit(1).pluck(:happened_at).first unless start_time
-    end_time   = Time.now.utc unless end_time
+    start_time ||= Event.all.order(:happened_at).limit(1).pluck(:happened_at).first
+    end_time   ||= Time.now.utc
     raise ArgumentError, "start_time > end_time" if start_time > end_time
+    end_time    += 1.month
     start_series = "#{start_time.year}-#{start_time.month}-01"
-    end_series   = Date.civil(end_time.year, end_time.month, -1) # last day of month
+    end_series   = "#{end_time.year}-#{end_time.month}-01"
 
     sql = "WITH RECURSIVE q AS (
             SELECT u
@@ -279,7 +280,8 @@ class Unit < ApplicationRecord
         ) e ON mon.month = e.month
         ORDER BY mon.month;"
     values = [self.id, Event::Type::DOWNLOAD, start_time, end_time]
-    self.class.connection.exec_query(sql, "SQL", values)
+    result = self.class.connection.exec_query(sql, "SQL", values).to_a
+    result[0..(result.length - 2)]
   end
 
   ##
@@ -358,11 +360,12 @@ class Unit < ApplicationRecord
   #                            keys.
   #
   def submitted_item_count_by_month(start_time: nil, end_time: nil)
-    start_time   = Event.all.order(:happened_at).limit(1).pluck(:happened_at).first unless start_time
-    end_time     = Time.now.utc unless end_time
+    start_time ||= Event.all.order(:happened_at).limit(1).pluck(:happened_at).first
+    end_time   ||= Time.now.utc
     raise ArgumentError, "start_time > end_time" if start_time > end_time
+    end_time    += 1.month
     start_series = "#{start_time.year}-#{start_time.month}-01"
-    end_series   = Date.civil(end_time.year, end_time.month, -1) # last day of month
+    end_series   = "#{end_time.year}-#{end_time.month}-01"
 
     sql = "WITH RECURSIVE q AS (
         SELECT u
@@ -392,7 +395,8 @@ class Unit < ApplicationRecord
     ) e ON mon.month = e.month
     ORDER BY mon.month;"
     values = [self.id, Event::Type::CREATE, start_time, end_time]
-    self.class.connection.exec_query(sql, "SQL", values)
+    result = self.class.connection.exec_query(sql, "SQL", values).to_a
+    result[0..(result.length - 2)]
   end
 
 
