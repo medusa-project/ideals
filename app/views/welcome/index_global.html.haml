@@ -22,22 +22,21 @@
       %br
       %small across Illinois
 
-    #institution-accordion.accordion
+    #institution-accordion.accordion.accordion-flush
       - @institutions.each do |institution|
-        .card.institution{"data-key": institution.key}
-          .card-header
-            %h2.mb-0
-              %button.btn.btn-link.btn-block.text-left{type:            "button",
-                                                       "data-toggle":   "collapse",
-                                                       "data-target":   "#collapse-#{institution.key}",
-                                                       "aria-expanded": "true",
-                                                       "aria-controls": "collapse-#{institution.key}"}
-                = institution.name
+        .accordion-item.institution{"data-key": institution.key}
+          %h2.accordion-header
+            %button.accordion-button.collapsed{type:             "button",
+                                               "data-bs-toggle": "collapse",
+                                               "data-bs-target": "#collapse-#{institution.key}",
+                                               "aria-expanded":  "false",
+                                               "aria-controls":  "collapse-#{institution.key}"}
+              = institution.name
 
-          .collapse{id:                "collapse-#{institution.key}",
-                    "aria-labelledby": "headingOne",
-                    "data-parent":     "#institution-accordion"}
-            .card-body.text-center
+          .accordion-collapse.collapse{id:                "collapse-#{institution.key}",
+                                       "aria-labelledby": "headingOne",
+                                       "data-bs-parent":  "#institution-accordion"}
+            .accordion-body.text-center
               = link_to(url_for(controller: "units", action: "index", host: institution.fqdn), class: "count") do
                 = icon_for(Unit)
                 = number_with_delimiter(institution.units.count)
