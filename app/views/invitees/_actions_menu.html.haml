@@ -29,7 +29,7 @@
           Reject
         %li
           %hr.dropdown-divider
-      - if !invitee.identity&.activated
+      - if Rails.env.development? && !invitee.identity&.activated
         %h6.dropdown-header Testing Only
         = link_to(invitee_path(invitee),
                   method: :delete, class: "dropdown-item",
