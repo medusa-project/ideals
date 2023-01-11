@@ -276,7 +276,7 @@ class Institution < ApplicationRecord
   def download_count_by_month(start_time: nil, end_time: nil)
     start_time ||= Event.all.order(:happened_at).limit(1).pluck(:happened_at).first
     end_time   ||= Time.now.utc
-    raise ArgumentError, "start_time > end_time" if start_time > end_time
+    raise ArgumentError, "End time must be after start time" if start_time > end_time
     end_time    += 1.month
     start_series = "#{start_time.year}-#{start_time.month}-01"
     end_series   = "#{end_time.year}-#{end_time.month}-01"
@@ -437,7 +437,7 @@ class Institution < ApplicationRecord
   def submitted_item_count_by_month(start_time: nil, end_time: nil)
     start_time ||= Event.all.order(:happened_at).limit(1).pluck(:happened_at).first
     end_time   ||= Time.now.utc
-    raise ArgumentError, "start_time > end_time" if start_time > end_time
+    raise ArgumentError, "End time must be after start time" if start_time > end_time
     end_time    += 1.month
     start_series = "#{start_time.year}-#{start_time.month}-01"
     end_series   = "#{end_time.year}-#{end_time.month}-01"

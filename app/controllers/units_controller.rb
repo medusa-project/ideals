@@ -275,26 +275,31 @@ class UnitsController < ApplicationController
   # Responds to `GET /units/:id/statistics-by-range`
   #
   def statistics_by_range
-    from_time = TimeUtils.ymd_to_time(params[:from_year],
-                                      params[:from_month],
-                                      params[:from_day])
-    to_time   = TimeUtils.ymd_to_time(params[:to_year],
-                                      params[:to_month],
-                                      params[:to_day])
-    # These two queries could probably be consolidated, but this will do for
-    # now.
-    @counts_by_month = @unit.submitted_item_count_by_month(start_time: from_time,
-                                                           end_time:   to_time)
-    downloads_by_month = MonthlyUnitItemDownloadCount.for_unit(
-      unit:        @unit,
-      start_year:  params[:from_year].to_i,
-      start_month: params[:from_month].to_i,
-      end_year:    params[:to_year].to_i,
-      end_month:   params[:to_month].to_i)
-    @counts_by_month.each_with_index do |m, i|
-      m['item_count'] = m['count']
-      m['dl_count']   = downloads_by_month[i]['dl_count']
-      m.delete('count')
+    begin
+      from_time = TimeUtils.ymd_to_time(params[:from_year],
+                                        params[:from_month],
+                                        params[:from_day])
+      to_time   = TimeUtils.ymd_to_time(params[:to_year],
+                                        params[:to_month],
+                                        params[:to_day])
+      # These two queries could probably be consolidated, but this will do for
+      # now.
+      @counts_by_month = @unit.submitted_item_count_by_month(start_time: from_time,
+                                                             end_time:   to_time)
+      downloads_by_month = MonthlyUnitItemDownloadCount.for_unit(
+        unit:        @unit,
+        start_year:  params[:from_year].to_i,
+        start_month: params[:from_month].to_i,
+        end_year:    params[:to_year].to_i,
+        end_month:   params[:to_month].to_i)
+      @counts_by_month.each_with_index do |m, i|
+        m['item_count'] = m['count']
+        m['dl_count']   = downloads_by_month[i]['dl_count']
+        m.delete('count')
+      end
+    rescue ArgumentError => e
+      render plain: "#{e}", status: :bad_request
+      return
     end
 
     respond_to do |format|

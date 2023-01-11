@@ -166,11 +166,19 @@ const CollectionView = function() {
                 innerTabContent.html(IDEALS.Spinner());
                 const url = ROOT_URL + "/collections/" + collectionID + "/statistics-by-range?" +
                     statsTabContent.find("form").serialize();
-                $.get(url, function (data) {
-                    innerTabContent.html(data);
-                    const canvas    = $("#chart");
-                    const chartData = $.parseJSON($("#chart-data").val());
-                    new IDEALS.Chart(canvas, chartData);
+                $.ajax({
+                    method: "GET",
+                    url:    url,
+                    success: function(data) {
+                        $("#error-flash").hide();
+                        innerTabContent.html(data);
+                        const canvas    = $("#chart");
+                        const chartData = $.parseJSON($("#chart-data").val());
+                        new IDEALS.Chart(canvas, chartData);
+                    },
+                    error: function(data, status, xhr) {
+                        $("#error-flash").text(data.responseText).show();
+                    }
                 });
             };
             const refreshDownloadsByItem = function() {

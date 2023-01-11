@@ -576,6 +576,17 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "statistics_by_range() returns HTTP 400 for illegal arguments" do
+    collection = collections(:uiuc_collection1)
+    get collection_statistics_by_range_path(collection), params: {
+      from_year:  2008,
+      from_month: 1,
+      to_year:    2006,
+      to_month:   12
+    }
+    assert_response :bad_request
+  end
+
   test "statistics_by_range() returns HTTP 410 for a buried collection" do
     get collection_path(collections(:uiuc_buried)), xhr: true
     assert_response :gone

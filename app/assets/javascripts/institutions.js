@@ -77,8 +77,16 @@ const InstitutionView = function() {
                 innerTabContent.html(IDEALS.Spinner());
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/statistics-by-range?" +
                     statsTabContent.find("form").serialize();
-                $.get(url, function (data) {
-                    innerTabContent.html(data);
+                $.ajax({
+                    method: "GET",
+                    url:    url,
+                    success: function(data) {
+                        $("#error-flash").hide();
+                        innerTabContent.html(data);
+                    },
+                    error: function(data, status, xhr) {
+                        $("#error-flash").text(data.responseText).show();
+                    }
                 });
             };
             const refreshDownloadsByItem = function() {

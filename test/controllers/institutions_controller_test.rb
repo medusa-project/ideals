@@ -484,6 +484,17 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "statistics_by_range() returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:southwest_admin))
+    get institution_statistics_by_range_path(@institution), params: {
+      from_year:  2008,
+      from_month: 1,
+      to_year:    2005,
+      to_month:   1
+    }
+    assert_response :bad_request
+  end
+
   # update_preservation()
 
   test "update_preservation() redirects to root page for logged-out users" do

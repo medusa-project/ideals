@@ -479,6 +479,17 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "statistics_by_range() returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:uiuc_admin))
+    get unit_statistics_by_range_path(units(:uiuc_unit1)), params: {
+      from_year:  2008,
+      from_month: 1,
+      to_year:    2005,
+      to_month:   12
+    }
+    assert_response :bad_request
+  end
+
   test "statistics_by_range() returns HTTP 410 for a buried unit" do
     log_in_as(users(:uiuc_admin))
     get unit_statistics_by_range_path(units(:uiuc_buried)), xhr: true
