@@ -20,7 +20,7 @@ class IdealsMailer < ApplicationMailer
     io << "Message: #{exception.message}\n"
     io << "#{message}\n" if message.present?
     io << "Time: #{Time.now.iso8601}\n"
-    io << "User: #{user.name}\n" if user
+    io << "User: #{user.email} (#{user.name})\n" if user
     io << "Stack Trace:\n"
     exception.backtrace.each do |line|
       io << line
