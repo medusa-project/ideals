@@ -4,6 +4,15 @@ class InviteeTest < ActiveSupport::TestCase
 
   include ActionMailer::TestHelper
 
+  class ApprovalStateTest < ActiveSupport::TestCase
+
+    test "all() returns all approval states" do
+      assert_equal Set.new(%w(approved rejected pending)),
+                   Set.new(Invitee::ApprovalState.all)
+    end
+
+  end
+
   setup do
     @instance = invitees(:example)
     assert @instance.valid?
@@ -14,7 +23,7 @@ class InviteeTest < ActiveSupport::TestCase
   test "create() sets approval_state" do
     invitee = Invitee.create!(email: "new@example.org",
                               note: "New note")
-    assert_equal ApprovalState::PENDING, invitee.approval_state
+    assert_equal Invitee::ApprovalState::PENDING, invitee.approval_state
   end
 
   test "create() sets expires_at" do
@@ -28,7 +37,7 @@ class InviteeTest < ActiveSupport::TestCase
   test "approve() updates the approval state" do
     @instance = invitees(:example_pending)
     @instance.approve
-    assert_equal ApprovalState::APPROVED, @instance.approval_state
+    assert_equal Invitee::ApprovalState::APPROVED, @instance.approval_state
   end
 
   test "approve() sends an email" do
@@ -41,12 +50,12 @@ class InviteeTest < ActiveSupport::TestCase
   # approved?()
 
   test "approved?() returns false if approval_state is not set to approved" do
-    @instance.approval_state = ApprovalState::PENDING
+    @instance.approval_state = Invitee::ApprovalState::PENDING
     assert !@instance.approved?
   end
 
   test "approved?() returns true if approval_state is set to approved" do
-    @instance.approval_state = ApprovalState::APPROVED
+    @instance.approval_state = Invitee::ApprovalState::APPROVED
     assert @instance.approved?
   end
 
@@ -108,7 +117,7 @@ class InviteeTest < ActiveSupport::TestCase
   test "invite() updates the approval state" do
     @instance = invitees(:example_pending)
     @instance.invite
-    assert_equal ApprovalState::APPROVED, @instance.approval_state
+    assert_equal Invitee::ApprovalState::APPROVED, @instance.approval_state
   end
 
   test "invite() sends an email" do
@@ -131,12 +140,12 @@ class InviteeTest < ActiveSupport::TestCase
   # pending?()
 
   test "pending?() returns false if approval_state is not set to pending" do
-    @instance.approval_state = ApprovalState::APPROVED
+    @instance.approval_state = Invitee::ApprovalState::APPROVED
     assert !@instance.pending?
   end
 
   test "pending?() returns true if approval_state is set to pending" do
-    @instance.approval_state = ApprovalState::PENDING
+    @instance.approval_state = Invitee::ApprovalState::PENDING
     assert @instance.pending?
   end
 
@@ -145,7 +154,7 @@ class InviteeTest < ActiveSupport::TestCase
   test "reject() updates the approval state" do
     @instance = invitees(:example_pending)
     @instance.reject
-    assert_equal ApprovalState::REJECTED, @instance.approval_state
+    assert_equal Invitee::ApprovalState::REJECTED, @instance.approval_state
   end
 
   test "reject() sends an email" do
@@ -158,19 +167,19 @@ class InviteeTest < ActiveSupport::TestCase
   # rejected?()
 
   test "rejected?() returns false if approval_state is not set to rejected" do
-    @instance.approval_state = ApprovalState::PENDING
+    @instance.approval_state = Invitee::ApprovalState::PENDING
     assert !@instance.rejected?
   end
 
   test "rejected?() returns true if approval_state is set to rejected" do
-    @instance.approval_state = ApprovalState::REJECTED
+    @instance.approval_state = Invitee::ApprovalState::REJECTED
     assert @instance.rejected?
   end
 
   # send_approval_email()
 
   test "send_approval_email() raises an error if the instance is not approved" do
-    @instance.approval_state = ApprovalState::PENDING
+    @instance.approval_state = Invitee::ApprovalState::PENDING
     assert_no_emails do
       assert_raises do
         @instance.send_approval_email
@@ -179,7 +188,7 @@ class InviteeTest < ActiveSupport::TestCase
   end
 
   test "send_approval_email() sends an email if the instance is approved" do
-    @instance.approval_state = ApprovalState::APPROVED
+    @instance.approval_state = Invitee::ApprovalState::APPROVED
     assert_emails 1 do
       @instance.send_approval_email
     end
@@ -188,7 +197,7 @@ class InviteeTest < ActiveSupport::TestCase
   # send_invited_email()
 
   test "send_invited_email() raises an error if the instance is not approved" do
-    @instance.approval_state = ApprovalState::PENDING
+    @instance.approval_state = Invitee::ApprovalState::PENDING
     assert_no_emails do
       assert_raises do
         @instance.send_invited_email
@@ -197,7 +206,7 @@ class InviteeTest < ActiveSupport::TestCase
   end
 
   test "send_invited_email() sends an email if the instance is approved" do
-    @instance.approval_state = ApprovalState::APPROVED
+    @instance.approval_state = Invitee::ApprovalState::APPROVED
     assert_emails 1 do
       @instance.send_invited_email
     end
@@ -206,7 +215,7 @@ class InviteeTest < ActiveSupport::TestCase
   # send_reception_emails()
 
   test "send_reception_email() raises an error if the instance is not pending" do
-    @instance.approval_state = ApprovalState::APPROVED
+    @instance.approval_state = Invitee::ApprovalState::APPROVED
     assert_no_emails do
       assert_raises do
         @instance.send_reception_emails
@@ -215,7 +224,7 @@ class InviteeTest < ActiveSupport::TestCase
   end
 
   test "send_reception_email() sends two emails if the instance is pending" do
-    @instance.approval_state = ApprovalState::PENDING
+    @instance.approval_state = Invitee::ApprovalState::PENDING
     assert_emails 2 do
       @instance.send_reception_emails
     end
@@ -224,7 +233,7 @@ class InviteeTest < ActiveSupport::TestCase
   # send_rejection_email()
 
   test "send_rejection_email() raises an error if the instance is not rejected" do
-    @instance.approval_state = ApprovalState::PENDING
+    @instance.approval_state = Invitee::ApprovalState::PENDING
     assert_no_emails do
       assert_raises do
         @instance.send_rejection_email
@@ -233,7 +242,7 @@ class InviteeTest < ActiveSupport::TestCase
   end
 
   test "send_rejection_email() sends an email if the instance is rejected" do
-    @instance.approval_state = ApprovalState::REJECTED
+    @instance.approval_state = Invitee::ApprovalState::REJECTED
     assert_emails 1 do
       @instance.send_rejection_email
     end

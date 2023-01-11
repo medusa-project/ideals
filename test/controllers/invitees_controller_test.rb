@@ -71,7 +71,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
                }
            }
       invitee = Invitee.find_by_email(email)
-      assert_equal ApprovalState::APPROVED, invitee.approval_state
+      assert_equal Invitee::ApprovalState::APPROVED, invitee.approval_state
     end
   end
 
@@ -131,7 +131,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
            }
     end
     invitee = Invitee.find_by_email(email)
-    assert_equal ApprovalState::PENDING, invitee.approval_state
+    assert_equal Invitee::ApprovalState::PENDING, invitee.approval_state
   end
 
   test "create_unsolicited() sets the flash and redirects if all arguments are valid" do

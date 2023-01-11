@@ -33,7 +33,7 @@ class LocalUser < User
       unless invitee
         invitee = Invitee.create!(email:          email,
                                   institution:    institution,
-                                  approval_state: ApprovalState::APPROVED,
+                                  approval_state: Invitee::ApprovalState::APPROVED,
                                   note:           "Created as a sysadmin on the "\
                                                   "command line, bypassing the "\
                                                   "invitation process")

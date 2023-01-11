@@ -28,11 +28,11 @@
         %td= invitee.inviting_user ? link_to(invitee.inviting_user.name, invitee.inviting_user.becomes(User)) : "Self-Invited"
         %td
           - case invitee.approval_state
-          - when ApprovalState::PENDING
+          - when Invitee::ApprovalState::PENDING
             %span.badge.text-bg-primary PENDING
-          - when ApprovalState::APPROVED
+          - when Invitee::ApprovalState::APPROVED
             %span.badge.text-bg-success APPROVED
-          - when ApprovalState::REJECTED
+          - when Invitee::ApprovalState::REJECTED
             %span.badge.text-bg-danger REJECTED
         %td= render partial: "invitees/actions_menu",
                     locals: { invitee: invitee, button_class: "btn btn-sm btn-outline-secondary" }

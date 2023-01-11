@@ -271,11 +271,11 @@ class ApplicationController < ActionController::Base
       # Pending Invitees (if the user is allowed to act on them)
       if policy(Invitee).approve?
         count = Invitee.where(institution:    current_institution,
-                              approval_state: ApprovalState::PENDING).count
+                              approval_state: Invitee::ApprovalState::PENDING).count
         if count > 0
           @list.items << {
               message: "Act on #{count} #{"invitee".pluralize(count)}",
-              url:     invitees_path(approval_state: ApprovalState::PENDING)
+              url:     invitees_path(approval_state: Invitee::ApprovalState::PENDING)
           }
           @list.total_items += count
         end

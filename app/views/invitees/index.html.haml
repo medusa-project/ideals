@@ -22,7 +22,7 @@
         .col
           = label_tag nil, "Approval State", class: "form-label"
           = select_tag "approval_state",
-                       options_for_select(ApprovalState::all.map{ |s| [s.capitalize, s] },
+                       options_for_select(Invitee::ApprovalState::all.map{ |s| [s.capitalize, s] },
                                           params[:approval_state]),
                        include_blank: true,
                        class: "form-select"

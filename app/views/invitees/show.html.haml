@@ -18,11 +18,11 @@
       %dt Approval State
       %dd
         - case @invitee.approval_state
-        - when ApprovalState::PENDING
+        - when Invitee::ApprovalState::PENDING
           %span.badge.text-bg-primary PENDING
-        - when ApprovalState::APPROVED
+        - when Invitee::ApprovalState::APPROVED
           %span.badge.text-bg-success APPROVED
-        - when ApprovalState::REJECTED
+        - when Invitee::ApprovalState::REJECTED
           %span.badge.text-bg-danger REJECTED
       %dt Created
       %dd= local_time_ago(@invitee.created_at)
