@@ -354,8 +354,8 @@ class Institution < ApplicationRecord
   #
   def nuke!
     raise "You maniac, you can only nuke an institution in test!" unless Rails.env.test?
-    self.invitees.delete_all
-    self.users.delete_all
+    self.imports.destroy_all
+    self.users.destroy_all
     self.units.each do |unit|
       unit.collections.each do |collection|
         collection.items.each do |item|
