@@ -710,8 +710,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_05_194330) do
   add_foreign_key "imports", "users", on_update: :cascade, on_delete: :nullify
   add_foreign_key "institution_administrators", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "institution_administrators", "users", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "invitees", "institutions", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "invitees", "institutions", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "items", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
