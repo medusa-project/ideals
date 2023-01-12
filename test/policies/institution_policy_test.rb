@@ -31,7 +31,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -64,9 +64,10 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.destroy?
   end
@@ -147,7 +148,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "edit_preservation?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -180,7 +181,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "edit_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -315,7 +316,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -357,7 +358,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "item_download_counts?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -390,7 +391,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -439,7 +440,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -505,7 +506,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "show_preservation?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -555,7 +556,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "show_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -605,7 +606,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "show_settings?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -655,7 +656,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "show_statistics?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -705,7 +706,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "show_theme?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -754,7 +755,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "show_users?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -838,7 +839,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "update_preservation?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -871,7 +872,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "update_properties?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -920,7 +921,7 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
 
   test "update_settings?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
+    user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
