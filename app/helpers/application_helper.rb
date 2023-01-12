@@ -720,10 +720,10 @@ module ApplicationHelper
       desc = results_params[:direction] == "desc"
       html << '<div class="btn-group btn-group-toggle ms-2" data-bs-toggle="buttons">'
       html <<   "<label class=\"btn btn-default btn-outline-primary #{!desc ? "active" : ""}\">"
-      html <<     '<input type="radio" name="direction" value="asc" autocomplete="off" checked> &uarr;'
+      html <<     "<input type=\"radio\" name=\"direction\" value=\"asc\" autocomplete=\"off\" #{!desc ? "checked" : ""}> &uarr;"
       html <<   '</label>'
       html <<   "<label class=\"btn btn-default btn-outline-primary #{desc ? "active" : ""}\">"
-      html <<     '<input type="radio" name="direction" value="desc" autocomplete="off"> &darr;'
+      html <<     "<input type=\"radio\" name=\"direction\" value=\"desc\" autocomplete=\"off\" #{desc ? "checked" : ""}> &darr;"
       html <<   '</label>'
       html << '</div>'
     end
