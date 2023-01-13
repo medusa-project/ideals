@@ -35,20 +35,23 @@
 #
 # # Attributes
 #
-# * `approval_state`:   One of the {ApprovalState} constant values.
-# * `created_at`:       Managed by ActiveRecord.
-# * `email`:            Email address.
-# * `expires_at`:       Time after which invite is no longer valid.
-# * `institution_id`:   Foreign key to {Institution} signifying the institution
+# * `approval_state`    One of the {ApprovalState} constant values.
+# * `created_at`        Managed by ActiveRecord.
+# * `email`             Email address.
+# * `expires_at`        Time after which invite is no longer valid.
+# * `institution_admin` If true, signifies that the corresponding {User} that
+#                       is to be created should be an administrator of the
+#                       institution referenced by {institution_id}.
+# * `institution_id`    Foreign key to {Institution} signifying the institution
 #                       into which the invitee is being invited.
-# * `inviting_user_id`: Foreign key to {User} indicating the user who invited
+# * `inviting_user_id`  Foreign key to {User} indicating the user who invited
 #                       the invitee to register. This is null in the case of
 #                       "self-invited" invitees.
-# * `note`:             Contains the "purpose" that the user entered when
+# * `note`              Contains the "purpose" that the user entered when
 #                       requesting an account. For users who were invited and
 #                       did not request their account, this is autofilled with
 #                       such a notice.
-# * `updated_at`:       Managed by ActiveRecord.
+# * `updated_at`        Managed by ActiveRecord.
 #
 class Invitee < ApplicationRecord
 

@@ -88,6 +88,7 @@ Rails.application.routes.draw do
     match "/users", to: "institutions#show_users", via: :get,
           constraints: lambda { |request| request.xhr? }
 
+    match "/invite-administrator", to: "institutions#invite_administrator", via: :get
     match "/item-download-counts", to: "institutions#item_download_counts", via: :get
     match "/preservation", to: "institutions#update_preservation", via: [:patch, :post]
     match "/properties", to: "institutions#update_properties", via: [:patch, :post]

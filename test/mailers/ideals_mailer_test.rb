@@ -129,7 +129,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [institutions(:example).feedback_email], email.from
     assert_equal [identity.email], email.to
-    assert_equal "Register for an IDEALS account", email.subject
+    assert_equal "Register for an account with IDEALS", email.subject
 
     assert_equal render_template("invited.txt", url: identity.registration_url),
                  email.text_part.body.raw_source

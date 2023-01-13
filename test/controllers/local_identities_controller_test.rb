@@ -383,12 +383,13 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() updates the instance and sends an email if all arguments
   are valid" do
-    identity = local_identities(:approved)
+    institution = institutions(:example)
+    identity    = local_identities(:approved)
     identity.create_registration_digest
-    token    = identity.registration_token
-    name     = "New Name"
-    phone    = "555-555-5555"
-    password = LocalIdentity.random_password
+    token       = identity.registration_token
+    name        = "New Name"
+    phone       = "555-555-5555"
+    password    = LocalIdentity.random_password
 
     assert_emails 1 do
       patch local_identity_path(identity),
@@ -410,8 +411,40 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
       user = identity.user
       assert_equal name, user.name
       assert_equal phone, user.phone
-      assert_equal institutions(:example), user.institution
+      assert_equal institution, user.institution
+      assert !user.institution_admin?(institution)
     end
+  end
+
+  test "update() makes the user an institution administrator if directed to by
+  the Invitee instance" do
+    institution = institutions(:example)
+    identity    = local_identities(:approved)
+    identity.invitee.update!(institution_admin: true)
+    identity.create_registration_digest
+    token       = identity.registration_token
+    name        = "New Name"
+    phone       = "555-555-5555"
+    password    = LocalIdentity.random_password
+
+    patch local_identity_path(identity),
+          params: {
+            token: token,
+            honey_email: "",
+            correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+            answer: "5",
+            local_identity: {
+              password: password,
+              password_confirmation: password,
+              user_attributes: {
+                name:  name,
+                phone: phone
+              }
+            }
+          }
+    identity.reload
+    user = identity.user
+    assert user.institution_admin?(institution)
   end
 
   # update_password()

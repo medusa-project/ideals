@@ -16,21 +16,4 @@
                           "data-bs-dismiss": "modal",
                           type:              "button"}
       .modal-body
-        .alert.alert-light
-          = icon_for(:info)
-          An email containing a link to the registration form will be sent to
-          this address.
-
-        = form_for(invitee, url: invitees_path, remote: true) do |f|
-          .error-messages
-            -# populated via ajax by shared/_validation_messages.js.erb
-
-          = f.hidden_field :inviting_user_id, value: current_user.id
-          = f.hidden_field :note, value: "Invited by #{current_user.name}"
-
-          .mb-3
-            = f.label :email, "Email"
-            = f.text_field :email, class: "form-control"
-
-          .mb-3
-            = f.submit "Send Invite", class: "btn btn-primary"
+        = render partial: "invitees/new_form", locals: { invitee: invitee }

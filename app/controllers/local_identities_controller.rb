@@ -86,11 +86,18 @@ class LocalIdentitiesController < ApplicationController
   def update
     begin
       raise "Incorrect math question response. Please try again." unless check_captcha
-      @identity.build_user(email:          @identity.email,
-                           uid:            @identity.email,
-                           name:           @identity.email,
-                           institution_id: @identity.invitee.institution_id,
-                           type:           LocalUser.to_s) unless @identity.user
+      unless @identity.user
+        user = @identity.build_user(email:          @identity.email,
+                                    uid:            @identity.email,
+                                    name:           @identity.email,
+                                    institution_id: @identity.invitee.institution_id,
+                                    type:           LocalUser.to_s)
+        user.save!
+      end
+      if @identity.invitee.institution_admin
+        user.institution.administering_users << user
+        user.institution.save!
+      end
       @identity.update!(identity_params)
       @identity.create_activation_digest
       @identity.send_post_registration_email

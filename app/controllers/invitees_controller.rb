@@ -15,7 +15,7 @@ class InviteesController < ApplicationController
   before_action :store_location, only: [:index, :show]
 
   ##
-  # Performs the opposite action as {reject}. Sysadmin-only.
+  # Performs the opposite action as {reject}. Institution admins only.
   #
   # Responds to `PATCH/POST /invitees/:id/approve`.
   #
@@ -31,17 +31,17 @@ class InviteesController < ApplicationController
   end
 
   ##
-  # Handles input from the sysadmin-only invite-user form. This is one of two
-  # entry points of local-identity users into the system, the other being
-  # {create_unsolicited}.
+  # Handles input from the invite-user form (institution admins only). This is
+  # one of two entry points of local-identity users into the system, the other
+  # being {create_unsolicited}.
   #
   # Responds to `POST /invitees` (XHR only).
   #
   # @see create_unsolicited
   #
   def create
-    @invitee             = Invitee.new(invitee_params)
-    @invitee.institution = current_institution
+    @invitee               = Invitee.new(invitee_params)
+    @invitee.institution ||= current_institution
     authorize(@invitee)
     begin
       ActiveRecord::Base.transaction do
@@ -90,7 +90,9 @@ class InviteesController < ApplicationController
   end
 
   ##
-  # Responds to `DELETE /invitees/:id`. Sysadmin-only.
+  # Institution admins only.
+  #
+  # Responds to `DELETE /invitees/:id`.
   #
   def destroy
     @invitee.destroy!
@@ -138,9 +140,9 @@ class InviteesController < ApplicationController
   end
 
   ##
-  # Performs the opposite action as {approve}.
+  # Performs the opposite action as {approve}. Institution admins only.
   #
-  # Responds to `PATCH/POST /invitees/:id/reject`. Sysadmin-only.
+  # Responds to `PATCH/POST /invitees/:id/reject`.
   #
   def reject
     @invitee.reject
@@ -154,7 +156,9 @@ class InviteesController < ApplicationController
   end
 
   ##
-  # Responds to `PATCH/POST /invitees/:id/resend-email`. Sysadmin-only.
+  # Institution admins only.
+  #
+  # Responds to `PATCH/POST /invitees/:id/resend-email`.
   #
   def resend_email
     @invitee.send_approval_email
@@ -179,7 +183,9 @@ class InviteesController < ApplicationController
   end
 
   def invitee_params
-    params.require(:invitee).permit(:email, :inviting_user_id, :note)
+    params.require(:invitee).permit(:email, :institution_admin,
+                                    :institution_id, :inviting_user_id,
+                                    :note)
   end
 
   def set_invitee

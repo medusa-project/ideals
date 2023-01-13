@@ -126,7 +126,7 @@ class IdealsMailer < ApplicationMailer
     @institution = @identity.invitee.institution
     mail(from:    @institution.feedback_email,
          to:      @identity.email,
-         subject: "Register for an #{@institution.service_name} account")
+         subject: "Register for an account with #{@institution.service_name}")
   end
 
   ##

@@ -1,134 +1,151 @@
 ################################# example ###################################
 
 example:
-  institution:    example
-  email:          example@example.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       example
+  email:             example@example.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 example2:
-  institution:    example
-  email:          example2@example.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       example
+  email:             example2@example.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 example_sysadmin:
-  institution:    example
-  email:          admin@example.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       example
+  email:             admin@example.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 example_approved:
-  institution:    example
-  email:          approved-invitee@example.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       example
+  email:             approved-invitee@example.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 example_pending:
-  institution:    example
-  email:          pending@example.edu
-  approval_state: <%= Invitee::ApprovalState::PENDING %>
-  note:           This invitee is pending.
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       example
+  email:             pending@example.edu
+  approval_state:    <%= Invitee::ApprovalState::PENDING %>
+  note:              This invitee is pending.
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 ################################ northeast ##################################
 
 northeast:
-  institution:    northeast
-  email:          user@northeast.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       northeast
+  email:             user@northeast.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 northeast_admin:
-  institution:    northeast
-  email:          admin@northeast.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       northeast
+  email:             admin@northeast.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 ################################ southwest ##################################
 
 southwest:
-  institution:    southwest
-  email:          user@southwest.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       southwest
+  email:             user@southwest.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 southwest_admin:
-  institution:    southwest
-  email:          admin@southwest.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       southwest
+  email:             admin@southwest.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 southwest_sysadmin:
-  institution:    southwest
-  email:          sysadmin@southwest.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       southwest
+  email:             sysadmin@southwest.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 ################################## uiuc #####################################
 
 uiuc:
-  institution:    uiuc
-  email:          shib@illinois.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       uiuc
+  email:             shib@illinois.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 uiuc2:
-  institution:    uiuc
-  email:          user2@illinois.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       uiuc
+  email:             user2@illinois.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 uiuc_admin:
-  institution:    uiuc
-  email:          instadmin@illinois.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       uiuc
+  email:             instadmin@illinois.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 uiuc_sysadmin:
-  institution:    uiuc
-  email:          sysadmin@illinois.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       uiuc
+  email:             sysadmin@illinois.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 uiuc_unit1_admin:
-  institution:    uiuc
-  email:          uiuc_unit1_admin@illinois.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       uiuc
+  email:             uiuc_unit1_admin@illinois.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 uiuc_unit1_unit2_unit1_admin:
-  institution:    uiuc
-  email:          uiuc_unit1_unit2_unit1_admin@illinois.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       uiuc
+  email:             uiuc_unit1_unit2_unit1_admin@illinois.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 uiuc_collection1_collection1_manager:
-  institution:    uiuc
-  email:          uiuc_collection1_collection1_manager@illinois.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
+  institution:       uiuc
+  email:             uiuc_collection1_collection1_manager@illinois.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
 
 uiuc_collection1_collection1_submitter:
-  institution:    uiuc
-  email:          uiuc_collection1_collection1_submitter@illinois.edu
-  approval_state: <%= Invitee::ApprovalState::APPROVED %>
-  note:           Sample note
-  expires_at:     <%= Time.now + Invitee::EXPIRATION %>
-
+  institution:       uiuc
+  email:             uiuc_collection1_collection1_submitter@illinois.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false

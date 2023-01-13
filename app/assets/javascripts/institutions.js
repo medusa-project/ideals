@@ -125,6 +125,13 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/access";
         $.get(url, function(data) {
             $("#access-tab-content").html(data);
+
+            $('.invite-administrator').on("click", function () {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/invite-administrator";
+                $.get(url, function (data) {
+                    $("#invite-administrator-modal .modal-body").html(data);
+                });
+            });
             $('.edit-administrators').on("click", function () {
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-administrators";
                 $.get(url, function (data) {

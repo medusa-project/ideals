@@ -72,7 +72,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   test "activation_url() returns a correct URL" do
     @instance.create_activation_digest
-    expected = sprintf("https://%s/identities/%d/activate?token=%s",
+    expected = sprintf("http://%s/identities/%d/activate?token=%s",
                        @instance.invitee.institution.fqdn,
                        @instance.id,
                        @instance.activation_token)
@@ -149,7 +149,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   test "password_reset_url() returns a correct URL" do
     @instance.create_reset_digest
-    expected = sprintf("https://%s/identities/%d/reset-password?token=%s",
+    expected = sprintf("http://%s/identities/%d/reset-password?token=%s",
                        @instance.invitee.institution.fqdn,
                        @instance.id,
                        @instance.reset_token)
@@ -166,7 +166,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   test "registration_url() returns a correct URL" do
     @instance.create_registration_digest
-    expected = sprintf("https://%s/identities/%d/register?token=%s",
+    expected = sprintf("http://%s/identities/%d/register?token=%s",
                        @instance.invitee.institution.fqdn,
                        @instance.id,
                        @instance.registration_token)

@@ -242,6 +242,25 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # invite_administrator()
+
+  test "invite_administrator() returns HTTP 403 for logged-out users" do
+    get institution_invite_administrator_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "invite_administrator() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_invite_administrator_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "invite_administrator() returns HTTP 200 for sysadmins" do
+    log_in_as(users(:southwest_sysadmin))
+    get institution_invite_administrator_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # item_download_counts()
 
   test "item_download_counts() redirects to root page for logged-out users" do

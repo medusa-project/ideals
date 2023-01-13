@@ -69,7 +69,8 @@ class LocalUserTest < ActiveSupport::TestCase
     assert_nil LocalUser.from_omniauth(hash)
   end
 
-  test "from_omniauth() returns nil if the associated LocalIdentity is not activated" do
+  test "from_omniauth() returns nil if the associated LocalIdentity is not
+  activated" do
     identity = users(:example).identity
     identity.update_attribute(:activated, false)
 

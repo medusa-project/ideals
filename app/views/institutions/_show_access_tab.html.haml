@@ -1,9 +1,18 @@
 .btn-group.float-end{role: "group"}
+  - if policy(@institution).invite_administrator?
+    -# Invite Administrator button
+    %button.btn.btn-light.invite-administrator{"data-bs-target":       "#invite-administrator-modal",
+                                               "data-bs-toggle":       "modal",
+                                               role:                   "button",
+                                               "data-institution-key": @institution.key }
+      %i.fa.fa-plus
+      Invite Administrator
   - if policy(@institution).edit_administrators?
-    %button.btn.btn-light.edit-administrators{"data-institution-key": @institution.key,
-                                              "data-bs-target":       "#edit-administrators-modal",
+    -# Edit Administrators button
+    %button.btn.btn-light.edit-administrators{"data-bs-target":       "#edit-administrators-modal",
                                               "data-bs-toggle":       "modal",
-                                              role:                   "button"}
+                                              role:                   "button",
+                                              "data-institution-key": @institution.key}
       %i.fas.fa-pencil-alt
       Edit Administrators
 
@@ -28,10 +37,13 @@
         - if @institution.administering_users.any?
           %ul
             - @institution.administering_users.each do |user|
-              %li= link_to(user.name, "mailto:#{user.email}")
+              %li= link_to(user.name, user.becomes(User))
         - else
           None
 
+= render partial: "shared/ajax_modal",
+       locals: { id: "invite-administrator-modal",
+                 title: "Invite Administrator" }
 = render partial: "shared/ajax_modal",
        locals: { id: "edit-administrators-modal",
                  title: "Edit Administrators" }
