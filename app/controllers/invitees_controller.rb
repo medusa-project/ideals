@@ -72,6 +72,7 @@ class InviteesController < ApplicationController
     @invitee.institution = current_institution
     authorize(@invitee)
     begin
+      raise "Incorrect math question response. Please try again." unless check_captcha
       ActiveRecord::Base.transaction do
         @invitee.save!
         @invitee.send_reception_emails
@@ -83,7 +84,8 @@ class InviteesController < ApplicationController
       flash['success'] = "Thanks for requesting an account! We will review "\
           "your request and act on it as soon as possible. When we do, we'll "\
           "notify you via email."
-      redirect_to root_url
+      redirect_to @invitee.institution.scope_url,
+                  allow_other_host: true # TODO: remove this and fix tests
     end
   end
 

@@ -85,6 +85,7 @@ class LocalIdentitiesController < ApplicationController
   #
   def update
     begin
+      raise "Incorrect math question response. Please try again." unless check_captcha
       @identity.build_user(email:          @identity.email,
                            uid:            @identity.email,
                            name:           @identity.email,
@@ -95,13 +96,13 @@ class LocalIdentitiesController < ApplicationController
       @identity.send_post_registration_email
     rescue => e
       flash['error'] = "#{e}"
-      setup_registration_view
-      render "register"
+      redirect_to local_identity_register_path(@identity)
     else
       flash['success'] = "Thanks for registering! Check your email for a "\
                          "link to log in and start using "\
                          "#{@identity.invitee.institution.service_name}."
-      redirect_to root_url
+      redirect_to @identity.invitee.institution.scope_url,
+                  allow_other_host: true # TODO: remove this and fix tests
     end
   end
 

@@ -25,18 +25,21 @@
 
 = form_for(@invitee, url: create_unsolicited_invitees_path) do |f|
   .row.mb-3
-    = f.label :email, class: "col-sm-2 col-form-label"
-    .col-sm-10
+    = f.label :email, class: "col-sm-3 col-form-label"
+    .col-sm-9
       = f.text_field :email, class: "form-control", required: true
   .row.mb-3
-    = f.label :note, "Purpose", class: "col-sm-2 col-form-label"
-    .col-sm-10
+    = f.label :note, "Purpose", class: "col-sm-3 col-form-label"
+    .col-sm-9
       = f.text_area :note, class: "form-control", required: true
+
+  - captcha_hash = captcha
   .row.mb-3
-    .col-sm-2
-    .col-sm-10
-      = recaptcha_tags
+    = captcha_hash[:label]
+    .col-sm-9
+      = captcha_hash[:field]
+
   .row.mb-3
-    .col-sm-2
-    .col-sm-10
+    .col-sm-3
+    .col-sm-9
       = f.submit "Submit Request", class: "btn btn-primary"

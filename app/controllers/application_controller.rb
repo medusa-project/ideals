@@ -37,6 +37,34 @@ class ApplicationController < ActionController::Base
   end
 
   ##
+  # Checks whether the client has passed a CAPTCHA test. Three form fields are
+  # checked:
+  #
+  # 1. A hash of the salted correct answer to a question, e.g. "what's 5 + 3?"
+  # 2. The answer to the question above, provided by the client, whose salted
+  #    hash is expected to match #1
+  # 3. Another irrelevant field that is hidden via CSS and expected to remain
+  #    unfilled (the "honeypot technique")
+  #
+  # This method works in conjunction with {ApplicationHelper#captcha}.
+  #
+  # @return [Boolean] If `false`, the check failed and the caller should
+  #                   prepare an appropriate error response.
+  #
+  def check_captcha
+    # Check the honeypot
+    email   = params[:honey_email]
+    success = email.blank?
+    if success
+      # Check the answer
+      answer_hash   = Digest::MD5.hexdigest("#{params[:answer]}#{ApplicationHelper::CAPTCHA_SALT}")
+      expected_hash = params[:correct_answer_hash]
+      success       = (answer_hash == expected_hash)
+    end
+    success
+  end
+
+  ##
   # Returns the institution whose FQDN corresponds to the `X-Forwarded-Host`
   # request header. Note that in global scope, there will not be such an
   # institution, in which case the {Institution#default default institution}

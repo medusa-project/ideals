@@ -3,6 +3,7 @@ module ApplicationHelper
   # These tags will not be filtered out when displaying user-entered HTML.
   ALLOWED_HTML_TAGS           = %w(a h1 h2 h3 h4 h5 h6 li ol p ul)
   ALLOWED_HTML_TAG_ATTRIBUTES = %w(href title)
+  CAPTCHA_SALT                = ::Configuration.instance.secret_key_base
   MAX_PAGINATION_LINKS        = 5
 
   ##
@@ -126,6 +127,36 @@ module ApplicationHelper
     html <<   "</ol>"
     html << "</nav>"
     raw(html.string)
+  end
+
+  ##
+  # Returns CAPTCHA form elements. The elements are:
+  #
+  # * `honey_email`:         hidden via CSS and expected to remain unfilled
+  # * `correct_answer_hash`: hashed salted correct answer
+  # * `answer`:              client-supplied answer
+  #
+  # Input is checked on the server using {ApplicationController#check_captcha}.
+  #
+  # @return [Hash<Symbol,String>] Two-element hash with `label` and `field`
+  #                               keys.
+  #
+  def captcha
+    field_html  = StringIO.new
+    number1     = rand(9)
+    number2     = rand(9)
+    answer_hash = Digest::MD5.hexdigest((number1 + number2).to_s + CAPTCHA_SALT)
+    label_html  = label_tag(:answer, raw("What is #{number1} &plus; #{number2}?"),
+                            class: "col-sm-3 col-form-label")
+    field_html << text_field_tag(:honey_email, nil,
+                                 placeholder: "Leave this field blank.",
+                                 style:       "display: none") # honeypot field
+    field_html << text_field_tag(:answer, nil, class: "form-control")
+    field_html << hidden_field_tag(:correct_answer_hash, answer_hash)
+    {
+      label: raw(label_html),
+      field: raw(field_html.string)
+    }
   end
 
   ##

@@ -50,8 +50,6 @@ gem "pg"
 # Our application server
 gem "puma"
 gem "rails", "~> 7.0"
-# Used during the new user sign-up process
-gem "recaptcha"
 # Use SCSS for stylesheets
 gem "sassc"
 gem "sprockets-rails"

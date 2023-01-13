@@ -105,15 +105,53 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # create_unsolicited()
 
-  test "create_unsolicited() redirects for illegal arguments" do
+  test "create_unsolicited() redirects back for illegal arguments" do
     post create_unsolicited_invitees_path,
          params: {
-             invitee: {
-                 email: "",
-                 note: "This is a new invitee"
-             }
+           honey_email: "",
+           correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+           answer: "5",
+           invitee: {
+             email: "", # invalid
+             note: "This is a new invitee"
+           }
          }
     assert_redirected_to new_invitee_path
+  end
+
+  test "create_unsolicited() sets the flash and redirects back upon an
+  incorrect CAPTCHA response" do
+    email = "new@example.edu"
+    assert_nil Invitee.find_by_email(email)
+
+    post create_unsolicited_invitees_path,
+         params: {
+           honey_email: "",
+           correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+           answer: "7", # WRONG!
+           invitee: {
+             email: email,
+             note: "This is a new invitee"
+           }
+         }
+    assert flash['error'].start_with?("Incorrect math question response")
+    assert_redirected_to new_invitee_path
+  end
+
+  test "create_unsolicited() sets the flash and redirects if all arguments are
+  valid" do
+    post create_unsolicited_invitees_path,
+         params: {
+           honey_email: "",
+           correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+           answer: "5",
+           invitee: {
+             email: "new@example.edu",
+             note: "This is a new invitee"
+           }
+         }
+    assert flash['success'].start_with?("Thanks for requesting")
+    assert_redirected_to root_url.chomp("/")
   end
 
   test "create_unsolicited() creates a pending instance and sends two emails if
@@ -124,26 +162,17 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert_emails 2 do
       post create_unsolicited_invitees_path,
            params: {
-               invitee: {
-                   email: email,
-                   note: "This is a new invitee"
-               }
+             honey_email: "",
+             correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+             answer: "5",
+             invitee: {
+               email: email,
+               note: "This is a new invitee"
+             }
            }
     end
     invitee = Invitee.find_by_email(email)
     assert_equal Invitee::ApprovalState::PENDING, invitee.approval_state
-  end
-
-  test "create_unsolicited() sets the flash and redirects if all arguments are valid" do
-    post create_unsolicited_invitees_path,
-         params: {
-             invitee: {
-                 email: "new@example.edu",
-                 note: "This is a new invitee"
-             }
-         }
-    assert flash['success'].start_with?("Thanks for requesting")
-    assert_redirected_to root_url
   end
 
   # destroy()

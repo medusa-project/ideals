@@ -1,6 +1,6 @@
 - provide :title, "Register"
 
-%h1 Register your non-NetID account
+%h1 Register a New Account
 
 = form_for(@identity, url: local_identity_path(@identity, token: params[:token])) do |f|
 
@@ -35,10 +35,11 @@
     .col-sm-9
       = f.password_field :password_confirmation, class: "form-control", required: true
 
+  - captcha_hash = captcha
   .row.mb-3
-    .col-sm-3
+    = captcha_hash[:label]
     .col-sm-9
-      = recaptcha_tags
+      = captcha_hash[:field]
 
   .row
     .col-sm-3

@@ -261,29 +261,35 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
-  test "update() redirects and sets the flash if a token is not provided" do
+  test "update() sets the flash and redirects if no token is provided" do
     identity = local_identities(:approved)
     patch local_identity_path(identity),
           params: {
-              local_identity: {
-                  password: "MyNewPassword123!",
-                  password_confirmation: "MyNewPassword123!",
-                  user_attributes: {
-                      name: "New Name",
-                      phone: "555-555-5555"
-                  }
+            honey_email: "",
+            correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+            answer: "5",
+            local_identity: {
+              password: "MyNewPassword123!",
+              password_confirmation: "MyNewPassword123!",
+              user_attributes: {
+                name: "New Name",
+                phone: "555-555-5555"
               }
+            }
           }
     assert_equal "Invalid registration link.", flash['error']
     assert_redirected_to root_url
   end
 
-  test "update() redirects and sets the flash if an invalid token is
+  test "update() sets the flash and redirects if an invalid token is
   provided" do
     identity = local_identities(:approved)
     patch local_identity_path(identity),
           params: {
               token: "bogus",
+              honey_email: "",
+              correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+              answer: "5",
               local_identity: {
                   password: "MyNewPassword123!",
                   password_confirmation: "MyNewPassword123!",
@@ -297,8 +303,8 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
-  test "update() sets the flash if the password does not match the
-  confirmation" do
+  test "update() sets the flash and redirects back if the password does not
+  match the confirmation" do
     identity = local_identities(:approved)
     identity.create_registration_digest
     token = identity.registration_token
@@ -306,6 +312,9 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     patch local_identity_path(identity),
           params: {
               token: token,
+              honey_email: "",
+              correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+              answer: "5",
               local_identity: {
                   password: "MyNewPassword123!",
                   password_confirmation: "ThisDoesNotMatch123!",
@@ -316,6 +325,60 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
               }
           }
     assert flash['error'].include?("Password confirmation doesn't match")
+    assert_redirected_to local_identity_register_path(identity)
+  end
+
+  test "update() sets the flash and redirects back upon an incorrect CAPTCHA
+  response" do
+    identity = local_identities(:approved)
+    identity.create_registration_digest
+    token    = identity.registration_token
+    name     = "New Name"
+    phone    = "555-555-5555"
+    password = LocalIdentity.random_password
+
+    patch local_identity_path(identity),
+          params: {
+            token: token,
+            honey_email: "",
+            correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+            answer: "7", # WRONG!
+            local_identity: {
+              password: password,
+              password_confirmation: password,
+              user_attributes: {
+                name:     name,
+                phone:    phone
+              }
+            }
+          }
+    assert flash['error'].start_with?("Incorrect math question response")
+    assert_redirected_to local_identity_register_path(identity)
+  end
+
+  test "update() sets the flash and redirects if all arguments are valid" do
+    identity = local_identities(:approved)
+    identity.create_registration_digest
+    token    = identity.registration_token
+    password = LocalIdentity.random_password
+
+    patch local_identity_path(identity),
+          params: {
+            token: token,
+            honey_email: "",
+            correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+            answer: "5",
+            local_identity: {
+              password:              password,
+              password_confirmation: password,
+              user_attributes: {
+                name:  "New Name",
+                phone: "555-555-5555"
+              }
+            }
+          }
+    assert flash['success'].start_with?("Thanks for registering!")
+    assert_redirected_to identity.invitee.institution.scope_url
   end
 
   test "update() updates the instance and sends an email if all arguments
@@ -330,15 +393,18 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     assert_emails 1 do
       patch local_identity_path(identity),
             params: {
-                token: token,
-                local_identity: {
-                    password: password,
-                    password_confirmation: password,
-                    user_attributes: {
-                        name:     name,
-                        phone:    phone
-                    }
+              token: token,
+              honey_email: "",
+              correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+              answer: "5",
+              local_identity: {
+                password: password,
+                password_confirmation: password,
+                user_attributes: {
+                  name:  name,
+                  phone: phone
                 }
+              }
             }
       identity.reload
       user = identity.user
@@ -346,28 +412,6 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
       assert_equal phone, user.phone
       assert_equal institutions(:example), user.institution
     end
-  end
-
-  test "update() sets the flash and redirects if all arguments are valid" do
-    identity = local_identities(:approved)
-    identity.create_registration_digest
-    token    = identity.registration_token
-    password = LocalIdentity.random_password
-
-    patch local_identity_path(identity),
-          params: {
-              token: token,
-              local_identity: {
-                  password:              password,
-                  password_confirmation: password,
-                  user_attributes: {
-                      name:  "New Name",
-                      phone: "555-555-5555"
-                  }
-              }
-          }
-    assert flash['success'].start_with?("Thanks for registering!")
-    assert_redirected_to root_url
   end
 
   # update_password()
