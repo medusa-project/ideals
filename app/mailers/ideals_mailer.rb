@@ -5,6 +5,8 @@ class IdealsMailer < ApplicationMailer
   # see https://answers.uillinois.edu/illinois/page.php?id=47888
   NO_REPLY_ADDRESS = "no-reply@illinois.edu"
 
+  default from: NO_REPLY_ADDRESS
+
   ##
   # @param exception [Exception]
   # @param message [String, nil] Additional message text.
@@ -40,8 +42,7 @@ class IdealsMailer < ApplicationMailer
   def account_approved(identity)
     @identity    = identity
     @institution = @identity.invitee.institution
-    mail(from:    @institution.feedback_email,
-         to:      @identity.email,
+    mail(to:      @identity.email,
          subject: "Register your #{@institution.service_name} account")
   end
 
@@ -53,8 +54,7 @@ class IdealsMailer < ApplicationMailer
   def account_denied(invitee)
     @invitee     = invitee
     @institution = @invitee.institution
-    mail(from:    @institution.feedback_email,
-         to:      @invitee.email,
+    mail(to:      @invitee.email,
          subject: "Your #{@institution.service_name} account request")
   end
 
@@ -67,8 +67,7 @@ class IdealsMailer < ApplicationMailer
   def account_registered(identity)
     @identity    = identity
     @institution = @identity.invitee.institution
-    mail(from:    @institution.feedback_email,
-         to:      @identity.email,
+    mail(to:      @identity.email,
          subject: "Welcome to #{@institution.service_name}!")
   end
 
@@ -82,8 +81,7 @@ class IdealsMailer < ApplicationMailer
     @institution = invitee.institution
     @invitee     = invitee
     @invitee_url = "https://#{@institution.fqdn}/invitees/#{invitee.id}"
-    mail(from:    @institution.feedback_email,
-         to:      [@institution.feedback_email],
+    mail(to:      @institution.feedback_email,
          subject: "#{subject_prefix} Action required on a new "\
                   "#{@institution.service_name} user")
   end
@@ -99,17 +97,14 @@ class IdealsMailer < ApplicationMailer
   def account_request_received(invitee)
     @invitee     = invitee
     @institution = @invitee.institution
-    mail(from:    @institution.feedback_email,
-         to:      @invitee.email,
+    mail(to:      @invitee.email,
          subject: "Your #{@institution.service_name} account request")
   end
 
   def error(error_text)
     @error_text = error_text
-    mail(from:     Institution.default.feedback_email,
-         reply_to: NO_REPLY_ADDRESS,
-         to:       ::Configuration.instance.admin[:tech_mail_list],
-         subject:  "#{subject_prefix} System Error")
+    mail(to:      ::Configuration.instance.admin[:tech_mail_list],
+         subject: "#{subject_prefix} System Error")
   end
 
   ##
@@ -124,8 +119,7 @@ class IdealsMailer < ApplicationMailer
   def invited(identity)
     @identity    = identity
     @institution = @identity.invitee.institution
-    mail(from:    @institution.feedback_email,
-         to:      @identity.email,
+    mail(to:      @identity.email,
          subject: "Register for an account with #{@institution.service_name}")
   end
 
@@ -137,10 +131,8 @@ class IdealsMailer < ApplicationMailer
     @item_url    = item_url(item, host: @institution.scope_url)
     if item.primary_collection&.managing_users&.any?
       recipients = item.primary_collection.managing_users.map(&:email)
-      mail(from:     item.institution.feedback_email,
-           reply_to: NO_REPLY_ADDRESS,
-           to:       recipients,
-           subject:  "A new #{@institution.service_name} item requires review")
+      mail(to:      recipients,
+           subject: "A new #{@institution.service_name} item requires review")
     end
   end
 
@@ -150,8 +142,7 @@ class IdealsMailer < ApplicationMailer
   def password_reset(identity)
     @identity    = identity
     @institution = @identity.invitee.institution
-    mail(from:    @institution.feedback_email,
-         to:      @identity.email,
+    mail(to:      @identity.email,
          subject: "Reset your #{@institution.service_name} password")
   end
 
@@ -159,8 +150,7 @@ class IdealsMailer < ApplicationMailer
   # Used to test email delivery. See also the `mail:test` rake task.
   #
   def test(recipient)
-    mail(from:    Institution.default.feedback_email,
-         to:      recipient,
+    mail(to:      recipient,
          subject: "#{subject_prefix} Hello from IDEALS")
   end
 
