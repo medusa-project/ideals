@@ -53,46 +53,9 @@ class LocalIdentityTest < ActiveSupport::TestCase
     assert_not_nil @instance.activated_at
   end
 
-  test "activate() clears the activation and registration digests" do
+  test "activate() clears the registration digest" do
     @instance.create_registration_digest
-    @instance.create_activation_digest
-
     @instance.activate
-    assert_nil @instance.registration_digest
-    assert_nil @instance.activation_digest
-  end
-
-  # activation_url()
-
-  test "activation_url raises an error if activation_token is blank" do
-    assert_raises RuntimeError do
-      @instance.activation_url
-    end
-  end
-
-  test "activation_url() returns a correct URL" do
-    @instance.create_activation_digest
-    expected = sprintf("http://%s/identities/%d/activate?token=%s",
-                       @instance.invitee.institution.fqdn,
-                       @instance.id,
-                       @instance.activation_token)
-    assert_equal expected, @instance.activation_url
-  end
-
-  # create_activation_digest()
-
-  test "create_activation_digest() works" do
-    digest  = @instance.activation_digest
-    @instance.create_activation_digest
-
-    assert_not_empty @instance.activation_digest
-    assert_not_equal digest, @instance.activation_digest
-  end
-
-  test "create_activation_digest() clears the registration digest" do
-    @instance.create_registration_digest
-    @instance.create_activation_digest
-
     assert_nil @instance.registration_digest
   end
 
@@ -221,15 +184,6 @@ class LocalIdentityTest < ActiveSupport::TestCase
     @instance.create_reset_digest
     assert_emails 1 do
       @instance.send_password_reset_email
-    end
-  end
-
-  # send_post_registration_email()
-
-  test "send_post_registration_email() sends an email" do
-    @instance.create_activation_digest
-    assert_emails 1 do
-      @instance.send_post_registration_email
     end
   end
 

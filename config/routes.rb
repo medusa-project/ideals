@@ -139,7 +139,6 @@ Rails.application.routes.draw do
     match "/withdraw", to: "items#withdraw", via: :patch
   end
   resources :local_identities, only: [:update], path: "identities" do
-    match "/activate", to: "local_identities#activate", via: :get
     match "/edit-password", to: "local_identities#edit_password", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/register", to: "local_identities#register", via: :get

@@ -3,8 +3,7 @@
 ##
 # Local user identity, which hooks into the `omniauth-identity` authentication
 # strategy. This is a surrogate of a {LocalUser} used for users whose
-# credentials are stored locally, i.e. users without a NetID who don't log in
-# via Shibboleth.
+# credentials are stored in the database.
 #
 # N.B. 1: See the documentation of {Invitee} for a detailed overview of the
 # invitation & registration process.
@@ -26,7 +25,7 @@
 #                          is stored in an instance variable and not persisted,
 #                          as it is typically sent out immediately to the user
 #                          (in an email). Use {authenticated?} to check that
-#                          the token provided by the user matches this value.
+#                          the token provided by the user matches this value. TODO: this is no longer used
 # * `created_at`:          Managed by ActiveRecord.
 # * `email`:               Email address associated with the instance. This is
 #                          often used as an identifier and must be unique.
@@ -111,19 +110,6 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   end
 
   ##
-  # @return [String]
-  # @raises [RuntimeError] if {activation_token} is blank. (Invoke
-  #         {create_activation_digest} to remedy that.)
-  #
-  def activation_url
-    raise "Activation token is not set." if self.activation_token.blank?
-    sprintf("%s/identities/%d/activate?token=%s",
-            self.invitee.institution.scope_url,
-            self.id,
-            self.activation_token)
-  end
-
-  ##
   # @return [Boolean] Whether the given token matches the digest stored in the
   #         given attribute.
   #
@@ -131,16 +117,6 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
     digest = send("#{attribute}_digest")
     return false if digest.nil?
     BCrypt::Password.new(digest).is_password?(token)
-  end
-
-  ##
-  # Creates and assigns a new activation token and digest. Also clears
-  # {registration_digest}.
-  #
-  def create_activation_digest
-    self.activation_token = LocalIdentity.new_token
-    update_attribute(:activation_digest, LocalIdentity.digest(self.activation_token))
-    update_attribute(:registration_digest, nil)
   end
 
   ##
@@ -222,8 +198,8 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   end
 
   ##
-  # Sends an email to the invitee notifying them that their registration was
-  # received, and a link to activate their account.
+  # Sends an email to the invitee welcoming them to the system following
+  # successful registration.
   #
   def send_post_registration_email
     IdealsMailer.account_registered(self).deliver_now

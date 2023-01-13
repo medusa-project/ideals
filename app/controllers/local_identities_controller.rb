@@ -9,23 +9,11 @@ class LocalIdentitiesController < ApplicationController
   before_action :set_identity
   before_action :authorize_identity, only: [:edit_password, :register, :update,
                                             :update_password]
-  before_action :pre_validate_activation, only: :activate
   before_action :pre_validate_password_reset, only: [:new_password,
                                                      :reset_password]
   before_action :setup_registration_view, only: :register
   before_action :pre_validate_registration, only: [:register, :update]
   before_action :validate_current_password, only: :update_password
-
-  ##
-  # Supports incoming links from emails after registration.
-  #
-  # Responds to `GET /identities/:id/activate`
-  #
-  def activate
-    @identity.activate
-    flash['success'] = "Your account has been activated. You may now log in."
-    redirect_to root_path
-  end
 
   ##
   # Responds to `GET /identities/:id/edit-password` (XHR only)
@@ -99,15 +87,15 @@ class LocalIdentitiesController < ApplicationController
         user.institution.save!
       end
       @identity.update!(identity_params)
-      @identity.create_activation_digest
+      @identity.activate
       @identity.send_post_registration_email
     rescue => e
       flash['error'] = "#{e}"
       redirect_to local_identity_register_path(@identity)
     else
-      flash['success'] = "Thanks for registering! Check your email for a "\
-                         "link to log in and start using "\
-                         "#{@identity.invitee.institution.service_name}."
+      flash['success'] = "Thanks for registering for "\
+                         "#{@identity.invitee.institution.service_name}! "\
+                         "You may now log in."
       redirect_to @identity.invitee.institution.scope_url,
                   allow_other_host: true # TODO: remove this and fix tests
     end
@@ -144,19 +132,6 @@ class LocalIdentitiesController < ApplicationController
 
   def identity_password_params
     params.require(:local_identity).permit(:password, :password_confirmation)
-  end
-
-  def pre_validate_activation
-    # Validate the token.
-    unless @identity.authenticated?(:activation, params[:token])
-      flash['error'] = "Invalid activation link."
-      redirect_to root_url and return
-    end
-    # Check that the identity has not already been activated.
-    if @identity.activated?
-      flash['error'] = "This account has already been activated."
-      redirect_to root_url
-    end
   end
 
   def pre_validate_password_reset

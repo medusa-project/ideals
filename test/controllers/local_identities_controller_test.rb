@@ -6,41 +6,6 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     host! institutions(:southwest).fqdn
   end
 
-  # activate()
-
-  test "activate() redirects to root path for logged-in users" do
-    identity = local_identities(:approved)
-    get local_identity_activate_path(identity)
-    assert_redirected_to root_path
-  end
-
-  test "activate() redirects and sets the flash if a token is not provided" do
-    identity = local_identities(:approved)
-    get local_identity_activate_path(identity)
-    assert_equal "Invalid activation link.", flash['error']
-    assert_redirected_to root_url
-  end
-
-  test "activate() redirects and sets the flash if an invalid token is provided" do
-    identity = local_identities(:approved)
-    get local_identity_activate_path(identity, token: "bogus")
-    assert_equal "Invalid activation link.", flash['error']
-    assert_redirected_to root_url
-  end
-
-  test "activate() activates the instance and redirects if all arguments are
-  valid" do
-    identity = local_identities(:approved)
-    assert !identity.activated
-    identity.create_activation_digest
-    token    = identity.activation_token
-
-    get local_identity_activate_path(identity, token: token)
-    identity.reload
-    assert identity.activated
-    assert_redirected_to root_path
-  end
-
   # edit_password()
 
   test "edit_password() returns HTTP 403 for logged-out users" do
@@ -377,7 +342,8 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
               }
             }
           }
-    assert flash['success'].start_with?("Thanks for registering!")
+    assert flash['success'].start_with?("Thanks for registering for "\
+        "#{identity.invitee.institution.service_name}")
     assert_redirected_to identity.invitee.institution.scope_url
   end
 

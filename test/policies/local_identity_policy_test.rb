@@ -6,21 +6,6 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     @identity = local_identities(:example)
   end
 
-  # activate?()
-
-  test "activate?() returns true with a nil user" do
-    policy = LocalIdentityPolicy.new(nil, @identity)
-    assert policy.activate?
-  end
-
-  test "activate?() authorizes everyone" do
-    user    = users(:example)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = LocalIdentityPolicy.new(context, @identity)
-    assert policy.activate?
-  end
-
   # edit_password?()
 
   test "edit_password?() returns false with a nil request context" do

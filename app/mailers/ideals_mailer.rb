@@ -69,7 +69,7 @@ class IdealsMailer < ApplicationMailer
     @institution = @identity.invitee.institution
     mail(from:    @institution.feedback_email,
          to:      @identity.email,
-         subject: "You're ready to log in to #{@institution.service_name}!")
+         subject: "Welcome to #{@institution.service_name}!")
   end
 
   ##

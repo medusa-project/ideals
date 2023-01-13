@@ -13,10 +13,6 @@ class LocalIdentityPolicy < ApplicationPolicy
     @identity = identity
   end
 
-  def activate
-    AUTHORIZED_RESULT
-  end
-
   def edit_password
     user_matches_identity
   end

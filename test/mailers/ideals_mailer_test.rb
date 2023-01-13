@@ -46,21 +46,23 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_registered()
 
   test "account_registered() sends the expected email" do
-    identity = local_identities(:example)
-    identity.create_activation_digest
+    identity    = local_identities(:example)
+    institution = identity.invitee.institution
 
     email = IdealsMailer.account_registered(identity).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [institutions(:example).feedback_email], email.from
     assert_equal [identity.email], email.to
-    assert_equal "You're ready to log in to IDEALS!", email.subject
+    assert_equal "Welcome to IDEALS!", email.subject
 
     assert_equal render_template("account_registered.txt",
-                                 url: identity.activation_url),
+                                 service_name: institution.service_name,
+                                 url:          institution.scope_url),
                  email.text_part.body.raw_source
     assert_equal render_template("account_registered.html",
-                                 url: identity.activation_url),
+                                 service_name: institution.service_name,
+                                 url:          institution.scope_url),
                  email.html_part.body.raw_source
   end
 

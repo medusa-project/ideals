@@ -1,4 +1,5 @@
-Your registration has been received. Follow the link below to log in:
+Your {{{service_name}}} registration has been approved.
+Follow the link below to log in:
 
 {{{url}}}
 
