@@ -9,10 +9,13 @@ module AuditableHelper
     html = StringIO.new
     html << '<div id="events-accordion" class="accordion">'
     events.each do |event|
-      html << '<div class="card">'
-      html <<   "<h5 id=\"event-header-#{event.id}\" class=\"card-header\">"
-      html <<     "<div data-bs-toggle=\"collapse\" "\
-                    "data-bs-target=\"#event-#{event.id}\" aria-expanded=\"true\" "\
+      html << '<div class="accordion-item">'
+      html <<   "<h5 id=\"event-header-#{event.id}\" class=\"accordion-header\">"
+      html <<     "<button class=\"accordion-button collapsed\" "\
+                    "type=\"button\" "\
+                    "data-bs-toggle=\"collapse\" "\
+                    "data-bs-target=\"#event-#{event.id}\" "\
+                    "aria-expanded=\"false\" "\
                     "aria-controls=\"event-#{event.id}\">"
       case event.event_type
       when Event::Type::CREATE, Event::Type::UNDELETE
@@ -24,23 +27,22 @@ module AuditableHelper
       else
         badge_class = "bg-primary"
       end
-      html <<       "<span class=\"badge #{badge_class}\">"
+      html <<       "<span class=\"badge #{badge_class} me-2\">"
       html <<         Event::Type.label(event.event_type).upcase
       html <<       '</span>'
-      html <<       ' &bull; '
       html <<       local_time(event.happened_at)
       if event.user
-        html <<       ' &bull; '
-        html <<       link_to(event.user.becomes(User)) do
+        html <<       link_to(event.user.becomes(User), class: "ms-2") do
           raw("#{icon_for(event.user)} <small>#{event.user.name}</small>")
         end
       end
-      html <<     '</div>'
+      html <<     '</button>'
       html <<   '</h5>'
-      html <<   "<div id=\"event-#{event.id}\" class=\"collapse\" "\
+      html <<   "<div id=\"event-#{event.id}\" "\
+                  "class=\"accordion-collapse collapse\" "\
                   "aria-labelledby=\"event-header-#{event.id}\" "\
-                  "data-parent=\"#events-accordion\">"
-      html <<     '<div class="card-body">'
+                  "data-bs-parent=\"#events-accordion\">"
+      html <<     '<div class="accordion-body">'
       html <<       '<p>'
       html <<         event.description
       html <<       '</p>'
