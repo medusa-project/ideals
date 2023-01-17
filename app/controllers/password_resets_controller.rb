@@ -21,15 +21,16 @@ class PasswordResetsController < ApplicationController
   # Responds to `POST /reset-password`
   #
   def post
-    if params[:password_reset] && params[:password_reset][:email].present?
+    if params.dig(:password_reset, :email).present?
       email = params[:password_reset][:email]&.downcase
       if StringUtils.valid_email?(email)
-        if StringUtils.uofi_email?(email)
+        if current_institution.key == "uiuc" && StringUtils.uofi_email?(email)
           flash['error'] = "Sorry, we're not able to reset passwords for "\
               "email addresses that are associated with an Illinois NetID. "\
               "If you have forgotten your NetID password, please contact the "\
               "NetID Center."
-          redirect_to root_path
+          redirect_to current_institution.scope_url,
+                      allow_other_host: true
         else
           @identity = LocalIdentity.where("LOWER(email) = ?", email).limit(1).first
           if @identity
@@ -38,7 +39,8 @@ class PasswordResetsController < ApplicationController
             flash['success'] = "An email has been sent containing "\
                 "instructions to reset your password. If you don't receive "\
                 "it soon, check your spam folder."
-            redirect_to root_url
+            redirect_to current_institution.scope_url,
+                        allow_other_host: true
           else
             flash['error'] = "No user with this email address has been registered."
             redirect_to reset_password_path
@@ -51,7 +53,7 @@ class PasswordResetsController < ApplicationController
       end
     else
       flash['error'] = "No email address was provided. Please try again."
-      redirect_to reset_password_path, status: :bad_request
+      render "get", status: :bad_request
     end
   end
 
