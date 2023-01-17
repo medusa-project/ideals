@@ -2,11 +2,7 @@
 
 %h1 Register a New Account
 
-= form_for(@identity, url: local_identity_path(@identity, token: params[:token])) do |f|
-
-  -# TODO: why does form_for's default _method input have a garbage value? is this a rails bug?
-  = hidden_field_tag "_method", "patch"
-  = hidden_field_tag "_method", "patch"
+= form_for(@identity, method: :patch, url: local_identity_path(@identity, token: @token)) do |f|
 
   = f.fields_for(:user, @user.becomes(User)) do |u|
     .row.mb-3

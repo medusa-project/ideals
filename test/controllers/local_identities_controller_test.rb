@@ -290,7 +290,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
               }
           }
     assert flash['error'].include?("Password confirmation doesn't match")
-    assert_redirected_to local_identity_register_path(identity)
+    assert_redirected_to local_identity_register_path(identity, token: token)
   end
 
   test "update() sets the flash and redirects back upon an incorrect CAPTCHA
@@ -318,7 +318,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
             }
           }
     assert flash['error'].start_with?("Incorrect math question response")
-    assert_redirected_to local_identity_register_path(identity)
+    assert_redirected_to local_identity_register_path(identity, token: token)
   end
 
   test "update() sets the flash and redirects if all arguments are valid" do

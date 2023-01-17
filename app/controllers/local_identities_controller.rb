@@ -42,6 +42,7 @@ class LocalIdentitiesController < ApplicationController
   # argument which supports incoming links from emails.
   #
   def register
+    @token = params[:token]
   end
 
   ##
@@ -74,7 +75,8 @@ class LocalIdentitiesController < ApplicationController
   def update
     begin
       raise "Incorrect math question response. Please try again." unless check_captcha
-      unless @identity.user
+      user = @identity.user
+      unless user
         user = @identity.build_user(email:          @identity.email,
                                     uid:            @identity.email,
                                     name:           @identity.email,
@@ -91,7 +93,7 @@ class LocalIdentitiesController < ApplicationController
       @identity.send_post_registration_email
     rescue => e
       flash['error'] = "#{e}"
-      redirect_to local_identity_register_path(@identity)
+      redirect_to local_identity_register_path(@identity, token: params[:token])
     else
       flash['success'] = "Thanks for registering for "\
                          "#{@identity.invitee.institution.service_name}! "\
