@@ -25,13 +25,11 @@
     = f.select(:input_type, options_for_select(RegisteredElement::InputType.all.map{ |t| [t.split("_").map(&:capitalize).join(" "), t] }.sort.reverse,
                                                f.object.input_type),
                {},
-               class: "form-select",
-               disabled: f.object.required?)
+               class: "form-select")
   .mb-3
     = f.label :highwire_mapping, "Highwire Press Mapping"
     = f.text_field :highwire_mapping,
-                   class: "form-control",
-                   disabled: f.object.required?
+                   class: "form-control"
 
   .mb-3
     = f.label :scope_note
