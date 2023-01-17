@@ -125,7 +125,9 @@
                                                                 type:                 "button"}
                     %i.fa.fa-pencil-alt
                     Edit
-              %h4.card-title NetID Users
+              %h4.card-title
+                NetID Users
+                %span.badge.bg-primary UIUC only
               - if @netid_users.any?
                 %ul
                   - @netid_users.each do |user|
@@ -150,7 +152,9 @@
                                                                 type:                 "button"}
                     %i.fa.fa-pencil-alt
                     Edit
-              %h4.card-title Departments
+              %h4.card-title
+                Departments
+                %span.badge.bg-primary UIUC only
               - if @departments.any?
                 %ul
                   - @departments.each do |department|
@@ -169,7 +173,9 @@
                                                                  type:                 "button"}
                     %i.fa.fa-pencil-alt
                     Edit
-              %h4.card-title Affiliations
+              %h4.card-title
+                Affiliations
+                %span.badge.bg-primary UIUC only
               - if @affiliations.any?
                 %ul
                   - @affiliations.each do |affiliation|
@@ -189,7 +195,9 @@
                                                               type:                 "button"}
                     %i.fa.fa-pencil-alt
                     Edit
-              %h4.card-title AD Groups
+              %h4.card-title
+                AD Groups
+                %span.badge.bg-primary UIUC only
               - if @ad_groups.any?
                 %ul
                   - @ad_groups.each do |group|
