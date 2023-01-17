@@ -8,13 +8,9 @@
 
 <% # primary_color %>
 
-.badge-primary {
-    background-color: <%= h @institution.primary_color %>;
-    color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %>;
-}
-.bg-primary .card-header, .bg-primary .card-body {
-    background-color: <%= h @institution.primary_color %>;
-    color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %>;
+.badge.bg-primary, .bg-primary .card-header, .bg-primary .card-body {
+    background-color: <%= h @institution.primary_color %> !important;
+    color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %> !important;
 }
 .bg-primary code {
     color: inherit;
