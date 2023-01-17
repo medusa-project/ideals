@@ -2,7 +2,7 @@
 - provide :title, @user_group.name
 
 - can_edit             = policy(@user_group).edit?
-- show_uiuc_dimensions = @user_group.institution&.key == "uiuc"
+- show_uiuc_dimensions = @user_group.institution&.key == "uiuc" || (!@user_group.institution && current_institution.key == "uiuc")
 
 .btn-group.float-end{role: "group"}
   - if can_edit
