@@ -29,10 +29,9 @@
           -# progress bar injected here
         - if can_delete_bitstreams
           %td
-            - if bitstream.staging_key.present? && !bitstream.submitted_for_ingest
-              %button.btn.btn-sm.btn-outline-danger.remove
-                %i.fa.fa-minus
-                Remove
+            %button.btn.btn-sm.btn-outline-danger.remove
+              %i.fa.fa-minus
+              Remove
 
 -# This input is hidden via CSS. JavaScript sends #file-dropzone click events
 -# to it in order to open a file selection dialog.
