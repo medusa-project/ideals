@@ -415,7 +415,7 @@ class Bitstream < ApplicationRecord
   #
   def download_to_temp_file
     source_key = self.effective_key
-    tempfile   = Tempfile.new("#{self.class}.download_to_temp_file-#{self.id}")
+    tempfile   = Tempfile.new("#{self.class}-download_to_temp_file-#{self.id}")
     begin
       ObjectSpace.undefine_finalizer(tempfile)
       PersistentStore.instance.get_object(key:             source_key,
