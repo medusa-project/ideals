@@ -415,10 +415,15 @@ class Bitstream < ApplicationRecord
   #
   def download_to_temp_file
     source_key = self.effective_key
-    tempfile   = Tempfile.new("#{self.class}-#{self.id}")
-    ObjectSpace.undefine_finalizer(tempfile)
-    PersistentStore.instance.get_object(key:             source_key,
-                                        response_target: tempfile.path)
+    tempfile   = Tempfile.new("#{self.class}.download_to_temp_file-#{self.id}")
+    begin
+      ObjectSpace.undefine_finalizer(tempfile)
+      PersistentStore.instance.get_object(key:             source_key,
+                                          response_target: tempfile.path)
+    rescue => e
+      tempfile.unlink
+      raise e
+    end
     tempfile
   end
 
@@ -570,7 +575,7 @@ class Bitstream < ApplicationRecord
     case self.format&.short_name
     when "PDF"
       infile  = download_to_temp_file
-      outfile = Tempfile.new("full_text")
+      outfile = Tempfile.new("#{self.class}.read_full_text")
       begin
         # pdftotext is part of the poppler or xpdf package.
         `pdftotext -q #{infile.path} #{outfile.path}`
