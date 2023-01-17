@@ -4,6 +4,7 @@ class DownloadTest < ActiveSupport::TestCase
 
   setup do
     @download = downloads(:one)
+    setup_s3
   end
 
   # cleanup()
