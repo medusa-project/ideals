@@ -19,8 +19,8 @@
   - if @unit.rights.present?
     %dt Rights
     %dd= @unit.rights
-    %dt Handle URI
-    %dd= @unit.handle&.url
+  %dt Handle URI
+  %dd= @unit.handle&.permanent_url
   - if policy(@unit).show_extended_about?
     %dt Metadata Profile
     %dd
