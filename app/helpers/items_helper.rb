@@ -113,14 +113,14 @@ module ItemsHelper
   #
   def embargoes_form_card(embargo: nil, index: 0)
     selected_year = Time.now.year
-    latest_year   = Time.now.year + 100
+    latest_year   = selected_year + 100
 
     html = StringIO.new
     html << '<div class="card mb-3">'
-    html <<   '<div class="card-header">'
-    html <<     '<div class="float-right">'
-    html <<       '<button class="btn btn-outline-danger remove-embargo" type="button">'
-    html <<         '<i class="fa fa-minus"></i> '
+    html <<   '<div class="card-header pt-3">'
+    html <<     '<div class="float-end">'
+    html <<       '<button class="btn btn-sm btn-outline-danger remove-embargo" type="button">'
+    html <<         '<i class="fa fa-minus"></i> Remove Embargo'
     html <<       '</button>'
     html <<     '</div>'
     html <<     '<div class="form-inline">'
@@ -137,7 +137,7 @@ module ItemsHelper
     html <<           radio_button_tag("embargoes[0][perpetual]", "false",
                                        !embargo&.perpetual,
                                        class: 'form-check-input')
-    html <<           "Expires at"
+    html <<           "Expires at:"
     html <<         '</label>'
     html <<       '</div>'
 
@@ -155,13 +155,13 @@ module ItemsHelper
     html <<   '</div>'
     html <<   '<div class="card-body">'
     html <<     '<div class="row">'
-    html <<       '<div class="col-sm-4">'
+    html <<       '<div class="col-sm-5">'
     html <<         '<div class="mb-3">'
     html <<           'Restrict'
     html <<           '<div class="form-check">'
     html <<             '<label>'
     html <<               radio_button_tag("embargoes[#{index}][kind]", Embargo::Kind::DOWNLOAD,
-                                           (embargo&.kind == Embargo::Kind::DOWNLOAD),
+                                           (embargo&.kind == Embargo::Kind::DOWNLOAD || !embargo),
                                            class: 'form-check-input')
     html <<               " Files Only"
     html <<             '</label>'
@@ -176,12 +176,12 @@ module ItemsHelper
     html <<           '</div>'
     html <<         '</div>'
     html <<       '</div>'
-    html <<       '<div class="col-sm-8">'
+    html <<       '<div class="col-sm-7">'
     html <<         '<div class="mb-3">'
-    html <<           'Exempted User Groups'
+    html <<           'Exempted User Groups<br>'
     if embargo && embargo.user_groups.any?
-      embargo.user_groups.each_with_index do |group, index|
-        html << embargo_user_group_row(group: group, index: index)
+      embargo.user_groups.each_with_index do |group, index2|
+        html << embargo_user_group_row(group: group, index: index2)
       end
     else
       html << embargo_user_group_row
@@ -298,14 +298,14 @@ module ItemsHelper
 
   def embargo_user_group_row(group: nil, index: 0)
     html  = StringIO.new
-    html << "<div class=\"user-group form-inline mb-2\" "\
+    html << "<div class=\"user-group input-group mb-2\" "\
                   "style=\"#{group ? "" : "display: none"}\">"
     html <<   select_tag("embargoes[#{index}][user_group_ids][]",
                          options_for_select(UserGroup.all.order(:name).pluck(:name, :id), group&.id),
                          disabled: group.blank?,
                          class:    "form-select",
                          style:    "width: 90%")
-    html <<   '<button class="btn btn-outline-danger btn-sm ms-2 remove-user-group" type="button">'
+    html <<   '<button class="btn btn-outline-danger btn-sm remove-user-group" type="button">'
     html <<     '<i class="fa fa-minus"></i>'
     html <<   '</button>'
     html << '</div>'
