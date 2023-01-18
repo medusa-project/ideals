@@ -6,14 +6,12 @@
     %meta{content: "True", name: "HandheldFriendly"}/
     %meta{content: "width=device-width,initial-scale=1.0,shrink-to-fit=no", name: "viewport"}/
     %meta{content: "IE=edge", "http-equiv": "X-UA-Compatible"}/
-    %meta{content: current_institution.service_name, name: "Generator"}/
+    %meta{content: ::Configuration.instance.website[:global_service_name], name: "Generator"}/
     %title
       = yield :title
       |
-      = current_institution.service_name
-    = institution_favicon_tags
-    = stylesheet_link_tag 'application', media: 'all'
-    %link{rel: "stylesheet", href: custom_styles_path}
+      = ::Configuration.instance.website[:global_service_name]
+    = stylesheet_link_tag 'global/application', media: 'all'
     = javascript_include_tag 'application'
     = csrf_meta_tags
     = yield(:head_content)
@@ -21,16 +19,14 @@
   %body{id: yield(:body_id).present? ? yield(:body_id) : nil,
         'data-nav': yield(:active_nav)}
     .container-fluid
-      = render partial: 'layouts/lower_header'
+      = render partial: 'layouts/global_lower_header'
       .page-content
         - unless request.path == "/"
           = render partial: "shared/flashes"
-        -# IndexPagesController.show() is a special case whereby we want to
-        -# show the breadcrumbs for admins only, thus this ugly hack.
-        - if @breadcrumbable && (controller_name != "index_pages" || action_name != "show")
+        - if @breadcrumbable
           = breadcrumbs(@breadcrumbable)
         = yield
-      = render partial: "layouts/footer"
+      = render partial: "layouts/global_footer"
 
     - unless logged_in?
       = render partial: "sessions/login_modal"

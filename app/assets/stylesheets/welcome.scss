@@ -1,8 +1,5 @@
-body#welcome, body#global-landing { /* TODO: rename welcome to institution-landing */
-  overflow-x: hidden;
-}
-
 body#welcome {
+  overflow-x: hidden;
   #welcome-image {
     /* may be overridden by the theme */
     background-image: image-url("orange_network.jpg");
@@ -34,80 +31,6 @@ body#welcome {
       line-height: 1.5em;
       li {
         margin-bottom: 0.75em;
-      }
-    }
-  }
-}
-
-body#global-landing {
-  #main-image {
-    background-image: image-url("orange_network.jpg");
-    margin: -16px -16px 1em -16px;
-    background-position: center;
-    border-bottom: 3px solid $gray-400;
-    height: 200px;
-    div {
-      background-color: rgba(0, 0, 0, 0.3);
-      font-size: 1.8em;
-      color: white;
-      display: inline-block;
-      margin: 12px;
-      padding: 0.2em 0.5em;
-    }
-  }
-  p {
-    font-size: 1.2em;
-  }
-  .count {
-    color: $gray-600;
-    font-size: 2em;
-    text-align: center;
-    small {
-      font-size: 0.6em;
-    }
-  }
-  #map-section, #map-section .collapse, #map-section .collapsing {
-    $section-color: #f5f5f5;
-    background-color: $section-color;
-    #illinois-map {
-      fill: #84a4d3;
-      stroke: #213e65;
-      stroke-width: 3px;
-      max-width: 100%;
-      height: 600px;
-      .institution-point {
-        stroke: orange;
-        fill: #941f1f;
-      }
-      .institution-point.selected {
-        fill: orange;
-        stroke: yellow;
-      }
-    }
-    #institution-accordion {
-      border: 1px solid rgba(0,0,0,0.125);
-      border-radius: 0.375rem;
-      .accordion-item {
-        border-radius: 0.375rem;
-        padding: 0;
-        .accordion-button {
-          background-color: $section-color;
-          border-radius: 0.375rem;
-          color: $gray-600;
-          font-size: 0.65em;
-          padding: 0.5em;
-          text-decoration: none;
-        }
-      }
-      .accordion-header:hover {
-        background-color: #f0f0f0;
-      }
-      .accordion-body {
-        a.count {
-          font-size: 1.3em;
-          color: $gray-600;
-          text-decoration: none;
-        }
       }
     }
   }
