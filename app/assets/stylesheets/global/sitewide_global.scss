@@ -1,0 +1,16 @@
+a, a.page-link, .nav-link, .btn-outline-primary {
+  color: #23527c;
+}
+
+a:hover, .nav-link:hover, a.page-link:hover {
+  color: #23527c;
+}
+
+a:active {
+  color: #23527c;
+}
+
+a.dropdown-item:active {
+  background-color: #23527c !important;
+  color: white;
+}
