@@ -3,6 +3,8 @@
 @import "font-awesome-sprockets";
 @import "font-awesome";
 
+/* N.B.: can't have files in global/ with the same name as ones in parent dir */
 @import "sitewide";
+@import "global/sitewide_global";
 @import "global/welcome";
 @import "global/footer";

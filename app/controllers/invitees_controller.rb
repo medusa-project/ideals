@@ -12,7 +12,7 @@ class InviteesController < ApplicationController
                                      :show]
   before_action :authorize_invitee, only: [:approve, :destroy, :reject,
                                            :resend_email, :show]
-  before_action :store_location, only: [:index, :show]
+  before_action :store_location, only: [:index, :index_all, :show]
 
   ##
   # Performs the opposite action as {reject}. Institution admins only.
@@ -109,21 +109,12 @@ class InviteesController < ApplicationController
   #
   def index
     authorize(Invitee)
-    @permitted_params = params.permit(Search::RESULTS_PARAMS +
-                                        Search::SIMPLE_SEARCH_PARAMS +
-                                        [:approval_state, :class])
-    @start            = @permitted_params[:start].to_i
-    @window           = window_size
-    @invitees         = Invitee.
-        where(institution: current_institution).
-        where("LOWER(email) LIKE ?", "%#{@permitted_params[:q]&.downcase}%").
-        where("approval_state LIKE ?", "%#{@permitted_params[:approval_state]}%").
-        order(:created_at).
-        limit(@window).
-        offset(@start)
-    @count            = @invitees.count
-    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
-    @new_invitee      = Invitee.new
+    setup_index(current_institution)
+  end
+
+  def index_all
+    authorize(Invitee)
+    setup_index(nil)
   end
 
   ##
@@ -176,6 +167,7 @@ class InviteesController < ApplicationController
   def show
   end
 
+
   private
 
   def authorize_invitee
@@ -191,6 +183,27 @@ class InviteesController < ApplicationController
   def set_invitee
     @invitee = Invitee.find(params[:id] || params[:invitee_id])
     @breadcrumbable = @invitee
+  end
+
+  def setup_index(institution)
+    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+                                        Search::SIMPLE_SEARCH_PARAMS +
+                                        [:approval_state, :class])
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    @invitees         = Invitee.
+      where("LOWER(email) LIKE ?", "%#{@permitted_params[:q]&.downcase}%").
+      where("approval_state LIKE ?", "%#{@permitted_params[:approval_state]}%").
+      order(:created_at)
+    if institution
+      @invitees = @invitees.where(institution: institution)
+    elsif params[:institution_id].present?
+      @invitees = @invitees.where(institution_id: params[:institution_id].to_i)
+    end
+    @count            = @invitees.count
+    @invitees         = @invitees.limit(@window).offset(@start)
+    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
+    @new_invitee      = Invitee.new
   end
 
 end

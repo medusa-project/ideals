@@ -33,6 +33,10 @@ class InviteePolicy < ApplicationPolicy
     create
   end
 
+  def index_all
+    effective_sysadmin(user, role)
+  end
+
   def new
     logged_out
   end

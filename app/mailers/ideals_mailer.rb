@@ -5,7 +5,7 @@ class IdealsMailer < ApplicationMailer
   # see https://answers.uillinois.edu/illinois/page.php?id=47888
   NO_REPLY_ADDRESS = "no-reply@illinois.edu"
 
-  default from: NO_REPLY_ADDRESS
+  default from: "#{::Configuration.instance.website[:global_service_name]} <#{NO_REPLY_ADDRESS}>"
 
   ##
   # @param exception [Exception]
