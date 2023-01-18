@@ -8,7 +8,7 @@
 
 <% # primary_color %>
 
-.badge.bg-primary, .bg-primary .card-header, .bg-primary .card-body {
+.badge.bg-primary, .badge.text-bg-primary, .bg-primary .card-header, .bg-primary .card-body {
     background-color: <%= h @institution.primary_color %> !important;
     color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %> !important;
 }
