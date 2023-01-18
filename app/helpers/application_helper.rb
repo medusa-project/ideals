@@ -382,6 +382,8 @@ module ApplicationHelper
       icon = "fa fa-upload"
     when "IndexPage"
       icon = "far fa-file-alt"
+    when "Invitee"
+      icon = "fa fa-user-plus"
     when "Institution"
       icon = "fa fa-university"
     when "Item"

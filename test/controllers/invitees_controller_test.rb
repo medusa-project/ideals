@@ -235,6 +235,34 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  # index_all()
+
+  test "index_all() redirects to root page for logged-out users" do
+    get all_invitees_path
+    assert_redirected_to @invitee.institution.scope_url
+  end
+
+  test "index_all() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:example))
+    get all_invitees_path
+    assert_response :forbidden
+  end
+
+  test "index_all() returns HTTP 200 for authorized users" do
+    log_in_as(users(:example_sysadmin))
+    get all_invitees_path
+    assert_response :ok
+  end
+
+  test "index_all() respects role limits" do
+    log_in_as(users(:example_sysadmin))
+    get all_invitees_path
+    assert_response :ok
+
+    get all_invitees_path(role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # new()
 
   test "new() redirects to root path for logged-in users" do

@@ -1,0 +1,44 @@
+-# Requires the following locals:
+-#
+-# count [Integer]
+-# window [Integer]
+-# current_page [Integer]
+-# permitted_params [ActionController::Parameters]
+-# invitees [Enumerable<Invitee>]
+-#
+
+- pagination = paginate(count: count, page: current_page, per_page: window,
+                        permitted_params: permitted_params)
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
+
+%table.table
+  %thead
+    %tr
+      %th Email
+      %th Institution
+      %th Invited By
+      %th Approval State
+      %th
+  %tbody
+    - invitees.each do |invitee|
+      %tr
+        %td= link_to(invitee.email, invitee)
+        %td= invitee.institution&.name
+        %td= invitee.inviting_user ? link_to(invitee.inviting_user.name, invitee.inviting_user.becomes(User)) : "Self-Invited"
+        %td
+          - case invitee.approval_state
+          - when Invitee::ApprovalState::PENDING
+            %span.badge.text-bg-primary PENDING
+          - when Invitee::ApprovalState::APPROVED
+            %span.badge.text-bg-success APPROVED
+          - when Invitee::ApprovalState::REJECTED
+            %span.badge.text-bg-danger REJECTED
+        %td= render partial: "invitees/actions_menu",
+                    locals: { invitee: invitee, button_class: "btn btn-sm btn-outline-secondary" }
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination

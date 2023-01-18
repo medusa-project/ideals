@@ -1,0 +1,35 @@
+- provide :body_id, "list_invitees"
+- provide :title, "Invitees"
+
+%h1 All Invitees
+
+.card.mb-3
+  .card-body
+    = form_tag all_invitees_path, method: :get, class: "form-inline" do
+      .row.mb-3
+        .col
+          = label_tag nil, "Email", class: "form-label"
+          = filter_field
+        .col
+          = label_tag nil, "Institution", class: "form-label"
+          = select_tag "institution_id",
+                       options_for_select(Institution.order(:name).map{ |i| [i.name, i.id] },
+                                          params[:institution_id]),
+                       include_blank: true,
+                       class: "form-select"
+        .col
+          = label_tag nil, "Approval State", class: "form-label"
+          = select_tag "approval_state",
+                       options_for_select(Invitee::ApprovalState::all.map{ |s| [s.capitalize, s] },
+                                          params[:approval_state]),
+                       include_blank: true,
+                       class: "form-select"
+      = button_tag "Clear", type: "reset", class: "btn btn-outline-secondary"
+      = submit_tag "Filter", name: "", class: "btn btn-primary"
+
+= render partial: "all_invitees",
+         locals: { count:            @count,
+                   current_page:     @current_page,
+                   invitees:         @invitees,
+                   permitted_params: @permitted_params,
+                   window:           @window }

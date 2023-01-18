@@ -228,6 +228,39 @@ class InviteePolicyTest < ActiveSupport::TestCase
     assert !policy.index?
   end
 
+  # index_all?()
+
+  test "index_all?() returns false with a nil request context" do
+    policy = InviteePolicy.new(nil, @institution)
+    assert !policy.index_all?
+  end
+
+  test "index_all?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @institution)
+    assert !policy.index_all?
+  end
+
+  test "index_all?() authorizes sysadmins" do
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @institution)
+    assert policy.index_all?
+  end
+
+  test "index_all?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InviteePolicy.new(context, @institution)
+    assert !policy.index_all?
+  end
+
   # new?()
 
   test "new?() returns true with a nil user" do

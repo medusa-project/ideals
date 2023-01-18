@@ -63,6 +63,9 @@
                 Global Metadata Profile
               %li
                 %hr.dropdown-divider
+              = link_to(all_invitees_path, class: "dropdown-item") do
+                %i.fa.fa-user-plus
+                All Invitees
               = link_to(all_users_path, class: "dropdown-item") do
                 %i.fa.fa-user
                 All Users
@@ -136,7 +139,7 @@
               %li
                 %hr.dropdown-divider
               = link_to(invitees_path, class: "dropdown-item") do
-                %i.fa.fa-user-plus
+                = icon_for(Invitee)
                 Invitees
               = link_to(users_path, class: "dropdown-item") do
                 %i.fa.fa-user
