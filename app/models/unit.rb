@@ -272,14 +272,14 @@ class Unit < ApplicationRecord
                 LEFT JOIN items i ON b.item_id = i.id
                 LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
                 LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
-            WHERE ucm.unit_id IN ($1)
-                AND e.event_type = $2
-                AND e.happened_at >= $3
-                AND e.happened_at <= $4
+            WHERE ucm.unit_id IN (#{ids.join(",")})
+                AND e.event_type = $1
+                AND e.happened_at >= $2
+                AND e.happened_at <= $3
             GROUP BY month
         ) e ON mon.month = e.month
         ORDER BY mon.month;"
-    values = [ids, Event::Type::DOWNLOAD, start_time, end_time]
+    values = [Event::Type::DOWNLOAD, start_time, end_time]
     result = self.class.connection.exec_query(sql, "SQL", values).to_a
     result[0..(result.length - 2)]
   end

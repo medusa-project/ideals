@@ -134,6 +134,7 @@ const UserView = function() {
                 const directionButtonGroup = directionRadios.parents(".btn-group");
                 if (sortMenu.val() === "") { // relevance/no sort
                     directionButtonGroup.hide();
+                    directionRadios.filter(":first").prop("checked", true);
                 } else {
                     directionButtonGroup.show();
                 }
@@ -143,6 +144,8 @@ const UserView = function() {
                 refreshResults();
             });
             directionRadios.on("change", function() {
+                $(this).parent().addClass("active");
+                $(this).parent().siblings().removeClass("active");
                 refreshResults();
             });
             showOrHideDirectionRadios();
