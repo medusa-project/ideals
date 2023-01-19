@@ -75,10 +75,23 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal 0, groups.length
   end
 
+  # all_child_ids()
+
+  test "all_child_ids() returns the correct units" do
+    unit  = units(:uiuc_unit1)
+    child = unit.all_children.first
+    ids   = unit.all_child_ids
+    assert_equal 3, ids.count
+    assert ids.include?(child.id)
+  end
+
   # all_children()
 
   test "all_children() returns the correct units" do
-    assert_equal 3, units(:uiuc_unit1).all_children.count
+    unit     = units(:uiuc_unit1)
+    children = unit.all_children
+    assert_equal 3, children.count
+    assert children.first.kind_of?(Unit)
   end
 
   # all_parents()
