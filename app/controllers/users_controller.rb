@@ -164,15 +164,15 @@ class UsersController < ApplicationController
   end
 
   def set_submitted_items_ivars
-    @start            = params[:items_start].to_i
+    @permitted_params = params.permit(:direction, :sort, :start, :window)
+    @start            = @permitted_params[:start].to_i
     @window           = window_size
-    @permitted_params = params.permit(:collections_start, :items_start, :window)
     @items            = Item.search.
       institution(current_institution).
       aggregations(false).
       filter(Item::IndexFields::SUBMITTER, @user.id).
       must_not(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
-      order(params[:sort] => params[:direction] == "desc" ? :desc : :asc).
+      order(@permitted_params[:sort] => @permitted_params[:direction] == "desc" ? :desc : :asc).
       limit(@window).
       start(@start)
     @items             = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
