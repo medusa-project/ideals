@@ -25,14 +25,19 @@
                options_for_select(role_options, f.object.role),
                {},
                class: "form-select")
+    %p.form-text
+      = icon_for(:warning)
+      If this is set to a more privileged role than your role, you will lose
+      the ability to see or edit the file.
 
   .mb-3
     .form-check
       = f.check_box :primary, class: "form-check-input"
       = f.label :primary, class: "form-check-label"
-    %p.text-secondary
+    %p.form-text
+      = icon_for(:info)
       If checked, all other files attached to the same item
-      will automatically be made non-primary.
+      will be made non-primary.
 
   - if f.object.item.bitstreams.select{ |b| b.bundle == f.object.bundle }.length > 1
     .mb-3
