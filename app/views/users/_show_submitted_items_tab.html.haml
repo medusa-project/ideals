@@ -2,9 +2,9 @@
   = form_tag(user_path(@user), method: :get, class: "filter") do
     .row.justify-content-between
       .col-4
-        .input-group.mb-3.filter-field
+        .mb-3.filter-field
           = hidden_field_tag("fq[]", "#{Item::IndexFields::SUBMITTER}:#{@user.id}")
-          = filter_field(submit_text: "Filter")
+          = filter_field(placeholder: "Filter")
       .col-4
         .input-group
           = sort_menu

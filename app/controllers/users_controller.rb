@@ -164,12 +164,13 @@ class UsersController < ApplicationController
   end
 
   def set_submitted_items_ivars
-    @permitted_params = params.permit(:direction, :sort, :start, :window)
+    @permitted_params = params.permit(:direction, :q, :sort, :start)
     @start            = @permitted_params[:start].to_i
     @window           = window_size
     @items            = Item.search.
       institution(current_institution).
       aggregations(false).
+      query_searchable_fields(@permitted_params[:q]).
       filter(Item::IndexFields::SUBMITTER, @user.id).
       must_not(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
       order(@permitted_params[:sort] => @permitted_params[:direction] == "desc" ? :desc : :asc).
