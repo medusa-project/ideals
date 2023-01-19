@@ -43,6 +43,7 @@ gem "natural_sort"
 gem "netaddr"
 # Enables local identity logins.
 gem "omniauth-identity"
+gem "omniauth-rails_csrf_protection"
 # Enables Shibboleth logins.
 gem "omniauth-shibboleth"
 # Our database
@@ -66,10 +67,6 @@ group :development do
   gem "capistrano-rails"
   gem "capistrano-rbenv"
   gem 'yard'
-end
-
-group :production do
-  gem "omniauth-rails_csrf_protection"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
