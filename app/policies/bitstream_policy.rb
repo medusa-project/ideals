@@ -115,7 +115,13 @@ class BitstreamPolicy < ApplicationPolicy
                    reason:     "This file's owning item is embargoed." }
         end
       end
-    elsif role && role < bitstream.role
+    elsif (role && role < bitstream.role) ||
+      (!user && bitstream.role > Role::LOGGED_OUT) ||
+      (user && bitstream.role >= Role::SYSTEM_ADMINISTRATOR) ||
+      (user && bitstream.role >= Role::COLLECTION_SUBMITTER && !user.effective_submitter?(bitstream.item.effective_primary_collection)) ||
+      (user && bitstream.role >= Role::COLLECTION_MANAGER && !user.effective_manager?(bitstream.item.effective_primary_collection)) ||
+      (user && bitstream.role >= Role::UNIT_ADMINISTRATOR && !user.effective_unit_admin?(bitstream.item.effective_primary_unit)) ||
+      (user && bitstream.role >= Role::INSTITUTION_ADMINISTRATOR && !user.effective_institution_admin?(bitstream.institution))
       return { authorized: false,
                reason:     "Your role is not allowed to access this file." }
     end
