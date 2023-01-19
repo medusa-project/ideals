@@ -115,11 +115,11 @@ class Unit < ApplicationRecord
   end
 
   ##
-  # @return [Enumerable<Unit>] All units that are children of the instance, at
-  #                            any level in the tree.
+  # @return [Enumerable<Integer>] IDs of all units that are children of the
+  #                               instance, at any level in the tree.
   # @see walk_tree
   #
-  def all_children
+  def all_child_ids
     # This is much faster than walking down the tree via ActiveRecord.
     sql = "WITH RECURSIVE q AS (
         SELECT h, ARRAY[id] AS breadcrumb
@@ -136,9 +136,18 @@ class Unit < ApplicationRecord
       ORDER BY breadcrumb"
     values  = [self.id]
     results = ActiveRecord::Base.connection.exec_query(sql, "SQL", values)
-    Unit.where("id IN (?)", results.
-        select{ |row| row['id'] != self.id }.
-        map{ |row| row['id'] })
+    results.
+      select{ |row| row['id'] != self.id }.
+      map{ |row| row['id'] }
+  end
+
+  ##
+  # @return [Enumerable<Unit>] All units that are children of the instance, at
+  #                            any level in the tree.
+  # @see walk_tree
+  #
+  def all_children
+    Unit.where(id: all_child_ids)
   end
 
   ##
@@ -250,17 +259,9 @@ class Unit < ApplicationRecord
     end_time    += 1.month
     start_series = "#{start_time.year}-#{start_time.month}-01"
     end_series   = "#{end_time.year}-#{end_time.month}-01"
+    ids          = self.all_child_ids + [self.id]
 
-    sql = "WITH RECURSIVE q AS (
-            SELECT u
-            FROM units u
-            WHERE id = $1
-            UNION ALL
-            SELECT ui
-            FROM q
-            JOIN units ui ON ui.parent_id = (q.u).id
-        )
-        SELECT mon.month, coalesce(e.count, 0) AS dl_count
+    sql = "SELECT mon.month, coalesce(e.count, 0) AS dl_count
         FROM generate_series('#{start_series}'::timestamp,
                              '#{end_series}'::timestamp, interval '1 month') AS mon(month)
         LEFT JOIN (
@@ -271,15 +272,14 @@ class Unit < ApplicationRecord
                 LEFT JOIN items i ON b.item_id = i.id
                 LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id
                 LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = cim.collection_id
-                LEFT JOIN q ON ucm.unit_id IN (SELECT (q.u).id FROM q)
-            WHERE (q.u).id = $1
+            WHERE ucm.unit_id IN ($1)
                 AND e.event_type = $2
                 AND e.happened_at >= $3
                 AND e.happened_at <= $4
             GROUP BY month
         ) e ON mon.month = e.month
         ORDER BY mon.month;"
-    values = [self.id, Event::Type::DOWNLOAD, start_time, end_time]
+    values = [ids, Event::Type::DOWNLOAD, start_time, end_time]
     result = self.class.connection.exec_query(sql, "SQL", values).to_a
     result[0..(result.length - 2)]
   end

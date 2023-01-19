@@ -16,12 +16,6 @@
         = link_to(@item.handle.permanent_url, @item.handle.permanent_url)
       - else
         None
-    %dt Local Handle URI
-    %dd
-      - if @item.handle
-        = link_to(@item.handle.url, @item.handle.url)
-      - else
-        None
     - if @item.submitter
       - submitter = @item.submitter.becomes(User)
       %dt Submitter

@@ -43,20 +43,22 @@ class MonthlyUnitItemDownloadCount < ApplicationRecord
   # @param end_month [Integer]   Inclusive.
   # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`
   #                            keys. The length is equal to the month span
-  #                            provided in the arguments. # TODO: dl_count should be count
+  #                            provided in the arguments.
   #
   def self.for_unit(unit:, start_year:, start_month:, end_year:, end_month:)
     start_time = Time.new(start_year, start_month)
     end_time   = Time.new(end_year, end_month)
     raise ArgumentError, "Start year/month is equal to or later than end year/month" if start_time >= end_time
+    unit_ids   = unit.all_child_ids + [unit.id]
 
-    sql = "SELECT year, month, count
+    sql    = "SELECT year, month, SUM(count) AS count
           FROM monthly_unit_item_download_counts
-          WHERE unit_id = $1
-            AND ((year = $2 AND month >= $3) OR (year > $4))
-            AND ((year = $5 AND month <= $6) OR (year < $7))
+          WHERE unit_id IN (#{unit_ids.join(",")})
+            AND ((year = $1 AND month >= $2) OR (year > $3))
+            AND ((year = $4 AND month <= $5) OR (year < $6))
+          GROUP BY year, month
           ORDER BY year, month;"
-    values = [unit.id, start_year, start_month, start_year,
+    values = [start_year, start_month, start_year,
               end_year, end_month, end_year]
     result = self.connection.exec_query(sql, "SQL", values)
     MonthlyItemDownloadCount.pad_results(
@@ -106,7 +108,7 @@ class MonthlyUnitItemDownloadCount < ApplicationRecord
     raise ArgumentError, "Start year/month is equal to or later than end year/month" if start_time >= end_time
 
     ids = [unit.id]
-    ids += unit.all_children.map(&:id) if include_children
+    ids += unit.all_child_ids if include_children
     sql = "SELECT SUM(count) AS count
           FROM monthly_unit_item_download_counts
           WHERE unit_id IN (#{ids.join(",")})

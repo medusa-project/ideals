@@ -148,11 +148,11 @@ class Collection < ApplicationRecord
   before_destroy :validate_empty
 
   ##
-  # @return [Enumerable<Collection>] All collections that are children of the
-  #                                  instance, at any level in the tree.
+  # @return [Enumerable<Integer>] IDs of all collections that are children of
+  #                               the instance, at any level in the tree.
   # @see walk_tree
   #
-  def all_children
+  def all_child_ids
     # This is much faster than walking down the tree via ActiveRecord.
     sql = "WITH RECURSIVE q AS (
         SELECT h, 1 AS level, ARRAY[id] AS breadcrumb
@@ -169,9 +169,18 @@ class Collection < ApplicationRecord
       ORDER BY breadcrumb"
     values  = [self.id]
     results = ActiveRecord::Base.connection.exec_query(sql, "SQL", values)
-    Collection.where("id IN (?)", results.
-        select{ |row| row['id'] != self.id }.
-        map{ |row| row['id'] })
+    results.
+      select{ |row| row['id'] != self.id }.
+      map{ |row| row['id'] }
+  end
+
+  ##
+  # @return [Enumerable<Collection>] All collections that are children of the
+  #                                  instance, at any level in the tree.
+  # @see walk_tree
+  #
+  def all_children
+    Collection.where(id: all_child_ids)
   end
 
   ##
