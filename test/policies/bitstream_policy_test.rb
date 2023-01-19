@@ -709,6 +709,141 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
+  test "show?() authorizes bitstreams limited to the logged-in role to
+  logged-in users" do
+    user      = users(:southwest_sysadmin)
+    bitstream = bitstreams(:role_limited)
+    bitstream.update!(role: Role::LOGGED_IN)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize bitstreams limited to the logged-in role to
+  logged-out users" do
+    bitstream = bitstreams(:role_limited)
+    bitstream.update!(role: Role::LOGGED_IN)
+    context   = RequestContext.new(user:        nil,
+                                   institution: bitstream.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert !policy.show?
+  end
+
+  test "show?() authorizes bitstreams limited to the collection submitter role
+  to collection submitters" do
+    user      = users(:southwest)
+    bitstream = bitstreams(:role_limited)
+    bitstream.item.primary_collection.submitting_users << user
+    bitstream.update!(role: Role::COLLECTION_SUBMITTER)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize bitstreams limited to the collection
+  submitter role to non-collection submitters" do
+    user      = users(:southwest)
+    bitstream = bitstreams(:role_limited)
+    bitstream.update!(role: Role::COLLECTION_SUBMITTER)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert !policy.show?
+  end
+
+  test "show?() authorizes bitstreams limited to the collection manager role
+  to collection managers" do
+    user      = users(:southwest)
+    bitstream = bitstreams(:role_limited)
+    bitstream.item.primary_collection.managing_users << user
+    bitstream.update!(role: Role::COLLECTION_MANAGER)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize bitstreams limited to the collection manager
+  role to non-collection submitters" do
+    user      = users(:southwest)
+    bitstream = bitstreams(:role_limited)
+    bitstream.update!(role: Role::COLLECTION_MANAGER)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert !policy.show?
+  end
+
+  test "show?() authorizes bitstreams limited to the unit administrator role
+  to unit administrators" do
+    user      = users(:southwest)
+    bitstream = bitstreams(:role_limited)
+    bitstream.item.primary_unit.administering_users << user
+    bitstream.update!(role: Role::UNIT_ADMINISTRATOR)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize bitstreams limited to the unit administrator
+  role to non-unit administrators" do
+    user      = users(:southwest)
+    bitstream = bitstreams(:role_limited)
+    bitstream.update!(role: Role::UNIT_ADMINISTRATOR)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert !policy.show?
+  end
+
+  test "show?() authorizes bitstreams limited to the institution administrator
+  role to institution administrators" do
+    user      = users(:southwest)
+    bitstream = bitstreams(:role_limited)
+    bitstream.item.institution.administering_users << user
+    bitstream.update!(role: Role::INSTITUTION_ADMINISTRATOR)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize bitstreams limited to the institution
+  administrator role to non-unit administrators" do
+    user      = users(:southwest)
+    bitstream = bitstreams(:role_limited)
+    bitstream.update!(role: Role::INSTITUTION_ADMINISTRATOR)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert !policy.show?
+  end
+
+  test "show?() authorizes bitstreams limited to the system administrator
+  role to system administrators" do
+    user      = users(:southwest_sysadmin)
+    bitstream = bitstreams(:role_limited)
+    bitstream.update!(role: Role::SYSTEM_ADMINISTRATOR)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize bitstreams limited to the system
+  administrator role to non-system administrators" do
+    user      = users(:southwest)
+    bitstream = bitstreams(:role_limited)
+    bitstream.update!(role: Role::SYSTEM_ADMINISTRATOR)
+    context   = RequestContext.new(user:        user,
+                                   institution: user.institution)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert !policy.show?
+  end
+
   test "show?() restricts non-content bitstreams to non-collection managers" do
     user    = users(:example)
     context = RequestContext.new(user:        user,
