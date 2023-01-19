@@ -104,6 +104,10 @@ nav.navbar {
   }
 }
 
+input[name=direction] {
+  appearance: none;
+}
+
 .resource-list {
   a {
     text-decoration: none;

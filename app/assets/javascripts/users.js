@@ -134,6 +134,7 @@ const UserView = function() {
                 const directionButtonGroup = directionRadios.parents(".btn-group");
                 if (sortMenu.val() === "") { // relevance/no sort
                     directionButtonGroup.hide();
+                    directionRadios.val("asc");
                 } else {
                     directionButtonGroup.show();
                 }
