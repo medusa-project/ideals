@@ -32,10 +32,25 @@ class CollectionTest < ActiveSupport::TestCase
     assert_kind_of CollectionRelation, Collection.search
   end
 
+  # all_child_ids()
+
+  test "all_child_ids() returns the correct IDs" do
+    collection = collections(:uiuc_collection1)
+    child      = collection.all_children.first
+
+    ids        = collection.all_child_ids
+    assert_equal 2, ids.count
+    assert ids.include?(child.id)
+  end
+
   # all_children()
 
   test "all_children() returns the correct collections" do
-    assert_equal 2, collections(:uiuc_collection1).all_children.count
+    collection = collections(:uiuc_collection1)
+    children   = collection.all_children
+    assert_equal 2, children.count
+    assert children.first.kind_of?(Collection)
+    assert_equal collection, children.first.parent
   end
 
   # all_managing_groups()
