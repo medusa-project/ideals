@@ -42,24 +42,21 @@ class BitstreamsController < ApplicationController
   # Responds to `POST /items/:item_id/bitstreams`
   #
   def create
-    request.env['rack.input'].set_encoding(Encoding::UTF_8) # TODO: put this in an application-wide initializer
-    Tempfile.create("BitstreamsController.create") do |tempfile|
-      tempfile.write(request.env['rack.input'].read)
-      tempfile.close
-      ActiveRecord::Base.transaction do
-        filename = request.env['HTTP_X_FILENAME']
-        length   = request.env['HTTP_X_CONTENT_LENGTH'].to_i
-        bs       = Bitstream.new_in_staging(item:     @item,
-                                            filename: filename,
-                                            length:   length)
-        bs.upload_to_staging(tempfile)
-        bs.save!
-        if @item.stage >= Item::Stages::APPROVED
-          bs.move_into_permanent_storage
-        end
-        response.header['Location'] = item_bitstream_url(@item, bs)
-        head :created
+    input = request.env['rack.input']
+    input.set_encoding(Encoding::UTF_8)
+    ActiveRecord::Base.transaction do
+      filename = request.env['HTTP_X_FILENAME']
+      length   = request.env['HTTP_X_CONTENT_LENGTH'].to_i
+      bs       = Bitstream.new_in_staging(item:     @item,
+                                          filename: filename,
+                                          length:   length)
+      bs.upload_to_staging(input)
+      bs.save!
+      if @item.stage >= Item::Stages::APPROVED
+        bs.move_into_permanent_storage
       end
+      response.header['Location'] = item_bitstream_url(@item, bs)
+      head :created
     end
   end
 
