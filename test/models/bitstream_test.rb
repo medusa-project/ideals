@@ -334,7 +334,7 @@ class BitstreamTest < ActiveSupport::TestCase
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                           filename: File.basename(fixture),
+                                           filename: SecureRandom.hex,
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
       @instance.move_into_permanent_storage
@@ -355,7 +355,7 @@ class BitstreamTest < ActiveSupport::TestCase
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                           filename: File.basename(fixture),
+                                           filename: SecureRandom.hex,
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
       @instance.move_into_permanent_storage
@@ -729,7 +729,7 @@ class BitstreamTest < ActiveSupport::TestCase
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                             filename: File.basename(fixture),
+                                             filename: SecureRandom.hex,
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)
         @instance.move_into_permanent_storage
@@ -752,7 +752,7 @@ class BitstreamTest < ActiveSupport::TestCase
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                             filename: File.basename(fixture),
+                                             filename: SecureRandom.hex,
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)
         @instance.move_into_permanent_storage

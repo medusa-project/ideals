@@ -697,13 +697,15 @@ class Bitstream < ApplicationRecord
   # order to make room for it.
   #
   def shift_bundle_positions_before_create
-    transaction do
-      self.item.bitstreams.
-        where(bundle: self.bundle).
-        where("bundle_position >= ?", self.bundle_position).each do |b|
-        # update_column skips callbacks, which would cause this method to be
-        # called recursively.
-        b.update_column(:bundle_position, b.bundle_position + 1)
+    if self.bundle_position
+      transaction do
+        self.item.bitstreams.
+          where(bundle: self.bundle).
+          where("bundle_position >= ?", self.bundle_position).each do |b|
+          # update_column skips callbacks, which would cause this method to be
+          # called recursively.
+          b.update_column(:bundle_position, b.bundle_position + 1)
+        end
       end
     end
   end
@@ -735,7 +737,7 @@ class Bitstream < ApplicationRecord
   # {Item} to ensure that they are sequential and zero-based.
   #
   def shift_bundle_positions_after_destroy
-    if self.item && self.destroyed?
+    if self.bundle_position && self.item && self.destroyed?
       transaction do
         self.item.bitstreams.
           where(bundle: self.bundle).
