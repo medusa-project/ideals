@@ -113,8 +113,10 @@ class ShibbolethUser < User
                        "#{auth.dig("extra", "raw_info", "sn")}"
     self.name        = self.uid if self.name.blank?
     self.org_dn      = auth.dig("extra", "raw_info", "org-dn")
-    # The "OR" is a hack to make UIS accounts work--eventually they should be transitioned into LocalUsers and moved into UIS
-    self.institution = Institution.find_by_org_dn(self.org_dn) || Institution.find_by_key("uiuc")
+    # UIS accounts will not have an org DN--eventually these users will be
+    # converted into LocalUsers and moved into the UIS space
+    self.institution = self.org_dn.present? ?
+                         Institution.find_by_org_dn(self.org_dn) : Institution.find_by_key("uiuc")
     self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
     self.affiliation = Affiliation.from_shibboleth(auth)
     dept             = auth.dig("extra", "raw_info", "departmentCode")

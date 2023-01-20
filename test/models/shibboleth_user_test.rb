@@ -70,6 +70,42 @@ class ShibbolethUserTest < ActiveSupport::TestCase
     assert_same shib_user.id, user.id
   end
 
+  # N.B.: non-UIUC users have a blank org DN, and they all get assigned to the
+  # UIUC institution. This is intended to be temporary until all of UIS's stuff
+  # gets migrated into the UIS institution and its users are transitioned to
+  # local identities.
+  test "from_omniauth() works with non-UIUC users" do
+    auth_hash = {
+      provider: "shibboleth",
+      uid: "shib@southwest.edu",
+      info: {
+        name: "Southwest U Shibboleth User",
+        email: "shib@southwest.edu"
+      },
+      credentials: {
+      },
+      extra: {
+        raw_info: {
+          eppn: "shib@southwest.edu",
+          "unscoped-affiliation": "faculty;affiliate;staff;employee;member",
+          uid: "shib",
+          sn: "User",
+          "org-dn": "",
+          nickname: "Shib",
+          givenName: "Shib",
+          iTrustAffiliation: "",
+          departmentName: "",
+          programCode: "",
+          levelCode: ""
+        }
+      }
+    }.deep_stringify_keys
+    shib_user = users(:southwest_shibboleth)
+    user      = ShibbolethUser.from_omniauth(auth_hash)
+    assert_same shib_user.id, user.id
+    assert_equal institutions(:uiuc), user.institution
+  end
+
   test "from_omniauth() returns a new instance if a corresponding
   ShibbolethUser does not already exist" do
     assert_nil ShibbolethUser.find_by_uid("example@illinois.edu")

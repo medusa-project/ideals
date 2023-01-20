@@ -100,6 +100,15 @@ southwest_sysadmin:
   user_groups:
     - sysadmin
 
+southwest_shibboleth:
+  type:        ShibbolethUser
+  institution: southwest
+  uid:         shib@southwest.edu
+  name:        Southwest University Shibboleth User
+  email:       shib@southwest.edu
+  phone:       (888) 555-1234
+  enabled:     true
+
 ################################### uiuc ###################################
 
 uiuc:
