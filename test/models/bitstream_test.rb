@@ -334,7 +334,7 @@ class BitstreamTest < ActiveSupport::TestCase
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                           filename: File.basename(fixture),
+                                           filename: SecureRandom.hex,
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
       @instance.move_into_permanent_storage
@@ -355,7 +355,7 @@ class BitstreamTest < ActiveSupport::TestCase
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                           filename: File.basename(fixture),
+                                           filename: SecureRandom.hex,
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
       @instance.move_into_permanent_storage
@@ -729,7 +729,7 @@ class BitstreamTest < ActiveSupport::TestCase
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                             filename: File.basename(fixture),
+                                             filename: SecureRandom.hex,
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)
         @instance.move_into_permanent_storage
@@ -752,7 +752,7 @@ class BitstreamTest < ActiveSupport::TestCase
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                             filename: File.basename(fixture),
+                                             filename: SecureRandom.hex,
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)
         @instance.move_into_permanent_storage
@@ -760,6 +760,25 @@ class BitstreamTest < ActiveSupport::TestCase
 
       # Check that the file exists in the bucket.
       assert PersistentStore.instance.object_exists?(key: @instance.permanent_key)
+    ensure
+      @instance.delete_from_staging
+      @instance.delete_from_permanent_storage
+    end
+  end
+
+  test "move_into_permanent_storage() removes the staging object" do
+    begin
+      fixture     = file_fixture("escher_lego.png")
+      staging_key = nil
+      File.open(fixture, "r") do |file|
+        @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+                                             filename: SecureRandom.hex,
+                                             length:   File.size(fixture))
+        @instance.upload_to_staging(file)
+        staging_key = @instance.staging_key
+        @instance.move_into_permanent_storage
+      end
+      assert !PersistentStore.instance.object_exists?(key: staging_key)
     ensure
       @instance.delete_from_staging
       @instance.delete_from_permanent_storage

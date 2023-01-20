@@ -477,6 +477,9 @@ const IDEALS = {
      *
      * To simplify the implementation, we try to reject uploads of directories.
      *
+     * N.B.: clients are advised to supply a error handler callback via
+     * {onIOError()}. Otherwise, errors will be displayed in alerts.
+     *
      * @constructor
      */
     ItemFileUploader: function() {
@@ -484,16 +487,21 @@ const IDEALS = {
         DISALLOWED_LC_FILENAMES.add(".ds_store");
         DISALLOWED_LC_FILENAMES.add("thumbs.db");
 
-        const canDelete       = ($("[name=can_delete_bitstreams]").val() === "true");
-        const filesForm       = $("#files-form");
-        const filesTable      = filesForm.find("table.files");
-        let numUploadingFiles = 0;
-        let numUploadedFiles  = filesTable.find("tr").length;
+        const canDelete  = ($("[name=can_delete_bitstreams]").val() === "true");
+        const filesForm  = $("#files-form");
+        const filesTable = filesForm.find("table.files");
+        const self       = this;
+
+        let uploadInProgressCallback, uploadCompleteCallback, uploadErrorCallback,
+            removeFileCompleteCallback, removeFileErrorCallback;
+
+        this.numUploadingFiles = 0;
+        this.numUploadedFiles  = filesTable.find("tr").length;
 
         /**
-         * Adds a file to the table and uploads it to staging. If a file with
-         * the same name already exists in the table, the upload is cancelled
-         * and an alert is shown.
+         * Adds a file to the table and uploads it to the server. If a file
+         * with the same name already exists in the table, the upload is
+         * cancelled and an alert is shown.
          *
          * @param file {File}
          */
@@ -508,14 +516,19 @@ const IDEALS = {
             }
             // If a file with the same name has already been added
             if (getFilenames().has(file.name)) {
-                alert("A file named " + file.name +
-                    " has already been uploaded. Please rename it and try again.");
+                const message = "A file named " + file.name +
+                    " has already been uploaded. Please rename it and try again."
+                if (uploadErrorCallback) {
+                    uploadErrorCallback(file, message);
+                } else {
+                    alert(message);
+                }
                 return;
             }
             // All clear.
             // N.B.: This structure must be kept in sync with the structure in
             // the view template (submit_files_form_uploads).
-            filesTable.append("<tr data-filename='" + file.name + "'>" +
+            filesTable.append("<tr data-filename=\"" + file.name.replace("\"", "&quot;") + "\">" +
                 "    <td></td>" +
                 "    <td>" + file.name + "</td>" +
                 "    <td>" + IDEALS.Util.formatBytes(file.size) + "</td>" +
@@ -526,7 +539,7 @@ const IDEALS = {
                 "                 aria-valuemin='0' aria-valuemax='100'></div>" +
                 "        </div>" +
                 "    </td>" +
-                "    <td></td>" + // remove button (admin only)
+                "    <td></td>" + // remove button
                 "</tr>");
             uploadFile(file);
         };
@@ -543,7 +556,7 @@ const IDEALS = {
         };
 
         /**
-         * To be called when a file upload is complete.
+         * Called when a file upload is complete.
          *
          * @param row {jQuery}
          * @param bitstreamURI {String}
@@ -566,40 +579,24 @@ const IDEALS = {
             }
         };
 
-        /**
-         * Called when a file upload fails.
-         *
-         * @param row {jQuery}
-         */
-        const markRowUploadToStagingFailed = function(row) {
-            row.find("td:first-child").html("<i class='fa fa-times text-danger'></i>");
-            row.find(".progress").remove();
-
-            // "Remove" button
-            if (canDelete) {
-                const removalCell = row.find("td:last-child");
-                removalCell.html(
-                    "<button class='btn btn-sm btn-outline-danger remove' type='button'>" +
-                    "   <i class='fa fa-minus'></i> Remove" +
-                    "</button>");
-                removalCell.find("button.remove").on("click", function () {
-                    onRemoveFileButtonClicked($(this));
-                });
-            }
+        this.onRemoveFileComplete = function(callback) {
+            removeFileCompleteCallback = callback;
         };
 
-        /**
-         * @returns {number}
-         */
-        this.numUploadedFiles = function() {
-            return numUploadedFiles;
+        this.onRemoveFileError = function(callback) {
+            removeFileErrorCallback = callback;
         };
 
-        /**
-         * @returns {number}
-         */
-        this.numUploadingFiles = function() {
-            return numUploadingFiles;
+        this.onUploadInProgress = function(callback) {
+            uploadInProgressCallback = callback;
+        };
+
+        this.onUploadComplete = function(callback) {
+            uploadCompleteCallback = callback;
+        };
+
+        this.onUploadError = function(callback) {
+            uploadErrorCallback = callback;
         };
 
         /**
@@ -610,26 +607,34 @@ const IDEALS = {
         const onRemoveFileButtonClicked = function(button) {
             const row          = button.parents("tr");
             const bitstreamURI = row.data("uri");
-            const onSuccess    = function() {
-                row.fadeOut(IDEALS.FADE_TIME, function() {
+            const onSuccess = function () {
+                row.fadeOut(IDEALS.FADE_TIME, function () {
                     row.remove();
-                    numUploadedFiles--;
+                    self.numUploadedFiles--;
                 });
+                if (removeFileCompleteCallback) {
+                    removeFileCompleteCallback();
+                }
             };
-            const onError      = function(xhr, status, error) {
+            const onError = function (xhr, status, error) {
                 console.error(xhr);
                 console.error(status);
                 console.error(error);
-                alert("There was an error removing the file. If this error " +
-                    "persists, please contact the administrators.");
+                const message = "There was an error removing the file. " +
+                    "If this error persists, please contact us."
+                if (removeFileErrorCallback) {
+                    removeFileErrorCallback(message);
+                } else {
+                    alert(message);
+                }
             };
             new IDEALS.Client().delete(bitstreamURI, onSuccess, onError);
         };
 
         const uploadFile = function(file) {
-            const fileRow     = filesTable.find("tr[data-filename='" + file.name + "']");
+            const fileRow     = filesTable.find("tr[data-filename=\"" + file.name.replace("\"", "&quot;") + "\"]");
             const progressBar = fileRow.find(".progress-bar");
-            numUploadingFiles++;
+            self.numUploadingFiles++;
 
             const onProgressChanged = function(e) {
                 const complete = Math.round(e.loaded / e.total * 100);
@@ -637,14 +642,29 @@ const IDEALS = {
                 progressBar.css("width", complete + "%");
             };
             const onComplete = function(bitstreamURI) {
-                numUploadingFiles--;
-                numUploadedFiles++;
+                self.numUploadingFiles--;
+                self.numUploadedFiles++;
+                if (uploadCompleteCallback) {
+                    uploadCompleteCallback(file);
+                }
                 markRowUploadToStagingComplete(fileRow, bitstreamURI);
             };
             const onError = function(xhr) {
-                numUploadingFiles--;
-                markRowUploadToStagingFailed(fileRow);
+                self.numUploadingFiles--;
+                console.error(xhr);
+                const message = "There was an error uploading the file. " +
+                    "If this error persists, please contact us.";
+                if (uploadErrorCallback) {
+                    uploadErrorCallback(file, message);
+                } else {
+                    alert(message);
+                }
+                fileRow.remove();
             };
+
+            if (uploadInProgressCallback) {
+                uploadInProgressCallback();
+            }
             new IDEALS.Client().uploadFile(file,
                 $("input[name=item_bitstreams_uri]").val(),
                 onProgressChanged, onComplete, onError);

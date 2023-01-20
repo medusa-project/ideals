@@ -23,22 +23,25 @@ class Affiliation < ApplicationRecord
   # @param info [Hash] Shibboleth auth hash.
   #
   def self.from_shibboleth(info)
-    info = info['extra']['raw_info'].symbolize_keys
-    # Explanation of this logic:
-    # https://uofi.app.box.com/notes/801448983786?s=5k6iiozlhp5mui5b4vrbskn3pu968j8r
-    key = nil
-    if info[:iTrustAffiliation].match?(/staff|allied/)
-      key = FACULTY_STAFF_KEY
-    elsif info[:iTrustAffiliation].include?("student")
-      if %w(1G 1V 1M 1L).include?(info[:levelCode])
-        key = GRADUATE_STUDENT_KEY
-      elsif info[:levelCode] == "1U"
-        key = UNDERGRADUATE_STUDENT_KEY
-      end
-      if %w(PHD CAS).include?(info[:programCode])
-        key = PHD_STUDENT_KEY
-      elsif info[:programCode].present?
-        key = MASTERS_STUDENT_KEY
+    key  = nil
+    info = info.dig("extra", "raw_info")
+    if info # this will be nil when using the OmniAuth developer strategy
+      info = info.symbolize_keys
+      # Explanation of this logic:
+      # https://uofi.app.box.com/notes/801448983786?s=5k6iiozlhp5mui5b4vrbskn3pu968j8r
+      if info[:iTrustAffiliation].match?(/staff|allied/)
+        key = FACULTY_STAFF_KEY
+      elsif info[:iTrustAffiliation].include?("student")
+        if %w(1G 1V 1M 1L).include?(info[:levelCode])
+          key = GRADUATE_STUDENT_KEY
+        elsif info[:levelCode] == "1U"
+          key = UNDERGRADUATE_STUDENT_KEY
+        end
+        if %w(PHD CAS).include?(info[:programCode])
+          key = PHD_STUDENT_KEY
+        elsif info[:programCode].present?
+          key = MASTERS_STUDENT_KEY
+        end
       end
     end
     key ? Affiliation.find_by_key(key) : nil

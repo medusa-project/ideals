@@ -14,12 +14,12 @@ module UsersHelper
     html <<     form_tag(request.path, method: :get, class: "form-inline") do
       form = StringIO.new
       form << '<div class="row">'
-      form <<   '<div class="col-md-4">'
+      form <<   '<div class="col">'
       form <<     label_tag("q", "Name or Email", class: "form-label")
       form <<     filter_field
       form <<   '</div>'
       if show_institution
-        form << '<div class="col-md-4">'
+        form << '<div class="col">'
         form <<   label_tag("institution_id", "Institution", class: "form-label")
         form <<   select_tag("institution_id",
                              options_for_select(Institution.all.order(:name).map{ |i| [i.name, i.id] }),
@@ -27,13 +27,6 @@ module UsersHelper
                              class: "form-select")
         form << '</div>'
       end
-      form <<   '<div class="col-md-4">'
-      form <<     label_tag("class", "Authentication Type", class: "form-label")
-      form <<     select_tag("class", options_for_select([["Any", ""],
-                                                          ["Shibboleth", ShibbolethUser.to_s],
-                                                          ["Local", LocalUser.to_s]]),
-                             class: "form-select")
-      form <<   '</div>'
       form << '</div>'
       raw(form.string)
     end

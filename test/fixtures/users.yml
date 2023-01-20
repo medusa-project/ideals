@@ -100,11 +100,19 @@ southwest_sysadmin:
   user_groups:
     - sysadmin
 
+southwest_shibboleth:
+  type:        ShibbolethUser
+  institution: southwest
+  uid:         shib@southwest.edu
+  name:        Southwest University Shibboleth User
+  email:       shib@southwest.edu
+  phone:       (888) 555-1234
+  enabled:     true
+
 ################################### uiuc ###################################
 
 uiuc:
   type:        ShibbolethUser
-  identity:    uiuc
   uid:         shib@illinois.edu
   name:        Shib Boleth, Esq.
   email:       shib@illinois.edu
@@ -116,7 +124,6 @@ uiuc:
 uiuc2:
   type:        ShibbolethUser
   institution: uiuc
-  identity:    uiuc2
   uid:         user2@illinois.edu
   name:        UIUC Normal User 2
   email:       user2@illinois.edu
@@ -127,7 +134,6 @@ uiuc2:
 uiuc_admin:
   type:        ShibbolethUser
   institution: uiuc
-  identity:    uiuc_admin
   uid:         instadmin@illinois.edu
   name:        UIUC Institution Admin
   email:       instadmin@illinois.edu
@@ -140,7 +146,6 @@ uiuc_admin:
 uiuc_sysadmin:
   type:        ShibbolethUser
   institution: uiuc
-  identity:    uiuc_sysadmin
   uid:         sysadmin@illinois.edu
   name:        UIUC Sysadmin
   email:       sysadmin@illinois.edu
@@ -153,7 +158,6 @@ uiuc_sysadmin:
 uiuc_collection1_collection1_manager:
   type:        LocalUser
   institution: uiuc
-  identity:    uiuc_collection1_collection1_manager
   uid:         uiuc_collection1_collection1_manager@illinois.edu
   name:        Collection1 Collection1 Manager
   email:       uiuc_collection1_collection1_manager@illinois.edu
@@ -163,7 +167,6 @@ uiuc_collection1_collection1_manager:
 uiuc_collection1_collection1_submitter:
   type:        LocalUser
   institution: uiuc
-  identity:    uiuc_collection1_collection1_submitter
   uid:         phil@illinois.edu
   name:        Collection1 Collection1 Submitter
   email:       phil@illinois.edu
@@ -173,7 +176,6 @@ uiuc_collection1_collection1_submitter:
 uiuc_unit1_admin:
   type:        LocalUser
   institution: uiuc
-  identity:    uiuc_unit1_admin
   uid:         uiuc_unit1_admin@illinois.edu
   name:        Unit1 Admin
   email:       uiuc_unit1_admin@illinois.edu
@@ -183,7 +185,6 @@ uiuc_unit1_admin:
 uiuc_unit1_unit2_unit1_admin:
   type:        LocalUser
   institution: uiuc
-  identity:    uiuc_unit1_unit2_unit1_admin
   uid:         uiuc_unit1_unit2_unit1_admin@illinois.edu
   name:        Unit1 Unit2 Unit1 Admin
   email:       uiuc_unit1_unit2_unit1_admin@illinois.edu

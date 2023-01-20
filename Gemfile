@@ -5,8 +5,6 @@ git_source(:github) {|repo| "https://github.com/#{repo}.git" }
 
 ruby "3.1.2"
 
-# Bootstrap needs this
-gem "autoprefixer-rails"
 gem "aws-sdk-s3", "~> 1"
 # Use ActiveModel has_secure_password for local identity users
 gem "bcrypt", "~> 3"
@@ -43,6 +41,7 @@ gem "natural_sort"
 gem "netaddr"
 # Enables local identity logins.
 gem "omniauth-identity"
+gem "omniauth-rails_csrf_protection"
 # Enables Shibboleth logins.
 gem "omniauth-shibboleth"
 # Our database
@@ -67,10 +66,3 @@ group :development do
   gem "capistrano-rbenv"
   gem 'yard'
 end
-
-group :production do
-  gem "omniauth-rails_csrf_protection"
-end
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-#gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]

@@ -1,4 +1,10 @@
 .text-center
+  - if Rails.env.development?
+    = form_tag("/auth/developer", method: :post) do
+      = submit_tag("Log in as OmniAuth Developer (DEVELOPMENT)",
+                   class: "btn btn-primary p-4 mb-3")
+
+  -# Show this in development even though it doesn't work there, for styling reasons
   = link_to(netid_login_path, class: "btn btn-primary p-4") do
     = image_tag "library_wordmark_horizontal_1.png",
         style: "height: 2em",

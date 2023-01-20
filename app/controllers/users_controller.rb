@@ -203,13 +203,12 @@ class UsersController < ApplicationController
     authorize(User)
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS +
-                                        [:class, :institution_id])
+                                        [:institution_id])
     @start            = @permitted_params[:start].to_i
     @window           = window_size
     q                 = "%#{@permitted_params[:q]&.downcase}%"
     @users            = User.
       where("LOWER(name) LIKE ? OR LOWER(uid) LIKE ? OR LOWER(email) LIKE ?", q, q, q).
-      where("type LIKE ?", "%#{@permitted_params[:class]}").
       order(:name)
     if institution
       @users          = @users.where(institution_id: institution.id)

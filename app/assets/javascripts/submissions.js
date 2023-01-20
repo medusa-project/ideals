@@ -80,23 +80,9 @@ const AgreementView = function() {
  * @constructor
  */
 const SubmissionForm = function() {
-    const self              = this;
-    const form              = $("form#properties-form, form#access-form, " +
-                              "form#metadata-form, form#files-form");
-    // Properties section
-    const propertiesForm    = form.filter("#properties-form");
-    const unitsMenu         = $("[name=unit_id]");
-    const collectionSection = $("#collection-section");
-    const collectionsMenu   = $("[name='item[primary_collection_id]']");
-    // Access section
-    const accessForm        = form.filter("#access-form");
-    // Metadata section
-    const metadataForm      = form.filter("#metadata-form");
-    // Files section
-    const filesForm         = form.filter("#files-form");
-    const uploader          = new IDEALS.ItemFileUploader();
-    // Files section
-    const completionForm    = $("#completion-form");
+    const self = this;
+    const form = $("form#properties-form, form#access-form, " +
+                   "form#metadata-form, form#files-form");
 
     var lastEditedInput;
 
@@ -168,17 +154,35 @@ const SubmissionForm = function() {
         });
     };
 
-    const setError = function(container, message) {
+    const setErrorAlert = function(container, message) {
         container.empty();
         if (message != null) {
             container.html("<div class='alert alert-danger'>" + message + "</div>");
+            container.show();
         }
+    };
+
+    const setInfoAlert = function(container, message) {
+        container.empty();
+        if (message != null) {
+            container.html("<div class='alert alert-info'>" + message + "</div>");
+            container.show();
+        }
+    };
+
+    const clearAlert = function(container) {
+        container.empty();
     };
 
     /****************** Properties/Collections section *********************/
 
+    const propertiesForm    = form.filter("#properties-form");
+    const unitsMenu         = $("[name=unit_id]");
+    const collectionSection = $("#collection-section");
+    const collectionsMenu   = $("[name='item[primary_collection_id]']");
+
     const setPropertiesError = function(message) {
-        setError(propertiesForm.find("#properties-messages"), message);
+        setErrorAlert(propertiesForm.find("#properties-messages"), message);
     };
 
     this.validatePropertiesSection = function() {
@@ -238,8 +242,10 @@ const SubmissionForm = function() {
 
     /************************** Access section *****************************/
 
+    const accessForm = form.filter("#access-form");
+
     const setAccessError = function(message) {
-        setError(accessForm.find("#access-messages"), message);
+        setErrorAlert(accessForm.find("#access-messages"), message);
     };
 
     this.validateAccessLiftDate = function() {
@@ -304,8 +310,10 @@ const SubmissionForm = function() {
 
     /************************* Metadata section ****************************/
 
+    const metadataForm = form.filter("#metadata-form");
+
     const setMetadataError = function(message) {
-        setError(metadataForm.find("#metadata-messages"), message);
+        setErrorAlert(metadataForm.find("#metadata-messages"), message);
     };
 
     this.validateMetadataSection = function(includeRequired) {
@@ -486,27 +494,45 @@ const SubmissionForm = function() {
 
     /*************************** Files section *****************************/
 
-    const setFilesError = function(message) {
-        setError(filesForm.find("#files-messages"), message);
-    };
+    const filesForm            = form.filter("#files-form");
+    const uploader             = new IDEALS.ItemFileUploader();
+    const completionForm       = $("#completion-form");
+    const formSubmitButton     = completionForm.find("input[type=submit]");
+    const fileMessageContainer = filesForm.find("#files-messages");
+
+    uploader.onUploadInProgress(function() {
+        setInfoAlert(fileMessageContainer, "Uploading is in progress. " +
+            "Please wait for this notice to disappear.");
+        formSubmitButton.prop("disabled", true);
+    });
+    uploader.onUploadComplete(function(file) {
+        if (uploader.numUploadingFiles < 1) {
+            clearAlert(fileMessageContainer);
+            formSubmitButton.prop("disabled", false);
+        }
+    });
+    uploader.onUploadError(function(file, message) {
+        setErrorAlert(fileMessageContainer, message);
+    });
+    uploader.onRemoveFileComplete(function() {});
+    uploader.onRemoveFileError(function(message) {
+        setErrorAlert(fileMessageContainer, message);
+    });
 
     this.validateFilesSection = function() {
-        setFilesError(null);
-        // Check that at least one file has been uploaded.
-        if (uploader.numUploadedFiles() < 1) {
-            setFilesError("You must upload at least one file.");
+        if (uploader.numUploadingFiles > 0) {
+            setErrorAlert(fileMessageContainer, "Please wait for file uploads to complete.");
+            return false;
+        } else if (uploader.numUploadedFiles < 1) {
+            setErrorAlert(fileMessageContainer, "You must upload at least one file.");
             return false;
         }
-        // Check that there are no uploads in progress.
-        if (uploader.numUploadingFiles() > 0) {
-            setFilesError("Wait for file uploads to complete.");
-            return false;
-        }
+        clearAlert(fileMessageContainer);
         return true;
     };
 
     // Validate everything before submitting.
-    completionForm.find("input[type=submit]").on("click", function(e) {
+    formSubmitButton.on("click", function(e) {
         if (!self.validatePropertiesSection()) {
             $("#properties-tab").click();
             return false;
