@@ -369,7 +369,7 @@ class Bitstream < ApplicationRecord
     PersistentStore.instance.delete_object(key: self.staging_key)
     self.update!(staging_key: nil)
   rescue Aws::S3::Errors::NotFound
-    self.update!(staging_key: nil)
+    # nothing we can do
   end
 
   ##
@@ -522,13 +522,10 @@ class Bitstream < ApplicationRecord
     permanent_key = self.class.permanent_key(institution_key: self.institution.key,
                                              item_id:         self.item_id,
                                              filename:        self.original_filename)
-    transaction do
-      store.copy_object(source_key: self.staging_key,
-                        target_key: permanent_key)
-      self.update!(permanent_key: permanent_key,
-                   staging_key:   nil)
-      self.delete_from_staging
-    end
+    store.copy_object(source_key: self.staging_key,
+                      target_key: permanent_key)
+    self.update!(permanent_key: permanent_key)
+    self.delete_from_staging
   end
 
   ##
