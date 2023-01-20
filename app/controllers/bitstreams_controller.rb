@@ -43,6 +43,7 @@ class BitstreamsController < ApplicationController
   #
   def create
     input = request.env['rack.input']
+    input.rewind # helps ward off a Aws::S3::Errors::BadDigest error
     input.set_encoding(Encoding::UTF_8)
     ActiveRecord::Base.transaction do
       filename = request.env['HTTP_X_FILENAME']
