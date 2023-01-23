@@ -613,7 +613,7 @@ class Bitstream < ApplicationRecord
     PersistentStore.instance.put_object(key:             self.permanent_key,
                                         institution_key: self.institution.key,
                                         path:            file)
-    self.update!(length: file.size)
+    self.update!(length: File.size(file))
   end
 
   ##

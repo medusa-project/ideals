@@ -377,6 +377,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "delete_from_staging() deletes the corresponding object" do
+    Bitstream.delete_all
     store = PersistentStore.instance
 
     # Write a file to the bucket.
@@ -399,6 +400,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "delete_from_staging() updates the instance properties" do
+    Bitstream.delete_all
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
@@ -1123,6 +1125,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # upload_to_staging()
 
   test "upload_to_staging() uploads a file to the application bucket" do
+    Bitstream.delete_all
     begin
       # Write a file to the bucket.
       fixture = file_fixture("escher_lego.png")
