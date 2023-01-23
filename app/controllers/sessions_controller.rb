@@ -17,6 +17,17 @@ class SessionsController < ApplicationController
   end
 
   ##
+  # Handles callbacks from the auth provider. (In development this is the
+  # OmniAuth development strategy, and in demo/production it's the Shibboleth
+  # SP.) It is responsible for taking the UID from the authentication hash,
+  # translating it into a {User}, and setting the user's ID in the session.
+  #
+  # This method will only have been called upon successful authentication--
+  # never upon failure. However, only {User#enabled enabled users} whose
+  # {User#institution owning institution} matches the request institution are
+  # allowed to log in. {LocalUser}s also must have an associated activated
+  # {LocalIdentity}.
+  #
   # Responds to `GET/POST /auth/:provider/callback`.
   #
   def create
@@ -47,16 +58,20 @@ class SessionsController < ApplicationController
   end
 
   def unauthorized
-    render plain: "401 Unauthorized", status: :unauthorized
+    flash['error'] = "You are not authorized to log in. "\
+                     "If this problem persists, please contact us."
+    redirect_to return_url, allow_other_host: true
   end
 
-  protected
+
+  private
 
   def return_url
-    session[:login_return_url] || root_url
+    session[:login_return_url] || current_institution&.scope_url || root_url
   end
 
   def shibboleth_login_path(host)
     "/Shibboleth.sso/Login?target=https://#{host}/auth/shibboleth/callback"
   end
+
 end
