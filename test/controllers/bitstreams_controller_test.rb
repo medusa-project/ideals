@@ -37,6 +37,11 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "create() returns HTTP 400 when the Content-Length header does not match
+  the data length" do
+    skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
+  end
+
   test "create() returns HTTP 400 for illegal arguments" do
     skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
     log_in_as(users(:example_sysadmin))

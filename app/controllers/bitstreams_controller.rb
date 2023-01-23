@@ -42,22 +42,27 @@ class BitstreamsController < ApplicationController
   # Responds to `POST /items/:item_id/bitstreams`
   #
   def create
-    input = request.env['rack.input']
-    input.rewind # helps ward off a Aws::S3::Errors::BadDigest error
-    input.set_encoding(Encoding::UTF_8)
-    ActiveRecord::Base.transaction do
-      filename = request.env['HTTP_X_FILENAME']
-      length   = request.env['HTTP_X_CONTENT_LENGTH'].to_i
-      bs       = Bitstream.new_in_staging(item:     @item,
-                                          filename: filename,
-                                          length:   length)
-      bs.upload_to_staging(input)
-      bs.save!
-      if @item.stage >= Item::Stages::APPROVED
-        bs.move_into_permanent_storage
+    filename = request.env['HTTP_X_FILENAME']
+    length   = request.env['HTTP_X_CONTENT_LENGTH'].to_i
+    input    = request.env['rack.input']
+    input.rewind if input.respond_to?(:rewind) # helps ward off a Aws::S3::Errors::BadDigest error
+    input.set_encoding(Encoding::UTF_8) if input.respond_to?(:set_encoding)
+    if length == input.length # don't know why it wouldn't be but can't hurt to check
+      ActiveRecord::Base.transaction do
+        bs = Bitstream.new_in_staging(item:     @item,
+                                      filename: filename,
+                                      length:   length)
+        bs.upload_to_staging(input)
+        bs.save!
+        if @item.stage >= Item::Stages::APPROVED
+          bs.move_into_permanent_storage
+        end
+        response.header['Location'] = item_bitstream_url(@item, bs)
+        head :created
       end
-      response.header['Location'] = item_bitstream_url(@item, bs)
-      head :created
+    else
+      render plain: "The value of the Content-Length header does not match "\
+                    "the length provided.", status: :bad_request
     end
   end
 
