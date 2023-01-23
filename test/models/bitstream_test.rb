@@ -1107,6 +1107,19 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  test "upload_to_permanent() updates the length property" do
+    begin
+      fixture = file_fixture("escher_lego.png")
+      key     = %w[institutions uiuc storage file].join("/")
+      @instance.update!(permanent_key: key)
+      @instance.upload_to_permanent(fixture)
+
+      assert_equal File.size(fixture), @instance.length
+    ensure
+      @instance.delete_from_permanent_storage
+    end
+  end
+
   # upload_to_staging()
 
   test "upload_to_staging() uploads a file to the application bucket" do
@@ -1122,6 +1135,23 @@ class BitstreamTest < ActiveSupport::TestCase
 
       # Check that the file exists in the bucket.
       assert PersistentStore.instance.object_exists?(key: @instance.staging_key)
+    ensure
+      @instance.delete_from_staging
+    end
+  end
+
+  test "upload_to_staging() updates the length property" do
+    Bitstream.delete_all
+    begin
+      # Write a file to the bucket.
+      fixture = file_fixture("escher_lego.png")
+      File.open(fixture, "r") do |file|
+        @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+                                             filename: File.basename(fixture),
+                                             length:   0)
+        @instance.upload_to_staging(file)
+      end
+      assert_equal File.size(fixture), @instance.length
     ensure
       @instance.delete_from_staging
     end
