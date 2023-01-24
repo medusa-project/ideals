@@ -31,6 +31,16 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @institution.scope_url
   end
 
+  test "create() via XHR with a non-activated user returns HTTP 403" do
+    user = users(:example)
+    user.identity.update_attribute(:activated, false)
+    post "/auth/identity/callback", params: {
+      auth_key: user.email,
+      password: "password"
+    }, xhr: true
+    assert_response :forbidden
+  end
+
   test "create() with a disabled user redirects to the return URL" do
     user = users(:example)
     user.update!(enabled: false)
@@ -39,6 +49,16 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
       password: "password"
     }
     assert_redirected_to @institution.scope_url
+  end
+
+  test "create() via XHR with a disabled user returns HTTP 403" do
+    user = users(:example)
+    user.update!(enabled: false)
+    post "/auth/identity/callback", params: {
+      auth_key: user.email,
+      password: "password"
+    }, xhr: true
+    assert_response :forbidden
   end
 
   test "create() with user of different institution redirects to the return
@@ -51,6 +71,15 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @institution.scope_url
   end
 
+  test "create() via XHR with user of different institution returns HTTP 403" do
+    user = users(:northeast)
+    post "/auth/identity/callback", params: {
+      auth_key: user.email,
+      password: "password"
+    }, xhr: true
+    assert_response :forbidden
+  end
+
   test "create() with valid credentials redirects to root URL" do
     user = users(:example)
     user.institution.update!(default: true)
@@ -58,6 +87,16 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
         auth_key: user.email,
         password: "password"
     }
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "create() via XHR with valid credentials redirects to root URL" do
+    user = users(:example)
+    user.institution.update!(default: true)
+    post "/auth/identity/callback", params: {
+      auth_key: user.email,
+      password: "password"
+    }, xhr: true
     assert_redirected_to @institution.scope_url
   end
 

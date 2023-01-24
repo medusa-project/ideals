@@ -57,10 +57,30 @@ class SessionsController < ApplicationController
                 allow_other_host: true)
   end
 
-  def unauthorized
-    flash['error'] = "You are not authorized to log in. "\
-                     "If this problem persists, please contact us."
-    redirect_to return_url, allow_other_host: true
+  ##
+  # Handles omniauth-identity authentication failures.
+  #
+  # Responds to `GET /auth/failure`.
+  #
+  def auth_failed
+    message = "Login failed: incorrect username and/or password."
+    if request.xhr?
+      render plain: message, status: :unauthorized
+    else
+      flash['error'] = message
+      redirect_to return_url, allow_other_host: true
+    end
+  end
+
+  def unauthorized # TODO: this should be private
+    message = "You are not authorized to log in. "\
+              "If this problem persists, please contact us."
+    if request.xhr?
+      render plain: message, status: :forbidden
+    else
+      flash['error'] = message
+      redirect_to return_url, allow_other_host: true
+    end
   end
 
 
