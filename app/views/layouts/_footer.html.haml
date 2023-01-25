@@ -2,8 +2,9 @@
 
 %footer{role: "contentinfo"}
   .text-line
-    \#{link_to 'Contact us', "mailto:#{current_institution.feedback_email}"}
-    for questions and to provide feedback.
+    - if current_institution.feedback_email
+      \#{link_to 'Contact us', "mailto:#{current_institution.feedback_email}"}
+      for questions and to provide feedback.
   .info-area
     - if current_institution.footer_image_filename
       = image_tag(current_institution.footer_image_url,
