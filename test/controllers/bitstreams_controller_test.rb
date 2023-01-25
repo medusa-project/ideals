@@ -37,6 +37,15 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "create() creates an associated Event" do
+    skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
+    log_in_as(users(:example_sysadmin))
+    assert_difference "Event.count", 1 do
+      post item_bitstreams_path(items(:uiuc_item1)),
+           file_fixture("escher_lego.png")
+    end
+  end
+
   test "create() returns HTTP 400 when the Content-Length header does not match
   the data length" do
     skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
@@ -63,6 +72,12 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test "destroy() returns HTTP 204 for an existing bitstream" do
+    log_in_as(users(:uiuc_admin))
+    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
+    assert_response :no_content
+  end
+
   test "destroy() destroys the bitstream" do
     log_in_as(users(:uiuc_admin))
     assert_difference "Bitstream.count", -1 do
@@ -70,10 +85,11 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "destroy() returns HTTP 204 for an existing bitstream" do
+  test "destroy() creates an associated Event" do
     log_in_as(users(:uiuc_admin))
-    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
-    assert_response :no_content
+    assert_difference "Event.count", 1 do
+      delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
+    end
   end
 
   test "destroy() returns HTTP 404 for a missing bitstream" do

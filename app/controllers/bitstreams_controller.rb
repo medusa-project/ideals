@@ -49,13 +49,18 @@ class BitstreamsController < ApplicationController
     input.set_encoding(Encoding::UTF_8) if input.respond_to?(:set_encoding)
     if length == input.length # don't know why it wouldn't be but can't hurt to check
       ActiveRecord::Base.transaction do
-        bs = Bitstream.new_in_staging(item:     @item,
-                                      filename: filename,
-                                      length:   length)
-        bs.upload_to_staging(input)
-        bs.save!
-        if @item.stage >= Item::Stages::APPROVED
-          bs.move_into_permanent_storage
+        bs = nil
+        UpdateItemCommand.new(item:        @item,
+                              user:        current_user,
+                              description: "Added an associated bitstream.").execute do
+          bs = Bitstream.new_in_staging(item:     @item,
+                                        filename: filename,
+                                        length:   length)
+          bs.upload_to_staging(input)
+          bs.save!
+          if @item.stage >= Item::Stages::APPROVED
+            bs.move_into_permanent_storage
+          end
         end
         response.header['Location'] = item_bitstream_url(@item, bs)
         head :created
@@ -72,7 +77,11 @@ class BitstreamsController < ApplicationController
   # Responds to `DELETE /items/:item_id/bitstreams/:id`
   #
   def destroy
-    @bitstream.destroy!
+    UpdateItemCommand.new(item:        @bitstream.item,
+                          user:        current_user,
+                          description: "Deleted an associated bitstream.").execute do
+      @bitstream.destroy!
+    end
     head :no_content
   end
 
