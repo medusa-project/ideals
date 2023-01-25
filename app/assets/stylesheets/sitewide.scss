@@ -22,16 +22,6 @@ html {
   margin: 0;
   padding: 0.3em 0.5em;
 }
-#sitewide-banner-message.alert-info {
-  background-color: #bfdaff;
-}
-#sitewide-banner-message.alert-warning {
-  background-color: #fcd88a;
-}
-#sitewide-banner-message.alert-danger {
-  background-color: #c00000;
-  color: white;
-}
 
 .breadcrumb {
   background-color: $gray-100;
@@ -46,6 +36,16 @@ html {
   background-color: #337ab7 !important;
 }
 
+.alert-info {
+  background-color: #d7e6ff;
+}
+.alert-warning {
+  background-color: #ffe4ac;
+}
+.alert-danger {
+  background-color: #ec1212;
+  color: white;
+}
 .alert-light {
   background-color: $gray-100;
 }
