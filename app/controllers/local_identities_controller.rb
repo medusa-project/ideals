@@ -84,7 +84,8 @@ class LocalIdentitiesController < ApplicationController
                                     type:           LocalUser.to_s)
         user.save!
       end
-      if @identity.invitee.institution_admin
+      if @identity.invitee.institution_admin &&
+          !user.institution.administering_users.include?(user)
         user.institution.administering_users << user
         user.institution.save!
       end
