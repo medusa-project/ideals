@@ -26,6 +26,7 @@ class UpdateItemCommand < Command
   def execute(&block)
     Item.transaction do
       yield(@item)
+      @item.reload
       Event.create!(event_type:     Event::Type::UPDATE,
                     item:           @item,
                     user:           @user,
