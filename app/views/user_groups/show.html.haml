@@ -22,7 +22,11 @@
       %i.fa.fa-trash
       Delete
 
-%h1= @user_group.name
+%h1
+  = @user_group.name
+  - unless @user_group.institution
+    %small
+      %span.badge.bg-info GLOBAL
 
 - if @user_group.defines_institution
   .alert.alert-light
@@ -53,7 +57,7 @@
   #membership.tab-pane.fade.show.active{role:              "tabpanel",
                                         "aria-labelledby": "membership-tab"}
     .row.mb-3
-      .col-sm-6
+      .col-sm-12
         .card
           .card-body
             - if can_edit
@@ -66,12 +70,26 @@
                   Edit
             %h4.card-title Local Users
             - if @local_users.any?
-              %ul
-                - @local_users.each do |user|
-                  %li= link_to(user.name, user.becomes(User))
+              - if @user_group.institution_id
+                %ul
+                  - @local_users.each do |user|
+                    %li= link_to(user.name, user.becomes(User))
+              - else
+                %table.table
+                  - @local_users.each do |user|
+                    %tr
+                      %td
+                        = link_to(user.becomes(User)) do
+                          = icon_for(user)
+                          = user.name
+                      %td
+                        = link_to(user.institution) do
+                          = icon_for(user.institution)
+                          = user.institution.name
             - else
               %p None
 
+    .row.mb-3
       .col-sm-6
         .card
           .card-body
@@ -91,8 +109,6 @@
                     %code= group.pattern
             - else
               %p None
-
-    .row.mb-3
       .col-sm-6
         .card
           .card-body
@@ -113,6 +129,7 @@
             - else
               %p None
 
+    .row.mb-3
       .col-sm-6
         - if show_uiuc_dimensions
           .card
@@ -138,8 +155,6 @@
                         = link_to(user.netid, user.becomes(User))
               - else
                 %p None
-
-    .row.mb-3
       .col-sm-6
         - if show_uiuc_dimensions
           .card
@@ -161,6 +176,7 @@
                     %li= department.name
               - else
                 %p None
+    .row.mb-3
       .col-sm-6
         - if show_uiuc_dimensions
           .card
@@ -182,7 +198,6 @@
                     %li= affiliation.name
               - else
                 %p None
-    .row.mb-3
       .col-sm-6
         - if show_uiuc_dimensions
           .card
