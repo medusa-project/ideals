@@ -143,6 +143,28 @@ bz2:
   category: archive
   icon: file-archive-o
   readable_by_vips: false
+c:
+  short_name: C
+  long_name: C Source
+  extensions:
+    - c
+  media_types:
+    - text/plain
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+  viewer_method: text_viewer_for
+cpp:
+  short_name: C++
+  long_name: C++ Source
+  extensions:
+    - cpp
+  media_types:
+    - text/plain
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+  viewer_method: text_viewer_for
 css:
   short_name: CSS
   long_name: Cascading Style Sheets
@@ -153,6 +175,7 @@ css:
   category: code
   icon: file-code-o
   readable_by_vips: false
+  viewer_method: text_viewer_for
 csv:
   short_name: CSV
   long_name: Comma-Separated Values
@@ -369,6 +392,21 @@ js:
   category: code
   icon: file-code-o
   readable_by_vips: false
+json:
+  short_name: JSON
+  long_name: JavaScript Object Notation
+  extensions:
+    - json
+  media_types:
+    - application/json
+    - application/x-javascript
+    - text/javascript
+    - text/x-javascript
+    - text/x-json
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+  viewer_method: text_viewer_for
 key:
   short_name: Keynote
   long_name: Apple Keynote Presentation
@@ -450,6 +488,16 @@ mobi:
     - application/x-mobipocket-ebook
   category: document
   icon: file-text-o
+  readable_by_vips: false
+mhtml:
+  short_name: MHTML
+  long_name: MIME Encapsulation of Aggregate HTML Documents
+  extensions:
+    - mhtml
+  media_types:
+    - application/x-mimearchive
+  category: archive
+  icon: file-archive-o
   readable_by_vips: false
 mp1_audio:
   short_name: MP1
@@ -934,6 +982,19 @@ rtf:
   category: document
   icon: file-text-o
   readable_by_vips: false
+scss:
+  short_name: SASS
+  long_name: SASS
+  extensions:
+    - scss
+    - sass
+  media_types:
+    - text/x-sass
+    - text/x-scss
+  category: code
+  icon: file-code-o
+  readable_by_vips: false
+  viewer_method: text_viewer_for
 sdd:
   short_name: StarImpress
   long_name: StarImpress
@@ -1300,6 +1361,16 @@ xlsx:
     - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
   category: document
   icon: file-excel-o
+  readable_by_vips: false
+xmind:
+  short_name: XMind
+  long_name: XMind Workbook
+  extensions:
+    - xmind
+  media_types:
+    - application/x-xmind
+  category: document
+  icon: file-image-o
   readable_by_vips: false
 xml:
   short_name: XML
