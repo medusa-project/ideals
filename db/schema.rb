@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_20_205558) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_27_154303) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -358,8 +358,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_20_205558) do
     t.datetime "activated_at"
     t.string "registration_digest"
     t.string "name", null: false
+    t.string "lowercase_email", null: false
     t.index ["email"], name: "index_local_identities_on_email", unique: true
     t.index ["invitee_id"], name: "index_local_identities_on_invitee_id"
+    t.index ["lowercase_email"], name: "index_local_identities_on_lowercase_email", unique: true
   end
 
   create_table "manager_groups", force: :cascade do |t|

@@ -10,9 +10,8 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :identity,
            model: LocalIdentity,
            fields: [:email, :name],
-           # TODO: this supports case insensitive emails--but emails must be stored lowercase too
-           #locate_conditions: -> (req) { { model.auth_key => req['auth_key']&.downcase } },
-           on_failed_registration: WelcomeController.action(:on_failed_registration)
+           locate_conditions: -> (req) { { model.auth_key => req['auth_key']&.downcase } },
+           on_failed_registration: WelcomeController.action(:on_failed_registration) # TODO: we aren't using this
   # Shibboleth is only available in production & demo. In all other
   # environments, developer is used instead.
   if Rails.env.development? || Rails.env.test?

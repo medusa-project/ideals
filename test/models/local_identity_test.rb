@@ -102,6 +102,14 @@ class LocalIdentityTest < ActiveSupport::TestCase
     end
   end
 
+  # lowercase_email
+
+  test "lowercase_email is set upon save" do
+    email = "MixedCase@Example.Org"
+    @instance.update!(email: email)
+    assert_equal email.downcase, @instance.lowercase_email
+  end
+
   # password_reset_url()
 
   test "password_reset_url raises an error if reset_token is blank" do

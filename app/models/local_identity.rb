@@ -30,6 +30,8 @@
 # * `email`:               Email address associated with the instance. This is
 #                          often used as an identifier and must be unique.
 # * `invitee_id`:          Foreign key to {Invitee}.
+# * `lowercase_email`:     The value of {email} gets copied into this column
+#                          upon save to support case-insensitive logins.
 # * `name`:                Required by omniauth-identity but not really used
 #                          otherwise. See {User#name} instead.
 # * `password_digest`:     Digest of the password, set by {create_for_user}.
@@ -65,8 +67,13 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   validate :validate_password_strength
   validate :validate_invitee_expiration, on: :create
 
+  before_save :set_lowercase_email
+
   accepts_nested_attributes_for :user, update_only: true
 
+  # Tell omniauth-identity what column to use for lookups; also see
+  # config/initializers/omniauth.rb
+  auth_key :lowercase_email
   has_secure_password
 
   ##
@@ -217,6 +224,10 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
 
 
   private
+
+  def set_lowercase_email
+    self.lowercase_email = self.email.downcase
+  end
 
   def validate_invitee_expiration
     if invitee&.expired?
