@@ -93,7 +93,7 @@ class LocalUserTest < ActiveSupport::TestCase
 
   # save()
 
-  test "save() updates the email of the associated Identity" do
+  test "save() updates the email of the associated LocalIdentity" do
     new_email = "new@example.edu"
     @instance.update!(email: new_email)
     assert_equal new_email, @instance.identity.email

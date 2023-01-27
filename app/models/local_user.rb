@@ -69,7 +69,7 @@ class LocalUser < User
     create! do |user|
       user.uid         = email
       user.email       = email
-      user.name        = auth[:info][:name]
+      user.name        = email
       user.institution = invitee.institution
     end
   end
@@ -114,10 +114,9 @@ class LocalUser < User
   # those of the instance.
   #
   def sync_identity_properties
-    id = LocalIdentity.find_by_email(self.email_was)
-    if id
-      id.update_attribute(:email, self.email) if self.email_changed?
-      id.update_attribute(:name, self.name) if self.name_changed?
+    if self.email_changed?
+      id = LocalIdentity.find_by_email(self.email_was)
+      id.update_attribute(:email, self.email) if id
     end
   end
 
