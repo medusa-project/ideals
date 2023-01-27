@@ -83,6 +83,18 @@ code {
   color: black;
 }
 
+dl {
+  display: grid;
+  grid-template-columns: max-content auto;
+}
+dt {
+  grid-column: 1;
+  margin-right: 1em;
+}
+dd {
+  grid-column: 2;
+}
+
 nav.navbar {
   a {
     text-decoration: none;
