@@ -90,7 +90,6 @@ class LocalIdentitiesController < ApplicationController
         user.institution.save!
       end
       @identity.update!(identity_params)
-      @identity.activate
       @identity.send_post_registration_email
     rescue => e
       flash['error'] = "#{e}"
@@ -152,15 +151,9 @@ class LocalIdentitiesController < ApplicationController
   end
 
   def pre_validate_registration
-    # Validate the token.
     unless @identity.authenticated?(:registration, params[:token])
       flash['error'] = "Invalid registration link."
       redirect_to root_url and return
-    end
-    # Check that the identity has not already been activated.
-    if @identity.activated?
-      flash['error'] = "This account has already been activated."
-      redirect_to root_url
     end
   end
 

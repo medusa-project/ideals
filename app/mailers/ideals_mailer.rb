@@ -59,8 +59,8 @@ class IdealsMailer < ApplicationMailer
   end
 
   ##
-  # Notifies the given invitee that their registration has been received, and
-  # contains a link to activate their account.
+  # Notifies the given invitee that their registration has been
+  # received/approved, and contains a link to log in.
   #
   # @param identity [Identity]
   #

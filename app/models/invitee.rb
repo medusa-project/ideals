@@ -28,8 +28,7 @@
 #        {Invitee} instance is marked as {ApprovalState::REJECTED rejected}.
 # 3. At this point, assuming the user is approved, the "paths" merge. The user
 #    accesses the registration form, filling in their info.
-# 4. Upon form submission, the user's account is activated and receives a
-#    welcome email.
+# 4. Upon successful form submission, the user receives a welcome email.
 #
 # # Attributes
 #

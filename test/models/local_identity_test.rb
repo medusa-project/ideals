@@ -42,23 +42,6 @@ class LocalIdentityTest < ActiveSupport::TestCase
     assert password.gsub(/[^#{LocalIdentity::PASSWORD_SPECIAL_CHARACTERS}]/, "").length >= LocalIdentity::PASSWORD_MIN_SPECIAL_CHARACTERS
   end
 
-  # activate()
-
-  test "activate() activates the instance" do
-    @instance.activated    = false
-    @instance.activated_at = nil
-
-    @instance.activate
-    assert @instance.activated
-    assert_not_nil @instance.activated_at
-  end
-
-  test "activate() clears the registration digest" do
-    @instance.create_registration_digest
-    @instance.activate
-    assert_nil @instance.registration_digest
-  end
-
   # create_registration_digest()
 
   test "create_registration_digest() works" do

@@ -117,7 +117,6 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "register() returns HTTP 200 if a valid token is provided" do
     identity = local_identities(:example)
-    identity.update_attribute(:activated, false)
     identity.create_registration_digest
     token = identity.registration_token
 

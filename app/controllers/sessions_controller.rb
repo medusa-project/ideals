@@ -25,7 +25,7 @@ class SessionsController < ApplicationController
   # This method will only have been called upon successful authentication--
   # never upon failure. However, only {User#enabled enabled users} whose
   # {User#institution owning institution} matches the request institution are
-  # allowed to log in. {LocalUser}s also must have an associated activated
+  # allowed to log in. {LocalUser}s also must have an associated
   # {LocalIdentity}.
   #
   # Responds to `GET/POST /auth/:provider/callback`.

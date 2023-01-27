@@ -44,9 +44,7 @@ class LocalUser < User
                                          name:                  name || email,
                                          password:              password,
                                          password_confirmation: password,
-                                         invitee:               invitee,
-                                         activated:             true,
-                                         activated_at:          Time.zone.now)
+                                         invitee:               invitee)
       end
       identity.build_user(email:       email,
                           uid:         email,
@@ -78,33 +76,19 @@ class LocalUser < User
   ##
   # @param auth [Hash]
   # @return [LocalUser] Instance corresponding to the given OmniAuth hash.
-  #                     Only instances with {LocalIdentity#activated activated
-  #                     identities} are returned.
   #
   def self.from_omniauth(auth)
     auth = auth.deep_symbolize_keys
     return nil unless auth && auth[:uid] && auth[:info][:email]
 
-    email    = auth[:info][:email].strip
-    identity = LocalIdentity.find_by(email: email)
-
-    return nil unless identity&.activated
-
-    user = LocalUser.find_by(uid: email)
+    email = auth[:info][:email].strip
+    user  = LocalUser.find_by(uid: email)
     if user
       user.update_with_omniauth(auth)
     else
       user = LocalUser.create_with_omniauth(auth)
     end
     user
-  end
-
-  ##
-  # @return [Boolean] Whether the associated {Identity} has been activated,
-  #                   i.e. is allowed to log in.
-  #
-  def activated?
-    identity.activated
   end
 
   ##

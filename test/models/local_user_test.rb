@@ -27,7 +27,6 @@ class LocalUserTest < ActiveSupport::TestCase
     identity = invitee.identity
     assert_equal email, identity.email
     assert_equal name, identity.name
-    assert identity.activated
 
     # check the LocalUser
     assert_equal identity, user.identity
@@ -69,23 +68,6 @@ class LocalUserTest < ActiveSupport::TestCase
     assert_nil LocalUser.from_omniauth(hash)
   end
 
-  test "from_omniauth() returns nil if the associated LocalIdentity is not
-  activated" do
-    identity = users(:example).identity
-    identity.update_attribute(:activated, false)
-
-    hash = {
-        provider: "identity",
-        uid: "example@example.edu",
-        info: {
-            name: "I have no rights",
-            email: "example@example.edu"
-        },
-        credentials: ""
-    }
-    assert_nil LocalUser.from_omniauth(hash)
-  end
-
   test "from_omniauth() updates stale user attributes" do
     name = "This is my new name"
     hash = {
@@ -112,19 +94,6 @@ class LocalUserTest < ActiveSupport::TestCase
         credentials: ""
     }
     assert_equal users(:example), LocalUser.from_omniauth(hash)
-  end
-
-  # activated?()
-
-  test "activated?() returns false when the associated identity has not been
-  activated" do
-    @instance.identity.update_attribute(:activated, false)
-    assert !@instance.activated?
-  end
-
-  test "activated?() returns true when the associated identity has been activated" do
-    @instance.identity.update_attribute(:activated, true)
-    assert @instance.activated?
   end
 
   # destroy()

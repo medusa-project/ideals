@@ -21,26 +21,6 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @institution.scope_url + "/auth/failure?message=invalid_credentials&strategy=identity"
   end
 
-  test "create() with a non-activated user redirects to the return URL" do
-    user = users(:example)
-    user.identity.update_attribute(:activated, false)
-    post "/auth/identity/callback", params: {
-        auth_key: user.email,
-        password: "password"
-    }
-    assert_redirected_to @institution.scope_url
-  end
-
-  test "create() via XHR with a non-activated user returns HTTP 403" do
-    user = users(:example)
-    user.identity.update_attribute(:activated, false)
-    post "/auth/identity/callback", params: {
-      auth_key: user.email,
-      password: "password"
-    }, xhr: true
-    assert_response :forbidden
-  end
-
   test "create() with a disabled user redirects to the return URL" do
     user = users(:example)
     user.update!(enabled: false)
