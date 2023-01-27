@@ -18,6 +18,8 @@ class ApplicationController < ActionController::Base
   before_action :redirect_to_main_host, :log_out_disabled_user
   after_action :copy_flash_to_response_headers
 
+  layout "application_scoped"
+
   ##
   # @param entity [Class] Model or any other object to which access can be
   #               authorized.

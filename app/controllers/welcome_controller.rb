@@ -1,6 +1,6 @@
 class WelcomeController < ApplicationController
 
-  layout -> { institution_scope? ? "application" : "global_application" }
+  layout -> { institution_scope? ? "application_scoped" : "application_global" }
 
   before_action :store_location, only: :index
 
