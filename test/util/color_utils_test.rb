@@ -17,12 +17,18 @@ class ColorUtilsTest < ActiveSupport::TestCase
     assert ColorUtils.css_color?("#aa3")
     assert !ColorUtils.css_color?("ra3")
     assert !ColorUtils.css_color?("#ra3")
+    assert ColorUtils.css_color?("#AA3")
+    assert !ColorUtils.css_color?("RA3")
+    assert !ColorUtils.css_color?("#RA3")
   end
 
   test "css_color?() works with six-character hexadecimal colors" do
     assert ColorUtils.css_color?("#aa3bc7")
     assert !ColorUtils.css_color?("aa3bc7")
     assert !ColorUtils.css_color?("#ra3bc7")
+    assert ColorUtils.css_color?("#AA3BC7")
+    assert !ColorUtils.css_color?("AA3BC7")
+    assert !ColorUtils.css_color?("#RA3BC7")
   end
 
   test "css_color?() works with rgb() syntax" do
