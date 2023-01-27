@@ -1,0 +1,18 @@
+- provide :body_id, "welcome"
+- provide :title, "Welcome"
+
+= render partial: "shared/flashes"
+
+- if logged_in?
+  = render partial: "welcome"
+- else
+  .row
+    .col-8
+      = render partial: "welcome"
+    .col-4
+      .d-grid{style: "margin-top: 4em"}
+        %button.btn.btn-lg.btn-primary.btn-block{"data-bs-target": "#login-modal",
+                                                 "data-bs-toggle": "modal",
+                                                 type:             "button"}
+          %i.fa.fa-sign-in-alt
+          &nbsp;Log In

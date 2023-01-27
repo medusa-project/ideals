@@ -23,7 +23,9 @@
     - @institutions.each do |institution|
       %tr
         %td.text-center
-          - if institution.outgoing_message_queue.blank?
+          - if !institution.public
+            %span.badge.bg-warning PRIVATE
+          - elsif institution.outgoing_message_queue.blank?
             .text-danger= icon_for(:warning)
           = boolean(institution.default, style: :word, true_value: "DEFAULT", show_false: false)
         %td= link_to(institution.name, institution)

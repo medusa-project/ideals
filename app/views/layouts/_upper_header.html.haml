@@ -95,10 +95,10 @@
         - if current_user.effective_institution_admin?(current_institution)
           -# Institution Administration menu
           .btn-group{role: "group"}
-            %button#institution-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
-                                                                                "aria-haspopup": "true",
+            %button#institution-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded":  "false",
+                                                                                "aria-haspopup":  "true",
                                                                                 "data-bs-toggle": "dropdown",
-                                                                                type: "button"}
+                                                                                type:             "button"}
               = icon_for(Institution)
               My Institution
             .dropdown-menu{"aria-labelledby": "administration-dropdown"}
@@ -106,36 +106,37 @@
                         class: "dropdown-item") do
                 = icon_for(Institution)
                 My Institution
-              %li
-                %hr.dropdown-divider
-              = link_to(items_review_path, class: "dropdown-item") do
-                %i.fa.fa-tasks
-                Review Submissions
-              %li
-                %hr.dropdown-divider
-              = link_to(registered_elements_path, class: "dropdown-item") do
-                = icon_for(RegisteredElement)
-                Element Registry
-              = link_to(metadata_profiles_path, class: "dropdown-item") do
-                = icon_for(MetadataProfile)
-                Metadata Profiles
-              = link_to(submission_profiles_path, class: "dropdown-item") do
-                = icon_for(SubmissionProfile)
-                Submission Profiles
-              = link_to(vocabularies_path, class: "dropdown-item") do
-                = icon_for(Vocabulary)
-                Vocabularies
-              = link_to(index_pages_path, class: "dropdown-item") do
-                = icon_for(IndexPage)
-                Index Pages
-              %li
-                %hr.dropdown-divider
-              = link_to(imports_path, class: "dropdown-item") do
-                = icon_for(Import)
-                Import Items
-              = link_to(items_export_path, class: "dropdown-item") do
-                %i.fa.fa-download
-                Export Items
+              - if current_institution.public
+                %li
+                  %hr.dropdown-divider
+                = link_to(items_review_path, class: "dropdown-item") do
+                  %i.fa.fa-tasks
+                  Review Submissions
+                %li
+                  %hr.dropdown-divider
+                = link_to(registered_elements_path, class: "dropdown-item") do
+                  = icon_for(RegisteredElement)
+                  Element Registry
+                = link_to(metadata_profiles_path, class: "dropdown-item") do
+                  = icon_for(MetadataProfile)
+                  Metadata Profiles
+                = link_to(submission_profiles_path, class: "dropdown-item") do
+                  = icon_for(SubmissionProfile)
+                  Submission Profiles
+                = link_to(vocabularies_path, class: "dropdown-item") do
+                  = icon_for(Vocabulary)
+                  Vocabularies
+                = link_to(index_pages_path, class: "dropdown-item") do
+                  = icon_for(IndexPage)
+                  Index Pages
+                %li
+                  %hr.dropdown-divider
+                = link_to(imports_path, class: "dropdown-item") do
+                  = icon_for(Import)
+                  Import Items
+                = link_to(items_export_path, class: "dropdown-item") do
+                  %i.fa.fa-download
+                  Export Items
               %li
                 %hr.dropdown-divider
               = link_to(invitees_path, class: "dropdown-item") do
@@ -152,11 +153,12 @@
               = link_to(tasks_path, class: "dropdown-item") do
                 = icon_for(Task)
                 Tasks
-              %li
-                %hr.dropdown-divider
-              = link_to(oai_pmh_path(verb: "Identify"), class: "dropdown-item", target: "_blank") do
-                %i.fa.fa-exchange-alt
-                OAI-PMH Endpoint
+              - if current_institution.public
+                %li
+                  %hr.dropdown-divider
+                = link_to(oai_pmh_path(verb: "Identify"), class: "dropdown-item", target: "_blank") do
+                  %i.fa.fa-exchange-alt
+                  OAI-PMH Endpoint
 
         -# User menu
         .btn-group{role: "group"}

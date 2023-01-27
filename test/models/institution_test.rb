@@ -36,7 +36,13 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "file_sizes() returns a correct value" do
     sizes = Institution.file_sizes
-    assert_equal Institution.count, sizes.count
+    assert_equal Institution.where(public: true).count, sizes.count
+  end
+
+  test "file_sizes() omits private institutions" do
+    Institution.all.first.update!(public: false)
+    sizes = Institution.file_sizes
+    assert_equal Institution.where(public: true).count, sizes.count
   end
 
   # footer_image_filename()
@@ -76,7 +82,13 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "item_counts() returns a correct value" do
     counts = Institution.item_counts
-    assert_equal Institution.count, counts.count
+    assert_equal Institution.where(public: true).count, counts.count
+  end
+
+  test "item_counts() omits private institutions" do
+    Institution.all.first.update!(public: false)
+    counts = Institution.item_counts
+    assert_equal Institution.where(public: true).count, counts.count
   end
 
   # create()

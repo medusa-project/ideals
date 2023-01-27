@@ -27,6 +27,10 @@ body#welcome {
     }
   }
   .page-content {
+    /* This works around an issue whereby one of the header dropdown menus
+    (Global Administration in particular because it's the longest) gets clipped
+    off when the page is too short, */
+    min-height: 18em;
     ul {
       line-height: 1.5em;
       li {

@@ -11,42 +11,43 @@
                              "data-bs-toggle": "collapse",
                              type:             "button"}
         %span.navbar-toggler-icon
-      #navbar-supported-content.collapse.navbar-collapse
-        %ul.navbar-nav.me-auto.mb-2.mb-lg-0
-          %li#deposit-nav.nav-item
-            = link_to submit_path, class: "nav-link" do
-              %i.fa.fa-plus
-              Submit an Item
-          %li#browse-nav.nav-item.dropdown
-            %a.nav-link.dropdown-toggle{href:             "#",
-                                        role:             "button",
-                                        "data-bs-toggle": "dropdown",
-                                        "aria-expanded":  false}
-              %i.fa.fa-cubes
-              Browse
-            %ul.dropdown-menu
-              %li= link_to "Academic Units and Collections", units_path, class: "dropdown-item"
-              %li= link_to "Most Recent Items", recent_items_path, class: "dropdown-item"
-              - re = RegisteredElement.find_by_name("dc:date:issued") # institution not important
-              - if re # safety check in case this element doesn't exist for some reason
-                %li= link_to("Items By Publication Date",                           |
-                             items_path(sort: re.indexed_sort_field,                |
-                                        direction: "desc"), class: "dropdown-item") |
-              - index_pages = current_institution.index_pages
-              - if index_pages.any?
-                %li
-                  %hr.dropdown-divider
-                  - index_pages.order(:name).each do |index_page|
-                    %li= link_to index_page.name, index_page, class: "dropdown-item"
-          - if current_institution.about_url || current_institution.about_html
-            %li#policies-nav.nav-item
-              - if current_institution.about_url.present?
-                = link_to current_institution.about_url, class: 'nav-link' do
-                  = icon_for(:info)
-                  About
-              - elsif current_institution.about_html.present?
-                = link_to about_path, class: 'nav-link' do
-                  = icon_for(:info)
-                  About
-        = render partial: "layouts/lower_header_search_field"
+      - if current_institution.public
+        #navbar-supported-content.collapse.navbar-collapse
+          %ul.navbar-nav.me-auto.mb-2.mb-lg-0
+            %li#deposit-nav.nav-item
+              = link_to submit_path, class: "nav-link" do
+                %i.fa.fa-plus
+                Submit an Item
+            %li#browse-nav.nav-item.dropdown
+              %a.nav-link.dropdown-toggle{href:             "#",
+                                          role:             "button",
+                                          "data-bs-toggle": "dropdown",
+                                          "aria-expanded":  false}
+                %i.fa.fa-cubes
+                Browse
+              %ul.dropdown-menu
+                %li= link_to "Academic Units and Collections", units_path, class: "dropdown-item"
+                %li= link_to "Most Recent Items", recent_items_path, class: "dropdown-item"
+                - re = RegisteredElement.find_by_name("dc:date:issued") # institution not important
+                - if re # safety check in case this element doesn't exist for some reason
+                  %li= link_to("Items By Publication Date",                           |
+                               items_path(sort: re.indexed_sort_field,                |
+                                          direction: "desc"), class: "dropdown-item") |
+                - index_pages = current_institution.index_pages
+                - if index_pages.any?
+                  %li
+                    %hr.dropdown-divider
+                    - index_pages.order(:name).each do |index_page|
+                      %li= link_to index_page.name, index_page, class: "dropdown-item"
+            - if current_institution.about_url || current_institution.about_html
+              %li#policies-nav.nav-item
+                - if current_institution.about_url.present?
+                  = link_to current_institution.about_url, class: 'nav-link' do
+                    = icon_for(:info)
+                    About
+                - elsif current_institution.about_html.present?
+                  = link_to about_path, class: 'nav-link' do
+                    = icon_for(:info)
+                    About
+          = render partial: "layouts/lower_header_search_field"
 

@@ -43,5 +43,7 @@
       = raw("#{@institution.longitude_seconds}&quot;")
     - else
       Not Set
+  %dt Public
+  %dd= boolean(@institution.public, style: :word)
   %dt Default
   %dd= boolean(@institution.default, style: :word)

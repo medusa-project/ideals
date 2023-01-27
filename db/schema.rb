@@ -304,12 +304,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_20_205558) do
     t.float "longitude_seconds"
     t.boolean "default", default: false, null: false
     t.index ["default"], name: "index_institutions_on_default"
+    t.boolean "public", default: true, null: false
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true
     t.index ["medusa_file_group_id"], name: "index_institutions_on_medusa_file_group_id", unique: true
     t.index ["name"], name: "index_institutions_on_name", unique: true
     t.index ["outgoing_message_queue"], name: "index_institutions_on_outgoing_message_queue", unique: true
+    t.index ["public"], name: "index_institutions_on_public"
   end
 
   create_table "invitees", force: :cascade do |t|

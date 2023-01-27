@@ -53,6 +53,12 @@
 #                             Shibboleth SP.
 # * `primary_color`           Theme primary color.
 # * `primary_hover_color`     Theme hover-over primary color.
+# * `public`                  Whether the institution appears on the public
+#                             website. The use case for this feature is to
+#                             support users with no institutional affiliation
+#                             (e.g. CARLI sysadmins) without having to change a
+#                             bunch of design and code that originally assumed
+#                             that all users would belong to an institution.
 # * `service_name`            Name of the service that the institution is
 #                             running. For example, at UIUC, this would be
 #                             IDEALS.
@@ -158,6 +164,7 @@ class Institution < ApplicationRecord
       FROM institutions ins
       LEFT JOIN items i ON i.institution_id = ins.id
       LEFT JOIN bitstreams b ON b.item_id = i.id
+      WHERE ins.public = true
       GROUP BY ins.id
       ORDER BY ins.name;"
     connection.execute(sql)
@@ -214,6 +221,7 @@ class Institution < ApplicationRecord
     sql = "SELECT ins.id, ins.name, COUNT(i.id) AS count
       FROM institutions ins
       LEFT JOIN items i ON ins.id = i.institution_id
+      WHERE ins.public = true
       GROUP BY ins.id
       ORDER BY ins.name;"
     connection.execute(sql)

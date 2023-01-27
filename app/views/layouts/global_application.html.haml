@@ -19,7 +19,7 @@
   %body{id: yield(:body_id).present? ? yield(:body_id) : nil,
         'data-nav': yield(:active_nav)}
     .container-fluid
-      = render partial: 'layouts/global_lower_header'
+      = render partial: 'layouts/global_header'
       .page-content
         - unless request.path == "/"
           = render partial: "shared/flashes"

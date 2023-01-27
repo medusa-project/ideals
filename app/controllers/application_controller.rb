@@ -286,7 +286,7 @@ class ApplicationController < ActionController::Base
     if @list.nil?
       @list = ToDoList.new
       if current_user&.sysadmin?
-        count = Institution.where("outgoing_message_queue IS NULL OR outgoing_message_queue = ''").count
+        count = Institution.where("public = true AND (outgoing_message_queue IS NULL OR outgoing_message_queue = '')").count
         if count > 0
           @list.items << {
             message: "Set up preservation for #{count} #{"institution".pluralize(count)}",
