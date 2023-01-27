@@ -26,7 +26,6 @@ class LocalUserTest < ActiveSupport::TestCase
     # check the LocalIdentity
     identity = invitee.identity
     assert_equal email, identity.email
-    assert_equal name, identity.name
 
     # check the LocalUser
     assert_equal identity, user.identity
@@ -66,21 +65,6 @@ class LocalUserTest < ActiveSupport::TestCase
         credentials: ""
     }
     assert_nil LocalUser.from_omniauth(hash)
-  end
-
-  test "from_omniauth() updates stale user attributes" do
-    name = "This is my new name"
-    hash = {
-        provider: "identity",
-        uid: "example@example.edu",
-        info: {
-            name: name,
-            email: "example@example.edu"
-        },
-        credentials: ""
-    }
-    user = LocalUser.from_omniauth(hash)
-    assert_equal name, user.name
   end
 
   test "from_omniauth() returns the relevant LocalUser" do

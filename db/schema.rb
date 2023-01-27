@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_27_210612) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_27_220435) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -355,7 +355,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_27_210612) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "registration_digest"
-    t.string "name", null: false
     t.string "lowercase_email", null: false
     t.index ["email"], name: "index_local_identities_on_email", unique: true
     t.index ["invitee_id"], name: "index_local_identities_on_invitee_id"
