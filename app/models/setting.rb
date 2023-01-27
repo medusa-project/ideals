@@ -17,6 +17,8 @@ class Setting < ApplicationRecord
     BANNER_MESSAGE       = "banner_message"
     # Allowed values: info, warning, danger
     BANNER_MESSAGE_TYPE  = "banner_message.type"
+    # Used in global search context. Not used in a scoped context, where
+    # {Institution#earliest_search_year} is used instead.
     EARLIEST_SEARCH_YEAR = "earliest_search_year"
   end
 

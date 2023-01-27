@@ -4,19 +4,19 @@
 
   .mb-3
     = f.label :service_name, "Service Name"
-    = f.text_field :service_name, class: 'form-control'
+    = f.text_field :service_name, class: "form-control"
 
   .mb-3
     = f.label :main_website_url, "Main Website URL"
-    = f.text_field :main_website_url, placeholder: "https://", class: 'form-control'
+    = f.text_field :main_website_url, placeholder: "https://", class: "form-control"
 
   .mb-3
     = f.label :feedback_email, "Feedback Email"
-    = f.text_field :feedback_email, class: 'form-control'
+    = f.text_field :feedback_email, class: "form-control"
 
   .mb-3
     = f.label :welcome_html, "Welcome HTML"
-    = f.text_area :welcome_html, class: 'form-control', rows: 8
+    = f.text_area :welcome_html, class: "form-control", rows: 8
     %p.form-text
       %i.fa.fa-info-circle
       The following HTML tags are allowed:
@@ -24,7 +24,7 @@
 
   .mb-3
     = f.label :about_html, "About HTML"
-    = f.text_area :about_html, class: 'form-control', rows: 8
+    = f.text_area :about_html, class: "form-control", rows: 8
     %p.form-text
       %i.fa.fa-info-circle
       The following HTML tags are allowed:
@@ -32,14 +32,18 @@
 
   .mb-3
     = f.label :about_url, "About URL"
-    = f.text_field :about_url, class: 'form-control'
+    = f.text_field :about_url, class: "form-control"
     %p.form-text
       %i.fa.fa-info-circle
       If filled in, this will override the About HTML.
 
   .mb-3
     = f.label :copyright_notice, "Copyright Notice"
-    = f.text_field :copyright_notice, class: 'form-control'
+    = f.text_field :copyright_notice, class: "form-control"
+
+  .mb-3
+    = f.label :earliest_search_year, "Earliest Search Year"
+    = f.number_field :earliest_search_year, class: "form-control"
 
   .clearfix
     .float-end

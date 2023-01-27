@@ -16,6 +16,7 @@
 #                             information available (like an `X-Forwarded-Host`
 #                             header) to determine which one to use.
 #                             Only one institution has this set to true.
+# * `earliest_search_year`    Earliest year available in advanced search.
 # * `feedback_email`          Email address for public feedback.
 # * `footer_background_color` Theme background color of the footer.
 # * `footer_image_filename`   Filename of the footer image, which is expected

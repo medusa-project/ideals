@@ -23,6 +23,7 @@ module ItemsHelper
                            options_for_select(options),
                            class: "form-select") # TODO: selected
       elsif reg_e.input_type == RegisteredElement::InputType::DATE
+        earliest_year = current_institution.earliest_search_year
         html << '<ul class="nav nav-pills nav-justified date-search-type" role="tablist">'
         html <<   '<li class="nav-item" role="presentation">'
         html <<     '<button class="nav-link active" id="exact-date-tab" '\
@@ -51,7 +52,7 @@ module ItemsHelper
                                   selected_month:    0,
                                   selected_day:      0,
                                   selected_year:     0,
-                                  earliest_year:     Setting.integer(Setting::Key::EARLIEST_SEARCH_YEAR),
+                                  earliest_year:     earliest_year,
                                   latest_year:       Time.now.year,
                                   include_blanks:    true)
         html <<     '</div>'
@@ -66,7 +67,7 @@ module ItemsHelper
                                   selected_month:    0,
                                   selected_day:      0,
                                   selected_year:     0,
-                                  earliest_year:     Setting.integer(Setting::Key::EARLIEST_SEARCH_YEAR),
+                                  earliest_year:     earliest_year,
                                   latest_year:       Time.now.year,
                                   include_blanks:    true)
         html <<     '</div>'
@@ -78,7 +79,7 @@ module ItemsHelper
                                   selected_month:    0,
                                   selected_day:      0,
                                   selected_year:     0,
-                                  earliest_year:     Setting.integer(Setting::Key::EARLIEST_SEARCH_YEAR),
+                                  earliest_year:     earliest_year,
                                   latest_year:       Time.now.year,
                                   include_blanks:    true)
         html <<     '</div>'

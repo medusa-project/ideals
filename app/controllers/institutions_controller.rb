@@ -394,7 +394,7 @@ class InstitutionsController < ApplicationController
   def settings_params
     params.require(:institution).permit(:about_html, :about_url,
                                         :active_link_color, :copyright_notice,
-                                        :feedback_email,
+                                        :earliest_search_year, :feedback_email,
                                         :footer_background_color,
                                         :header_background_color, :link_color,
                                         :link_hover_color, :main_website_url,
