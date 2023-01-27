@@ -53,6 +53,8 @@ class OaiPmhController < ApplicationController
 
   protect_from_forgery with: :null_session
 
+  layout false
+
   before_action :ensure_public_institution, :validate_request
 
   rescue_from ActionView::Template::Error, with: :rescue_template_error

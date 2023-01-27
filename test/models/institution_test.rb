@@ -485,6 +485,7 @@ class InstitutionTest < ActiveSupport::TestCase
   # nuke!()
 
   test "nuke!() nukes an instance" do
+    setup_opensearch
     @instance.nuke!
     assert @instance.destroyed?
   end
