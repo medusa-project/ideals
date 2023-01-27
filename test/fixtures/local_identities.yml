@@ -11,35 +11,30 @@ example:
   invitee:         example
   email:           example@example.edu
   lowercase_email: example@example.edu
-  name:            No Rights
   password_digest: <%= password_digest %>
 
 example2:
   invitee:         example2
   email:           example2@example.edu
   lowercase_email: example2@example.edu
-  name:            No Rights II
   password_digest: <%= password_digest %>
 
 example_sysadmin:
   invitee:         example_sysadmin
   email:           admin@example.edu
   lowercase_email: admin@example.edu
-  name:            Admin
   password_digest: <%= password_digest %>
 
 pending:
   invitee:         example
   email:           pending@example.edu
   lowercase_email: pending@example.edu
-  name:            Pending
   password_digest: <%= password_digest %>
 
 approved:
   invitee:         example_approved
   email:           approved@example.edu
   lowercase_email: approved@example.edu
-  name:            Approved
   password_digest: <%= password_digest %>
 
 ################################ northeast ##################################
@@ -48,14 +43,12 @@ northeast:
   invitee:         northeast
   email:           user@northeast.edu
   lowercase_email: user@northeast.edu
-  name:            Northeast University Normal User
   password_digest: <%= password_digest %>
 
 northeast_admin:
   invitee:         northeast_admin
   email:           admin@northeast.edu
   lowercase_email: admin@northeast.edu
-  name:            Northeast University Institution Administrator
   password_digest: <%= password_digest %>
 
 ################################ southwest ##################################
@@ -64,20 +57,17 @@ southwest:
   invitee:         southwest
   email:           user@southwest.edu
   lowercase_email: user@southwest.edu
-  name:            Southwest University Normal User
   password_digest: <%= password_digest %>
 
 southwest_admin:
   invitee:         southwest_admin
   email:           admin@southwest.edu
   lowercase_email: admin@southwest.edu
-  name:            Southwest University Institution Administrator
   password_digest: <%= password_digest %>
 
 southwest_sysadmin:
   invitee:         southwest_sysadmin
   email:           sysadmin@southwest.edu
   lowercase_email: sysadmin@southwest.edu
-  name:            Southwest University System Administrator
   password_digest: <%= password_digest %>
 

@@ -41,7 +41,6 @@ class LocalUser < User
       identity = LocalIdentity.find_by_email(email)
       unless identity
         identity = LocalIdentity.create!(email:                 email,
-                                         name:                  name || email,
                                          password:              password,
                                          password_confirmation: password,
                                          invitee:               invitee)
@@ -55,7 +54,9 @@ class LocalUser < User
   end
 
   ##
-  # Private; use {from_omniauth} instead.
+  # Private method used by {from_omniauth}.
+  #
+  # @private
   #
   def self.create_with_omniauth(auth)
     email = auth[:info][:email].strip
@@ -84,7 +85,10 @@ class LocalUser < User
     email = auth[:info][:email].strip
     user  = LocalUser.find_by(uid: email)
     if user
-      user.update_with_omniauth(auth)
+      # Unlike an omniauth-shibboleth user, the auth hash of an
+      # omniauth-identity user is not going to contain any info other than an
+      # email. So there is not much to update.
+      user.update!(uid: auth[:info][:email].strip)
     else
       user = LocalUser.create_with_omniauth(auth)
     end
@@ -98,14 +102,6 @@ class LocalUser < User
     self.user_groups.include?(UserGroup.sysadmin)
   end
 
-  def update_with_omniauth(auth)
-    email = auth[:info][:email].strip
-    return nil unless email
-
-    update!(uid:   email,
-            email: email,
-            name:  auth[:info][:name])
-  end
 
   private
 
