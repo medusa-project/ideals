@@ -197,7 +197,6 @@ class Invitee < ApplicationRecord
         # during registration.
         password = LocalIdentity.random_password
         LocalIdentity.create!(email:                 self.email,
-                              name:                  self.email,
                               password:              password,
                               password_confirmation: password,
                               invitee:               self)
