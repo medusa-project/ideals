@@ -105,7 +105,7 @@ class Handle < ApplicationRecord
   #
   def put_to_server
     self.reload # the prefix is auto-incrementing
-    base_url = "https://#{self.institution.fqdn}"
+    base_url = self.institution.scope_url
     helpers  = Rails.application.routes.url_helpers
     if self.unit
       entity_url = helpers.unit_url(self.unit, host: base_url)
