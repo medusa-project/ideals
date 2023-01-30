@@ -12,34 +12,26 @@ class MessageHandler
   #
   def self.handle(message)
     message_hash = JSON.parse(message)
-    if MessageHandler.valid?(message_hash) && message_hash['status'] == "ok"
-      if message_hash['operation'] == "delete"
+    if message_hash['status'] == "ok"
+      case message_hash['operation']
+      when "ingest"
+        on_ingest_succeeded_message(message, message_hash)
+      when "delete"
         on_delete_succeeded_message(message, message_hash)
       else
-        on_ingest_succeeded_message(message, message_hash)
+        raise "Invalid message from Medusa:\n\n"\
+              "#{message_hash.to_yaml}"
       end
     else
-      if message_hash['operation'] == "delete"
+      case message_hash['operation']
+      when "ingest"
+        on_ingest_failed_message(message, message_hash)
+      when "delete"
         on_delete_failed_message(message, message_hash)
       else
-        on_ingest_failed_message(message, message_hash)
+        raise "Invalid message from Medusa:\n\n"\
+              "#{message_hash.to_yaml}"
       end
-    end
-  end
-
-  ##
-  # @param message_hash [Hash] Deserialized JSON.
-  # @return [Boolean]
-  # @private
-  #
-  def self.valid?(message_hash)
-    if %w[ok error].include?(message_hash['status']) &&
-        %w[ingest delete].include?(message_hash['operation'])
-      true
-    else
-      IdealsMailer.error("Invalid message from Medusa:\n\n"\
-          "#{message_hash.to_yaml}").deliver_now
-      false
     end
   end
 
@@ -72,8 +64,7 @@ class MessageHandler
     message.update!(status:        message_hash['status'],
                     raw_response:  message_json,
                     response_time: Time.now)
-    error_string = "Failed to delete from Medusa:\n\n#{message_hash.to_yaml}"
-    IdealsMailer.error(error_string).deliver_now
+    raise "Failed to delete from Medusa:\n\n#{message_hash.to_yaml}"
   end
 
   ##
@@ -91,12 +82,11 @@ class MessageHandler
                       response_time: Time.now,
                       raw_response:  message_json)
     else
-      IdealsMailer.error("Received an ingest-succeeded message for staging key: "\
+      raise "Received an ingest-succeeded message for staging key: "\
           "#{message_hash['staging_key']}, but an outgoing message object "\
           "was not found.\n\n"\
           "Response:\n"\
-          "#{message_hash.to_yaml}").deliver_now
-      return false
+          "#{message_hash.to_yaml}"
     end
 
     bitstream = message.bitstream
@@ -106,8 +96,8 @@ class MessageHandler
       # Now that it has been successfully ingested, delete it from staging.
       bitstream.delete_from_staging
     else
-      IdealsMailer.error("Bitstream not found for message:\n\n"\
-          "#{message_hash.to_yaml}").deliver_now
+      raise "Bitstream not found for message:\n\n"\
+            "#{message_hash.to_yaml}"
     end
   end
 
@@ -135,12 +125,11 @@ class MessageHandler
                       response_time: Time.now,
                       raw_response:  message_json)
     else
-      IdealsMailer.error("Received an ingest-failed message for staging key: "\
-          "#{message_hash['staging_key']}, but an outgoing message object "\
-          "was not found.\n\n"\
-          "Response:\n"\
-          "#{message_hash.to_yaml}").deliver_now
-      return false
+      raise "Received an ingest-failed message for staging key: "\
+            "#{message_hash['staging_key']}, but an outgoing message object "\
+            "was not found.\n\n"\
+            "Response:\n"\
+            "#{message_hash.to_yaml}"
     end
   end
 

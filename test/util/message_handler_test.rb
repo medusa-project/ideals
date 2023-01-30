@@ -87,43 +87,9 @@ class MessageHandlerTest < ActiveSupport::TestCase
         'operation' => "delete",
         'uuid'      => messages(:failed_delete).medusa_uuid
     }
-    MessageHandler.handle(JSON.generate(incoming_message))
-
-    assert IdealsMailer.deliveries.any?
-  end
-
-  # valid?()
-
-  test "valid?() returns true for a valid ingest-success message" do
-    assert MessageHandler.valid?({
-                                     "operation" => "ingest",
-                                     "status" => "ok"
-                                  })
-  end
-
-  test "valid?() returns true for a valid ingest-error message" do
-    assert MessageHandler.valid?({
-                                     "operation" => "ingest",
-                                     "status" => "error"
-                                  })
-  end
-
-  test "valid?() returns true for a valid delete-success message" do
-    assert MessageHandler.valid?({
-                                     "operation" => "delete",
-                                     "status" => "ok"
-                                  })
-  end
-
-  test "valid?() returns true for a valid delete-error message" do
-    assert MessageHandler.valid?({
-                                     "operation" => "delete",
-                                     "status" => "error"
-                                  })
-  end
-
-  test "valid?() returns false for an invalid message" do
-    assert !MessageHandler.valid?({ "status" => "bogus" })
+    assert_raises do
+      MessageHandler.handle(JSON.generate(incoming_message))
+    end
   end
 
 end
