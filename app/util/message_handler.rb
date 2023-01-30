@@ -91,8 +91,10 @@ class MessageHandler
                       response_time: Time.now,
                       raw_response:  message_json)
     else
-      IdealsMailer.error("Outgoing message not found for staging key:"\
-          "#{message_hash['staging_key']}\n\n Response:\n"\
+      IdealsMailer.error("Received an ingest-succeeded message for staging key: "\
+          "#{message_hash['staging_key']}, but an outgoing message object "\
+          "was not found.\n\n"\
+          "Response:\n"\
           "#{message_hash.to_yaml}").deliver_now
       return false
     end
@@ -133,8 +135,10 @@ class MessageHandler
                       response_time: Time.now,
                       raw_response:  message_json)
     else
-      IdealsMailer.error("Outgoing message not found for staging key:"\
-          "#{message_hash['staging_key']}\n\n Response:\n"\
+      IdealsMailer.error("Received an ingest-failed message for staging key: "\
+          "#{message_hash['staging_key']}, but an outgoing message object "\
+          "was not found.\n\n"\
+          "Response:\n"\
           "#{message_hash.to_yaml}").deliver_now
       return false
     end
