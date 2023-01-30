@@ -1,4 +1,4 @@
-- if invitee.pending? || invitee.approved?
+- if invitee.pending? || (Rails.env.development? && !invitee.user)
   .dropdown
     %button.dropdown-toggle{type:             "button",
                             class:            button_class,
@@ -26,7 +26,7 @@
                   data: { confirm: "Are you sure you want to reject #{invitee.email}?\n\nThe invitee will be notified via email." }) do
           %i.fa.fa-times
           Reject
-      - if Rails.env.development?
+      - if Rails.env.development? && !invitee.user
         %li
           %hr.dropdown-divider
         %h6.dropdown-header Testing Only
