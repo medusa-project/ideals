@@ -589,6 +589,9 @@ class Institution < ApplicationRecord
     self.registered_elements.build(name:             "dc:date:submitted",
                                    input_type:       RegisteredElement::InputType::DATE,
                                    label:            "Date Deposited")
+    self.registered_elements.build(name:             "dc:description",
+                                   input_type:       RegisteredElement::InputType::TEXT_AREA,
+                                   label:            "Description")
     self.registered_elements.build(name:             "dc:description:abstract",
                                    input_type:       RegisteredElement::InputType::TEXT_AREA,
                                    label:            "Abstract")
