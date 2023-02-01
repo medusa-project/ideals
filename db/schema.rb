@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_27_220435) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_31_180801) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -306,6 +306,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_27_220435) do
     t.index ["default"], name: "index_institutions_on_default"
     t.boolean "public", default: true, null: false
     t.integer "earliest_search_year", default: 2000, null: false
+    t.bigint "title_element_id"
+    t.bigint "author_element_id"
+    t.bigint "description_element_id"
+    t.bigint "date_submitted_element_id"
+    t.bigint "date_approved_element_id"
+    t.bigint "date_published_element_id"
+    t.bigint "handle_uri_element_id"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true
@@ -712,6 +719,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_27_220435) do
   add_foreign_key "imports", "users", on_update: :cascade, on_delete: :nullify
   add_foreign_key "institution_administrators", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "institution_administrators", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "institutions", "registered_elements", column: "author_element_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "institutions", "registered_elements", column: "date_approved_element_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "institutions", "registered_elements", column: "date_published_element_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "institutions", "registered_elements", column: "date_submitted_element_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "institutions", "registered_elements", column: "description_element_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "institutions", "registered_elements", column: "handle_uri_element_id", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "institutions", "registered_elements", column: "title_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "invitees", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "items", "institutions", on_update: :cascade, on_delete: :restrict

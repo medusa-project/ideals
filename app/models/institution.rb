@@ -1,74 +1,116 @@
 ##
+# The root of the main entity tree. All {Unit}s reside in an institution.
+#
+# Each institution has its own domain name at which its own website, scoped to
+# its own content, is available.
+#
 # # Attributes
 #
-# * `active_link_color`       Theme active hyperlink color.
-# * `banner_image_filename`   Filename of the banner image, which may exist in
-#                             in the application S3 bucket under
-#                             {image_key_prefix}. If not present, a generic
-#                             image is used.
-# * `copyright_notice`        Generic institution-wide copyright notice,
-#                             displayed on the website somewhere (probably in
-#                             the footer).
-# * `created_at`              Managed by ActiveRecord.
-# * `default`                 Boolean flag indicating whether a particular
-#                             institution is the system default, i.e. the one
-#                             that should be used when there is no other
-#                             information available (like an `X-Forwarded-Host`
-#                             header) to determine which one to use.
-#                             Only one institution has this set to true.
-# * `earliest_search_year`    Earliest year available in advanced search.
-# * `feedback_email`          Email address for public feedback.
-# * `footer_background_color` Theme background color of the footer.
-# * `footer_image_filename`   Filename of the footer image, which is expected
-#                             to exist in the application S3 bucket under
-#                             {image_key_prefix}.
-# * `has_favicon`             Whether the instance has a favicon, i.e. whether
-#                             an institution admin has uploaded one. Unlike the
-#                             other image-related attributes, the favicon's
-#                             filenames are fixed.
-# * `header_background_color` Theme background color of the header.
-# * `header_image_filename`   Filename of the header image, which is expected
-#                             to exist in the application S3 bucket under
-#                             {image_key_prefix}.
-# * `key`                     Short string that uniquely identifies the
-#                             institution.
-# * `latitude_degrees`        The degrees component of the institution's
-#                             latitude.
-# * `latitude_minutes`        The minutes component of the institution's
-#                             latitude.
-# * `latitude_seconds`        The seconds component of the institution's
-#                             latitude.
-# * `link_color`              Theme hyperlink color.
-# * `link_hover_color`        Theme hover-over-hyperlink color.
-# * `longitude_degrees`       The degrees component of the institution's
-#                             longitude.
-# * `longitude_minutes`       The minutes component of the institution's
-#                             longitude.
-# * `longitude_seconds`       The seconds component of the institution's
-#                             longitude.
-# * `main_website_url`        URL of the institution's main website.
-# * `medusa_file_group_id`    ID of the Medusa file group in which the
-#                             institution's content is stored.
-# * `name`                    Institution name.
-# * `org_dn`                  Value of an `eduPersonOrgDN` attribute from the
-#                             Shibboleth SP.
-# * `primary_color`           Theme primary color.
-# * `primary_hover_color`     Theme hover-over primary color.
-# * `public`                  Whether the institution appears on the public
-#                             website. The use case for this feature is to
-#                             support users with no institutional affiliation
-#                             (e.g. CARLI sysadmins) without having to change a
-#                             bunch of design and code that originally assumed
-#                             that all users would belong to an institution.
-# * `service_name`            Name of the service that the institution is
-#                             running. For example, at UIUC, this would be
-#                             IDEALS.
-# * `updated_at`              Managed by ActiveRecord.
-# * `welcome_html`            HTML text that appears on the main page.
+# * `active_link_color`          Theme active hyperlink color.
+# * `author_element_id`          Foreign key to {RegisteredElement} designating
+#                                an element to treat as the author element.
+# * `banner_image_filename`      Filename of the banner image, which may exist
+#                                in the application S3 bucket under
+#                                {image_key_prefix}. If not present, a generic
+#                                image is used.
+# * `copyright_notice`           Generic institution-wide copyright notice,
+#                                displayed on the website somewhere (probably
+#                                in the footer).
+# * `created_at`                 Managed by ActiveRecord.
+# * `date_approved_element_id`   Foreign key to {RegisteredElement} designating
+#                                an element to treat as the date-approved
+#                                element.
+# * `date_published_element_id`  Foreign key to {RegisteredElement} designating
+#                                an element to treat as the date-approved
+#                                element.
+# * `date_submitted_element_id`  Foreign key to {RegisteredElement} designating
+#                                an element to treat as the date-submitted
+#                                element.
+# * `default`                    Boolean flag indicating whether a particular
+#                                institution is the system default, i.e. the
+#                                one that should be used when there is no other
+#                                information available (like an
+#                                `X-Forwarded-Host` header) to determine which
+#                                one to use. Only one institution has this set
+#                                to true. # TODO: this is no longer needed--get rid of it
+# * `description_element_id`     Foreign key to {RegisteredElement} designating
+#                                an element to treat as the description
+#                                element.
+# * `earliest_search_year`       Earliest year available in advanced search.
+# * `feedback_email`             Email address for public feedback.
+# * `footer_background_color`    Theme background color of the footer.
+# * `footer_image_filename`      Filename of the footer image, which is
+#                                expected
+#                                to exist in the application S3 bucket under
+#                                {image_key_prefix}.
+# * `handle_uri_element_id`      Foreign key to {RegisteredElement} designating
+#                                an element to treat as the date-submitted
+#                                element.
+# * `has_favicon`                Whether the instance has a favicon, i.e.
+#                                whether an institution admin has uploaded one.
+#                                Unlike the other image-related attributes, the
+#                                favicon's filenames are fixed.
+# * `header_background_color`    Theme background color of the header.
+# * `header_image_filename`      Filename of the header image, which is
+#                                expected to exist in the application S3 bucket
+#                                under {image_key_prefix}.
+# * `key`                        Short string that uniquely identifies the
+#                                institution.
+# * `latitude_degrees`           The degrees component of the institution's
+#                                latitude.
+# * `latitude_minutes`           The minutes component of the institution's
+#                                latitude.
+# * `latitude_seconds`           The seconds component of the institution's
+#                                latitude.
+# * `link_color`                 Theme hyperlink color.
+# * `link_hover_color`           Theme hover-over-hyperlink color.
+# * `longitude_degrees`          The degrees component of the institution's
+#                                longitude.
+# * `longitude_minutes`          The minutes component of the institution's
+#                                longitude.
+# * `longitude_seconds`          The seconds component of the institution's
+#                                longitude.
+# * `main_website_url`           URL of the institution's main website.
+# * `medusa_file_group_id`       ID of the Medusa file group in which the
+#                                institution's content is stored.
+# * `name`                       Institution name.
+# * `org_dn`                     Value of an `eduPersonOrgDN` attribute from
+#                                the Shibboleth SP.
+# * `primary_color`              Theme primary color.
+# * `primary_hover_color`        Theme hover-over primary color.
+# * `public`                     Whether the institution appears on the public
+#                                website. The use case for this feature is to
+#                                support users with no institutional
+#                                affiliation (e.g. CARLI sysadmins) without
+#                                having to change a bunch of design and code
+#                                that originally assumed that all users would
+#                                belong to an institution.
+# * `service_name`               Name of the service that the institution is
+#                                running. For example, at UIUC, this would be
+#                                IDEALS.
+# * `title_element_id`           Foreign key to {RegisteredElement} designating
+#                                an element to treat as the title element.
+# * `updated_at`                 Managed by ActiveRecord.
+# * `welcome_html`               HTML text that appears on the main page.
 #
 class Institution < ApplicationRecord
 
   include Breadcrumb
+
+  belongs_to :author_element, class_name: "RegisteredElement",
+             foreign_key: :author_element_id, optional: true
+  belongs_to :date_approved_element, class_name: "RegisteredElement",
+             foreign_key: :date_approved_element_id, optional: true
+  belongs_to :date_published_element, class_name: "RegisteredElement",
+             foreign_key: :date_published_element_id, optional: true
+  belongs_to :date_submitted_element, class_name: "RegisteredElement",
+             foreign_key: :date_submitted_element_id, optional: true
+  belongs_to :description_element, class_name: "RegisteredElement",
+             foreign_key: :description_element_id, optional: true
+  belongs_to :handle_uri_element, class_name: "RegisteredElement",
+             foreign_key: :handle_uri_element_id, optional: true
+  belongs_to :title_element, class_name: "RegisteredElement",
+             foreign_key: :title_element_id, optional: true
 
   has_many :administrators, class_name: "InstitutionAdministrator"
   has_many :administering_users, through: :administrators,
@@ -119,10 +161,11 @@ class Institution < ApplicationRecord
   validate :disallow_key_changes, :validate_css_colors
 
   before_save :ensure_default_uniqueness
-  # N.B.: elements must be added AFTER vocabularies!
+  # N.B.: order is important!
   after_create :add_default_vocabularies, :add_default_elements,
-               :add_default_metadata_profile, :add_default_submission_profile,
-               :add_default_index_pages, :add_defining_user_group
+               :add_default_element_mappings, :add_default_metadata_profile,
+               :add_default_submission_profile, :add_default_index_pages,
+               :add_defining_user_group
 
   ##
   # @param extension [String]
@@ -559,10 +602,22 @@ class Institution < ApplicationRecord
   private
 
   def add_default_elements
-    # N.B.: when this app was first launched at UIUC, the elements with which
-    # it was launched were imported from DSpace. This list is, for now, a
-    # duplicate of those.
-    # See: https://uofi.app.box.com/notes/593479281190
+    # These elements are used by default metadata mappings (see
+    # add_default_metadata_mappings()) as Dublin Core does not have good
+    # equivalents.
+    self.registered_elements.build(name:             "ideals:date:submitted",
+                                   label:            "Date Submitted",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
+    self.registered_elements.build(name:             "ideals:date:approved",
+                                   label:            "Date Approved",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
+    self.registered_elements.build(name:             "ideals:date:published",
+                                   label:            "Date Published",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
+    self.registered_elements.build(name:             "ideals:handleURI",
+                                   label:            "Handle URI",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
+
     self.registered_elements.build(name:             "dc:contributor",
                                    label:            "Contributor",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD)
@@ -671,6 +726,16 @@ class Institution < ApplicationRecord
     raise "No creator element (this is a bug)" unless element
     page.registered_elements << element
     page.save!
+  end
+
+  def add_default_element_mappings
+    self.update!(title_element:          self.registered_elements.find_by_name("dc:title"),
+                 author_element:         self.registered_elements.find_by_name("dc:creator"),
+                 description_element:    self.registered_elements.find_by_name("dc:description"),
+                 date_submitted_element: self.registered_elements.find_by_name("ideals:date:submitted"),
+                 date_approved_element:  self.registered_elements.find_by_name("ideals:date:approved"),
+                 date_published_element: self.registered_elements.find_by_name("ideals:date:published"),
+                 handle_uri_element:     self.registered_elements.find_by_name("ideals:handleURI"))
   end
 
   def add_default_metadata_profile

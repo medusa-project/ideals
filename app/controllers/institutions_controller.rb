@@ -54,6 +54,16 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Used for editing element mappings.
+  #
+  # Responds to `GET /institutions/:key/element-mappings/edit` (XHR only)
+  #
+  def edit_element_mappings
+    render partial: "element_mappings_form",
+           locals: { institution: @institution }
+  end
+
+  ##
   # Responds to `GET /institutions/:key/edit-preservation`
   #
   def edit_preservation
@@ -123,8 +133,7 @@ class InstitutionsController < ApplicationController
     # The items array contains item IDs and download counts but not titles.
     # So here we will insert them.
     AscribedElement.
-      where(registered_element: RegisteredElement.find_by(name: "dc:title",
-                                                          institution: current_institution)).
+      where(registered_element: current_institution.title_element).
       where(item_id: @items.map{ |row| row['id'] }).pluck(:item_id, :string).each do |asc_e|
       row = @items.find{ |r| r['id'] == asc_e[0] }
       row['title'] = asc_e[1] if row
@@ -172,6 +181,15 @@ class InstitutionsController < ApplicationController
   #
   def show_access
     render partial: "show_access_tab"
+  end
+
+  ##
+  # Renders HTML for the element mappings tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/element-mappings` (XHR only)
+  #
+  def show_element_mappings
+    render partial: "show_element_mappings_tab"
   end
 
   ##
@@ -392,14 +410,26 @@ class InstitutionsController < ApplicationController
   end
 
   def settings_params
-    params.require(:institution).permit(:about_html, :about_url,
-                                        :active_link_color, :copyright_notice,
+    params.require(:institution).permit(# Settings tab
+                                        :about_html, :about_url,
+                                        :copyright_notice,
                                         :earliest_search_year, :feedback_email,
+                                        :main_website_url, :service_name,
+                                        :welcome_html,
+                                        # Element Mappings tab
+                                        :author_element_id,
+                                        :date_approved_element_id,
+                                        :date_published_element_id,
+                                        :date_submitted_element_id,
+                                        :description_element_id,
+                                        :handle_uri_element_id,
+                                        :title_element_id,
+                                        # Theme tab
+                                        :active_link_color,
                                         :footer_background_color,
                                         :header_background_color, :link_color,
-                                        :link_hover_color, :main_website_url,
-                                        :primary_color, :primary_hover_color,
-                                        :service_name, :welcome_html)
+                                        :link_hover_color, :primary_color,
+                                        :primary_hover_color)
   end
 
   def upload_images

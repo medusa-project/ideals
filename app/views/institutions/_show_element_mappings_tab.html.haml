@@ -1,0 +1,104 @@
+.btn-group.mb-3.float-end{role: "group"}
+  -# Edit button
+  %button.btn.btn-light.edit-element-mappings{"data-bs-target": "#edit-element-mappings-modal",
+                                              "data-bs-toggle": "modal",
+                                              type:             "button"}
+    %i.fas.fa-pencil-alt
+    Edit
+
+.clearfix
+
+.alert.alert-light
+  = icon_for(:info)
+  These rules control how system elements are mapped to
+  \#{link_to("your institution's registered elements", registered_elements_path)}.
+  See the edit menu for more information.
+
+%table.table
+  %thead
+    %tr
+      %th System Element
+      %th
+      %th Registered Element
+  %tbody
+    %tr
+      %td Title
+      %td{style: "width: 1px"} &rarr;
+      %td
+        = @institution.title_element.label
+        %br
+        %code
+          = @institution.title_element.name
+    %tr
+      %td Author
+      %td &rarr;
+      %td
+        = @institution.author_element.label
+        %br
+        %code
+          = @institution.author_element.name
+    %tr
+      %td Description
+      %td &rarr;
+      %td
+        = @institution.description_element.label
+        %br
+        %code
+          = @institution.description_element.name
+    %tr
+      %td Date Submitted
+      - if @institution.date_submitted_element
+        %td &rarr;
+        %td
+          = @institution.date_submitted_element.label
+          %br
+          %code
+            = @institution.date_submitted_element.name
+      - else
+        %td
+        %td
+          .badge.bg-warning
+            Unmapped
+    %tr
+      %td Date Approved
+      - if @institution.date_approved_element
+        %td &rarr;
+        %td
+          = @institution.date_approved_element.label
+          %br
+          %code
+            = @institution.date_approved_element.name
+      - else
+        %td
+        %td
+          .badge.bg-warning
+            Unmapped
+    %tr
+      %td Date Published
+      - if @institution.date_published_element
+        %td &rarr;
+        %td
+          = @institution.date_published_element.label
+          %br
+          %code
+            = @institution.date_published_element.name
+      - else
+        %td
+        %td
+          .badge.bg-warning
+            Unmapped
+
+    %tr
+      %td Handle URI
+      - if @institution.handle_uri_element
+        %td &rarr;
+        %td
+          = @institution.handle_uri_element.label
+          %br
+          %code
+            = @institution.handle_uri_element.name
+      - else
+        %td
+        %td
+          .badge.bg-warning
+            Unmapped

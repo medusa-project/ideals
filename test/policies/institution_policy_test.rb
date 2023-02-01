@@ -123,6 +123,57 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_administrators?
   end
 
+  # edit_element_mappings?()
+
+  test "edit_element_mappings?() returns false with a nil user" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.edit_element_mappings?
+  end
+
+  test "edit_element_mappings?() is restrictive by default" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_element_mappings?
+  end
+
+  test "edit_element_mappings?() authorizes sysadmins" do
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_element_mappings?
+  end
+
+  test "edit_element_mappings?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.edit_element_mappings?
+  end
+
+  test "edit_element_mappings?() does not authorize administrators of different
+  institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_element_mappings?
+  end
+
+  test "edit_element_mappings?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_element_mappings?
+  end
+
   # edit_preservation?()
 
   test "edit_preservation?() returns false with a nil request context" do
@@ -522,6 +573,66 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.show_access?
+  end
+
+  # show_element_mappings?()
+
+  test "show_element_mappings?() returns false with a nil request context" do
+    policy = InstitutionPolicy.new(nil, @institution)
+    assert !policy.show_element_mappings?
+  end
+
+  test "show_element_mappings?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_element_mappings?
+  end
+
+  test "show_element_mappings?() authorizes sysadmins" do
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_element_mappings?
+  end
+
+  test "show_element_mappings?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_element_mappings?
+  end
+
+  test "show_element_mappings?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InstitutionPolicy.new(context, institutions(:uiuc))
+    assert !policy.show_element_mappings?
+  end
+
+  test "show_element_mappings?() does not authorize private institutions" do
+    institution = institutions(:southwest)
+    institution.update!(public: false)
+    user        = users(:southwest_admin)
+    context     = RequestContext.new(user:        user,
+                                     institution: user.institution)
+    policy      = InstitutionPolicy.new(context, institution)
+    assert !policy.show_element_mappings?
+  end
+
+  test "show_element_mappings?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_element_mappings?
   end
 
   # show_preservation?()

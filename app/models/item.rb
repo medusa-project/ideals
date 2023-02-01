@@ -343,20 +343,16 @@ class Item < ApplicationRecord
 
   ##
   # Sets {stage} to {Stages::APPROVED} and creates an associated
-  # `dcterms:available` {AscribedElement} with a string value of the current
-  # ISO-8601 timestamp.
+  # {AscribedElement} with a string value of the current ISO 8601 timestamp.
   #
   # @return [void]
   #
   def approve
     self.stage = Stages::APPROVED
-    name       = "dcterms:available"
-    unless self.elements.find{ |e| e.name == name }
-      reg_e = RegisteredElement.find_by(name:        name,
-                                        institution: self.institution)
-      self.elements.build(registered_element: reg_e,
-                          string:             Time.now.iso8601) if reg_e
-    end
+    reg_e      = self.institution.date_approved_element
+    self.elements.build(registered_element: reg_e,
+                        string:             Time.now.iso8601) if reg_e
+    self.save!
   end
 
   ##
@@ -484,8 +480,7 @@ class Item < ApplicationRecord
   # Overrides parent.
   #
   # Creates a new {Handle}, assigns it to the instance, and creates an
-  # associated `dcterms:identifier` {AscribedElement} with a URI value of the
-  # handle URI.
+  # associated {AscribedElement} with a URI value of the handle URI.
   #
   # @return [void]
   # @raises [StandardError] if the instance already has a handle.
@@ -493,12 +488,10 @@ class Item < ApplicationRecord
   def assign_handle
     return if self.handle
     self.create_handle!
-    # Assign a dcterms:identifier element with a URI value of the handle URI.
-    reg_e = RegisteredElement.find_by(name:        "dcterms:identifier",
-                                      institution: self.institution)
+    reg_e = self.institution.handle_uri_element
     self.elements.build(registered_element: reg_e,
                         string:             self.handle.permanent_url,
-                        uri:                self.handle.permanent_url) if reg_e
+                        uri:                self.handle.permanent_url).save! if reg_e
   end
 
   def breadcrumb_label
@@ -537,12 +530,11 @@ class Item < ApplicationRecord
   # @return [void]
   #
   def complete_submission
-    # Assign a dcterms:date:submitted element with a string value of the
-    # current ISO-8601 timestamp.
-    reg_e = RegisteredElement.find_by(name:        "dc:date:submitted",
-                                      institution: self.institution)
+    # Assign a date-submitted element with a string value of the current
+    # ISO-8601 timestamp.
+    reg_e = self.institution.date_submitted_element
     self.elements.build(registered_element: reg_e,
-                        string:             Time.now.iso8601) if reg_e
+                        string:             Time.now.iso8601).save! if reg_e
     natural_sort_bitstreams
     if self.primary_collection&.submissions_reviewed
       self.update!(stage: Stages::SUBMITTED)

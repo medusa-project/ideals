@@ -12,7 +12,7 @@
 
 %h1= @item.title
 
-%h4.creators= @item.elements.select{ |e| e.name == "dc:creator" }.map(&:string).join("; ")
+%h4.creators= @item.authors.map(&:string).join("; ")
 
 .mb-3
 

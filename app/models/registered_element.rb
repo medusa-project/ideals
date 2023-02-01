@@ -1,21 +1,18 @@
 ##
 # An element available for use in the application.
 #
-# Instances comprise a simple list. {AscribedElement} attaches them to entities
+# Instances comprise a flat list. {AscribedElement} attaches them to entities
 # and {MetadataProfileElement} attaches them to {MetadataProfile}s.
+#
+# Most elements are scoped to an {Institution}, except for a few global
+# elements that are used by the {MetadataProfile#global global metadata profile}
+# in cross-institution contexts. Element names must be unique within the scope.
 #
 # # System-Required Elements
 #
-# Some elements are required to be present for various functionality to work.
-# These are defined in {SYSTEM_REQUIRED_ELEMENTS}.
-#
-# * `dc:creator`         Stores item authors.
-# * `dc:date:issued`
-# * `dc:date:submitted`  Automatically created upon submission of an item.
-# * `dc:title`           Stores item titles.
-# * `dcterms:available`  Automatically created upon approval of an item (which
-#                        may be the same as the submission time).
-# * `dcterms:identifier` Stores item handles.
+# The system requires certain elements to be present, such as a title element,
+# an author element, etc. These are defined by properties of {Institution} like
+# {Institution#title_element_mapping}, etc.
 #
 # # Attributes
 #
@@ -46,12 +43,10 @@ class RegisteredElement < ApplicationRecord
     end
   end
 
-  DATE_FIELD_PREFIX        = "d"
-  KEYWORD_FIELD_SUFFIX     = ".keyword"
-  SYSTEM_REQUIRED_ELEMENTS = %w(dc:creator dc:date:issued dc:date:submitted
-                                dc:title dcterms:available dcterms:identifier)
-  SORTABLE_FIELD_SUFFIX    = ".sort"
-  TEXT_FIELD_PREFIX        = "t"
+  DATE_FIELD_PREFIX     = "d"
+  KEYWORD_FIELD_SUFFIX  = ".keyword"
+  SORTABLE_FIELD_SUFFIX = ".sort"
+  TEXT_FIELD_PREFIX     = "t"
 
   belongs_to :institution
   belongs_to :vocabulary, optional: true
@@ -71,8 +66,6 @@ class RegisteredElement < ApplicationRecord
   validates_format_of :name, with: /\A[A-Za-z0-9_\-:]+\z/, allow_blank: false
 
   before_save :assign_default_input_type
-  before_save :restrict_changes_to_required_elements
-  before_destroy :restrict_changes_to_required_elements
 
   ##
   # @param name [String] Element name.
@@ -125,14 +118,6 @@ class RegisteredElement < ApplicationRecord
      name.gsub(OpenSearchClient::RESERVED_CHARACTERS, "_")].join("_")
   end
 
-  ##
-  # @return [Boolean] Whether the element is required by the system. Such
-  #                   elements should be unmodifiable.
-  #
-  def required?
-    SYSTEM_REQUIRED_ELEMENTS.include?(self.name)
-  end
-
   def to_param
     name
   end
@@ -142,13 +127,6 @@ class RegisteredElement < ApplicationRecord
 
   def assign_default_input_type
     self.input_type ||= InputType::TEXT_FIELD
-  end
-
-  def restrict_changes_to_required_elements
-    if SYSTEM_REQUIRED_ELEMENTS.include?(self.name_was)
-      errors.add(:base, "System-required elements cannot be changed")
-      throw :abort
-    end
   end
 
 end

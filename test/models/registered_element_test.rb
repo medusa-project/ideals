@@ -34,13 +34,6 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert registered_elements(:uiuc_unused).destroy
   end
 
-  test "system-required instances cannot be destroyed" do
-    re = registered_elements(:uiuc_dc_creator)
-    # get these out of the way or they will cause FK violations
-    AscribedElement.where(registered_element: re).delete_all
-    assert !re.destroy
-  end
-
   # indexed_keyword_field()
 
   test "indexed_keyword_field() returns the expected name" do
@@ -148,16 +141,6 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert !@instance.valid?
     @instance.name = "c@ts"
     assert !@instance.valid?
-  end
-
-  # update()
-
-  test "update() updates non-system-required instances" do
-    assert registered_elements(:uiuc_dc_contributor).update(name: "dc:bogus")
-  end
-
-  test "update() does not update system-required instances" do
-    assert !registered_elements(:uiuc_dc_creator).update(name: "dc:bogus")
   end
 
   # uri

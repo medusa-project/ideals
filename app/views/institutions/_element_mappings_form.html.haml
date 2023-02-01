@@ -1,0 +1,75 @@
+-# Required locals:
+-#
+-# institution [Institution]
+-#
+- element_options = RegisteredElement.where(institution: institution).order(:label).map{ |e| [e.label, e.id] }
+= form_for(institution, url: institution_settings_path(institution), remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .mb-3
+    = f.label(:title_element_id, "Title Element", class: "form-label")
+    = f.select(:title_element_id, element_options, {}, class: "form-select")
+    .form-text
+      = icon_for(:info)
+      This menu tells the system what element to treat as the title element,
+      which affects results lists, the item view page, and everywhere else
+      titles are displayed.
+
+  .mb-3
+    = f.label(:author_element_id, "Author Element", class: "form-label")
+    = f.select(:author_element_id, element_options, {}, class: "form-select")
+    .form-text
+      = icon_for(:info)
+      This menu tells the system what element to treat as the author element,
+      which affects results lists, the item view page, and everywhere else
+      authors are displayed.
+
+  .mb-3
+    = f.label(:description_element_id, "Description Element", class: "form-label")
+    = f.select(:description_element_id, element_options, {}, class: "form-select")
+    .form-text
+      = icon_for(:info)
+      This menu tells the system what element to treat as the description element,
+      which affects results lists and everywhere else descriptions are displayed.
+
+  .mb-3
+    = f.label(:date_submitted_element_id, "Date Submitted Element", class: "form-label")
+    = f.select(:date_submitted_element_id, element_options, { include_blank: true }, class: "form-select")
+    .form-text
+      = icon_for(:info)
+      Upon submission of an item, an element will automatically be appended to
+      it containing a timestamp in ISO 8601 format.
+      If set to the blank first option in the list, no such element will be added.
+
+  .mb-3
+    = f.label(:date_approved_element_id, "Date Approved Element", class: "form-label")
+    = f.select(:date_approved_element_id, element_options, { include_blank: true }, class: "form-select")
+    .form-text
+      = icon_for(:info)
+      Upon approval of a submitted item, an element will automatically be
+      appended to it containing a timestamp in ISO 8601 format.
+      If set to the blank first option in the list, no such element will be added.
+
+  .mb-3
+    = f.label(:date_published_element_id, "Date Published Element", class: "form-label")
+    = f.select(:date_published_element_id, element_options, { include_blank: true }, class: "form-select")
+    .form-text
+      = icon_for(:info)
+      When an item first becomes publicly available, an element will
+      automatically be appended to it containing a timestamp in ISO 8601 format.
+      If set to the blank first option in the list, no such element will be added.
+
+  .mb-3
+    = f.label(:handle_uri_element_id, "Handle URI Element", class: "form-label")
+    = f.select(:handle_uri_element_id, element_options, { include_blank: true }, class: "form-select")
+    .form-text
+      = icon_for(:info)
+      Upon approval of an item, an element will automatically be appended to
+      it containing its handle URI.
+      If set to the blank first option in the list, no such element will be added.
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Save Changes", class: "btn btn-primary")

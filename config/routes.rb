@@ -68,6 +68,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-administrators", to: "institutions#edit_administrators", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/element-mappings/edit", to: "institutions#edit_element_mappings", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-preservation", to: "institutions#edit_preservation", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "institutions#edit_properties", via: :get,
@@ -75,6 +77,8 @@ Rails.application.routes.draw do
     match "/edit-settings", to: "institutions#edit_settings", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-theme", to: "institutions#edit_theme", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/element-mappings", to: "institutions#show_element_mappings", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/preservation", to: "institutions#show_preservation", via: :get,
           constraints: lambda { |request| request.xhr? }

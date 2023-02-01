@@ -126,25 +126,25 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal Item::Stages::APPROVED, item.stage
   end
 
-  test "approve() creates an associated dcterms:available element if one does
-  not already exist" do
+  test "approve() creates an associated date-approved element" do
     item = items(:uiuc_submitting)
-    item.approve
-    e = item.element("dcterms:available")
-    assert_not_nil e.string
-    assert_equal e.registered_element.institution, item.institution
+    item.institution.update!(handle_uri_element: nil)
+    assert_difference "AscribedElement.count", 1 do
+      item.approve
+      e = item.element(item.institution.date_approved_element.name)
+      assert_not_nil e.string
+      assert_equal e.registered_element.institution, item.institution
+    end
   end
 
-  test "approve() does not create an associated dcterms:available element if
-  one already exists" do
-    item       = items(:uiuc_described)
-    item.stage = Item::Stages::APPROVED
-    reg_e      = RegisteredElement.find_by(name:        "dcterms:available",
-                                           institution: item.institution)
-    item.elements.build(registered_element: reg_e,
-                        string:             "whatever")
-    item.approve
-    assert_equal 1, item.elements.select{ |e| e.name == "dcterms:available" }.length
+  test "approve() does not create an associated date-approved element if no
+  such mapping is defined" do
+    item = items(:uiuc_submitting)
+    item.institution.update!(date_approved_element: nil,
+                             handle_uri_element:    nil)
+    assert_no_difference "item.elements.count" do
+      item.approve
+    end
   end
 
   # approved?()
@@ -221,7 +221,7 @@ class ItemTest < ActiveSupport::TestCase
     item = items(:uiuc_described)
     doc = item.as_indexed_json
     assert_equal 3, item.elements.length
-    title = item.elements.find{ |e| e.name == Configuration.instance.elements[:title] }
+    title = item.elements.find{ |e| e.name == item.institution.title_element.name }
     assert_equal [title.string],
                  doc[title.registered_element.indexed_field]
   end
@@ -261,12 +261,33 @@ class ItemTest < ActiveSupport::TestCase
     assert item.handle.exists_on_server?
   end
 
-  test "assign_handle() creates an associated identifier element" do
+  test "assign_handle() creates an associated handle URI element" do
     item = items(:uiuc_described)
-    item.assign_handle
-    e = item.element("dcterms:identifier")
-    assert_equal item.handle.permanent_url, e.uri
-    assert_equal e.registered_element.institution, item.institution
+    assert_difference "AscribedElement.count", 1 do
+      item.assign_handle
+      e = item.element(item.institution.handle_uri_element.name)
+      assert_equal item.handle.permanent_url, e.uri
+      assert_equal e.registered_element.institution, item.institution
+    end
+  end
+
+  test "assign_handle() does not create an associated handle URI element if
+  no such mapping is defined" do
+    item = items(:uiuc_described)
+    item.institution.update!(handle_uri_element: nil)
+    assert_no_difference "AscribedElement.count" do
+      item.assign_handle
+    end
+  end
+
+  # authors() (Describable concern)
+
+  test "authors() returns all author elements" do
+    item  = items(:uiuc_described)
+    reg_e = item.institution.author_element
+    item.elements.build(registered_element: reg_e, string: "Value 1")
+    item.elements.build(registered_element: reg_e, string: "Value 2")
+    assert_equal ["Value 1", "Value 2"], item.authors.map(&:string)
   end
 
   # buried?()
@@ -299,10 +320,10 @@ class ItemTest < ActiveSupport::TestCase
 
   # complete_submission()
 
-  test "complete_submission() creates an associated dc:date:submitted element" do
+  test "complete_submission() creates an associated date-submitted element" do
     item = items(:uiuc_described)
     item.complete_submission
-    e = item.element("dc:date:submitted")
+    e = item.element(item.institution.date_submitted_element.name)
     assert_not_nil e.string
     assert_equal item.institution, e.registered_element.institution
   end
@@ -340,22 +361,30 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal Item::Stages::APPROVED, item.stage
   end
 
-  test "complete_submission() does not create an associated dcterms:available
-  element if the collection is reviewing submissions" do
-    item = items(:uiuc_submitting)
-    item.primary_collection.submissions_reviewed = true
-    item.complete_submission
-    assert_nil item.element("dcterms:available")
-  end
-
-  test "complete_submission() creates an associated dcterms:available element
+  test "complete_submission() creates an associated date-submitted element
   if the collection is not reviewing submissions" do
     item = items(:uiuc_submitting)
     item.primary_collection.submissions_reviewed = false
-    item.complete_submission
-    e = item.element("dcterms:available")
-    assert_not_nil e.string
-    assert_equal e.registered_element.institution, item.institution
+    item.institution.update!(date_approved_element: nil,
+                             handle_uri_element:    nil)
+    assert_difference "AscribedElement.count", 1 do
+      item.complete_submission
+      e = item.element(item.institution.date_submitted_element.name)
+      assert_not_nil e.string
+      assert_equal e.registered_element.institution, item.institution
+    end
+  end
+
+  test "complete_submission() does not create an associated date-submitted
+  element if no such mapping is defined" do
+    item = items(:uiuc_submitting)
+    item.primary_collection.submissions_reviewed = false
+    item.institution.update!(date_submitted_element: nil,
+                             date_approved_element:  nil,
+                             handle_uri_element:     nil)
+    assert_no_difference "AscribedElement.count" do
+      item.complete_submission
+    end
   end
 
   test "complete_submission() does not move any associated Bitstreams into

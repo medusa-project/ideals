@@ -13,6 +13,13 @@ empty:
   feedback_email:         feedback@empty.edu
   outgoing_message_queue: empty_to_nowhere
   incoming_message_queue: nowhere_to_empty
+  title_element:          empty_dc_title
+  author_element:         empty_dc_creator
+  description_element:    empty_dc_description
+  date_approved_element:  empty_ideals_date_approved
+  date_published_element: empty_ideals_date_published
+  date_submitted_element: empty_ideals_date_submitted
+  handle_uri_element:     empty_ideals_handle_uri
   default:                false
 
 example:
@@ -25,6 +32,13 @@ example:
   feedback_email:         feedback@example.edu
   outgoing_message_queue: example_to_nowhere
   incoming_message_queue: nowhere_to_example
+  title_element:          example_dc_title
+  author_element:         example_dc_creator
+  description_element:    example_dc_description
+  date_approved_element:  example_ideals_date_approved
+  date_published_element: example_ideals_date_published
+  date_submitted_element: example_ideals_date_submitted
+  handle_uri_element:     example_ideals_handle_uri
   default:                false
 
 northeast:
@@ -37,6 +51,13 @@ northeast:
   feedback_email:         feedback@northeast.edu
   outgoing_message_queue: northeast_to_nowhere
   incoming_message_queue: nowhere_to_northeast
+  title_element:          northeast_dc_title
+  author_element:         northeast_dc_creator
+  description_element:    northeast_dc_description
+  date_approved_element:  northeast_ideals_date_approved
+  date_published_element: northeast_ideals_date_published
+  date_submitted_element: northeast_ideals_date_submitted
+  handle_uri_element:     northeast_ideals_handle_uri
   default:                false
   administering_groups:
     - northeast_admins
@@ -51,6 +72,13 @@ southwest:
   feedback_email:         feedback@southwest.edu
   outgoing_message_queue: southwest_to_nowhere
   incoming_message_queue: nowhere_to_southwest
+  title_element:          southwest_dc_title
+  author_element:         southwest_dc_creator
+  description_element:    southwest_dc_description
+  date_approved_element:  southwest_ideals_date_approved
+  date_published_element: southwest_ideals_date_published
+  date_submitted_element: southwest_ideals_date_submitted
+  handle_uri_element:     southwest_ideals_handle_uri
   default:                false
   administering_groups:
     - southwest_admins
@@ -66,6 +94,13 @@ uiuc:
   welcome_html:           <h1>Welcome to IDEALS</h1>
   outgoing_message_queue: ideals_to_medusa
   incoming_message_queue: medusa_to_ideals
+  title_element:          uiuc_dc_title
+  author_element:         uiuc_dc_creator
+  description_element:    uiuc_dc_description
+  date_approved_element:  uiuc_ideals_date_approved
+  date_published_element: uiuc_ideals_date_published
+  date_submitted_element: uiuc_ideals_date_submitted
+  handle_uri_element:     uiuc_ideals_handle_uri
   default:                true
   administering_groups:
     - uiuc_admins

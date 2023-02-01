@@ -141,6 +141,25 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_element_mappings()
+
+  test "edit_element_mappings() returns HTTP 403 for logged-out users" do
+    get institution_element_mappings_edit_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_element_mappings() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_element_mappings_edit_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_element_mappings() returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    get institution_element_mappings_edit_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # edit_preservation()
 
   test "edit_preservation() returns HTTP 403 for logged-out users" do
@@ -363,6 +382,25 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
     get institution_access_path(@institution, role: Role::LOGGED_OUT), xhr: true
     assert_select(".edit-administrators", false)
+  end
+
+  # show_element_mappings()
+
+  test "show_element_mappings() returns HTTP 403 for logged-out users" do
+    get institution_element_mappings_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_element_mappings() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_element_mappings_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_element_mappings() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_element_mappings_path(@institution), xhr: true
+    assert_response :ok
   end
 
   # show_preservation()

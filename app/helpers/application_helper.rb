@@ -676,18 +676,17 @@ module ApplicationHelper
     html <<     "</h5>"
 
     if resource.kind_of?(Item)
-      config  = ::Configuration.instance
-      creator = resource.elements.
-        select{ |e| e.name == config.elements[:creator] }.
+      author = resource.elements.
+        select{ |e| e.name == resource.institution.author_element.name }.
         map(&:string).
         join("; ")
       date    = resource.elements.
-        select{ |e| e.name == config.elements[:date] }.
+        select{ |e| e.name == resource.institution.date_published_element.name }.
         map{ |e| e.string.to_i.to_s }.
         reject{ |e| e == "0" }.
         join("; ")
       info_parts  = []
-      info_parts << creator if creator.present?
+      info_parts << author if author.present?
       info_parts << date if date.present?
       html       << info_parts.join(" &bull; ")
       html << "<br><br>"

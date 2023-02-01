@@ -1,5 +1,5 @@
 ##
-# Defines an ordered list of {RegisteredElement metadata elements}, their
+# Defines an ordered list of {MetadataProfileElement metadata elements}, their
 # labels, and whether they are searchable, sortable, etc. A metadata profile
 # can be assigned to {Collection}s and {Unit}s. Collections without an assigned
 # profile will fall back to the parent unit's profile, and then to the
@@ -55,13 +55,12 @@ class MetadataProfile < ApplicationRecord
   end
 
   ##
-  # Ascribes some baseline [MetadataProfileElement]s to a newly created
+  # Ascribes some baseline {MetadataProfileElement}s to a newly created
   # profile.
   #
   def add_default_elements
     raise "Instance already has elements ascribed to it" if self.elements.any?
-    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:title",
-                                                                      institution: self.institution),
+    self.elements.build(registered_element: self.institution.title_element,
                         position:           0,
                         relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                         visible:            true,
@@ -76,8 +75,7 @@ class MetadataProfile < ApplicationRecord
                         searchable:         true,
                         sortable:           true,
                         faceted:            true)
-    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:creator",
-                                                                      institution: self.institution),
+    self.elements.build(registered_element: self.institution.author_element,
                         position:           2,
                         relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
                         visible:            true,
@@ -98,8 +96,7 @@ class MetadataProfile < ApplicationRecord
                         searchable:         true,
                         sortable:           false,
                         faceted:            false)
-    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:date:issued",
-                                                                      institution: self.institution),
+    self.elements.build(registered_element: self.institution.date_published_element,
                         position:           5,
                         visible:            true,
                         searchable:         true,
