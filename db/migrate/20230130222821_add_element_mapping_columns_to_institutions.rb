@@ -118,24 +118,24 @@ class AddElementMappingColumnsToInstitutions < ActiveRecord::Migration[7.0]
                VALUES(#{uiuc_id}, 'dc:description', 'Description', NOW(), NOW());")
     end
     if 1 > execute("SELECT COUNT(id) AS count FROM registered_elements
-          WHERE institution_id = #{uiuc_id} AND name = 'ideals:date:submitted';")[0]['count']
+          WHERE institution_id = #{uiuc_id} AND name = 'dc:date:submitted';")[0]['count']
       execute("INSERT INTO registered_elements(institution_id, name, label, created_at, updated_at)
-               VALUES(#{uiuc_id}, 'ideals:date:submitted', 'Date Submitted', NOW(), NOW());")
+               VALUES(#{uiuc_id}, 'dc:date:submitted', 'Date Submitted', NOW(), NOW());")
     end
     if 1 > execute("SELECT COUNT(id) AS count FROM registered_elements
-          WHERE institution_id = #{uiuc_id} AND name = 'ideals:date:approved';")[0]['count']
+          WHERE institution_id = #{uiuc_id} AND name = 'dcterms:available';")[0]['count']
       execute("INSERT INTO registered_elements(institution_id, name, label, created_at, updated_at)
-               VALUES(#{uiuc_id}, 'ideals:date:approved', 'Date Approved', NOW(), NOW());")
+               VALUES(#{uiuc_id}, 'dcterms:available', 'Date Approved', NOW(), NOW());")
     end
     if 1 > execute("SELECT COUNT(id) AS count FROM registered_elements
-          WHERE institution_id = #{uiuc_id} AND name = 'ideals:date:published';")[0]['count']
+          WHERE institution_id = #{uiuc_id} AND name = 'dc:date:issued';")[0]['count']
       execute("INSERT INTO registered_elements(institution_id, name, label, created_at, updated_at)
-               VALUES(#{uiuc_id}, 'ideals:date:published', 'Date Published', NOW(), NOW());")
+               VALUES(#{uiuc_id}, 'dc:date:issued', 'Date Published', NOW(), NOW());")
     end
     if 1 > execute("SELECT COUNT(id) AS count FROM registered_elements
-          WHERE institution_id = #{uiuc_id} AND name = 'ideals:handleURI';")[0]['count']
+          WHERE institution_id = #{uiuc_id} AND name = 'dcterms:identifier';")[0]['count']
       execute("INSERT INTO registered_elements(institution_id, name, label, created_at, updated_at)
-               VALUES(#{uiuc_id}, 'ideals:handleURI', 'Handle URI', NOW(), NOW());")
+               VALUES(#{uiuc_id}, 'dcterms:identifier', 'Handle URI', NOW(), NOW());")
     end
 
     # Get UIUC element IDs
