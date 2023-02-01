@@ -11,7 +11,7 @@
       = yield :title
       |
       = ::Configuration.instance.website[:global_service_name]
-    = stylesheet_link_tag 'global/application', media: 'all'
+    = stylesheet_link_tag 'global/application_global', media: 'all'
     = javascript_include_tag 'application'
     = csrf_meta_tags
     = yield(:head_content)
