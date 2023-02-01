@@ -366,6 +366,12 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "index() returns HTTP 200 in global scope" do
+    host! ::Configuration.instance.main_host
+    get items_path
+    assert_response :ok
+  end
+
   test "index() omits submitting, submitted, embargoed, withdrawn, and buried
   items by default" do
     skip # TODO: this fails intermittently
