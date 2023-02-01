@@ -430,7 +430,7 @@ module ApplicationHelper
   end
 
   def include_chart_library
-    javascript_include_tag("https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js")
+    javascript_include_tag(asset_path("/chart.min.js"))
   end
 
   ##
