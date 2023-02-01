@@ -161,7 +161,7 @@ Rails.application.routes.draw do
   match "/recent-items", to: "items#recent", via: :get, as: "recent_items"
   match "/reset-password", to: "password_resets#get", via: :get
   match "/reset-password", to: "password_resets#post", via: :post
-  resources :registered_elements, param: :name, path: "elements"
+  resources :registered_elements, except: :show, param: :name, path: "elements"
   match "/robots", to: "robots#show", via: :get
   match "/settings", to: "settings#index", via: :get
   match "/settings", to: "settings#update", via: :patch
