@@ -1,9 +1,15 @@
 ##
 # Defines an ordered list of {MetadataProfileElement metadata elements}, their
-# labels, and whether they are searchable, sortable, etc. A metadata profile
-# can be assigned to {Collection}s and {Unit}s. Collections without an assigned
-# profile will fall back to the parent unit's profile, and then to the
-# {MetadataProfile#institution_default institution's default profile}.
+# labels, and whether they are searchable, sortable, etc.
+#
+# The elements specified in a metadata profile are a snapshot of the same
+# institution's {RegisteredElement element registry} at the time of its
+# creation.
+#
+# A metadata profile can be assigned to {Collection}s and {Unit}s. Collections
+# without an assigned profile will fall back to the parent unit's profile, and
+# then to the {MetadataProfile#institution_default institution's default
+# profile}.
 #
 # A metadata profile is like a template or view. Instead of enumerating an
 # {Item}'s metadata elements for public display, for example, we enumerate the
@@ -60,62 +66,15 @@ class MetadataProfile < ApplicationRecord
   #
   def add_default_elements
     raise "Instance already has elements ascribed to it" if self.elements.any?
-    self.elements.build(registered_element: self.institution.title_element,
-                        position:           0,
-                        relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
-                        visible:            true,
-                        searchable:         true,
-                        sortable:           true,
-                        faceted:            false)
-    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:subject",
-                                                                      institution: self.institution),
-                        position:           1,
-                        relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
-                        visible:            true,
-                        searchable:         true,
-                        sortable:           true,
-                        faceted:            true)
-    self.elements.build(registered_element: self.institution.author_element,
-                        position:           2,
-                        relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT + 1,
-                        visible:            true,
-                        searchable:         true,
-                        sortable:           true,
-                        faceted:            true)
-    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:contributor",
-                                                                      institution: self.institution),
-                        position:           3,
-                        visible:            true,
-                        searchable:         true,
-                        sortable:           false,
-                        faceted:            false)
-    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:description:abstract",
-                                                                      institution: self.institution),
-                        position:           4,
-                        visible:            true,
-                        searchable:         true,
-                        sortable:           false,
-                        faceted:            false)
-    self.elements.build(registered_element: self.institution.date_published_element,
-                        position:           5,
-                        visible:            true,
-                        searchable:         true,
-                        sortable:           true,
-                        faceted:            false)
-    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:identifier:uri",
-                                                                      institution: self.institution),
-                        position:           6,
-                        visible:            true,
-                        searchable:         true,
-                        sortable:           false,
-                        faceted:            false)
-    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:type",
-                                                                      institution: self.institution),
-                        position:           7,
-                        visible:            true,
-                        searchable:         true,
-                        sortable:           false,
-                        faceted:            true)
+    self.institution.registered_elements.order(:label).each_with_index do |reg_e, index|
+      self.elements.build(registered_element: reg_e,
+                          position:           index,
+                          relevance_weight:   MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT,
+                          visible:            true,
+                          searchable:         true,
+                          sortable:           true,
+                          faceted:            reg_e == self.institution.author_element)
+    end
     self.save!
   end
 

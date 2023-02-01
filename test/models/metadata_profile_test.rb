@@ -52,6 +52,15 @@ class MetadataProfileTest < ActiveSupport::TestCase
     end
   end
 
+  test "add_default_elements() adds counterparts of all RegisteredElements in
+  the same institution" do
+    profile = MetadataProfile.create!(name:        "Test Profile",
+                                      institution: institutions(:uiuc))
+    profile.add_default_elements
+    assert_equal profile.institution.registered_elements.count,
+                 profile.elements.count
+  end
+
   test "add_default_elements() raises an error if the instance already has
   elements attached to it" do
     profile = metadata_profiles(:uiuc_default)
