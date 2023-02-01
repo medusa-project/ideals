@@ -2,6 +2,10 @@ require 'test_helper'
 
 class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
 
+  setup do
+    host! institutions(:uiuc).fqdn
+  end
+
   # get()
 
   test "get() returns HTTP 200" do

@@ -2,8 +2,8 @@
                                "data-bs-touch":    "false",
                                "data-bs-interval": "9999999999"}
   .carousel-inner
-    - if current_institution.key == "uiuc"
+    - if current_institution&.key == "uiuc"
       .carousel-item.active
         = render partial: "sessions/netid_login_form"
-    .carousel-item.p-1{class: current_institution.key == "uiuc" ? "" : "active"}
+    .carousel-item.p-1{class: current_institution&.key == "uiuc" ? "" : "active"}
       = render partial: "sessions/local_login_form"

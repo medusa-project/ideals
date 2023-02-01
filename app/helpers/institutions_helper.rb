@@ -18,14 +18,16 @@ module InstitutionsHelper
   # @return [String] HTML `link` tags.
   #
   def institution_favicon_tags
-    html = StringIO.new
-    FAVICONS.each do |icon|
-      html << raw("<link rel=\"#{icon[:rel]}\" "\
-                  "type=\"#{icon[:type]}\" "\
-                  "sizes=\"#{icon[:size]}x#{icon[:size]}\" "\
-                  "href=\"#{current_institution.favicon_url(size: icon[:size])}\">\n")
+    if current_institution
+      html = StringIO.new
+      FAVICONS.each do |icon|
+        html << raw("<link rel=\"#{icon[:rel]}\" "\
+                    "type=\"#{icon[:type]}\" "\
+                    "sizes=\"#{icon[:size]}x#{icon[:size]}\" "\
+                    "href=\"#{current_institution.favicon_url(size: icon[:size])}\">\n")
+      end
+      raw(html.string)
     end
-    raw(html.string)
   end
 
 end

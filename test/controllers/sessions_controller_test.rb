@@ -8,6 +8,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
+    host! institutions(:example).fqdn
     log_out
   end
 
@@ -60,9 +61,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "create() with valid credentials redirects to root URL" do
+  test "create() with valid credentials redirects to the institution root URL" do
     user = users(:example)
-    user.institution.update!(default: true)
     post "/auth/identity/callback", params: {
         auth_key: user.email,
         password: "password"
@@ -70,9 +70,9 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @institution.scope_url
   end
 
-  test "create() via XHR with valid credentials redirects to root URL" do
+  test "create() via XHR with valid credentials redirects to the institution
+  root URL" do
     user = users(:example)
-    user.institution.update!(default: true)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
       password: "password"
@@ -82,7 +82,6 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with valid credentials sets the user's auth hash" do
     user = users(:example)
-    user.institution.update!(default: true)
     user.update!(auth_hash: nil)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
@@ -94,7 +93,6 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with valid credentials sets the user's last-logged-in time" do
     user = users(:example)
-    user.institution.update!(default: true)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
       password: "password"

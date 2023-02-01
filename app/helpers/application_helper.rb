@@ -160,16 +160,13 @@ module ApplicationHelper
   end
 
   ##
-  # Returns the institution whose FQDN corresponds to the value of the
-  # `X-Forwarded-Host` header. This header should always be present in demo and
-  # production, but not in development or test, where a fallback is used
-  # instead.
-  #
-  # @return [Institution]
+  # @return [Institution,nil] The institution whose FQDN corresponds to the
+  #         value of the `X-Forwarded-Host` header. In global scope, there
+  #         will be no such header, in which case `nil` is returned.
   # @see institution_scope?
   #
   def current_institution
-    Institution.find_by_fqdn(request.host_with_port) || Institution.find_by_default(true)
+    Institution.find_by_fqdn(request.host_with_port)
   end
 
   ##
@@ -725,7 +722,7 @@ module ApplicationHelper
   # @param metadata_profile [MetadataProfile]
   # @return [String] HTML form element.
   #
-  def sort_menu(metadata_profile = current_institution.default_metadata_profile)
+  def sort_menu(metadata_profile = current_institution&.default_metadata_profile || MetadataProfile.global)
     results_params    = params.permit(Search::RESULTS_PARAMS)
     sortable_elements = metadata_profile.elements.where(sortable: true)
     html              = StringIO.new

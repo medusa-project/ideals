@@ -1,14 +1,12 @@
 class WelcomeController < ApplicationController
 
-  layout -> { institution_scope? ? "application_scoped" : "application_global" }
-
   before_action :store_location, only: :index
 
   ##
   # Responds to `GET /about`
   #
   def about
-    @about_html = current_institution.about_html
+    @about_html = current_institution&.about_html
   end
 
   ##

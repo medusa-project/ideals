@@ -3,7 +3,8 @@ require 'test_helper'
 class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    host! institutions(:uiuc).fqdn
+    @institution = institutions(:uiuc)
+    host! @institution.fqdn
     setup_opensearch
     setup_s3
   end
@@ -275,7 +276,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "export() via GET redirects to root page for logged-out users" do
     get items_export_path
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "export() via GET returns HTTP 403 for unauthorized users" do
@@ -387,7 +388,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "process_review() redirects to root page for logged-out users" do
     post items_process_review_path
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "process_review() returns HTTP 403 for unauthorized users" do
@@ -498,7 +499,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "review() redirects to root page for logged-out users" do
     get items_review_path
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "review() returns HTTP 403 for unauthorized users" do

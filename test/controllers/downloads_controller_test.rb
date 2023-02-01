@@ -3,6 +3,7 @@ require 'test_helper'
 class DownloadsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
+    host! institutions(:uiuc).fqdn
     setup_s3
   end
 

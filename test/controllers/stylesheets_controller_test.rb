@@ -2,6 +2,10 @@ require 'test_helper'
 
 class StylesheetsControllerTest < ActionDispatch::IntegrationTest
 
+  setup do
+    host! institutions(:southwest).fqdn
+  end
+
   # show()
 
   test "show() returns HTTP 200" do
