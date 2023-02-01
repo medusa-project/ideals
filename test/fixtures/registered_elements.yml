@@ -10,6 +10,136 @@ global_dc_title:
   highwire_mapping:
   scope_note:
 
+################################# empty #################################
+
+empty_dc_title:
+  institution:      empty
+  name:             dc:title
+  label:            Title
+  uri:              http://purl.org/dc/title
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+empty_dc_creator:
+  institution:      empty
+  name:             dc:creator
+  label:            Creator
+  uri:              http://purl.org/dc/creator
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+empty_dc_description:
+  institution:      empty
+  name:             dc:description
+  label:            Description
+  uri:              http://purl.org/dc/description
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+empty_ideals_date_approved:
+  institution:      empty
+  name:             ideals:date:approved
+  label:            Date Approved
+  uri:              http://www.ideals.illinois.edu/elements/dateApproved
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+empty_ideals_date_published:
+  institution:      empty
+  name:             ideals:date:published
+  label:            Date Published
+  uri:              http://www.ideals.illinois.edu/elements/datePublished
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+empty_ideals_date_submitted:
+  institution:      empty
+  name:             ideals:date:submitted
+  label:            Date Submitted
+  uri:              http://www.ideals.illinois.edu/elements/dateSubmitted
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+empty_ideals_handle_uri:
+  institution:      empty
+  name:             ideals:handleURI
+  label:            Handle URI
+  uri:              http://www.ideals.illinois.edu/elements/handleURI
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+################################# example #################################
+
+example_dc_title:
+  institution:      example
+  name:             dc:title
+  label:            Title
+  uri:              http://purl.org/dc/title
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+example_dc_creator:
+  institution:      example
+  name:             dc:creator
+  label:            Creator
+  uri:              http://purl.org/dc/creator
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+example_dc_description:
+  institution:      example
+  name:             dc:description
+  label:            Description
+  uri:              http://purl.org/dc/description
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+example_ideals_date_approved:
+  institution:      example
+  name:             ideals:date:approved
+  label:            Date Approved
+  uri:              http://www.ideals.illinois.edu/elements/dateApproved
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+example_ideals_date_published:
+  institution:      example
+  name:             ideals:date:published
+  label:            Date Published
+  uri:              http://www.ideals.illinois.edu/elements/datePublished
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+example_ideals_date_submitted:
+  institution:      example
+  name:             ideals:date:submitted
+  label:            Date Submitted
+  uri:              http://www.ideals.illinois.edu/elements/dateSubmitted
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+example_ideals_handle_uri:
+  institution:      example
+  name:             ideals:handleURI
+  label:            Handle URI
+  uri:              http://www.ideals.illinois.edu/elements/handleURI
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
 ################################# northeast #################################
 
 northeast_dc_title:
@@ -17,6 +147,60 @@ northeast_dc_title:
   name:             dc:title
   label:            Title
   uri:              http://purl.org/dc/title
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+northeast_dc_creator:
+  institution:      northeast
+  name:             dc:creator
+  label:            Creator
+  uri:              http://purl.org/dc/creator
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+northeast_dc_description:
+  institution:      northeast
+  name:             dc:description
+  label:            Description
+  uri:              http://purl.org/dc/description
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+northeast_ideals_date_approved:
+  institution:      northeast
+  name:             ideals:date:approved
+  label:            Date Approved
+  uri:              http://www.ideals.illinois.edu/elements/dateApproved
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+northeast_ideals_date_published:
+  institution:      northeast
+  name:             ideals:date:published
+  label:            Date Published
+  uri:              http://www.ideals.illinois.edu/elements/datePublished
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+northeast_ideals_date_submitted:
+  institution:      northeast
+  name:             ideals:date:submitted
+  label:            Date Submitted
+  uri:              http://www.ideals.illinois.edu/elements/dateSubmitted
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+northeast_ideals_handle_uri:
+  institution:      northeast
+  name:             ideals:handleURI
+  label:            Handle URI
+  uri:              http://www.ideals.illinois.edu/elements/handleURI
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
@@ -235,6 +419,42 @@ southwest_dcterms_identifier:
   name:             dcterms:identifier
   label:            Identifier
   uri:              http://purl.org/dc/terms/identifier
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_ideals_date_approved:
+  institution:      southwest
+  name:             ideals:date:approved
+  label:            Date Approved
+  uri:              http://www.ideals.illinois.edu/elements/dateApproved
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_ideals_date_published:
+  institution:      southwest
+  name:             ideals:date:published
+  label:            Date Published
+  uri:              http://www.ideals.illinois.edu/elements/datePublished
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_ideals_date_submitted:
+  institution:      southwest
+  name:             ideals:date:submitted
+  label:            Date Submitted
+  uri:              http://www.ideals.illinois.edu/elements/dateSubmitted
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+southwest_ideals_handle_uri:
+  institution:      southwest
+  name:             ideals:handleURI
+  label:            Handle URI
+  uri:              http://www.ideals.illinois.edu/elements/handleURI
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:
@@ -507,6 +727,42 @@ uiuc_dcterms_identifier:
   name:             dcterms:identifier
   label:            Identifier
   uri:              http://purl.org/dc/terms/identifier
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+uiuc_ideals_date_approved:
+  institution:      uiuc
+  name:             ideals:date:approved
+  label:            Date Approved
+  uri:              http://www.ideals.illinois.edu/elements/dateApproved
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+uiuc_ideals_date_published:
+  institution:      uiuc
+  name:             ideals:date:published
+  label:            Date Published
+  uri:              http://www.ideals.illinois.edu/elements/datePublished
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+uiuc_ideals_date_submitted:
+  institution:      uiuc
+  name:             ideals:date:submitted
+  label:            Date Submitted
+  uri:              http://www.ideals.illinois.edu/elements/dateSubmitted
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  highwire_mapping:
+  scope_note:
+
+uiuc_ideals_handle_uri:
+  institution:      uiuc
+  name:             ideals:handleURI
+  label:            HandleURI
+  uri:              http://www.ideals.illinois.edu/elements/handleURI
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
   highwire_mapping:
   scope_note:

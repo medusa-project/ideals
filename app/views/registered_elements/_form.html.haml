@@ -6,7 +6,7 @@
 
   .mb-3
     = f.label :name
-    = f.text_field :name, class: "form-control", disabled: !f.object.new_record? || f.object.required?
+    = f.text_field :name, class: "form-control", disabled: !f.object.new_record?
   .mb-3
     = f.label :uri, "URI"
     = f.text_field :uri, class: "form-control"
@@ -18,8 +18,7 @@
     = f.select(:vocabulary_id, options_for_select(Vocabulary.where(institution: current_institution).order(:name).map{ |v| [v.name, v.id] },
                                                   f.object.vocabulary_id),
                { include_blank: true },
-               class: "form-select",
-               disabled: f.object.required?)
+               class: "form-select")
   .mb-3
     = f.label :input_type, "Input Type"
     = f.select(:input_type, options_for_select(RegisteredElement::InputType.all.map{ |t| [t.split("_").map(&:capitalize).join(" "), t] }.sort.reverse,

@@ -198,8 +198,7 @@ class CollectionsController < ApplicationController
     # The items array contains item IDs and download counts but not titles.
     # So here we will insert them.
     AscribedElement.
-      where(registered_element: RegisteredElement.find_by(name: "dc:title",
-                                                          institution: current_institution)).
+      where(registered_element: current_institution.title_element).
       where(item_id: @items.map{ |row| row['id'] }).pluck(:item_id, :string).each do |asc_e|
       row = @items.find{ |r| r['id'] == asc_e[0] }
       row['title'] = asc_e[1] if row

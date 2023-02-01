@@ -112,8 +112,8 @@ class SafImporterTest < ActiveSupport::TestCase
 
     # Test metadata
     assert_equal 9, item.elements.length
-    assert_not_nil item.element("dcterms:available")  # added automatically upon approval
-    assert_not_nil item.element("dcterms:identifier") # added automatically when the handle is assigned
+    assert_not_nil item.element(item.institution.date_approved_element.name)  # added automatically upon approval
+    assert_not_nil item.element(item.institution.handle_uri_element.name) # added automatically when the handle is assigned
     assert_equal "Escher Lego", item.element("dc:title").string
     assert_equal "Subject 1", item.elements.select{ |e| e.name == "dc:subject"}[0].string
     assert_equal 1, item.elements.select{ |e| e.name == "dc:subject"}[0].position
@@ -280,8 +280,8 @@ class SafImporterTest < ActiveSupport::TestCase
 
     # Test metadata
     assert_equal 9, item.elements.length
-    assert_not_nil item.element("dcterms:available")  # added automatically upon approval
-    assert_not_nil item.element("dcterms:identifier") # added automatically when the handle is assigned
+    assert_not_nil item.element(item.institution.date_approved_element.name)  # added automatically upon approval
+    assert_not_nil item.element(item.institution.handle_uri_element.name) # added automatically when the handle is assigned
     assert_equal "Escher Lego", item.element("dc:title").string
     assert_equal "Subject 1", item.elements.select{ |e| e.name == "dc:subject"}[0].string
     assert_equal 1, item.elements.select{ |e| e.name == "dc:subject"}[0].position

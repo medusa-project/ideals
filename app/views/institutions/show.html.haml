@@ -39,6 +39,15 @@
                                       "aria-selected":  "false"}
           %i.fa.fa-cog
           Settings
+      - if policy(@institution).show_element_mappings?
+        %button#element-mappings-tab.nav-link{"data-bs-target": "#element-mappings-tab-content",
+                                              "data-bs-toggle": "pill",
+                                              role:             "tab",
+                                              type:             "button",
+                                              "aria-controls":  "element-mappings-tab-content",
+                                              "aria-selected":  "false"}
+          = icon_for(RegisteredElement)
+          Element Mappings
       - if policy(@institution).show_preservation?
         %button#preservation-tab.nav-link{"data-bs-target": "#preservation-tab-content",
                                           "data-bs-toggle": "pill",
@@ -97,8 +106,13 @@
         = spinner
 
     - if policy(@institution).show_settings?
-      #settings-tab-content.tab-pane.fade{role:               "tabpanel",
+      #settings-tab-content.tab-pane.fade{role:              "tabpanel",
                                           "aria-labelledby": "settings-tab"}
+        = spinner
+
+    - if policy(@institution).show_element_mappings?
+      #element-mappings-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                  "aria-labelledby": "element-mappings-tab"}
         = spinner
 
     - if policy(@institution).show_preservation?
@@ -126,6 +140,8 @@
                                         "aria-labelledby": "access-tab"}
         = spinner
 
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-element-mappings-modal", title: "Edit Element Mappings" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-preservation-modal", title: "Edit Preservation" }
 = render partial: "shared/ajax_modal",

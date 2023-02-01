@@ -147,9 +147,9 @@ class MetadataProfileElement < ApplicationRecord
   end
 
   def registered_element_and_profile_are_of_same_institution
-    profile = self.metadata_profile&.institution
-    reg_e   = self.registered_element
-    if profile && reg_e && profile.id != reg_e.institution_id
+    institution = self.metadata_profile&.institution
+    reg_e       = self.registered_element
+    if institution && reg_e && institution.id != reg_e.institution_id
       errors.add(:base, "Registered element and owning metadata profile must "\
                         "be of the same institution")
       throw(:abort)

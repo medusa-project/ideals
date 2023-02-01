@@ -143,6 +143,20 @@ const InstitutionView = function() {
             });
         });
     });
+
+    $("#element-mappings-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/element-mappings";
+        $.get(url, function(data) {
+            $("#element-mappings-tab-content").html(data);
+            $('button.edit-element-mappings').on('click', function() {
+                $.get(url + "/edit", function(data) {
+                    const modalBody = $("#edit-element-mappings-modal .modal-body");
+                    modalBody.html(data);
+                });
+            });
+        });
+    });
+
 };
 
 $(document).ready(function() {

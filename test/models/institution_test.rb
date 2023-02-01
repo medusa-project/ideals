@@ -99,7 +99,29 @@ class InstitutionTest < ActiveSupport::TestCase
                                       key:              "new",
                                       fqdn:             "example.net",
                                       main_website_url: "https://example.net")
-    assert_equal 29, institution.registered_elements.count
+    assert_equal 34, institution.registered_elements.count
+  end
+
+  test "create() adds default element mappings" do
+    institution = Institution.create!(name:             "New Institution",
+                                      service_name:     "New",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      main_website_url: "https://example.net")
+    assert_equal institution.registered_elements.find_by_name("dc:title"),
+                 institution.title_element
+    assert_equal institution.registered_elements.find_by_name("dc:creator"),
+                 institution.author_element
+    assert_equal institution.registered_elements.find_by_name("dc:description"),
+                 institution.description_element
+    assert_equal institution.registered_elements.find_by_name("ideals:date:submitted"),
+                 institution.date_submitted_element
+    assert_equal institution.registered_elements.find_by_name("ideals:date:approved"),
+                 institution.date_approved_element
+    assert_equal institution.registered_elements.find_by_name("ideals:date:published"),
+                 institution.date_published_element
+    assert_equal institution.registered_elements.find_by_name("ideals:handleURI"),
+                 institution.handle_uri_element
   end
 
   test "create() adds a default index page" do

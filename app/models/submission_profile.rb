@@ -44,13 +44,11 @@ class SubmissionProfile < ApplicationRecord
   #
   def add_default_elements
     raise "Instance already has elements ascribed to it" if self.elements.any?
-    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:title",
-                                                                      institution: self.institution),
+    self.elements.build(registered_element: self.institution.title_element,
                         position:           0,
                         repeatable:         false,
                         required:           true)
-    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:date:issued",
-                                                                      institution: self.institution),
+    self.elements.build(registered_element: self.institution.date_published_element,
                         position:           1,
                         repeatable:         true,
                         required:           true)
@@ -64,8 +62,7 @@ class SubmissionProfile < ApplicationRecord
                         position:           3,
                         repeatable:         true,
                         required:           true)
-    self.elements.build(registered_element: RegisteredElement.find_by(name: "dc:creator",
-                                                                      institution: self.institution),
+    self.elements.build(registered_element: self.institution.author_element,
                         position:           4,
                         repeatable:         true,
                         required:           false)

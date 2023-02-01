@@ -13,11 +13,19 @@ module Describable
   included do
 
     ##
-    # @return [String] Value of the description [AscribedElement] in the
+    # @return [Enumerable<String>] All author [AscribedElement]s in the
+    #                              {elements} association.
+    #
+    def authors
+      self.elements.select{ |e| e.name == self.institution.author_element&.name }
+    end
+
+    ##
+    # @return [String] Value of any description [AscribedElement] in the
     #                  {elements} association, or an empty string if not found.
     #
     def description
-      self.element(::Configuration.instance.elements[:description])&.string || ""
+      self.element(self.institution.description_element&.name)&.string || ""
     end
 
     ##
@@ -30,11 +38,11 @@ module Describable
     end
 
     ##
-    # @return [String] Value of the title [AscribedElement] in the {elements}
+    # @return [String] Value of any title {AscribedElement} in the {elements}
     #                  association, or an empty string if not found.
     #
     def title
-      self.element(::Configuration.instance.elements[:title])&.string || ""
+      self.element(self.institution.title_element&.name)&.string || ""
     end
 
   end

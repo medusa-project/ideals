@@ -34,7 +34,12 @@ namespace :medusa do
             loop = payload.present?
             if loop
               count += 1
-              MessageHandler.handle(payload)
+              begin
+                MessageHandler.handle(payload)
+              rescue => e
+                puts "#{e}"
+                IdealsMailer.error(e.message).deliver_now
+              end
             end
           end
         end

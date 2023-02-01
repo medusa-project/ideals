@@ -24,6 +24,10 @@ class InstitutionPolicy < ApplicationPolicy
     edit_settings
   end
 
+  def edit_element_mappings
+    edit_settings
+  end
+
   def edit_preservation
     update_preservation
   end
@@ -64,6 +68,11 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show_access
+    show
+  end
+
+  def show_element_mappings
+    return private_institution unless institution.public
     show
   end
 
