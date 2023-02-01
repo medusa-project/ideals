@@ -26,8 +26,7 @@ class LocalUser < User
   # @param name [String] If not provided, the email is used.
   # @return [LocalUser]
   #
-  def self.create_manually(email:, password:, institution: nil, name: nil)
-    institution ||= Institution.default
+  def self.create_manually(email:, password:, institution:, name: nil)
     ActiveRecord::Base.transaction do
       invitee = Invitee.find_by_email(email)
       unless invitee
