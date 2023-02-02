@@ -481,11 +481,16 @@ class Bitstream < ApplicationRecord
     staging_key = [self.item_id, self.original_filename].join("/")
     target_key  = self.class.medusa_key(self.item.handle.handle,
                                         self.original_filename)
-    message     = self.messages.build(operation:   Message::Operation::INGEST,
-                                      staging_key: staging_key,
-                                      target_key:  target_key)
-    message.save!
-    message.send_message
+    # If we are inside a transaction, and an error is raised after this block
+    # but before commit, we don't want the Message we are creating here to get
+    # wiped out by a rollback. So we persist it in a separate DB connection.
+    Bitstream.connection_pool.with_connection do
+      message = self.messages.build(operation:   Message::Operation::INGEST,
+                                    staging_key: staging_key,
+                                    target_key:  target_key)
+      message.save!
+      message.send_message
+    end
     self.update_column(:submitted_for_ingest, true) # skip callbacks
   end
 

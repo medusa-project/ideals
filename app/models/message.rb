@@ -3,6 +3,18 @@
 ##
 # Encapsulates an outgoing and incoming Medusa AMQP message.
 #
+# N.B.: When working within a transaction, instances should be persisted using
+# a separate database connection, like this:
+#
+# ```
+# ActiveRecord::Base.connection_pool.with_connection { ... persistence code ... }
+# ```
+#
+# The objective is to maintain an instance corresponding to each message sent
+# to Medusa, but consider the case of e.g. an instance created inside a
+# transaction that rolls back after a message has already been sent to the
+# queue. Using a separate connection like this ensures persistence.
+#
 # # Attributes
 #
 # * `bitstream_id`  Foreign key to {Bitstream}. May be `nil` if the related
