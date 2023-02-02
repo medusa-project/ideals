@@ -16,6 +16,15 @@
       %i.fa.fa-upload
       Drop a package or CSV file here, or click to select it.
 
+  -# this is set to display:none and shown via JS when an upload is in progress
+  #wait-message
+    .spinner-border.mb-3{role: "status"}
+      %span.visually-hidden
+        Loading&hellip;
+    %p
+      Please wait for the files to upload. This panel will close when the
+      upload is complete.
+
   .clearfix
     .float-end
       %button.btn.btn-light.cancel{"data-bs-dismiss": "modal", type: "button"} Cancel

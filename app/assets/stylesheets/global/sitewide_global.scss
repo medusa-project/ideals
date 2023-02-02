@@ -1,16 +1,72 @@
-a, a.page-link, .nav-link, .btn-outline-primary {
-  color: #23527c;
+/*
+N.B.: this file should contain the same definitions as
+app/views/stylesheets/show.css.erb
+*/
+
+$sitewide-primary-color: #23527c;
+$sitewide-primary-hover-color: #05325b;
+$sitewide-link-color: #23527c;
+$sitewide-link-hover-color: #23527c;
+$sitewide-active-link-color: #23527c;
+$sitewide-header-background-color: #13294B;
+$sitewide-footer-background-color: #13294B;
+
+.badge.bg-primary, .badge.text-bg-primary, .bg-primary .card-header, .bg-primary .card-body {
+  background-color: $sitewide-primary-color !important;
+  color: white !important;
+}
+.bg-primary code {
+  color: inherit;
+}
+.btn-primary, .btn-primary.disabled, .btn-primary:disabled {
+  background-color: $sitewide-primary-color;
+  border-color: transparent;
+  color: white !important;
+}
+.btn-outline-primary {
+  border-color: $sitewide-primary-color;
+}
+.btn-outline-primary.active {
+  border-color: $sitewide-primary-color !important;
+  background-color: $sitewide-primary-color !important;
+}
+.nav-pills .nav-link.active {
+  background-color: $sitewide-primary-color;
+  color: white;
+}
+.page-item.active .page-link {
+  background-color: $sitewide-primary-color;
+  border: 1px solid $sitewide-primary-color;
+}
+.progress-bar {
+  background-color: $sitewide-primary-color;
+  color: white;
 }
 
-a:hover, .nav-link:hover, a.page-link:hover {
-  color: #23527c;
+.btn-primary:hover, .btn-outline-primary:hover {
+  background-color: $sitewide-primary-hover-color;
+  border-color: transparent;
 }
 
-a:active {
-  color: #23527c;
-}
+a, a.page-link, .nav-link, .btn-outline-primary { color: $sitewide-link-color; }
 
+a:hover, .nav-link:hover, a.page-link:hover { color: $sitewide-link-hover-color; }
+
+a:active { color: $sitewide-active-link-color; }
 a.dropdown-item:active {
-  background-color: #23527c !important;
+  background-color: $sitewide-active-link-color !important;
+  color: white;
+}
+
+header > div:first-child {
+  background-color: $sitewide-header-background-color;
+  color: white;
+}
+header > div:first-child .btn {
+  color: white;
+}
+
+footer .info-area {
+  background-color: $sitewide-footer-background-color;
   color: white;
 }

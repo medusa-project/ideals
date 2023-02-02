@@ -9,7 +9,8 @@ const ImportsView = function() {
     const ROOT_URL   = $("input[name=root_url]").val();
 
     const UploadPackagePanel = function() {
-        const dropZone = $(".file-drop-zone");
+        const dropZone    = $(".file-drop-zone");
+        const waitMessage = $("#wait-message");
 
         /**
          * @param entry {FileSystemFileEntry}
@@ -81,6 +82,8 @@ const ImportsView = function() {
         // selection dialog.
         const fileChooser = $(".file-chooser");
         fileChooser.on("change", function() {
+            waitMessage.show();
+            dropZone.hide();
             deleteAllFiles();
             const files = this.files;
             for (let i = 0; i < files.length; i++) {
@@ -99,6 +102,8 @@ const ImportsView = function() {
         dropZone.on("drop", function(e) {
             e.preventDefault();
             e = e.originalEvent;
+            waitMessage.show();
+            dropZone.hide();
             deleteAllFiles();
             getAllFileEntries(e.dataTransfer.items).then(
                 function(entries) {

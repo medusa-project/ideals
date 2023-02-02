@@ -242,7 +242,7 @@ class SafImporter
       bundle    = Bitstream::Bundle::CONTENT
       line.split("\t").each do |part|
         if part.start_with?("bundle:")
-          bundle = Bitstream::Bundle.for_string(part.split(":").last)
+          bundle = Bitstream::Bundle.for_string(part.split(":").last.upcase)
         elsif part.start_with?("description:")
           description = part[12..]
         elsif part.start_with?("primary:")
@@ -301,7 +301,7 @@ class SafImporter
       bundle   = Bitstream::Bundle::CONTENT
       line.split("\t").each do |part|
         if part.start_with?("bundle:")
-          bundle = Bitstream::Bundle.for_string(part.split(":").last)
+          bundle = Bitstream::Bundle.for_string(part.split(":").last.upcase)
         elsif part.start_with?("description:")
           description = part[12..]
         elsif part.start_with?("primary:")

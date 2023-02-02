@@ -5,7 +5,7 @@ module ItemsHelper
   # @return [String] Form elements for the advanced search form, excluding the
   #                  outer `form` element.
   #
-  def advanced_search_form(metadata_profile = current_institution.default_metadata_profile)
+  def advanced_search_form(metadata_profile = current_institution&.default_metadata_profile || MetadataProfile.global)
     mp_elements = metadata_profile.elements.select(&:searchable).sort_by(&:position)
     html        = StringIO.new
 

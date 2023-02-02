@@ -3,7 +3,8 @@ require 'test_helper'
 class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    host! institutions(:uiuc).fqdn
+    @institution = institutions(:uiuc)
+    host! @institution.fqdn
     setup_opensearch
   end
 
@@ -70,7 +71,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to root page for logged-out users" do
     post collections_path
-    assert_redirected_to Institution.default.scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "create() returns HTTP 403 for unauthorized users" do

@@ -20,12 +20,6 @@ class InstitutionTest < ActiveSupport::TestCase
                  Institution.banner_image_key("test", "png")
   end
 
-  # default()
-
-  test "default() returns the default institution" do
-    assert_equal institutions(:uiuc), Institution.default
-  end
-
   # favicon_filename()
 
   test "favicon_filename() returns a correct filename" do
@@ -550,17 +544,6 @@ class InstitutionTest < ActiveSupport::TestCase
     setup_opensearch
     Item.reindex_all
     assert_equal 0, @instance.public_item_count
-  end
-
-  # save()
-
-  test "save() sets all other instances as not-default when the instance is set
-  as default" do
-    Institution.update_all(default: false)
-    @instance = Institution.all.first
-    @instance.default = true
-    @instance.save!
-    assert_equal @instance, Institution.find_by_default(true)
   end
 
   # regenerate_favicons()

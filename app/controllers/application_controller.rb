@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
   before_action :redirect_to_main_host, :log_out_disabled_user
   after_action :copy_flash_to_response_headers
 
-  layout "application_scoped"
+  layout -> { institution_scope? ? "application_scoped" : "application_global" }
 
   ##
   # @param entity [Class] Model or any other object to which access can be
@@ -244,9 +244,10 @@ class ApplicationController < ActionController::Base
       end
 
     else
-      @message = IdealsMailer.error_body(exception,
-                                         url_path: request.path,
-                                         user:     current_user)
+      @feedback_email = ::Configuration.instance.admin[:tech_mail_list][0]
+      @message        = IdealsMailer.error_body(exception,
+                                                url_path: request.path,
+                                                user:     current_user)
       Rails.logger.error(@message)
       IdealsMailer.error(@message).deliver_now unless Rails.env.development?
 

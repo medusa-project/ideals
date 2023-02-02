@@ -27,7 +27,6 @@
             %span.badge.bg-warning PRIVATE
           - elsif institution.outgoing_message_queue.blank?
             .text-danger= icon_for(:warning)
-          = boolean(institution.default, style: :word, true_value: "DEFAULT", show_false: false)
         %td= link_to(institution.name, institution)
         %td= link_to(institution.service_name, institution)
         %td

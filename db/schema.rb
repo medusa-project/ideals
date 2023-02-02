@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_31_180801) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_01_015257) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -302,8 +302,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_31_180801) do
     t.integer "longitude_degrees"
     t.integer "longitude_minutes"
     t.float "longitude_seconds"
-    t.boolean "default", default: false, null: false
-    t.index ["default"], name: "index_institutions_on_default"
     t.boolean "public", default: true, null: false
     t.integer "earliest_search_year", default: 2000, null: false
     t.bigint "title_element_id"
@@ -738,6 +736,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_31_180801) do
   add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :nullify
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "registered_elements", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "registered_elements", "vocabularies", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade

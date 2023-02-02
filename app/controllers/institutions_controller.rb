@@ -402,11 +402,11 @@ class InstitutionsController < ApplicationController
   # "setting."
   #
   def properties_params
-    params.require(:institution).permit(:default, :fqdn, :key,
-                                        :latitude_degrees, :latitude_minutes,
-                                        :latitude_seconds, :longitude_degrees,
-                                        :longitude_minutes, :longitude_seconds,
-                                        :name, :org_dn, :public, :service_name)
+    params.require(:institution).permit(:fqdn, :key, :latitude_degrees,
+                                        :latitude_minutes, :latitude_seconds,
+                                        :longitude_degrees, :longitude_minutes,
+                                        :longitude_seconds, :name, :org_dn,
+                                        :public, :service_name)
   end
 
   def settings_params

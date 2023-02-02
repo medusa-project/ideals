@@ -122,6 +122,12 @@ class RegisteredElement < ApplicationRecord
     name
   end
 
+  ##
+  # Override that converts empty values to nil.
+  #
+  def uri=(val)
+    super(val == "" ? nil : val)
+  end
 
   private
 

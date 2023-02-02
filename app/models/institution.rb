@@ -26,13 +26,6 @@
 # * `date_submitted_element_id`  Foreign key to {RegisteredElement} designating
 #                                an element to treat as the date-submitted
 #                                element.
-# * `default`                    Boolean flag indicating whether a particular
-#                                institution is the system default, i.e. the
-#                                one that should be used when there is no other
-#                                information available (like an
-#                                `X-Forwarded-Host` header) to determine which
-#                                one to use. Only one institution has this set
-#                                to true. # TODO: this is no longer needed--get rid of it
 # * `description_element_id`     Foreign key to {RegisteredElement} designating
 #                                an element to treat as the description
 #                                element.
@@ -160,7 +153,6 @@ class Institution < ApplicationRecord
 
   validate :disallow_key_changes, :validate_css_colors
 
-  before_save :ensure_default_uniqueness
   # N.B.: order is important!
   after_create :add_default_vocabularies, :add_default_elements,
                :add_default_element_mappings, :add_default_metadata_profile,
@@ -183,13 +175,6 @@ class Institution < ApplicationRecord
   def self.banner_image_key(institution_key, extension)
     [image_key_prefix(institution_key),
      banner_image_filename(extension)].join
-  end
-
-  ##
-  # @return [Institution] The default institution.
-  #
-  def self.default
-    Institution.find_by_default(true)
   end
 
   ##
@@ -900,17 +885,6 @@ class Institution < ApplicationRecord
   def disallow_key_changes
     if !new_record? && key_changed?
       errors.add(:key, "cannot be changed")
-    end
-  end
-
-  ##
-  # Ensures that only one institution is set as default.
-  #
-  def ensure_default_uniqueness
-    if self.default && self.default_changed?
-      Institution.where(default: true).
-        where("id != ?", self.id).
-        update_all(default: false)
     end
   end
 

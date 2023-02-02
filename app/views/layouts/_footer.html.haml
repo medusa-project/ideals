@@ -2,13 +2,13 @@
 
 %footer{role: "contentinfo"}
   .text-line
-    - if current_institution.feedback_email
+    - if current_institution&.feedback_email
       \#{link_to 'Contact us', "mailto:#{current_institution.feedback_email}"}
       for questions and to provide feedback.
   .info-area
-    - if current_institution.footer_image_filename
+    - if current_institution&.footer_image_filename
       = image_tag(current_institution.footer_image_url,
                   alt: "Institution Logo")
-    - if current_institution.copyright_notice
+    - if current_institution&.copyright_notice
       .footer-copyright.text-center.mt-3
         = current_institution.copyright_notice

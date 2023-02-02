@@ -4,4 +4,8 @@ body#imports {
       white-space: nowrap;
     }
   }
+  #wait-message {
+    display: none;
+    text-align: center;
+  }
 }

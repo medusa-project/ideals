@@ -154,4 +154,11 @@ class RegisteredElementTest < ActiveSupport::TestCase
     end
   end
 
+  # uri=()
+
+  test "uri=() converts empty strings to nil" do
+    @instance.uri = ""
+    assert_nil @instance.uri
+  end
+
 end
