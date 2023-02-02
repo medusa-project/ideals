@@ -23,6 +23,9 @@
   - if @import.task&.detail&.present?
     %dt Detail
     %dd.text-danger= @import.task.detail
+  - if @import.task&.backtrace&.present?
+    %dt Stack Trace
+    %dd.text-danger= @import.task.backtrace
   - if @import.files&.any?
     %dt Files
     %dd
