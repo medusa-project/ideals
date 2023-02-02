@@ -13,6 +13,10 @@
       = number_field_tag("settings[#{Setting::Key::EARLIEST_SEARCH_YEAR}]",
                          Setting::integer(Setting::Key::EARLIEST_SEARCH_YEAR),
                          class: "form-control")
+      %p.form-text
+        = icon_for(:info)
+        This is used only in the global context.
+        Institutions can override this within their own contexts.
   .mb-3.row
     = label_tag("settings[#{Setting::Key::BANNER_MESSAGE}]",
                 "Banner Message",
