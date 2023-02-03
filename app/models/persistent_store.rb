@@ -48,6 +48,15 @@ class PersistentStore
   end
 
   ##
+  # @param source_key [String]
+  # @param target_key [String]
+  #
+  def move_object(source_key:, target_key:)
+    copy_object(source_key: source_key, target_key: target_key)
+    delete_object(key: source_key)
+  end
+
+  ##
   # @param key_prefix [String]
   # @return [Integer]
   #

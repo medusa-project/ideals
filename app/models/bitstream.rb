@@ -527,10 +527,10 @@ class Bitstream < ApplicationRecord
     permanent_key = self.class.permanent_key(institution_key: self.institution.key,
                                              item_id:         self.item_id,
                                              filename:        self.original_filename)
-    store.copy_object(source_key: self.staging_key,
+    store.move_object(source_key: self.staging_key,
                       target_key: permanent_key)
-    self.update!(permanent_key: permanent_key)
-    self.delete_from_staging
+    self.update!(permanent_key: permanent_key,
+                 staging_key:   nil)
   end
 
   ##
