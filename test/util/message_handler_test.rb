@@ -67,7 +67,8 @@ class MessageHandlerTest < ActiveSupport::TestCase
     MessageHandler.handle(JSON.generate(incoming_message)) # assert no errors
   end
 
-  test "handle() deletes any bitstream corresponding to a delete-succeeded message" do
+  test "handle() nils out the Medusa storage properties of a bitstream
+  corresponding to a delete-succeeded message" do
     bitstream        = bitstreams(:item2_in_medusa)
     incoming_message = {
         'status'    => "ok",
@@ -76,9 +77,9 @@ class MessageHandlerTest < ActiveSupport::TestCase
     }
     MessageHandler.handle(JSON.generate(incoming_message))
 
-    assert_raises ActiveRecord::RecordNotFound do
-      bitstream.reload
-    end
+    bitstream.reload
+    assert_nil bitstream.medusa_uuid
+    assert_nil bitstream.medusa_key
   end
 
   test "handle() handles a delete-failed message" do
