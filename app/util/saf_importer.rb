@@ -284,7 +284,7 @@ class SafImporter
                                               filename:        filename)
       bs = Bitstream.create(item:              item,
                             permanent_key:     permanent_key,
-                            original_filename: filename,
+                            filename:          filename,
                             bundle:            bundle,
                             primary:           primary,
                             description:       description,
@@ -346,7 +346,7 @@ class SafImporter
                                               filename:        filename)
       bs = Bitstream.create(item:              item,
                             permanent_key:     permanent_key,
-                            original_filename: filename,
+                            filename:          filename,
                             bundle:            bundle,
                             primary:           primary,
                             description:       description,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_01_015257) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_01_211730) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -75,7 +75,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_01_015257) do
     t.boolean "primary", default: false, null: false
     t.datetime "full_text_checked_at"
     t.integer "bundle_position"
+    t.string "filename"
     t.index ["bundle"], name: "index_bitstreams_on_bundle"
+    t.index ["filename"], name: "index_bitstreams_on_filename"
     t.index ["full_text_checked_at"], name: "index_bitstreams_on_full_text_checked_at"
     t.index ["item_id"], name: "index_bitstreams_on_item_id"
     t.index ["medusa_key"], name: "index_bitstreams_on_medusa_key", unique: true

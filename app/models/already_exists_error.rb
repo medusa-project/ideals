@@ -1,3 +1,0 @@
-class AlreadyExistsError < RuntimeError
-
-end

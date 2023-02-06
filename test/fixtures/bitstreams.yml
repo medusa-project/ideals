@@ -11,6 +11,7 @@ item1_in_staging:
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename:    escher_lego.png
+  filename:             escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -25,6 +26,7 @@ submitting_in_staging:
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename:    escher_lego.png
+  filename:             escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -39,6 +41,7 @@ submitted_in_staging:
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename:    escher_lego.png
+  filename:             escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -53,6 +56,7 @@ awaiting_ingest_into_medusa:
   permanent_key:        <%= SecureRandom.hex %>
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename:    escher_lego.png
+  filename:             escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -67,6 +71,7 @@ approved_in_permanent:
   permanent_key:        <%= SecureRandom.hex %>
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pdf.pdf")) %>
   original_filename:    pdf.pdf
+  filename:             pdf.pdf
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -81,6 +86,7 @@ item2_in_medusa:
   permanent_key:        <%= SecureRandom.hex %>
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename:    escher_lego.png
+  filename:             escher_lego.png
   medusa_key:           test/test/escher_lego.png
   medusa_uuid:          3d2a99d5-2f5b-401e-80c1-864a95e3acf7
   role:                 <%= Role::LOGGED_OUT %>
@@ -95,6 +101,7 @@ license_bundle:
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pooh.jpg")) %>
   original_filename:    pooh.jpg
+  filename:             pooh.jpg
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -109,6 +116,7 @@ role_limited:
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "crane.jpg")) %>
   original_filename:    crane.jpg
+  filename:             crane.jpg
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::SYSTEM_ADMINISTRATOR %>
@@ -123,6 +131,7 @@ embargoed_in_staging:
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename:    escher_lego.png
+  filename:             escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -137,6 +146,7 @@ withdrawn_in_staging:
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename:    escher_lego.png
+  filename:             escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -151,6 +161,7 @@ multiple_bitstreams_1:
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename:    escher_lego.png
+  filename:             escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -165,6 +176,7 @@ multiple_bitstreams_2:
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pooh.jpg")) %>
   original_filename:    pooh.jpg
+  filename:             pooh.jpg
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -179,6 +191,7 @@ multiple_bitstreams_3:
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "crane.jpg")) %>
   original_filename:    crane.jpg
+  filename:             crane.jpg
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>
@@ -193,6 +206,7 @@ collection1_collection1_item1_in_staging:
   permanent_key:
   length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename:    escher_lego.png
+  filename:             escher_lego.png
   medusa_key:
   medusa_uuid:
   role:                 <%= Role::LOGGED_OUT %>

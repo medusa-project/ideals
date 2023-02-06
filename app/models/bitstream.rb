@@ -13,16 +13,20 @@
 # group. Upon receipt of a success message, {medusa_key} and {medusa_uuid} are
 # set on its corresponding instance.
 #
+# To rename an instance's filename, simply update the {filename} property.
+# ActiveRecord callbacks will handle all the work of maintaining consistency
+# with application and preservation storage.
+#
 # # Formats/media types
 #
 # The `Content-Type` header supplied by the client during the submission/upload
 # process cannot be relied on to contain a useful, specific media type.
-# Instead, the {original_filename} extension is used by {format} to infer a
+# Instead, the {filename} extension is used by {format} to infer a
 # {FileFormat}, which may have one or more associated media types.
 #
 # Later, the S3 object in staging is ingested into Medusa, and Medusa will
 # perform its own media type management, which is not very reliable. Again,
-# {original_filename} is the "source of truth."
+# {filename} is the "source of truth."
 #
 # When a format cannot be inferred, {format} will return `nil.` In this case it
 # may be necessary to update the {FileFormat format database}.
@@ -30,7 +34,7 @@
 # # Preservation
 #
 # Bitstreams are ingested into Medusa automatically depending on several
-# conditions--see the `ingest_into_medusa` `after_save` callback.
+# conditions--see the `ingest_into_medusa` `before_save` callback.
 #
 # # Derivative images
 #
@@ -56,6 +60,10 @@
 #                           attached to the same {Item}.
 # * `created_at`:           Managed by ActiveRecord.
 # * `description`:          Description.
+# * `filename`:             Filename of the bitstream. This may be (and usually
+#                           is) the same as {original_filename}, but may be
+#                           different if the bitstream/file was renamed after
+#                           ingest.
 # * `full_text_checked_at`  Date/time that the bitstream's content was last
 #                           checked for full text. When this is set,
 #                           {full_text} may or may not contain anything, but
@@ -71,6 +79,7 @@
 #                           Collection Registry. Set only after the bitstream
 #                           has been ingested.
 # * `original_filename`:    Filename of the bitstream as submitted by the user.
+#                           This may or may not be the same as {filename}.
 # * `permanent_key`:        Object key in the application S3 bucket, which is
 #                           set after the owning {Item} has been approved.
 # * `primary`               Whether the instance is the primary bitstream of
@@ -102,19 +111,34 @@ class Bitstream < ApplicationRecord
                       allow_blank: true
   validates_inclusion_of :role, in: -> (value) { Role.all }
 
+  before_save :populate_filenames
   before_save :ensure_primary_uniqueness
-  after_save :ingest_into_medusa, if: -> {
+  before_save :move_storage_object, if: -> {
+    filename_changed? &&
+      filename_was.present? &&
+      (staging_key.present? || permanent_key.present?)
+  }
+  before_save :delete_from_medusa, if: -> {
+    filename_changed? &&
+      medusa_key.present? &&
+      institution.outgoing_message_queue.present?
+  }
+  after_save :ingest_into_medusa, if: -> { # depends on a database ID
     permanent_key.present? &&
       saved_change_to_permanent_key? &&
-      !submitted_for_ingest &&
       item.handle.present? &&
-      institution.outgoing_message_queue.present? }
+      institution.outgoing_message_queue.present?
+  }
+  after_save :reindex_owning_item, if: -> {
+      filename_changed?
+  }
   after_save :read_full_text_async, if: -> {
     bundle == Bundle::CONTENT &&
     can_read_full_text? &&
     full_text_checked_at.blank? &&
     effective_key.present? &&
-    (defined?(ActiveSupport::TestCase) != "constant" || ActiveSupport::TestCase.respond_to?(:seeding) && !ActiveSupport::TestCase.seeding?)
+    (defined?(ActiveSupport::TestCase) != "constant" ||
+      (ActiveSupport::TestCase.respond_to?(:seeding) && !ActiveSupport::TestCase.seeding?))
   }
   before_destroy :delete_derivatives, :delete_from_staging,
                  :delete_from_permanent_storage
@@ -123,6 +147,9 @@ class Bitstream < ApplicationRecord
   before_create :shift_bundle_positions_before_create
   before_update :shift_bundle_positions_before_update
   after_destroy :shift_bundle_positions_after_destroy
+
+  validate :validate_original_filename_immutability
+  validate :validate_unique_filename
 
   LOGGER = CustomLogger.new(Bitstream)
 
@@ -200,7 +227,7 @@ class Bitstream < ApplicationRecord
     Dir.mktmpdir do |tmpdir|
       bitstreams.each_with_index do |bs, index|
         tmpfile = bs.download_to_temp_file
-        FileUtils.mv(tmpfile.path, File.join(tmpdir, bs.original_filename))
+        FileUtils.mv(tmpfile.path, File.join(tmpdir, bs.filename))
         task&.progress(index / bitstreams.length.to_f)
       end
       zip_filename = "files.zip"
@@ -251,6 +278,7 @@ class Bitstream < ApplicationRecord
                                                  item_id:         item.id,
                                                  filename:        filename),
                   original_filename: filename,
+                  filename:          filename,
                   length:            length)
   end
 
@@ -334,16 +362,17 @@ class Bitstream < ApplicationRecord
   ##
   # Sends a message to Medusa to delete the corresponding object.
   #
-  # This should only be done in the demo environment, if at all. The production
-  # Medusa instance shouldn't even honor delete messages.
-  #
   def delete_from_medusa
     return nil if self.medusa_uuid.blank?
-    message = self.messages.build(operation:   Message::Operation::DELETE,
-                                  medusa_uuid: self.medusa_uuid,
-                                  medusa_key:  self.medusa_key)
-    message.save!
-    message.send_message
+    # N.B.: MessageHandler will nil out medusa_uuid and medusa_key upon success.
+    # See inline comment in ingest_into_medusa() for an explanation of this
+    Bitstream.connection_pool.with_connection do
+      message = self.messages.build(operation:   Message::Operation::DELETE,
+                                    medusa_uuid: self.medusa_uuid,
+                                    medusa_key:  self.medusa_key)
+      message.save!
+      message.send_message
+    end
   end
 
   ##
@@ -442,7 +471,7 @@ class Bitstream < ApplicationRecord
   #
   def format
     unless @format
-      ext = self.original_filename&.split(".")&.last
+      ext     = self.filename&.split(".")&.last
       @format = FileFormat.for_extension(ext) if ext
     end
     @format
@@ -457,33 +486,26 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # @param force [Boolean] If true, the ingest occurs even if the instance has
-  #                        already been submitted or already exists in Medusa.
   # @raises [ArgumentError] if the bitstream does not have an ID or permanent
   #                         key, or if its owning item does not have a handle,
   #                         or if its owning institution does not
-  #                         {Institution#preservation_active? support preservation}.
-  # @raises [AlreadyExistsError] if the bitstream already has a Medusa UUID.
+  #                         {Institution#preservation_active? support
+  #                         preservation}.
   #
-  def ingest_into_medusa(force: false)
+  def ingest_into_medusa
     raise ArgumentError, "Instance has not been saved yet" if self.id.blank?
     raise ArgumentError, "Permanent key is not set" if self.permanent_key.blank?
     raise ArgumentError, "Owning item does not have a handle" if !self.item.handle || self.item.handle&.suffix&.blank?
     raise ArgumentError, "Owning institution does not have an outgoing message queue set" if self.institution.outgoing_message_queue.blank?
-    unless force
-      raise AlreadyExistsError, "Already submitted for ingest" if self.submitted_for_ingest
-      raise AlreadyExistsError, "Already exists in Medusa" if self.medusa_uuid.present?
-    end
 
     # The staging key (this is Medusa AMQP interface terminology, not
     # Bitstream terminology) is relative to the permanent key prefix because
     # Medusa is configured to look only within that prefix.
-    staging_key = [self.item_id, self.original_filename].join("/")
-    target_key  = self.class.medusa_key(self.item.handle.handle,
-                                        self.original_filename)
+    staging_key = [self.item_id, self.filename].join("/")
+    target_key  = self.class.medusa_key(self.item.handle.handle, self.filename)
     # If we are inside a transaction, and an error is raised after this block
     # but before commit, we don't want the Message we are creating here to get
-    # wiped out by a rollback. So we persist it in a separate DB connection.
+    # wiped out by a rollback, so we persist it in a separate DB connection.
     Bitstream.connection_pool.with_connection do
       message = self.messages.build(operation:   Message::Operation::INGEST,
                                     staging_key: staging_key,
@@ -526,11 +548,11 @@ class Bitstream < ApplicationRecord
     store         = PersistentStore.instance
     permanent_key = self.class.permanent_key(institution_key: self.institution.key,
                                              item_id:         self.item_id,
-                                             filename:        self.original_filename)
+                                             filename:        self.filename)
     store.move_object(source_key: self.staging_key,
                       target_key: permanent_key)
-    self.update!(permanent_key: permanent_key,
-                 staging_key:   nil)
+    self.update_column(:permanent_key, permanent_key) # skip callbacks
+    self.update_column(:staging_key, nil)             # skip callbacks
   end
 
   ##
@@ -573,7 +595,7 @@ class Bitstream < ApplicationRecord
   def read_full_text(force: false)
     return if !force && full_text_checked_at.present?
     text = nil
-    #noinspection RubyRedundantSafeNavigation,RubyCaseWithoutElseBlockInspection
+    #noinspection RubyRedundantSafeNavigation
     case self.format&.short_name
     when "PDF"
       infile  = download_to_temp_file
@@ -591,7 +613,7 @@ class Bitstream < ApplicationRecord
     when "Text"
       text = self.data.read
     else
-      self.update!(full_text_checked_at: Time.now) and return
+      self.update_column(:full_text_checked_at, Time.now) and return
     end
     text = StringUtils.utf8(text) # convert to UTF-8
     text.delete!("\u0000")        # strip null bytes
@@ -599,7 +621,7 @@ class Bitstream < ApplicationRecord
     transaction do
       self.full_text&.destroy!
       self.create_full_text!(text: text) if text.present?
-      self.update!(full_text_checked_at: Time.now)
+      self.update_column(:full_text_checked_at, Time.now)
     end
     self.item.reindex if changed
   end
@@ -696,6 +718,43 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # `before_save` callback that renames the corresponding object in storage if
+  # the {filename} property has changed.
+  #
+  def move_storage_object
+    return if !filename_changed? || filename_was.blank?
+    return if staging_key.blank? && permanent_key.blank?
+    if self.permanent_key_was.present?
+      target_key = self.class.permanent_key(institution_key: self.institution.key,
+                                            item_id:         self.item_id,
+                                            filename:        self.filename)
+      PersistentStore.instance.move_object(source_key: self.permanent_key_was,
+                                           target_key: target_key)
+      self.update_column(:permanent_key, target_key)
+    elsif self.staging_key_was.present?  # skip callbacks
+      target_key = self.class.staging_key(institution_key: self.institution.key,
+                                          item_id:         self.item_id,
+                                          filename:        self.filename)
+      PersistentStore.instance.move_object(source_key: self.staging_key_was,
+                                           target_key: target_key)
+      self.update_column(:staging_key, target_key) # skip callbacks
+    end
+  end
+
+  ##
+  # Sets {filename} to the value of {original_filename} if it is nil, and vice
+  # versa.
+  #
+  def populate_filenames
+    self.filename ||= self.original_filename
+    self.original_filename ||= self.filename
+  end
+
+  def reindex_owning_item
+    self.item&.reindex
+  end
+
+  ##
   # Increments the bundle positions of all bitstreams attached to the owning
   # {Item} that are greater than or equal to the position of this instance, in
   # order to make room for it.
@@ -750,6 +809,30 @@ class Bitstream < ApplicationRecord
           # called recursively.
           bitstream.update_column(:bundle_position, position) if bitstream.bundle_position != position
         end
+      end
+    end
+  end
+
+  ##
+  # Ensures that {original_filename}, once set, cannot be changed.
+  #
+  def validate_original_filename_immutability
+    if self.original_filename_changed? && self.original_filename_was.present?
+      errors.add(:original_filename, "cannot be changed")
+      throw :abort
+    end
+  end
+
+  ##
+  # Ensures that {filename} cannot be changed to the same as another bitstream
+  # attached to the same {Item}.
+  def validate_unique_filename
+    return unless filename_changed?
+    self.item.bitstreams.reject{ |bs| bs == self }.each do |bs|
+      if bs.filename == filename
+        errors.add(:filename, "cannot be the same as another file attached "\
+                              "to the same item")
+        throw :abort
       end
     end
   end

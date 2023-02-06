@@ -459,11 +459,11 @@ class ItemsController < ApplicationController
   def set_item_bitstreams
     @content_bitstreams  = @item.bitstreams.
       where(bundle: Bitstream::Bundle::CONTENT).
-      order("bitstreams.bundle_position", "LOWER(original_filename)").
+      order("bundle_position", "LOWER(filename)").
       select{ |b| policy(b).show? }
     @other_bitstreams    = @item.bitstreams.
       where("bundle != ?", Bitstream::Bundle::CONTENT).
-      order("bitstreams.bundle_position", "LOWER(original_filename)").
+      order("bundle_position", "LOWER(filename)").
       select{ |b| policy(b).show? }
   end
 

@@ -90,7 +90,7 @@ class BitstreamTest < ActiveSupport::TestCase
                                        filename:        filename),
                  bs.staging_key
     assert_equal length, bs.length
-    assert_equal filename, bs.original_filename
+    assert_equal filename, bs.filename
   end
 
   # permanent_key()
@@ -213,12 +213,12 @@ class BitstreamTest < ActiveSupport::TestCase
   # can_read_full_text?()
 
   test "can_read_full_text?() returns true for a supported format" do
-    @instance.original_filename = "doc.pdf"
+    @instance.filename = "doc.pdf"
     assert @instance.can_read_full_text?
   end
 
   test "can_read_full_text?() returns false for an unsupported format" do
-    @instance.original_filename = "image.jpg"
+    @instance.filename = "image.jpg"
     assert !@instance.can_read_full_text?
   end
 
@@ -226,7 +226,8 @@ class BitstreamTest < ActiveSupport::TestCase
     item = items(:uiuc_multiple_bitstreams)
     Bitstream.create!(bundle_position:   1,
                       item:              item,
-                      original_filename: "cats.jpg")
+                      original_filename: "cats.jpg",
+                      filename:          "cats.jpg")
     # Assert that the positions are sequential and zero-based.
     item.bitstreams.order(:bundle_position).each_with_index do |b, i|
       assert_equal i, b.bundle_position
@@ -421,6 +422,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # derivative_url()
 
   test "derivative_url() with an unsupported format raises an error" do
+    @instance.filename          = "cats.bogus"
     @instance.original_filename = "cats.bogus"
     assert_raises do
       @instance.derivative_url(size: 45)
@@ -449,7 +451,7 @@ class BitstreamTest < ActiveSupport::TestCase
     store     = PersistentStore.instance
     key       = Bitstream.staging_key(institution_key: @instance.institution.key,
                                       item_id:         @instance.item_id,
-                                      filename:        @instance.original_filename)
+                                      filename:        @instance.filename)
     assert store.object_exists?(key: key)
     @instance.destroy!
     assert !store.object_exists?(key: key)
@@ -461,7 +463,7 @@ class BitstreamTest < ActiveSupport::TestCase
     store     = PersistentStore.instance
     key       = Bitstream.permanent_key(institution_key: @instance.institution.key,
                                         item_id:         @instance.item_id,
-                                        filename:        @instance.original_filename)
+                                        filename:        @instance.filename)
     assert store.object_exists?(key: key)
     @instance.destroy!
     assert !store.object_exists?(key: key)
@@ -544,6 +546,16 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_nil @instance.effective_key
   end
 
+  # filename
+
+  test "filename must be unique among all bitstreams attached to the same
+  item" do
+    assert @instance.valid?
+    other_bs = @instance.item.bitstreams.reject{ |bs| @instance == bs }.first
+    @instance.filename = other_bs.filename
+    assert !@instance.valid?
+  end
+
   # format()
 
   test "format() returns the correct format" do
@@ -551,7 +563,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "format() returns nil for an unknown format" do
-    @instance.original_filename = "bogus"
+    @instance.filename = "bogus"
     assert_nil @instance.format
   end
 
@@ -559,19 +571,19 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "has_representative_image?() returns true for an instance that is in a
    supported format" do
-    @instance.original_filename = "file.jpg"
+    @instance.filename = "file.jpg"
     assert @instance.has_representative_image?
   end
 
   test "has_representative_image?() returns false for an instance that is not
   in a supported format" do
-    @instance.original_filename = "file.txt"
+    @instance.filename = "file.txt"
     assert !@instance.has_representative_image?
   end
 
   test "has_representative_image?() returns false for an instance that is in an
   unrecognized format" do
-    @instance.original_filename = "file.bogus"
+    @instance.filename = "file.bogus"
     assert !@instance.has_representative_image?
   end
 
@@ -601,15 +613,6 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
-  test "ingest_into_medusa() raises an error if the owning item's handle does
-  not have a suffix" do
-    @instance = bitstreams(:approved_in_permanent)
-    @instance.item.handle.suffix = nil
-    assert_raises AlreadyExistsError do
-      @instance.ingest_into_medusa
-    end
-  end
-
   test "ingest_into_medusa() raises an error if the owning item does not have a
   handle" do
     @instance.item.handle.destroy!
@@ -617,37 +620,6 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.ingest_into_medusa
     end
-  end
-
-  test "ingest_into_medusa() raises an error if the instance has already been
-  submitted for ingest and the force argument is false" do
-    @instance = bitstreams(:approved_in_permanent)
-    assert_raises AlreadyExistsError do
-      @instance.ingest_into_medusa
-    end
-  end
-
-  test "ingest_into_medusa() does not raise an error if the instance has
-  already been submitted for ingest but the force argument is true" do
-    @instance.permanent_key        = "cats"
-    @instance.submitted_for_ingest = true
-    @instance.ingest_into_medusa(force: true)
-  end
-
-  test "ingest_into_medusa() raises an error if a Medusa UUID is already present
-  and the force argument is false" do
-    @instance.permanent_key = "cats"
-    @instance.medusa_uuid   = SecureRandom.uuid
-    assert_raises AlreadyExistsError do
-      @instance.ingest_into_medusa
-    end
-  end
-
-  test "ingest_into_medusa() does not raise an error if a Medusa UUID is
-  already present but the force argument is true" do
-    @instance.permanent_key = "cats"
-    @instance.medusa_uuid   = SecureRandom.uuid
-    @instance.ingest_into_medusa(force: true)
   end
 
   test "ingest_into_medusa() sends a message to the queue" do
@@ -740,7 +712,7 @@ class BitstreamTest < ActiveSupport::TestCase
       assert_nil @instance.staging_key
       assert_equal Bitstream.permanent_key(institution_key: @instance.institution.key,
                                            item_id:         @instance.item_id,
-                                           filename:        @instance.original_filename),
+                                           filename:        @instance.filename),
                    @instance.permanent_key
     ensure
       @instance.delete_from_staging
@@ -787,6 +759,14 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  # original_filename
+
+  test "original_filename cannot be changed" do
+    assert_raises ActiveRecord::RecordInvalid do
+      @instance.update!(original_filename: "nope")
+    end
+  end
+
   # presigned_url()
 
   test "presigned_url() returns a presigned URL for an object in staging" do
@@ -804,13 +784,13 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "presigned_url() returns a presigned URL with a correct
   response-content-type for an instance with a known format" do
-    @instance.original_filename = "image.jpg"
+    @instance.filename = "image.jpg"
     assert @instance.presigned_url.include?("response-content-type=image%2Fjpeg")
   end
 
   test "presigned_url() returns a presigned URL with a correct
   response-content-type for an instance with an unknown format" do
-    @instance.original_filename = "image.whatsthis"
+    @instance.filename = "image.whatsthis"
     assert @instance.presigned_url.include?("response-content-type=application%2Foctet-stream")
   end
 
@@ -888,7 +868,7 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance               = bitstreams(:approved_in_permanent)
     @instance.permanent_key = Bitstream.permanent_key(institution_key: @instance.institution.key,
                                                       item_id:         @instance.item_id,
-                                                      filename:        @instance.original_filename)
+                                                      filename:        @instance.filename)
     checked_at = Time.now
     text       = "cats"
     @instance.update!(full_text_checked_at: checked_at)
@@ -951,6 +931,8 @@ class BitstreamTest < ActiveSupport::TestCase
 
   # save()
 
+  # save() ensure_primary_uniqueness callback
+
   test "save() sets all other bitstreams attached to the same item to not
   primary" do
     item = items(:uiuc_approved)
@@ -961,6 +943,74 @@ class BitstreamTest < ActiveSupport::TestCase
     b1.reload
     assert !b1.primary
   end
+
+  # save() populate_filenames callback
+
+  test "save() sets the filename property to the value of the original_filename
+  property if it is nil" do
+    filename = "original filename.jpg"
+    @instance.update_column(:original_filename, filename)
+    @instance.update!(filename: nil)
+    assert_equal filename, @instance.original_filename
+    assert_equal filename, @instance.filename
+  end
+
+  test "save() sets the original_filename property to the value of the filename
+  property if it is nil" do
+    filename = "original filename.jpg"
+    @instance.update_column(:original_filename, nil)
+    @instance.update(filename: filename)
+    assert_equal filename, @instance.filename
+    assert_equal filename, @instance.original_filename
+  end
+
+  # save() move_storage_object callback
+
+  test "save() moves the storage object in staging when the filename has
+  changed" do
+    @instance = bitstreams(:submitted_in_staging)
+    old_key      = @instance.staging_key
+    new_filename = "new filename"
+    @instance.update!(filename: new_filename)
+    new_key      = @instance.staging_key
+
+    assert_not_equal old_key, new_key
+    assert new_key.end_with?(new_filename)
+    assert !PersistentStore.instance.object_exists?(key: old_key)
+    assert PersistentStore.instance.object_exists?(key: new_key)
+  end
+
+  test "save() moves the permanent storage object when the filename has
+  changed" do
+    @instance = bitstreams(:approved_in_permanent)
+    old_key      = @instance.permanent_key
+    new_filename = "new filename"
+    @instance.update!(filename: new_filename)
+    new_key      = @instance.permanent_key
+
+    assert_not_equal old_key, new_key
+    assert new_key.end_with?(new_filename)
+    assert !PersistentStore.instance.object_exists?(key: old_key)
+    assert PersistentStore.instance.object_exists?(key: new_key)
+  end
+
+  # save() delete_from_medusa callback
+
+  test "save() sends a delete message to Medusa when the filename changes" do
+    queue = @instance.institution.outgoing_message_queue
+    @instance = bitstreams(:approved_in_permanent)
+    # These have to be set in order for the delete_from_medusa callback to work
+    @instance.update!(medusa_key: "some key",
+                      medusa_uuid: SecureRandom.uuid)
+
+    # change the filename
+    @instance.update!(filename: "new filename.pdf")
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
+      assert_equal "delete", message['operation']
+    end
+  end
+
+  # save() ingest_into_medusa callback
 
   test "save() does not send an ingest message to Medusa if the permanent key
   is not set" do

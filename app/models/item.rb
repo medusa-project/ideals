@@ -238,7 +238,7 @@ class Item < ApplicationRecord
               # administrative feature
               dest_dir = File.join(stuffdir, item.handle&.handle || "#{item.id}")
               FileUtils.mkdir_p(dest_dir)
-              dest_path = File.join(dest_dir, bs.original_filename)
+              dest_path = File.join(dest_dir, bs.filename)
               PersistentStore.instance.get_object(key:             bs.permanent_key,
                                                   response_target: dest_path)
               task&.progress(index / count.to_f)
@@ -390,7 +390,7 @@ class Item < ApplicationRecord
     # Add bitstreams.
     self.bitstreams.each do |bitstream|
       bitstream.as_change_hash.each do |k, v|
-        hash["bitstream:#{bitstream.original_filename}:#{k}"] = v
+        hash["bitstream:#{bitstream.id}:#{k}"] = v
       end
     end
     # Add embaroges.
@@ -415,7 +415,7 @@ class Item < ApplicationRecord
     doc[IndexFields::EMBARGOES]          = self.current_embargoes.
         select{ |e| e.kind == Embargo::Kind::ALL_ACCESS }.
         map(&:as_indexed_json)
-    doc[IndexFields::FILENAMES]          = self.bitstreams.map(&:original_filename)
+    doc[IndexFields::FILENAMES]          = self.bitstreams.map(&:filename)
     # N.B.: in AWS OpenSearch, the maximum document size depends on instance
     # size, but for our purposes is likely 10485760 bytes (10 MB). The length
     # may be exceeded either by one large bitstream's FullText, or many smaller
@@ -728,8 +728,8 @@ class Item < ApplicationRecord
       self.bitstreams.
         select{ |b| b.bundle == Bitstream::Bundle::CONTENT }.
         sort{ |a, b|
-          (a.original_filename.split(".").last.downcase == 'pdf' ? 'a' : 'zzz') <=>
-          b.original_filename.split(".").last.downcase }.
+          (a.filename.split(".").last.downcase == 'pdf' ? 'a' : 'zzz') <=>
+          b.filename.split(".").last.downcase }.
         first
   end
 
@@ -806,10 +806,10 @@ class Item < ApplicationRecord
   # Natural-sorts attached bitstreams by filename.
   #
   def natural_sort_bitstreams
-    filenames = self.bitstreams.map(&:original_filename)
+    filenames = self.bitstreams.map(&:filename)
     NaturalSort.sort!(filenames)
     self.bitstreams.each do |bs|
-      bs.update!(bundle_position: filenames.index(bs.original_filename))
+      bs.update!(bundle_position: filenames.index(bs.filename))
     end
   end
 

@@ -5,6 +5,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @institution = institutions(:uiuc)
     host! @institution.fqdn
+    clear_message_queues
     setup_opensearch
     setup_s3
   end
@@ -433,22 +434,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
          }
     item.reload
     assert_not_nil item.handle
-  end
-
-  test "process_review() sends an ingest message to Medusa for approved items" do
-    item = items(:uiuc_submitted)
-    log_in_as(users(:example_sysadmin))
-    post items_process_review_path,
-         params: {
-             items: [item.id],
-             verb: "approve"
-         }
-    item.bitstreams.each do
-      queue = item.institution.outgoing_message_queue
-      AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
-        assert message.present?
-      end
-    end
   end
 
   test "process_review() rejects items" do

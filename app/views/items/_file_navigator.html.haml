@@ -5,7 +5,7 @@
       .section-heading
         Content Files
       - @content_bitstreams.each do |bitstream|
-        .thumbnail{title:               bitstream.original_filename,
+        .thumbnail{title:               bitstream.filename,
                    "data-item-id":      bitstream.item_id,
                    "data-bitstream-id": bitstream.id,
                    "data-primary":      bitstream.primary ? "true" : "false",
@@ -14,14 +14,14 @@
                                      region:         :square,
                                      size:           512,
                                      generate_async: true,
-                                     title:          bitstream.original_filename)
-          = bitstream.original_filename
+                                     title:          bitstream.filename)
+          = bitstream.filename
           - tabindex += 1
     - if @other_bitstreams.any?
       .section-heading
         Other Files
       - @other_bitstreams.each do |bitstream|
-        .thumbnail{title:               bitstream.original_filename,
+        .thumbnail{title:               bitstream.filename,
                    "data-item-id":      bitstream.item_id,
                    "data-bitstream-id": bitstream.id,
                    "data-primary":      bitstream.primary ? "true" : "false",
@@ -30,8 +30,8 @@
                                      region:         :square,
                                      size:           512,
                                      generate_async: true,
-                                     title:          bitstream.original_filename)
-          = bitstream.original_filename
+                                     title:          bitstream.filename)
+          = bitstream.filename
           - tabindex += 1
   - if @item.approved?
     #file-navigator-thumbnail-column-footer

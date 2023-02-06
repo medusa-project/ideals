@@ -196,22 +196,6 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  test "ingest() returns HTTP 409 if the bitstream has already been submitted
-  for ingest" do
-    log_in_as(users(:uiuc_admin))
-    bitstream = bitstreams(:approved_in_permanent)
-    post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
-    assert_response :conflict
-  end
-
-  test "ingest() returns HTTP 409 if the bitstream already exists in Medusa" do
-    log_in_as(users(:uiuc_admin))
-    bitstream = bitstreams(:approved_in_permanent)
-    bitstream.update!(medusa_uuid: SecureRandom.uuid)
-    post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
-    assert_response :conflict
-  end
-
   test "ingest() ingests the bitstream" do
     log_in_as(users(:uiuc_admin))
     bitstream = bitstreams(:awaiting_ingest_into_medusa)

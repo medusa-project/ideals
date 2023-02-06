@@ -183,8 +183,9 @@ class ItemTest < ActiveSupport::TestCase
     # test bitstreams
     @instance = items(:uiuc_item1)
     hash = @instance.as_change_hash
-    assert_equal "escher_lego.png",
-                 hash['bitstream:escher_lego.png:original_filename']
+    @instance.bitstreams.each do |bs|
+      assert_equal bs.filename, hash["bitstream:#{bs.id}:filename"]
+    end
   end
 
   # as_indexed_json()
@@ -330,18 +331,18 @@ class ItemTest < ActiveSupport::TestCase
 
   test "complete_submission() sets correct bitstream bundle positions" do
     item = items(:uiuc_described)
-    item.bitstreams.build(original_filename: "Test 1")
-    item.bitstreams.build(original_filename: "Test 6")
-    item.bitstreams.build(original_filename: "Test 5")
-    item.bitstreams.build(original_filename: "Test 3")
-    item.bitstreams.build(original_filename: "Test 2")
-    item.bitstreams.build(original_filename: "Test 4")
+    item.bitstreams.build(filename: "Test 1")
+    item.bitstreams.build(filename: "Test 6")
+    item.bitstreams.build(filename: "Test 5")
+    item.bitstreams.build(filename: "Test 3")
+    item.bitstreams.build(filename: "Test 2")
+    item.bitstreams.build(filename: "Test 4")
     item.save!
     item.complete_submission
-    filenames = item.bitstreams.map(&:original_filename)
+    filenames = item.bitstreams.map(&:filename)
     NaturalSort.sort!(filenames)
     item.bitstreams.each do |bs|
-      assert_equal filenames.index(bs.original_filename), bs.bundle_position
+      assert_equal filenames.index(bs.filename), bs.bundle_position
     end
   end
 
@@ -705,12 +706,12 @@ class ItemTest < ActiveSupport::TestCase
 
   test "representative_bitstream() returns the primary bitstream if one exists" do
     @instance = Item.create(institution: institutions(:southwest))
-    b1 = @instance.bitstreams.build(primary: true,
-                                    bundle: Bitstream::Bundle::CONTENT,
-                                    original_filename: "image.jpg")
-    b2 = @instance.bitstreams.build(primary: false,
-                                    bundle: Bitstream::Bundle::LICENSE,
-                                    original_filename: "license.txt")
+    b1 = @instance.bitstreams.build(primary:  true,
+                                    bundle:   Bitstream::Bundle::CONTENT,
+                                    filename: "image.jpg")
+    b2 = @instance.bitstreams.build(primary:  false,
+                                    bundle:   Bitstream::Bundle::LICENSE,
+                                    filename: "license.txt")
 
     assert_same b1, @instance.representative_bitstream
   end
@@ -718,12 +719,12 @@ class ItemTest < ActiveSupport::TestCase
   test "representative_bitstream() returns a bitstream in the content bundle if
   a primary bitstream does not exist" do
     @instance = Item.create(institution: institutions(:southwest))
-    b1 = @instance.bitstreams.build(primary:           false,
-                                    bundle:            Bitstream::Bundle::CONTENT,
-                                    original_filename: "image.jpg")
-    b2 = @instance.bitstreams.build(primary:           false,
-                                    bundle:            Bitstream::Bundle::LICENSE,
-                                    original_filename: "license.txt")
+    b1 = @instance.bitstreams.build(primary:  false,
+                                    bundle:   Bitstream::Bundle::CONTENT,
+                                    filename: "image.jpg")
+    b2 = @instance.bitstreams.build(primary:  false,
+                                    bundle:   Bitstream::Bundle::LICENSE,
+                                    filename: "license.txt")
 
     assert_same b1, @instance.representative_bitstream
   end
@@ -731,12 +732,12 @@ class ItemTest < ActiveSupport::TestCase
   test "representative_bitstream() returns nil if no representative bitstream
   exists" do
     @instance = Item.create(institution: institutions(:southwest))
-    @instance.bitstreams.build(primary:           false,
-                               bundle:            Bitstream::Bundle::NOTES,
-                               original_filename: "notes.txt")
-    @instance.bitstreams.build(primary:           false,
-                               bundle:            Bitstream::Bundle::LICENSE,
-                               original_filename: "license.txt")
+    @instance.bitstreams.build(primary:  false,
+                               bundle:   Bitstream::Bundle::NOTES,
+                               filename: "notes.txt")
+    @instance.bitstreams.build(primary:  false,
+                               bundle:   Bitstream::Bundle::LICENSE,
+                               filename: "license.txt")
 
     assert_nil @instance.representative_bitstream
   end

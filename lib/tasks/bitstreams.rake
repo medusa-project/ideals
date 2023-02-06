@@ -21,7 +21,7 @@ namespace :bitstreams do
 
     bitstream_ids = Bitstream.
       where(full_text_checked_at: nil).
-      where("(LOWER(original_filename) LIKE '%.pdf' OR LOWER(original_filename) LIKE '%.txt')").
+      where("(LOWER(filename) LIKE '%.pdf' OR LOWER(filename) LIKE '%.txt')").
       where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").
       order(:id).
       pluck(:id)
@@ -94,13 +94,10 @@ namespace :bitstreams do
     count      = bitstreams.count
     puts "#{count} bitstreams submitted for ingest but with unknown Medusa UUID..."
     bitstreams.each do |bs|
-      target_key = file_group.directory.relative_key + "/" +
-        Bitstream.medusa_key(bs.item.handle.handle,
-                             bs.original_filename)
-
-      exists_in_bucket = PersistentStore.instance.object_exists?(key: target_key)
-      num_in_bucket += 1 if exists_in_bucket
-
+      target_key          = file_group.directory.relative_key + "/" +
+        Bitstream.medusa_key(bs.item.handle.handle, bs.filename)
+      exists_in_bucket    = PersistentStore.instance.object_exists?(key: target_key)
+      num_in_bucket      += 1 if exists_in_bucket
       exists_in_medusa_db = false
       file_group.directory.walk_tree do |node|
         if node.relative_key == target_key
@@ -116,7 +113,7 @@ namespace :bitstreams do
       end
       num_in_medusa_db += 1 if exists_in_medusa_db
       if !exists_in_medusa_db && exists_in_bucket
-        bs.ingest_into_medusa(force: true)
+        bs.ingest_into_medusa
         num_reingests += 1
       elsif !exists_in_medusa_db && !exists_in_bucket
         puts "Bitstream #{bs.id} not present in Medusa database or bucket. Try re-ingesting."

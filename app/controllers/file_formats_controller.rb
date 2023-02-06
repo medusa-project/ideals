@@ -9,7 +9,7 @@ class FileFormatsController < ApplicationController
   # Responds to `GET /file-formats`.
   #
   def index
-    sql = "SELECT array_to_string(regexp_matches(LOWER(original_filename),'\\.(\\w+)$'), ', ') AS ext,
+    sql = "SELECT array_to_string(regexp_matches(LOWER(filename),'\\.(\\w+)$'), ', ') AS ext,
           COUNT(id) AS count
       FROM bitstreams
       GROUP BY ext
