@@ -265,10 +265,6 @@ class ItemPolicy < ApplicationPolicy
     show_access
   end
 
-  def show_sysadmin_content
-    effective_sysadmin(user, role)
-  end
-
   def statistics
     return { authorized: false,
              reason:     "This item has been deleted." } if item.buried?

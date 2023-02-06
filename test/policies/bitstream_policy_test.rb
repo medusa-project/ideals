@@ -921,6 +921,99 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
+  # show_details?()
+
+  test "show_details?() returns false with a nil user" do
+    policy = BitstreamPolicy.new(nil, @bitstream)
+    assert !policy.show_details?
+  end
+
+  test "show_details?() does not authorize non-sysadmins" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, @bitstream)
+    assert !policy.show_details?
+  end
+
+  test "show_details?() authorizes sysadmins" do
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = BitstreamPolicy.new(context, @bitstream)
+    assert policy.show_details?
+  end
+
+  test "show_details?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, @bitstream)
+    assert !policy.show_details?
+  end
+
+  # show_role?()
+
+  test "show_role?() returns false with a nil user" do
+    policy = BitstreamPolicy.new(nil, @bitstream)
+    assert !policy.show_role?
+  end
+
+  test "show_role?() is restrictive by default" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, @bitstream)
+    assert !policy.show_role?
+  end
+
+  test "show_role?() authorizes sysadmins" do
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, @bitstream)
+    assert policy.show_role?
+  end
+
+  test "show_role?() authorizes unit admins" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+
+    unit = @bitstream.item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+
+    policy = BitstreamPolicy.new(context, @bitstream)
+    assert policy.show_role?
+  end
+
+  test "show_role?() authorizes collection managers" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+
+    collection = @bitstream.item.primary_collection
+    collection.managing_users << user
+    collection.save!
+
+    policy = BitstreamPolicy.new(context, @bitstream)
+    assert policy.show_role?
+  end
+
+  test "show_role?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+
+    policy  = BitstreamPolicy.new(context, @bitstream)
+    assert !policy.show_role?
+  end
+
   # stream?()
 
   test "stream?() returns true with a nil user" do
