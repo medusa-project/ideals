@@ -113,36 +113,43 @@ class SafImporter
         # Work inside a transaction to avoid any incompletely created items.
         ActiveRecord::Base.transaction do
           item = ImportItemCommand.new(primary_collection: primary_collection).execute
-          item.assign_handle
+          begin
+            item.assign_handle
 
-          # Add bitstreams corresponding to each line in the content file.
-          item_dir_path     = File.join(pathname, item_dir)
-          content_file_path = File.join(item_dir_path, "content")
-          unless File.exist?(content_file_path)
-            raise IOError, "Missing content file for item #{item_dir}"
-          end
-          add_bitstreams_from_file(item:              item,
-                                   content_file_path: content_file_path)
+            # Add bitstreams corresponding to each line in the content file.
+            item_dir_path     = File.join(pathname, item_dir)
+            content_file_path = File.join(item_dir_path, "content")
+            unless File.exist?(content_file_path)
+              raise IOError, "Missing content file for item #{item_dir}"
+            end
+            add_bitstreams_from_file(item:              item,
+                                     content_file_path: content_file_path)
 
-          # Add metadata corresponding to the Dublin Core metadata file.
-          dc_path = File.join(item_dir_path, "dublin_core.xml")
-          unless File.exist?(dc_path)
-            raise IOError, "Missing dublin_core.xml file for item #{item_dir}"
-          end
-          add_metadata(item:                   item,
-                       metadata_relative_path: dc_path,
-                       metadata_file_content:  File.read(dc_path))
-
-          # Add metadata corresponding to any other metadata files.
-          Dir.glob(File.join(item_dir_path, "metadata*.xml")) do |metadata_file_path|
+            # Add metadata corresponding to the Dublin Core metadata file.
+            dc_path = File.join(item_dir_path, "dublin_core.xml")
+            unless File.exist?(dc_path)
+              raise IOError, "Missing dublin_core.xml file for item #{item_dir}"
+            end
             add_metadata(item:                   item,
-                         metadata_relative_path: metadata_file_path,
-                         metadata_file_content:  File.read(metadata_file_path))
-          end
+                         metadata_relative_path: dc_path,
+                         metadata_file_content:  File.read(dc_path))
 
-          item.approve
-          item.save!
-          mapfile.write("#{item_dir}\t#{item.handle.handle}\n")
+            # Add metadata corresponding to any other metadata files.
+            Dir.glob(File.join(item_dir_path, "metadata*.xml")) do |metadata_file_path|
+              add_metadata(item:                   item,
+                           metadata_relative_path: metadata_file_path,
+                           metadata_file_content:  File.read(metadata_file_path))
+            end
+
+            item.approve
+            item.save!
+          rescue => e
+            item.handle&.delete_from_server
+            raise e
+          else
+            mapfile.write("#{item_dir}\t#{item.handle.handle}\n")
+            progress&.report(index, "Importing #{item_dirs.length} items from SAF package")
+          end
         end
       end
     end
@@ -173,48 +180,54 @@ class SafImporter
       # Work inside a transaction to avoid any incompletely created items.
       Import.transaction do
         item = ImportItemCommand.new(primary_collection: import.collection).execute
-        item.assign_handle
+        begin
+          item.assign_handle
 
-        # Add bitstreams corresponding to each line in the content file.
-        content_file_key = item_dir + "/content"
-        unless store.object_exists?(key: content_file_key)
-          raise IOError, "Missing content file for item #{item_dir}"
-        end
-        content = store.get_object(key: content_file_key).read
-        add_bitstreams_from_s3(item:                 item,
-                               item_key_prefix:      item_dir,
-                               content_file_key:     content_file_key,
-                               content_file_content: content)
+          # Add bitstreams corresponding to each line in the content file.
+          content_file_key = item_dir + "/content"
+          unless store.object_exists?(key: content_file_key)
+            raise IOError, "Missing content file for item #{item_dir}"
+          end
+          content = store.get_object(key: content_file_key).read
+          add_bitstreams_from_s3(item:                 item,
+                                 item_key_prefix:      item_dir,
+                                 content_file_key:     content_file_key,
+                                 content_file_content: content)
 
-        # Add metadata corresponding to the Dublin Core metadata file.
-        dc_key = item_dir + "/dublin_core.xml"
-        unless store.object_exists?(key: dc_key)
-          raise IOError, "Missing dublin_core.xml file for item #{item_dir}"
-        end
-        content = store.get_object(key: dc_key).read
-        add_metadata(item:                   item,
-                     metadata_relative_path: dc_key,
-                     metadata_file_content:  content)
-
-        # Add metadata corresponding to any other metadata files.
-        item_object_keys = store.objects(key_prefix: item_dir)
-        item_object_keys.map(&:key).select{ |k| k.match(/\/metadata_.+.xml$/) }.each do |metadata_key|
-          content = store.get_object(key: metadata_key).read
+          # Add metadata corresponding to the Dublin Core metadata file.
+          dc_key = item_dir + "/dublin_core.xml"
+          unless store.object_exists?(key: dc_key)
+            raise IOError, "Missing dublin_core.xml file for item #{item_dir}"
+          end
+          content = store.get_object(key: dc_key).read
           add_metadata(item:                   item,
-                       metadata_relative_path: metadata_key,
+                       metadata_relative_path: dc_key,
                        metadata_file_content:  content)
-        end
 
-        item.approve
-        item.save!
-        imported_items << {
-          item_id: item_dir.split("/").last,
-          handle:  item.handle.handle
-        }
-        import.progress(index / item_key_prefixes.length.to_f,
-                        imported_items)
-        import.task&.progress(index / item_key_prefixes.length.to_f,
-                              status_text: "Importing #{item_key_prefixes.length} items from SAF package")
+          # Add metadata corresponding to any other metadata files.
+          item_object_keys = store.objects(key_prefix: item_dir)
+          item_object_keys.map(&:key).select{ |k| k.match(/\/metadata_.+.xml$/) }.each do |metadata_key|
+            content = store.get_object(key: metadata_key).read
+            add_metadata(item:                   item,
+                         metadata_relative_path: metadata_key,
+                         metadata_file_content:  content)
+          end
+
+          item.approve
+          item.save!
+        rescue => e
+          item.handle&.delete_from_server
+          raise e
+        else
+          imported_items << {
+            item_id: item_dir.split("/").last,
+            handle:  item.handle.handle
+          }
+          import.progress(index / item_key_prefixes.length.to_f,
+                          imported_items)
+          import.task&.progress(index / item_key_prefixes.length.to_f,
+                                status_text: "Importing #{item_key_prefixes.length} items from SAF package")
+        end
       end
     end
   rescue => e
@@ -271,7 +284,7 @@ class SafImporter
                                               filename:        filename)
       bs = Bitstream.create(item:              item,
                             permanent_key:     permanent_key,
-                            original_filename: filename,
+                            filename:          filename,
                             bundle:            bundle,
                             primary:           primary,
                             description:       description,
@@ -333,7 +346,7 @@ class SafImporter
                                               filename:        filename)
       bs = Bitstream.create(item:              item,
                             permanent_key:     permanent_key,
-                            original_filename: filename,
+                            filename:          filename,
                             bundle:            bundle,
                             primary:           primary,
                             description:       description,

@@ -13,6 +13,10 @@
     -# populated via ajax by shared/_validation_messages.js.erb
 
   .mb-3
+    = f.label :filename
+    = f.text_field :filename, class: "form-control"
+
+  .mb-3
     = f.label :bundle, "Bundle"
     = f.select(:bundle,
                options_for_select(bundle_options, f.object.bundle),
@@ -43,7 +47,7 @@
     .mb-3
       = f.label :bundle_position, "Position After (Within Bundle)"
       = f.select(:bundle_position,
-        [["Nothing (First)", 0]] + f.object.item.bitstreams.reject{ |b| b.id == f.object.id }.sort_by{ |a| [a.bundle_position ? 0 : 1, a.bundle_position] }.map.with_index { |b, i| [b.original_filename, i + 1] },
+        [["Nothing (First)", 0]] + f.object.item.bitstreams.reject{ |b| b.id == f.object.id }.sort_by{ |a| [a.bundle_position ? 0 : 1, a.bundle_position] }.map.with_index { |b, i| [b.filename, i + 1] },
         { selected: f.object.bundle_position },
         class: "form-select")
 

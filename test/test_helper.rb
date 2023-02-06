@@ -28,17 +28,19 @@ class ActiveSupport::TestCase
   def fix_bitstream_keys(bitstream)
     submitted_for_ingest = bitstream.submitted_for_ingest
     if bitstream.staging_key.present?
-      bitstream.staging_key = Bitstream.staging_key(institution_key: bitstream.institution.key,
-                                                    item_id:         bitstream.item_id,
-                                                    filename:        bitstream.original_filename)
-    end
-    if bitstream.permanent_key.present?
-      bitstream.permanent_key = Bitstream.permanent_key(
+      staging_key = Bitstream.staging_key(
         institution_key: bitstream.institution.key,
         item_id:         bitstream.item_id,
-        filename:        bitstream.original_filename)
+        filename:        bitstream.filename)
+      bitstream.update_column(:staging_key, staging_key)
     end
-    bitstream.save!
+    if bitstream.permanent_key.present?
+      permanent_key = Bitstream.permanent_key(
+        institution_key: bitstream.institution.key,
+        item_id:         bitstream.item_id,
+        filename:        bitstream.filename)
+      bitstream.update_column(:permanent_key, permanent_key)
+    end
     # Restore submitted_for_ingest to its initial value
     bitstream.update_column(:submitted_for_ingest, submitted_for_ingest)
   end
@@ -126,7 +128,7 @@ class ActiveSupport::TestCase
     @@seeding = true
     Bitstream.where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").each do |bs|
       fix_bitstream_keys(bs)
-      File.open(file_fixture(bs.original_filename), "r") do |file|
+      File.open(file_fixture(bs.filename), "r") do |file|
         PersistentStore.instance.put_object(key:  bs.effective_key,
                                             file: file)
       end

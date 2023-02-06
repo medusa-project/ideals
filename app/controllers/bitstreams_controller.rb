@@ -129,8 +129,6 @@ class BitstreamsController < ApplicationController
     @bitstream.ingest_into_medusa
   rescue ArgumentError => e
     render plain: "#{e}", status: :bad_request
-  rescue AlreadyExistsError => e
-    render plain: "#{e}", status: :conflict
   else
     head :no_content
   end
@@ -248,7 +246,7 @@ class BitstreamsController < ApplicationController
              locals: { object: @bitstream.errors.any? ? @bitstream : e },
              status: :bad_request
     else
-      flash['success'] = "File \"#{@bitstream.original_filename}\" updated."
+      flash['success'] = "File \"#{@bitstream.filename}\" updated."
       render "shared/reload"
     end
   end
@@ -285,11 +283,11 @@ class BitstreamsController < ApplicationController
 
   def bitstream_params
     params.require(:bitstream).permit(:bundle, :bundle_position, :description,
-                                      :primary, :role)
+                                      :filename, :primary, :role)
   end
 
   def download_content_disposition
-    utf8_filename  = @bitstream.original_filename
+    utf8_filename  = @bitstream.filename
     ascii_filename = utf8_filename.gsub(/[^[:ascii:]]*/, '_')
     # N.B.: CGI.escape() inserts "+" instead of "%20" which Chrome interprets
     # literally.

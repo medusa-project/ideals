@@ -1,7 +1,7 @@
 - show_sysadmin_content = policy(@bitstream.item).show_sysadmin_content?
 
 #file-navigator-viewer-header
-  %h4= @bitstream.description.present? ? @bitstream.description : @bitstream.original_filename
+  %h4= @bitstream.description.present? ? @bitstream.description : @bitstream.filename
   .btn-group{role: "group"}
     - if policy(@bitstream).download?
       -# Download button

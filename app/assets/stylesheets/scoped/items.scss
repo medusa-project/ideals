@@ -239,12 +239,8 @@ body#show_item {
     }
   }
   #events-accordion {
-    .card-header {
-      cursor: pointer;
-      user-select: none;
-      a {
-        text-decoration: none;
-      }
+    .accordion-body {
+      overflow-x: scroll;
     }
   }
   .diff-added {

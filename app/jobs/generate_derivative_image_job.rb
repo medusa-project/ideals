@@ -19,7 +19,7 @@ class GenerateDerivativeImageJob < ApplicationJob
                         institution:   bs.institution,
                         started_at:    Time.now,
                         status_text:   "Generating #{region}/#{size} #{format} "\
-                                       "derivative image for #{bs.original_filename}")
+                                       "derivative image for #{bs.filename}")
     begin
       bs.send(:generate_derivative, region: region, size: size, format: format)
     rescue => e

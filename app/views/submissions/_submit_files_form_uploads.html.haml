@@ -18,12 +18,12 @@
 -# Its structure must be kept in sync with that code.
 %table.table.table-sm.files
   %tbody
-    - item.bitstreams.order(:original_filename).each do |bitstream|
+    - item.bitstreams.order(:filename).each do |bitstream|
       %tr{"data-uri":      item_bitstream_path(item, bitstream),
-          "data-filename": bitstream.original_filename}
+          "data-filename": bitstream.filename}
         %td
           %i.fa.fa-check.text-success
-        %td= bitstream.original_filename
+        %td= bitstream.filename
         %td= number_to_human_size(bitstream.length)
         %td
           -# progress bar injected here

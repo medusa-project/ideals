@@ -84,6 +84,33 @@ class PersistentStoreTest < ActiveSupport::TestCase
     end
   end
 
+  # move_object()
+
+  test "move_object() copies an object" do
+    store = PersistentStore.instance
+    file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
+    source_key = "cats/siamese"
+    target_key = "cats/mainecoon"
+    store.put_object(key: source_key, path: file)
+    store.move_object(source_key: source_key, target_key: target_key)
+    assert store.object_exists?(key: target_key)
+    assert !store.object_exists?(key: source_key)
+  end
+
+  test "move_object() deletes the source object" do
+    store      = PersistentStore.instance
+    file       = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
+    source_key = "cats/siamese"
+    target_key = "cats/mainecoon"
+    store.put_object(key:  source_key, path: file)
+    store.move_object(source_key: source_key, target_key: target_key)
+    assert !store.object_exists?(key: source_key)
+  end
+
+  test "move_object() copies the ACL of the copied object" do
+    skip # we can't test this because MinIO doesn't support ACLs # TODO: is this still the case?
+  end
+
   # object_count()
 
   test "object_count() returns a correct count" do

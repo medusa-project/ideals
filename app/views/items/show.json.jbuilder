@@ -37,8 +37,9 @@ if policy(@item).show?
   end
 
   json.files do
-    @item.bitstreams.order(:original_filename).each do |bitstream|
+    @item.bitstreams.order(:filename).each do |bitstream|
       json.child! do
+        json.filename bitstream.filename
         json.original_filename bitstream.original_filename
         json.media_type bitstream.media_type
         json.length bitstream.length
