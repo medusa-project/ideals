@@ -7,7 +7,7 @@ class ReadFullTextJobTest < ActiveSupport::TestCase
   end
 
   test "perform() reads full text" do
-    bs = bitstreams(:approved_in_permanent)
+    bs = bitstreams(:uiuc_approved_in_permanent)
     bs.update!(full_text_checked_at: nil,
                full_text:            nil)
 

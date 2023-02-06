@@ -10,7 +10,7 @@ class MessageHandlerTest < ActiveSupport::TestCase
 
   test "handle() handles an ingest-succeeded message" do
     message          = messages(:ingest_no_response)
-    bitstream        = bitstreams(:item1_in_staging)
+    bitstream        = bitstreams(:uiuc_item1_in_staging)
     medusa_uuid      = SecureRandom.uuid
     incoming_message = {
         'status'       => "ok",
@@ -69,7 +69,7 @@ class MessageHandlerTest < ActiveSupport::TestCase
 
   test "handle() nils out the Medusa storage properties of a bitstream
   corresponding to a delete-succeeded message" do
-    bitstream        = bitstreams(:item2_in_medusa)
+    bitstream        = bitstreams(:uiuc_in_medusa)
     incoming_message = {
         'status'    => "ok",
         'operation' => "delete",

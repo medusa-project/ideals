@@ -57,7 +57,7 @@ class EventTest < ActiveSupport::TestCase
     @instance.item = items(:uiuc_item1)
     assert @instance.valid?
 
-    @instance.bitstream = bitstreams(:item1_in_staging)
+    @instance.bitstream = bitstreams(:uiuc_item1_in_staging)
     @instance.item      = nil
     assert @instance.valid?
   end

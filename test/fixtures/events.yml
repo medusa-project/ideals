@@ -3,7 +3,7 @@
 uiuc_item1_create:
   event_type: <%= Event::Type::CREATE %>
   item: uiuc_item1
-  user: example_sysadmin
+  user: uiuc_sysadmin
   description:
   before_changes:
   after_changes:

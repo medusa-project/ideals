@@ -256,7 +256,6 @@ class CollectionTest < ActiveSupport::TestCase
   end
 
   test "download_count_by_month() returns a correct count" do
-    Event.destroy_all
     expected = 0
     @instance.all_children.each do |child_collection|
       child_collection.items.each do |item|

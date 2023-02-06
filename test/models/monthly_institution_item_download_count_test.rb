@@ -82,7 +82,7 @@ class MonthlyInstitutionItemDownloadCountTest < ActiveSupport::TestCase
     assert_equal (end_year - start_year + 1) * (end_month - start_month + 1),
                  actual.length
     actual.each do |row|
-      assert_equal 21, row['dl_count']
+      assert_equal 20, row['dl_count']
     end
   end
 

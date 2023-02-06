@@ -4,7 +4,7 @@
 # set in tests via Bitstream.staging_key() and permanent_key().
 # They are set to temporary values here in order to get seeded into the bucket.
 
-item1_in_staging:
+uiuc_item1_in_staging:
   item:                 uiuc_item1
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
@@ -19,7 +19,7 @@ item1_in_staging:
   bundle_position:      0
   description:          Sample description
 
-submitting_in_staging:
+uiuc_submitting_in_staging:
   item:                 uiuc_submitting
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
@@ -34,7 +34,7 @@ submitting_in_staging:
   bundle_position:      0
   description:          Sample description
 
-submitted_in_staging:
+uiuc_submitted_in_staging:
   item:                 uiuc_submitted
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
@@ -49,7 +49,7 @@ submitted_in_staging:
   bundle_position:      0
   description:          Sample description
 
-awaiting_ingest_into_medusa:
+uiuc_awaiting_ingest_into_medusa:
   item:                 uiuc_awaiting_ingest_into_medusa
   submitted_for_ingest: false
   staging_key:
@@ -64,7 +64,7 @@ awaiting_ingest_into_medusa:
   bundle_position:      0
   description:          Sample description
 
-approved_in_permanent:
+uiuc_approved_in_permanent:
   item:                 uiuc_approved
   submitted_for_ingest: true
   staging_key:
@@ -79,7 +79,7 @@ approved_in_permanent:
   bundle_position:      0
   description:          Sample description
 
-item2_in_medusa:
+uiuc_in_medusa:
   item:                 uiuc_in_medusa
   submitted_for_ingest: true
   staging_key:
@@ -94,7 +94,7 @@ item2_in_medusa:
   bundle_position:      0
   description:          Sample description
 
-license_bundle:
+uiuc_item1_license_bundle:
   item:                 uiuc_item1
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
@@ -109,7 +109,7 @@ license_bundle:
   bundle_position:      0
   description:          Sample description
 
-role_limited:
+uiuc_item1_role_limited:
   item:                 uiuc_item1
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
@@ -124,7 +124,7 @@ role_limited:
   bundle_position:      0
   description:          Sample description
 
-embargoed_in_staging:
+uiuc_embargoed_in_staging:
   item:                 uiuc_embargoed
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
@@ -139,7 +139,7 @@ embargoed_in_staging:
   bundle_position:      0
   description:          Sample description
 
-withdrawn_in_staging:
+uiuc_withdrawn_in_staging:
   item:                 uiuc_withdrawn
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
@@ -154,7 +154,7 @@ withdrawn_in_staging:
   bundle_position:      0
   description:          Sample description
 
-multiple_bitstreams_1:
+uiuc_multiple_bitstreams_1:
   item:                 uiuc_multiple_bitstreams
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
@@ -169,7 +169,7 @@ multiple_bitstreams_1:
   bundle_position:      0
   description:          Sample description
 
-multiple_bitstreams_2:
+uiuc_multiple_bitstreams_2:
   item:                 uiuc_multiple_bitstreams
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
@@ -184,7 +184,7 @@ multiple_bitstreams_2:
   bundle_position:      1
   description:          Sample description
 
-multiple_bitstreams_3:
+uiuc_multiple_bitstreams_3:
   item:                 uiuc_multiple_bitstreams
   submitted_for_ingest: false
   staging_key:          <%= SecureRandom.hex %>
@@ -197,19 +197,4 @@ multiple_bitstreams_3:
   role:                 <%= Role::LOGGED_OUT %>
   bundle:               <%= Bitstream::Bundle::CONTENT %>
   bundle_position:      2
-  description:          Sample description
-
-collection1_collection1_item1_in_staging:
-  item:                 uiuc_collection1_collection1_item1
-  submitted_for_ingest: false
-  staging_key:          <%= SecureRandom.hex %>
-  permanent_key:
-  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
-  original_filename:    escher_lego.png
-  filename:             escher_lego.png
-  medusa_key:
-  medusa_uuid:
-  role:                 <%= Role::LOGGED_OUT %>
-  bundle:               <%= Bitstream::Bundle::CONTENT %>
-  bundle_position:      0
   description:          Sample description

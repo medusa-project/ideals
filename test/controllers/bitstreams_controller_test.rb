@@ -62,33 +62,33 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() redirects to root page for logged-out users" do
     item = items(:uiuc_item1)
-    delete item_bitstream_path(item, bitstreams(:item1_in_staging))
+    delete item_bitstream_path(item, bitstreams(:uiuc_item1_in_staging))
     assert_redirected_to item.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
+    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:uiuc_item1_in_staging))
     assert_response :forbidden
   end
 
   test "destroy() returns HTTP 204 for an existing bitstream" do
     log_in_as(users(:uiuc_admin))
-    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
+    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:uiuc_item1_in_staging))
     assert_response :no_content
   end
 
   test "destroy() destroys the bitstream" do
     log_in_as(users(:uiuc_admin))
     assert_difference "Bitstream.count", -1 do
-      delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
+      delete item_bitstream_path(items(:uiuc_item1), bitstreams(:uiuc_item1_in_staging))
     end
   end
 
   test "destroy() creates an associated Event" do
     log_in_as(users(:uiuc_admin))
     assert_difference "Event.count", 1 do
-      delete item_bitstream_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
+      delete item_bitstream_path(items(:uiuc_item1), bitstreams(:uiuc_item1_in_staging))
     end
   end
 
@@ -168,19 +168,19 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "ingest() redirects to root page for logged-out users" do
     item = items(:uiuc_item1)
-    post item_bitstream_ingest_path(item, bitstreams(:item1_in_staging))
+    post item_bitstream_ingest_path(item, bitstreams(:uiuc_item1_in_staging))
     assert_redirected_to item.institution.scope_url
   end
 
   test "ingest() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    post item_bitstream_ingest_path(items(:uiuc_item1), bitstreams(:item1_in_staging))
+    post item_bitstream_ingest_path(items(:uiuc_item1), bitstreams(:uiuc_item1_in_staging))
     assert_response :forbidden
   end
 
   test "ingest() returns HTTP 400 if the bitstream's staging key is nil" do
     log_in_as(users(:uiuc_admin))
-    bitstream = bitstreams(:item1_in_staging)
+    bitstream = bitstreams(:uiuc_item1_in_staging)
     bitstream.update!(staging_key: nil)
     post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
     assert_response :bad_request
@@ -188,7 +188,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "ingest() returns HTTP 400 if the bitstream's item does not have a handle" do
     log_in_as(users(:uiuc_admin))
-    bitstream = bitstreams(:item1_in_staging)
+    bitstream = bitstreams(:uiuc_item1_in_staging)
     item = bitstream.item
     item.handle.destroy!
     item.update!(handle: nil)
@@ -198,7 +198,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "ingest() ingests the bitstream" do
     log_in_as(users(:uiuc_admin))
-    bitstream = bitstreams(:awaiting_ingest_into_medusa)
+    bitstream = bitstreams(:uiuc_awaiting_ingest_into_medusa)
     assert !bitstream.submitted_for_ingest
 
     post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
@@ -209,7 +209,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "ingest() returns HTTP 204 for a successful ingest" do
     log_in_as(users(:uiuc_admin))
     post item_bitstream_ingest_path(items(:uiuc_awaiting_ingest_into_medusa),
-                                    bitstreams(:awaiting_ingest_into_medusa))
+                                    bitstreams(:uiuc_awaiting_ingest_into_medusa))
     assert_response :no_content
   end
 
@@ -366,7 +366,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "show() returns HTTP 200" do
     item = items(:uiuc_item1)
-    bs   = bitstreams(:item1_in_staging)
+    bs   = bitstreams(:uiuc_item1_in_staging)
     get item_bitstream_path(item, bs)
     assert_response :ok
   end
@@ -492,7 +492,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "stream() returns HTTP 400 for an invalid range" do
-    bitstream = bitstreams(:approved_in_permanent)
+    bitstream = bitstreams(:uiuc_approved_in_permanent)
     get item_bitstream_stream_path(bitstream.item, bitstream),
         headers: { Range: "bytes=#{bitstream.length}-#{bitstream.length + 100}"}
     assert_response :bad_request
@@ -615,21 +615,21 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to root page for logged-out users" do
-    bitstream = bitstreams(:item1_in_staging)
+    bitstream = bitstreams(:uiuc_item1_in_staging)
     patch item_bitstream_path(bitstream.item, bitstream)
     assert_redirected_to bitstream.institution.scope_url
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    bitstream = bitstreams(:item1_in_staging)
+    bitstream = bitstreams(:uiuc_item1_in_staging)
     patch item_bitstream_path(bitstream.item, bitstream)
     assert_response :forbidden
   end
   
   test "update() updates a bitstream" do
     log_in_as(users(:uiuc_admin))
-    bitstream = bitstreams(:item1_in_staging)
+    bitstream = bitstreams(:uiuc_item1_in_staging)
     patch item_bitstream_path(bitstream.item, bitstream),
           xhr: true,
           params: {
@@ -643,7 +643,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() creates an associated Event" do
     log_in_as(users(:uiuc_admin))
-    bitstream = bitstreams(:item1_in_staging)
+    bitstream = bitstreams(:uiuc_item1_in_staging)
     assert_difference "Event.count" do
       patch item_bitstream_path(bitstream.item, bitstream),
             xhr: true,
@@ -657,7 +657,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 200" do
     log_in_as(users(:uiuc_admin))
-    bitstream = bitstreams(:item1_in_staging)
+    bitstream = bitstreams(:uiuc_item1_in_staging)
     patch item_bitstream_path(bitstream.item, bitstream),
           xhr: true,
           params: {
@@ -670,7 +670,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:uiuc_admin))
-    bitstream = bitstreams(:item1_in_staging)
+    bitstream = bitstreams(:uiuc_item1_in_staging)
     patch item_bitstream_path(bitstream.item, bitstream),
           xhr: true,
           params: {
@@ -691,7 +691,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "viewer() returns HTTP 200" do
     item = items(:uiuc_item1)
-    bs   = bitstreams(:item1_in_staging)
+    bs   = bitstreams(:uiuc_item1_in_staging)
     get item_bitstream_viewer_path(item, bs), xhr: true
     assert_response :ok
   end
@@ -752,7 +752,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "viewer() returns HTTP 404 for non-XHR requests" do
     item = items(:uiuc_item1)
-    bs   = bitstreams(:item1_in_staging)
+    bs   = bitstreams(:uiuc_item1_in_staging)
     get item_bitstream_viewer_path(item, bs)
     assert_response :not_found
   end
