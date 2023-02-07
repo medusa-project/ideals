@@ -10,6 +10,8 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
+
+// Application library & support files
 //= require rails-ujs
 //= require jquery3
 //= require js.cookie
@@ -17,4 +19,26 @@
 //= require bootstrap
 //= require activestorage
 //= require local-time
-//= require_tree .
+//= require cable
+
+// View-specific files
+//= require ideals
+//= require collections
+//= require imports
+//= require index_pages
+//= require institutions
+//= require invitees
+//= require items
+//= require metadata_profiles
+//= require registered_elements
+//= require statistics
+//= require submission_profiles
+//= require submissions
+//= require tasks
+//= require units
+//= require user_groups
+//= require users
+//= require vocabularies
+//= require welcome
+
+//= require trailer
