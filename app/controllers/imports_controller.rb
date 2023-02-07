@@ -20,7 +20,9 @@ class ImportsController < ApplicationController
              locals: { object: @import.errors.any? ? @import : e },
              status: :bad_request
     else
-      flash['success'] = "Import created."
+      toast!(title:   "Import created",
+             message: "An import has been created. Click its upload button "\
+                      "to add files to it.")
       render "shared/reload"
     end
   end
@@ -83,8 +85,9 @@ class ImportsController < ApplicationController
   #
   def update # TODO: rename to complete or something
     ImportJob.perform_later(@import, current_user)
-    flash['success'] = "The files have been uploaded, and the import will "\
-                       "begin momentarily."
+    toast!(title:   "Files uploaded",
+           message: "The files have been uploaded. The import will commence "\
+                    "momentarily.")
     render "shared/reload"
   end
 

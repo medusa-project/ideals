@@ -1065,5 +1065,11 @@ const ideals_ready = function () {
     $("[disabled='disabled']").on("click", function() {
         return false;
     });
+
+    // Initialize Bootstrap toasts
+    const toasts = document.querySelectorAll('.toast')
+    const toastList = [...toasts]
+        .map(toast => new bootstrap.Toast(toast, {}))
+        .forEach(toast => toast.show());
 };
 $(document).ready(ideals_ready);

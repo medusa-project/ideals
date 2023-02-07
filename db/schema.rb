@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_01_211730) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_07_164853) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -95,6 +95,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_01_211730) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["collection_id", "item_id"], name: "index_collection_item_memberships_on_collection_id_and_item_id", unique: true
+  end
+
+  create_table "collection_managers", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "collection_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id", "user_id"], name: "index_collection_managers_on_collection_id_and_user_id", unique: true
+  end
+
+  create_table "collection_submitters", force: :cascade do |t|
+    t.bigint "collection_id"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id", "user_id"], name: "index_collection_submitters_on_collection_id_and_user_id", unique: true
   end
 
   create_table "collections", force: :cascade do |t|
@@ -313,6 +329,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_01_211730) do
     t.bigint "date_approved_element_id"
     t.bigint "date_published_element_id"
     t.bigint "handle_uri_element_id"
+    t.text "deposit_agreement"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true
@@ -374,14 +391,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_01_211730) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["collection_id", "user_group_id"], name: "index_manager_groups_on_collection_id_and_user_group_id", unique: true
-  end
-
-  create_table "managers", force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "collection_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["collection_id", "user_id"], name: "index_managers_on_collection_id_and_user_id", unique: true
   end
 
   create_table "messages", force: :cascade do |t|
@@ -550,14 +559,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_01_211730) do
     t.index ["collection_id", "user_group_id"], name: "index_submitter_groups_on_collection_id_and_user_group_id", unique: true
   end
 
-  create_table "submitters", force: :cascade do |t|
-    t.bigint "collection_id"
-    t.bigint "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["collection_id", "user_id"], name: "index_submitters_on_collection_id_and_user_id", unique: true
-  end
-
   create_table "tasks", force: :cascade do |t|
     t.bigint "user_id"
     t.string "name", null: false
@@ -693,6 +694,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_01_211730) do
   add_foreign_key "bitstreams", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_item_memberships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collection_item_memberships", "items", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "collection_managers", "collections", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "collection_managers", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "collection_submitters", "collections", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "collection_submitters", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "collections", "collections", column: "parent_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :nullify
@@ -733,8 +738,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_01_211730) do
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
   add_foreign_key "manager_groups", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "manager_groups", "user_groups", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "managers", "collections", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "managers", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :nullify
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
@@ -744,8 +747,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_01_211730) do
   add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitter_groups", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitter_groups", "user_groups", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "submitters", "collections", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "submitters", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "tasks", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "tasks", "users", on_update: :cascade, on_delete: :nullify
   add_foreign_key "unit_administrator_groups", "units", on_update: :cascade, on_delete: :cascade

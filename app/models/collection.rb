@@ -58,10 +58,10 @@
 # * `elements`            References zero-to-many {AscribedElement}s used to
 #                         describe an instance.
 # * `items`               References all {Item}s contained within the instance.
-# * `managers`            References the {Manager}s that are allowed to manage
-#                         the instance. This does not include all "effective"
-#                         managers, such as administrators of owning units or
-#                         system administrators; see
+# * `managers`            References the {CollectionManager}s that are allowed
+#                         to manage the instance. This does not include all
+#                         "effective" managers, such as administrators of
+#                         owning units or system administrators; see
 #                         {User#effective_manager()?}.
 # * `managing_users`      More useful alternative to {managers} that returns
 #                         {User}s instead.
@@ -72,8 +72,8 @@
 # * `submission_profile`  References the {SubmissionProfile} directly assigned
 #                         to the instance, if any (see the documentation of the
 #                         `submission_profile_id` attribute).
-# * `submitters`          References all {Submitter}s who are allowed to submit
-#                         {Item}s into the instance.
+# * `submitters`          References all {CollectionSubmitter}s who are allowed
+#                         to submit {Item}s into the instance.
 # * `submitting_users`    More useful alternative to {submitters} that returns
 #                         {User}s instead.
 # * `units`               References all units to which the instance directly
@@ -121,7 +121,7 @@ class Collection < ApplicationRecord
   has_many :manager_groups
   has_many :managing_groups, through: :manager_groups,
            class_name: "UserGroup", source: :user_group
-  has_many :managers
+  has_many :managers, class_name: "CollectionManager"
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user
   belongs_to :parent, class_name: "Collection",
@@ -134,7 +134,7 @@ class Collection < ApplicationRecord
   has_many :submitter_groups
   has_many :submitting_groups, through: :submitter_groups,
            class_name: "UserGroup", source: :user_group
-  has_many :submitters
+  has_many :submitters, class_name: "CollectionSubmitter"
   has_many :submitting_users, through: :submitters,
            class_name: "User", source: :user
   has_many :unit_collection_memberships

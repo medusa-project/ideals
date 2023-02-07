@@ -71,8 +71,9 @@ class UnitsController < ApplicationController
              locals: { object: @unit.errors.any? ? @unit : e },
              status: :bad_request
     else
-      OpenSearchClient.instance.refresh
-      flash['success'] = "Unit \"#{@unit.title}\" created."
+      RefreshOpensearchJob.perform_later
+      toast!(title:   "Unit created",
+             message: "The unit \"#{@unit.title}\" has been created.")
       render "create", locals: { unit: @unit }
     end
   end
@@ -92,8 +93,9 @@ class UnitsController < ApplicationController
     flash['error'] = "#{e}"
     redirect_to @unit
   else
-    OpenSearchClient.instance.refresh
-    flash['success'] = "Unit \"#{@unit.title}\" deleted."
+    RefreshOpensearchJob.perform_later
+    toast!(title:   "Unit deleted",
+           message: "The unit \"#{@unit.title}\" has been deleted.")
     redirect_to(@unit.parent || units_path)
   end
 
@@ -334,8 +336,9 @@ class UnitsController < ApplicationController
   rescue => e
     flash['error'] = "#{e}"
   else
-    OpenSearchClient.instance.refresh
-    flash['success'] = "Unit \"#{@unit.title}\" undeleted."
+    RefreshOpensearchJob.perform_later
+    toast!(title:   "Unit undeleted",
+           message: "The unit \"#{@unit.title}\" has been undeleted.")
   ensure
     redirect_to @unit
   end
@@ -359,8 +362,9 @@ class UnitsController < ApplicationController
              locals: { object: @unit.errors.any? ? @unit : e },
              status: :bad_request
     else
-      OpenSearchClient.instance.refresh
-      flash['success'] = "Unit \"#{@unit.title}\" updated."
+      RefreshOpensearchJob.perform_later
+      toast!(title:   "Unit updated",
+             message: "The unit \"#{@unit.title}\" has been updated.")
       render 'shared/reload'
     end
   end

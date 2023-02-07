@@ -116,7 +116,8 @@ class LocalIdentitiesController < ApplicationController
              locals: { object: @identity.errors.any? ? @identity : e },
              status: :bad_request
     else
-      flash['success'] = "Your password has been changed."
+      toast!(title:   "Password changed",
+             message: "Your password has been changed.")
       render "shared/reload"
     end
   end

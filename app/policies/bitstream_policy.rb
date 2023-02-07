@@ -142,6 +142,28 @@ class BitstreamPolicy < ApplicationPolicy
     AUTHORIZED_RESULT
   end
 
+  ##
+  # Used only in views to determine whether to show bitstream details.
+  #
+  def show_details
+    effective_sysadmin(user, role)
+  end
+
+  ##
+  # Subset of {show_details} to determine whether to show the bitstream minimum
+  # access role specifically.
+  #
+  def show_role
+    return LOGGED_OUT_RESULT unless user
+    bitstream.item.collections.each do |col|
+      if role >= Role::COLLECTION_MANAGER && user.effective_manager?(col)
+        return AUTHORIZED_RESULT
+      end
+    end
+    { authorized: false,
+      reason:     "You are not authorized to access this file." }
+  end
+
   def stream
     download
   end

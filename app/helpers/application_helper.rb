@@ -1,7 +1,7 @@
 module ApplicationHelper
 
   # These tags will not be filtered out when displaying user-entered HTML.
-  ALLOWED_HTML_TAGS           = %w(a h1 h2 h3 h4 h5 h6 li ol p ul)
+  ALLOWED_HTML_TAGS           = %w(a b dl dt em h1 h2 h3 h4 h5 h6 i li ol p strong ul)
   ALLOWED_HTML_TAG_ATTRIBUTES = %w(href title)
   CAPTCHA_SALT                = ::Configuration.instance.secret_key_base
   MAX_PAGINATION_LINKS        = 5
@@ -789,6 +789,38 @@ module ApplicationHelper
       end
     end
     nil
+  end
+
+  ##
+  # Gets and clears the toast (small closeable message dialog at the top right
+  # of the page).
+  #
+  # @see toast!
+  #
+  def toast
+    toast = session[:toast]
+    session[:toast] = nil
+    if toast
+      toast.symbolize_keys!
+      toast[:icon] = toast[:icon]&.to_sym
+    end
+    toast
+  end
+
+  ##
+  # Sets the toast.
+  #
+  # @param title [String]
+  # @param message [String]
+  # @param icon [String,Symbol] Value to pass to {ApplicationHelper#icon_for},
+  #                             typically either `:info` or `:warning`.
+  # @return Enumerable<Hash> Enumerable of Hashes with the following keys:
+  #                          `:title`, `:message`, `:icon`
+  # @see toast
+  #
+  def toast!(title:, message:, icon: nil)
+    icon ||= :info
+    session[:toast] = { title: title, message: message, icon: icon }
   end
 
 

@@ -16,7 +16,9 @@ class MetadataProfilesController < ApplicationController
       flash['error'] = "#{e}"
       redirect_back fallback_location: metadata_profile_path(@profile)
     else
-      flash['success'] = "Cloned #{@profile.name} as \"#{clone.name}\"."
+      toast!(title:   "Profile cloned",
+             message: "Metadata profile \"#{@profile.name}\" has been cloned "\
+                      "as \"#{clone.name}\".")
       redirect_to metadata_profile_path(clone)
     end
   end
@@ -36,7 +38,9 @@ class MetadataProfilesController < ApplicationController
              locals: { object: @profile.errors.any? ? @profile : e },
              status: :bad_request
     else
-      flash['success'] = "Metadata profile \"#{@profile.name}\" created."
+      toast!(title:   "Profile created",
+             message: "The metadata profile \"#{@profile.name}\" has been "\
+                      "created.")
       render "shared/reload"
     end
   end
@@ -50,7 +54,9 @@ class MetadataProfilesController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      flash['success'] = "Metadata profile \"#{@profile.name}\" deleted."
+      toast!(title:   "Profile deleted",
+             message: "The metadata profile \"#{@profile.name}\" has been "\
+                      "deleted.")
     ensure
       redirect_to metadata_profiles_path
     end
@@ -95,7 +101,9 @@ class MetadataProfilesController < ApplicationController
              locals: { object: @profile.errors.any? ? @profile : e },
              status: :bad_request
     else
-      flash['success'] = "Metadata profile \"#{@profile.name}\" updated."
+      toast!(title:   "Profile updated",
+             message: "The metadata profile \"#{@profile.name}\" has been "\
+                      "updated.")
       render "shared/reload"
     end
   end

@@ -4,7 +4,7 @@
 
 ingest_no_response:
   operation:     ingest
-  bitstream:     item1_in_staging
+  bitstream:     uiuc_item1_in_staging
   status:
   medusa_key:
   medusa_uuid:
@@ -15,7 +15,7 @@ ingest_no_response:
 
 successful_ingest:
   operation:     ingest
-  bitstream:     item2_in_medusa
+  bitstream:     uiuc_in_medusa
   status:        ok
   medusa_key:    target/dog
   medusa_uuid:   f6d28553-a73d-4d40-9d7d-665a3fa4aa1c
@@ -26,7 +26,7 @@ successful_ingest:
 
 failed_ingest:
   operation:     ingest
-  bitstream:     item2_in_medusa
+  bitstream:     uiuc_in_medusa
   status:        error
   medusa_key:
   medusa_uuid:
@@ -39,7 +39,7 @@ failed_ingest:
 
 delete_no_response:
   operation:     delete
-  bitstream:     item2_in_medusa
+  bitstream:     uiuc_in_medusa
   status:
   medusa_key:
   medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
@@ -50,7 +50,7 @@ delete_no_response:
 
 successful_delete:
   operation:     delete
-  bitstream:     item2_in_medusa
+  bitstream:     uiuc_in_medusa
   status:        ok
   medusa_key:    target/cow
   medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
@@ -61,7 +61,7 @@ successful_delete:
 
 failed_delete:
   operation:     delete
-  bitstream:     item2_in_medusa
+  bitstream:     uiuc_in_medusa
   status:        error
   medusa_key:    target/alpaca
   medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7

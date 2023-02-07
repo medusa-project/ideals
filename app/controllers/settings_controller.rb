@@ -24,7 +24,8 @@ class SettingsController < ApplicationController
       handle_error(e)
       render :index
     else
-      flash['success'] = "Settings updated."
+      toast!(title:   "Settings updated",
+             message: "Settings have been updated.")
       redirect_to settings_path
     end
   end

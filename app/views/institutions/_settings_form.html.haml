@@ -16,7 +16,7 @@
 
   .mb-3
     = f.label :welcome_html, "Welcome HTML"
-    = f.text_area :welcome_html, class: "form-control", rows: 8
+    = f.text_area :welcome_html, class: "form-control", rows: 10
     %p.form-text
       %i.fa.fa-info-circle
       The following HTML tags are allowed:
@@ -24,7 +24,7 @@
 
   .mb-3
     = f.label :about_html, "About HTML"
-    = f.text_area :about_html, class: "form-control", rows: 8
+    = f.text_area :about_html, class: "form-control", rows: 10
     %p.form-text
       %i.fa.fa-info-circle
       The following HTML tags are allowed:
@@ -36,6 +36,14 @@
     %p.form-text
       %i.fa.fa-info-circle
       If filled in, this will override the About HTML.
+
+  .mb-3
+    = f.label :deposit_agreement, "Deposit Agreement"
+    = f.text_area :deposit_agreement, class: "form-control", rows: 10
+    %p.form-text
+      %i.fa.fa-info-circle
+      The following HTML tags are allowed:
+      = raw(ApplicationHelper::ALLOWED_HTML_TAGS.map{ |t| raw("<code>&lt;#{t}&gt;</code>") }.join(", "))
 
   .mb-3
     = f.label :copyright_notice, "Copyright Notice"

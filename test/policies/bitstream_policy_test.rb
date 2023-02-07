@@ -54,7 +54,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   end
 
   setup do
-    @bitstream = bitstreams(:item1_in_staging)
+    @bitstream = bitstreams(:uiuc_item1_in_staging)
   end
 
   # create?()
@@ -261,7 +261,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_embargoed_in_staging))
     assert !policy.download?
   end
 
@@ -269,7 +269,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_submitting_in_staging))
     assert !policy.download?
   end
 
@@ -277,7 +277,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert !policy.download?
   end
 
@@ -285,7 +285,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_embargoed_in_staging))
     assert policy.download?
   end
 
@@ -293,7 +293,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_submitting_in_staging))
     assert policy.download?
   end
 
@@ -301,7 +301,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert policy.download?
   end
 
@@ -311,7 +311,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert !policy.download?
   end
 
@@ -320,7 +320,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_role_limited))
     assert !policy.download?
   end
 
@@ -328,7 +328,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_license_bundle))
     assert !policy.download?
   end
 
@@ -336,7 +336,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user      = users(:example)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     policy    = BitstreamPolicy.new(context, bitstream)
 
     assert policy.download?
@@ -353,7 +353,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     policy    = BitstreamPolicy.new(context, bitstream)
     assert policy.download?
 
@@ -367,14 +367,14 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_license_bundle))
     assert policy.download?
   end
 
   test "download?() authorizes clients whose hostname or IP matches a user group
   assigned to the bitstream" do
     group     = user_groups(:hostname)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     item      = bitstream.item
     item.bitstream_authorizations.build(user_group: group)
     item.save!
@@ -388,7 +388,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "download?() does not authorize clients whose hostname or IP does not
   match a user group assigned to the bitstream" do
     group     = user_groups(:hostname)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     item      = bitstream.item
     item.bitstream_authorizations.build(user_group: group)
     item.save!
@@ -535,7 +535,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_embargoed_in_staging))
     assert !policy.object?
   end
 
@@ -543,7 +543,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_submitting_in_staging))
     assert !policy.object?
   end
 
@@ -551,7 +551,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert !policy.object?
   end
 
@@ -559,7 +559,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_embargoed_in_staging))
     assert policy.object?
   end
 
@@ -567,7 +567,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_submitting_in_staging))
     assert policy.object?
   end
 
@@ -575,7 +575,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert policy.object?
   end
 
@@ -585,7 +585,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert !policy.object?
   end
 
@@ -594,7 +594,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_role_limited))
     assert !policy.object?
   end
 
@@ -602,7 +602,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_license_bundle))
     assert !policy.object?
   end
 
@@ -610,7 +610,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user      = users(:example)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     policy    = BitstreamPolicy.new(context, bitstream)
 
     assert policy.object?
@@ -627,7 +627,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     policy    = BitstreamPolicy.new(context, bitstream)
     assert policy.object?
 
@@ -641,7 +641,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_license_bundle))
     assert policy.object?
   end
 
@@ -656,7 +656,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_embargoed_in_staging))
     assert !policy.show?
   end
 
@@ -664,7 +664,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_submitting_in_staging))
     assert !policy.show?
   end
 
@@ -672,7 +672,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert !policy.show?
   end
 
@@ -680,7 +680,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_embargoed_in_staging))
     assert policy.show?
   end
 
@@ -688,7 +688,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_submitting_in_staging))
     assert policy.show?
   end
 
@@ -696,7 +696,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert policy.show?
   end
 
@@ -705,14 +705,14 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_role_limited))
     assert !policy.show?
   end
 
   test "show?() authorizes bitstreams limited to the logged-in role to
   logged-in users" do
     user      = users(:southwest_sysadmin)
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.update!(role: Role::LOGGED_IN)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
@@ -722,7 +722,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
   test "show?() does not authorize bitstreams limited to the logged-in role to
   logged-out users" do
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.update!(role: Role::LOGGED_IN)
     context   = RequestContext.new(user:        nil,
                                    institution: bitstream.institution)
@@ -733,7 +733,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes bitstreams limited to the collection submitter role
   to collection submitters" do
     user      = users(:southwest)
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.item.primary_collection.submitting_users << user
     bitstream.update!(role: Role::COLLECTION_SUBMITTER)
     context   = RequestContext.new(user:        user,
@@ -745,7 +745,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() does not authorize bitstreams limited to the collection
   submitter role to non-collection submitters" do
     user      = users(:southwest)
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.update!(role: Role::COLLECTION_SUBMITTER)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
@@ -756,7 +756,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes bitstreams limited to the collection manager role
   to collection managers" do
     user      = users(:southwest)
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.item.primary_collection.managing_users << user
     bitstream.update!(role: Role::COLLECTION_MANAGER)
     context   = RequestContext.new(user:        user,
@@ -768,7 +768,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() does not authorize bitstreams limited to the collection manager
   role to non-collection submitters" do
     user      = users(:southwest)
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.update!(role: Role::COLLECTION_MANAGER)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
@@ -779,7 +779,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes bitstreams limited to the unit administrator role
   to unit administrators" do
     user      = users(:southwest)
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.item.primary_unit.administering_users << user
     bitstream.update!(role: Role::UNIT_ADMINISTRATOR)
     context   = RequestContext.new(user:        user,
@@ -791,7 +791,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() does not authorize bitstreams limited to the unit administrator
   role to non-unit administrators" do
     user      = users(:southwest)
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.update!(role: Role::UNIT_ADMINISTRATOR)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
@@ -802,7 +802,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes bitstreams limited to the institution administrator
   role to institution administrators" do
     user      = users(:southwest)
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.item.institution.administering_users << user
     bitstream.update!(role: Role::INSTITUTION_ADMINISTRATOR)
     context   = RequestContext.new(user:        user,
@@ -814,7 +814,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() does not authorize bitstreams limited to the institution
   administrator role to non-unit administrators" do
     user      = users(:southwest)
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.update!(role: Role::INSTITUTION_ADMINISTRATOR)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
@@ -825,7 +825,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes bitstreams limited to the system administrator
   role to system administrators" do
     user      = users(:southwest_sysadmin)
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.update!(role: Role::SYSTEM_ADMINISTRATOR)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
@@ -836,7 +836,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() does not authorize bitstreams limited to the system
   administrator role to non-system administrators" do
     user      = users(:southwest)
-    bitstream = bitstreams(:role_limited)
+    bitstream = bitstreams(:uiuc_item1_role_limited)
     bitstream.update!(role: Role::SYSTEM_ADMINISTRATOR)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
@@ -848,7 +848,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_license_bundle))
     assert !policy.show?
   end
 
@@ -856,7 +856,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user      = users(:example)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     policy    = BitstreamPolicy.new(context, bitstream)
 
     assert policy.show?
@@ -873,7 +873,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     policy    = BitstreamPolicy.new(context, bitstream)
     assert policy.show?
 
@@ -886,7 +886,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() authorizes clients whose hostname or IP matches a user group
   assigned to the bitstream" do
     group     = user_groups(:hostname)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     item      = bitstream.item
     item.bitstream_authorizations.build(user_group: group)
     item.save!
@@ -900,7 +900,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "show?() does not authorize clients whose hostname or IP does not match
   a user group assigned to the bitstream" do
     group     = user_groups(:hostname)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     item      = bitstream.item
     item.bitstream_authorizations.build(user_group: group)
     item.save!
@@ -917,8 +917,101 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert !policy.show?
+  end
+
+  # show_details?()
+
+  test "show_details?() returns false with a nil user" do
+    policy = BitstreamPolicy.new(nil, @bitstream)
+    assert !policy.show_details?
+  end
+
+  test "show_details?() does not authorize non-sysadmins" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, @bitstream)
+    assert !policy.show_details?
+  end
+
+  test "show_details?() authorizes sysadmins" do
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = BitstreamPolicy.new(context, @bitstream)
+    assert policy.show_details?
+  end
+
+  test "show_details?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, @bitstream)
+    assert !policy.show_details?
+  end
+
+  # show_role?()
+
+  test "show_role?() returns false with a nil user" do
+    policy = BitstreamPolicy.new(nil, @bitstream)
+    assert !policy.show_role?
+  end
+
+  test "show_role?() is restrictive by default" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, @bitstream)
+    assert !policy.show_role?
+  end
+
+  test "show_role?() authorizes sysadmins" do
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = BitstreamPolicy.new(context, @bitstream)
+    assert policy.show_role?
+  end
+
+  test "show_role?() authorizes unit admins" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+
+    unit = @bitstream.item.primary_collection.units.first
+    unit.administrators.build(user: user)
+    unit.save!
+
+    policy = BitstreamPolicy.new(context, @bitstream)
+    assert policy.show_role?
+  end
+
+  test "show_role?() authorizes collection managers" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+
+    collection = @bitstream.item.primary_collection
+    collection.managing_users << user
+    collection.save!
+
+    policy = BitstreamPolicy.new(context, @bitstream)
+    assert policy.show_role?
+  end
+
+  test "show_role?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+
+    policy  = BitstreamPolicy.new(context, @bitstream)
+    assert !policy.show_role?
   end
 
   # stream?()
@@ -932,7 +1025,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_embargoed_in_staging))
     assert !policy.stream?
   end
 
@@ -940,7 +1033,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_submitting_in_staging))
     assert !policy.stream?
   end
 
@@ -948,7 +1041,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert !policy.stream?
   end
 
@@ -956,7 +1049,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_embargoed_in_staging))
     assert policy.stream?
   end
 
@@ -964,7 +1057,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_submitting_in_staging))
     assert policy.stream?
   end
 
@@ -972,7 +1065,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert policy.stream?
   end
 
@@ -982,7 +1075,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert !policy.stream?
   end
 
@@ -991,7 +1084,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_role_limited))
     assert !policy.stream?
   end
 
@@ -999,7 +1092,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_license_bundle))
     assert !policy.stream?
   end
 
@@ -1007,7 +1100,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user      = users(:example)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     policy    = BitstreamPolicy.new(context, bitstream)
 
     assert policy.stream?
@@ -1024,7 +1117,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     policy    = BitstreamPolicy.new(context, bitstream)
     assert policy.stream?
 
@@ -1038,7 +1131,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_license_bundle))
     assert policy.stream?
   end
 
@@ -1143,7 +1236,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_embargoed_in_staging))
     assert !policy.viewer?
   end
 
@@ -1151,7 +1244,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_submitting_in_staging))
     assert !policy.viewer?
   end
 
@@ -1159,7 +1252,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert !policy.viewer?
   end
 
@@ -1167,7 +1260,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:embargoed_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_embargoed_in_staging))
     assert policy.viewer?
   end
 
@@ -1175,7 +1268,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:submitting_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_submitting_in_staging))
     assert policy.viewer?
   end
 
@@ -1183,7 +1276,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert policy.viewer?
   end
 
@@ -1193,7 +1286,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:withdrawn_in_staging))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_withdrawn_in_staging))
     assert !policy.viewer?
   end
 
@@ -1202,7 +1295,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:role_limited))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_role_limited))
     assert !policy.viewer?
   end
 
@@ -1210,7 +1303,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_license_bundle))
     assert !policy.viewer?
   end
 
@@ -1218,7 +1311,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user      = users(:example)
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     policy    = BitstreamPolicy.new(context, bitstream)
 
     assert policy.viewer?
@@ -1235,7 +1328,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     context   = RequestContext.new(user:        user,
                                    institution: user.institution)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     policy    = BitstreamPolicy.new(context, bitstream)
     assert policy.viewer?
 
@@ -1249,14 +1342,14 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:license_bundle))
+    policy  = BitstreamPolicy.new(context, bitstreams(:uiuc_item1_license_bundle))
     assert policy.viewer?
   end
 
   test "viewer?() authorizes clients whose hostname or IP matches a user group
   assigned to the bitstream" do
     group     = user_groups(:hostname)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     item      = bitstream.item
     item.bitstream_authorizations.build(user_group: group)
     item.save!
@@ -1270,7 +1363,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
   test "viewer?() does not authorize clients whose hostname or IP does not
   match a user group assigned to the bitstream" do
     group     = user_groups(:hostname)
-    bitstream = bitstreams(:item2_in_medusa)
+    bitstream = bitstreams(:uiuc_in_medusa)
     item      = bitstream.item
     item.bitstream_authorizations.build(user_group: group)
     item.save!

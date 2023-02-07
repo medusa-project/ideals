@@ -7,7 +7,7 @@ class GenerateDerivativeImageJobTest < ActiveSupport::TestCase
   end
 
   test "perform() generates a derivative image" do
-    bs = bitstreams(:approved_in_permanent)
+    bs = bitstreams(:uiuc_approved_in_permanent)
     # upload the source image to the permanent area of the application S3 bucket
     File.open(file_fixture("escher_lego.png"), "r") do |file|
       bs.upload_to_permanent(file)

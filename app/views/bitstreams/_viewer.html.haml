@@ -1,4 +1,4 @@
-- show_sysadmin_content = policy(@bitstream.item).show_sysadmin_content?
+- show_details = policy(@bitstream).show_details?
 
 #file-navigator-viewer-header
   %h4= @bitstream.description.present? ? @bitstream.description : @bitstream.filename
@@ -39,7 +39,7 @@
         %code= @bitstream.media_type || "Unknown"
       %dt Size
       %dd= number_to_human_size(@bitstream.length)
-      - if show_sysadmin_content
+      - if show_details
         %dt Database ID
         %dd= @bitstream.id
       %dt API Resource
@@ -47,7 +47,7 @@
                    item_bitstream_path(@bitstream.item, @bitstream)) |
       %dt Bundle
       %dd= Bitstream::Bundle.label(@bitstream.bundle)
-      - if show_sysadmin_content
+      - if show_details
         - if @bitstream.staging_key.present?
           %dt Staging Key
           %dd
@@ -58,9 +58,10 @@
             %code= @bitstream.permanent_key
       %dt Primary
       %dd= boolean(@bitstream.primary, style: :word)
-      - if show_sysadmin_content
+      - if policy(@bitstream).show_role?
         %dt Minimum Access Role
         %dd= Role.label(@bitstream.role)
+      - if show_details
         %dt Submitted For Ingest
         %dd= boolean(@bitstream.submitted_for_ingest, style: :word)
         - if @bitstream.medusa_uuid.present?

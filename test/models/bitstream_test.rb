@@ -36,7 +36,7 @@ class BitstreamTest < ActiveSupport::TestCase
   setup do
     setup_s3
     clear_message_queues
-    @instance = bitstreams(:item1_in_staging)
+    @instance = bitstreams(:uiuc_item1_in_staging)
     assert @instance.valid?
   end
 
@@ -47,8 +47,8 @@ class BitstreamTest < ActiveSupport::TestCase
   # create_zip_file()
 
   test "create_zip_file() creates a zip of bitstreams" do
-    bitstreams = [bitstreams(:approved_in_permanent),
-                  bitstreams(:license_bundle)]
+    bitstreams = [bitstreams(:uiuc_approved_in_permanent),
+                  bitstreams(:uiuc_item1_license_bundle)]
     dest_key   = "institutions/test/downloads/file.zip"
     Bitstream.create_zip_file(bitstreams: bitstreams, dest_key: dest_key)
 
@@ -237,7 +237,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # destroy()
 
   test "destroy() updates bundle positions in the owning item" do
-    @instance = bitstreams(:multiple_bitstreams_1)
+    @instance = bitstreams(:uiuc_multiple_bitstreams_1)
     item = @instance.item
     @instance.destroy!
     # Assert that the positions are sequential and zero-based.
@@ -310,7 +310,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "delete_from_medusa() sends a correct message if medusa_uuid is set" do
-    @instance = bitstreams(:item2_in_medusa)
+    @instance = bitstreams(:uiuc_in_medusa)
     @instance.delete_from_medusa
     queue = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -447,7 +447,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "destroy() deletes the corresponding file from the staging area of the
   application bucket" do
-    @instance = bitstreams(:submitted_in_staging)
+    @instance = bitstreams(:uiuc_submitted_in_staging)
     store     = PersistentStore.instance
     key       = Bitstream.staging_key(institution_key: @instance.institution.key,
                                       item_id:         @instance.item_id,
@@ -459,7 +459,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "destroy() deletes the corresponding file from the permanent area of the
   application bucket" do
-    @instance = bitstreams(:approved_in_permanent)
+    @instance = bitstreams(:uiuc_approved_in_permanent)
     store     = PersistentStore.instance
     key       = Bitstream.permanent_key(institution_key: @instance.institution.key,
                                         item_id:         @instance.item_id,
@@ -470,7 +470,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "destroy() deletes corresponding derivatives" do
-    @instance  = bitstreams(:submitted_in_staging)
+    @instance  = bitstreams(:uiuc_submitted_in_staging)
     store      = PersistentStore.instance
     key_prefix = @instance.send(:derivative_key_prefix)
     @instance.derivative_url(size: 256) # generate a derivative
@@ -483,7 +483,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "destroy() does not send a delete message to Medusa if medusa_uuid is
   not set" do
-    @instance = bitstreams(:submitted_in_staging)
+    @instance = bitstreams(:uiuc_submitted_in_staging)
     @instance.destroy!
     queue = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -493,7 +493,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "destroy() sends a delete message to Medusa if medusa_uuid is set" do
     Message.destroy_all
-    @instance = bitstreams(:item2_in_medusa)
+    @instance = bitstreams(:uiuc_in_medusa)
     @instance.destroy!
     queue = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -606,7 +606,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "ingest_into_medusa() raises an error if preservation is not active for
   the owning institution" do
-    @instance = bitstreams(:awaiting_ingest_into_medusa)
+    @instance = bitstreams(:uiuc_awaiting_ingest_into_medusa)
     @instance.institution.outgoing_message_queue = nil
     assert_raises ArgumentError do
       @instance.ingest_into_medusa
@@ -623,7 +623,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "ingest_into_medusa() sends a message to the queue" do
-    @instance = bitstreams(:awaiting_ingest_into_medusa)
+    @instance = bitstreams(:uiuc_awaiting_ingest_into_medusa)
     @instance.ingest_into_medusa
     queue     = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -830,7 +830,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "read_full_text() works when full_text_checked_at is not set and force
   argument is false" do
-    @instance = bitstreams(:approved_in_permanent)
+    @instance = bitstreams(:uiuc_approved_in_permanent)
     @instance.update!(full_text_checked_at: nil,
                       full_text:            nil)
     @instance.read_full_text(force: false)
@@ -841,7 +841,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "read_full_text() works when full_text_checked_at is not set and force
   argument is true" do
-    @instance = bitstreams(:approved_in_permanent)
+    @instance = bitstreams(:uiuc_approved_in_permanent)
     @instance.update!(full_text_checked_at: nil,
                       full_text:            nil)
     @instance.read_full_text(force: true)
@@ -852,7 +852,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "read_full_text() does nothing when full_text_checked_at is set and
   force argument is false" do
-    @instance = bitstreams(:approved_in_permanent)
+    @instance = bitstreams(:uiuc_approved_in_permanent)
     checked_at = Time.now.utc
     text       = "cats"
     @instance.update!(full_text_checked_at: checked_at)
@@ -865,7 +865,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "read_full_text() works when full_text_checked_at is set and
   force argument is true" do
-    @instance               = bitstreams(:approved_in_permanent)
+    @instance               = bitstreams(:uiuc_approved_in_permanent)
     @instance.permanent_key = Bitstream.permanent_key(institution_key: @instance.institution.key,
                                                       item_id:         @instance.item_id,
                                                       filename:        @instance.filename)
@@ -894,7 +894,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # This won't work because ActiveJob in the test environment uses the
     # test backend, which is not asynchronous
     skip
-    @instance = bitstreams(:approved_in_permanent)
+    @instance = bitstreams(:uiuc_approved_in_permanent)
     @instance.update!(full_text_checked_at: nil,
                       full_text:            nil)
     @instance.read_full_text_async
@@ -968,7 +968,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() moves the storage object in staging when the filename has
   changed" do
-    @instance = bitstreams(:submitted_in_staging)
+    @instance = bitstreams(:uiuc_submitted_in_staging)
     old_key      = @instance.staging_key
     new_filename = "new filename"
     @instance.update!(filename: new_filename)
@@ -982,7 +982,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() moves the permanent storage object when the filename has
   changed" do
-    @instance = bitstreams(:approved_in_permanent)
+    @instance = bitstreams(:uiuc_approved_in_permanent)
     old_key      = @instance.permanent_key
     new_filename = "new filename"
     @instance.update!(filename: new_filename)
@@ -998,7 +998,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() sends a delete message to Medusa when the filename changes" do
     queue = @instance.institution.outgoing_message_queue
-    @instance = bitstreams(:approved_in_permanent)
+    @instance = bitstreams(:uiuc_approved_in_permanent)
     # These have to be set in order for the delete_from_medusa callback to work
     @instance.update!(medusa_key: "some key",
                       medusa_uuid: SecureRandom.uuid)
@@ -1014,7 +1014,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() does not send an ingest message to Medusa if the permanent key
   is not set" do
-    @instance = bitstreams(:submitted_in_staging)
+    @instance = bitstreams(:uiuc_submitted_in_staging)
     @instance.save!
     queue     = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -1024,7 +1024,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() does not send an ingest message to Medusa if preservation is not
   active on the owning institution" do
-    @instance = bitstreams(:submitted_in_staging)
+    @instance = bitstreams(:uiuc_submitted_in_staging)
     @instance.institution.medusa_file_group_id = nil
     @instance.save!
     queue     = @instance.institution.outgoing_message_queue
@@ -1035,7 +1035,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() does not send an ingest message to Medusa if the permanent key
   has not changed" do
-    @instance = bitstreams(:awaiting_ingest_into_medusa)
+    @instance = bitstreams(:uiuc_awaiting_ingest_into_medusa)
     @instance.save!
     queue = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -1045,7 +1045,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() sends an ingest message to Medusa if the permanent key has
   changed" do
-    @instance = bitstreams(:submitted_in_staging)
+    @instance = bitstreams(:uiuc_submitted_in_staging)
     @instance.item.assign_handle
     @instance.update!(permanent_key: ["institutions",
                                       @instance.institution.key,
@@ -1062,7 +1062,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # This won't work because ActiveJob in the test environment uses the
     # test backend, which is not asynchronous
     skip
-    @instance = bitstreams(:approved_in_permanent)
+    @instance = bitstreams(:uiuc_approved_in_permanent)
     @instance.update!(full_text_checked_at: nil,
                       full_text:            nil)
     sleep 2
@@ -1073,7 +1073,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "save() does not read full text when the bundle is not CONTENT" do
-    @instance = bitstreams(:approved_in_permanent)
+    @instance = bitstreams(:uiuc_approved_in_permanent)
     @instance.update!(bundle:               Bitstream::Bundle::LICENSE,
                       full_text_checked_at: nil,
                       full_text:            nil)
@@ -1085,7 +1085,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "save() does not read full text when full_text_is_checked_at is set" do
-    @instance = bitstreams(:approved_in_permanent)
+    @instance = bitstreams(:uiuc_approved_in_permanent)
     time      = Time.now.utc
     @instance.update!(full_text_checked_at: time,
                       full_text:            FullText.new(text: "cats"))
@@ -1097,7 +1097,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "save() does not read full text when an effective key does not exist" do
-    @instance = bitstreams(:approved_in_permanent)
+    @instance = bitstreams(:uiuc_approved_in_permanent)
     @instance.update!(full_text_checked_at: nil,
                       full_text:            nil,
                       staging_key:          nil,
@@ -1123,7 +1123,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "update() update bundle positions in the owning item when increasing a
   bundle position" do
-    @instance = bitstreams(:multiple_bitstreams_1)
+    @instance = bitstreams(:uiuc_multiple_bitstreams_1)
     assert_equal 0, @instance.bundle_position
     @instance.update!(bundle_position: 2)
     # Assert that the positions are sequential and zero-based.
@@ -1134,7 +1134,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "update() updates bundle positions in the owning item when decreasing a
   bundle position" do
-    @instance = bitstreams(:multiple_bitstreams_1)
+    @instance = bitstreams(:uiuc_multiple_bitstreams_1)
     @instance = @instance.item.bitstreams.where(bundle_position: 2).first
     @instance.update!(bundle_position: 0)
     # Assert that the positions are sequential and zero-based.

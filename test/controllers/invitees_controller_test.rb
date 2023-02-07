@@ -31,11 +31,10 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "approve() sets the flash and redirects upon success" do
+  test "approve() redirects upon success" do
     log_in_as(users(:example_sysadmin))
     patch invitee_approve_path(@invitee)
     assert_redirected_to invitees_path
-    assert flash['success'].start_with?("Invitee #{@invitee.email} has been approved")
   end
 
   # create()
@@ -73,20 +72,6 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
       invitee = Invitee.find_by_email(email)
       assert_equal Invitee::ApprovalState::APPROVED, invitee.approval_state
     end
-  end
-
-  test "create() sets the flash if all arguments are valid" do
-    log_in_as(users(:example_sysadmin))
-
-    post invitees_path,
-         xhr: true,
-         params: {
-             invitee: {
-                 email: "new@example.edu",
-                 note: "This is a new invitee"
-             }
-         }
-    assert flash['success'].include?("An invitation has been sent")
   end
 
   test "create() returns HTTP 200 if all arguments are valid" do
@@ -300,11 +285,10 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "reject() sets the flash and redirects upon success" do
+  test "reject() redirects upon success" do
     log_in_as(users(:example_sysadmin))
     patch invitee_reject_path(@invitee)
     assert_redirected_to invitees_path
-    assert flash['success'].start_with?("Invitee #{@invitee.email} has been rejected")
   end
 
   # resend_email()

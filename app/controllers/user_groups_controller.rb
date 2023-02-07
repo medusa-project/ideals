@@ -19,7 +19,8 @@ class UserGroupsController < ApplicationController
              locals: { object: @user_group.errors.any? ? @user_group : e },
              status: :bad_request
     else
-      flash['success'] = "User group \"#{@user_group.name}\" created."
+      toast!(title:   "User group created",
+             message: "The user group \"#{@user_group.name}\" has been created.")
       render "shared/reload"
     end
   end
@@ -33,7 +34,8 @@ class UserGroupsController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      flash['success'] = "User group \"#{@user_group.name}\" deleted."
+      toast!(title:   "User group deleted",
+             message: "The user group \"#{@user_group.name}\" has been deleted.")
     ensure
       redirect_to user_groups_path
     end
@@ -169,7 +171,8 @@ class UserGroupsController < ApplicationController
              locals: { object: @user_group.errors.any? ? @user_group : e },
              status: :bad_request
     else
-      flash['success'] = "User group \"#{@user_group.name}\" updated."
+      toast!(title:   "User group updated",
+             message: "The user group \"#{@user_group.name}\" has been updated.")
       render "shared/reload"
     end
   end

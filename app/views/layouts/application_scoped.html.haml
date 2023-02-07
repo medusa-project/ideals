@@ -21,6 +21,7 @@
   %body{id: yield(:body_id).present? ? yield(:body_id) : nil,
         'data-nav': yield(:active_nav)}
     .container-fluid
+      = render partial: "shared/toasts"
       = render partial: 'layouts/lower_header'
       .page-content
         - unless request.path == "/"
