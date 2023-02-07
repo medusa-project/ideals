@@ -58,10 +58,10 @@
 # * `elements`            References zero-to-many {AscribedElement}s used to
 #                         describe an instance.
 # * `items`               References all {Item}s contained within the instance.
-# * `managers`            References the {Manager}s that are allowed to manage
-#                         the instance. This does not include all "effective"
-#                         managers, such as administrators of owning units or
-#                         system administrators; see
+# * `managers`            References the {CollectionManager}s that are allowed
+#                         to manage the instance. This does not include all
+#                         "effective" managers, such as administrators of
+#                         owning units or system administrators; see
 #                         {User#effective_manager()?}.
 # * `managing_users`      More useful alternative to {managers} that returns
 #                         {User}s instead.
@@ -121,7 +121,7 @@ class Collection < ApplicationRecord
   has_many :manager_groups
   has_many :managing_groups, through: :manager_groups,
            class_name: "UserGroup", source: :user_group
-  has_many :managers
+  has_many :managers, class_name: "CollectionManager"
   has_many :managing_users, through: :managers,
            class_name: "User", source: :user
   belongs_to :parent, class_name: "Collection",
