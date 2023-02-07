@@ -18,7 +18,9 @@ class VocabularyTermsController < ApplicationController
              locals: { object: @term.errors.any? ? @term : e },
              status: :bad_request
     else
-      flash['success'] = "Term \"#{@term.displayed_value}\" created."
+      toast!(title:   "Term created",
+             message: "The vocabulary term \"#{@term.displayed_value}\" has "\
+                      "been created.")
       render "shared/reload"
     end
   end
@@ -32,7 +34,9 @@ class VocabularyTermsController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      flash['success'] = "Term \"#{@term.displayed_value}\" deleted."
+      toast!(title:   "Term deleted",
+             message: "The vocabulary term \"#{@term.displayed_value}\" has "\
+                      "been deleted.")
     ensure
       redirect_back fallback_location: @term.vocabulary
     end
@@ -68,7 +72,9 @@ class VocabularyTermsController < ApplicationController
              locals: { object: @term.errors.any? ? @term : e },
              status: :bad_request
     else
-      flash['success'] = "Term \"#{@term.displayed_value}\" updated."
+      toast!(title:   "Term updated",
+             message: "The vocabulary term \"#{@term.displayed_value}\" has "\
+                      "been updated.")
       render "shared/reload"
     end
   end

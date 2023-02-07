@@ -791,6 +791,38 @@ module ApplicationHelper
     nil
   end
 
+  ##
+  # Gets and clears the toast (small closeable message dialog at the top right
+  # of the page).
+  #
+  # @see toast!
+  #
+  def toast
+    toast = session[:toast]
+    session[:toast] = nil
+    if toast
+      toast.symbolize_keys!
+      toast[:icon] = toast[:icon]&.to_sym
+    end
+    toast
+  end
+
+  ##
+  # Sets the toast.
+  #
+  # @param title [String]
+  # @param message [String]
+  # @param icon [String,Symbol] Value to pass to {ApplicationHelper#icon_for},
+  #                             typically either `:info` or `:warning`.
+  # @return Enumerable<Hash> Enumerable of Hashes with the following keys:
+  #                          `:title`, `:message`, `:icon`
+  # @see toast
+  #
+  def toast!(title:, message:, icon: nil)
+    icon ||= :info
+    session[:toast] = { title: title, message: message, icon: icon }
+  end
+
 
   private
 

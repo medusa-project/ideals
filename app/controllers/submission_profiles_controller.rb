@@ -16,7 +16,9 @@ class SubmissionProfilesController < ApplicationController
       flash['error'] = "#{e}"
       redirect_back fallback_location: submission_profile_path(@profile)
     else
-      flash['success'] = "Cloned #{@profile.name} as \"#{clone.name}\"."
+      toast!(title:   "Profile cloned",
+             message: "The submission profile \"#{@profile.name}\" has been "\
+                      "cloned as \"#{clone.name}\".")
       redirect_to submission_profile_path(clone)
     end
   end
@@ -36,7 +38,9 @@ class SubmissionProfilesController < ApplicationController
              locals: { object: @profile.errors.any? ? @profile : e },
              status: :bad_request
     else
-      flash['success'] = "Submission profile \"#{@profile.name}\" created."
+      toast!(title:   "Profile cloned",
+             message: "The submission profile \"#{@profile.name}\" has been "\
+                      "created.")
       render "shared/reload"
     end
   end
@@ -50,7 +54,9 @@ class SubmissionProfilesController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      flash['success'] = "Submission profile \"#{@profile.name}\" deleted."
+      toast!(title:   "Profile deleted",
+             message: "The submission profile \"#{@profile.name}\" has been "\
+                      "deleted.")
     ensure
       redirect_to submission_profiles_path
     end
@@ -96,7 +102,9 @@ class SubmissionProfilesController < ApplicationController
              locals: { object: @profile.errors.any? ? @profile : e },
              status: :bad_request
     else
-      flash['success'] = "Submission profile \"#{@profile.name}\" updated."
+      toast!(title:   "Profile updated",
+             message: "The submission profile \"#{@profile.name}\" has been "\
+                      "updated.")
       render "shared/reload"
     end
   end

@@ -19,7 +19,8 @@ class RegisteredElementsController < ApplicationController
              locals: { object: @element.errors.any? ? @element : e },
              status: :bad_request
     else
-      flash['success'] = "Element \"#{@element.name}\" created."
+      toast!(title:   "Element created",
+             message: "The element \"#{@element.name}\" has been created.")
       render "shared/reload"
     end
   end
@@ -36,7 +37,8 @@ class RegisteredElementsController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      flash['success'] = "Element \"#{@element.name}\" deleted."
+      toast!(title:   "Element deleted",
+             message: "The element \"#{@element.name}\" has been deleted.")
     ensure
       redirect_back fallback_location: registered_elements_path
     end
@@ -71,7 +73,8 @@ class RegisteredElementsController < ApplicationController
              locals: { object: @element.errors.any? ? @element : e },
              status: :bad_request
     else
-      flash['success'] = "Element \"#{@element.name}\" updated."
+      toast!(title:   "Element updated",
+             message: "The element \"#{@element.name}\" has been updated.")
       render "shared/reload"
     end
   end

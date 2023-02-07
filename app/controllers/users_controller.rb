@@ -134,7 +134,8 @@ class UsersController < ApplicationController
              locals: { object: @user.errors.any? ? @user : e },
              status: :bad_request
     else
-      flash['success'] = "Properties of user #{@user.name} have been updated."
+      toast!(title:   "User updated",
+             message: "The properties of user #{@user.name} have been updated.")
       render "shared/reload"
     end
   end

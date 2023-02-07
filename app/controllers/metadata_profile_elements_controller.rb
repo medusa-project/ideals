@@ -17,7 +17,8 @@ class MetadataProfileElementsController < ApplicationController
              locals: { object: @element.errors.any? ? @element : e },
              status: :bad_request
     else
-      flash['success'] = "Element \"#{@element.label}\" created."
+      toast!(title:   "Element created",
+             message: "A \"#{@element.label}\" element has been created.")
       render "shared/reload"
     end
   end
@@ -31,7 +32,8 @@ class MetadataProfileElementsController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      flash['success'] = "Element \"#{@element.label}\" deleted."
+      toast!(title:   "Element deleted",
+             message: "The \"#{@element.label}\" element has been deleted.")
     ensure
       redirect_back fallback_location: @element.metadata_profile
     end
@@ -59,7 +61,8 @@ class MetadataProfileElementsController < ApplicationController
              locals: { object: @element.errors.any? ? @element : e },
              status: :bad_request
     else
-      flash['success'] = "Element \"#{@element.label}\" updated."
+      toast!(title:   "Element updated",
+             message: "The \"#{@element.label}\" element has been updated.")
       render "shared/reload"
     end
   end

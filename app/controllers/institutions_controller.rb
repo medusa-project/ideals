@@ -24,7 +24,8 @@ class InstitutionsController < ApplicationController
              locals: { object: @institution.errors.any? ? @institution : e },
              status: :bad_request
     else
-      flash['success'] = "Institution \"#{@institution.name}\" created."
+      toast!(title:   "Institution created",
+             message: "The \"#{@institution.name}\" institution has been created.")
       render "shared/reload"
     end
   end
@@ -38,7 +39,8 @@ class InstitutionsController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      flash['success'] = "Institution \"#{@institution.name}\" deleted."
+      toast!(title:   "Institution deleted",
+             message: "The \"#{@institution.name}\" institution has been deleted.")
     ensure
       redirect_to institutions_path
     end
@@ -313,7 +315,8 @@ class InstitutionsController < ApplicationController
              locals:  { object: @institution.errors.any? ? @institution : e },
              status:  :bad_request
     else
-      flash['success'] = "Institution \"#{@institution.name}\" updated."
+      toast!(title:   "Institution updated",
+             message: "The \"#{@institution.name}\" institution has been updated.")
       render "shared/reload"
     end
   end
@@ -331,7 +334,8 @@ class InstitutionsController < ApplicationController
              locals: { object: @institution.errors.any? ? @institution : e },
              status: :bad_request
     else
-      flash['success'] = "Institution \"#{@institution.name}\" updated."
+      toast!(title:   "Institution updated",
+             message: "The \"#{@institution.name}\" institution has been updated.")
       render "shared/reload"
     end
   end
@@ -351,7 +355,8 @@ class InstitutionsController < ApplicationController
              locals: { object: @institution.errors.any? ? @institution : e },
              status: :bad_request
     else
-      flash['success'] = "Institution \"#{@institution.name}\" updated."
+      toast!(title:   "Institution updated",
+             message: "The \"#{@institution.name}\" institution has been updated.")
       render "shared/reload"
     end
   end

@@ -77,7 +77,8 @@ class CollectionsController < ApplicationController
              status: :bad_request
     else
       OpenSearchClient.instance.refresh
-      flash['success'] = "Collection \"#{@collection.title}\" created."
+      toast!(title:   "Collection created",
+             message: "The \"#{@collection.title}\" collection has been created.")
       render 'shared/reload'
     end
   end
@@ -102,7 +103,8 @@ class CollectionsController < ApplicationController
       redirect_to @collection
     else
       OpenSearchClient.instance.refresh
-      flash['success'] = "Collection \"#{title}\" deleted."
+      toast!(title:   "Collection deleted",
+             message: "The \"#{title}\" collection has been deleted.")
       redirect_to(parent || primary_unit)
     end
   end
@@ -384,7 +386,8 @@ class CollectionsController < ApplicationController
     flash['error'] = "#{e}"
   else
     OpenSearchClient.instance.refresh
-    flash['success'] = "Collection \"#{@collection.title}\" undeleted."
+    toast!(title:   "Collection undeleted",
+           message: "The \"#{@collection.title}\" collection has been undeleted.")
   ensure
     redirect_to @collection
   end
@@ -411,7 +414,8 @@ class CollectionsController < ApplicationController
              status: :bad_request
     else
       OpenSearchClient.instance.refresh
-      flash['success'] = "Collection \"#{@collection.title}\" updated."
+      toast!(title:   "Collection updated",
+             message: "Collection \"#{@collection.title}\" has been updated.")
       render 'shared/reload'
     end
   end

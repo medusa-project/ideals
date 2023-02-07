@@ -25,8 +25,9 @@ class InviteesController < ApplicationController
     flash['error'] = "#{e}"
     redirect_back fallback_location: invitees_path
   else
-    flash['success'] = "Invitee #{@invitee.email} has been approved and will "\
-        "be receiving an email notification shortly."
+    toast!(title:   "Invitee approved",
+           message: "The invitee #{@invitee.email} has been approved, and "\
+                    "will be receiving an email notification shortly.")
     redirect_back fallback_location: invitees_path
   end
 
@@ -53,7 +54,8 @@ class InviteesController < ApplicationController
              locals: { object: @invitee.errors.any? ? @invitee : e },
              status: :bad_request
     else
-      flash['success'] = "An invitation has been sent to #{@invitee.email}."
+      toast!(title:   "Invitation sent",
+             message: "An invitation has been sent to #{@invitee.email}.")
       render "shared/reload"
     end
   end
@@ -99,7 +101,8 @@ class InviteesController < ApplicationController
   rescue => e
     flash['error'] = "#{e}"
   else
-    flash['success'] = "Invitee #{@invitee.email} has been deleted."
+    toast!(title:   "Invitee deleted",
+           message: "The invitee #{@invitee.email} has been deleted.")
   ensure
     redirect_back fallback_location: invitees_url
   end
@@ -141,8 +144,9 @@ class InviteesController < ApplicationController
     flash['error'] = "#{e}"
     redirect_back fallback_location: invitees_path
   else
-    flash['success'] = "Invitee #{@invitee.email} has been rejected and will "\
-        "be receiving an email notification shortly."
+    toast!(title:   "Invitee rejected",
+           message: "The invitee #{@invitee.email} has been rejected and "\
+                    "will be receiving an email notification shortly.")
     redirect_back fallback_location: invitees_path
   end
 
@@ -157,7 +161,8 @@ class InviteesController < ApplicationController
     flash['error'] = "#{e}"
     redirect_back fallback_location: invitees_path
   else
-    flash['success'] = "An email has been sent to #{@invitee.email}."
+    toast!(title:   "Email re-sent",
+           message: "An email has been sent to #{@invitee.email}.")
     redirect_to invitees_path
   end
 

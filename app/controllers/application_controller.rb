@@ -346,6 +346,14 @@ class ApplicationController < ActionController::Base
   end
 
   ##
+  # Sets the toast.
+  # @see ApplicationHelper#toast!
+  #
+  def toast!(title:, message:, icon: nil)
+    helpers.toast!(title: title, message: message, icon: icon)
+  end
+
+  ##
   # @return [Integer] Effective window size a.k.a. results limit based on the
   #                   application configuration and `window` query argument.
   #

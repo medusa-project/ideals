@@ -19,7 +19,8 @@ class VocabulariesController < ApplicationController
              locals: { object: @vocabulary.errors.any? ? @vocabulary : e },
              status: :bad_request
     else
-      flash['success'] = "Vocabulary \"#{@vocabulary.name}\" created."
+      toast!(title:   "Vocabulary created",
+             message: "The vocabulary \"#{@vocabulary.name}\" has been created.")
       render "shared/reload"
     end
   end
@@ -33,7 +34,8 @@ class VocabulariesController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      flash['success'] = "Vocabulary \"#{@vocabulary.name}\" deleted."
+      toast!(title:   "Vocabulary deleted",
+             message: "The vocabulary \"#{@vocabulary.name}\" has been deleted.")
     ensure
       redirect_to vocabularies_path
     end
@@ -91,7 +93,8 @@ class VocabulariesController < ApplicationController
              locals: { object: @vocabulary.errors.any? ? @vocabulary : e },
              status: :bad_request
     else
-      flash['success'] = "Vocabulary \"#{@vocabulary.name}\" has been updated."
+      toast!(title:   "Vocabulary updated",
+             message: "The vocabulary \"#{@vocabulary.name}\" has been updated.")
       render "shared/reload"
     end
   end

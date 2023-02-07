@@ -1,0 +1,21 @@
+.toast-container.position-fixed{style: "position: absolute; top: 0; right: 0; z-index: 1000"}
+  - toast_struct = toast
+  - if toast_struct
+    .toast.mt-2.me-2{role:               "status",
+                     "aria-live":        "polite",
+                     "aria-atomic":      "true",
+                     "data-bs-autohide": "false"}
+      .toast-header
+        %strong.me-auto
+          - if toast_struct[:icon] == :warning
+            %span.text-danger
+              = icon_for(toast_struct[:icon])
+          - else
+            = icon_for(toast_struct[:icon])
+          = toast_struct[:title]
+        %small= local_time_ago(Time.now) # local-time JS will automatically keep this updated on the client
+        %button.btn-close{type:              "button",
+                          "data-bs-dismiss": "toast",
+                          "aria-label":      "Close"}
+      .toast-body
+        = sanitize(toast_struct[:message])

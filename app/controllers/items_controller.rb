@@ -42,7 +42,8 @@ class ItemsController < ApplicationController
       flash['error'] = "#{e}"
     else
       OpenSearchClient.instance.refresh
-      flash['success'] = "Item deleted."
+      toast!(title:   "Item deleted",
+             message: "The item \"#{@item.title}\" has been deleted.")
     ensure
       redirect_to collection || root_url
     end
@@ -226,13 +227,15 @@ class ItemsController < ApplicationController
           item = Item.find(item_id)
           approve_item(item)
         end
-        flash['success'] = "Approved #{params[:items].length} items."
+        toast!(title:   "Items approved",
+               message: "#{params[:items].length} items have been approved.")
       when "reject"
         params[:items].each do |item_id|
           item = Item.find(item_id)
           reject_item(item)
         end
-        flash['success'] = "Rejected #{params[:items].length} items."
+        toast!(title:   "Items rejected",
+               message: "#{params[:items].length} items have been rejected.")
       else
         flash['error'] = "Unrecognized verb (this is probably a bug)"
         redirect_back fallback_location: items_review_path and return
@@ -329,7 +332,8 @@ class ItemsController < ApplicationController
     flash['error'] = "#{e}"
   else
     OpenSearchClient.instance.refresh
-    flash['success'] = "This item has been undeleted."
+    toast!(title:   "Item undeleted",
+           message: "The item \"#{@item.title}\" has been undeleted.")
   ensure
     redirect_to @item
   end
@@ -368,7 +372,8 @@ class ItemsController < ApplicationController
              status: :bad_request
     else
       OpenSearchClient.instance.refresh
-      flash['success'] = "Item \"#{@item.title}\" updated."
+      toast!(title:   "Item updated",
+             message: "The item \"#{@item.title}\" has been updated.")
       render "shared/reload"
     end
   end

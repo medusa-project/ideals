@@ -20,7 +20,8 @@ class IndexPagesController < ApplicationController
              locals: { object: @index_page.errors.any? ? @index_page : e },
              status: :bad_request
     else
-      flash['success'] = "Index page \"#{@index_page.name}\" created."
+      toast!(title:   "Index page created",
+             message: "Index page \"#{@index_page.name}\" has been created.")
       render "shared/reload"
     end
   end
@@ -34,7 +35,8 @@ class IndexPagesController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      flash['success'] = "Index page \"#{@index_page.name}\" deleted."
+      toast!(title:   "Index page deleted",
+             message: "Index page \"#{@index_page.name}\" has been deleted.")
     ensure
       redirect_to index_pages_path
     end
@@ -126,7 +128,8 @@ class IndexPagesController < ApplicationController
              locals: { object: @index_page.errors.any? ? @index_page : e },
              status: :bad_request
     else
-      flash['success'] = "Index page \"#{@index_page.name}\" updated."
+      toast!(title:   "Index page updated",
+             message: "Index page \"#{@index_page.name}\" has been updated.")
       render "shared/reload"
     end
   end
