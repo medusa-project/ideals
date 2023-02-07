@@ -42,6 +42,14 @@
     - else
       .badge.text-bg-danger
         Not Set
+  %dt Deposit Agreement
+  %dd
+    - if @institution.deposit_agreement.present?
+      .badge.text-bg-success
+        Present
+    - else
+      .badge.text-bg-danger
+        Not Set
   %dt Copyright Notice
   %dd
     - if @institution.copyright_notice.present?

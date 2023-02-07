@@ -417,7 +417,7 @@ class InstitutionsController < ApplicationController
   def settings_params
     params.require(:institution).permit(# Settings tab
                                         :about_html, :about_url,
-                                        :copyright_notice,
+                                        :copyright_notice, :deposit_agreement,
                                         :earliest_search_year, :feedback_email,
                                         :main_website_url, :service_name,
                                         :welcome_html,

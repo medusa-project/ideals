@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_07_144549) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_07_164853) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -329,6 +329,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_07_144549) do
     t.bigint "date_approved_element_id"
     t.bigint "date_published_element_id"
     t.bigint "handle_uri_element_id"
+    t.text "deposit_agreement"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true
