@@ -76,7 +76,7 @@ class CollectionsController < ApplicationController
              locals: { object: @collection.errors.any? ? @collection : e },
              status: :bad_request
     else
-      OpenSearchClient.instance.refresh
+      RefreshOpensearchJob.perform_later
       toast!(title:   "Collection created",
              message: "The \"#{@collection.title}\" collection has been created.")
       render 'shared/reload'
@@ -102,7 +102,7 @@ class CollectionsController < ApplicationController
       flash['error'] = "#{e}"
       redirect_to @collection
     else
-      OpenSearchClient.instance.refresh
+      RefreshOpensearchJob.perform_later
       toast!(title:   "Collection deleted",
              message: "The \"#{title}\" collection has been deleted.")
       redirect_to(parent || primary_unit)
@@ -385,7 +385,7 @@ class CollectionsController < ApplicationController
   rescue => e
     flash['error'] = "#{e}"
   else
-    OpenSearchClient.instance.refresh
+    RefreshOpensearchJob.perform_later
     toast!(title:   "Collection undeleted",
            message: "The \"#{@collection.title}\" collection has been undeleted.")
   ensure
@@ -413,7 +413,7 @@ class CollectionsController < ApplicationController
              locals: { object: @collection.errors.any? ? @collection : e },
              status: :bad_request
     else
-      OpenSearchClient.instance.refresh
+      RefreshOpensearchJob.perform_later
       toast!(title:   "Collection updated",
              message: "Collection \"#{@collection.title}\" has been updated.")
       render 'shared/reload'

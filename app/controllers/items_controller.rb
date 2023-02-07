@@ -20,7 +20,7 @@ class ItemsController < ApplicationController
   #
   def approve
     approve_item(@item)
-    OpenSearchClient.instance.refresh
+    RefreshOpensearchJob.perform_later
     redirect_back fallback_location: item_path(@item)
   end
 
@@ -41,7 +41,7 @@ class ItemsController < ApplicationController
     rescue => e
       flash['error'] = "#{e}"
     else
-      OpenSearchClient.instance.refresh
+      RefreshOpensearchJob.perform_later
       toast!(title:   "Item deleted",
              message: "The item \"#{@item.title}\" has been deleted.")
     ensure
@@ -240,7 +240,7 @@ class ItemsController < ApplicationController
         flash['error'] = "Unrecognized verb (this is probably a bug)"
         redirect_back fallback_location: items_review_path and return
       end
-      OpenSearchClient.instance.refresh
+      RefreshOpensearchJob.perform_later
     end
     redirect_back fallback_location: items_review_path
   end
@@ -274,7 +274,7 @@ class ItemsController < ApplicationController
   #
   def reject
     reject_item(@item)
-    OpenSearchClient.instance.refresh
+    RefreshOpensearchJob.perform_later
     redirect_back fallback_location: item_path(@item)
   end
 
@@ -331,7 +331,7 @@ class ItemsController < ApplicationController
   rescue => e
     flash['error'] = "#{e}"
   else
-    OpenSearchClient.instance.refresh
+    RefreshOpensearchJob.perform_later
     toast!(title:   "Item undeleted",
            message: "The item \"#{@item.title}\" has been undeleted.")
   ensure
@@ -371,7 +371,7 @@ class ItemsController < ApplicationController
              locals: { object: @item.errors.any? ? @item : e },
              status: :bad_request
     else
-      OpenSearchClient.instance.refresh
+      RefreshOpensearchJob.perform_later
       toast!(title:   "Item updated",
              message: "The item \"#{@item.title}\" has been updated.")
       render "shared/reload"
@@ -399,7 +399,7 @@ class ItemsController < ApplicationController
                           description: "Item was withdrawn.").execute do
       @item.update!(stage: Item::Stages::WITHDRAWN)
     end
-    OpenSearchClient.instance.refresh
+    RefreshOpensearchJob.perform_later
     redirect_back fallback_location: item_path(@item)
   end
 
