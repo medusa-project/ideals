@@ -72,8 +72,8 @@
 # * `submission_profile`  References the {SubmissionProfile} directly assigned
 #                         to the instance, if any (see the documentation of the
 #                         `submission_profile_id` attribute).
-# * `submitters`          References all {Submitter}s who are allowed to submit
-#                         {Item}s into the instance.
+# * `submitters`          References all {CollectionSubmitter}s who are allowed
+#                         to submit {Item}s into the instance.
 # * `submitting_users`    More useful alternative to {submitters} that returns
 #                         {User}s instead.
 # * `units`               References all units to which the instance directly
@@ -134,7 +134,7 @@ class Collection < ApplicationRecord
   has_many :submitter_groups
   has_many :submitting_groups, through: :submitter_groups,
            class_name: "UserGroup", source: :user_group
-  has_many :submitters
+  has_many :submitters, class_name: "CollectionSubmitter"
   has_many :submitting_users, through: :submitters,
            class_name: "User", source: :user
   has_many :unit_collection_memberships
