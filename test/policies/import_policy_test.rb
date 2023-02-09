@@ -3,18 +3,20 @@ require 'test_helper'
 class ImportPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @import = imports(:saf_new)
+    @import = imports(:southwest_saf_new)
   end
 
   # create?
 
   test "create?() returns false with a nil user" do
-    policy = ImportPolicy.new(nil, @import)
+    context = RequestContext.new(user:        nil,
+                                 institution: @import.institution)
+    policy = ImportPolicy.new(context, @import)
     assert !policy.create?
   end
 
   test "create?() is restrictive by default" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -22,7 +24,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -51,7 +53,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() works with class objects" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, Import)
@@ -60,7 +62,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
@@ -71,12 +73,21 @@ class ImportPolicyTest < ActiveSupport::TestCase
   # delete_all_files?()
 
   test "delete_all_files?() returns false with a nil user" do
-    policy = ImportPolicy.new(nil, @import)
+    context = RequestContext.new(user:        nil,
+                                 institution: @import.institution)
+    policy = ImportPolicy.new(context, @import)
+    assert !policy.delete_all_files?
+  end
+
+  test "delete_all_files?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
     assert !policy.delete_all_files?
   end
 
   test "delete_all_files?() is restrictive by default" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -114,7 +125,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "delete_all_files?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
@@ -125,12 +136,21 @@ class ImportPolicyTest < ActiveSupport::TestCase
   # edit?()
 
   test "edit?() returns false with a nil user" do
-    policy = ImportPolicy.new(nil, @import)
+    context = RequestContext.new(user:        nil,
+                                 institution: @import.institution)
+    policy = ImportPolicy.new(context, @import)
+    assert !policy.edit?
+  end
+
+  test "edit?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
     assert !policy.edit?
   end
 
   test "edit?() is restrictive by default" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -139,7 +159,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "edit?() does not authorize users other than the one who created the
   instance" do
-    user    = users(:example_sysadmin) # instance was created by uiuc_admin
+    user    = users(:southwest_sysadmin) # instance was created by uiuc_admin
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -177,7 +197,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
@@ -188,12 +208,14 @@ class ImportPolicyTest < ActiveSupport::TestCase
   # index?()
 
   test "index?() returns false with a nil user" do
-    policy = ImportPolicy.new(nil, Import)
+    context = RequestContext.new(user:        nil,
+                                 institution: @import.institution)
+    policy = ImportPolicy.new(context, Import)
     assert !policy.index?
   end
 
   test "index?() is restrictive by default" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -201,7 +223,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -231,7 +253,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
@@ -242,12 +264,21 @@ class ImportPolicyTest < ActiveSupport::TestCase
   # new?()
 
   test "new?() returns false with a nil user" do
-    policy = ImportPolicy.new(nil, @import)
+    context = RequestContext.new(user:        nil,
+                                 institution: @import.institution)
+    policy = ImportPolicy.new(context, @import)
+    assert !policy.new?
+  end
+
+  test "new?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
     assert !policy.new?
   end
 
   test "new?() is restrictive by default" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -255,7 +286,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -284,7 +315,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() works with class objects" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, Collection)
@@ -293,7 +324,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
@@ -304,12 +335,21 @@ class ImportPolicyTest < ActiveSupport::TestCase
   # show?()
 
   test "show?() returns false with a nil user" do
-    policy = ImportPolicy.new(nil, @import)
+    context = RequestContext.new(user:        nil,
+                                 institution: @import.institution)
+    policy = ImportPolicy.new(context, @import)
+    assert !policy.show?
+  end
+
+  test "show?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
     assert !policy.show?
   end
 
   test "show?() is restrictive by default" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -317,7 +357,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -347,16 +387,16 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "show?() does not authorize administrators of a different institution
   than the import" do
-    user    = users(:southwest_admin)
+    user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
-                                 institution: institutions(:uiuc))
+                                 institution: @import.institution)
     policy  = ImportPolicy.new(context, @import)
     assert !policy.show?
   end
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
@@ -367,12 +407,21 @@ class ImportPolicyTest < ActiveSupport::TestCase
   # update?()
 
   test "update?() returns false with a nil user" do
-    policy = ImportPolicy.new(nil, @import)
+    context = RequestContext.new(user:        nil,
+                                 institution: @import.institution)
+    policy = ImportPolicy.new(context, @import)
+    assert !policy.update?
+  end
+
+  test "update?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
     assert !policy.update?
   end
 
   test "update?() is restrictive by default" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -381,7 +430,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "update?() does not authorize users other than the one who created the
   instance" do
-    user    = users(:example_sysadmin) # instance was created by uiuc_admin
+    user    = users(:southwest_sysadmin) # instance was created by uiuc_admin
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -419,7 +468,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
@@ -430,12 +479,14 @@ class ImportPolicyTest < ActiveSupport::TestCase
   # upload_file?()
 
   test "upload_file?() returns false with a nil user" do
-    policy = ImportPolicy.new(nil, @import)
+    context = RequestContext.new(user:        nil,
+                                 institution: @import.institution)
+    policy = ImportPolicy.new(context, @import)
     assert !policy.upload_file?
   end
 
   test "upload_file?() is restrictive by default" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -444,7 +495,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "upload_file?() does not authorize users other than the creator of the
   instance" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -482,7 +533,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "upload_file?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)

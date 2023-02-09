@@ -16,6 +16,13 @@ southwest_unit1_collection1:
   submissions_reviewed: true
   buried:               false
 
+southwest_unit1_collection2:
+  institution:          southwest
+  metadata_profile:     southwest_default
+  submission_profile:   southwest_default
+  submissions_reviewed: true
+  buried:               false
+
 ################################## uiuc #####################################
 
 uiuc_collection1:

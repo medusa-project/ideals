@@ -1,5 +1,9 @@
 class VocabularyPolicy < ApplicationPolicy
-  attr_reader :user, :ctx_institution, :role, :vocabulary
+
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This vocabulary resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
@@ -8,12 +12,12 @@ class VocabularyPolicy < ApplicationPolicy
   def initialize(request_context, vocabulary)
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
-    @role            = request_context&.role_limit
+    @role_limit      = request_context&.role_limit
     @vocabulary      = vocabulary
   end
 
   def create
-    effective_institution_admin(user, ctx_institution, role)
+    effective_institution_admin(@user, @ctx_institution, @role_limit)
   end
 
   def destroy
@@ -37,9 +41,11 @@ class VocabularyPolicy < ApplicationPolicy
   end
 
   def update
-    result = effective_institution_admin(user, ctx_institution, role)
-    result[:authorized] ?
-      effective_institution_admin(user, vocabulary.institution, role) :
-      result
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif @ctx_institution != @vocabulary.institution
+      return WRONG_SCOPE_RESULT
+    end
+    effective_institution_admin(@user, @vocabulary.institution, @role_limit)
   end
 end

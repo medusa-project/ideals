@@ -1,3 +1,21 @@
+################################ southwest ##################################
+
+southwest_unit1_collection1_embargoed_download:
+  item:       southwest_unit1_collection1_embargoed
+  expires_at: <%= Time.now + 1.hour %>
+  kind:       <%= Embargo::Kind::DOWNLOAD %>
+  perpetual:  false
+  reason:
+
+southwest_unit1_collection1_embargoed_all_access:
+  item:       southwest_unit1_collection1_embargoed
+  expires_at: <%= Time.now + 1.hour %>
+  kind:       <%= Embargo::Kind::ALL_ACCESS %>
+  perpetual:  false
+  reason:
+
+################################## uiuc #####################################
+
 download:
   item:       uiuc_embargoed
   expires_at: <%= Time.now + 1.hour %>

@@ -1,16 +1,21 @@
 # frozen_string_literal: true
 
 class UnitPolicy < ApplicationPolicy
-  attr_reader :user, :role, :unit
+
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This unit resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
   # @param unit [Unit]
   #
   def initialize(request_context, unit)
-    @user = request_context&.user
-    @role = request_context&.role_limit
-    @unit = unit
+    @user            = request_context&.user
+    @ctx_institution = request_context&.institution
+    @role_limit      = request_context&.role_limit
+    @unit            = unit
   end
 
   ##
@@ -18,49 +23,48 @@ class UnitPolicy < ApplicationPolicy
   # unit to another unit of which s/he is not an effective administrator.
   #
   def change_parent(new_parent_id)
-    if user
-      return AUTHORIZED_RESULT if new_parent_id == unit.parent_id
-      return AUTHORIZED_RESULT if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
-      return AUTHORIZED_RESULT if role >= Role::UNIT_ADMINISTRATOR &&
-        user.effective_unit_admin?(Unit.find(new_parent_id))
+    if @ctx_institution != @unit.institution
+      return WRONG_SCOPE_RESULT
+    elsif !@user
+      return LOGGED_OUT_RESULT
+    elsif new_parent_id == @unit.parent_id
+      return AUTHORIZED_RESULT
+    elsif @role_limit >= Role::SYSTEM_ADMINISTRATOR && @user.sysadmin?
+      return AUTHORIZED_RESULT
+    elsif @role_limit >= Role::UNIT_ADMINISTRATOR &&
+      @user.effective_unit_admin?(Unit.find(new_parent_id))
+      return AUTHORIZED_RESULT
     end
     { authorized: false,
       reason:     "You must be an administrator of the desired parent unit." }
   end
 
   def children
-    AUTHORIZED_RESULT
+    index
   end
 
   def collections_tree_fragment
-    AUTHORIZED_RESULT
+    index
   end
 
   def create
-    if user
-      return AUTHORIZED_RESULT if role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?
-      return AUTHORIZED_RESULT if role >= Role::INSTITUTION_ADMINISTRATOR &&
-        user.institution_admin?(user.institution)
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif @role_limit >= Role::SYSTEM_ADMINISTRATOR && @user.sysadmin?
+      return AUTHORIZED_RESULT
+    elsif @role_limit >= Role::INSTITUTION_ADMINISTRATOR &&
+      @user.institution_admin?(@user.institution)
+      return AUTHORIZED_RESULT
     end
     { authorized: false,
       reason:     "You must be an administrator of the institution in which "\
-                  "the unit is to reside." }
+                  "the unit resides." }
   end
 
   def delete
     # (Note that the unit must also be empty of collections and child
     # units; this is validated in the model.)
-    if !user
-      return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(user, role)
-      return AUTHORIZED_RESULT
-    elsif (!role || role >= Role::INSTITUTION_ADMINISTRATOR) &&
-      user.effective_institution_admin?(unit.institution)
-      return AUTHORIZED_RESULT
-    end
-    { authorized: false,
-      reason:     "You must be an administrator of the institution in which "\
-                  "this unit resides." }
+    create
   end
 
   def edit_administrators
@@ -80,6 +84,9 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def index
+    if @unit.kind_of?(Unit) && @ctx_institution != @unit.institution
+      return WRONG_SCOPE_RESULT
+    end
     AUTHORIZED_RESULT
   end
 
@@ -96,20 +103,13 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def new_collection
-    if !user
-      return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(user, role)
-      return AUTHORIZED_RESULT
-    elsif role >= Role::UNIT_ADMINISTRATOR && user.effective_unit_admin?(unit)
-      return AUTHORIZED_RESULT
-    end
-    {
-      authorized: false,
-      reason: "You must be an administrator of this unit."
-    }
+    effective_unit_admin
   end
 
   def show
+    if @ctx_institution != @unit.institution
+      return WRONG_SCOPE_RESULT
+    end
     AUTHORIZED_RESULT
   end
 
@@ -126,7 +126,7 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def show_extended_about
-    effective_admin
+    effective_unit_admin
   end
 
   def show_items
@@ -150,18 +150,20 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def update
-    effective_admin
+    effective_unit_admin
   end
 
 
   private
 
-  def effective_admin
-    if !user
+  def effective_unit_admin
+    if @unit.kind_of?(Unit) && @ctx_institution != @unit.institution
+      return WRONG_SCOPE_RESULT
+    elsif !@user
       return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(user, role)
+    elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif role >= Role::UNIT_ADMINISTRATOR && user.effective_unit_admin?(unit)
+    elsif @role_limit >= Role::UNIT_ADMINISTRATOR && @user.effective_unit_admin?(@unit)
       return AUTHORIZED_RESULT
     end
     { authorized: false, reason: "You must be an administrator of the unit." }

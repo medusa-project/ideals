@@ -28,6 +28,16 @@ example2:
   phone:       (888) 555-1234
   enabled:     true
 
+example_approved:
+  type:        LocalUser
+  institution: example
+  identity:    approved
+  uid:         approved@example.edu
+  name:        Not Approved
+  email:       approved@example.edu
+  phone:       (888) 555-1234
+  enabled:     true
+
 example_sysadmin:
   type:        LocalUser
   institution: example

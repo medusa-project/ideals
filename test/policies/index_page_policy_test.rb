@@ -3,29 +3,37 @@ require 'test_helper'
 class IndexPagePolicyTest < ActiveSupport::TestCase
 
   setup do
-    @user       = users(:example)
     @index_page = index_pages(:southwest_creators)
   end
 
   # create?()
 
   test "create?() returns false with a nil user" do
-    policy = IndexPagePolicy.new(nil, @index_page)
+    context = RequestContext.new(user:        nil,
+                                 institution: @index_page.institution)
+    policy = IndexPagePolicy.new(context, @index_page)
+    assert !policy.create?
+  end
+
+  test "create?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.create?
   end
 
   test "create?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @index_page.institution)
     policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.create?
   end
 
   test "create?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @index_page.institution)
     policy  = IndexPagePolicy.new(context, @index_page)
     assert policy.create?
   end
@@ -33,8 +41,8 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
   test "create?() authorizes administrators of the same institution" do
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = IndexPagePolicy.new(context, @element)
+                                 institution: @index_page.institution)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert policy.create?
   end
 
@@ -43,15 +51,15 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = IndexPagePolicy.new(context, @element)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.create?
   end
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
+                                 institution: @index_page.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.create?
@@ -60,22 +68,31 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
   # destroy?()
 
   test "destroy?() returns false with a nil user" do
-    policy = IndexPagePolicy.new(nil, @index_page)
+    context = RequestContext.new(user:        nil,
+                                 institution: @index_page.institution)
+    policy = IndexPagePolicy.new(context, @index_page)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.destroy?
   end
 
   test "destroy?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @index_page.institution)
     policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.destroy?
   end
 
   test "destroy?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @index_page.institution)
     policy  = IndexPagePolicy.new(context, @index_page)
     assert policy.destroy?
   end
@@ -83,8 +100,8 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes administrators of the same institution" do
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = IndexPagePolicy.new(context, @element)
+                                 institution: @index_page.institution)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert policy.destroy?
   end
 
@@ -93,15 +110,15 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = IndexPagePolicy.new(context, @element)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.destroy?
   end
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
+                                 institution: @index_page.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.destroy?
@@ -110,22 +127,31 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
   # edit?()
 
   test "edit?() returns false with a nil user" do
-    policy = IndexPagePolicy.new(nil, @index_page)
+    context = RequestContext.new(user:        nil,
+                                 institution: @index_page.institution)
+    policy = IndexPagePolicy.new(context, @index_page)
+    assert !policy.edit?
+  end
+
+  test "edit?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.edit?
   end
 
   test "edit?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @index_page.institution)
     policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.edit?
   end
 
   test "edit?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @index_page.institution)
     policy  = IndexPagePolicy.new(context, @index_page)
     assert policy.edit?
   end
@@ -133,8 +159,8 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
   test "edit?() authorizes administrators of the same institution" do
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = IndexPagePolicy.new(context, @element)
+                                 institution: @index_page.institution)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert policy.edit?
   end
 
@@ -143,15 +169,15 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = IndexPagePolicy.new(context, @element)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.edit?
   end
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
+                                 institution: @index_page.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.edit?
@@ -160,31 +186,40 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
   # index?()
 
   test "index?() returns false with a nil user" do
-    policy = IndexPagePolicy.new(nil, MetadataProfile)
+    context = RequestContext.new(user:        nil,
+                                 institution: @index_page.institution)
+    policy = IndexPagePolicy.new(context, IndexPage)
+    assert !policy.index?
+  end
+
+  test "index?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = IndexPagePolicy.new(context, IndexPage)
     assert !policy.index?
   end
 
   test "index?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = IndexPagePolicy.new(context, MetadataProfile)
+                                 institution: @index_page.institution)
+    policy  = IndexPagePolicy.new(context, IndexPage)
     assert !policy.index?
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = IndexPagePolicy.new(context, MetadataProfile)
+                                 institution: @index_page.institution)
+    policy  = IndexPagePolicy.new(context, IndexPage)
     assert policy.index?
   end
 
   test "index?() authorizes administrators of the same institution" do
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = IndexPagePolicy.new(context, @element)
+                                 institution: @index_page.institution)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert policy.index?
   end
 
@@ -193,15 +228,15 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = IndexPagePolicy.new(context, @element)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.index?
   end
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
+                                 institution: @index_page.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.index?
@@ -210,22 +245,31 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
   # new()
 
   test "new?() returns false with a nil user" do
-    policy = IndexPagePolicy.new(nil, @index_page)
+    context = RequestContext.new(user:        nil,
+                                 institution: @index_page.institution)
+    policy = IndexPagePolicy.new(context, @index_page)
+    assert !policy.new?
+  end
+
+  test "new?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.new?
   end
 
   test "new?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @index_page.institution)
     policy = IndexPagePolicy.new(context, @index_page)
     assert !policy.new?
   end
 
   test "new?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @index_page.institution)
     policy = IndexPagePolicy.new(context, @index_page)
     assert policy.new?
   end
@@ -233,8 +277,8 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
   test "new?() authorizes administrators of the same institution" do
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = IndexPagePolicy.new(context, @element)
+                                 institution: @index_page.institution)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert policy.new?
   end
 
@@ -243,15 +287,15 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = IndexPagePolicy.new(context, @element)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.new?
   end
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
+                                 institution: @index_page.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.new?
@@ -265,6 +309,13 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  test "show?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = IndexPagePolicy.new(context, @index_page)
+    assert !policy.show?
+  end
+
   test "show?() does not authorize requests to a different institution" do
     context = RequestContext.new(institution: institutions(:northeast))
     policy  = IndexPagePolicy.new(context, @index_page)
@@ -274,22 +325,31 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
   # update?()
 
   test "update?() returns false with a nil user" do
-    policy = IndexPagePolicy.new(nil, @index_page)
+    context = RequestContext.new(user:        nil,
+                                 institution: @index_page.institution)
+    policy = IndexPagePolicy.new(context, @index_page)
+    assert !policy.update?
+  end
+
+  test "update?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.update?
   end
 
   test "update?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @index_page.institution)
     policy = IndexPagePolicy.new(context, @index_page)
     assert !policy.update?
   end
 
   test "update?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @index_page.institution)
     policy = IndexPagePolicy.new(context, @index_page)
     assert policy.update?
   end
@@ -297,8 +357,8 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
   test "update?() authorizes administrators of the same institution" do
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = IndexPagePolicy.new(context, @element)
+                                 institution: @index_page.institution)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert policy.update?
   end
 
@@ -307,18 +367,18 @@ class IndexPagePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = IndexPagePolicy.new(context, @element)
+    policy  = IndexPagePolicy.new(context, @index_page)
     assert !policy.update?
   end
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
+                                 institution: @index_page.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = IndexPagePolicy.new(context, @index_page)
-    assert !policy.show?
+    assert !policy.update?
   end
 
 end

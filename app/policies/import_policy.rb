@@ -1,6 +1,9 @@
 class ImportPolicy < ApplicationPolicy
 
-  attr_reader :user, :ctx_institution, :role, :import
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This import resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
@@ -9,7 +12,7 @@ class ImportPolicy < ApplicationPolicy
   def initialize(request_context, import)
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
-    @role            = request_context&.role_limit
+    @role_limit      = request_context&.role_limit
     @import          = import
   end
 
@@ -26,7 +29,7 @@ class ImportPolicy < ApplicationPolicy
   end
 
   def index
-    effective_institution_admin(user, ctx_institution, role)
+    effective_institution_admin(@user, @ctx_institution, @role_limit)
   end
 
   def new
@@ -34,14 +37,16 @@ class ImportPolicy < ApplicationPolicy
   end
 
   def show
-    result = effective_institution_admin(user, ctx_institution, role)
-    result[:authorized] ?
-      effective_institution_admin(user, import.institution, role) :
-      result
+    if @ctx_institution != @import.institution
+      return WRONG_SCOPE_RESULT
+    end
+    effective_institution_admin(@user, @import.institution, @role_limit)
   end
 
   def update
-    if user != import.user
+    if @ctx_institution != @import.institution
+      return WRONG_SCOPE_RESULT
+    elsif @user != @import.user
       return {
         authorized: false,
         reason:     "Imports can only be modified by the user who created them."

@@ -14,6 +14,12 @@ southwest_unit1_collection1:
   primary:      true
   unit_default: true
 
+southwest_unit1_collection2:
+  unit:         southwest_unit1
+  collection:   southwest_unit1_collection2
+  primary:      true
+  unit_default: false
+
 ################################## uiuc #####################################
 
 uiuc_unit1_collection1:

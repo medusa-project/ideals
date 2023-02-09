@@ -1,24 +1,35 @@
 class SubmissionProfilePolicy < ApplicationPolicy
 
-  attr_reader :user, :ctx_institution, :role, :submission_profile
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This submission profile resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
   # @param submission_profile [SubmissionProfile]
   #
   def initialize(request_context, submission_profile)
-    @user               = request_context&.user
-    @ctx_institution    = request_context&.institution
-    @role               = request_context&.role_limit
-    @submission_profile = submission_profile
+    @user            = request_context&.user
+    @ctx_institution = request_context&.institution
+    @role_limit      = request_context&.role_limit
+    @profile         = submission_profile
   end
 
   def clone
-    destroy
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif @ctx_institution != @profile.institution
+      return WRONG_SCOPE_RESULT
+    end
+    effective_institution_admin(@user, @profile.institution, @role_limit)
   end
 
   def create
-    effective_institution_admin(user, ctx_institution, role)
+    if !@user
+      return LOGGED_OUT_RESULT
+    end
+    effective_institution_admin(@user, @ctx_institution, @role_limit)
   end
 
   def destroy
@@ -42,9 +53,11 @@ class SubmissionProfilePolicy < ApplicationPolicy
   end
 
   def update
-    result = effective_institution_admin(user, ctx_institution, role)
-    result[:authorized] ?
-      effective_institution_admin(user, submission_profile.institution, role) :
-      result
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif @ctx_institution != @profile.institution
+      return WRONG_SCOPE_RESULT
+    end
+    effective_institution_admin(@user, @profile.institution, @role_limit)
   end
 end

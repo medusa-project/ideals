@@ -1,24 +1,31 @@
 class InviteePolicy < ApplicationPolicy
 
-  attr_reader :user, :institution, :role, :invitee
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This invitee resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
   # @param invitee [Invitee]
   #
   def initialize(request_context, invitee)
-    @user        = request_context&.user
-    @institution = request_context&.institution
-    @role        = request_context&.role_limit || Role::NO_LIMIT
-    @invitee     = invitee
+    @user            = request_context&.user
+    @ctx_institution = request_context&.institution
+    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
+    @invitee         = invitee
   end
 
   def approve
-    create
+    if @invitee.respond_to?(:institution) &&
+      @ctx_institution != @invitee.institution
+      return WRONG_SCOPE_RESULT
+    end
+    effective_institution_admin(@user, @ctx_institution, @role_limit)
   end
 
   def create
-    effective_institution_admin(user, institution, role)
+    effective_institution_admin(@user, @ctx_institution, @role_limit)
   end
 
   def create_unsolicited
@@ -34,7 +41,7 @@ class InviteePolicy < ApplicationPolicy
   end
 
   def index_all
-    effective_sysadmin(user, role)
+    effective_sysadmin(@user, @role_limit)
   end
 
   def new
@@ -50,14 +57,14 @@ class InviteePolicy < ApplicationPolicy
   end
 
   def show
-    index
+    approve
   end
 
 
   private
 
   def logged_out
-    user.nil? ? AUTHORIZED_RESULT :
+    @user.nil? ? AUTHORIZED_RESULT :
       { authorized: false,
         reason: "You cannot perform this action while logged in." }
   end

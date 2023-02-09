@@ -1,6 +1,6 @@
 ##
-# N.B.: To use this policy, a [LocalUser] or [ShibbolethUser] instance must be
-# cast to its [User] superclass; for example:
+# N.B.: To use this policy, a {LocalUser}, {ShibbolethUser}, etc. instance must
+# be cast to its {User} superclass; for example:
 #
 # ```
 # authorize(user.becomes(User))
@@ -8,24 +8,23 @@
 # ```
 #
 class UserPolicy < ApplicationPolicy
-  attr_reader :subject_user, :role, :institution, :object_user
 
   ##
   # @param request_context [RequestContext]
   # @param object_user [User] The user to which access is being requested.
   #
   def initialize(request_context, object_user)
-    @subject_user = request_context&.user
-    @role         = request_context&.role_limit
-    @institution  = request_context&.institution
-    @object_user  = object_user
+    @subject_user    = request_context&.user
+    @role_limit      = request_context&.role_limit
+    @ctx_institution = request_context&.institution
+    @object_user     = object_user
   end
 
   ##
   # N.B. this does not correspond to a controller method.
   #
   def change_institution
-    effective_sysadmin(subject_user, role)
+    effective_sysadmin(@subject_user, @role_limit)
   end
 
   def edit_properties
@@ -33,26 +32,26 @@ class UserPolicy < ApplicationPolicy
   end
 
   def enable
-    effective_institution_admin(subject_user, institution, role)
+    effective_institution_admin(@subject_user, @ctx_institution, @role_limit)
   end
 
   def disable
-    self.enable
+    enable
   end
 
   def index
-    effective_institution_admin(subject_user, institution, role)
+    effective_institution_admin(@subject_user, @ctx_institution, @role_limit)
   end
 
   def index_all
-    effective_sysadmin(subject_user, role)
+    effective_sysadmin(@subject_user, @role_limit)
   end
 
   ##
   # This does not correspond to a controller method.
   #
   def invite
-    effective_institution_admin(subject_user, subject_user&.institution, role)
+    effective_institution_admin(@subject_user, @subject_user&.institution, @role_limit)
   end
 
   def show
@@ -87,15 +86,15 @@ class UserPolicy < ApplicationPolicy
   private
 
   def institution_admin_or_same_user
-    if subject_user
-      if (role >= Role::LOGGED_IN && subject_user.id == object_user.id) ||
-        effective_sysadmin?(subject_user, role) ||
-        effective_institution_admin?(subject_user, object_user.institution, role)
+    if @subject_user
+      if (@role_limit >= Role::LOGGED_IN && @subject_user.id == @object_user.id) ||
+        effective_sysadmin?(@subject_user, @role_limit) ||
+        effective_institution_admin?(@subject_user, @object_user.institution, @role_limit)
         return AUTHORIZED_RESULT
       end
     end
     { authorized: false,
-      reason:     "You don't have permission to edit this user account." }
+      reason:     "You don't have permission to access this user account." }
   end
 
 end

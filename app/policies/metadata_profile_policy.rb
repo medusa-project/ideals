@@ -1,43 +1,45 @@
 # frozen_string_literal: true
 
 class MetadataProfilePolicy < ApplicationPolicy
-  attr_reader :user, :ctx_institution, :role, :metadata_profile
+
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This metadata profile resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
   # @param metadata_profile [MetadataProfile]
   #
   def initialize(request_context, metadata_profile)
-    @user             = request_context&.user
-    @ctx_institution  = request_context&.institution
-    @role             = request_context&.role_limit
-    @metadata_profile = metadata_profile
+    @user            = request_context&.user
+    @ctx_institution = request_context&.institution
+    @role_limit      = request_context&.role_limit
+    @profile         = metadata_profile
   end
 
   def clone
-    if metadata_profile.global?
+    if @profile.global?
       return { authorized: false,
                reason:     "The global metadata profile cannot be cloned." }
+    elsif @ctx_institution != @profile.institution
+      return WRONG_SCOPE_RESULT
     end
-    result = effective_institution_admin(user, ctx_institution, role)
-    result[:authorized] ?
-      effective_institution_admin(user, metadata_profile.institution, role) :
-      result
+    effective_institution_admin(@user, @profile.institution, @role_limit)
   end
 
   def create
-    effective_institution_admin(user, ctx_institution, role)
+    effective_institution_admin(@user, @ctx_institution, @role_limit)
   end
 
   def destroy
-    if metadata_profile.global?
+    if @profile.global?
       return { authorized: false,
                reason:     "The global metadata profile cannot be deleted." }
+    elsif @ctx_institution != @profile.institution
+      return WRONG_SCOPE_RESULT
     end
-    result = effective_institution_admin(user, ctx_institution, role)
-    result[:authorized] ?
-      effective_institution_admin(user, metadata_profile.institution, role) :
-      result
+    effective_institution_admin(@user, @profile.institution, @role_limit)
   end
 
   def edit
@@ -45,7 +47,7 @@ class MetadataProfilePolicy < ApplicationPolicy
   end
 
   def index
-    effective_institution_admin(user, ctx_institution, role)
+    effective_institution_admin(@user, @ctx_institution, @role_limit)
   end
 
   def new
@@ -57,12 +59,13 @@ class MetadataProfilePolicy < ApplicationPolicy
   end
 
   def update
-    if metadata_profile.global?
-      return effective_sysadmin(user, role)
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif @profile.global?
+      return effective_sysadmin(@user, @role_limit)
+    elsif @ctx_institution != @profile.institution
+      return WRONG_SCOPE_RESULT
     end
-    result = effective_institution_admin(user, ctx_institution, role)
-    result[:authorized] ?
-      effective_institution_admin(user, metadata_profile.institution, role) :
-      result
+    effective_institution_admin(@user, @profile.institution, @role_limit)
   end
 end

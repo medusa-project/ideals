@@ -8,13 +8,14 @@ class BitstreamPolicy < ApplicationPolicy
     ##
     # @param request_context [RequestContext]
     # @param relation [ActiveRecord::Relation<Bitstream>]
-    # @param owning_item [Item] Item owning the bitstreams in {relation}.
+    # @param options [Hash] Hash with an `:owning_item` key representing the
+    #        Item owning the bitstreams in {relation}.
     #
     def initialize(request_context, relation, options = {})
       @owning_item     = options[:owning_item]
       @request_context = request_context
       @user            = request_context&.user
-      @role            = request_context&.role_limit || Role::NO_LIMIT
+      @role_limit      = request_context&.role_limit || Role::NO_LIMIT
       @relation        = relation
     end
 
@@ -25,19 +26,22 @@ class BitstreamPolicy < ApplicationPolicy
     # @return [ActiveRecord::Relation]
     #
     def resolve
-      unless BitstreamPolicy.new(@request_context, nil).effective_sysadmin?(user, role)
+      unless BitstreamPolicy.new(@request_context, nil).effective_sysadmin?(@user, @role_limit)
         # Only collection managers and above can download bitstreams outside
         # of the content bundle.
-        unless user&.effective_manager?(owning_item.primary_collection)
+        unless @user&.effective_manager?(@owning_item.primary_collection)
           @relation = @relation.where(bundle: Bitstream::Bundle::CONTENT)
         end
-        @relation = @relation.where("role <= ?", role) if role
+        @relation = @relation.where("role <= ?", @role_limit) if @role_limit
       end
       @relation
     end
   end
 
-  attr_reader :user, :role, :bitstream
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This file resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
@@ -46,23 +50,26 @@ class BitstreamPolicy < ApplicationPolicy
   def initialize(request_context, bitstream)
     @client_ip       = request_context&.client_ip
     @client_hostname = request_context&.client_hostname
+    @ctx_institution = request_context&.institution
     @user            = request_context&.user
-    @role            = request_context&.role_limit
+    @role_limit      = request_context&.role_limit
     @bitstream       = bitstream
     @request_context = request_context
   end
 
   def create
-    if !user
+    if @ctx_institution != @bitstream.institution
+      return WRONG_SCOPE_RESULT
+    elsif !@user
       return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(user, role) # sysadmins can do anything
+    elsif effective_sysadmin?(@user, @role_limit) # sysadmins can do anything
       return AUTHORIZED_RESULT
     else
-      bitstream.item.collections.each do |collection|
+      @bitstream.item.collections.each do |collection|
         # non-sysadmins can submit to collections for which they have submitter
         # privileges
-        return AUTHORIZED_RESULT if role >= Role::COLLECTION_SUBMITTER &&
-            user&.effective_submitter?(collection)
+        return AUTHORIZED_RESULT if @role_limit >= Role::COLLECTION_SUBMITTER &&
+          @user&.effective_submitter?(collection)
       end
     end
     { authorized: false,
@@ -71,7 +78,7 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def destroy
-    ItemPolicy.new(@request_context, bitstream.item).delete_bitstreams
+    ItemPolicy.new(@request_context, @bitstream.item).delete_bitstreams
   end
 
   def download
@@ -96,32 +103,34 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def show
-    if effective_sysadmin?(user, role)
+    if @ctx_institution != @bitstream.institution
+      return WRONG_SCOPE_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif !bitstream.item.approved?
+    elsif !@bitstream.item.approved?
       return { authorized: false,
                reason:     "This file's owning item is not approved." }
-    elsif bitstream.bundle != Bitstream::Bundle::CONTENT &&
-      (!user&.effective_manager?(bitstream.item.primary_collection) || (role && role < Role::COLLECTION_MANAGER))
+    elsif @bitstream.bundle != Bitstream::Bundle::CONTENT &&
+      (!@user&.effective_manager?(@bitstream.item.primary_collection) || (@role_limit && @role_limit < Role::COLLECTION_MANAGER))
       return {
         authorized: false,
         reason:     "You must be a manager of the primary collection in "\
                     "which the file's item resides."
       }
-    elsif bitstream.item.current_embargoes.any?
-      bitstream.item.current_embargoes.each do |embargo|
-        unless user && embargo.exempt?(user)
+    elsif @bitstream.item.current_embargoes.any?
+      @bitstream.item.current_embargoes.each do |embargo|
+        unless @user && embargo.exempt?(@user)
           return { authorized: false,
                    reason:     "This file's owning item is embargoed." }
         end
       end
-    elsif (role && role < bitstream.role) ||
-      (!user && bitstream.role > Role::LOGGED_OUT) ||
-      (user && bitstream.role >= Role::SYSTEM_ADMINISTRATOR) ||
-      (user && bitstream.role >= Role::COLLECTION_SUBMITTER && !user.effective_submitter?(bitstream.item.effective_primary_collection)) ||
-      (user && bitstream.role >= Role::COLLECTION_MANAGER && !user.effective_manager?(bitstream.item.effective_primary_collection)) ||
-      (user && bitstream.role >= Role::UNIT_ADMINISTRATOR && !user.effective_unit_admin?(bitstream.item.effective_primary_unit)) ||
-      (user && bitstream.role >= Role::INSTITUTION_ADMINISTRATOR && !user.effective_institution_admin?(bitstream.institution))
+    elsif (@role_limit && @role_limit < @bitstream.role) ||
+      (!@user && @bitstream.role > Role::LOGGED_OUT) ||
+      (@user && @bitstream.role >= Role::SYSTEM_ADMINISTRATOR) ||
+      (@user && @bitstream.role >= Role::COLLECTION_SUBMITTER && !@user.effective_submitter?(@bitstream.item.effective_primary_collection)) ||
+      (@user && @bitstream.role >= Role::COLLECTION_MANAGER && !@user.effective_manager?(@bitstream.item.effective_primary_collection)) ||
+      (@user && @bitstream.role >= Role::UNIT_ADMINISTRATOR && !@user.effective_unit_admin?(@bitstream.item.effective_primary_unit)) ||
+      (@user && @bitstream.role >= Role::INSTITUTION_ADMINISTRATOR && !@user.effective_institution_admin?(@bitstream.institution))
       return { authorized: false,
                reason:     "Your role is not allowed to access this file." }
     end
@@ -129,10 +138,10 @@ class BitstreamPolicy < ApplicationPolicy
     # If there are any user groups authorizing the bitstream by hostname or IP,
     # then only clients with a matching hostname/IP are authorized.
     # Otherwise, anyone is.
-    if bitstream.item.bitstream_authorizations.any?
+    if @bitstream.item.bitstream_authorizations.any?
       groups = UserGroup.all_matching_hostname_or_ip(@client_hostname, @client_ip)
       groups.each do |group|
-        if bitstream.authorized_by?(group)
+        if @bitstream.authorized_by?(group)
           return AUTHORIZED_RESULT
         end
       end
@@ -146,7 +155,7 @@ class BitstreamPolicy < ApplicationPolicy
   # Used only in views to determine whether to show bitstream details.
   #
   def show_details
-    effective_sysadmin(user, role)
+    effective_sysadmin(@user, @role_limit)
   end
 
   ##
@@ -154,9 +163,13 @@ class BitstreamPolicy < ApplicationPolicy
   # access role specifically.
   #
   def show_role
-    return LOGGED_OUT_RESULT unless user
-    bitstream.item.collections.each do |col|
-      if role >= Role::COLLECTION_MANAGER && user.effective_manager?(col)
+    if @ctx_institution != @bitstream.institution
+      return WRONG_SCOPE_RESULT
+    elsif !@user
+      return LOGGED_OUT_RESULT
+    end
+    @bitstream.item.collections.each do |col|
+      if @role_limit >= Role::COLLECTION_MANAGER && @user.effective_manager?(col)
         return AUTHORIZED_RESULT
       end
     end
@@ -169,19 +182,21 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def update
-    if !user
+    if @ctx_institution != @bitstream.institution
+      return WRONG_SCOPE_RESULT
+    elsif !@user
       return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(user, role)
+    elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
     else
-      bitstream.item.collections.each do |collection|
+      @bitstream.item.collections.each do |collection|
         # collection managers can update bitstreams within their collections
-        return AUTHORIZED_RESULT if role >= Role::COLLECTION_MANAGER &&
-          user.effective_manager?(collection)
+        return AUTHORIZED_RESULT if @role_limit >= Role::COLLECTION_MANAGER &&
+          @user.effective_manager?(collection)
         # unit admins can update bitstreams within their units
         collection.units.each do |unit|
-          return AUTHORIZED_RESULT if role >= Role::UNIT_ADMINISTRATOR &&
-            user.effective_unit_admin?(unit)
+          return AUTHORIZED_RESULT if @role_limit >= Role::UNIT_ADMINISTRATOR &&
+            @user.effective_unit_admin?(unit)
         end
       end
     end

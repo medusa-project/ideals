@@ -3,13 +3,22 @@ require 'test_helper'
 class InviteePolicyTest < ActiveSupport::TestCase
 
   setup do
-    @invitee = invitees(:example)
+    @invitee = invitees(:southwest)
   end
 
   # approve?()
 
   test "approve?() returns false with a nil user" do
-    policy = InviteePolicy.new(nil, @invitee)
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @invitee)
+    assert !policy.approve?
+  end
+
+  test "approve?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.approve?
   end
 
@@ -22,7 +31,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "approve?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -33,7 +42,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert policy.approve?
   end
 
@@ -42,24 +51,33 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.approve?
   end
 
   test "approve?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = InviteePolicy.new(context, @item)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.approve?
   end
 
   # create?()
 
   test "create?() returns false with a nil user" do
-    policy = InviteePolicy.new(nil, @invitee)
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @invitee)
+    assert !policy.create?
+  end
+
+  test "create?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.create?
   end
 
@@ -72,7 +90,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -83,7 +101,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert policy.create?
   end
 
@@ -92,25 +110,34 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.create?
   end
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = InviteePolicy.new(context, @item)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.create?
   end
 
   # create_unsolicited?()
 
   test "create_unsolicited?() returns true with a nil user" do
-    policy = InviteePolicy.new(nil, @invitee)
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @invitee)
     assert policy.create_unsolicited?
+  end
+
+  test "create_unsolicited?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.create_unsolicited?
   end
 
   test "create_unsolicited?() does not authorize logged-in users" do
@@ -131,7 +158,16 @@ class InviteePolicyTest < ActiveSupport::TestCase
   # destroy?()
 
   test "destroy?() returns false with a nil user" do
-    policy = InviteePolicy.new(nil, @invitee)
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @invitee)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.destroy?
   end
 
@@ -144,7 +180,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -155,7 +191,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert policy.destroy?
   end
 
@@ -164,24 +200,33 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.destroy?
   end
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = InviteePolicy.new(context, @item)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.destroy?
   end
 
   # index?()
 
   test "index?() returns false with a nil user" do
-    policy = InviteePolicy.new(nil, @invitee)
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @invitee)
+    assert !policy.index?
+  end
+
+  test "index?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.index?
   end
 
@@ -194,7 +239,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = InviteePolicy.new(context, @invitee)
@@ -205,7 +250,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert policy.index?
   end
 
@@ -214,24 +259,33 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.index?
   end
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = InviteePolicy.new(context, @item)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.index?
   end
 
   # index_all?()
 
   test "index_all?() returns false with a nil request context" do
-    policy = InviteePolicy.new(nil, @institution)
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @institution)
+    assert !policy.index_all?
+  end
+
+  test "index_all?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.index_all?
   end
 
@@ -244,7 +298,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "index_all?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @institution)
@@ -253,7 +307,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
 
   test "index_all?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -264,8 +318,17 @@ class InviteePolicyTest < ActiveSupport::TestCase
   # new?()
 
   test "new?() returns true with a nil user" do
-    policy = InviteePolicy.new(nil, @invitee)
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @invitee)
     assert policy.new?
+  end
+
+  test "new?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.new?
   end
 
   test "new?() does not authorize logged-in users" do
@@ -286,7 +349,16 @@ class InviteePolicyTest < ActiveSupport::TestCase
   # reject?()
 
   test "reject?() returns false with a nil user" do
-    policy = InviteePolicy.new(nil, @invitee)
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @invitee)
+    assert !policy.reject?
+  end
+
+  test "reject?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.reject?
   end
 
@@ -299,7 +371,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "reject?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -310,7 +382,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert policy.reject?
   end
 
@@ -319,24 +391,33 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.reject?
   end
 
   test "reject?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = InviteePolicy.new(context, @item)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.reject?
   end
 
   # resend_email?()
 
   test "resend_email?() returns false with a nil user" do
-    policy = InviteePolicy.new(nil, @invitee)
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @invitee)
+    assert !policy.resend_email?
+  end
+
+  test "resend_email?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.resend_email?
   end
 
@@ -349,7 +430,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "resend_email?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -360,7 +441,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert policy.resend_email?
   end
 
@@ -369,24 +450,33 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.resend_email?
   end
 
   test "resend_email?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = InviteePolicy.new(context, @item)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.resend_email?
   end
 
   # show?()
 
   test "show?() returns false with a nil user" do
-    policy = InviteePolicy.new(nil, @invitee)
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @invitee)
+    assert !policy.show?
+  end
+
+  test "show?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.show?
   end
 
@@ -399,7 +489,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = InviteePolicy.new(context, @invitee)
@@ -410,7 +500,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert policy.show?
   end
 
@@ -419,17 +509,17 @@ class InviteePolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = InviteePolicy.new(context, @element)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.show?
   end
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = InviteePolicy.new(context, @item)
+    policy  = InviteePolicy.new(context, @invitee)
     assert !policy.show?
   end
 

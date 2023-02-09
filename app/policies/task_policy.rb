@@ -1,6 +1,9 @@
 class TaskPolicy < ApplicationPolicy
 
-  attr_reader :user, :ctx_institution, :role, :task
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This task resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
@@ -9,23 +12,23 @@ class TaskPolicy < ApplicationPolicy
   def initialize(request_context, task)
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
-    @role            = request_context&.role_limit
+    @role_limit      = request_context&.role_limit
     @task            = task
   end
 
   def index
-    effective_institution_admin(user, ctx_institution, role)
+    effective_institution_admin(@user, @ctx_institution, @role_limit)
   end
 
   def index_all
-    effective_sysadmin(user, role)
+    effective_sysadmin(@user, @role_limit)
   end
 
   def show
-    result = effective_institution_admin(user, ctx_institution, role)
-    result[:authorized] ?
-      effective_institution_admin(user, task.institution, role) :
-      result
+    if @ctx_institution != @task.institution
+      return WRONG_SCOPE_RESULT
+    end
+    effective_institution_admin(@user, @task.institution, @role_limit)
   end
 
 end

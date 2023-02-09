@@ -1,25 +1,28 @@
 class UserGroupPolicy < ApplicationPolicy
 
-  attr_reader :user, :institution, :role, :user_group
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This user group resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
   # @param user_group [UserGroup]
   #
   def initialize(request_context, user_group)
-    @user        = request_context&.user
-    @institution = request_context&.institution
-    @role        = request_context&.role_limit
-    @user_group  = user_group
+    @user            = request_context&.user
+    @ctx_institution = request_context&.institution
+    @role_limit      = request_context&.role_limit
+    @user_group      = user_group
   end
 
   def create
-    if !user
+    if !@user
       return LOGGED_OUT_RESULT
-    elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?)
+    elsif @role_limit >= Role::SYSTEM_ADMINISTRATOR && @user.sysadmin?
       return AUTHORIZED_RESULT
-    elsif role >= Role::INSTITUTION_ADMINISTRATOR &&
-        user.institution_administrators.count > 0
+    elsif @role_limit >= Role::INSTITUTION_ADMINISTRATOR &&
+      @user.institution_administrators.count > 0
       return AUTHORIZED_RESULT
     end
     { authorized: false,
@@ -28,12 +31,11 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def destroy
-    result = update
-    if !result[:authorized] || user_group.required?
+    if @user_group.required?
       return { authorized: false,
                reason:     "This group cannot be deleted." }
     end
-    result
+    update
   end
 
   def edit
@@ -69,12 +71,12 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def index
-    if !user
+    if !@user
       return LOGGED_OUT_RESULT
-    elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?)
+    elsif @role_limit >= Role::SYSTEM_ADMINISTRATOR && @user.sysadmin?
       return AUTHORIZED_RESULT
-    elsif role >= Role::INSTITUTION_ADMINISTRATOR &&
-        user.institution_administrators.count > 0
+    elsif @role_limit >= Role::INSTITUTION_ADMINISTRATOR &&
+      @user.institution_administrators.count > 0
       return AUTHORIZED_RESULT
     end
     { authorized: false,
@@ -83,7 +85,7 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def index_global
-    effective_sysadmin(user, role)
+    effective_sysadmin(@user, @role_limit)
   end
 
   def new
@@ -91,17 +93,19 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def show
-    user_group.institution ? update : index_global
+    @user_group.institution ? update : index_global
   end
 
   def update
-    if !user
+    if @user_group.institution && @ctx_institution != @user_group.institution
+      return WRONG_SCOPE_RESULT
+    elsif !@user
       return LOGGED_OUT_RESULT
-    elsif (role >= Role::SYSTEM_ADMINISTRATOR && user.sysadmin?)
+    elsif @role_limit >= Role::SYSTEM_ADMINISTRATOR && @user.sysadmin?
       return AUTHORIZED_RESULT
-    elsif role >= Role::INSTITUTION_ADMINISTRATOR &&
-      user.institution == user_group.institution &&
-      user.institution_admin?(user_group.institution)
+    elsif @role_limit >= Role::INSTITUTION_ADMINISTRATOR &&
+      @user.institution == @user_group.institution &&
+      @user.institution_admin?(@user_group.institution)
       return AUTHORIZED_RESULT
     end
     { authorized: false,

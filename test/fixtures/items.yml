@@ -9,6 +9,38 @@ northeast_unit1_collection1_item1:
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
+################################ southwest ##################################
+
+southwest_unit1_collection1_item1:
+  institution:  southwest
+  submitter:    southwest
+  stage:        <%= Item::Stages::APPROVED %>
+  stage_reason:
+
+southwest_unit1_collection1_submitting:
+  institution:  southwest
+  submitter:    southwest
+  stage:        <%= Item::Stages::SUBMITTING %>
+  stage_reason:
+
+southwest_unit1_collection1_withdrawn:
+  institution:  southwest
+  submitter:    southwest
+  stage:        <%= Item::Stages::WITHDRAWN %>
+  stage_reason:
+
+southwest_unit1_collection1_buried:
+  institution:  southwest
+  submitter:    southwest
+  stage:        <%= Item::Stages::BURIED %>
+  stage_reason:
+
+southwest_unit1_collection1_embargoed:
+  institution:  southwest
+  submitter:    southwest
+  stage:        <%= Item::Stages::APPROVED %>
+  stage_reason:
+
 ################################## uiuc #####################################
 
 # uiuc_collection1 items
