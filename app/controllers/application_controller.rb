@@ -236,38 +236,31 @@ class ApplicationController < ActionController::Base
   end
 
   def rescue_server_error(exception)
-    if exception.class == ActiveRecord::RecordNotFound
-      respond_to do |format|
-        format.html { render "errors/error404", status: :not_found }
-        format.json { head status: :not_found }
-        format.all { render "errors/error404", status: :not_found }
+    @breadcrumbable = nil # we don't want a breadcrumb on our error page
+    @feedback_email = ::Configuration.instance.admin[:tech_mail_list][0]
+    @message        = IdealsMailer.error_body(exception,
+                                              url_path: request.path,
+                                              user:     current_user)
+    Rails.logger.error(@message)
+    IdealsMailer.error(@message).deliver_now unless Rails.env.development?
+
+    respond_to do |format|
+      format.html do
+        render "errors/error500",
+               status: :internal_server_error,
+               content_type: "text/html"
       end
-
-    else
-      @feedback_email = ::Configuration.instance.admin[:tech_mail_list][0]
-      @message        = IdealsMailer.error_body(exception,
-                                                url_path: request.path,
-                                                user:     current_user)
-      Rails.logger.error(@message)
-      IdealsMailer.error(@message).deliver_now unless Rails.env.development?
-
-      respond_to do |format|
-        format.html do
-          render "errors/error500",
-                 status: :internal_server_error,
-                 content_type: "text/html"
-        end
-        format.all do
-          render plain: "HTTP 500 Internal Server Error",
-                 status: :internal_server_error,
-                 content_type: "text/plain"
-        end
+      format.all do
+        render plain: "HTTP 500 Internal Server Error",
+               status: :internal_server_error,
+               content_type: "text/plain"
       end
     end
   end
 
   def rescue_unauthorized(e)
-    @reason = e.reason || e.message
+    @breadcrumbable = nil # we don't want a breadcrumb on our error page
+    @reason         = e.reason || e.message
     respond_to do |format|
       format.html { render "errors/error403", status: :forbidden }
       format.json { render json: @reason, status: :forbidden }
