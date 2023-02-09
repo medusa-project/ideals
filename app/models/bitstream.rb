@@ -1,19 +1,23 @@
 ##
 # Binary file/object associated with an {Item}. The "bitstream" terminology
 # comes from DSpace, which is what IDEALS used to be built on, but "file" is
-# used instead in the user interface.
+# used in the user interface.
 #
 # # Storage locations
 #
 # When a file is first uploaded, it is stored in the application S3 bucket
-# under `institutions/:key/staging/`, and {staging_key} is set on its
+# under `institutions/:key/staging/:item_id`, and {staging_key} is set on its
 # corresponding instance. When it is approved, it is moved to a location under
-# `institutions/:key/storage/`, and {permanent_key} is set on its corresponding
-# instance. Also, a message is sent to Medusa to ingest it into the IDEALS file
-# group. Upon receipt of a success message, {medusa_key} and {medusa_uuid} are
-# set on its corresponding instance.
+# `institutions/:key/storage/:item_handle`, and {permanent_key} is set on its
+# corresponding instance. Also, a message is sent to Medusa to ingest it into
+# the IDEALS file group. Upon receipt of a success message, {medusa_key} and
+# {medusa_uuid} are set on its corresponding instance.
 #
-# To rename an instance's filename, simply update the {filename} property.
+# It would be simpler to use just one storage location, like
+# `institutions/:key/storage/`, but the keys under that prefix are all handles,
+# which items may not receive until they are submitted.
+#
+# Filenames can be changed at any time by updating the {filename} property.
 # ActiveRecord callbacks will handle all the work of maintaining consistency
 # with application and preservation storage.
 #

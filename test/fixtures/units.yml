@@ -12,6 +12,11 @@ southwest_unit1:
   institution: southwest
   buried:      false
 
+southwest_unit2:
+  title:       Unit2
+  institution: southwest
+  buried:      false
+
 ################################## uiuc #####################################
 
 uiuc_unit1:

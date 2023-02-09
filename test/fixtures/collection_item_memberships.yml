@@ -5,6 +5,33 @@ northeast_unit1_collection1_item1:
   item:       northeast_unit1_collection1_item1
   primary:    true
 
+################################ southwest ##################################
+
+southwest_unit1_collection1_item1:
+  collection: southwest_unit1_collection1
+  item:       southwest_unit1_collection1_item1
+  primary:    true
+
+southwest_unit1_collection1_withdrawn:
+  collection: southwest_unit1_collection1
+  item:       southwest_unit1_collection1_withdrawn
+  primary:    true
+
+southwest_unit1_collection1_submitting:
+  collection: southwest_unit1_collection1
+  item:       southwest_unit1_collection1_submitting
+  primary:    true
+
+southwest_unit1_collection1_buried:
+  collection: southwest_unit1_collection1
+  item:       southwest_unit1_collection1_buried
+  primary:    true
+
+southwest_unit1_collection1_embargoed:
+  collection: southwest_unit1_collection1
+  item:       southwest_unit1_collection1_embargoed
+  primary:    true
+
 ################################## uiuc #####################################
 
 # uiuc_collection1 items

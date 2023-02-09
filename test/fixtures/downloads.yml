@@ -1,17 +1,29 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+################################ southwest ##################################
+
+southwest_one:
+  institution: southwest
+  key:         49bc68be7f62f5088682d458b93c22d8
+  filename:    file.zip
+  url:
+  expired:     false
+  ip_address:  127.0.0.1
+
+################################## uiuc #####################################
+
 one:
+  institution: uiuc
   key:         4a926d2bd33ca25887043ef83f6950c0
   filename:    file.zip
   url:
   expired:     false
   ip_address:  127.0.0.1
-  institution: uiuc
 
 expired:
+  institution: uiuc
   key:         cfe5b27128678fe3fe3eb2f5e8ee6d8f
   filename:    expired.zip
   url:
   expired:     true
   ip_address:  127.0.0.1
-  institution: uiuc

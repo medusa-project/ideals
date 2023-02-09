@@ -1,25 +1,29 @@
 # frozen_string_literal: true
 
 class IndexPagePolicy < ApplicationPolicy
-  attr_reader :user, :institution, :role, :index_page
+
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This index page resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
   # @param index_page [IndexPage]
   #
   def initialize(request_context, index_page)
-    @user        = request_context&.user
-    @institution = request_context&.institution
-    @role        = request_context&.role_limit
-    @index_page  = index_page
+    @user            = request_context&.user
+    @ctx_institution = request_context&.institution
+    @role_limit      = request_context&.role_limit
+    @index_page      = index_page
   end
 
   def create
-    effective_institution_admin(user, institution, role)
+    effective_institution_admin(@user, @ctx_institution, @role_limit)
   end
 
   def destroy
-    create
+    update
   end
 
   def edit
@@ -35,15 +39,16 @@ class IndexPagePolicy < ApplicationPolicy
   end
 
   def show
-    if institution.key == index_page.institution.key
-      AUTHORIZED_RESULT
-    else
-      { authorized: false,
-        reason:     "You are not authorized to access this index." }
+    if @ctx_institution != @index_page.institution
+      return WRONG_SCOPE_RESULT
     end
+    AUTHORIZED_RESULT
   end
 
   def update
-    create
+    if @ctx_institution != @index_page.institution
+      return WRONG_SCOPE_RESULT
+    end
+    effective_institution_admin(@user, @ctx_institution, @role_limit)    
   end
 end

@@ -4,6 +4,101 @@
 # set in tests via Bitstream.staging_key() and permanent_key().
 # They are set to temporary values here in order to get seeded into the bucket.
 
+
+################################ southwest ##################################
+
+southwest_unit1_collection1_submitting_1:
+  item:                 southwest_unit1_collection1_submitting
+  submitted_for_ingest: true
+  staging_key:          <%= SecureRandom.hex %>
+  permanent_key:
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
+  filename:             escher_lego.png
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
+  description:          Sample description
+
+southwest_unit1_collection1_item1_approved:
+  item:                 southwest_unit1_collection1_item1
+  submitted_for_ingest: true
+  staging_key:
+  permanent_key:        <%= SecureRandom.hex %>
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
+  filename:             escher_lego.png
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
+  description:          Sample description
+
+southwest_unit1_collection1_item1_license:
+  item:                 southwest_unit1_collection1_item1
+  submitted_for_ingest: true
+  staging_key:
+  permanent_key:        <%= SecureRandom.hex %>
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pdf.pdf")) %>
+  original_filename:    pdf.pdf
+  filename:             pdf.pdf
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::LICENSE %>
+  bundle_position:      0
+  description:          Sample description
+
+southwest_unit1_collection1_item1_role_limited:
+  item:                 southwest_unit1_collection1_item1
+  submitted_for_ingest: false
+  staging_key:
+  permanent_key:        <%= SecureRandom.hex %>
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "crane.jpg")) %>
+  original_filename:    crane.jpg
+  filename:             crane.jpg
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::SYSTEM_ADMINISTRATOR %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
+  description:          Sample description
+
+southwest_unit1_collection1_embargoed_1:
+  item:                 southwest_unit1_collection1_embargoed
+  submitted_for_ingest: true
+  staging_key:
+  permanent_key:        <%= SecureRandom.hex %>
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
+  filename:             escher_lego.png
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
+  description:          Sample description
+
+southwest_unit1_collection1_withdrawn_1:
+  item:                 southwest_unit1_collection1_withdrawn
+  submitted_for_ingest: true
+  staging_key:
+  permanent_key:        <%= SecureRandom.hex %>
+  length:               <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
+  original_filename:    escher_lego.png
+  filename:             escher_lego.png
+  medusa_key:
+  medusa_uuid:
+  role:                 <%= Role::LOGGED_OUT %>
+  bundle:               <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:      0
+  description:          Sample description
+
+################################## uiuc #####################################
+
 uiuc_item1_in_staging:
   item:                 uiuc_item1
   submitted_for_ingest: false

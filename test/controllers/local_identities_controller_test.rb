@@ -3,13 +3,14 @@ require 'test_helper'
 class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    host! institutions(:southwest).fqdn
+    @institution = institutions(:southwest)
+    host! @institution.fqdn
   end
 
   # edit_password()
 
   test "edit_password() returns HTTP 403 for logged-out users" do
-    identity = local_identities(:example_sysadmin)
+    identity = local_identities(:southwest_sysadmin)
     get local_identity_edit_password_path(identity), xhr: true
     assert_response :forbidden
   end
@@ -24,7 +25,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   test "edit_password() returns HTTP 403 for users other than the user whose
   password is being changed" do
     log_in_as(users(:example_sysadmin))
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     get local_identity_edit_password_path(identity), xhr: true
     assert_response :forbidden
   end
@@ -50,13 +51,13 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   # new_password()
 
   test "new_password() redirects to root path for logged-in users" do
-    identity = local_identities(:approved)
+    identity = local_identities(:southwest)
     get local_identity_reset_password_path(identity)
     assert_redirected_to root_path
   end
 
   test "new_password() redirects and sets the flash if a token is not provided" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     get local_identity_reset_password_path(identity)
     assert_equal "Invalid password reset link.", flash['error']
     assert_redirected_to root_url
@@ -64,7 +65,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "new_password() redirects and sets the flash if an invalid token is
   provided" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     get local_identity_reset_password_path(identity, token: "bogus")
     assert_equal "Invalid password reset link.", flash['error']
     assert_redirected_to root_url
@@ -72,7 +73,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "new_password() redirects and sets the flash if an expired token is
   provided" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     identity.create_reset_digest
     token = identity.reset_token
     identity.update_attribute(:reset_sent_at, Time.now - 1.month)
@@ -84,7 +85,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "new_password() returns HTTP 200 if a valid token is provided" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     identity.create_reset_digest
     token = identity.reset_token
 
@@ -95,13 +96,13 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   # register()
 
   test "register() redirects to root path for logged-in users" do
-    identity = local_identities(:approved)
+    identity = local_identities(:southwest)
     get local_identity_register_path(identity)
     assert_redirected_to root_path
   end
 
   test "register() redirects and sets the flash if a token is not provided" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     get local_identity_register_path(identity)
     assert_equal "Invalid registration link.", flash['error']
     assert_redirected_to root_url
@@ -109,14 +110,14 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "register() redirects and sets the flash if an invalid token is
   provided" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     get local_identity_register_path(identity, token: "bogus")
     assert_equal "Invalid registration link.", flash['error']
     assert_redirected_to root_url
   end
 
   test "register() returns HTTP 200 if a valid token is provided" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     identity.create_registration_digest
     token = identity.registration_token
 
@@ -127,14 +128,14 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   # reset_password()
 
   test "reset_password() redirects to root path for logged-in users" do
-    identity = local_identities(:approved)
+    identity = local_identities(:southwest)
     post local_identity_reset_password_path(identity)
     assert_redirected_to root_path
   end
 
   test "reset_password() redirects and sets the flash if a token is not
   provided" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     post local_identity_reset_password_path(identity),
          params: {
              local_identity: {
@@ -148,7 +149,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "reset_password() redirects and sets the flash if an invalid token is
   provided" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     post local_identity_reset_password_path(identity),
          params: {
              token: "bogus",
@@ -163,7 +164,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "reset_password() redirects and sets the flash if an expired token is
   provided" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     identity.create_reset_digest
     token = identity.reset_token
     identity.update_attribute(:reset_sent_at, Time.now - 1.month)
@@ -183,7 +184,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "reset_password() sets the flash if the password does not match the
   confirmation" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     identity.create_reset_digest
     token = identity.reset_token
 
@@ -200,7 +201,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "reset_password() sets the flash and redirects if all arguments are
   valid" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     identity.create_reset_digest
     token    = identity.reset_token
     password = LocalIdentity.random_password
@@ -220,13 +221,13 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   # update()
 
   test "update() redirects to root path for logged-in users" do
-    identity = local_identities(:approved)
+    identity = local_identities(:southwest)
     patch local_identity_path(identity)
     assert_redirected_to root_path
   end
 
   test "update() sets the flash and redirects if no token is provided" do
-    identity = local_identities(:approved)
+    identity = local_identities(:southwest)
     patch local_identity_path(identity),
           params: {
             honey_email: "",
@@ -247,7 +248,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() sets the flash and redirects if an invalid token is
   provided" do
-    identity = local_identities(:approved)
+    identity = local_identities(:southwest)
     patch local_identity_path(identity),
           params: {
               token: "bogus",
@@ -269,7 +270,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() sets the flash and redirects back if the password does not
   match the confirmation" do
-    identity = local_identities(:approved)
+    identity = local_identities(:southwest)
     identity.create_registration_digest
     token = identity.registration_token
 
@@ -294,7 +295,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() sets the flash and redirects back upon an incorrect CAPTCHA
   response" do
-    identity = local_identities(:approved)
+    identity = local_identities(:southwest)
     identity.create_registration_digest
     token    = identity.registration_token
     name     = "New Name"
@@ -321,7 +322,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() sets the flash and redirects if all arguments are valid" do
-    identity = local_identities(:approved)
+    identity = local_identities(:southwest)
     identity.create_registration_digest
     token    = identity.registration_token
     password = LocalIdentity.random_password
@@ -348,8 +349,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() updates the instance and sends an email if all arguments
   are valid" do
-    institution = institutions(:example)
-    identity    = local_identities(:approved)
+    identity    = local_identities(:southwest)
     identity.create_registration_digest
     token       = identity.registration_token
     name        = "New Name"
@@ -376,21 +376,20 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
       user = identity.user
       assert_equal name, user.name
       assert_equal phone, user.phone
-      assert_equal institution, user.institution
-      assert !user.institution_admin?(institution)
+      assert_equal @institution, user.institution
+      assert !user.institution_admin?(@institution)
     end
   end
 
   test "update() makes the user an institution administrator if directed to by
   the Invitee instance" do
-    institution = institutions(:example)
-    identity    = local_identities(:approved)
+    identity = local_identities(:southwest)
     identity.invitee.update!(institution_admin: true)
     identity.create_registration_digest
-    token       = identity.registration_token
-    name        = "New Name"
-    phone       = "555-555-5555"
-    password    = LocalIdentity.random_password
+    token    = identity.registration_token
+    name     = "New Name"
+    phone    = "555-555-5555"
+    password = LocalIdentity.random_password
 
     patch local_identity_path(identity),
           params: {
@@ -409,20 +408,20 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
           }
     identity.reload
     user = identity.user
-    assert user.institution_admin?(institution)
+    assert user.institution_admin?(@institution)
   end
 
   # update_password()
 
   test "update_password() returns HTTP 403 for logged-out users" do
-    identity = local_identities(:example_sysadmin)
+    identity = local_identities(:southwest_sysadmin)
     patch local_identity_update_password_path(identity), xhr: true
     assert_response :forbidden
   end
 
   test "update_password() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:example))
-    identity = local_identities(:example_sysadmin)
+    identity = local_identities(:southwest_sysadmin)
     patch local_identity_update_password_path(identity), xhr: true
     assert_response :forbidden
   end

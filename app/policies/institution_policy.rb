@@ -1,5 +1,4 @@
 class InstitutionPolicy < ApplicationPolicy
-  attr_reader :user, :ctx_institution, :role, :institution
 
   ##
   # @param request_context [RequestContext]
@@ -8,16 +7,16 @@ class InstitutionPolicy < ApplicationPolicy
   def initialize(request_context, institution)
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
-    @role            = request_context&.role_limit
+    @role_limit      = request_context&.role_limit
     @institution     = institution
   end
 
   def create
-    effective_sysadmin(user, role)
+    effective_sysadmin(@user, @role_limit)
   end
 
   def destroy
-    create
+    effective_sysadmin(@user, @role_limit)
   end
 
   def edit_administrators
@@ -49,7 +48,7 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def invite_administrator
-    effective_sysadmin(user, role)
+    effective_sysadmin(@user, @role_limit)
   end
 
   def item_download_counts
@@ -57,14 +56,11 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def new
-    create
+    effective_sysadmin(@user, @role_limit)
   end
 
   def show
-    result = effective_institution_admin(user, ctx_institution, role)
-    result[:authorized] ?
-      effective_institution_admin(user, institution, role) :
-      result
+    effective_institution_admin(@user, @institution, @role_limit)
   end
 
   def show_access
@@ -72,13 +68,13 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show_element_mappings
-    return private_institution unless institution.public
+    return private_institution unless @institution.public
     show
   end
 
   def show_preservation
-    return private_institution unless institution.public
-    effective_sysadmin(user, role)
+    return private_institution unless @institution.public
+    effective_sysadmin(@user, @role_limit)
   end
 
   def show_properties
@@ -86,17 +82,17 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show_settings
-    return private_institution unless institution.public
+    return private_institution unless @institution.public
     show
   end
 
   def show_statistics
-    return private_institution unless institution.public
+    return private_institution unless @institution.public
     show
   end
 
   def show_theme
-    return private_institution unless institution.public
+    return private_institution unless @institution.public
     show
   end
 
@@ -109,11 +105,11 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def update_preservation
-    effective_sysadmin(user, role)
+    update_properties
   end
 
   def update_properties
-    effective_sysadmin(user, role)
+    effective_sysadmin(@user, @role_limit)
   end
 
   def update_settings

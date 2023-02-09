@@ -3,20 +3,22 @@ require 'test_helper'
 class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @element = submission_profile_elements(:uiuc_default_title)
+    @element = submission_profile_elements(:southwest_default_title)
   end
 
   # create?()
 
   test "create?() returns false with a nil user" do
-    policy = SubmissionProfileElementPolicy.new(nil, @element)
+    context = RequestContext.new(user:        nil,
+                                 institution: @element.submission_profile.institution)
+    policy = SubmissionProfileElementPolicy.new(context, @element)
     assert !policy.create?
   end
 
   test "create?() does not authorize non-privileged users" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.submission_profile.institution)
     policy  = SubmissionProfileElementPolicy.new(context, @element)
     assert !policy.create?
   end
@@ -24,7 +26,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
   test "create?() authorizes administrators of the same institution" do
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.submission_profile.institution)
     policy  = SubmissionProfileElementPolicy.new(context, @element)
     assert policy.create?
   end
@@ -40,7 +42,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -51,14 +53,23 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
   # destroy?()
 
   test "destroy?() returns false with a nil user" do
-    policy = SubmissionProfileElementPolicy.new(nil, @element)
+    context = RequestContext.new(user:        nil,
+                                 institution: @element.submission_profile.institution)
+    policy = SubmissionProfileElementPolicy.new(context, @element)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = SubmissionProfileElementPolicy.new(context, @element)
     assert !policy.destroy?
   end
 
   test "destroy?() authorizes administrators of the same institution" do
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.submission_profile.institution)
     policy  = SubmissionProfileElementPolicy.new(context, @element)
     assert policy.destroy?
   end
@@ -83,7 +94,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -94,22 +105,31 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
   # edit?()
 
   test "edit?() returns false with a nil user" do
-    policy = SubmissionProfileElementPolicy.new(nil, @element)
+    context = RequestContext.new(user:        nil,
+                                 institution: @element.submission_profile.institution)
+    policy = SubmissionProfileElementPolicy.new(context, @element)
+    assert !policy.edit?
+  end
+
+  test "edit?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = SubmissionProfileElementPolicy.new(context, @element)
     assert !policy.edit?
   end
 
   test "edit?() does not authorize non-privileged users" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.submission_profile.institution)
     policy  = SubmissionProfileElementPolicy.new(context, @element)
     assert !policy.edit?
   end
 
   test "edit?() authorizes administrators of the same institution" do
-    user = users(:uiuc_admin)
+    user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.submission_profile.institution)
     policy  = SubmissionProfileElementPolicy.new(context, @element)
     assert policy.edit?
   end
@@ -134,7 +154,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -145,22 +165,31 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
   # update?()
 
   test "update?() returns false with a nil user" do
-    policy = SubmissionProfileElementPolicy.new(nil, @element)
+    context = RequestContext.new(user:        nil,
+                                 institution: @element.submission_profile.institution)
+    policy = SubmissionProfileElementPolicy.new(context, @element)
+    assert !policy.update?
+  end
+
+  test "update?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = SubmissionProfileElementPolicy.new(context, @element)
     assert !policy.update?
   end
 
   test "update?() does not authorize non-privileged users" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.submission_profile.institution)
     policy = SubmissionProfileElementPolicy.new(context, @element)
     assert !policy.update?
   end
 
   test "update?() authorizes administrators of the same institution" do
-    user = users(:uiuc_admin)
+    user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.submission_profile.institution)
     policy  = SubmissionProfileElementPolicy.new(context, @element)
     assert policy.update?
   end
@@ -185,7 +214,7 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

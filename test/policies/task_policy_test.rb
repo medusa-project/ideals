@@ -9,12 +9,14 @@ class TaskPolicyTest < ActiveSupport::TestCase
   # index?()
 
   test "index?() returns false with a nil user" do
-    policy = TaskPolicy.new(nil, Task)
+    context = RequestContext.new(user:        nil,
+                                 institution: @task.institution)
+    policy = TaskPolicy.new(context, Task)
     assert !policy.index?
   end
 
   test "index?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = TaskPolicy.new(context, Task)
@@ -22,7 +24,7 @@ class TaskPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = TaskPolicy.new(context, Task)
@@ -49,7 +51,7 @@ class TaskPolicyTest < ActiveSupport::TestCase
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -60,12 +62,14 @@ class TaskPolicyTest < ActiveSupport::TestCase
   # index_all?()
 
   test "index_all?() returns false with a nil request context" do
-    policy = TaskPolicy.new(nil, Task)
+    context = RequestContext.new(user:        nil,
+                                 institution: @task.institution)
+    policy = TaskPolicy.new(context, Task)
     assert !policy.index_all?
   end
 
   test "index_all?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = TaskPolicy.new(context, Task)
@@ -73,7 +77,7 @@ class TaskPolicyTest < ActiveSupport::TestCase
   end
 
   test "index_all?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = TaskPolicy.new(context, Task)
@@ -82,7 +86,7 @@ class TaskPolicyTest < ActiveSupport::TestCase
 
   test "index_all?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
@@ -93,12 +97,21 @@ class TaskPolicyTest < ActiveSupport::TestCase
   # show?()
 
   test "show?() returns false with a nil user" do
-    policy = TaskPolicy.new(nil, @task)
+    context = RequestContext.new(user:        nil,
+                                 institution: @task.institution)
+    policy = TaskPolicy.new(context, @task)
+    assert !policy.show?
+  end
+
+  test "show?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = TaskPolicy.new(context, @task)
     assert !policy.show?
   end
 
   test "show?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = TaskPolicy.new(context, @task)
@@ -106,7 +119,7 @@ class TaskPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = TaskPolicy.new(context, @task)
@@ -133,7 +146,7 @@ class TaskPolicyTest < ActiveSupport::TestCase
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

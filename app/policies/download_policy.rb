@@ -1,6 +1,9 @@
 class DownloadPolicy < ApplicationPolicy
 
-  attr_reader :user, :role, :download
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This download resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
@@ -9,8 +12,9 @@ class DownloadPolicy < ApplicationPolicy
   def initialize(request_context, download)
     @client_ip       = request_context&.client_ip
     @client_hostname = request_context&.client_hostname
+    @ctx_institution = request_context&.institution
     @user            = request_context&.user
-    @role            = request_context&.role_limit
+    @role_limit      = request_context&.role_limit
     @download        = download
   end
 
@@ -19,12 +23,14 @@ class DownloadPolicy < ApplicationPolicy
   end
 
   def show
-    if download.expired # even sysadmins can't access expired downloads
+    if @ctx_institution != @download.institution
+      return WRONG_SCOPE_RESULT
+    elsif @download.expired # even sysadmins can't access expired downloads
       return { authorized: false,
                reason:     "This download is expired." }
-    elsif effective_sysadmin?(user, role)
+    elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif download.ip_address.present? && download.ip_address != @client_ip
+    elsif @download.ip_address.present? && @download.ip_address != @client_ip
       return { authorized: false,
                reason:     "You are not authorized to access this download." }
     end

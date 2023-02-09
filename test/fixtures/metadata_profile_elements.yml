@@ -10,6 +10,20 @@ global_title:
   sortable:           true
   relevance_weight:   <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
+################################ southwest ##################################
+
+southwest_default_title:
+  metadata_profile:   southwest_default
+  registered_element: southwest_dc_title
+  position:           0
+  visible:            true
+  faceted:            false
+  searchable:         true
+  sortable:           true
+  relevance_weight:   <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+
+################################## uiuc #####################################
+
 uiuc_default_title:
   metadata_profile:   uiuc_default
   registered_element: uiuc_dc_title

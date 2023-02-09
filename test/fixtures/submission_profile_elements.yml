@@ -1,5 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+################################ southwest ##################################
+
+southwest_default_title:
+  submission_profile: southwest_default
+  registered_element: southwest_dc_title
+  position:           0
+  repeatable:         false
+  required:           true
+  placeholder_text:
+
+################################## uiuc #####################################
+
 uiuc_default_title:
   submission_profile: uiuc_default
   registered_element: uiuc_dc_title

@@ -3,28 +3,30 @@ require 'test_helper'
 class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @element = registered_elements(:uiuc_dc_title)
+    @element = registered_elements(:southwest_dc_title)
   end
 
   # create?()
 
   test "create?() returns false with a nil user" do
-    policy = RegisteredElementPolicy.new(nil, @element)
+    context = RequestContext.new(user:        nil,
+                                 institution: @element.institution)
+    policy = RegisteredElementPolicy.new(context, @element)
     assert !policy.create?
   end
 
   test "create?() does not authorize users with no privileges" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.create?
   end
 
   test "create?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.create?
   end
@@ -32,7 +34,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "create?() authorizes administrators of the same institution" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.create?
   end
@@ -48,9 +50,9 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution,
+                                 institution: @element.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.create?
@@ -59,30 +61,39 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   # destroy?()
 
   test "destroy?() returns false with a nil user" do
-    policy = RegisteredElementPolicy.new(nil, @element)
+    context = RequestContext.new(user:        nil,
+                                 institution: @element.institution)
+    policy = RegisteredElementPolicy.new(context, @element)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.destroy?
   end
 
   test "destroy?() does not authorize users with no privileges" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.destroy?
   end
 
   test "destroy?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.destroy?
   end
 
   test "destroy?() authorizes administrators of the same institution" do
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.destroy?
   end
@@ -107,41 +118,50 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = RegisteredElementPolicy.new(context, @item)
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.destroy?
   end
 
   # edit?()
 
   test "edit?() returns false with a nil user" do
-    policy = RegisteredElementPolicy.new(nil, @element)
+    context = RequestContext.new(user:        nil,
+                                 institution: @element.institution)
+    policy = RegisteredElementPolicy.new(context, @element)
+    assert !policy.edit?
+  end
+
+  test "edit?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.edit?
   end
 
   test "edit?() does not authorize users with no privileges" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy = RegisteredElementPolicy.new(context, @element)
     assert !policy.edit?
   end
 
   test "edit?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.edit?
   end
 
   test "edit?() authorizes administrators of the same institution" do
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.edit?
   end
@@ -166,33 +186,35 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "edit?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = RegisteredElementPolicy.new(context, @item)
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.edit?
   end
 
   # index?()
 
   test "index?() returns false with a nil user" do
-    policy = RegisteredElementPolicy.new(nil, RegisteredElement)
+    context = RequestContext.new(user:        nil,
+                                 institution: @element.institution)
+    policy = RegisteredElementPolicy.new(context, RegisteredElement)
     assert !policy.index?
   end
 
   test "index?() does not authorize users with no privileges" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, RegisteredElement)
     assert !policy.index?
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, RegisteredElement)
     assert policy.index?
   end
@@ -200,40 +222,42 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "index?() authorizes institution administrators" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, RegisteredElement)
     assert policy.index?
   end
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = RegisteredElementPolicy.new(context, @item)
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.index?
   end
 
   # new?()
 
   test "new?() returns false with a nil user" do
-    policy = RegisteredElementPolicy.new(nil, @element)
+    context = RequestContext.new(user:        nil,
+                                 institution: @element.institution)
+    policy = RegisteredElementPolicy.new(context, @element)
     assert !policy.new?
   end
 
   test "new?() does not authorize users with no privileges" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.new?
   end
 
   test "new?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy = RegisteredElementPolicy.new(context, @element)
     assert policy.new?
   end
@@ -241,7 +265,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   test "new?() authorizes administrators of the same institution" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, RegisteredElement)
     assert policy.new?
   end
@@ -252,46 +276,55 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
     policy  = RegisteredElementPolicy.new(context, RegisteredElement)
-    assert !policy.edit?
+    assert !policy.new?
   end
 
   test "new?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = RegisteredElementPolicy.new(context, @item)
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.new?
   end
 
   # show?()
 
   test "show?() returns false with a nil user" do
-    policy = RegisteredElementPolicy.new(nil, @element)
+    context = RequestContext.new(user:        nil,
+                                 institution: @element.institution)
+    policy = RegisteredElementPolicy.new(context, @element)
+    assert !policy.show?
+  end
+
+  test "show?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.show?
   end
 
   test "show?() does not authorize users with no privileges" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.show?
   end
 
   test "show?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.show?
   end
 
   test "show?() authorizes administrators of the same institution" do
-    user    = users(:uiuc_admin)
+    user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.show?
   end
@@ -316,41 +349,50 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "show?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = RegisteredElementPolicy.new(context, @item)
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.show?
   end
 
   # update?()
 
   test "update?() returns false with a nil user" do
-    policy = RegisteredElementPolicy.new(nil, @element)
+    context = RequestContext.new(user:        nil,
+                                 institution: @element.institution)
+    policy = RegisteredElementPolicy.new(context, @element)
+    assert !policy.update?
+  end
+
+  test "update?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.update?
   end
 
   test "update?() does not authorize users with no privileges" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.update?
   end
 
   test "update?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy = RegisteredElementPolicy.new(context, @element)
     assert policy.update?
   end
 
   test "update?() authorizes administrators of the same institution" do
-    user = users(:uiuc_admin)
+    user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: @element.institution)
     policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.update?
   end
@@ -375,11 +417,11 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = RegisteredElementPolicy.new(context, @item)
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.update?
   end
 

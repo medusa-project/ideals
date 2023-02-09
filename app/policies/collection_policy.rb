@@ -1,16 +1,21 @@
 # frozen_string_literal: true
 
 class CollectionPolicy < ApplicationPolicy
-  attr_reader :user, :role, :collection
+
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This collection resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
   # @param collection [Collection]
   #
   def initialize(request_context, collection)
-    @user       = request_context&.user
-    @role       = request_context&.role_limit || Role::NO_LIMIT
-    @collection = collection
+    @user            = request_context&.user
+    @ctx_institution = request_context&.institution
+    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
+    @collection      = collection
   end
 
   def all_files
@@ -23,14 +28,16 @@ class CollectionPolicy < ApplicationPolicy
   # manager.
   #
   def change_parent(new_parent_id)
-    if !user
+    if @ctx_institution != @collection.institution
+      return WRONG_SCOPE_RESULT
+    elsif !@user
       return LOGGED_OUT_RESULT
-    elsif new_parent_id == collection.parent_id # no change
+    elsif new_parent_id == @collection.parent_id # no change
       return AUTHORIZED_RESULT
-    elsif effective_sysadmin?(user, role)
+    elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif role >= Role::COLLECTION_MANAGER &&
-        user.effective_manager?(Collection.find(new_parent_id))
+    elsif @role_limit >= Role::COLLECTION_MANAGER &&
+      @user.effective_manager?(Collection.find(new_parent_id))
       return AUTHORIZED_RESULT
     end
     { authorized: false,
@@ -39,7 +46,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def children
-    AUTHORIZED_RESULT
+    index
   end
 
   def create
@@ -47,12 +54,14 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def delete
-    if !user
+    if @ctx_institution != @collection.institution
+      return WRONG_SCOPE_RESULT
+    elsif !@user
       return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(user, role)
+    elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif (!role || role >= Role::INSTITUTION_ADMINISTRATOR) &&
-      user.effective_institution_admin?(collection.institution)
+    elsif (!@role_limit || @role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
+      @user.effective_institution_admin?(@collection.institution)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
@@ -85,6 +94,10 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def index
+    if @collection.kind_of?(Collection) &&
+      @ctx_institution != @collection.institution
+      return WRONG_SCOPE_RESULT
+    end
     AUTHORIZED_RESULT
   end
 
@@ -101,6 +114,9 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def show
+    if @ctx_institution != @collection.institution
+      return WRONG_SCOPE_RESULT
+    end
     AUTHORIZED_RESULT
   end
 
@@ -151,27 +167,33 @@ class CollectionPolicy < ApplicationPolicy
   private
 
   def effective_manager
-    if !user
+    if @collection.kind_of?(Collection) &&
+      @ctx_institution != @collection.institution
+      return WRONG_SCOPE_RESULT
+    elsif !@user
       return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(user, role)
+    elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif role >= Role::COLLECTION_MANAGER && collection.is_a?(Collection) &&
-        user.effective_manager?(collection)
+    elsif @role_limit >= Role::COLLECTION_MANAGER && @collection.is_a?(Collection) &&
+      @user.effective_manager?(@collection)
       return AUTHORIZED_RESULT
     end
     { authorized: false, reason: "You must be a manager of the collection." }
   end
 
   def effective_submitter
-    if !user
+    if @collection.kind_of?(Collection) &&
+      @ctx_institution != @collection.institution
+      return WRONG_SCOPE_RESULT
+    elsif !@user
       return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(user, role)
+    elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif role >= Role::COLLECTION_SUBMITTER && user.effective_submitter?(collection)
+    elsif @role_limit >= Role::COLLECTION_SUBMITTER && @user.effective_submitter?(@collection)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
-      reason: "You must be authorized to submit to the collection." }
+      reason: "You are not authorized to submit to the collection." }
   end
 
 end

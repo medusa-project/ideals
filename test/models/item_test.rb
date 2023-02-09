@@ -38,7 +38,8 @@ class ItemTest < ActiveSupport::TestCase
   # non_embargoed()
 
   test "non_embargoed() returns all non-all-access-embargoed items" do
-    assert_equal Item.count - 1, Item.non_embargoed.count
+    assert_equal Item.count - Embargo.where(kind: Embargo::Kind::ALL_ACCESS).count,
+                 Item.non_embargoed.count
   end
 
   # reindex_all() (Indexed concern)

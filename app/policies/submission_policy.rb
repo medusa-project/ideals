@@ -2,8 +2,6 @@
 
 class SubmissionPolicy < ApplicationPolicy
 
-  attr_reader :user, :role, :item
-
   ##
   # @param request_context [RequestContext]
   # @param item [Item]
@@ -11,7 +9,8 @@ class SubmissionPolicy < ApplicationPolicy
   def initialize(request_context, item)
     @request_context = request_context
     @user            = request_context&.user
-    @role            = request_context&.role_limit
+    @ctx_institution = request_context&.institution
+    @role_limit      = request_context&.role_limit
     @item            = item
   end
 
@@ -20,7 +19,7 @@ class SubmissionPolicy < ApplicationPolicy
   end
 
   def create
-    user && role >= Role::LOGGED_IN ? AUTHORIZED_RESULT : LOGGED_OUT_RESULT
+    @user && @role_limit >= Role::LOGGED_IN ? AUTHORIZED_RESULT : LOGGED_OUT_RESULT
   end
 
   def destroy
@@ -36,7 +35,7 @@ class SubmissionPolicy < ApplicationPolicy
   end
 
   def update
-    ItemPolicy.new(@request_context, item).update
+    ItemPolicy.new(@request_context, @item).update
   end
 
 end

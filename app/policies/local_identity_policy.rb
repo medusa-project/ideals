@@ -1,16 +1,21 @@
 # frozen_string_literal: true
 
 class LocalIdentityPolicy < ApplicationPolicy
-  attr_reader :user, :role, :identity
+
+  WRONG_SCOPE_RESULT = {
+    authorized: false,
+    reason:     "This identity resides in a different institution."
+  }
 
   ##
   # @param request_context [RequestContext]
   # @param identity [LocalIdentity]
   #
   def initialize(request_context, identity)
-    @user     = request_context&.user
-    @role     = request_context&.role_limit || Role::NO_LIMIT
-    @identity = identity
+    @user            = request_context&.user
+    @ctx_institution = request_context&.institution
+    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
+    @identity        = identity
   end
 
   def edit_password
@@ -18,19 +23,22 @@ class LocalIdentityPolicy < ApplicationPolicy
   end
 
   def new_password
-    AUTHORIZED_RESULT
+    register
   end
 
   def register
+    if @ctx_institution != @identity.user.institution
+      return WRONG_SCOPE_RESULT
+    end
     AUTHORIZED_RESULT
   end
 
   def reset_password
-    AUTHORIZED_RESULT
+    register
   end
 
   def update
-    AUTHORIZED_RESULT
+    register
   end
 
   def update_password
@@ -41,7 +49,9 @@ class LocalIdentityPolicy < ApplicationPolicy
   private
 
   def user_matches_identity
-    if user && (role >= Role::LOGGED_IN && user.id == identity.user&.id)
+    if @ctx_institution != @identity.user.institution
+      return WRONG_SCOPE_RESULT
+    elsif @user && (@role_limit >= Role::LOGGED_IN && @user.id == @identity.user&.id)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
