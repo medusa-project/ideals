@@ -169,7 +169,8 @@ class ItemPolicy < ApplicationPolicy
       return WRONG_SCOPE_RESULT
     # Withdrawn & buried items are authorized but are shown in a special,
     # limited view.
-    elsif effective_sysadmin?(@user, @role_limit) || @item.withdrawn? || @item.buried?
+    elsif effective_institution_admin?(@user, @ctx_institution, @role_limit) ||
+      @item.withdrawn? || @item.buried?
       return AUTHORIZED_RESULT
     elsif !@item.approved?
       return { authorized: false, reason: "This item is not approved." }
