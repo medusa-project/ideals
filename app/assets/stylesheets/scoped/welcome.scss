@@ -7,6 +7,7 @@ body#welcome {
     background-position: center;
     border-bottom: 3px solid $gray-400;
     display: flex;
+    /* may be overridden by the theme */
     height: 200px;
     flex-flow: column nowrap;
     justify-content: center;

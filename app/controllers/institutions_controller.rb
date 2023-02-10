@@ -433,6 +433,7 @@ class InstitutionsController < ApplicationController
                                         :title_element_id,
                                         # Theme tab
                                         :active_link_color,
+                                        :banner_image_height,
                                         :footer_background_color,
                                         :header_background_color, :link_color,
                                         :link_hover_color, :primary_color,
