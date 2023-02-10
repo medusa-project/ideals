@@ -244,7 +244,10 @@ class ApplicationController < ActionController::Base
     @breadcrumbable = nil # we don't want a breadcrumb on our error page
     @feedback_email = ::Configuration.instance.admin[:tech_mail_list][0]
     @message        = IdealsMailer.error_body(exception,
+                                              method:   request.method,
+                                              host:     request.host,
                                               url_path: request.path,
+                                              query:    request.query_string,
                                               user:     current_user)
     Rails.logger.error(@message)
     IdealsMailer.error(@message).deliver_now unless Rails.env.development?

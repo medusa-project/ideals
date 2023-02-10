@@ -9,20 +9,31 @@ class IdealsMailer < ApplicationMailer
 
   ##
   # @param exception [Exception]
-  # @param message [String, nil] Additional message text.
-  # @param url [String]          Request URL.
-  # @param user [User]           Current user.
+  # @param detail [String]   Additional message text.
+  # @param method [String]   Request HTTP method.
+  # @param host [String]     Request host.
+  # @param url_path [String] Request URL path.
+  # @param query [String]    Request query string.
+  # @param user [User]       Request user.
   # @return [String]
   #
-  def self.error_body(exception, message: nil, url_path: nil, user: nil)
+  def self.error_body(exception,
+                      detail:   nil,
+                      method:   nil,
+                      host:     nil,
+                      url_path: nil,
+                      query:    nil,
+                      user:     nil)
     io = StringIO.new
-    io << "Error"
-    io << " on #{url_path}" if url_path
-    io << ":\nClass: #{exception.class}\n"
+    io << "Class:   #{exception.class}\n"
     io << "Message: #{exception.message}\n"
-    io << "#{message}\n" if message.present?
-    io << "Time: #{Time.now.iso8601}\n"
-    io << "User: #{user.email} (#{user.name})\n" if user
+    io << "Detail:  #{detail}\n" if detail
+    io << "Time:    #{Time.now.strftime("%Y-%m-%d %l:%M:%S.%L %p")}\n"
+    io << "Method:  #{method}\n" if method
+    io << "Host:    #{host}\n" if host
+    io << "Path:    #{url_path}\n" if url_path
+    io << "Query:   ?#{query}\n" if query
+    io << "User:    #{user.email} (#{user.name})\n" if user
     io << "Stack Trace:\n"
     exception.backtrace.each do |line|
       io << line

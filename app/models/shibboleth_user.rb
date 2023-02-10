@@ -125,8 +125,8 @@ class ShibbolethUser < User
       self.save!
     rescue => e
       @message = IdealsMailer.error_body(e,
-                                         message: "[user: #{self.as_json}]\n[auth hash: #{auth.as_json}]",
-                                         user:    self)
+                                         detail: "[user: #{self.as_json}]\n[auth hash: #{auth.as_json}]",
+                                         user:   self)
       Rails.logger.error(@message)
       IdealsMailer.error(@message).deliver_now unless Rails.env.development?
     end
