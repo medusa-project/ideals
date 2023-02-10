@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 class IdealsMailer < ApplicationMailer
-  # This address is not arbitrary;
-  # see https://answers.uillinois.edu/illinois/page.php?id=47888
-  NO_REPLY_ADDRESS = "no-reply@illinois.edu"
+
+  NO_REPLY_ADDRESS = ::Configuration.instance.mail[:no_reply_address]
 
   default from: "#{::Configuration.instance.website[:global_service_name]} <#{NO_REPLY_ADDRESS}>"
 
