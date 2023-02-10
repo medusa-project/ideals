@@ -163,7 +163,7 @@ module ApplicationHelper
   # @return [Institution,nil] The institution whose FQDN corresponds to the
   #         value of the `X-Forwarded-Host` header. In global scope, there
   #         will be no such header, in which case `nil` is returned.
-  # @see institution_scope?
+  # @see institution_host?
   #
   def current_institution
     Institution.find_by_fqdn(request.host_with_port)
@@ -438,7 +438,7 @@ module ApplicationHelper
   #                   institution.
   # @see current_institution
   #
-  def institution_scope?
+  def institution_host?
     Institution.exists?(fqdn: request.host_with_port)
   end
 

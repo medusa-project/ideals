@@ -197,7 +197,7 @@ class ItemsController < ApplicationController
       facet_filters(@permitted_params[:fq]).
       start(@start).
       limit(@window)
-    if institution_scope?
+    if institution_host?
       @items = @items.institution(current_institution)
     else
       @items = @items.metadata_profile(MetadataProfile.global)

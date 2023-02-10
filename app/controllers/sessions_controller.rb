@@ -53,7 +53,7 @@ class SessionsController < ApplicationController
 
   def destroy
     reset_session
-    redirect_to(institution_scope? ? current_institution.scope_url : root_url,
+    redirect_to(institution_host? ? current_institution.scope_url : root_url,
                 allow_other_host: true)
   end
 

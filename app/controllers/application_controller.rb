@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
   before_action :redirect_to_main_host, :log_out_disabled_user
   after_action :copy_flash_to_response_headers
 
-  layout -> { institution_scope? ? "application_scoped" : "application_global" }
+  layout -> { institution_host? ? "application_scoped" : "application_global" }
 
   ##
   # @param entity [Class] Model or any other object to which access can be
@@ -73,10 +73,10 @@ class ApplicationController < ActionController::Base
   # institution, in which case the {Institution#default default institution}
   # will be returned, which won't be what is wanted. Therefore this method
   # should only be used after the scope is known--either from a controller
-  # action with a known scope, or after using {institution_scope?}.
+  # action with a known scope, or after using {institution_host?}.
   #
   # @return [Institution]
-  # @see institution_scope?
+  # @see institution_host?
   #
   def current_institution
     helpers.current_institution
@@ -102,8 +102,8 @@ class ApplicationController < ActionController::Base
   # @return [Boolean]
   # @see current_institution
   #
-  def institution_scope?
-    helpers.institution_scope?
+  def institution_host?
+    helpers.institution_host?
   end
 
   def logged_in?
@@ -167,7 +167,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def ensure_institution_host
-    raise NotFoundError unless institution_scope?
+    raise NotFoundError unless institution_host?
   end
 
   def ensure_logged_in

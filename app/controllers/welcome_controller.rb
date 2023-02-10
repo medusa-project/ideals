@@ -16,7 +16,7 @@ class WelcomeController < ApplicationController
   # Responds to `GET /`
   #
   def index
-    if institution_scope?
+    if institution_host?
       if current_institution.public
         scoped_index
       else
