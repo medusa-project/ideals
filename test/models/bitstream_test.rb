@@ -817,13 +817,10 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_not_nil @instance.public_url
   end
 
-  test "public_url() raises an IOError if the instance has no corresponding
-  object" do
+  test "public_url() returns nil if the instance has no corresponding object" do
     @instance.staging_key   = nil
     @instance.permanent_key = nil
-    assert_raises IOError do
-      @instance.public_url
-    end
+    assert_nil @instance.public_url
   end
 
   # read_full_text()
