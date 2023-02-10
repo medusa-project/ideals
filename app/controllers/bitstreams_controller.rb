@@ -148,10 +148,15 @@ class BitstreamsController < ApplicationController
   #
   def object
     url = @bitstream.public_url
-    @bitstream.add_download(user: current_user) if params[:dl] == "1"
-    redirect_to url,
-                status:           :temporary_redirect,
-                allow_other_host: true
+    if url
+      @bitstream.add_download(user: current_user) if params[:dl] == "1"
+      redirect_to url,
+                  status:           :temporary_redirect,
+                  allow_other_host: true
+    else
+      render plain:  "This bitstream has no corresponding storage object.",
+             status: :not_found
+    end
   end
 
   ##

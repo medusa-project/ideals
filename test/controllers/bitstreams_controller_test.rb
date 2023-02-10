@@ -221,7 +221,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   # object()
 
-  test "object() returns HTTP 307" do
+  test "object() returns HTTP 307 for an existing bitstream with an existing
+  storage object" do
     fixture   = file_fixture("pdf.pdf")
     item      = items(:uiuc_item1)
     bitstream = Bitstream.new_in_staging(item:     item,
@@ -237,6 +238,19 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     ensure
       bitstream.delete_from_staging
     end
+  end
+
+  test "object() returns HTTP 404 for an existing bitstream with a nonexistent
+  storage object" do
+    fixture   = file_fixture("pdf.pdf")
+    item      = items(:uiuc_item1)
+    bitstream = Bitstream.new_in_staging(item:     item,
+                                         filename: File.basename(fixture),
+                                         length:   File.size(fixture))
+    bitstream.staging_key = nil
+    bitstream.save!
+    get item_bitstream_object_path(item, bitstream)
+    assert_response :not_found
   end
 
   test "object() increments the bitstream's download count when dl=1" do
