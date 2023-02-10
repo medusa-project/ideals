@@ -16,14 +16,14 @@ southwest_unit1_collection1_embargoed_all_access:
 
 ################################## uiuc #####################################
 
-download:
+uiuc_embargoed_download:
   item:       uiuc_embargoed
   expires_at: <%= Time.now + 1.hour %>
   kind:       <%= Embargo::Kind::DOWNLOAD %>
   perpetual:  false
   reason:
 
-all_access:
+uiuc_embargoed_all_access:
   item:       uiuc_embargoed
   expires_at: <%= Time.now + 1.hour %>
   kind:       <%= Embargo::Kind::ALL_ACCESS %>

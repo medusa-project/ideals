@@ -12,7 +12,7 @@ southwest_one:
 
 ################################## uiuc #####################################
 
-one:
+uiuc_one:
   institution: uiuc
   key:         4a926d2bd33ca25887043ef83f6950c0
   filename:    file.zip
@@ -20,7 +20,7 @@ one:
   expired:     false
   ip_address:  127.0.0.1
 
-expired:
+uiuc_expired:
   institution: uiuc
   key:         cfe5b27128678fe3fe3eb2f5e8ee6d8f
   filename:    expired.zip

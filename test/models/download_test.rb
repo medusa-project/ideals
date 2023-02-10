@@ -3,7 +3,7 @@ require 'test_helper'
 class DownloadTest < ActiveSupport::TestCase
 
   setup do
-    @download = downloads(:one)
+    @download = downloads(:uiuc_one)
     setup_s3
   end
 

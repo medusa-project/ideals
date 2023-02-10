@@ -3,7 +3,7 @@ require 'test_helper'
 class HandleTest < ActiveSupport::TestCase
 
   setup do
-    @instance = handles(:handle1)
+    @instance = handles(:uiuc_item1)
   end
 
   # prefix()

@@ -375,7 +375,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "export() via POST exports CSV" do
     log_in_as(users(:uiuc_admin))
     post items_export_path, params: {
-      handles: handles(:collection1_handle).to_s,
+      handles: handles(:uiuc_collection1).to_s,
       elements: ["dc:title"]
     }
     assert response.body.start_with?("id,")

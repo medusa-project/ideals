@@ -13,7 +13,7 @@ southwest_saf_new:
 
 ################################## uiuc #####################################
 
-csv_new:
+uiuc_csv_new:
   user:               uiuc_admin
   institution:        uiuc
   collection:         uiuc_collection1
@@ -22,7 +22,7 @@ csv_new:
   imported_items:     "[]"
   task:               csv_import
 
-saf_new:
+uiuc_saf_new:
   user:               uiuc_admin
   institution:        uiuc
   collection:         uiuc_collection1
@@ -31,26 +31,3 @@ saf_new:
   imported_items:     "[]"
   task:               saf_import
 
-saf_running:
-  user:               uiuc_admin
-  institution:        uiuc
-  collection:         uiuc_collection1
-  kind:               <%= Import::Kind::SAF %>
-  files:              "[]"
-  imported_items:     "[]"
-
-saf_succeeded:
-  user:               uiuc_admin
-  institution:        uiuc
-  collection:         uiuc_collection1
-  kind:               <%= Import::Kind::SAF %>
-  files:              "[]"
-  imported_items:     "[]"
-
-saf_failed:
-  user:               uiuc_admin
-  institution:        uiuc
-  collection:         uiuc_collection1
-  kind:               <%= Import::Kind::SAF %>
-  files:              "[]"
-  imported_items:     "[]"

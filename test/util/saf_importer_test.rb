@@ -172,7 +172,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() raises an error for a missing content file" do
     package = File.join(PACKAGES_PATH, "missing_content_file")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
 
     assert_raises IOError do
@@ -183,7 +183,7 @@ class SafImporterTest < ActiveSupport::TestCase
   test "import_from_s3() raises an error for a missing file component on a line
   of the content file" do
     package = File.join(PACKAGES_PATH, "missing_file_on_content_file_line")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
 
     assert_raises IOError do
@@ -193,7 +193,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() raises an error for an illegal flag in a content file" do
     package = File.join(PACKAGES_PATH, "illegal_content_file_flag")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
 
     assert_raises IOError do
@@ -204,7 +204,7 @@ class SafImporterTest < ActiveSupport::TestCase
   test "import_from_s3() raises an error for a missing file that is present in
   the content file" do
     package = File.join(PACKAGES_PATH, "missing_file")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
 
     assert_raises IOError do
@@ -214,7 +214,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() raises an error for a missing dublin_core.xml file" do
     package = File.join(PACKAGES_PATH, "missing_dublin_core")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
 
     assert_raises IOError do
@@ -225,7 +225,7 @@ class SafImporterTest < ActiveSupport::TestCase
   test "import_from_s3() raises an error when encountering a registered element
   not present in the registry" do
     package = File.join(PACKAGES_PATH, "illegal_metadata_element")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
 
     assert_raises IOError do
@@ -235,7 +235,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() sets the import kind" do
     package = File.join(PACKAGES_PATH, "valid_item")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
     @instance.import_from_s3(import)
 
@@ -244,7 +244,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() creates correct items" do
     package = File.join(PACKAGES_PATH, "valid_item")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
     @instance.import_from_s3(import)
 
@@ -295,7 +295,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() adds imported items to imported_items before failure" do
     package = File.join(PACKAGES_PATH, "one_invalid_item")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
 
     assert_raises IOError do
@@ -311,7 +311,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() adds correct mapfile lines upon success" do
     package = File.join(PACKAGES_PATH, "valid_item")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
 
     @instance.import_from_s3(import)
@@ -326,7 +326,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() skips already-imported items" do
     package = File.join(PACKAGES_PATH, "valid_item")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
 
     assert_no_changes "Item.count" do
@@ -338,7 +338,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() succeeds the import's task upon success" do
     package = File.join(PACKAGES_PATH, "valid_item")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
 
     @instance.import_from_s3(import)
@@ -348,7 +348,7 @@ class SafImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() fails the import's task failure" do
     package = File.join(PACKAGES_PATH, "one_invalid_item")
-    import  = imports(:saf_new)
+    import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
 
     assert_raises IOError do

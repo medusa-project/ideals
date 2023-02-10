@@ -90,6 +90,7 @@ saf_import:
   backtrace:
 
 southwest_saf_import:
+  institution:      southwest
   name:             ImportTask
   status:           <%= Task::Status::PENDING %>
   status_text:      Waiting
