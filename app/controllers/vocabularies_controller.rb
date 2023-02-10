@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class VocabulariesController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_vocabulary, except: [:create, :index, :new]
   before_action :authorize_vocabulary, except: [:create, :index]
   before_action :store_location, only: [:index, :show]

@@ -13,6 +13,12 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get messages_path
+    assert_response :not_found
+  end
+
   test "index() redirects to root page for logged-out users" do
     get messages_path
     assert_redirected_to @institution.scope_url
@@ -40,6 +46,13 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show()
+
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    message = messages(:ingest_no_response)
+    get message_path(message)
+    assert_response :not_found
+  end
 
   test "show() redirects to root page for logged-out users" do
     message = messages(:ingest_no_response)

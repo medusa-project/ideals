@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 class WelcomeController < ApplicationController
 
+  before_action :ensure_institution_host, only: :about
   before_action :store_location, only: :index
 
   ##

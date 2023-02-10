@@ -8,7 +8,7 @@ class SubmissionsController < ApplicationController
 
   include MetadataSubmission
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_item, only: [:complete, :destroy, :edit, :status, :update]
   before_action :authorize_item, only: [:destroy, :update]
   before_action :check_submitting, only: [:complete, :destroy, :edit, :update]

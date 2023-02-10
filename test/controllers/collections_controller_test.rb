@@ -14,6 +14,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # all_files()
 
+  test "all_files() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_empty)
+    get collection_all_files_path(collection, format: :zip)
+    assert_response :not_found
+  end
+
   test "all_files() redirects to root page for logged-out users" do
     collection = collections(:uiuc_empty)
     get collection_all_files_path(collection, format: :zip)
@@ -52,6 +59,12 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # children()
 
+  test "children() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get collection_children_path(collections(:uiuc_collection1)), xhr: true
+    assert_response :not_found
+  end
+
   test "children() returns HTTP 200 for XHR requests" do
     get collection_children_path(collections(:uiuc_collection1)), xhr: true
     assert_response :ok
@@ -68,6 +81,12 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # create()
+
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post collections_path
+    assert_response :not_found
+  end
 
   test "create() redirects to root page for logged-out users" do
     post collections_path
@@ -137,6 +156,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # delete()
 
+  test "delete() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    post collection_delete_path(collection)
+    assert_response :not_found
+  end
+
   test "delete() redirects to root page for logged-out users" do
     collection = collections(:uiuc_collection1)
     post collection_delete_path(collection)
@@ -195,6 +221,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_collection_membership()
 
+  test "edit_collection_membership() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_edit_collection_membership_path(collection), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_collection_membership() returns HTTP 403 for logged-out users" do
     collection = collections(:uiuc_collection1)
     get collection_edit_collection_membership_path(collection), xhr: true
@@ -230,6 +263,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit_managers()
+
+  test "edit_managers() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_edit_managers_path(collection), xhr: true
+    assert_response :not_found
+  end
 
   test "edit_managers() returns HTTP 403 for logged-out users" do
     collection = collections(:uiuc_collection1)
@@ -267,6 +307,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
+  test "edit_properties() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_edit_properties_path(collection), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_properties() returns HTTP 403 for logged-out users" do
     collection = collections(:uiuc_collection1)
     get collection_edit_properties_path(collection), xhr: true
@@ -302,6 +349,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit_submitters()
+
+  test "edit_submitters() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_edit_submitters_path(collection), xhr: true
+    assert_response :not_found
+  end
 
   test "edit_submitters() returns HTTP 403 for logged-out users" do
     collection = collections(:uiuc_collection1)
@@ -339,6 +393,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_unit_membership()
 
+  test "edit_unit_membership() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_edit_unit_membership_path(collection), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_unit_membership() returns HTTP 403 for logged-out users" do
     collection = collections(:uiuc_collection1)
     get collection_edit_unit_membership_path(collection), xhr: true
@@ -375,6 +436,12 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get collections_path
+    assert_response :not_found
+  end
+
   test "index() returns HTTP 406 for HTML" do
     get collections_path
     assert_response :not_acceptable
@@ -386,6 +453,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # item_download_counts()
+
+  test "item_download_counts() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_item_download_counts_path(collection)
+    assert_response :not_found
+  end
 
   test "item_download_counts() returns HTTP 200 for HTML" do
     collection = collections(:uiuc_collection1)
@@ -407,6 +481,12 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_item_results()
 
+  test "show_item_results() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get collection_item_results_path(collections(:uiuc_collection1)), xhr: true
+    assert_response :not_found
+  end
+
   test "show_item_results() returns HTTP 200" do
     get collection_item_results_path(collections(:uiuc_collection1)), xhr: true
     assert_response :ok
@@ -423,6 +503,12 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show()
+
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get collection_path(collections(:uiuc_collection1))
+    assert_response :not_found
+  end
 
   test "show() returns HTTP 200 for HTML" do
     get collection_path(collections(:uiuc_collection1))
@@ -450,6 +536,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_about()
 
+  test "show_about() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_about_path(collection)
+    assert_response :not_found
+  end
+
   test "show_about() returns HTTP 404 for non-XHR requests" do
     collection = collections(:uiuc_collection1)
     get collection_about_path(collection)
@@ -469,6 +562,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show_access()
+
+  test "show_access() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_access_path(collection), xhr: true
+    assert_response :not_found
+  end
 
   test "show_access() returns HTTP 403 for logged-out users" do
     collection = collections(:uiuc_collection1)
@@ -515,28 +615,46 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_items()
 
+  test "show_items() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_items_path(collection)
+    assert_response :not_found
+  end
+
   test "show_items() returns HTTP 200 for HTML" do
-    get collection_items_path(collections(:uiuc_collection1))
+    collection = collections(:uiuc_collection1)
+    get collection_items_path(collection)
     assert_response :ok
   end
 
   test "show_items() returns HTTP 403 for CSV for non-unit-administrators" do
-    get collection_items_path(collections(:uiuc_collection1), format: :csv)
+    collection = collections(:uiuc_collection1)
+    get collection_items_path(collection, format: :csv)
     assert_response :forbidden
   end
 
   test "show_items() returns HTTP 200 for CSV for unit administrators" do
     log_in_as(users(:uiuc_admin))
-    get collection_items_path(collections(:uiuc_collection1), format: :csv)
+    collection = collections(:uiuc_collection1)
+    get collection_items_path(collection, format: :csv)
     assert_response :ok
   end
 
   test "show_items() returns HTTP 410 for a buried collection" do
-    get collection_items_path(collections(:uiuc_buried))
+    collection = collections(:uiuc_buried)
+    get collection_items_path(collection)
     assert_response :gone
   end
 
   # show_statistics()
+
+  test "show_statistics() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_statistics_path(collection)
+    assert_response :not_found
+  end
 
   test "show_statistics() returns HTTP 200" do
     get collection_statistics_path(collections(:uiuc_collection1)), xhr: true
@@ -554,6 +672,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # statistics_by_range()
+
+  test "statistics_by_range() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_statistics_by_range_path(collection)
+    assert_response :not_found
+  end
 
   test "statistics_by_range() returns HTTP 200 for HTML" do
     collection = collections(:uiuc_collection1)
@@ -594,6 +719,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # undelete()
+
+  test "undelete() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_buried)
+    post collection_undelete_path(collection)
+    assert_response :not_found
+  end
 
   test "undelete() redirects to root page for logged-out users" do
     collection = collections(:uiuc_buried)
@@ -637,6 +769,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    patch collection_path(collection)
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     collection = collections(:uiuc_collection1)

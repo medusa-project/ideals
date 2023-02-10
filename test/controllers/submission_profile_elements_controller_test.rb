@@ -13,6 +13,12 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post submission_profile_submission_profile_elements_path(@profile)
+    assert_response :not_found
+  end
+
   test "create() redirects to root page for logged-out users" do
     post submission_profile_submission_profile_elements_path(@profile)
     assert_redirected_to @profile.institution.scope_url
@@ -77,6 +83,12 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete submission_profile_path(@profile) + "/elements/9999"
+    assert_response :not_found
+  end
+
   test "destroy() redirects to root page for logged-out users" do
     delete submission_profile_path(@profile) + "/elements/9999"
     assert_redirected_to @profile.institution.scope_url
@@ -114,6 +126,13 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    element = submission_profile_elements(:uiuc_default_title)
+    get edit_submission_profile_submission_profile_element_path(@profile, element)
+    assert_response :not_found
+  end
+
   test "edit() redirects to root page for logged-out users" do
     element = submission_profile_elements(:uiuc_default_title)
     get edit_submission_profile_submission_profile_element_path(@profile, element)
@@ -135,6 +154,12 @@ class SubmissionProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch submission_profile_path(@profile) + "/elements/9999"
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     patch submission_profile_path(@profile) + "/elements/9999"

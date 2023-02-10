@@ -14,6 +14,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # children()
 
+  test "children() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get unit_children_path(units(:uiuc_unit1))
+    assert_response :not_found
+  end
+
   test "children() returns HTTP 404 for non-XHR requests" do
     collections(:uiuc_described).reindex # this is needed to fully initialize the schema
     get unit_children_path(units(:uiuc_unit1))
@@ -33,6 +39,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # collections_tree_fragment()
 
+  test "collections_tree_fragment() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get unit_collections_tree_fragment_path(units(:uiuc_unit1))
+    assert_response :not_found
+  end
+
   test "collections_tree_fragment() returns HTTP 404 for non-XHR requests" do
     collections(:uiuc_described).reindex # this is needed to fully initialize the schema
     get unit_collections_tree_fragment_path(units(:uiuc_unit1))
@@ -51,6 +63,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # create()
+
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post units_path
+    assert_response :not_found
+  end
 
   test "create() redirects to root page for logged-out users" do
     post units_path
@@ -112,6 +130,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # delete()
 
+  test "delete() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:uiuc_unit1)
+    post unit_delete_path(unit)
+    assert_response :not_found
+  end
+
   test "delete() redirects to root page for logged-out users" do
     unit = units(:uiuc_unit1)
     post unit_delete_path(unit)
@@ -172,6 +197,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_administrators()
 
+  test "edit_administrators() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:uiuc_unit1)
+    get unit_edit_administrators_path(unit), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_administrators() returns HTTP 403 for logged-out users" do
     unit = units(:uiuc_unit1)
     get unit_edit_administrators_path(unit), xhr: true
@@ -207,6 +239,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit_membership()
+
+  test "edit_membership() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:uiuc_unit1)
+    get unit_edit_membership_path(unit), xhr: true
+    assert_response :not_found
+  end
 
   test "edit_membership() returns HTTP 403 for logged-out users" do
     unit = units(:uiuc_unit1)
@@ -244,6 +283,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
+  test "edit_properties() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:uiuc_unit1)
+    get unit_edit_properties_path(unit), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_properties() returns HTTP 403 for logged-out users" do
     unit = units(:uiuc_unit1)
     get unit_edit_properties_path(unit), xhr: true
@@ -280,6 +326,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get units_path
+    assert_response :not_found
+  end
+
   test "index() returns HTTP 200 for HTML" do
     get units_path
     assert_response :ok
@@ -291,6 +343,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # item_download_counts()
+
+  test "item_download_counts() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get unit_item_download_counts_path(units(:uiuc_unit1))
+    assert_response :not_found
+  end
 
   test "item_download_counts() returns HTTP 200 for HTML" do
     get unit_item_download_counts_path(units(:uiuc_unit1))
@@ -326,6 +384,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get unit_path(units(:uiuc_unit1))
+    assert_response :not_found
+  end
+
   test "show() returns HTTP 200 for HTML" do
     collections(:uiuc_described).reindex # this is needed to fully initialize the schema
     get unit_path(units(:uiuc_unit1))
@@ -354,6 +418,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # show_about()
 
+  test "show_about() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get unit_about_path(units(:uiuc_unit1))
+    assert_response :not_found
+  end
+
   test "show_about() returns HTTP 404 for non-XHR requests" do
     get unit_about_path(units(:uiuc_unit1))
     assert_response :not_found
@@ -370,6 +440,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show_access()
+
+  test "show_access() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:uiuc_unit1)
+    get unit_access_path(unit), xhr: true
+    assert_response :not_found
+  end
 
   test "show_access() returns HTTP 403 for logged-out users" do
     unit = units(:uiuc_unit1)
@@ -416,6 +493,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # show_items()
 
+  test "show_items() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get unit_items_path(units(:uiuc_unit1))
+    assert_response :not_found
+  end
+
   test "show_items() returns HTTP 200 for HTML" do
     get unit_items_path(units(:uiuc_unit1))
     assert_response :ok
@@ -439,6 +522,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # show_statistics()
 
+  test "show_statistics() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get unit_statistics_path(units(:uiuc_unit1))
+    assert_response :not_found
+  end
+
   test "show_statistics() returns HTTP 404 for non-XHR requests" do
     get unit_statistics_path(units(:uiuc_unit1))
     assert_response :not_found
@@ -456,6 +545,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # statistics_by_range()
+
+  test "statistics_by_range() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get unit_statistics_by_range_path(units(:uiuc_unit1))
+    assert_response :not_found
+  end
 
   test "statistics_by_range() returns HTTP 200 for HTML" do
     log_in_as(users(:uiuc_admin))
@@ -498,6 +593,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   # undelete()
 
+  test "undelete() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:uiuc_unit1)
+    post unit_undelete_path(unit)
+    assert_response :not_found
+  end
+
   test "undelete() redirects to root page for logged-out users" do
     unit = units(:uiuc_unit1)
     post unit_undelete_path(unit)
@@ -534,6 +636,13 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:uiuc_unit1)
+    patch unit_path(unit)
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     unit = units(:uiuc_unit1)

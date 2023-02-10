@@ -13,6 +13,12 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get tasks_path
+    assert_response :not_found
+  end
+
   test "index() redirects to root page for logged-out users" do
     get tasks_path
     assert_redirected_to @institution.scope_url
@@ -41,6 +47,12 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
   # index_all()
 
+  test "index_all() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get all_tasks_path
+    assert_response :not_found
+  end
+
   test "index_all() redirects to root page for logged-out users" do
     get all_tasks_path
     assert_redirected_to @institution.scope_url
@@ -68,6 +80,12 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show()
+
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get task_path(tasks(:running)), xhr: true
+    assert_response :not_found
+  end
 
   test "show() returns HTTP 403 for logged-out users" do
     get task_path(tasks(:running)), xhr: true

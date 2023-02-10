@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 class DownloadsController < ApplicationController
 
   LOGGER = CustomLogger.new(DownloadsController)
 
-  before_action :set_download, :authorize_download
+  before_action :ensure_institution_host, :set_download, :authorize_download
 
   ##
   # Responds to `GET /downloads/:download_key/file`

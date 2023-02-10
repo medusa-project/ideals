@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class VocabularyTermsController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_vocabulary, only: [:create, :new]
   before_action :set_term, only: [:edit, :update, :destroy]
   before_action :authorize_term, only: [:edit, :update, :destroy]

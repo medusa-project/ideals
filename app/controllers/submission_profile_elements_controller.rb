@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class SubmissionProfileElementsController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_element, only: [:edit, :update, :destroy]
   before_action :authorize_element, only: [:edit, :update, :destroy]
 

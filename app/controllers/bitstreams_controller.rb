@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # # Note about downloads
 #
@@ -21,6 +23,7 @@ class BitstreamsController < ApplicationController
 
   LOGGER = CustomLogger.new(BitstreamsController)
 
+  before_action :ensure_institution_host
   before_action :ensure_logged_in, except: [:index, :object, :show, :stream,
                                             :viewer]
 

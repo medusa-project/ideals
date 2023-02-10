@@ -16,6 +16,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # approve()
 
+  test "approve() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_submitted)
+    patch item_approve_path(item)
+    assert_response :not_found
+  end
+
   test "approve() redirects to root page for logged-out users" do
     item = items(:uiuc_submitted)
     patch item_approve_path(item)
@@ -65,6 +72,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # delete()
 
+  test "delete() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    post item_delete_path(item)
+    assert_response :not_found
+  end
+
   test "delete() redirects to root page for logged-out users" do
     item = items(:uiuc_item1)
     post item_delete_path(item)
@@ -101,6 +115,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # download_counts()
 
+  test "download_counts() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    get item_download_counts_path(item)
+    assert_response :not_found
+  end
+
   test "download_counts() redirects to root page for logged-out users" do
     item = items(:uiuc_item1)
     get item_download_counts_path(item)
@@ -129,6 +150,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit_embargoes()
+
+  test "edit_embargoes() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    get item_edit_embargoes_path(item), xhr: true
+    assert_response :not_found
+  end
 
   test "edit_embargoes() returns HTTP 403 for logged-out users" do
     item = items(:uiuc_item1)
@@ -159,6 +187,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_membership()
 
+  test "edit_membership() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    get item_edit_membership_path(item), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_membership() returns HTTP 403 for logged-out users" do
     item = items(:uiuc_item1)
     get item_edit_membership_path(item), xhr: true
@@ -187,6 +222,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit_metadata()
+
+  test "edit_metadata() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    get item_edit_metadata_path(item), xhr: true
+    assert_response :not_found
+  end
 
   test "edit_metadata() returns HTTP 403 for logged-out users" do
     item = items(:uiuc_item1)
@@ -217,6 +259,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
+  test "edit_properties() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    get item_edit_properties_path(item), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_properties() returns HTTP 403 for logged-out users" do
     item = items(:uiuc_item1)
     get item_edit_properties_path(item), xhr: true
@@ -246,6 +295,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_withdrawal()
 
+  test "edit_withdrawal() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    get item_edit_withdrawal_path(item), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_withdrawal() returns HTTP 403 for logged-out users" do
     item = items(:uiuc_item1)
     get item_edit_withdrawal_path(item), xhr: true
@@ -274,6 +330,12 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # export()
+
+  test "export() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get items_export_path
+    assert_response :not_found
+  end
 
   test "export() via GET redirects to root page for logged-out users" do
     get items_export_path
@@ -324,6 +386,12 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # file_navigator()
+
+  test "file_navigator() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get item_file_navigator_path(items(:uiuc_item1)), xhr: true
+    assert_response :not_found
+  end
 
   test "file_navigator() returns HTTP 200 for XHR requests" do
     get item_file_navigator_path(items(:uiuc_item1)), xhr: true
@@ -393,6 +461,12 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # process_review()
 
+  test "process_review() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post items_process_review_path
+    assert_response :not_found
+  end
+
   test "process_review() redirects to root page for logged-out users" do
     post items_process_review_path
     assert_redirected_to @institution.scope_url
@@ -449,7 +523,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_equal Item::Stages::REJECTED, item.stage
   end
 
-  # index()
+  # recent()
+
+  test "recent() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get recent_items_path
+    assert_response :not_found
+  end
 
   test "recent() returns HTTP 200" do
     get recent_items_path
@@ -457,6 +537,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # reject()
+
+  test "reject() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_submitted)
+    patch item_reject_path(item)
+    assert_response :not_found
+  end
 
   test "reject() redirects to root page for logged-out users" do
     item = items(:uiuc_submitted)
@@ -488,6 +575,12 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # review()
 
+  test "review() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get items_review_path
+    assert_response :not_found
+  end
+
   test "review() redirects to root page for logged-out users" do
     get items_review_path
     assert_redirected_to @institution.scope_url
@@ -506,6 +599,12 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show()
+
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get item_path(items(:uiuc_item1))
+    assert_response :not_found
+  end
 
   test "show() returns HTTP 200" do
     get item_path(items(:uiuc_item1))
@@ -548,6 +647,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # statistics()
 
+  test "statistics() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    get item_statistics_path(item), xhr: true
+    assert_response :not_found
+  end
+
   test "statistics() returns HTTP 403 for logged-out users" do
     item = items(:uiuc_item1)
     get item_statistics_path(item), xhr: true
@@ -567,6 +673,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # undelete()
+
+  test "undelete() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_buried)
+    post item_undelete_path(item)
+    assert_response :not_found
+  end
 
   test "undelete() redirects to root page for logged-out users" do
     item = items(:uiuc_buried)
@@ -607,6 +720,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   # upload_bitstreams()
 
+  test "upload_bitstreams() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    get item_upload_bitstreams_path(item), xhr: true
+    assert_response :not_found
+  end
+
   test "upload_bitstreams() returns HTTP 403 for logged-out users" do
     item = items(:uiuc_item1)
     get item_upload_bitstreams_path(item), xhr: true
@@ -635,6 +755,13 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # withdraw()
+
+  test "withdraw() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_submitted)
+    patch item_withdraw_path(item)
+    assert_response :not_found
+  end
 
   test "withdraw() redirects to root page for logged-out users" do
     item = items(:uiuc_submitted)

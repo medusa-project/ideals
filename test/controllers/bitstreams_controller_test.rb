@@ -14,14 +14,22 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    post item_bitstreams_path(item)
+    assert_response :not_found
+  end
+
   test "create() redirects to root page for logged-out users" do
     item = items(:uiuc_item1)
     post item_bitstreams_path(item)
     assert_redirected_to item.institution.scope_url
   end
 
+  # TODO: figure out how to POST raw data, i.e. not multipart/form-data, and unskip all of these
   test "create() returns HTTP 200" do
-    skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
+    skip
     log_in_as(users(:example_sysadmin))
     post item_bitstreams_path(items(:uiuc_item1)),
          file_fixture("escher_lego.png")
@@ -29,7 +37,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates a Bitstream" do
-    skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
+    skip
     log_in_as(users(:example_sysadmin))
     assert_difference "Bitstream.count" do
       post item_bitstreams_path(items(:uiuc_item1)),
@@ -38,7 +46,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates an associated Event" do
-    skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
+    skip
     log_in_as(users(:example_sysadmin))
     assert_difference "Event.count", 1 do
       post item_bitstreams_path(items(:uiuc_item1)),
@@ -48,11 +56,11 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() returns HTTP 400 when the Content-Length header does not match
   the data length" do
-    skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
+    skip
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    skip # TODO: figure out how to POST raw data, i.e. not multipart/form-data
+    skip
     log_in_as(users(:example_sysadmin))
     post item_bitstreams_path(items(:uiuc_item1))
     assert_response :bad_request
@@ -60,35 +68,47 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    bs = bitstreams(:uiuc_item1_in_staging)
+    delete item_bitstreams_path(bs.item, bs)
+    assert_response :not_found
+  end
+
   test "destroy() redirects to root page for logged-out users" do
     item = items(:uiuc_item1)
-    delete item_bitstream_path(item, bitstreams(:uiuc_item1_in_staging))
+    bs   = bitstreams(:uiuc_item1_in_staging)
+    delete item_bitstream_path(item, bs)
     assert_redirected_to item.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:uiuc_item1_in_staging))
+    bs = bitstreams(:uiuc_item1_in_staging)
+    delete item_bitstream_path(bs.item, bs)
     assert_response :forbidden
   end
 
   test "destroy() returns HTTP 204 for an existing bitstream" do
     log_in_as(users(:uiuc_admin))
-    delete item_bitstream_path(items(:uiuc_item1), bitstreams(:uiuc_item1_in_staging))
+    bs = bitstreams(:uiuc_item1_in_staging)
+    delete item_bitstream_path(bs.item, bs)
     assert_response :no_content
   end
 
   test "destroy() destroys the bitstream" do
     log_in_as(users(:uiuc_admin))
     assert_difference "Bitstream.count", -1 do
-      delete item_bitstream_path(items(:uiuc_item1), bitstreams(:uiuc_item1_in_staging))
+      bs = bitstreams(:uiuc_item1_in_staging)
+      delete item_bitstream_path(bs.item, bs)
     end
   end
 
   test "destroy() creates an associated Event" do
     log_in_as(users(:uiuc_admin))
     assert_difference "Event.count", 1 do
-      delete item_bitstream_path(items(:uiuc_item1), bitstreams(:uiuc_item1_in_staging))
+      bs = bitstreams(:uiuc_item1_in_staging)
+      delete item_bitstream_path(bs.item, bs)
     end
   end
 
@@ -99,6 +119,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit()
+
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item      = items(:uiuc_item1)
+    bitstream = item.bitstreams.first
+    get edit_item_bitstream_path(item, bitstream)
+    assert_response :not_found
+  end
 
   test "edit() returns HTTP 403 for logged-out users" do
     item      = items(:uiuc_item1)
@@ -133,6 +161,13 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_approved)
+    get item_bitstreams_path(item)
+    assert_response :not_found
+  end
+
   test "index() with a non-zip format returns HTTP 415" do
     item = items(:uiuc_approved)
     get item_bitstreams_path(item)
@@ -165,6 +200,13 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # ingest()
+
+  test "ingest() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    bitstream = bitstreams(:uiuc_item1_in_staging)
+    post item_bitstream_ingest_path(bitstream.item, bitstream)
+    assert_response :not_found
+  end
 
   test "ingest() redirects to root page for logged-out users" do
     item = items(:uiuc_item1)
@@ -220,6 +262,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # object()
+
+  test "object() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item      = items(:uiuc_item1)
+    bitstream = bitstreams(:uiuc_item1_in_staging)
+    get item_bitstream_object_path(item, bitstream)
+    assert_response :not_found
+  end
 
   test "object() returns HTTP 307 for an existing bitstream with an existing
   storage object" do
@@ -378,6 +428,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    bs   = bitstreams(:uiuc_item1_in_staging)
+    get item_bitstream_path(item, bs)
+    assert_response :not_found
+  end
+
   test "show() returns HTTP 200" do
     item = items(:uiuc_item1)
     bs   = bitstreams(:uiuc_item1_in_staging)
@@ -465,6 +523,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # stream()
+
+  test "stream() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    bs   = bitstreams(:uiuc_item1_in_staging)
+    get item_bitstream_stream_path(item, bs)
+    assert_response :not_found
+  end
 
   test "stream() returns HTTP 200 for bitstreams in staging" do
     fixture   = file_fixture("pdf.pdf")
@@ -628,6 +694,13 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
 
   # update()
 
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    bitstream = bitstreams(:uiuc_item1_in_staging)
+    patch item_bitstream_path(bitstream.item, bitstream)
+    assert_response :not_found
+  end
+
   test "update() redirects to root page for logged-out users" do
     bitstream = bitstreams(:uiuc_item1_in_staging)
     patch item_bitstream_path(bitstream.item, bitstream)
@@ -702,6 +775,14 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # viewer()
+
+  test "viewer() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_item1)
+    bs   = bitstreams(:uiuc_item1_in_staging)
+    patch item_bitstream_path(item, bs)
+    assert_response :not_found
+  end
 
   test "viewer() returns HTTP 200" do
     item = items(:uiuc_item1)

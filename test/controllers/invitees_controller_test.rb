@@ -9,7 +9,13 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # approve()
 
-  test "approve() redirects to root page for logged-out users" do
+  test "approve() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch invitee_approve_path(@invitee)
+    assert_response :not_found
+  end
+
+  test "approve() redirects to the scoped root page for logged-out users" do
     patch invitee_approve_path(@invitee)
     assert_redirected_to @invitee.institution.scope_url
   end
@@ -38,6 +44,12 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # create()
+
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post invitees_path, xhr: true
+    assert_response :not_found
+  end
 
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:example_sysadmin))
@@ -89,6 +101,12 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # create_unsolicited()
+
+  test "create_unsolicited() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post create_unsolicited_invitees_path
+    assert_response :not_found
+  end
 
   test "create_unsolicited() redirects back for illegal arguments" do
     post create_unsolicited_invitees_path,
@@ -162,7 +180,13 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
-  test "destroy() redirects to root page for logged-out users" do
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete invitee_path(@invitee)
+    assert_response :not_found
+  end
+
+  test "destroy() redirects to the scoped root page for logged-out users" do
     delete invitee_path(@invitee)
     assert_redirected_to @invitee.institution.scope_url
   end
@@ -194,7 +218,13 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
-  test "index() redirects to root page for logged-out users" do
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete invitees_path
+    assert_response :not_found
+  end
+
+  test "index() redirects to the scoped root page for logged-out users" do
     get invitees_path
     assert_redirected_to @invitee.institution.scope_url
   end
@@ -222,7 +252,13 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # index_all()
 
-  test "index_all() redirects to root page for logged-out users" do
+  test "index_all() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get all_invitees_path
+    assert_response :not_found
+  end
+
+  test "index_all() redirects to the scoped root page for logged-out users" do
     get all_invitees_path
     assert_redirected_to @invitee.institution.scope_url
   end
@@ -250,6 +286,12 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # new()
 
+  test "new() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get new_invitee_path
+    assert_response :not_found
+  end
+
   test "new() redirects to root path for logged-in users" do
     log_in_as(users(:example))
     get new_invitee_path
@@ -263,7 +305,13 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # reject()
 
-  test "reject() redirects to root page for logged-out users" do
+  test "reject() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch invitee_reject_path(@invitee)
+    assert_response :not_found
+  end
+
+  test "reject() redirects to the scoped root page for logged-out users" do
     patch invitee_reject_path(@invitee)
     assert_redirected_to @invitee.institution.scope_url
   end
@@ -293,7 +341,13 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # resend_email()
 
-  test "resend_email() redirects to root page for logged-out users" do
+  test "resend_email() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch invitee_resend_email_path(@invitee)
+    assert_response :not_found
+  end
+
+  test "resend_email() redirects to the scoped root page for logged-out users" do
     patch invitee_resend_email_path(@invitee)
     assert_redirected_to @invitee.institution.scope_url
   end
@@ -320,7 +374,13 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
-  test "show() redirects to root page for logged-out users" do
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get invitee_path(@invitee)
+    assert_response :not_found
+  end
+
+  test "show() redirects to the scoped root page for logged-out users" do
     get invitee_path(@invitee)
     assert_redirected_to @invitee.institution.scope_url
   end

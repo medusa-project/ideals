@@ -13,6 +13,12 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post registered_elements_path
+    assert_response :not_found
+  end
+
   test "create() redirects to root page for logged-out users" do
     post registered_elements_path
     assert_redirected_to @element.institution.scope_url
@@ -81,6 +87,12 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete "/elements/bogus"
+    assert_response :not_found
+  end
+
   test "destroy() redirects to root page for logged-out users" do
     delete "/elements/bogus"
     assert_redirected_to @element.institution.scope_url
@@ -114,6 +126,12 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get edit_registered_element_path(@element)
+    assert_response :not_found
+  end
+
   test "edit() redirects to root page for logged-out users" do
     get edit_registered_element_path(@element)
     assert_redirected_to @element.institution.scope_url
@@ -132,6 +150,12 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # index()
+
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get registered_elements_path
+    assert_response :not_found
+  end
 
   test "index() redirects to root page for logged-out users" do
     get registered_elements_path
@@ -160,6 +184,13 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    log_in_as(users(:uiuc))
+    patch registered_element_path(@element)
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     patch "/elements/bogus"

@@ -13,6 +13,12 @@ class StatisticsControllerTest < ActionDispatch::IntegrationTest
 
   # files()
 
+  test "files() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get statistics_files_path, xhr: true
+    assert_response :not_found
+  end
+
   test "files() returns HTTP 403 for logged-out users" do
     get statistics_files_path, xhr: true
     assert_response :forbidden
@@ -47,6 +53,12 @@ class StatisticsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get statistics_path
+    assert_response :not_found
+  end
+
   test "index() redirects to root page for logged-out users" do
     get statistics_path
     assert_redirected_to @institution.scope_url
@@ -74,6 +86,12 @@ class StatisticsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # items()
+
+  test "items() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get statistics_items_path, xhr: true
+    assert_response :not_found
+  end
 
   test "items() returns HTTP 403 for logged-out users" do
     get statistics_items_path, xhr: true

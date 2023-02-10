@@ -2,7 +2,7 @@
 
 class MessagesController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :authorize_index, only: :index
   before_action :load_message, only: :show
   before_action :authorize_message, only: :show

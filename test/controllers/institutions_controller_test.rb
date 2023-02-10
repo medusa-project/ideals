@@ -14,6 +14,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post institutions_path
+    assert_response :not_found
+  end
+
   test "create() redirects to root page for logged-out users" do
     post institutions_path
     assert_redirected_to @institution.scope_url
@@ -84,6 +90,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete institution_path(@institution)
+    assert_response :not_found
+  end
+
   test "destroy() redirects to root page for logged-out users" do
     delete institution_path(@institution)
     assert_redirected_to @institution.scope_url
@@ -118,6 +130,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_administrators()
 
+  test "edit_administrators() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete institution_edit_administrators_path(@institution)
+    assert_response :not_found
+  end
+
   test "edit_administrators() returns HTTP 403 for logged-out users" do
     get institution_edit_administrators_path(@institution), xhr: true
     assert_response :forbidden
@@ -143,6 +161,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_element_mappings()
 
+  test "edit_element_mappings() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_element_mappings_edit_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_element_mappings() returns HTTP 403 for logged-out users" do
     get institution_element_mappings_edit_path(@institution), xhr: true
     assert_response :forbidden
@@ -161,6 +185,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit_preservation()
+
+  test "edit_preservation() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_edit_preservation_path(@institution), xhr: true
+    assert_response :not_found
+  end
 
   test "edit_preservation() returns HTTP 403 for logged-out users" do
     get institution_edit_preservation_path(@institution), xhr: true
@@ -181,6 +211,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
+  test "edit_properties() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_edit_properties_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_properties() returns HTTP 403 for logged-out users" do
     get institution_edit_properties_path(@institution), xhr: true
     assert_response :forbidden
@@ -200,6 +236,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_settings()
 
+  test "edit_settings() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_edit_settings_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_settings() returns HTTP 403 for logged-out users" do
     get institution_edit_settings_path(@institution), xhr: true
     assert_response :forbidden
@@ -218,6 +260,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit_theme()
+
+  test "edit_theme() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_edit_theme_path(@institution), xhr: true
+    assert_response :not_found
+  end
 
   test "edit_theme() returns HTTP 403 for logged-out users" do
     get institution_edit_theme_path(@institution), xhr: true
@@ -244,6 +292,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institutions_path
+    assert_response :not_found
+  end
+
   test "index() redirects to root page for logged-out users" do
     get institutions_path
     assert_redirected_to @institution.scope_url
@@ -262,6 +316,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # invite_administrator()
+
+  test "invite_administrators() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_invite_administrator_path(@institution), xhr: true
+    assert_response :not_found
+  end
 
   test "invite_administrator() returns HTTP 403 for logged-out users" do
     get institution_invite_administrator_path(@institution), xhr: true
@@ -282,6 +342,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # item_download_counts()
 
+  test "item_download_counts() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_item_download_counts_path(@institution)
+    assert_response :not_found
+  end
+
   test "item_download_counts() redirects to root page for logged-out users" do
     get institution_item_download_counts_path(@institution)
     assert_redirected_to @institution.scope_url
@@ -301,6 +367,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # new()
 
+  test "new() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get new_institution_path
+    assert_response :not_found
+  end
+
   test "new() redirects to root page for logged-out users" do
     get new_institution_path
     assert_redirected_to @institution.scope_url
@@ -319,6 +391,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show()
+
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_path(@institution)
+    assert_response :not_found
+  end
 
   test "show() redirects to root page for logged-out users" do
     get institution_path(@institution)
@@ -351,6 +429,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show_access()
+
+  test "show_access() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_access_path(@institution), xhr: true
+    assert_response :not_found
+  end
 
   test "show_access() returns HTTP 403 for logged-out users" do
     get institution_access_path(@institution), xhr: true
@@ -386,6 +470,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_element_mappings()
 
+  test "show_element_mappings() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_element_mappings_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
   test "show_element_mappings() returns HTTP 403 for logged-out users" do
     get institution_element_mappings_path(@institution), xhr: true
     assert_response :forbidden
@@ -404,6 +494,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show_preservation()
+
+  test "show_preservation() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_preservation_path(@institution), xhr: true
+    assert_response :not_found
+  end
 
   test "show_preservation() returns HTTP 403 for logged-out users" do
     get institution_preservation_path(@institution), xhr: true
@@ -424,6 +520,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_properties()
 
+  test "show_properties() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_properties_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
   test "show_properties() returns HTTP 403 for logged-out users" do
     get institution_properties_path(@institution), xhr: true
     assert_response :forbidden
@@ -442,6 +544,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show_settings()
+
+  test "show_settings() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_settings_path(@institution), xhr: true
+    assert_response :not_found
+  end
 
   test "show_settings() returns HTTP 403 for logged-out users" do
     get institution_settings_path(@institution), xhr: true
@@ -462,6 +570,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_statistics()
 
+  test "show_statistics() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_statistics_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
   test "show_statistics() returns HTTP 403 for logged-out users" do
     get institution_statistics_path(@institution), xhr: true
     assert_response :forbidden
@@ -480,6 +594,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show_theme()
+
+  test "show_theme() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_theme_path(@institution), xhr: true
+    assert_response :not_found
+  end
 
   test "show_theme() returns HTTP 403 for logged-out users" do
     get institution_theme_path(@institution), xhr: true
@@ -500,6 +620,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
   # show_users()
 
+  test "show_users() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_users_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
   test "show_users() returns HTTP 403 for logged-out users" do
     get institution_users_path(@institution), xhr: true
     assert_response :forbidden
@@ -518,6 +644,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # statistics_by_range()
+
+  test "statistics_by_range() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_statistics_by_range_path(@institution)
+    assert_response :not_found
+  end
 
   test "statistics_by_range() redirects to root page for logged-out users" do
     get institution_statistics_by_range_path(@institution)
@@ -553,6 +685,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update_preservation()
+
+  test "update_preservation() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch institution_preservation_path(@institution)
+    assert_response :not_found
+  end
 
   test "update_preservation() redirects to root page for logged-out users" do
     patch institution_preservation_path(@institution)
@@ -613,6 +751,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update_properties()
+
+  test "update_properties() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch institution_properties_path(@institution)
+    assert_response :not_found
+  end
 
   test "update_properties() redirects to root page for logged-out users" do
     patch institution_properties_path(@institution)
@@ -677,6 +821,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update_settings()
+
+  test "update_settings() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch institution_settings_path(@institution)
+    assert_response :not_found
+  end
 
   test "update_settings() redirects to root page for logged-out users" do
     patch institution_settings_path(@institution)

@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class UserGroupsController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_user_group, except: [:create, :index, :index_global, :new]
   before_action :authorize_user_group, except: [:create, :index, :index_global,
                                                 :new]

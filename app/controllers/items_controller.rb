@@ -5,6 +5,7 @@ class ItemsController < ApplicationController
   include MetadataSubmission
   include Search
 
+  before_action :ensure_institution_host, except: :index
   before_action :ensure_logged_in, except: [:file_navigator, :index, :recent,
                                             :show]
   before_action :set_item, except: [:export, :index, :process_review, :recent,

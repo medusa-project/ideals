@@ -15,6 +15,12 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post imports_path, xhr: true
+    assert_response :not_found
+  end
+
   test "create() returns HTTP 403 for logged-out users" do
     post imports_path, xhr: true
     assert_response :forbidden
@@ -70,6 +76,12 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # delete_all_files()
 
+  test "delete_all_files() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post import_delete_all_files_path(@import)
+    assert_response :not_found
+  end
+
   test "delete_all_files() redirects to root page for logged-out users" do
     post import_delete_all_files_path(@import)
     assert_redirected_to @import.institution.scope_url
@@ -103,6 +115,12 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get edit_import_path(@import)
+    assert_response :not_found
+  end
+
   test "edit() redirects to root page for logged-out users" do
     get edit_import_path(@import)
     assert_redirected_to @import.institution.scope_url
@@ -121,6 +139,12 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # index()
+
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get imports_path
+    assert_response :not_found
+  end
 
   test "index() redirects to root page for logged-out users" do
     get imports_path
@@ -150,6 +174,12 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   # new()
 
+  test "new() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get new_import_path
+    assert_response :not_found
+  end
+
   test "new() redirects to root page for logged-out users" do
     get new_import_path
     assert_redirected_to @import.institution.scope_url
@@ -168,6 +198,12 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show()
+
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get import_path(@import)
+    assert_response :not_found
+  end
 
   test "show() redirects to root page for logged-out users" do
     get import_path(@import)
@@ -196,6 +232,12 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch import_path(@import)
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     patch "/imports/bogus"
@@ -241,6 +283,12 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # upload_file()
+
+  test "upload_file() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post import_upload_file_path(@import)
+    assert_response :not_found
+  end
 
   test "upload_file() redirects to root page for logged-out users" do
     post import_upload_file_path(@import)

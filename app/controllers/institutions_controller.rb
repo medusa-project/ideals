@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # N.B.: Institution properties are split into three categories: properties,
 # settings, and theme. Properties can only be edited by sysadmins. The other
@@ -5,7 +7,7 @@
 #
 class InstitutionsController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_institution, except: [:create, :index, :new]
   before_action :authorize_institution, except: [:create, :index, :new]
   before_action :store_location, only: [:index, :show]

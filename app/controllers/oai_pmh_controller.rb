@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Controller for the OAI-PMH endpoint.
 #
@@ -55,7 +57,8 @@ class OaiPmhController < ApplicationController
 
   layout false
 
-  before_action :ensure_public_institution, :validate_request
+  before_action :ensure_institution_host, :ensure_public_institution,
+                :validate_request
 
   rescue_from ActionView::Template::Error, with: :rescue_template_error
 

@@ -14,6 +14,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :rescue_not_found
   rescue_from GoneError, with: :rescue_gone
   rescue_from NotAuthorizedError, with: :rescue_unauthorized
+  rescue_from NotFoundError, with: :rescue_not_found
 
   before_action :redirect_to_main_host, :log_out_disabled_user
   after_action :copy_flash_to_response_headers
@@ -164,6 +165,10 @@ class ApplicationController < ActionController::Base
 
 
   protected
+
+  def ensure_institution_host
+    raise NotFoundError unless institution_scope?
+  end
 
   def ensure_logged_in
     unless logged_in?

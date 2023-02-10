@@ -14,6 +14,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # edit_properties()
 
+  test "edit_properties() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get user_edit_properties_path(users(:southwest)), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_properties() returns HTTP 403 for logged-out users" do
     get user_edit_properties_path(users(:southwest)), xhr: true
     assert_response :forbidden
@@ -43,6 +49,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # disable()
+
+  test "disable() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch user_disable_path(users(:southwest))
+    assert_response :not_found
+  end
 
   test "disable() redirects to root page for logged-out users" do
     patch user_disable_path(users(:southwest))
@@ -74,6 +86,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # enable()
 
+  test "enable() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch user_enable_path(users(:southwest))
+    assert_response :not_found
+  end
+
   test "enable() redirects to root page for logged-out users" do
     patch user_enable_path(users(:southwest))
     assert_redirected_to @institution.scope_url
@@ -103,6 +121,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # index()
+
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get users_path
+    assert_response :not_found
+  end
 
   test "index() redirects to root page for logged-out users" do
     get users_path
@@ -138,6 +162,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # index_all()
 
+  test "index_all() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get all_users_path
+    assert_response :not_found
+  end
+
   test "index_all() redirects to root page for logged-out users" do
     get all_users_path
     assert_redirected_to @institution.scope_url
@@ -172,6 +202,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get user_path(users(:southwest))
+    assert_response :not_found
+  end
+
   test "show() redirects to root page for logged-out users" do
     get user_path(users(:southwest))
     assert_redirected_to @institution.scope_url
@@ -201,6 +237,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show_properties()
+
+  test "show_properties() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get user_properties_path(users(:southwest)), xhr: true
+    assert_response :not_found
+  end
 
   test "show_properties() returns HTTP 403 for logged-out users" do
     get user_properties_path(users(:southwest)), xhr: true
@@ -237,6 +279,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # show_submittable_collections()
 
+  test "show_submittable_collections() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get user_submittable_collections_path(users(:southwest)), xhr: true
+    assert_response :not_found
+  end
+
   test "show_submittable_collections() returns HTTP 403 for logged-out users" do
     get user_submittable_collections_path(users(:southwest)), xhr: true
     assert_response :forbidden
@@ -271,6 +319,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show_submitted_items()
+
+  test "show_submitted_items() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get user_submitted_items_path(users(:southwest)), xhr: true
+    assert_response :not_found
+  end
 
   test "show_submitted_items() returns HTTP 403 for logged-out users" do
     get user_submitted_items_path(users(:southwest)), xhr: true
@@ -309,6 +363,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # show_submissions_in_progress()
 
+  test "show_submissions_in_progress() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get user_submissions_in_progress_path(users(:southwest)), xhr: true
+    assert_response :not_found
+  end
+
   test "show_submissions_in_progress() returns HTTP 403 for logged-out users" do
     get user_submissions_in_progress_path(users(:southwest)), xhr: true
     assert_response :forbidden
@@ -344,6 +404,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # submitted_item_results()
 
+  test "submitted_item_results() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get user_submitted_item_results_path(users(:southwest)), xhr: true
+    assert_response :not_found
+  end
+
   test "submitted_item_results() returns HTTP 403 for logged-out users" do
     get user_submitted_item_results_path(users(:southwest)), xhr: true
     assert_response :forbidden
@@ -378,6 +444,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update_properties()
+
+  test "update_properties() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch user_update_properties_path(users(:southwest)), xhr: true
+    assert_response :not_found
+  end
 
   test "update_properties() returns HTTP 403 for logged-out users" do
     patch user_update_properties_path(users(:southwest)), xhr: true
