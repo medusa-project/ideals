@@ -577,15 +577,13 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # @return [String]
+  # @return [String,nil] URL of the public object, or nil if the instance has
+  #         no corresponding storage object.
   # @see presigned_url
   #
   def public_url
     key = self.effective_key
-    unless key
-      raise IOError, "This bitstream has no corresponding storage object."
-    end
-    PersistentStore.instance.public_url(key: key)
+    key ? PersistentStore.instance.public_url(key: key) : nil
   end
 
   ##

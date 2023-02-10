@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class SettingsController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :authorize
   before_action :store_location, only: :index
 

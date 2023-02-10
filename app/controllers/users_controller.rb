@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class UsersController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_user, except: [:index, :index_all]
   before_action :authorize_user, except: [:index, :index_all]
   before_action :store_location, only: [:index, :index_all, :show]

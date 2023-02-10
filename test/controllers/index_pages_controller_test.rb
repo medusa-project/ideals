@@ -12,6 +12,12 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post index_pages_path
+    assert_response :not_found
+  end
+
   test "create() redirects to root page for logged-out users" do
     post index_pages_path
     assert_redirected_to institutions(:southwest).scope_url
@@ -72,6 +78,13 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    page = index_pages(:southwest_creators)
+    delete index_page_path(page)
+    assert_response :not_found
+  end
+
   test "destroy() redirects to root page for logged-out users" do
     page = index_pages(:southwest_creators)
     delete index_page_path(page)
@@ -107,6 +120,13 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    page = index_pages(:southwest_creators)
+    get edit_index_page_path(page)
+    assert_response :not_found
+  end
+
   test "edit() redirects to root page for logged-out users" do
     page = index_pages(:southwest_creators)
     get edit_index_page_path(page)
@@ -137,6 +157,12 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get index_pages_path
+    assert_response :not_found
+  end
+
   test "index() redirects to root page for logged-out users" do
     get index_pages_path
     assert_redirected_to institutions(:southwest).scope_url
@@ -165,6 +191,12 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   # new()
 
+  test "new() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get new_import_path
+    assert_response :not_found
+  end
+
   test "new() redirects to root page for logged-out users" do
     get new_import_path
     assert_redirected_to institutions(:southwest).scope_url
@@ -184,6 +216,12 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get index_page_path(index_pages(:northeast_creators))
+    assert_response :not_found
+  end
+
   test "show() returns HTTP 200 for a page in a different institution" do
     get index_page_path(index_pages(:northeast_creators))
     assert_response :forbidden
@@ -195,6 +233,12 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch "/index-pages/99999"
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     patch "/index-pages/99999"

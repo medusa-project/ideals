@@ -16,6 +16,12 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     refresh_opensearch
   end
 
+  test "request() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get "/oai-pmh", params: { verb: "Identify" }
+    assert_response :not_found
+  end
+
   test "request for a private institution returns HTTP 403" do
     @institution.update!(public: false)
     get "/oai-pmh", params: { verb: "Identify" }
@@ -374,6 +380,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
                               set:             "col_#{handle.prefix}_#{handle.suffix}" }
     assert_select "error", "resumptionToken is an exclusive argument."
   end
+
 
   private
 

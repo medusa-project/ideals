@@ -1,6 +1,6 @@
 class SubmissionProfilesController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_profile, only: [:clone, :edit, :show, :update, :destroy]
   before_action :authorize_profile, only: [:clone, :edit, :show, :update, :destroy]
   before_action :store_location, only: [:index, :show]

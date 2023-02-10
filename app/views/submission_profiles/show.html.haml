@@ -82,23 +82,20 @@
                       data: { confirm: 'Are you sure you want to delete this element?' }) do
               %i.fa.fa-trash
               Delete
-          %h5.card-title= element.registered_element.label
-          .row
-            .col-sm-3.text-right
-              %strong Required
-            .col-sm-9= boolean(element.required)
-          .row
-            .col-sm-3.text-right
-              %strong Repeatable
-            .col-sm-9= boolean(element.repeatable)
-          .row
-            .col-sm-3.text-right
-              %strong Placeholder Text
-            .col-sm-9= element.placeholder_text
-          .row
-            .col-sm-3.text-right
-              %strong Help Text
-            .col-sm-9= element.help_text
+          %h5.card-title.mb-3= element.registered_element.label
+          %dl.mb-0
+            %dt Required
+            %dd= boolean(element.required)
+            %dt Repeatable
+            %dd= boolean(element.repeatable)
+            %dt Placeholder Text
+            %dd
+              - if element.placeholder_text.present?
+                = element.placeholder_text
+              - else
+                None
+            %dt Help Text
+            %dd= element.help_text
 
   - unless @profile.institution_default
     #collections.tab-pane.fade{role: "tabpanel",

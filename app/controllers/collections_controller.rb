@@ -4,6 +4,7 @@ class CollectionsController < ApplicationController
 
   include Search
 
+  before_action :ensure_institution_host
   before_action :ensure_logged_in, only: [:all_files, :create, :delete,
                                           :edit_collection_membership,
                                           :edit_managers, :edit_properties,

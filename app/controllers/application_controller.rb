@@ -14,11 +14,12 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :rescue_not_found
   rescue_from GoneError, with: :rescue_gone
   rescue_from NotAuthorizedError, with: :rescue_unauthorized
+  rescue_from NotFoundError, with: :rescue_not_found
 
   before_action :redirect_to_main_host, :log_out_disabled_user
   after_action :copy_flash_to_response_headers
 
-  layout -> { institution_scope? ? "application_scoped" : "application_global" }
+  layout -> { institution_host? ? "application_scoped" : "application_global" }
 
   ##
   # @param entity [Class] Model or any other object to which access can be
@@ -72,10 +73,10 @@ class ApplicationController < ActionController::Base
   # institution, in which case the {Institution#default default institution}
   # will be returned, which won't be what is wanted. Therefore this method
   # should only be used after the scope is known--either from a controller
-  # action with a known scope, or after using {institution_scope?}.
+  # action with a known scope, or after using {institution_host?}.
   #
   # @return [Institution]
-  # @see institution_scope?
+  # @see institution_host?
   #
   def current_institution
     helpers.current_institution
@@ -101,8 +102,8 @@ class ApplicationController < ActionController::Base
   # @return [Boolean]
   # @see current_institution
   #
-  def institution_scope?
-    helpers.institution_scope?
+  def institution_host?
+    helpers.institution_host?
   end
 
   def logged_in?
@@ -164,6 +165,10 @@ class ApplicationController < ActionController::Base
 
 
   protected
+
+  def ensure_institution_host
+    raise NotFoundError unless institution_host?
+  end
 
   def ensure_logged_in
     unless logged_in?
@@ -239,7 +244,10 @@ class ApplicationController < ActionController::Base
     @breadcrumbable = nil # we don't want a breadcrumb on our error page
     @feedback_email = ::Configuration.instance.admin[:tech_mail_list][0]
     @message        = IdealsMailer.error_body(exception,
+                                              method:   request.method,
+                                              host:     request.host,
                                               url_path: request.path,
+                                              query:    request.query_string,
                                               user:     current_user)
     Rails.logger.error(@message)
     IdealsMailer.error(@message).deliver_now unless Rails.env.development?

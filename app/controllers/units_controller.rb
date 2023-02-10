@@ -4,6 +4,7 @@ class UnitsController < ApplicationController
 
   include Search
 
+  before_action :ensure_institution_host
   before_action :ensure_logged_in, only: [:create, :delete,
                                           :edit_administrators,
                                           :edit_membership, :edit_properties,

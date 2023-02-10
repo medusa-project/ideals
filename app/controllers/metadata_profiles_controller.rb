@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class MetadataProfilesController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_profile, except: [:create, :index]
   before_action :authorize_profile, except: [:create, :index]
   before_action :store_location, only: [:index, :show]

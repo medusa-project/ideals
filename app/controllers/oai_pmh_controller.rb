@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Controller for the OAI-PMH endpoint.
 #
@@ -55,7 +57,8 @@ class OaiPmhController < ApplicationController
 
   layout false
 
-  before_action :ensure_public_institution, :validate_request
+  before_action :ensure_institution_host, :ensure_public_institution,
+                :validate_request
 
   rescue_from ActionView::Template::Error, with: :rescue_template_error
 
@@ -342,7 +345,10 @@ class OaiPmhController < ApplicationController
 
   def rescue_template_error(error)
     message = IdealsMailer.error_body(error,
+                                      method:   request.method,
+                                      host:     request.host,
                                       url_path: request.path,
+                                      query:    request.query_string,
                                       user:     current_user)
     Rails.logger.error(message)
     IdealsMailer.error(message).deliver_now unless Rails.env.development?

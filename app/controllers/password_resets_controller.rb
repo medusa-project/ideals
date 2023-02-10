@@ -8,6 +8,8 @@
 #
 class PasswordResetsController < ApplicationController
 
+  before_action :ensure_institution_host
+
   ##
   # Renders the initial reset-password form, containing a single field for
   # email address.

@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class TasksController < ApplicationController
 
-  before_action :ensure_logged_in
+  before_action :ensure_institution_host, :ensure_logged_in
   before_action :authorize_index, only: [:index, :index_all]
   before_action :set_task, only: :show
   before_action :authorize_task, only: :show

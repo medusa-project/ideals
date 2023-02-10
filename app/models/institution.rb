@@ -13,6 +13,7 @@
 #                                in the application S3 bucket under
 #                                {image_key_prefix}. If not present, a generic
 #                                image is used.
+# * `banner_image_height`        Height of the banner image.
 # * `copyright_notice`           Generic institution-wide copyright notice,
 #                                displayed on the website somewhere (probably
 #                                in the footer).

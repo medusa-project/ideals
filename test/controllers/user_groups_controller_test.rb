@@ -13,6 +13,12 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post user_groups_path
+    assert_response :not_found
+  end
+
   test "create() redirects to root page for logged-out users" do
     post user_groups_path
     assert_redirected_to @institution.scope_url
@@ -73,6 +79,12 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete "/user-groups/99999"
+    assert_response :not_found
+  end
+
   test "destroy() redirects to root page for logged-out users" do
     delete "/user-groups/99999"
     assert_redirected_to @institution.scope_url
@@ -107,6 +119,13 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    group = user_groups(:uiuc)
+    get edit_user_group_path(group), xhr: true
+    assert_response :not_found
+  end
+
   test "edit() returns HTTP 403 for logged-out users" do
     group = user_groups(:uiuc)
     get edit_user_group_path(group), xhr: true
@@ -128,6 +147,13 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit_ad_groups()
+
+  test "edit_ad_groups() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    group = user_groups(:uiuc)
+    get user_group_edit_ad_groups_path(group), xhr: true
+    assert_response :not_found
+  end
 
   test "edit_ad_groups() returns HTTP 403 for logged-out users" do
     group = user_groups(:uiuc)
@@ -158,6 +184,13 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_affiliations()
 
+  test "edit_affiliations() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    group = user_groups(:uiuc)
+    get user_group_edit_affiliations_path(group), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_affiliations() returns HTTP 403 for logged-out users" do
     group = user_groups(:uiuc)
     get user_group_edit_affiliations_path(group), xhr: true
@@ -186,6 +219,13 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit_departments()
+
+  test "edit_departments() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    group = user_groups(:uiuc)
+    get user_group_edit_departments_path(group), xhr: true
+    assert_response :not_found
+  end
 
   test "edit_departments() returns HTTP 403 for logged-out users" do
     group = user_groups(:uiuc)
@@ -216,6 +256,13 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_email_patterns()
 
+  test "edit_email_patterns() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    group = user_groups(:uiuc)
+    get user_group_edit_email_patterns_path(group), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_email_patterns() returns HTTP 403 for logged-out users" do
     group = user_groups(:uiuc)
     get user_group_edit_email_patterns_path(group), xhr: true
@@ -244,6 +291,13 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit_hosts()
+
+  test "edit_hosts() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    group = user_groups(:uiuc)
+    get user_group_edit_hosts_path(group), xhr: true
+    assert_response :not_found
+  end
 
   test "edit_hosts() returns HTTP 403 for logged-out users" do
     group = user_groups(:uiuc)
@@ -274,6 +328,13 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # edit_local_users()
 
+  test "edit_local_users() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    group = user_groups(:uiuc)
+    get user_group_edit_local_users_path(group), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_local_users() returns HTTP 403 for logged-out users" do
     group = user_groups(:uiuc)
     get user_group_edit_local_users_path(group), xhr: true
@@ -302,6 +363,13 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # edit_netid_users()
+
+  test "edit_netid_users() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    group = user_groups(:uiuc)
+    get user_group_edit_netid_users_path(group), xhr: true
+    assert_response :not_found
+  end
 
   test "edit_netid_users() returns HTTP 403 for logged-out users" do
     group = user_groups(:uiuc)
@@ -332,6 +400,12 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get user_groups_path
+    assert_response :not_found
+  end
+
   test "index() redirects to root page for logged-out users" do
     get user_groups_path
     assert_redirected_to @institution.scope_url
@@ -359,6 +433,13 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show()
+
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    group = user_groups(:sysadmin)
+    get user_group_path(group)
+    assert_response :not_found
+  end
 
   test "show() redirects to root page for logged-out users" do
     group = user_groups(:sysadmin)
@@ -388,6 +469,12 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch "/user-groups/99999"
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     patch "/user-groups/99999"

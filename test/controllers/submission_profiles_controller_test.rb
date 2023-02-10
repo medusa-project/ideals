@@ -14,6 +14,12 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # clone()
 
+  test "clone() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post submission_profile_clone_path(@profile)
+    assert_response :not_found
+  end
+
   test "clone() redirects to root page for logged-out users" do
     post submission_profile_clone_path(@profile)
     assert_redirected_to @profile.institution.scope_url
@@ -39,6 +45,12 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # create()
+
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post submission_profiles_path
+    assert_response :not_found
+  end
 
   test "create() redirects to root page for logged-out users" do
     post submission_profiles_path
@@ -103,6 +115,12 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete "/submission-profiles/99999"
+    assert_response :not_found
+  end
+
   test "destroy() redirects to root page for logged-out users" do
     delete "/submission-profiles/99999"
     assert_redirected_to @institution.scope_url
@@ -138,6 +156,12 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get edit_submission_profile_path(@profile)
+    assert_response :not_found
+  end
+
   test "edit() redirects to root page for logged-out users" do
     get edit_submission_profile_path(@profile)
     assert_redirected_to @profile.institution.scope_url
@@ -156,6 +180,12 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # index()
+
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get submission_profiles_path
+    assert_response :not_found
+  end
 
   test "index() redirects to root page for logged-out users" do
     get submission_profiles_path
@@ -185,6 +215,12 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get submission_profile_path(@profile)
+    assert_response :not_found
+  end
+
   test "show() redirects to root page for logged-out users" do
     get submission_profile_path(@profile)
     assert_redirected_to @profile.institution.scope_url
@@ -212,6 +248,12 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch "/submission-profiles/99999"
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     patch "/submission-profiles/99999"

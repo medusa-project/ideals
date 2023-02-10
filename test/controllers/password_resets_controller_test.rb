@@ -8,6 +8,12 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
 
   # get()
 
+  test "get() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get reset_password_path
+    assert_response :not_found
+  end
+
   test "get() returns HTTP 200" do
     get reset_password_path
     assert_response :ok
@@ -15,9 +21,15 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
 
   # post()
 
+  test "post() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post reset_password_path
+    assert_response :not_found
+  end
+
   test "post() sets the flash and returns HTTP 400 when no email is provided" do
     # case 1
-    post reset_password_path, params: {}
+    post reset_password_path
     assert_response :bad_request
     assert flash['error'].start_with?("No email address was provided")
 

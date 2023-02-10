@@ -3,7 +3,8 @@
 #
 class StatisticsController < ApplicationController
 
-  before_action :ensure_logged_in, :authorize_sysadmin
+  before_action :ensure_institution_host, :ensure_logged_in,
+                :authorize_sysadmin
   before_action :store_location, only: :index
 
   ##

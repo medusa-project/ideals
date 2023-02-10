@@ -13,6 +13,12 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post metadata_profile_metadata_profile_elements_path(@profile)
+    assert_response :not_found
+  end
+
   test "create() redirects to root page for logged-out users" do
     post metadata_profile_metadata_profile_elements_path(@profile)
     assert_redirected_to @profile.institution.scope_url
@@ -80,16 +86,23 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    element = metadata_profile_elements(:uiuc_default_description)
+    delete metadata_profile_metadata_profile_element_path(@profile, element)
+    assert_response :not_found
+  end
+
   test "destroy() redirects to root page for logged-out users" do
-    delete metadata_profile_metadata_profile_element_path(@profile,
-                                                          metadata_profile_elements(:uiuc_default_description))
+    element = metadata_profile_elements(:uiuc_default_description)
+    delete metadata_profile_metadata_profile_element_path(@profile, element)
     assert_redirected_to @profile.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    delete metadata_profile_metadata_profile_element_path(@profile,
-                                                          metadata_profile_elements(:uiuc_default_description))
+    element = metadata_profile_elements(:uiuc_default_description)
+    delete metadata_profile_metadata_profile_element_path(@profile, element)
     assert_response :forbidden
   end
 
@@ -118,6 +131,13 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    element = metadata_profile_elements(:uiuc_default_title)
+    get edit_metadata_profile_metadata_profile_element_path(@profile, element)
+    assert_response :not_found
+  end
+
   test "edit() redirects to root page for logged-out users" do
     element = metadata_profile_elements(:uiuc_default_title)
     get edit_metadata_profile_metadata_profile_element_path(@profile, element)
@@ -139,6 +159,13 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    element = metadata_profile_elements(:uiuc_default_title)
+    patch metadata_profile_metadata_profile_element_path(@profile, element)
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     element = metadata_profile_elements(:uiuc_default_title)

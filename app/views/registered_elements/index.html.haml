@@ -33,36 +33,43 @@
           %i.fa.fa-trash
           Delete
 
-      %h5.card-title.element-label= element.label
+      %h5.card-title.mb-3.element-labe
+        = element.label
 
-      .row
-        .col-sm-2.text-right
-          %strong Name
-        .col-sm-10
+      %dl.mb-0
+        %dt Name
+        %dd
           %code.element-name= element.name
-        .col-sm-2.text-right
-          %strong URI
-        .col-sm-10
-          %code= element.uri
-        .col-sm-2.text-right
-          %strong Vocabulary
-        .col-sm-10
-          = element.vocabulary ? element.vocabulary&.name : "None"
-        .col-sm-2.text-right
-          %strong Input Type
-        .col-sm-10
-          = element.vocabulary ? "Menu" : element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
-        .col-sm-2.text-right
-          %strong Highwire Press Mapping
-        .col-sm-10
-          - if element.highwire_mapping
+        %dt URI
+        %dd
+          - if element.uri.present?
+            %code= element.uri
+          - else
+            None
+        %dt Vocabulary
+        %dd= element.vocabulary ? element.vocabulary&.name : "None"
+        %dt Input Type
+        %dd= element.vocabulary ? "Menu" : element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
+        %dt Highwire Press Mapping
+        %dd
+          - if element.highwire_mapping.present?
             %code= element.highwire_mapping
           - else
             None
-        .col-sm-2.text-right
-          %strong Scope Note
-        .col-sm-10
-          = simple_format(element.scope_note)
+        %dt Metadata Profiles
+        %dd
+          - if element.metadata_profile_elements.any?
+            = raw(element.metadata_profile_elements.map{ |mpe| link_to(mpe.metadata_profile.name, mpe.metadata_profile) }.join(", "))
+          - else
+            None
+        %dt Submission Profiles
+        %dd
+          - if element.submission_profile_elements.any?
+            = raw(element.submission_profile_elements.map{ |spe| link_to(spe.submission_profile.name, spe.submission_profile) }.join(", "))
+          - else
+            None
+        %dt Scope Note
+        %dd= simple_format(element.scope_note)
 
 = render partial: 'add_modal'
 = render partial: "shared/ajax_modal",

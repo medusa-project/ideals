@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 class WelcomeController < ApplicationController
 
+  before_action :ensure_institution_host, only: :about
   before_action :store_location, only: :index
 
   ##
@@ -13,7 +16,7 @@ class WelcomeController < ApplicationController
   # Responds to `GET /`
   #
   def index
-    if institution_scope?
+    if institution_host?
       if current_institution.public
         scoped_index
       else

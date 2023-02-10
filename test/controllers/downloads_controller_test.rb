@@ -9,6 +9,12 @@ class DownloadsControllerTest < ActionDispatch::IntegrationTest
 
   # file()
 
+  test "file() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get download_file_path(downloads(:one))
+    assert_response :not_found
+  end
+
   test "file() returns HTTP 403 when the request IP does not match the
   download's IP" do
     download = downloads(:one)
@@ -47,6 +53,12 @@ class DownloadsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # show()
+
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get download_path(downloads(:one))
+    assert_response :not_found
+  end
 
   test "show() returns HTTP 403 when the request IP does not match the
   download's IP" do

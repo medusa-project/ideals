@@ -15,6 +15,13 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   # complete()
 
+  test "complete() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_submitting)
+    post submission_complete_path(item)
+    assert_response :not_found
+  end
+
   test "complete() redirects to root page for logged-out users" do
     item = items(:uiuc_submitting)
     post submission_complete_path(item)
@@ -172,6 +179,12 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post submissions_path
+    assert_response :not_found
+  end
+
   test "create() redirects to root page for logged-out users" do
     post submissions_path
     assert_redirected_to @institution.scope_url
@@ -194,6 +207,13 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # destroy()
+
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_submitting)
+    delete submission_path(item)
+    assert_response :not_found
+  end
 
   test "destroy() redirects to root page for logged-out users" do
     item = items(:uiuc_submitting)
@@ -237,6 +257,13 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_submitting)
+    get edit_submission_path(item)
+    assert_response :not_found
+  end
+
   test "edit() redirects to root page for logged-out users" do
     item = items(:uiuc_submitting)
     get edit_submission_path(item)
@@ -259,6 +286,12 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   # new()
 
+  test "new() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get submit_path
+    assert_response :not_found
+  end
+
   test "new() redirects to root page for logged-out users" do
     get submit_path
     assert_redirected_to @institution.scope_url
@@ -271,6 +304,13 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # status()
+
+  test "status() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_submitted)
+    get submission_status_path(item)
+    assert_response :not_found
+  end
 
   test "status() redirects to root page for logged-out users" do
     item = items(:uiuc_submitted)
@@ -293,6 +333,13 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:uiuc_submitting)
+    patch submission_path(item)
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     item = items(:uiuc_submitting)

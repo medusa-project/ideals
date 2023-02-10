@@ -6,6 +6,7 @@
 #
 class InviteesController < ApplicationController
 
+  before_action :ensure_institution_host
   before_action :ensure_logged_in, except: [:create_unsolicited, :new]
   before_action :ensure_logged_out, only: [:create_unsolicited, :new]
   before_action :set_invitee, only: [:approve, :destroy, :reject, :resend_email,

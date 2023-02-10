@@ -74,6 +74,10 @@
       Should be at least 1920 pixels wide. PNG format recommended.
 
   .mb-3
+    = f.label :banner_image_height, "Banner Image Height (Pixels)"
+    = f.number_field :banner_image_height, class: "form-control"
+
+  .mb-3
     = f.label :footer_image, "Footer Image"
     %br
     = f.file_field :footer_image, directory: false, class: "form-control"

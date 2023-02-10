@@ -12,6 +12,12 @@ class FileFormatsControllerTest < ActionDispatch::IntegrationTest
 
   # index()
 
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get file_formats_path
+    assert_response :not_found
+  end
+
   test "index() redirects to root page for logged-out users" do
     get file_formats_path
     assert_redirected_to institutions(:southwest).scope_url

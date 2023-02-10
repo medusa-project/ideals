@@ -163,7 +163,7 @@ module ApplicationHelper
   # @return [Institution,nil] The institution whose FQDN corresponds to the
   #         value of the `X-Forwarded-Host` header. In global scope, there
   #         will be no such header, in which case `nil` is returned.
-  # @see institution_scope?
+  # @see institution_host?
   #
   def current_institution
     Institution.find_by_fqdn(request.host_with_port)
@@ -333,11 +333,11 @@ module ApplicationHelper
               "content=\"#{entity.handle&.permanent_url || polymorphic_url(entity)}\">\n"
     if entity.kind_of?(Item)
       entity.bitstreams.
-        select{ |b| b.bundle == Bitstream::Bundle::CONTENT }.
-        select{ |b| b.format && b.format.media_types.include?("application/pdf") }.
-        each do |bs|
-        html << "<meta name=\"citation_pdf_url\" "\
-                  "content=\"#{item_bitstream_stream_url(entity, bs)}\">\n"
+        select{ |b| b.bundle == Bitstream::Bundle::CONTENT &&
+          b.public_url &&
+          b.format &&
+          b.format.media_types.include?("application/pdf") }.each do |bs|
+        html << "<meta name=\"citation_pdf_url\" content=\"#{bs.public_url}\">\n"
       end
     end
     # Find all registered elements that have Highwire mappings.
@@ -438,7 +438,7 @@ module ApplicationHelper
   #                   institution.
   # @see current_institution
   #
-  def institution_scope?
+  def institution_host?
     Institution.exists?(fqdn: request.host_with_port)
   end
 

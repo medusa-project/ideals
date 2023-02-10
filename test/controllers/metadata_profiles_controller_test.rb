@@ -13,6 +13,12 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # clone()
 
+  test "clone() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post metadata_profile_clone_path(@profile)
+    assert_response :not_found
+  end
+
   test "clone() redirects to root page for logged-out users" do
     post metadata_profile_clone_path(@profile)
     assert_redirected_to @profile.institution.scope_url
@@ -38,6 +44,12 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # create()
+
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post metadata_profiles_path
+    assert_response :not_found
+  end
 
   test "create() redirects to root page for logged-out users" do
     post metadata_profiles_path
@@ -102,6 +114,13 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    @profile = metadata_profiles(:uiuc_unused)
+    delete metadata_profile_path(@profile)
+    assert_response :not_found
+  end
+
   test "destroy() redirects to root page for logged-out users" do
     @profile = metadata_profiles(:uiuc_unused)
     delete metadata_profile_path(@profile)
@@ -137,6 +156,12 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get edit_metadata_profile_path(@profile)
+    assert_response :not_found
+  end
+
   test "edit() redirects to root page for logged-out users" do
     get edit_metadata_profile_path(@profile)
     assert_redirected_to @profile.institution.scope_url
@@ -164,6 +189,12 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # index()
+
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get metadata_profiles_path
+    assert_response :not_found
+  end
 
   test "index() redirects to root page for logged-out users" do
     get metadata_profiles_path
@@ -193,6 +224,12 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # show()
 
+  test "show() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get metadata_profile_path(@profile)
+    assert_response :not_found
+  end
+
   test "show() redirects to root page for logged-out users" do
     get metadata_profile_path(@profile)
     assert_redirected_to @profile.institution.scope_url
@@ -220,6 +257,13 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    log_in_as(users(:uiuc))
+    patch metadata_profile_path(metadata_profiles(:uiuc_unused))
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     patch "/metadata-profiles/99999"

@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 ##
-# N.B.: see the documentation of [Invitee] for a detailed overview of the
+# N.B.: see the documentation of {Invitee} for a detailed overview of the
 # invitation & registration process.
 #
 class LocalIdentitiesController < ApplicationController
 
+  before_action :ensure_institution_host
   before_action :ensure_logged_in, only: [:edit_password, :update_password]
   before_action :ensure_logged_out, except: [:edit_password, :update_password]
   before_action :set_identity

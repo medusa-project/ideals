@@ -9,6 +9,13 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   # edit_password()
 
+  test "edit_password() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    identity = local_identities(:southwest_sysadmin)
+    get local_identity_edit_password_path(identity), xhr: true
+    assert_response :not_found
+  end
+
   test "edit_password() returns HTTP 403 for logged-out users" do
     identity = local_identities(:southwest_sysadmin)
     get local_identity_edit_password_path(identity), xhr: true
@@ -49,6 +56,13 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # new_password()
+
+  test "new_password() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    identity = local_identities(:southwest)
+    get local_identity_reset_password_path(identity)
+    assert_response :not_found
+  end
 
   test "new_password() redirects to root path for logged-in users" do
     identity = local_identities(:southwest)
@@ -95,6 +109,13 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   # register()
 
+  test "register() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    identity = local_identities(:southwest)
+    get local_identity_register_path(identity)
+    assert_response :not_found
+  end
+
   test "register() redirects to root path for logged-in users" do
     identity = local_identities(:southwest)
     get local_identity_register_path(identity)
@@ -126,6 +147,13 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # reset_password()
+
+  test "reset_password() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    identity = local_identities(:southwest)
+    post local_identity_reset_password_path(identity)
+    assert_response :not_found
+  end
 
   test "reset_password() redirects to root path for logged-in users" do
     identity = local_identities(:southwest)
@@ -219,6 +247,13 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    identity = local_identities(:southwest)
+    patch local_identity_path(identity)
+    assert_response :not_found
+  end
 
   test "update() redirects to root path for logged-in users" do
     identity = local_identities(:southwest)
@@ -412,6 +447,13 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update_password()
+
+  test "update_password() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    identity = local_identities(:southwest_sysadmin)
+    patch local_identity_update_password_path(identity), xhr: true
+    assert_response :not_found
+  end
 
   test "update_password() returns HTTP 403 for logged-out users" do
     identity = local_identities(:southwest_sysadmin)

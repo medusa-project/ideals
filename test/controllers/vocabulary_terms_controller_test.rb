@@ -13,6 +13,12 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post vocabulary_vocabulary_terms_path(@vocab)
+    assert_response :not_found
+  end
+
   test "create() redirects to root page for logged-out users" do
     post vocabulary_vocabulary_terms_path(@vocab)
     assert_redirected_to @vocab.institution.scope_url
@@ -77,6 +83,13 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
 
   # destroy()
 
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete vocabulary_vocabulary_term_path(@vocab,
+                                           vocabulary_terms(:southwest_one_one))
+    assert_response :not_found
+  end
+
   test "destroy() redirects to root page for logged-out users" do
     delete vocabulary_vocabulary_term_path(@vocab,
                                            vocabulary_terms(:southwest_one_one))
@@ -113,6 +126,13 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
 
   # edit()
 
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    term = vocabulary_terms(:southwest_one_one)
+    get edit_vocabulary_vocabulary_term_path(@vocab, term)
+    assert_response :not_found
+  end
+
   test "edit() redirects to root page for logged-out users" do
     term = vocabulary_terms(:southwest_one_one)
     get edit_vocabulary_vocabulary_term_path(@vocab, term)
@@ -134,6 +154,12 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # new()
+
+  test "new() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get new_vocabulary_vocabulary_term_path(@vocab)
+    assert_response :not_found
+  end
 
   test "new() redirects to root page for logged-out users" do
     get new_vocabulary_vocabulary_term_path(@vocab)
@@ -162,6 +188,13 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    term = vocabulary_terms(:southwest_one_one)
+    patch vocabulary_vocabulary_term_path(@vocab, term)
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     term = vocabulary_terms(:southwest_one_one)

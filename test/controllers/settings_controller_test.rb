@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class SettingControllerTest < ActionDispatch::IntegrationTest
+class SettingsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @institution = institutions(:southwest)
@@ -12,6 +12,12 @@ class SettingControllerTest < ActionDispatch::IntegrationTest
   end
 
   # index()
+
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get settings_path
+    assert_response :not_found
+  end
 
   test "index() redirects to root page for logged-out users" do
     get settings_path
@@ -40,6 +46,12 @@ class SettingControllerTest < ActionDispatch::IntegrationTest
   end
 
   # update()
+
+  test "update() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch settings_path
+    assert_response :not_found
+  end
 
   test "update() redirects to root page for logged-out users" do
     patch settings_path

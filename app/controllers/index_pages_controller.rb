@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 class IndexPagesController < ApplicationController
 
+  before_action :ensure_institution_host
   before_action :ensure_logged_in, except: :show
   before_action :set_index_page, except: [:create, :index, :new]
   before_action :authorize_index_page, except: [:create, :index, :new]

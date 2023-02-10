@@ -379,7 +379,7 @@ domain name (FQDN) via which the app was accessed. There are two possibilities:
    are scoped like this.
 2. This FQDN does not match a registered institution FQDN, in which case the
    request is considered to be in global scope. In this case,
-   `ApplicationController.institution_scope?()` returns false and there is no
+   `ApplicationController.institution_host?()` returns false and there is no
    relevant Institution model. (`current_institution()` should not be used.)
    Only a few routes are globally scoped.
 
