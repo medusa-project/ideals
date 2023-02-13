@@ -22,12 +22,6 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "request for a private institution returns HTTP 403" do
-    @institution.update!(public: false)
-    get "/oai-pmh", params: { verb: "Identify" }
-    assert_response :forbidden
-  end
-
   # 2.5.1
   test "repository supports deleted records" do
     get "/oai-pmh", params: { verb: "Identify" }

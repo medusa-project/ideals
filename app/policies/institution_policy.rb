@@ -68,12 +68,10 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show_element_mappings
-    return private_institution unless @institution.public
     show
   end
 
   def show_preservation
-    return private_institution unless @institution.public
     effective_sysadmin(@user, @role_limit)
   end
 
@@ -82,17 +80,14 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show_settings
-    return private_institution unless @institution.public
     show
   end
 
   def show_statistics
-    return private_institution unless @institution.public
     show
   end
 
   def show_theme
-    return private_institution unless @institution.public
     show
   end
 
@@ -114,13 +109,6 @@ class InstitutionPolicy < ApplicationPolicy
 
   def update_settings
     show
-  end
-
-
-  private
-
-  def private_institution
-    { authorize: false, reason: "This institution is private." }
   end
 
 end

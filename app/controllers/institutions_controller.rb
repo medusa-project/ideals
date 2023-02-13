@@ -413,7 +413,7 @@ class InstitutionsController < ApplicationController
                                         :latitude_minutes, :latitude_seconds,
                                         :longitude_degrees, :longitude_minutes,
                                         :longitude_seconds, :name, :org_dn,
-                                        :public, :service_name)
+                                        :service_name)
   end
 
   def settings_params
