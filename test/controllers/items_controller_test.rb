@@ -375,7 +375,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "export() via POST exports CSV" do
     log_in_as(users(:uiuc_admin))
     post items_export_path, params: {
-      handles: handles(:collection1_handle).to_s,
+      handles: handles(:uiuc_collection1).to_s,
       elements: ["dc:title"]
     }
     assert response.body.start_with?("id,")
@@ -616,9 +616,17 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "show() returns HTTP 403 for submitting items" do
+  test "show() returns HTTP 403 for submitting items for unauthorized users" do
     get item_path(items(:uiuc_submitting))
     assert_response :forbidden
+  end
+
+  test "show() redirects to the edit-submission page for submitting items for
+  institution admins" do
+    log_in_as(users(:uiuc_admin))
+    item = items(:uiuc_submitting)
+    get item_path(item)
+    assert_redirected_to edit_submission_path(item)
   end
 
   test "show() returns HTTP 403 for embargoed items" do

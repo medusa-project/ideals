@@ -9,9 +9,7 @@
         - to_do_list.items.each do |item|
           %li= link_to(item[:message], item[:url])
 
-- if !current_institution.public
-  %p This institution is private.
-- elsif current_institution.welcome_html.present?
+- if current_institution.welcome_html.present?
   = sanitize(current_institution.welcome_html,
              tags: ApplicationHelper::ALLOWED_HTML_TAGS,
              attributes: ApplicationHelper::ALLOWED_HTML_TAG_ATTRIBUTES)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_10_191511) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_13_214130) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -320,7 +320,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_10_191511) do
     t.integer "longitude_degrees"
     t.integer "longitude_minutes"
     t.float "longitude_seconds"
-    t.boolean "public", default: true, null: false
     t.integer "earliest_search_year", default: 2000, null: false
     t.bigint "title_element_id"
     t.bigint "author_element_id"
@@ -337,7 +336,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_10_191511) do
     t.index ["medusa_file_group_id"], name: "index_institutions_on_medusa_file_group_id", unique: true
     t.index ["name"], name: "index_institutions_on_name", unique: true
     t.index ["outgoing_message_queue"], name: "index_institutions_on_outgoing_message_queue", unique: true
-    t.index ["public"], name: "index_institutions_on_public"
   end
 
   create_table "invitees", force: :cascade do |t|

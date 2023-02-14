@@ -304,6 +304,8 @@ class ItemsController < ApplicationController
   def show
     @collections = @item.collections
     case @item.stage
+    when Item::Stages::SUBMITTING
+      redirect_to edit_submission_path(@item), status: :temporary_redirect
     when Item::Stages::BURIED
       render "show_buried", status: :gone and return
     when Item::Stages::WITHDRAWN

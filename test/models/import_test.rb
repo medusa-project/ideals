@@ -14,7 +14,7 @@ class ImportTest < ActiveSupport::TestCase
 
   setup do
     setup_s3
-    @instance = imports(:saf_new)
+    @instance = imports(:uiuc_saf_new)
   end
 
   teardown do

@@ -17,11 +17,7 @@ class WelcomeController < ApplicationController
   #
   def index
     if institution_host?
-      if current_institution.public
-        scoped_index
-      else
-        render "index_private"
-      end
+      scoped_index
     else
       global_index
     end
@@ -35,7 +31,7 @@ class WelcomeController < ApplicationController
   private
 
   def global_index
-    @institutions     = Institution.where(public: true).order(:name)
+    @institutions     = Institution.order(:name)
     @num_institutions = @institutions.count
     @num_items        = Rails.cache.fetch("global_num_items", expires_in: 12.hours) do
       Item.where(stage: Item::Stages::APPROVED).count

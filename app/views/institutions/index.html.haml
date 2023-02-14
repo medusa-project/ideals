@@ -23,9 +23,7 @@
     - @institutions.each do |institution|
       %tr
         %td.text-center
-          - if !institution.public
-            %span.badge.bg-warning PRIVATE
-          - elsif institution.outgoing_message_queue.blank?
+          - if institution.outgoing_message_queue.blank?
             .text-danger= icon_for(:warning)
         %td= link_to(institution.name, institution)
         %td= link_to(institution.service_name, institution)

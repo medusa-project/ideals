@@ -11,10 +11,11 @@ class RobotsController < ApplicationController
   # Responds to `GET /robots.txt`.
   #
   def show
-    if Rails.env.demo? || (institution_host? && !current_institution.public)
-      render "disallow_all" and return
+    if Rails.env.demo?
+      render "disallow_all"
+    else
+      render "show"
     end
-    render "show"
   end
 
 

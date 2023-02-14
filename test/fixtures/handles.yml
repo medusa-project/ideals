@@ -1,19 +1,19 @@
 # collection handles
 
-collection1_handle:
+uiuc_collection1:
   collection: uiuc_collection1
   suffix:     5000
 
 # item handles
 
-handle1:
+uiuc_item1:
   item:   uiuc_item1
   suffix: 5001
 
-awaiting_ingest_into_medusa:
+uiuc_awaiting_ingest_into_medusa:
   item:   uiuc_awaiting_ingest_into_medusa
   suffix: 5002
 
-approved:
+uiuc_approved:
   item:   uiuc_approved
   suffix: 5003

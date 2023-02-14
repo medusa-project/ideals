@@ -177,7 +177,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() sets the import kind" do
     csv    = file_fixture("csv/new.csv")
-    import = imports(:csv_new)
+    import = imports(:uiuc_csv_new)
     upload_to_s3(csv, import)
     @instance.import_from_s3(import, users(:example_sysadmin))
 
@@ -186,7 +186,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() creates correct items" do
     csv    = file_fixture("csv/new.csv")
-    import = imports(:csv_new)
+    import = imports(:uiuc_csv_new)
     upload_to_s3(csv, import)
     @instance.import_from_s3(import, users(:example_sysadmin))
 
@@ -203,7 +203,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() fails the import's task upon error" do
     csv    = file_fixture("csv/illegal_element.csv")
-    import = imports(:csv_new)
+    import = imports(:uiuc_csv_new)
     upload_to_s3(csv, import)
 
     assert_raises do
@@ -215,7 +215,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() succeeds the import's task upon success" do
     csv    = file_fixture("csv/new.csv")
-    import = imports(:csv_new)
+    import = imports(:uiuc_csv_new)
     upload_to_s3(csv, import)
 
     @instance.import_from_s3(import, users(:example_sysadmin))

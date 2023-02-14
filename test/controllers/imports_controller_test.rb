@@ -89,7 +89,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "delete_all_files() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    @import = imports(:saf_new)
+    @import = imports(:uiuc_saf_new)
     post import_delete_all_files_path(@import)
     assert_response :forbidden
   end
@@ -297,7 +297,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "upload_file() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    @import = imports(:saf_new)
+    @import = imports(:uiuc_saf_new)
     post import_upload_file_path(@import)
     assert_response :forbidden
   end

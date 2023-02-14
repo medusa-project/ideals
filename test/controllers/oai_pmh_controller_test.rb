@@ -22,12 +22,6 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "request for a private institution returns HTTP 403" do
-    @institution.update!(public: false)
-    get "/oai-pmh", params: { verb: "Identify" }
-    assert_response :forbidden
-  end
-
   # 2.5.1
   test "repository supports deleted records" do
     get "/oai-pmh", params: { verb: "Identify" }
@@ -327,7 +321,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "ListRecords disallows all other arguments when resumptionToken is present" do
-    handle = handles(:collection1_handle)
+    handle = handles(:uiuc_collection1)
     get "/oai-pmh", params: { verb:            "ListRecords",
                               resumptionToken: "offset:10",
                               set:             "col_#{handle.prefix}_#{handle.suffix}" }
@@ -361,7 +355,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   # 4.6 ListSets
   test "ListSets returns a list when correct arguments are passed and results
   are available" do
-    handle = handles(:collection1_handle)
+    handle = handles(:uiuc_collection1)
     get "/oai-pmh", params: { verb: "ListSets" }
     assert_select "ListSets > set > setSpec",
                   "col_#{handle.prefix}_#{handle.suffix}"
@@ -374,7 +368,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "ListSets disallows all other arguments when resumptionToken is present" do
-    handle = handles(:collection1_handle)
+    handle = handles(:uiuc_collection1)
     get "/oai-pmh", params: { verb:            "ListSets",
                               resumptionToken: "offset:10",
                               set:             "col_#{handle.prefix}_#{handle.suffix}" }

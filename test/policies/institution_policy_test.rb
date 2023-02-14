@@ -462,16 +462,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.item_download_counts?
   end
 
-  test "item_download_counts?() does not authorize private institutions" do
-    institution = institutions(:southwest)
-    institution.update!(public: false)
-    user        = users(:southwest_admin)
-    context     = RequestContext.new(user:        user,
-                                     institution: @institution)
-    policy      = InstitutionPolicy.new(context, institution)
-    assert !policy.item_download_counts?
-  end
-
   test "item_download_counts?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
@@ -646,16 +636,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_element_mappings?
   end
 
-  test "show_element_mappings?() does not authorize private institutions" do
-    institution = institutions(:southwest)
-    institution.update!(public: false)
-    user        = users(:southwest_admin)
-    context     = RequestContext.new(user:        user,
-                                     institution: @institution)
-    policy      = InstitutionPolicy.new(context, institution)
-    assert !policy.show_element_mappings?
-  end
-
   test "show_element_mappings?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
@@ -689,16 +669,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, @institution)
     assert policy.show_preservation?
-  end
-
-  test "show_preservation?() does not authorize private institutions" do
-    institution = institutions(:southwest)
-    institution.update!(public: false)
-    user        = users(:southwest_admin)
-    context     = RequestContext.new(user:        user,
-                                     institution: @institution)
-    policy      = InstitutionPolicy.new(context, institution)
-    assert !policy.show_preservation?
   end
 
   test "show_preservation?() respects role limits" do
@@ -805,16 +775,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_settings?
   end
 
-  test "show_settings?() does not authorize private institutions" do
-    institution = institutions(:southwest)
-    institution.update!(public: false)
-    user        = users(:southwest_admin)
-    context     = RequestContext.new(user:        user,
-                                     institution: @institution)
-    policy      = InstitutionPolicy.new(context, institution)
-    assert !policy.show_settings?
-  end
-
   test "show_settings?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
@@ -867,16 +827,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_statistics?
   end
 
-  test "show_statistics?() does not authorize private institutions" do
-    institution = institutions(:southwest)
-    institution.update!(public: false)
-    user        = users(:southwest_admin)
-    context     = RequestContext.new(user:        user,
-                                     institution: @institution)
-    policy      = InstitutionPolicy.new(context, institution)
-    assert !policy.show_statistics?
-  end
-
   test "show_statistics?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
@@ -926,16 +876,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, institutions(:northeast))
-    assert !policy.show_theme?
-  end
-
-  test "show_theme?() does not authorize private institutions" do
-    institution = institutions(:southwest)
-    institution.update!(public: false)
-    user        = users(:southwest_admin)
-    context     = RequestContext.new(user:        user,
-                                     institution: @institution)
-    policy      = InstitutionPolicy.new(context, institution)
     assert !policy.show_theme?
   end
 
@@ -1040,16 +980,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, institutions(:northeast))
-    assert !policy.statistics_by_range?
-  end
-
-  test "statistics_by_range?() does not authorize private institutions" do
-    institution = institutions(:southwest)
-    institution.update!(public: false)
-    user        = users(:southwest_admin)
-    context     = RequestContext.new(user:        user,
-                                     institution: @institution)
-    policy      = InstitutionPolicy.new(context, institution)
     assert !policy.statistics_by_range?
   end
 

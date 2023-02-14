@@ -57,8 +57,7 @@ class OaiPmhController < ApplicationController
 
   layout false
 
-  before_action :ensure_institution_host, :ensure_public_institution,
-                :validate_request
+  before_action :ensure_institution_host, :validate_request
 
   rescue_from ActionView::Template::Error, with: :rescue_template_error
 
@@ -427,13 +426,6 @@ class OaiPmhController < ApplicationController
         @errors << { code: "badArgument",
                      description: "Illegal argument: #{key}" }
       end
-    end
-  end
-
-  def ensure_public_institution
-    unless current_institution.public
-      render plain:  "403 Forbidden\n\nThis institution is not public.",
-             status: :forbidden
     end
   end
 
