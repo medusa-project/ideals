@@ -25,6 +25,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "collections#show_statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/submissions-in-progress", to: "collections#show_submissions_in_progress", via: :get,
+          constraints: lambda { |request| request.xhr? }
 
     match "/children", to: "collections#children", via: :get,
           constraints: lambda { |request| request.xhr? }

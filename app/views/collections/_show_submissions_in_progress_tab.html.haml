@@ -1,0 +1,22 @@
+- if @count > 0
+  - pagination = paginate(count:            @count,
+                          page:             @current_page,
+                          per_page:         @window,
+                          permitted_params: @permitted_params)
+
+  .card.mt-3.mb-3
+    #search-status.card-body.pt-3.pb-3
+      = search_status(@count, @start, @window, "item")
+
+  .row.justify-content-md-center
+    .col-md-auto
+      = pagination
+
+  = resource_list(@items, show_submitters: true)
+
+  .row.justify-content-md-center
+    .col-md-auto
+      = pagination
+
+- else
+  There are currently no items being submitted to this collection.

@@ -155,6 +155,13 @@ const CollectionView = function() {
         });
     });
 
+    $("#submissions-in-progress-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/collections/" + collectionID + "/submissions-in-progress";
+        $.get(url, function(data) {
+            $("#submissions-in-progress-tab-content").html(data);
+        });
+    });
+
     $("#statistics-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/collections/" + collectionID + "/statistics";
         $.get(url, function(data) {

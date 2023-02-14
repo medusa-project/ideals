@@ -144,6 +144,10 @@ class CollectionPolicy < ApplicationPolicy
     show
   end
 
+  def show_submissions_in_progress
+    show_review_submissions
+  end
+
   def statistics_by_range
     show_statistics
   end

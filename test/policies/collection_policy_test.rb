@@ -885,6 +885,59 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.show_statistics?
   end
 
+  # show_submissions_in_progress?()
+
+  test "show_submissions_in_progress?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @collection.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() authorizes collection managers" do
+    user    = users(:southwest)
+    user.managing_collections << @collection
+    user.save!
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.show_submissions_in_progress?
+  end
+
   # statistics_by_range?()
 
   test "statistics_by_range?() returns true with a nil user" do

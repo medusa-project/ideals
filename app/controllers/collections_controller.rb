@@ -243,8 +243,8 @@ class CollectionsController < ApplicationController
     if @collection.buried
       render "show_buried", status: :gone and return
     end
-    review_items  = review_items(0, 0)
-    @review_count = review_items.count
+    @review_count                  = review_items(0, 0).count
+    @submissions_in_progress_count = submissions_in_progress(0, 0).count
   end
 
   ##
@@ -318,6 +318,21 @@ class CollectionsController < ApplicationController
   #
   def show_statistics
     render partial: "show_statistics_tab"
+  end
+
+  ##
+  # Renders HTML for the submissions-in-progress tab in show-collection view.
+  #
+  # Responds to `GET /collections/:id/submissions-in-progress`
+  #
+  def show_submissions_in_progress
+    @permitted_params = params.permit(Search::RESULTS_PARAMS)
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    @items            = submissions_in_progress(@start, @window)
+    @count            = @items.count
+    @current_page     = @items.page
+    render partial: "show_submissions_in_progress_tab"
   end
 
   ##
@@ -491,7 +506,18 @@ class CollectionsController < ApplicationController
       institution(current_institution).
       aggregations(false).
       filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
-      filter(Item::IndexFields::COLLECTIONS, params[:id]&.gsub(/[^\d]/, "")). # TODO: why does this id sometimes arrive with a comma suffix?
+      filter(Item::IndexFields::COLLECTIONS, @collection.id).
+      order(Item::IndexFields::CREATED).
+      start(start).
+      limit(limit)
+  end
+
+  def submissions_in_progress(start, limit)
+    Item.search.
+      institution(current_institution).
+      aggregations(false).
+      filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
+      filter(Item::IndexFields::COLLECTIONS, @collection.id).
       order(Item::IndexFields::CREATED).
       start(start).
       limit(limit)

@@ -647,6 +647,48 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :gone
   end
 
+  # show_review_submissions()
+
+  test "show_review_submissions() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_review_submissions_path(collection), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_review_submissions() returns HTTP 403 for logged-out users" do
+    collection = collections(:uiuc_collection1)
+    get collection_review_submissions_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_review_submissions() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:example))
+    collection = collections(:uiuc_collection1)
+    get collection_review_submissions_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_review_submissions() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:example_sysadmin))
+    collection = collections(:uiuc_collection1)
+    get collection_review_submissions_path(collection)
+    assert_response :not_found
+  end
+
+  test "show_review_submissions() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:uiuc_admin))
+    get collection_review_submissions_path(collections(:uiuc_buried)), xhr: true
+    assert_response :gone
+  end
+
+  test "show_review_submissions() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:uiuc_admin))
+    collection = collections(:uiuc_collection1)
+    get collection_review_submissions_path(collection), xhr: true
+    assert_response :ok
+  end
+
   # show_statistics()
 
   test "show_statistics() returns HTTP 404 for unscoped requests" do
@@ -669,6 +711,48 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   test "show_statistics() returns HTTP 410 for a buried collection" do
     get collection_statistics_path(collections(:uiuc_buried)), xhr: true
     assert_response :gone
+  end
+
+  # show_submissions_in_progress()
+
+  test "show_submissions_in_progress() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_submissions_in_progress_path(collection), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_submissions_in_progress() returns HTTP 403 for logged-out users" do
+    collection = collections(:uiuc_collection1)
+    get collection_submissions_in_progress_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submissions_in_progress() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:example))
+    collection = collections(:uiuc_collection1)
+    get collection_submissions_in_progress_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submissions_in_progress() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:example_sysadmin))
+    collection = collections(:uiuc_collection1)
+    get collection_submissions_in_progress_path(collection)
+    assert_response :not_found
+  end
+
+  test "show_submissions_in_progress() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:uiuc_admin))
+    get collection_submissions_in_progress_path(collections(:uiuc_buried)), xhr: true
+    assert_response :gone
+  end
+
+  test "show_submissions_in_progress() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:uiuc_admin))
+    collection = collections(:uiuc_collection1)
+    get collection_submissions_in_progress_path(collection), xhr: true
+    assert_response :ok
   end
 
   # statistics_by_range()

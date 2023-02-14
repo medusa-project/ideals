@@ -610,16 +610,19 @@ module ApplicationHelper
   #                             primary.
   # @param default_id [Integer] ID of a resource in `resources` to indicate as
   #                             default.
+  # @param show_submitters [Boolean]
   # @return [String] HTML listing.
   #
   def resource_list(resources,
-                    primary_id: nil,
-                    default_id: nil)
+                    primary_id:      nil,
+                    default_id:      nil,
+                    show_submitters: false)
     html = StringIO.new
     resources.each do |resource|
       html << resource_list_row(resource,
-                                primary:    (primary_id == resource.id),
-                                default:    (default_id == resource.id))
+                                primary:        (primary_id == resource.id),
+                                default:        (default_id == resource.id),
+                                show_submitter: show_submitters)
     end
     raw(html.string)
   end
@@ -631,8 +634,9 @@ module ApplicationHelper
   # @return [String] HTML string.
   #
   def resource_list_row(resource,
-                        primary: false,
-                        default: false)
+                        primary:        false,
+                        default:        false,
+                        show_submitter: false)
     embargoed_item = resource.kind_of?(Item) &&
       resource.embargoed_for?(current_user)
     thumb          = thumbnail_for(resource)
@@ -672,7 +676,13 @@ module ApplicationHelper
     end
     html <<     "</h5>"
 
-    if resource.kind_of?(Item)
+    if show_submitter && resource.submitter
+      html << link_to(resource.submitter.becomes(User)) do
+        icon_for(resource.submitter) + " " + resource.submitter.name
+      end
+      html << " &bull; "
+      html << local_time(resource.created_at)
+    elsif resource.kind_of?(Item)
       author = resource.elements.
         select{ |e| e.name == resource.institution.author_element.name }.
         map(&:string).
