@@ -183,7 +183,8 @@ class Institution < ApplicationRecord
   # @return [Enumerable<Hash>]
   #
   def self.file_sizes
-    sql = "SELECT ins.id, ins.name, SUM(b.length)
+    sql = "SELECT ins.id, ins.name, SUM(b.length) AS sum,
+        AVG(b.length) AS mean, MAX(b.length) AS max
       FROM institutions ins
       LEFT JOIN items i ON i.institution_id = ins.id
       LEFT JOIN bitstreams b ON b.item_id = i.id
