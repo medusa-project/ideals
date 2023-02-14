@@ -625,31 +625,31 @@ module ApplicationHelper
   end
 
   ##
-  #
   # @param resource [Describable]
   # @param primary [Boolean] Whether to mark the resource as primary.
   # @param default [Boolean] Whether to mark the resource as default.
   # @return [String] HTML string.
   #
   def resource_list_row(resource,
-                        primary:    false,
-                        default:    false)
+                        primary: false,
+                        default: false)
     embargoed_item = resource.kind_of?(Item) &&
       resource.embargoed_for?(current_user)
-    thumb = thumbnail_for(resource)
-    html = StringIO.new
+    thumb          = thumbnail_for(resource)
+    resource_url   = polymorphic_url(resource, host: resource.institution.fqdn)
+    html           = StringIO.new
     html << "<div class=\"d-flex resource-list mb-3\">"
     if embargoed_item
       html <<   "<div class=\"flex-shrink-0 icon-thumbnail\">"
       html <<     '<i class="fa fa-lock"></i>'
     elsif thumb
       html <<   "<div class=\"flex-shrink-0 image-thumbnail\">"
-      html <<     link_to(resource) do
+      html <<     link_to(resource_url) do
         thumb
       end
     else
       html <<   "<div class=\"flex-shrink-0 icon-thumbnail\">"
-      html <<     link_to(resource) do
+      html <<     link_to(resource_url) do
         icon_for(resource)
       end
     end
@@ -659,7 +659,7 @@ module ApplicationHelper
     if embargoed_item
       html <<     resource.title
     else
-      html <<     link_to(resource.title, resource)
+      html <<     link_to(resource.title, resource_url)
     end
 
     if primary
