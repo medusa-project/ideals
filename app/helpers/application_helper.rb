@@ -667,12 +667,12 @@ module ApplicationHelper
     end
 
     if primary
-      html <<     " <span class=\"badge badge-primary\">PRIMARY</span>"
+      html <<     " <span class=\"badge text-bg-primary\">PRIMARY</span>"
     elsif default
-      html <<     " <span class=\"badge badge-primary\">DEFAULT</span>"
+      html <<     " <span class=\"badge text-bg-primary\">DEFAULT</span>"
     end
     if embargoed_item
-      html <<     " <span class=\"badge badge-danger\">EMBARGOED</span>"
+      html <<     " <span class=\"badge text-bg-danger\">EMBARGOED</span>"
     end
     html <<     "</h5>"
 

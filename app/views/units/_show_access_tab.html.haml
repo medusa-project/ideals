@@ -38,7 +38,7 @@
         - if @unit.administering_users.any?
           %ul
             - @unit.administering_users.each do |user|
-              %li= link_to(raw("#{user.name}#{user == @unit.primary_administrator ? " <span class=\"badge badge-primary\">PRIMARY</span>" : ""}"),
+              %li= link_to(raw("#{user.name}#{user == @unit.primary_administrator ? " <span class=\"badge text-bg-primary\">PRIMARY</span>" : ""}"),
                   "mailto:#{user.email}")
         - else
           None
