@@ -55,8 +55,6 @@
 # # Relationships
 #
 # * `collections`         References zero-to-many sub-{Collection}s.
-# * `elements`            References zero-to-many {AscribedElement}s used to
-#                         describe an instance.
 # * `items`               References all {Item}s contained within the instance.
 # * `managers`            References the {CollectionManager}s that are allowed
 #                         to manage the instance. This does not include all

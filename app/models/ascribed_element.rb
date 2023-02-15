@@ -8,8 +8,6 @@
 #
 # # Attributes
 #
-# * `collection_id`:         ID of the associated {Collection}. Set only if
-#                            {item_id} is not set.
 # * `created_at`:            Managed by ActiveRecord.
 # * `item_id`:               ID of the associated {Item}. Set only if
 #                            {collection_id} is not set.
