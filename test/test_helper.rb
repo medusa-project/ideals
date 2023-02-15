@@ -26,7 +26,7 @@ class ActiveSupport::TestCase
   # these properties.
   #
   def fix_bitstream_keys(bitstream)
-    submitted_for_ingest = bitstream.submitted_for_ingest
+    submitted_for_ingest = bitstream.submitted_for_ingest?
     if bitstream.staging_key.present?
       staging_key = Bitstream.staging_key(
         institution_key: bitstream.institution.key,
@@ -41,8 +41,6 @@ class ActiveSupport::TestCase
         filename:        bitstream.filename)
       bitstream.update_column(:permanent_key, permanent_key)
     end
-    # Restore submitted_for_ingest to its initial value
-    bitstream.update_column(:submitted_for_ingest, submitted_for_ingest)
   end
 
   def log_in_as(user)

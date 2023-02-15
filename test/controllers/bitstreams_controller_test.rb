@@ -241,11 +241,11 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "ingest() ingests the bitstream" do
     log_in_as(users(:uiuc_admin))
     bitstream = bitstreams(:uiuc_awaiting_ingest_into_medusa)
-    assert !bitstream.submitted_for_ingest
+    assert !bitstream.submitted_for_ingest?
 
     post item_bitstream_ingest_path(items(:uiuc_item1), bitstream)
     bitstream.reload
-    assert bitstream.submitted_for_ingest
+    assert bitstream.submitted_for_ingest?
   end
 
   test "ingest() returns HTTP 204 for a successful ingest" do

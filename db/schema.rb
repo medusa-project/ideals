@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_13_214130) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_15_191407) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -67,7 +67,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_214130) do
     t.string "original_filename"
     t.string "medusa_uuid"
     t.string "medusa_key"
-    t.boolean "submitted_for_ingest", default: false, null: false
     t.integer "role", default: 0, null: false
     t.integer "bundle", default: 0, null: false
     t.string "permanent_key"

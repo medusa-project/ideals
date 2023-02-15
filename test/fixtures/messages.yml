@@ -3,8 +3,8 @@
 # ingests
 
 ingest_no_response:
-  operation:     ingest
   bitstream:     uiuc_item1_in_staging
+  operation:     ingest
   status:
   medusa_key:
   medusa_uuid:
@@ -14,8 +14,8 @@ ingest_no_response:
   target_key:    target/cat
 
 successful_ingest:
-  operation:     ingest
   bitstream:     uiuc_in_medusa
+  operation:     ingest
   status:        ok
   medusa_key:    target/dog
   medusa_uuid:   f6d28553-a73d-4d40-9d7d-665a3fa4aa1c
@@ -25,8 +25,8 @@ successful_ingest:
   target_key:    target/dog
 
 failed_ingest:
-  operation:     ingest
   bitstream:     uiuc_in_medusa
+  operation:     ingest
   status:        error
   medusa_key:
   medusa_uuid:
@@ -38,8 +38,8 @@ failed_ingest:
 # deletes
 
 delete_no_response:
-  operation:     delete
   bitstream:     uiuc_in_medusa
+  operation:     delete
   status:
   medusa_key:
   medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
@@ -49,8 +49,8 @@ delete_no_response:
   target_key:    target/horse
 
 successful_delete:
-  operation:     delete
   bitstream:     uiuc_in_medusa
+  operation:     delete
   status:        ok
   medusa_key:    target/cow
   medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
@@ -60,8 +60,8 @@ successful_delete:
   target_key:    target/cow
 
 failed_delete:
-  operation:     delete
   bitstream:     uiuc_in_medusa
+  operation:     delete
   status:        error
   medusa_key:    target/alpaca
   medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
@@ -69,3 +69,73 @@ failed_delete:
   error_text:    Something went wrong.
   staging_key:   staging/alpaca
   target_key:    target/alpaca
+
+################################ southwest ##################################
+
+southwest_unit1_collection1_item1_approved_ingest:
+  bitstream:     southwest_unit1_collection1_item1_approved
+  operation:     ingest
+  status:
+  medusa_key:
+  medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
+  response_time:
+  error_text:
+  staging_key:   <%= SecureRandom.hex %>
+  target_key:    <%= SecureRandom.hex %>
+
+southwest_unit1_collection1_item1_license_ingest:
+  bitstream:     southwest_unit1_collection1_item1_license
+  operation:     ingest
+  status:
+  medusa_key:
+  medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
+  response_time:
+  error_text:
+  staging_key:   <%= SecureRandom.hex %>
+  target_key:    <%= SecureRandom.hex %>
+
+southwest_unit1_collection1_embargoed_1_ingest:
+  bitstream:     southwest_unit1_collection1_embargoed_1
+  operation:     ingest
+  status:
+  medusa_key:
+  medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
+  response_time:
+  error_text:
+  staging_key:   <%= SecureRandom.hex %>
+  target_key:    <%= SecureRandom.hex %>
+
+southwest_unit1_collection1_withdrawn_1_ingest:
+  bitstream:     southwest_unit1_collection1_withdrawn_1
+  operation:     ingest
+  status:
+  medusa_key:
+  medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
+  response_time:
+  error_text:
+  staging_key:   <%= SecureRandom.hex %>
+  target_key:    <%= SecureRandom.hex %>
+
+################################### uiuc #####################################
+
+uiuc_approved_in_permanent_ingest:
+  bitstream:     uiuc_approved_in_permanent
+  operation:     ingest
+  status:
+  medusa_key:
+  medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
+  response_time:
+  error_text:
+  staging_key:   <%= SecureRandom.hex %>
+  target_key:    <%= SecureRandom.hex %>
+
+uiuc_in_medusa_ingest:
+  bitstream:     uiuc_in_medusa
+  operation:     ingest
+  status:
+  medusa_key:
+  medusa_uuid:   3d2a99d5-2f5b-401e-80c1-864a95e3acf7
+  response_time:
+  error_text:
+  staging_key:   <%= SecureRandom.hex %>
+  target_key:    <%= SecureRandom.hex %>

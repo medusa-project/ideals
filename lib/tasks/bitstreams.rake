@@ -40,8 +40,9 @@ namespace :bitstreams do
   desc "Ingest bitstreams into Medusa that have not already been ingested"
   task :ingest_into_medusa, [:limit] => :environment do |task, args|
     bitstreams = Bitstream.
-      where(submitted_for_ingest: false, medusa_uuid: nil).
-      where("permanent_key IS NOT NULL")
+      where(medusa_uuid: nil).
+      where("permanent_key IS NOT NULL").
+      reject(&:submitted_for_ingest?)
     puts "#{bitstreams.count} bitstreams left to ingest"
     limit      = args[:limit].to_i
     bitstreams = bitstreams.limit(limit)
@@ -90,7 +91,9 @@ namespace :bitstreams do
     num_updated      = 0
     num_reingests    = 0
 
-    bitstreams = Bitstream.where(submitted_for_ingest: true, medusa_uuid: nil)
+    bitstreams = Bitstream.
+      where(medusa_uuid: nil).
+      select(&:submitted_for_ingest?)
     count      = bitstreams.count
     puts "#{count} bitstreams submitted for ingest but with unknown Medusa UUID..."
     bitstreams.each do |bs|

@@ -95,8 +95,6 @@
 # * `staging_key`:          Object key in the application S3 bucket, which is
 #                           set after the instance has been uploaded but before
 #                           it has been approved.
-# * `submitted_for_ingest`: Set to `true` after an ingest message has been sent
-#                           to Medusa.
 # * `updated_at`:           Managed by ActiveRecord.
 #
 class Bitstream < ApplicationRecord
@@ -517,7 +515,6 @@ class Bitstream < ApplicationRecord
       message.save!
       message.send_message
     end
-    self.update_column(:submitted_for_ingest, true) # skip callbacks
   end
 
   ##
@@ -633,6 +630,13 @@ class Bitstream < ApplicationRecord
   #
   def read_full_text_async
     ReadFullTextJob.perform_later(self)
+  end
+
+  ##
+  # @return [Boolean]
+  #
+  def submitted_for_ingest?
+    self.messages.where(operation: Message::Operation::INGEST).count > 0
   end
 
   ##

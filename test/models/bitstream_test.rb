@@ -1116,6 +1116,20 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  # submitted_for_ingest?()
+
+  test "submitted_for_ingest?() returns false when there is no associated
+  ingest message" do
+    @instance = bitstreams(:southwest_unit1_collection1_submitting_1)
+    assert !@instance.submitted_for_ingest?
+  end
+
+  test "submitted_for_ingest?() returns true when there is an associated ingest
+  message" do
+    @instance = bitstreams(:southwest_unit1_collection1_item1_approved)
+    assert @instance.submitted_for_ingest?
+  end
+
   # update()
 
   test "update() update bundle positions in the owning item when increasing a

@@ -63,7 +63,7 @@
         %dd= Role.label(@bitstream.role)
       - if show_details
         %dt Submitted For Ingest
-        %dd= boolean(@bitstream.submitted_for_ingest, style: :word)
+        %dd= boolean(@bitstream.submitted_for_ingest?, style: :word)
         - if @bitstream.medusa_uuid.present?
           %dt Medusa UUID
           %dd= link_to(@bitstream.medusa_uuid, @bitstream.medusa_url)
