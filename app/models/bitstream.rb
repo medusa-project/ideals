@@ -117,7 +117,7 @@ class Bitstream < ApplicationRecord
 
   before_save :populate_filenames
   before_save :ensure_primary_uniqueness
-  before_save :move_storage_object, if: -> {
+  before_save :rename_storage_object, if: -> {
     filename_changed? &&
       filename_was.present? &&
       (staging_key.present? || permanent_key.present?)
@@ -683,8 +683,8 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # Downloads the object into a temp file, writes a derivative image into an
-  # in-memory buffer, and saves it to the application S3 bucket.
+  # Downloads the object into a temp file, writes a derivative image into
+  # another temp file, and saves it to the application S3 bucket.
   #
   # @param region [Symbol]
   # @param size [Integer]
@@ -720,30 +720,6 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # `before_save` callback that renames the corresponding object in storage if
-  # the {filename} property has changed.
-  #
-  def move_storage_object
-    return if !filename_changed? || filename_was.blank?
-    return if staging_key.blank? && permanent_key.blank?
-    if self.permanent_key_was.present?
-      target_key = self.class.permanent_key(institution_key: self.institution.key,
-                                            item_id:         self.item_id,
-                                            filename:        self.filename)
-      PersistentStore.instance.move_object(source_key: self.permanent_key_was,
-                                           target_key: target_key)
-      self.update_column(:permanent_key, target_key)
-    elsif self.staging_key_was.present?  # skip callbacks
-      target_key = self.class.staging_key(institution_key: self.institution.key,
-                                          item_id:         self.item_id,
-                                          filename:        self.filename)
-      PersistentStore.instance.move_object(source_key: self.staging_key_was,
-                                           target_key: target_key)
-      self.update_column(:staging_key, target_key) # skip callbacks
-    end
-  end
-
-  ##
   # Sets {filename} to the value of {original_filename} if it is nil, and vice
   # versa.
   #
@@ -754,6 +730,30 @@ class Bitstream < ApplicationRecord
 
   def reindex_owning_item
     self.item&.reindex
+  end
+
+  ##
+  # `before_save` callback that renames the corresponding storage object if its
+  # {filename} property has changed.
+  #
+  def rename_storage_object
+    return if !filename_changed? || filename_was.blank?
+    return if staging_key.blank? && permanent_key.blank?
+    if self.permanent_key_was.present?
+      target_key = self.class.permanent_key(institution_key: self.institution.key,
+                                            item_id:         self.item_id,
+                                            filename:        self.filename)
+      PersistentStore.instance.move_object(source_key: self.permanent_key_was,
+                                           target_key: target_key)
+      self.update_column(:permanent_key, target_key) # skip callbacks
+    elsif self.staging_key_was.present?
+      target_key = self.class.staging_key(institution_key: self.institution.key,
+                                          item_id:         self.item_id,
+                                          filename:        self.filename)
+      PersistentStore.instance.move_object(source_key: self.staging_key_was,
+                                           target_key: target_key)
+      self.update_column(:staging_key, target_key) # skip callbacks
+    end
   end
 
   ##
