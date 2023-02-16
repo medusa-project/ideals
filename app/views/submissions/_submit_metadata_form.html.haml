@@ -29,7 +29,7 @@
               .col
                 - show_text_field = profile_element.name == "dc:type" && ascribed_element.string.present? && (!registered_element.vocabulary.vocabulary_terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string == "other")
                 = select_tag(show_text_field ? "disabled" : "elements[][string]",
-                             options_for_select(registered_element.vocabulary.vocabulary_terms.map{ |t| [t.displayed_value, t.stored_value] },
+                             options_for_select(registered_element.vocabulary.vocabulary_terms.sort_by(&:displayed_value).map{ |t| [t.displayed_value, t.stored_value] },
                                                 (registered_element.vocabulary.vocabulary_terms.map(&:stored_value).include?(ascribed_element.string) || ascribed_element.string.blank?) ? ascribed_element.string : "other"),
                              class: "form-select",
                              include_blank: true,
