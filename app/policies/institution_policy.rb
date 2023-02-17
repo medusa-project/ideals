@@ -59,6 +59,22 @@ class InstitutionPolicy < ApplicationPolicy
     effective_sysadmin(@user, @role_limit)
   end
 
+  def remove_banner_image
+    update_settings
+  end
+
+  def remove_favicon
+    update_settings
+  end
+
+  def remove_footer_image
+    update_settings
+  end
+
+  def remove_header_image
+    update_settings
+  end
+
   def show
     effective_institution_admin(@user, @institution, @role_limit)
   end

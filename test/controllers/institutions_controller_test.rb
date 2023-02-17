@@ -390,6 +390,170 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # remove_banner_image()
+
+  test "remove_banner_image() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete institution_banner_image_path(@institution)
+    assert_response :not_found
+  end
+
+  test "remove_banner_image() redirects to root page for logged-out users" do
+    delete institution_banner_image_path(@institution)
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "remove_banner_image() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    delete institution_banner_image_path(@institution)
+    assert_response :forbidden
+  end
+
+  test "remove_banner_image() removes an institution's banner image" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    delete institution_banner_image_path(institution)
+    institution.reload
+    assert_nil institution.banner_image_filename
+  end
+
+  test "remove_banner_image() redirects back to the institution page" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    delete institution_banner_image_path(user.institution)
+    assert_redirected_to user.institution
+  end
+
+  test "remove_banner_image() returns HTTP 404 for a nonexistent institution" do
+    log_in_as(users(:southwest_admin))
+    delete "/institutions/bogus/banner-image"
+    assert_response :not_found
+  end
+
+  # remove_favicon()
+
+  test "remove_favicon() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete institution_favicon_path(@institution)
+    assert_response :not_found
+  end
+
+  test "remove_favicon() redirects to root page for logged-out users" do
+    delete institution_favicon_path(@institution)
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "remove_favicon() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    delete institution_favicon_path(@institution)
+    assert_response :forbidden
+  end
+
+  test "remove_favicon() removes an institution's favicon" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    delete institution_favicon_path(institution)
+    institution.reload
+    assert !institution.has_favicon
+  end
+
+  test "remove_favicon() redirects back to the institution page" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    delete institution_favicon_path(user.institution)
+    assert_redirected_to user.institution
+  end
+
+  test "remove_favicon() returns HTTP 404 for a nonexistent institution" do
+    log_in_as(users(:southwest_admin))
+    delete "/institutions/bogus/favicon"
+    assert_response :not_found
+  end
+
+  # remove_footer_image()
+
+  test "remove_footer_image() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete institution_footer_image_path(@institution)
+    assert_response :not_found
+  end
+
+  test "remove_footer_image() redirects to root page for logged-out users" do
+    delete institution_footer_image_path(@institution)
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "remove_footer_image() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    delete institution_footer_image_path(@institution)
+    assert_response :forbidden
+  end
+
+  test "remove_footer_image() removes an institution's banner image" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    delete institution_footer_image_path(institution)
+    institution.reload
+    assert_nil institution.banner_image_filename
+  end
+
+  test "remove_footer_image() redirects back to the institution page" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    delete institution_footer_image_path(user.institution)
+    assert_redirected_to user.institution
+  end
+
+  test "remove_footer_image() returns HTTP 404 for a nonexistent institution" do
+    log_in_as(users(:southwest_admin))
+    delete "/institutions/bogus/footer-image"
+    assert_response :not_found
+  end
+
+  # remove_header_image()
+
+  test "remove_header_image() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete institution_header_image_path(@institution)
+    assert_response :not_found
+  end
+
+  test "remove_header_image() redirects to root page for logged-out users" do
+    delete institution_header_image_path(@institution)
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "remove_header_image() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    delete institution_header_image_path(@institution)
+    assert_response :forbidden
+  end
+
+  test "remove_header_image() removes an institution's banner image" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    delete institution_header_image_path(institution)
+    institution.reload
+    assert_nil institution.header_image_filename
+  end
+
+  test "remove_header_image() redirects back to the institution page" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    delete institution_header_image_path(user.institution)
+    assert_redirected_to user.institution
+  end
+
+  test "remove_header_image() returns HTTP 404 for a nonexistent institution" do
+    log_in_as(users(:southwest_admin))
+    delete "/institutions/bogus/header-image"
+    assert_response :not_found
+  end
+
   # show()
 
   test "show() returns HTTP 404 for unscoped requests" do

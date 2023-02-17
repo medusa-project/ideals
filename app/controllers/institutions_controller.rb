@@ -173,6 +173,62 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Responds to `DELETE /institutions/:id/banner-image`
+  #
+  def remove_banner_image
+    @institution.delete_banner_image
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    toast!(title:   "Image deleted",
+           message: "The banner image has been deleted.")
+  ensure
+    redirect_back fallback_location: @institution
+  end
+
+  ##
+  # Responds to `DELETE /institutions/:id/favicon`
+  #
+  def remove_favicon
+    @institution.delete_favicons
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    toast!(title:   "Image deleted",
+           message: "The favicons have been deleted.")
+  ensure
+    redirect_back fallback_location: @institution
+  end
+
+  ##
+  # Responds to `DELETE /institutions/:id/footer-image`
+  #
+  def remove_footer_image
+    @institution.delete_footer_image
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    toast!(title:   "Image deleted",
+           message: "The footer image has been deleted.")
+  ensure
+    redirect_back fallback_location: @institution
+  end
+
+  ##
+  # Responds to `DELETE /institutions/:id/header-image`
+  #
+  def remove_header_image
+    @institution.delete_header_image
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    toast!(title:   "Image deleted",
+           message: "The header image has been deleted.")
+  ensure
+    redirect_back fallback_location: @institution
+  end
+
+  ##
   # Responds to `GET /institutions/:key`
   #
   def show

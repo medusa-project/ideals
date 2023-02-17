@@ -288,6 +288,34 @@ class Institution < ApplicationRecord
     self.user_groups.where(defines_institution: true).limit(1).first
   end
 
+  def delete_banner_image
+    return if self.banner_image_filename.blank?
+    key = self.class.image_key_prefix(self.key) + self.banner_image_filename
+    PersistentStore.instance.delete_object(key: key)
+    self.update!(banner_image_filename: nil)
+  end
+
+  def delete_favicons
+    return unless self.has_favicon
+    key_prefix = self.class.image_key_prefix(self.key) + "favicons/"
+    PersistentStore.instance.delete_objects(key_prefix: key_prefix)
+    self.update!(has_favicon: false)
+  end
+
+  def delete_footer_image
+    return if self.footer_image_filename.blank?
+    key = self.class.image_key_prefix(self.key) + self.footer_image_filename
+    PersistentStore.instance.delete_object(key: key)
+    self.update!(footer_image_filename: nil)
+  end
+
+  def delete_header_image
+    return if self.header_image_filename.blank?
+    key = self.class.image_key_prefix(self.key) + self.header_image_filename
+    PersistentStore.instance.delete_object(key: key)
+    self.update!(header_image_filename: nil)
+  end
+
   ##
   # Compiles monthly download counts for a given time span by querying the
   # `events` table.
@@ -343,6 +371,7 @@ class Institution < ApplicationRecord
   def favicon_url(size:)
     return nil unless self.has_favicon
     key = [self.class.image_key_prefix(self.key),
+           "favicons/",
            self.class.favicon_filename(size: size)].join
     PersistentStore.instance.public_url(key: key)
   end
@@ -425,7 +454,7 @@ class Institution < ApplicationRecord
     raise "This institution does not have a master favicon" unless has_favicon
     begin
       Dir.mktmpdir do |tmpdir|
-        key_prefix  = self.class.image_key_prefix(self.key)
+        key_prefix  = self.class.image_key_prefix(self.key) + "favicons/"
         master_key  = key_prefix + "favicon-original.png"
         master_path = File.join(tmpdir, "favicon-original.png")
         # Download the master favicon.
@@ -436,7 +465,7 @@ class Institution < ApplicationRecord
           deriv_path = "#{tmpdir}/favicon-#{icon[:size]}x#{icon[:size]}.png"
           `vipsthumbnail #{master_path} --size=#{icon[:size]}x#{icon[:size]} -o #{deriv_path}.v`
           `vips gravity #{deriv_path}.v #{deriv_path} centre #{icon[:size]} #{icon[:size]} --background "0, 0, 0, 0"`
-          dest_key  = "#{key_prefix}favicon-#{icon[:size]}x#{icon[:size]}.png"
+          dest_key = "#{key_prefix}favicon-#{icon[:size]}x#{icon[:size]}.png"
           PersistentStore.instance.put_object(key:             dest_key,
                                               institution_key: self.key,
                                               path:            deriv_path)
@@ -534,7 +563,7 @@ class Institution < ApplicationRecord
       tempfile.close
       # Upload the "master favicon"
       key_prefix = self.class.image_key_prefix(self.key)
-      dest_key   = key_prefix + "favicon-original.png"
+      dest_key   = key_prefix + "favicons/favicon-original.png"
       PersistentStore.instance.put_object(key:             dest_key,
                                           institution_key: self.key,
                                           path:            tempfile.path)

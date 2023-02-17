@@ -57,7 +57,14 @@
         = @institution.active_link_color
   .col-sm-3
     .card
-      .card-header Master Favicon
+      .card-header
+        Master Favicon
+        - if @institution.has_favicon
+          .float-end
+            = link_to(institution_favicon_path(@institution),
+                      method: :delete, class: "btn btn-danger btn-sm") do
+              %i.fa.fa-trash
+              Delete
       .card-body
         - if @institution.has_favicon
           - size = InstitutionsHelper::FAVICONS.sort{ |a,b| a[:size] <=> b[:size] }.last[:size]
@@ -68,30 +75,51 @@
 .row
   .col-sm-4
     .card
-      .card-header Header Image
+      .card-header
+        Header Image
+        - if @institution.header_image_filename.present?
+          .float-end
+            = link_to(institution_header_image_path(@institution),
+                      method: :delete, class: "btn btn-danger btn-sm") do
+              %i.fa.fa-trash
+              Delete
       .card-body{style: "background-color: #{@institution.header_background_color}; "\
                         "color: #{ColorUtils.optimize_text_contrast(@institution.header_background_color)}"}
         - if @institution.key == "uiuc"
           This institution is using a custom header image that is not configurable.
         - else
-          - if @institution.header_image_filename
+          - if @institution.header_image_filename.present?
             = image_tag(@institution.header_image_url)
           - else
             No image set.
   .col-sm-4
     .card
-      .card-header Banner Image
+      .card-header
+        Banner Image
+        - if @institution.banner_image_filename.present?
+          .float-end
+            = link_to(institution_banner_image_path(@institution),
+                      method: :delete, class: "btn btn-danger btn-sm") do
+              %i.fa.fa-trash
+              Delete
       .card-body
-        - if @institution.banner_image_filename
+        - if @institution.banner_image_filename.present?
           = image_tag(@institution.banner_image_url)
         - else
           No image set.
   .col-sm-4
     .card
-      .card-header Footer Image
+      .card-header
+        Footer Image
+        - if @institution.footer_image_filename.present?
+          .float-end
+            = link_to(institution_footer_image_path(@institution),
+                      method: :delete, class: "btn btn-danger btn-sm") do
+              %i.fa.fa-trash
+              Delete
       .card-body{style: "background-color: #{@institution.footer_background_color}; "\
                         "color: #{ColorUtils.optimize_text_contrast(@institution.footer_background_color)}"}
-        - if @institution.footer_image_filename
+        - if @institution.footer_image_filename.present?
           = image_tag(@institution.footer_image_url)
         - else
           No image set.

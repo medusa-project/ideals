@@ -206,6 +206,87 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_not_nil @instance.defining_user_group
   end
 
+  # delete_banner_image()
+
+  test "delete_banner_image() deletes the banner image" do
+    setup_s3
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
+      @instance.upload_banner_image(io: file, extension: "jpg")
+    end
+
+    @instance.delete_banner_image
+
+    key = Institution.banner_image_key(@instance.key, "jpg")
+    assert !PersistentStore.instance.object_exists?(key: key)
+  end
+
+  test "delete_banner_image() returns if there is no banner image" do
+    @instance.banner_image_filename = nil
+    @instance.delete_banner_image
+  end
+
+  # delete_favicons()
+
+  test "delete_favicons() deletes the favicons" do
+    setup_s3
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
+      @instance.upload_favicon(io: file)
+    end
+
+    @instance.delete_favicons
+
+    key = "institutions/#{@instance.key}/theme/favicons/favicon-original.png"
+    assert !PersistentStore.instance.object_exists?(key: key)
+
+    InstitutionsHelper::FAVICONS.each do |icon|
+      key = "institutions/#{@instance.key}/theme/favicons/favicon-#{icon[:size]}x#{icon[:size]}.png"
+      assert !PersistentStore.instance.object_exists?(key: key)
+    end
+  end
+
+  test "delete_favicons() returns if there is no favicon" do
+    @instance.has_favicon = false
+    @instance.delete_favicons
+  end
+
+  # delete_footer_image()
+
+  test "delete_footer_image() deletes the footer image" do
+    setup_s3
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
+      @instance.upload_footer_image(io: file, extension: "jpg")
+    end
+
+    @instance.delete_footer_image
+
+    key = Institution.footer_image_key(@instance.key, "jpg")
+    assert !PersistentStore.instance.object_exists?(key: key)
+  end
+
+  test "delete_footer_image() returns if there is no footer image" do
+    @instance.footer_image_filename = nil
+    @instance.delete_footer_image
+  end
+
+  # delete_header_image()
+
+  test "delete_header_image() deletes the header image" do
+    setup_s3
+    File.open(file_fixture("escher_lego.png"), "r") do |file|
+      @instance.upload_header_image(io: file, extension: "jpg")
+    end
+
+    @instance.delete_header_image
+
+    key = Institution.header_image_key(@instance.key, "jpg")
+    assert !PersistentStore.instance.object_exists?(key: key)
+  end
+
+  test "delete_header_image() returns if there is no header image" do
+    @instance.header_image_filename = nil
+    @instance.delete_header_image
+  end
+
   # download_count_by_month()
 
   test "download_count_by_month() raises an error if start_time > end_time" do
@@ -274,7 +355,11 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "favicon_url() returns a correct URL when the instance has a favicon" do
     @instance.has_favicon = true
-    assert @instance.favicon_url(size: 128).start_with?("http://")
+    config = ::Configuration.instance
+    assert_equal config.storage[:endpoint] + "/" + config.storage[:bucket] +
+                   "/institutions/" + @instance.key +
+                   "/theme/favicons/favicon-128x128.png",
+                 @instance.favicon_url(size: 128)
   end
 
   test "favicon_url() returns nil when the instance does not have a favicon" do
@@ -544,14 +629,14 @@ class InstitutionTest < ActiveSupport::TestCase
     end
     # Delete its derivatives.
     InstitutionsHelper::FAVICONS.each do |icon|
-      key = "institutions/#{@instance.key}/theme/favicon-#{icon[:size]}x#{icon[:size]}.png"
+      key = "institutions/#{@instance.key}/theme/favicons/favicon-#{icon[:size]}x#{icon[:size]}.png"
       PersistentStore.instance.delete_object(key: key)
     end
     # Regenerate them.
     @instance.regenerate_favicons
     # Assert that they have all been generated.
     InstitutionsHelper::FAVICONS.each do |icon|
-      key = "institutions/#{@instance.key}/theme/favicon-#{icon[:size]}x#{icon[:size]}.png"
+      key = "institutions/#{@instance.key}/theme/favicons/favicon-#{icon[:size]}x#{icon[:size]}.png"
       assert PersistentStore.instance.object_exists?(key: key)
     end
   end
@@ -610,11 +695,11 @@ class InstitutionTest < ActiveSupport::TestCase
     File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_favicon(io: file)
     end
-    key = "institutions/#{@instance.key}/theme/favicon-original.png"
+    key = "institutions/#{@instance.key}/theme/favicons/favicon-original.png"
     assert PersistentStore.instance.object_exists?(key: key)
 
     InstitutionsHelper::FAVICONS.each do |icon|
-      key = "institutions/#{@instance.key}/theme/favicon-#{icon[:size]}x#{icon[:size]}.png"
+      key = "institutions/#{@instance.key}/theme/favicons/favicon-#{icon[:size]}x#{icon[:size]}.png"
       assert PersistentStore.instance.object_exists?(key: key)
     end
   end

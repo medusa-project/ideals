@@ -507,6 +507,178 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
+  # remove_banner_image?()
+
+  test "remove_banner_image?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.remove_banner_image?
+  end
+
+  test "remove_banner_image?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.remove_banner_image?
+  end
+
+  test "remove_banner_image?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.remove_banner_image?
+  end
+
+  test "remove_banner_image?() does not authorize administrators of a different institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, institutions(:northeast))
+    assert !policy.remove_banner_image?
+  end
+
+  test "remove_banner_image?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.remove_banner_image?
+  end
+
+  # remove_favicon?()
+
+  test "remove_favicon?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.remove_favicon?
+  end
+
+  test "remove_favicon?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.remove_favicon?
+  end
+
+  test "remove_favicon?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.remove_favicon?
+  end
+
+  test "remove_favicon?() does not authorize administrators of a different institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, institutions(:northeast))
+    assert !policy.remove_favicon?
+  end
+
+  test "remove_favicon?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.remove_favicon?
+  end
+
+  # remove_footer_image?()
+
+  test "remove_footer_image?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.remove_footer_image?
+  end
+
+  test "remove_footer_image?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.remove_footer_image?
+  end
+
+  test "remove_footer_image?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.remove_footer_image?
+  end
+
+  test "remove_footer_image?() does not authorize administrators of a different institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, institutions(:northeast))
+    assert !policy.remove_footer_image?
+  end
+
+  test "remove_footer_image?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.remove_footer_image?
+  end
+
+  # remove_header_image?()
+
+  test "remove_header_image?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.remove_header_image?
+  end
+
+  test "remove_header_image?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.remove_header_image?
+  end
+
+  test "remove_header_image?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.remove_header_image?
+  end
+
+  test "remove_header_image?() does not authorize administrators of a different institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, institutions(:northeast))
+    assert !policy.remove_header_image?
+  end
+
+  test "remove_header_image?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.remove_header_image?
+  end
+
   # show?()
 
   test "show?() returns false with a nil request context" do
