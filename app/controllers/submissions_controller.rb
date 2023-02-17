@@ -205,11 +205,16 @@ class SubmissionsController < ApplicationController
     ActiveRecord::Base.transaction do
       @item.embargoes.destroy_all
       if @item.temp_embargo_type.present? && @item.temp_embargo_type != "open"
-        embargo = @item.embargoes.build(kind:       @item.temp_embargo_kind || Embargo::Kind::DOWNLOAD,
-                                        expires_at: @item.temp_embargo_expires_at.present? ?
-                                                      Time.parse(@item.temp_embargo_expires_at) : nil,
-                                        reason:     @item.temp_embargo_reason)
+        embargo = @item.embargoes.build(kind:   @item.temp_embargo_kind || Embargo::Kind::DOWNLOAD,
+                                        reason: @item.temp_embargo_reason)
+        if @item.temp_embargo_expires_at.present?
+          embargo.expires_at = Time.parse(@item.temp_embargo_expires_at)
+          embargo.perpetual  = false
+        else
+          embargo.perpetual = true
+        end
         if @item.temp_embargo_type == "institution"
+          embargo.kind = Embargo::Kind::ALL_ACCESS
           embargo.user_groups << current_institution.defining_user_group
         end
       end
