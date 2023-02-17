@@ -39,6 +39,7 @@
 .page-item.active .page-link {
     background-color: <%= h @institution.primary_color %>;
     border: 1px solid <%= h @institution.primary_color %>;
+    color: <%= ColorUtils.optimize_text_contrast(@institution.primary_color) %>;
 }
 .progress-bar {
     background-color: <%= h @institution.primary_color %>;
