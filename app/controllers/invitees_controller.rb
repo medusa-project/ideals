@@ -199,7 +199,7 @@ class InviteesController < ApplicationController
     @window           = window_size
     @invitees         = Invitee.
       where("LOWER(email) LIKE ?", "%#{@permitted_params[:q]&.downcase}%").
-      where("approval_state LIKE ?", "%#{@permitted_params[:approval_state]}%").
+      where(approval_state: @permitted_params[:approval_state] || Invitee::ApprovalState::PENDING).
       order(:created_at)
     if institution
       @invitees = @invitees.where(institution: institution)
