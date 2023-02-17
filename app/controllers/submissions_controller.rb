@@ -206,7 +206,8 @@ class SubmissionsController < ApplicationController
       @item.embargoes.destroy_all
       if @item.temp_embargo_type.present? && @item.temp_embargo_type != "open"
         embargo = @item.embargoes.build(kind:       @item.temp_embargo_kind || Embargo::Kind::DOWNLOAD,
-                                        expires_at: Time.parse(@item.temp_embargo_expires_at),
+                                        expires_at: @item.temp_embargo_expires_at.present? ?
+                                                      Time.parse(@item.temp_embargo_expires_at) : nil,
                                         reason:     @item.temp_embargo_reason)
         if @item.temp_embargo_type == "institution"
           embargo.user_groups << current_institution.defining_user_group
