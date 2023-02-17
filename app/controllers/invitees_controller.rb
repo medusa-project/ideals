@@ -114,11 +114,19 @@ class InviteesController < ApplicationController
   def index
     authorize(Invitee)
     setup_index(current_institution)
+    respond_to do |format|
+      format.html
+      format.js { render partial: "invitees" }
+    end
   end
 
   def index_all
     authorize(Invitee)
     setup_index(nil)
+    respond_to do |format|
+      format.html
+      format.js { render partial: "all_invitees" }
+    end
   end
 
   ##
@@ -194,7 +202,7 @@ class InviteesController < ApplicationController
   def setup_index(institution)
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS +
-                                        [:approval_state, :class])
+                                        [:approval_state, :institution_id])
     @start            = @permitted_params[:start].to_i
     @window           = window_size
     @invitees         = Invitee.
@@ -204,7 +212,7 @@ class InviteesController < ApplicationController
     if institution
       @invitees = @invitees.where(institution: institution)
     elsif params[:institution_id].present?
-      @invitees = @invitees.where(institution_id: params[:institution_id].to_i)
+      @invitees = @invitees.where(institution_id: @permitted_params[:institution_id].to_i)
     end
     @count            = @invitees.count
     @invitees         = @invitees.limit(@window).offset(@start)

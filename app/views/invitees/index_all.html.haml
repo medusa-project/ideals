@@ -5,7 +5,7 @@
 
 .card.mb-3
   .card-body
-    = form_tag all_invitees_path, method: :get, class: "form-inline" do
+    = form_tag all_invitees_path, method: :get, id: "invitees-form", class: "form-inline" do
       .row.mb-3
         .col
           = label_tag nil, "Email", class: "form-label"
@@ -20,16 +20,14 @@
         .col
           = label_tag nil, "Approval State", class: "form-label"
           = select_tag "approval_state",
-                       options_for_select(Invitee::ApprovalState::all.map{ |s| [s.capitalize, s] },
-                                          params[:approval_state]),
-                       include_blank: true,
+                       options_for_select(Invitee::ApprovalState::all.sort.map{ |s| [s.capitalize, s] },
+                                          params[:approval_state] || Invitee::ApprovalState::PENDING),
                        class: "form-select"
-      = button_tag "Clear", type: "reset", class: "btn btn-outline-secondary"
-      = submit_tag "Filter", name: "", class: "btn btn-primary"
 
-= render partial: "all_invitees",
-         locals: { count:            @count,
-                   current_page:     @current_page,
-                   invitees:         @invitees,
-                   permitted_params: @permitted_params,
-                   window:           @window }
+#invitees-xhr-content
+  = render partial: "all_invitees",
+           locals: { count:            @count,
+                     current_page:     @current_page,
+                     invitees:         @invitees,
+                     permitted_params: @permitted_params,
+                     window:           @window }

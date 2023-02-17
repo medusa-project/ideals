@@ -1,14 +1,5 @@
--# Requires the following locals:
--#
--# count [Integer]
--# window [Integer]
--# current_page [Integer]
--# permitted_params [ActionController::Parameters]
--# invitees [Enumerable<Invitee>]
--#
-
-- pagination = paginate(count: count, page: current_page, per_page: window,
-                        permitted_params: permitted_params)
+- pagination = paginate(count: @count, page: @current_page, per_page: @window,
+                        permitted_params: @permitted_params)
 
 .row.justify-content-md-center
   .col-md-auto
@@ -23,7 +14,7 @@
       %th Approval State
       %th
   %tbody
-    - invitees.each do |invitee|
+    - @invitees.each do |invitee|
       %tr
         %td= link_to(invitee.email, invitee)
         %td= invitee.institution&.name
