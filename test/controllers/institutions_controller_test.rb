@@ -108,6 +108,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the institution" do
+    setup_s3
     log_in_as(users(:southwest_sysadmin))
     @institution.nuke!
     delete institution_path(@institution)
