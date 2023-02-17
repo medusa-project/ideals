@@ -254,7 +254,7 @@ const SubmissionForm = function() {
     }
 
     this.validateAccessSection = function() {
-        if (accessForm.find("input[name='item[temp_embargo_type]']:checked").val() !== "open") {
+        if (accessForm.find("input[name='item[temp_embargo_type]']:checked").val() === "closed") {
             if (!self.validateAccessLiftDate()) {
                 setAccessError("Lift date must be in YYYY-MM-DD format.");
                 return false;
