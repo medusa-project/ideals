@@ -214,7 +214,6 @@ class SubmissionsController < ApplicationController
           embargo.perpetual = true
         end
         if @item.temp_embargo_type == "institution"
-          embargo.kind = Embargo::Kind::ALL_ACCESS
           embargo.user_groups << current_institution.defining_user_group
         end
       end
