@@ -111,7 +111,8 @@ class BitstreamPolicy < ApplicationPolicy
       return { authorized: false,
                reason:     "This file's owning item is not approved." }
     elsif @bitstream.bundle != Bitstream::Bundle::CONTENT &&
-      (!@user&.effective_manager?(@bitstream.item.primary_collection) || (@role_limit && @role_limit < Role::COLLECTION_MANAGER))
+      (!@user&.effective_manager?(@bitstream.item.effective_primary_collection) ||
+        (@role_limit && @role_limit < Role::COLLECTION_MANAGER))
       return {
         authorized: false,
         reason:     "You must be a manager of the primary collection in "\
