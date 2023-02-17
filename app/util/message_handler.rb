@@ -48,10 +48,10 @@ class MessageHandler
     message.update!(status:        Message::Status::OK,
                     raw_response:  message_json,
                     response_time: Time.now)
-    # We don't want to literally delete the bitstream, as it has only been
-    # deleted from Medusa, not the application. However, we do want to nil out
-    # its Medusa storage properties.
-    message.bitstream.update!(medusa_uuid: nil, medusa_key: nil)
+    # We don't want to literally delete the bitstream, as it may have only been
+    # deleted from Medusa and not the application. However, if it does still
+    # exist, we do want to nil out its Medusa storage properties.
+    message.bitstream&.update!(medusa_uuid: nil, medusa_key: nil)
   end
 
   ##
