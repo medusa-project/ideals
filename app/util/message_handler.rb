@@ -66,7 +66,9 @@ class MessageHandler
     message.update!(status:        message_hash['status'],
                     raw_response:  message_json,
                     response_time: Time.now)
-    raise "Failed to delete from Medusa:\n\n#{message_hash.to_yaml}"
+    unless message_hash['error'].include?("File not found")
+      raise "Failed to delete from Medusa:\n\n#{message_hash.to_yaml}"
+    end
   end
 
   ##
