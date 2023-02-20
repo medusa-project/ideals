@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_15_191407) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_20_175322) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -405,7 +405,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_15_191407) do
     t.bigint "bitstream_id"
     t.text "raw_request"
     t.text "raw_response"
+    t.datetime "sent_at"
+    t.bigint "institution_id", null: false
     t.index ["bitstream_id"], name: "index_messages_on_bitstream_id"
+    t.index ["institution_id"], name: "index_messages_on_institution_id"
   end
 
   create_table "metadata_profile_elements", force: :cascade do |t|
@@ -737,6 +740,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_15_191407) do
   add_foreign_key "manager_groups", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "manager_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "messages", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :cascade
   add_foreign_key "registered_elements", "institutions", on_update: :cascade, on_delete: :cascade

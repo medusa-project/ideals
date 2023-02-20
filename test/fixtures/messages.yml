@@ -3,6 +3,7 @@
 # ingests
 
 ingest_no_response:
+  institution:   uiuc
   bitstream:     uiuc_item1_in_staging
   operation:     ingest
   status:
@@ -14,6 +15,7 @@ ingest_no_response:
   target_key:    target/cat
 
 successful_ingest:
+  institution:   uiuc
   bitstream:     uiuc_in_medusa
   operation:     ingest
   status:        ok
@@ -25,6 +27,7 @@ successful_ingest:
   target_key:    target/dog
 
 failed_ingest:
+  institution:   uiuc
   bitstream:     uiuc_in_medusa
   operation:     ingest
   status:        error
@@ -38,6 +41,7 @@ failed_ingest:
 # deletes
 
 delete_no_response:
+  institution:   uiuc
   bitstream:     uiuc_in_medusa
   operation:     delete
   status:
@@ -49,6 +53,7 @@ delete_no_response:
   target_key:    target/horse
 
 successful_delete:
+  institution:   uiuc
   bitstream:     uiuc_in_medusa
   operation:     delete
   status:        ok
@@ -60,6 +65,7 @@ successful_delete:
   target_key:    target/cow
 
 failed_delete:
+  institution:   uiuc
   bitstream:     uiuc_in_medusa
   operation:     delete
   status:        error
@@ -73,6 +79,7 @@ failed_delete:
 ################################ southwest ##################################
 
 southwest_unit1_collection1_item1_approved_ingest:
+  institution:   southwest
   bitstream:     southwest_unit1_collection1_item1_approved
   operation:     ingest
   status:
@@ -84,6 +91,7 @@ southwest_unit1_collection1_item1_approved_ingest:
   target_key:    <%= SecureRandom.hex %>
 
 southwest_unit1_collection1_item1_license_ingest:
+  institution:   southwest
   bitstream:     southwest_unit1_collection1_item1_license
   operation:     ingest
   status:
@@ -95,6 +103,7 @@ southwest_unit1_collection1_item1_license_ingest:
   target_key:    <%= SecureRandom.hex %>
 
 southwest_unit1_collection1_embargoed_1_ingest:
+  institution:   southwest
   bitstream:     southwest_unit1_collection1_embargoed_1
   operation:     ingest
   status:
@@ -106,6 +115,7 @@ southwest_unit1_collection1_embargoed_1_ingest:
   target_key:    <%= SecureRandom.hex %>
 
 southwest_unit1_collection1_withdrawn_1_ingest:
+  institution:   southwest
   bitstream:     southwest_unit1_collection1_withdrawn_1
   operation:     ingest
   status:
@@ -119,6 +129,7 @@ southwest_unit1_collection1_withdrawn_1_ingest:
 ################################### uiuc #####################################
 
 uiuc_approved_in_permanent_ingest:
+  institution:   uiuc
   bitstream:     uiuc_approved_in_permanent
   operation:     ingest
   status:
@@ -130,6 +141,7 @@ uiuc_approved_in_permanent_ingest:
   target_key:    <%= SecureRandom.hex %>
 
 uiuc_in_medusa_ingest:
+  institution:   uiuc
   bitstream:     uiuc_in_medusa
   operation:     ingest
   status:

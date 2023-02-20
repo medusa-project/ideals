@@ -2,24 +2,7 @@ namespace :medusa do
 
   desc "Delete a file"
   task :delete, [:uuid] => :environment do |task, args|
-    message = Message.create!(operation:   Message::Operation::DELETE,
-                              medusa_uuid: args[:uuid])
-    message.send_message
-  end
-
-  desc "Delete all files in the file group"
-  task :delete_all_files => :environment do
-    config = ::Configuration.instance
-    fg_id  = config.medusa[:file_group_id]
-    fg     = ::Medusa::FileGroup.with_id(fg_id)
-    dir    = fg.directory
-    dir.walk_tree do |node|
-      next unless node.kind_of?(::Medusa::File)
-      message = Message.create!(operation:   Message::Operation::DELETE,
-                                medusa_uuid: node.uuid,
-                                target_key:  node.relative_key)
-      message.send_message
-    end
+    Bitstream.find_by_medusa_uuid(args[:uuid]).delete_from_medusa
   end
 
   namespace :messages do
@@ -47,6 +30,14 @@ namespace :medusa do
       puts "Fetched #{count} messages."
     end
 
+    desc "Delete ingest messages whose associated bitstreams have vanished"
+    task :delete_stale => :environment do
+      Message.
+        where(operation: Message::Operation::INGEST).
+        where(bitstream_id: nil).
+        destroy_all
+    end
+
     desc "List the last 1000 messages"
     task :log => :environment do
       Message.order(:updated_at).limit(1000).each do |message|
@@ -56,7 +47,14 @@ namespace :medusa do
 
     desc "Resend failed Medusa messages"
     task :retry_failed => :environment do
-      Message.where(status: Message::Status::ERROR).each(&:resend)
+      Message.where("status = ? AND ((operation = ? AND bitstream_id IS NOT NULL) OR (operation = ?))",
+                    Message::Status::ERROR, Message::Operation::INGEST, Message::Operation::DELETE).
+        each(&:resend)
+    end
+
+    desc "Resend Medusa messages with no response"
+    task :retry_no_response => :environment do
+      Message.where(status: nil).each(&:resend)
     end
 
   end

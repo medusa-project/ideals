@@ -38,6 +38,21 @@ class MessageTest < ActiveSupport::TestCase
     assert_nil message.medusa_url
   end
 
+  # resend()
+
+  test "resend() sends a correct message" do
+    @instance = messages(:ingest_no_response)
+    @instance.resend
+    queue = @instance.bitstream.institution.outgoing_message_queue
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
+      assert_equal "ingest", message['operation']
+      assert_equal "staging/cat", message['staging_key']
+      assert_equal "target/cat", message['target_key']
+      assert_equal @instance.bitstream.class.to_s, message['pass_through']['class']
+      assert_equal @instance.bitstream.id, message['pass_through']['identifier']
+    end
+  end
+
   # send_message()
 
   test "send_message() sends a correct ingest message" do
