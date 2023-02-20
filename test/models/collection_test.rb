@@ -138,7 +138,6 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal @instance.short_description,
                  doc[Collection::IndexFields::SHORT_DESCRIPTION]
     assert_equal @instance.title, doc[Collection::IndexFields::TITLE]
-    assert doc[Collection::IndexFields::UNIT_DEFAULT]
     assert_equal %w(Unit1 Unit2),
                  doc[Collection::IndexFields::UNIT_TITLES]
     assert_equal @instance.units.count,
@@ -560,16 +559,6 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal 3, actual.length
     assert_kind_of Time, actual[0]['month']
     assert_equal 0, actual[0]['count']
-  end
-
-  # unit_default?()
-
-  test "unit_default?() returns false for a non-unit-default collection" do
-    assert !collections(:uiuc_described).unit_default?
-  end
-
-  test "unit_default?() returns true for a unit-default collection" do
-    assert collections(:uiuc_collection1).unit_default?
   end
 
   # units

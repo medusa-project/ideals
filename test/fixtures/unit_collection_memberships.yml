@@ -4,7 +4,6 @@ northeast_unit1_collection1:
   unit:         northeast_unit1
   collection:   northeast_unit1_collection1
   primary:      true
-  unit_default: true
 
 ################################ southwest ##################################
 
@@ -12,13 +11,11 @@ southwest_unit1_collection1:
   unit:         southwest_unit1
   collection:   southwest_unit1_collection1
   primary:      true
-  unit_default: true
 
 southwest_unit1_collection2:
   unit:         southwest_unit1
   collection:   southwest_unit1_collection2
   primary:      true
-  unit_default: false
 
 ################################## uiuc #####################################
 
@@ -26,57 +23,47 @@ uiuc_unit1_collection1:
   unit:         uiuc_unit1
   collection:   uiuc_collection1
   primary:      true
-  unit_default: true
 
 uiuc_unit1_collection1_collection1:
   unit:         uiuc_unit1
   collection:   uiuc_collection1_collection1
   primary:      true
-  unit_default: false
 
 uiuc_unit1_collection1_collection1_collection1:
   unit:         uiuc_unit1
   collection:   uiuc_collection1_collection1_collection1
   primary:      true
-  unit_default: false
 
 uiuc_unit1_unit2_unit1_collection1:
   unit:         uiuc_unit1_unit2_unit1
   collection:   uiuc_unit1_unit2_unit1_collection1
   primary:      true
-  unit_default: true
 
 uiuc_unit2_collection1:
   unit:         uiuc_unit2
   collection:   uiuc_collection1
   primary:      false
-  unit_default: false
 
 uiuc_unit1_described:
   unit:         uiuc_unit1
   collection:   uiuc_described
-  unit_default: false
   primary:      true
 
 uiuc_unit1_empty:
   unit:         uiuc_unit1
   collection:   uiuc_empty
-  unit_default: false
   primary:      true
 
 uiuc_unit1_undescribed:
   unit:         uiuc_unit1
   collection:   uiuc_undescribed
-  unit_default: false
 
 uiuc_unit2_collection2:
   unit:         uiuc_unit2
   collection:   uiuc_collection2
   primary:      true
-  unit_default: false
 
 uiuc_buried_buried:
   unit:         uiuc_buried
   collection:   uiuc_buried
   primary:      true
-  unit_default: true

@@ -4,5 +4,5 @@ json.array! @units do |unit|
   json.title          unit.title
   json.uri            unit_url(unit)
   json.numChildren    unit.units.length
-  json.numCollections unit.unit_collection_memberships.where(unit_default: false).count
+  json.numCollections unit.unit_collection_memberships.count
 end

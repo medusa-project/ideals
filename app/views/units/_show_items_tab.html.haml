@@ -1,8 +1,4 @@
 .btn-group.float-end{role: "group"}
-  - if @unit.default_collection && policy(@unit.default_collection).submit_item?
-    = link_to(collection_submit_path(@unit.default_collection), class: "btn btn-light", role: "button") do
-      %i.fas.fa-plus
-      Submit Item To This Unit
   - if policy(@unit).export_items?
     .dropdown
       %button#export-button.btn.btn-light.dropdown-toggle{type:             "button",

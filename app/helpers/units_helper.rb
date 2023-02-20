@@ -12,7 +12,7 @@ module UnitsHelper
     html << "<ul>"
     units.each do |unit|
       html << "<li data-id=\"#{unit.id}\">"
-      if unit.units.count > 0 || unit.unit_collection_memberships.where(unit_default: false).count > 0
+      if unit.units.count > 0 || unit.unit_collection_memberships.count > 0
         html <<   "<button class=\"btn btn-link expand\" type=\"button\" data-class=\"#{unit.class}\">"
         html <<     "<i class=\"far fa-plus-square\"></i>"
         html <<   "</button>"

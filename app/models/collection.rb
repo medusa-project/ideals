@@ -103,7 +103,6 @@ class Collection < ApplicationRecord
     SHORT_DESCRIPTION = "t_short_description"
     SUBMITTERS        = "i_submitter_id"
     TITLE             = "t_title"
-    UNIT_DEFAULT      = "b_unit_default"
     UNIT_TITLES       = "t_unit_titles"
     UNITS             = "i_units"
   end
@@ -264,7 +263,6 @@ class Collection < ApplicationRecord
     doc[IndexFields::RIGHTS]            = self.rights
     doc[IndexFields::SHORT_DESCRIPTION] = self.short_description
     doc[IndexFields::TITLE]             = self.title
-    doc[IndexFields::UNIT_DEFAULT]      = self.unit_default?
     doc[IndexFields::UNIT_TITLES]       = units.map(&:title)
     doc[IndexFields::UNITS]             = self.unit_ids
     doc
@@ -470,10 +468,6 @@ class Collection < ApplicationRecord
     values = [self.id, Event::Type::CREATE, start_time, end_time]
     result = self.class.connection.exec_query(sql, "SQL", values).to_a
     result[0..(result.length - 2)]
-  end
-
-  def unit_default?
-    self.unit_collection_memberships.pluck(:unit_default).find{ |m| m == true }.present?
   end
 
 

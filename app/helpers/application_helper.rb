@@ -608,20 +608,16 @@ module ApplicationHelper
   # @param resources [Enumerable<Describable,Unit,Collection>]
   # @param primary_id [Integer] ID of a resource in `resources` to indicate as
   #                             primary.
-  # @param default_id [Integer] ID of a resource in `resources` to indicate as
-  #                             default.
   # @param show_submitters [Boolean]
   # @return [String] HTML listing.
   #
   def resource_list(resources,
                     primary_id:      nil,
-                    default_id:      nil,
                     show_submitters: false)
     html = StringIO.new
     resources.each do |resource|
       html << resource_list_row(resource,
                                 primary:        (primary_id == resource.id),
-                                default:        (default_id == resource.id),
                                 show_submitter: show_submitters)
     end
     raw(html.string)
@@ -630,12 +626,10 @@ module ApplicationHelper
   ##
   # @param resource [Describable]
   # @param primary [Boolean] Whether to mark the resource as primary.
-  # @param default [Boolean] Whether to mark the resource as default.
   # @return [String] HTML string.
   #
   def resource_list_row(resource,
                         primary:        false,
-                        default:        false,
                         show_submitter: false)
     embargoed_item = resource.kind_of?(Item) &&
       resource.embargoed_for?(current_user)
@@ -668,8 +662,6 @@ module ApplicationHelper
 
     if primary
       html <<     " <span class=\"badge text-bg-primary\">PRIMARY</span>"
-    elsif default
-      html <<     " <span class=\"badge text-bg-primary\">DEFAULT</span>"
     end
     if embargoed_item
       html <<     " <span class=\"badge text-bg-danger\">EMBARGOED</span>"
@@ -726,7 +718,7 @@ module ApplicationHelper
   end
 
   ##
-  # Returns a sort pulldown menu for the given metadata profile. If there are
+  # Returns a sort <select> menu for the given metadata profile. If there are
   # no sortable elements in the profile, an empty string is returned.
   #
   # @param metadata_profile [MetadataProfile]

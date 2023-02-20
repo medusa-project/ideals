@@ -48,7 +48,6 @@ class CollectionsController < ApplicationController
     @collections = Collection.search.
         institution(current_institution).
         filter(Collection::IndexFields::PARENT, @collection.id).
-        filter(Collection::IndexFields::UNIT_DEFAULT, false).
         order("#{Collection::IndexFields::TITLE}.sort").
         limit(999)
     render partial: "children"

@@ -7,17 +7,6 @@ class UnitTest < ActiveSupport::TestCase
     @instance = units(:uiuc_unit1)
   end
 
-  # create()
-
-  test "create() creates a default collection" do
-    unit = Unit.create!(title: "New Unit",
-                        institution: institutions(:southwest))
-    assert_equal 1, unit.collections.length
-    m = unit.unit_collection_memberships.first
-    assert m.unit_default
-    assert_equal "Default collection for #{unit.title}", m.collection.title
-  end
-
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
@@ -202,28 +191,6 @@ class UnitTest < ActiveSupport::TestCase
 
   test "child?() returns true for child units" do
     assert units(:uiuc_unit1_unit2).child?
-  end
-
-  # create_default_collection()
-
-  test "create_default_collection() creates a correct default collection" do
-    @instance.collections.destroy_all
-    col = @instance.create_default_collection
-    assert col.unit_collection_memberships.first.unit_default
-    assert_equal "Default collection for #{@instance.title}", col.title
-    assert_equal "This collection was created automatically along with its parent unit.",
-                 col.description
-  end
-
-  # default_collection()
-
-  test "default_collection() returns the default collection" do
-    assert_equal collections(:uiuc_collection1), @instance.default_collection
-  end
-
-  test "default_collection() returns nil when there is no  default collection" do
-    @instance = units(:uiuc_empty)
-    assert_nil @instance.default_collection
   end
 
   # destroy()

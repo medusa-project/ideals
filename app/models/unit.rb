@@ -87,7 +87,6 @@ class Unit < ApplicationRecord
   validate :validate_buried, if: -> { buried }
   validate :validate_parent, :validate_primary_administrator
 
-  after_create :create_default_collection
   before_destroy :validate_empty
 
   ##
@@ -210,33 +209,6 @@ class Unit < ApplicationRecord
   #
   def child?
     self.parent_id.present?
-  end
-
-  ##
-  # Creates a new {Collection} and assigns the instance as its primary unit.
-  #
-  # @return [Collection]
-  #
-  def create_default_collection
-    return if self.unit_collection_memberships.where(unit_default: true).count > 0
-    transaction do
-      collection = Collection.create!(institution: self.institution,
-                                      title:       "Default collection for #{self.title}",
-                                      description: "This collection was "\
-                                      "created automatically along with its parent unit.")
-      self.unit_collection_memberships.build(unit:         self,
-                                             collection:   collection,
-                                             primary:      true,
-                                             unit_default: true).save!
-      collection
-    end
-  end
-
-  ##
-  # @return [Collection]
-  #
-  def default_collection
-    self.unit_collection_memberships.where(unit_default: true).limit(1).first&.collection
   end
 
   ##
