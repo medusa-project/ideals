@@ -8,7 +8,9 @@
     %h4 Request
     %dl
       %dt Sent
-      %dd= local_time(message.updated_at)
+      %dd
+        - if message.sent_at
+          = local_time(message.sent_at)
       %dt Operation
       %dd= badge_for_message_operation(message.operation)
       - if message.staging_key.present?

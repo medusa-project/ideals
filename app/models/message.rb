@@ -26,6 +26,7 @@
 # * `medusa_uuid`   UUID of the corresponding Medusa file.
 # * `operation`     One of the {Message::Operation} constant values.
 # * `response_time` Arrival time of the response message from Medusa.
+# * `sent_at`       Time the message was sent or resent.
 # * `staging_key`   Key of the **permanent** (not staging) object in the
 #                   application S3 bucket.
 # * `status`        Set by a response message from Medusa to one of the
@@ -43,8 +44,9 @@ class Message < ApplicationRecord
   end
 
   class Status
-    OK    = "ok"
-    ERROR = "error"
+    OK     = "ok"
+    ERROR  = "error"
+    RESENT = "resent"
   end
 
   belongs_to :bitstream, optional: true
@@ -57,17 +59,17 @@ class Message < ApplicationRecord
   #
   def as_console
     lines = ["#{self.id}----------------------------------"]
-    lines << "CREATED:       #{self.created_at.localtime}"
-    lines << "UPDATED:       #{self.updated_at.localtime}"
-    lines << "OPERATION:     #{self.operation}"
-    lines << "ITEM:          #{self.bitstream.item_id}"
-    lines << "BITSTREAM:     #{self.bitstream_id}"
-    lines << "STAGING KEY:   #{self.staging_key}"
-    lines << "TARGET KEY:    #{self.target_key}"
-    lines << "STATUS:        #{self.status}"
-    lines << "RESPONSE TIME: #{self.response_time}"
-    lines << "MEDUSA UUID:   #{self.medusa_uuid}"
-    lines << "ERROR:         #{self.error_text}" if self.error_text.present?
+    lines << "Created:       #{self.created_at.localtime}"
+    lines << "Updated:       #{self.updated_at.localtime}"
+    lines << "Operation:     #{self.operation}"
+    lines << "Item:          #{self.bitstream.item_id}"
+    lines << "Bitstream:     #{self.bitstream_id}"
+    lines << "Staging Key:   #{self.staging_key}"
+    lines << "Target Key:    #{self.target_key}"
+    lines << "Status:        #{self.status}"
+    lines << "Response Time: #{self.response_time}"
+    lines << "Medusa UUID:   #{self.medusa_uuid}"
+    lines << "Error:         #{self.error_text}" if self.error_text.present?
     lines.join("\n")
   end
 
@@ -84,13 +86,19 @@ class Message < ApplicationRecord
       : nil
   end
 
+  ##
+  # @see send_message
+  #
   def resend
-    update!(status:         "resent",
-            error_text:     nil,
-            response_time:  nil)
-    send
+    update!(status:        Status::RESENT,
+            error_text:    nil,
+            response_time: nil)
+    send_message
   end
 
+  ##
+  # @see resend
+  #
   def send_message
     case self.operation
     when Operation::DELETE
@@ -100,6 +108,7 @@ class Message < ApplicationRecord
     end
     queue = self.bitstream.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].send_message(queue, message)
+    self.update!(sent_at: Time.now)
   end
 
 

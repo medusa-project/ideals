@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_13_214130) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_20_172845) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -406,6 +406,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_214130) do
     t.bigint "bitstream_id"
     t.text "raw_request"
     t.text "raw_response"
+    t.datetime "sent_at"
     t.index ["bitstream_id"], name: "index_messages_on_bitstream_id"
   end
 
