@@ -59,6 +59,11 @@ namespace :medusa do
       Message.where(status: Message::Status::ERROR).each(&:resend)
     end
 
+    desc "Resend Medusa messages with no response"
+    task :retry_no_response => :environment do
+      Message.where(status: nil).each(&:resend)
+    end
+
   end
 
 end
