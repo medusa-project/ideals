@@ -30,6 +30,14 @@ namespace :medusa do
       puts "Fetched #{count} messages."
     end
 
+    desc "Delete ingest messages whose associated bitstreams have vanished"
+    task :delete_stale => :environment do
+      Message.
+        where(operation: Message::Operation::INGEST).
+        where(bitstream_id: nil).
+        destroy_all
+    end
+
     desc "List the last 1000 messages"
     task :log => :environment do
       Message.order(:updated_at).limit(1000).each do |message|
