@@ -5,6 +5,8 @@
 #
 class MessageHandler
 
+  LOGGER = CustomLogger.new(MessageHandler)
+
   ##
   # Handles an incoming message from Medusa.
   #
@@ -82,11 +84,12 @@ class MessageHandler
                       response_time: Time.now,
                       raw_response:  message_json)
     else
-      raise "Received an ingest-succeeded message for staging key: "\
-          "#{message_hash['staging_key']}, but an outgoing message object "\
-          "was not found.\n\n"\
-          "Response:\n"\
-          "#{message_hash.to_yaml}"
+      # The first two possibilities are not a problem and the third we can do
+      # nothing about
+      LOGGER.warn("Received an ingest-failed message for staging key: %s,"\
+                  "but an outgoing message object was not found.\n\n"\
+                  "Response: %s",
+                  message_hash['staging_key'], message_hash.to_yaml)
     end
 
     bitstream = message.bitstream
@@ -125,11 +128,12 @@ class MessageHandler
                       response_time: Time.now,
                       raw_response:  message_json)
     else
-      raise "Received an ingest-failed message for staging key: "\
-            "#{message_hash['staging_key']}, but an outgoing message object "\
-            "was not found.\n\n"\
-            "Response:\n"\
-            "#{message_hash.to_yaml}"
+      # The first two possibilities are not a problem and the third we can do
+      # nothing about
+      LOGGER.warn("Received an ingest-failed message for staging key: %s,"\
+                  "but an outgoing message object was not found.\n\n"\
+                  "Response: %s",
+                  message_hash['staging_key'], message_hash.to_yaml)
     end
   end
 
