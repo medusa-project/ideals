@@ -120,6 +120,7 @@ class Message < ApplicationRecord
   # @return [Hash]
   #
   def delete_message
+    raise "Medusa UUID is not set" if self.medusa_uuid.blank?
     {
       operation: Operation::DELETE,
       uuid:      self.medusa_uuid,
@@ -134,6 +135,9 @@ class Message < ApplicationRecord
   # @return [Hash]
   #
   def ingest_message
+    raise "Staging key is not set" if self.staging_key.blank?
+    raise "Target key is not set" if self.target_key.blank?
+    raise "Bitstream ID is not set" if self.bitstream_id.blank?
     {
       operation:    Operation::INGEST,
       staging_key:  self.staging_key,
