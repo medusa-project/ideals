@@ -373,7 +373,8 @@ class Bitstream < ApplicationRecord
     Bitstream.connection_pool.with_connection do
       message = self.messages.build(operation:   Message::Operation::DELETE,
                                     medusa_uuid: self.medusa_uuid,
-                                    medusa_key:  self.medusa_key)
+                                    medusa_key:  self.medusa_key,
+                                    institution: self.institution)
       message.save!
       message.send_message
     end
@@ -513,7 +514,8 @@ class Bitstream < ApplicationRecord
     Bitstream.connection_pool.with_connection do
       message = self.messages.build(operation:   Message::Operation::INGEST,
                                     staging_key: staging_key,
-                                    target_key:  target_key)
+                                    target_key:  target_key,
+                                    institution: self.institution)
       message.save!
       message.send_message
     end

@@ -3,6 +3,7 @@
 # ingests
 
 ingest_no_response:
+  institution:   uiuc
   operation:     ingest
   bitstream:     uiuc_item1_in_staging
   status:
@@ -14,6 +15,7 @@ ingest_no_response:
   target_key:    target/cat
 
 successful_ingest:
+  institution:   uiuc
   operation:     ingest
   bitstream:     uiuc_in_medusa
   status:        ok
@@ -25,6 +27,7 @@ successful_ingest:
   target_key:    target/dog
 
 failed_ingest:
+  institution:   uiuc
   operation:     ingest
   bitstream:     uiuc_in_medusa
   status:        error
@@ -38,6 +41,7 @@ failed_ingest:
 # deletes
 
 delete_no_response:
+  institution:   uiuc
   operation:     delete
   bitstream:     uiuc_in_medusa
   status:
@@ -49,6 +53,7 @@ delete_no_response:
   target_key:    target/horse
 
 successful_delete:
+  institution:   uiuc
   operation:     delete
   bitstream:     uiuc_in_medusa
   status:        ok
@@ -60,6 +65,7 @@ successful_delete:
   target_key:    target/cow
 
 failed_delete:
+  institution:   uiuc
   operation:     delete
   bitstream:     uiuc_in_medusa
   status:        error

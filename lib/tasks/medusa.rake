@@ -2,24 +2,7 @@ namespace :medusa do
 
   desc "Delete a file"
   task :delete, [:uuid] => :environment do |task, args|
-    message = Message.create!(operation:   Message::Operation::DELETE,
-                              medusa_uuid: args[:uuid])
-    message.send_message
-  end
-
-  desc "Delete all files in the file group"
-  task :delete_all_files => :environment do
-    config = ::Configuration.instance
-    fg_id  = config.medusa[:file_group_id]
-    fg     = ::Medusa::FileGroup.with_id(fg_id)
-    dir    = fg.directory
-    dir.walk_tree do |node|
-      next unless node.kind_of?(::Medusa::File)
-      message = Message.create!(operation:   Message::Operation::DELETE,
-                                medusa_uuid: node.uuid,
-                                target_key:  node.relative_key)
-      message.send_message
-    end
+    Bitstream.find_by_medusa_uuid(args[:uuid]).delete_from_medusa
   end
 
   namespace :messages do

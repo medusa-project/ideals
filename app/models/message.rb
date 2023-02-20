@@ -17,22 +17,23 @@
 #
 # # Attributes
 #
-# * `bitstream_id`  Foreign key to {Bitstream}. May be `nil` if the related
-#                   bitstream has been deleted.
-# * `created_at`    Managed by ActiveRecord.
-# * `error_text`    Error text provided by a response message from Medusa.
-# * `medusa_key`    Key of the file in Medusa. This is set by a response
-#                   message and should be the same as `target_key`.
-# * `medusa_uuid`   UUID of the corresponding Medusa file.
-# * `operation`     One of the {Message::Operation} constant values.
-# * `response_time` Arrival time of the response message from Medusa.
-# * `sent_at`       Time the message was sent or resent.
-# * `staging_key`   Key of the **permanent** (not staging) object in the
-#                   application S3 bucket.
-# * `status`        Set by a response message from Medusa to one of the
-#                   {Message::Status} constant values.
-# * `target_key`    Key of the target object in the Medusa S3 bucket.
-# * `updated_at`    Managed by ActiveRecord.
+# * `bitstream_id`   Foreign key to {Bitstream}. May be `nil` if the related
+#                    bitstream has been deleted.
+# * `created_at`     Managed by ActiveRecord.
+# * `error_text`     Error text provided by a response message from Medusa.
+# * `institution_id` Foreign key to {Institution}.
+# * `medusa_key`     Key of the file in Medusa. This is set by a response
+#                    message and should be the same as `target_key`.
+# * `medusa_uuid`    UUID of the corresponding Medusa file.
+# * `operation`      One of the {Message::Operation} constant values.
+# * `response_time`  Arrival time of the response message from Medusa.
+# * `sent_at`        Time the message was sent or resent.
+# * `staging_key`    Key of the **permanent** (not staging) object in the
+#                    application S3 bucket.
+# * `status`         Set by a response message from Medusa to one of the
+#                    {Message::Status} constant values.
+# * `target_key`     Key of the target object in the Medusa S3 bucket.
+# * `updated_at`     Managed by ActiveRecord.
 #
 # @see https://github.com/medusa-project/medusa-collection-registry/blob/master/README-amqp-accrual.md
 #
@@ -50,6 +51,7 @@ class Message < ApplicationRecord
   end
 
   belongs_to :bitstream, optional: true
+  belongs_to :institution
 
   validates :operation, inclusion: { in: Operation.constants.map{ |c| Operation.const_get(c) },
                                      message: "%{value} is not a valid operation" }
@@ -106,7 +108,7 @@ class Message < ApplicationRecord
     else
       message = ingest_message
     end
-    queue = self.bitstream.institution.outgoing_message_queue
+    queue = self.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].send_message(queue, message)
     self.update!(sent_at: Time.now)
   end

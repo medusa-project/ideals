@@ -21,7 +21,7 @@ class MessageTest < ActiveSupport::TestCase
 
   test "label() returns a correct value" do
     message = messages(:ingest_no_response)
-    assert_equal "#{message.operation} @ #{message.created_at}", message.label
+    assert_equal "#{message.operation} @ #{message.sent_at}", message.label
   end
 
   # medusa_url()
