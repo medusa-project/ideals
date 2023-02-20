@@ -47,7 +47,9 @@ namespace :medusa do
 
     desc "Resend failed Medusa messages"
     task :retry_failed => :environment do
-      Message.where(status: Message::Status::ERROR).each(&:resend)
+      Message.where("status = ? AND ((operation = ? AND bitstream_id IS NOT NULL) OR (operation = ?))",
+                    Message::Status::ERROR, Message::Operation::INGEST, Message::Operation::DELETE).
+        each(&:resend)
     end
 
     desc "Resend Medusa messages with no response"
