@@ -113,7 +113,7 @@ class Bitstream < ApplicationRecord
                       allow_blank: true
   validates_inclusion_of :role, in: -> (value) { Role.all }
 
-  before_save :populate_filenames
+  before_save :populate_filename
   before_save :ensure_primary_uniqueness
   before_save :rename_storage_object, if: -> {
     filename_changed? &&
@@ -274,14 +274,13 @@ class Bitstream < ApplicationRecord
   # @param length [Integer]
   # @return [Bitstream] New instance.
   #
-  def self.new_in_staging(item:, filename:, length:)
+  def self.new_in_staging(item:, filename:)
     Bitstream.new(item:              item,
                   staging_key:       staging_key(institution_key: item.institution.key,
                                                  item_id:         item.id,
                                                  filename:        filename),
                   original_filename: filename,
-                  filename:          filename,
-                  length:            length)
+                  filename:          filename)
   end
 
   ##
@@ -729,7 +728,7 @@ class Bitstream < ApplicationRecord
   # Sets {filename} to the value of {original_filename} if it is nil, and vice
   # versa.
   #
-  def populate_filenames
+  def populate_filename
     self.filename ||= self.original_filename
     self.original_filename ||= self.filename
   end

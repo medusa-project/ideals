@@ -77,6 +77,10 @@ class BitstreamPolicy < ApplicationPolicy
                   "collections containing the file." }
   end
 
+  def data
+    create
+  end
+
   def destroy
     ItemPolicy.new(@request_context, @bitstream.item).delete_bitstreams
   end

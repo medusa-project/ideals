@@ -1,7 +1,20 @@
 # frozen_string_literal: true
 
 ##
-# # Note about downloads
+# # Uploads
+#
+# Uploading is a two-step process:
+#
+# 1. A new instances is created via {create}.
+# 2. Data is uploaded to that instance via {data}.
+#
+# # Downloads
+#
+# Bitstreams can be downloaded in two ways:
+#
+# 1. Streaming them through the application via {stream}. This is not advised,
+#    as it ties up a request connection.
+# 2. By redirecting to its public S3 URL using {object}.
 #
 # Every time a [Bitstream] is "downloaded," an [Event] of type
 # [Event::Type::DOWNLOAD] is supposed to get ascribed to it, which effectively
@@ -27,7 +40,7 @@ class BitstreamsController < ApplicationController
   before_action :ensure_logged_in, except: [:index, :object, :show, :stream,
                                             :viewer]
 
-  before_action :set_item, only: [:create, :index]
+  before_action :set_item, only: [:create, :data, :index]
   before_action :set_bitstream, except: [:create, :index]
   before_action :authorize_item, only: :index
   before_action :authorize_bitstream, except: [:create, :index]
@@ -35,39 +48,49 @@ class BitstreamsController < ApplicationController
   rescue_from Aws::S3::Errors::InvalidRange, with: :rescue_invalid_range
 
   ##
-  # Accepts raw files (i.e. not `multipart/form-data`) via the file upload
-  # feature of the submission form. The accepted files are streamed into the
-  # application S3 bucket and associated with new {Bitstream}s which are in
-  # turn associated with a parent {Item}. If the item is still in a
-  # {Item#Stages#SUBMITTING submitting} stage, the bitstream is uploaded to the
-  # staging area of the bucket; otherwise it is uploaded to the permanent area.
-  #
   # Responds to `POST /items/:item_id/bitstreams`
   #
   def create
-    filename = request.env['HTTP_X_FILENAME']
-    length   = request.env['HTTP_X_CONTENT_LENGTH'].to_i
-    input    = request.env['rack.input']
-    input.rewind if input.respond_to?(:rewind) # helps ward off a Aws::S3::Errors::BadDigest error
-    input.set_encoding(Encoding::UTF_8) if input.respond_to?(:set_encoding)
-    if length == input.length # don't know why it wouldn't be but can't hurt to check
+    begin
+      bs = nil
       ActiveRecord::Base.transaction do
-        bs = nil
         UpdateItemCommand.new(item:        @item,
                               user:        current_user,
                               description: "Added an associated bitstream.").execute do
           bs = Bitstream.new_in_staging(item:     @item,
-                                        filename: filename,
-                                        length:   length)
-          bs.upload_to_staging(input)
+                                        filename: bitstream_params[:filename])
           bs.save!
-          if @item.stage >= Item::Stages::APPROVED
-            bs.move_into_permanent_storage
-          end
         end
-        response.header['Location'] = item_bitstream_url(@item, bs)
-        head :created
       end
+      response.header['Location'] = item_bitstream_url(@item, bs)
+      head :created
+    rescue => e
+      render plain: "#{e}", status: :bad_request
+    end
+  end
+
+  ##
+  # Used for uploading data to an existing bitstream. The data is uploaded to
+  # the staging area. If the bitstream's item is already {Item#Stages#APPROVED
+  # approved}, the object is moved into permanent storage upon completion of
+  # the upload.
+  #
+  # Responds to `PUT /items/:item_id/bitstreams/:id`
+  #
+  def data
+    length = request.env['HTTP_X_CONTENT_LENGTH'].to_i
+    input  = request.env['rack.input']
+    input.rewind if input.respond_to?(:rewind) # helps ward off a Aws::S3::Errors::BadDigest error
+    input.set_encoding(Encoding::UTF_8) if input.respond_to?(:set_encoding)
+    if length == input.length # don't know why it wouldn't be but can't hurt to check
+      ActiveRecord::Base.transaction do
+        @bitstream.upload_to_staging(input)
+        if @item.stage >= Item::Stages::APPROVED
+          @bitstream.move_into_permanent_storage
+        end
+      end
+      response.header['Location'] = item_bitstream_url(@item, @bitstream)
+      render plain: "200 OK"
     else
       render plain: "The value of the Content-Length header does not match "\
                     "the length provided.", status: :bad_request
@@ -179,6 +202,7 @@ class BitstreamsController < ApplicationController
   # Responds to `GET /items/:item_id/bitstreams/:id/stream`.
   #
   # @see object
+  # TODO: merge this into data()
   #
   def stream
     if @bitstream.permanent_key.present?

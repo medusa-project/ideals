@@ -95,11 +95,11 @@ const IDEALS = {
         };
 
         /**
-         * Sends a file to the server, creating a new Bitstream attached to an
-         * Item.
+         * Creates a new Bitstream attached to an Item on the server, and
+         * uploads data to it.
          *
-         * @param file [File]                  File to upload.
-         * @param uri [String]                 URI to POST the file to.
+         * @param file {File}                  File to upload.
+         * @param item_id {Number}             ID of the owning item.
          * @param onProgressChanged {Function} Function accepting an event
          *                                     argument.
          * @param onSuccess {Function}         Function accepting a string
@@ -108,28 +108,45 @@ const IDEALS = {
          * @param onError {Function}           Function accepting an
          *                                     {XMLHttpRequest} argument.
          */
-        this.uploadFile = function(file, uri, onProgressChanged, onSuccess, onError) {
-            const xhr = new XMLHttpRequest();
-            if (onProgressChanged) {
-                xhr.upload.addEventListener("progress", onProgressChanged);
-            }
-            xhr.open("POST", uri, true);
-            xhr.setRequestHeader("X-Filename", file.name);
-            xhr.setRequestHeader("X-Content-Length", file.size);
-            xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
-            xhr.send(file);
-
-            xhr.onreadystatechange = function () {
-                if (this.readyState === this.HEADERS_RECEIVED) {
-                    if (xhr.status === 0 || (xhr.status >= 200 && xhr.status < 400)) {
-                        if (onSuccess) {
-                            onSuccess(xhr.getResponseHeader("Location"));
-                        }
-                    } else if (onError) {
+        this.uploadFile = function(file, item_id, onProgressChanged, onSuccess,
+                                   onError) {
+            const createBitstream = function() {
+                $.ajax({
+                    method: "POST",
+                    headers: { "X-CSRF-Token": CSRF_TOKEN },
+                    url: ROOT_URL + "/items/" + item_id + "/bitstreams",
+                    data: { bitstream: { filename: file.name }},
+                    success: function(data, status, xhr) {
+                        uploadData(xhr.getResponseHeader("Location"),
+                            onProgressChanged);
+                    },
+                    error: function(data, status, xhr) {
                         onError(xhr);
                     }
+                });
+            }
+
+            const uploadData = function(bitstreamURI, onProgressChanged) {
+                const xhr = new XMLHttpRequest();
+                if (onProgressChanged) {
+                    xhr.upload.addEventListener("progress", onProgressChanged);
                 }
-            };
+                xhr.open("PUT", bitstreamURI + "/data", true);
+                xhr.setRequestHeader("X-Content-Length", file.size);
+                xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
+                xhr.send(file);
+
+                xhr.onreadystatechange = function () {
+                    if (this.readyState === this.HEADERS_RECEIVED) {
+                        if (xhr.status === 0 || (xhr.status >= 200 && xhr.status < 400)) {
+                            onSuccess(bitstreamURI);
+                        } else if (onError) {
+                            onError(xhr);
+                        }
+                    }
+                };
+            }
+            createBitstream(uploadData);
         };
     },
 
@@ -487,6 +504,7 @@ const IDEALS = {
         DISALLOWED_LC_FILENAMES.add(".ds_store");
         DISALLOWED_LC_FILENAMES.add("thumbs.db");
 
+        const itemID     = $("[name=item_id]").val();
         const canDelete  = ($("[name=can_delete_bitstreams]").val() === "true");
         const filesForm  = $("#files-form");
         const filesTable = filesForm.find("table.files");
@@ -665,8 +683,7 @@ const IDEALS = {
             if (uploadInProgressCallback) {
                 uploadInProgressCallback();
             }
-            new IDEALS.Client().uploadFile(file,
-                $("input[name=item_bitstreams_uri]").val(),
+            new IDEALS.Client().uploadFile(file, itemID,
                 onProgressChanged, onComplete, onError);
         };
 

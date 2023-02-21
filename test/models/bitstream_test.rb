@@ -81,15 +81,12 @@ class BitstreamTest < ActiveSupport::TestCase
   test "new_in_staging() returns a correct instance" do
     item     = items(:uiuc_item1)
     filename = "cats.jpg"
-    length   = 3424
     bs       = Bitstream.new_in_staging(item:     item,
-                                        filename: filename,
-                                        length:   length)
+                                        filename: filename)
     assert_equal Bitstream.staging_key(institution_key: item.institution.key,
                                        item_id:         item.id,
                                        filename:        filename),
                  bs.staging_key
-    assert_equal length, bs.length
     assert_equal filename, bs.filename
   end
 
@@ -335,8 +332,7 @@ class BitstreamTest < ActiveSupport::TestCase
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                           filename: SecureRandom.hex,
-                                           length:   File.size(fixture))
+                                           filename: SecureRandom.hex)
       @instance.upload_to_staging(file)
       @instance.move_into_permanent_storage
     end
@@ -356,8 +352,7 @@ class BitstreamTest < ActiveSupport::TestCase
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                           filename: SecureRandom.hex,
-                                           length:   File.size(fixture))
+                                           filename: SecureRandom.hex)
       @instance.upload_to_staging(file)
       @instance.move_into_permanent_storage
     end
@@ -385,8 +380,7 @@ class BitstreamTest < ActiveSupport::TestCase
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                           filename: File.basename(fixture),
-                                           length:   File.size(fixture))
+                                           filename: File.basename(fixture))
       @instance.upload_to_staging(file)
     end
 
@@ -406,8 +400,7 @@ class BitstreamTest < ActiveSupport::TestCase
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                           filename: File.basename(fixture),
-                                           length:   File.size(fixture))
+                                           filename: File.basename(fixture))
       @instance.upload_to_staging(file)
     end
 
@@ -691,8 +684,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "move_into_permanent_storage() raises an error if no object exists in
   staging" do
     @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                         filename: "file.jpg",
-                                         length:   1234)
+                                         filename: "file.jpg")
     assert_raises do
       @instance.move_into_permanent_storage
     end
@@ -703,8 +695,7 @@ class BitstreamTest < ActiveSupport::TestCase
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                             filename: SecureRandom.hex,
-                                             length:   File.size(fixture))
+                                             filename: SecureRandom.hex)
         @instance.upload_to_staging(file)
         @instance.move_into_permanent_storage
       end
@@ -726,8 +717,7 @@ class BitstreamTest < ActiveSupport::TestCase
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                             filename: SecureRandom.hex,
-                                             length:   File.size(fixture))
+                                             filename: SecureRandom.hex)
         @instance.upload_to_staging(file)
         @instance.move_into_permanent_storage
       end
@@ -746,8 +736,7 @@ class BitstreamTest < ActiveSupport::TestCase
       staging_key = nil
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                             filename: SecureRandom.hex,
-                                             length:   File.size(fixture))
+                                             filename: SecureRandom.hex)
         @instance.upload_to_staging(file)
         staging_key = @instance.staging_key
         @instance.move_into_permanent_storage
@@ -933,15 +922,17 @@ class BitstreamTest < ActiveSupport::TestCase
   test "save() sets all other bitstreams attached to the same item to not
   primary" do
     item = items(:uiuc_approved)
-    b1   = item.bitstreams.build(primary: true)
-    b2   = item.bitstreams.build(primary: false)
+    b1   = item.bitstreams.build(original_filename: "cats.jpg",
+                                 primary:           true)
+    b2   = item.bitstreams.build(original_filename: "dogs.jpg",
+                                 primary:           false)
     item.save!
     b2.update!(primary: true)
     b1.reload
     assert !b1.primary
   end
 
-  # save() populate_filenames callback
+  # save() populate_filename callback
 
   test "save() sets the filename property to the value of the original_filename
   property if it is nil" do
@@ -950,15 +941,6 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance.update!(filename: nil)
     assert_equal filename, @instance.original_filename
     assert_equal filename, @instance.filename
-  end
-
-  test "save() sets the original_filename property to the value of the filename
-  property if it is nil" do
-    filename = "original filename.jpg"
-    @instance.update_column(:original_filename, nil)
-    @instance.update(filename: filename)
-    assert_equal filename, @instance.filename
-    assert_equal filename, @instance.original_filename
   end
 
   # save() move_storage_object callback
@@ -1111,8 +1093,9 @@ class BitstreamTest < ActiveSupport::TestCase
   test "staging_key must be unique" do
     @instance.update!(staging_key:"cats")
     assert_raises ActiveRecord::RecordNotUnique do
-      Bitstream.create!(staging_key: "cats",
-                        item:        items(:uiuc_item1))
+      Bitstream.create!(staging_key:       "cats",
+                        original_filename: "cats",
+                        item:              items(:uiuc_item1))
     end
   end
 
@@ -1192,8 +1175,7 @@ class BitstreamTest < ActiveSupport::TestCase
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                             filename: File.basename(fixture),
-                                             length:   File.size(fixture))
+                                             filename: File.basename(fixture))
         @instance.upload_to_staging(file)
       end
 
@@ -1211,8 +1193,7 @@ class BitstreamTest < ActiveSupport::TestCase
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
         @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
-                                             filename: File.basename(fixture),
-                                             length:   0)
+                                             filename: File.basename(fixture))
         @instance.upload_to_staging(file)
       end
       assert_equal File.size(fixture), @instance.length

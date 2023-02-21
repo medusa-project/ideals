@@ -1,19 +1,27 @@
+################################ southwest ##################################
+
+southwest_unit1_collection1_item1:
+  item:   southwest_unit1_collection1_item1
+  suffix: 5000
+
+################################### uiuc ####################################
+
 # collection handles
 
 uiuc_collection1:
   collection: uiuc_collection1
-  suffix:     5000
+  suffix:     5001
 
 # item handles
 
 uiuc_item1:
   item:   uiuc_item1
-  suffix: 5001
+  suffix: 5002
 
 uiuc_awaiting_ingest_into_medusa:
   item:   uiuc_awaiting_ingest_into_medusa
-  suffix: 5002
+  suffix: 5003
 
 uiuc_approved:
   item:   uiuc_approved
-  suffix: 5003
+  suffix: 5004
