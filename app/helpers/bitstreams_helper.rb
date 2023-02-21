@@ -65,7 +65,7 @@ module BitstreamsHelper
   def audio_tag_for(bitstream)
     html = StringIO.new
     html << "<audio controls>"
-    html <<   "<source src=\"#{bitstream.presigned_url}\" type=\"#{bitstream.media_type}\">"
+    html <<   "<source src=\"#{bitstream.presigned_download_url}\" type=\"#{bitstream.media_type}\">"
     html <<   no_viewer_for(bitstream)
     html << "</audio>"
     raw(html.string)
@@ -88,7 +88,7 @@ module BitstreamsHelper
   end
 
   def object_tag_for(bitstream)
-    raw("<object data=\"#{bitstream.presigned_url(content_disposition: "inline")}\" "\
+    raw("<object data=\"#{bitstream.presigned_download_url(content_disposition: "inline")}\" "\
       "type=\"#{bitstream.media_type}\"></object>")
   end
 
@@ -111,7 +111,7 @@ module BitstreamsHelper
 
     # Add a generic embedded viewer; this is preferable to PDF.js when
     # the browser supports embedded PDFs
-    bitstream_path = bitstream.presigned_url(content_disposition: "inline")
+    bitstream_path = bitstream.presigned_download_url(content_disposition: "inline")
     html          << "<object id=\"native-pdf-viewer\" "\
                          "data=\"#{bitstream_path}\" "\
                          "type=\"#{bitstream.media_type}\"></object>"
@@ -127,7 +127,7 @@ module BitstreamsHelper
     # cross-domain requests. See: https://stackoverflow.com/a/69342595
     # The commit history of public/pdfjs/web/viewer.js should reveal the
     # change.
-    bitstream_url = bitstream.presigned_url(content_disposition: "inline")
+    bitstream_url = bitstream.presigned_download_url(content_disposition: "inline")
     viewer_url    = asset_path("/pdfjs/web/viewer.html?file=" + CGI.escape(bitstream_url))
     html          = "<iframe src=\"#{viewer_url}\" id=\"pdfjs-pdf-viewer\" "\
                             "height=\"100%\" width=\"100%\" "\
@@ -161,7 +161,7 @@ module BitstreamsHelper
   def video_tag_for(bitstream)
     html = StringIO.new
     html << "<video controls>"
-    html <<   "<source src=\"#{bitstream.presigned_url}\" type=\"#{bitstream.media_type}\">"
+    html <<   "<source src=\"#{bitstream.presigned_download_url}\" type=\"#{bitstream.media_type}\">"
     html <<   no_viewer_for(bitstream)
     html << "</video>"
     raw(html.string)

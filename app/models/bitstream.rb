@@ -562,7 +562,7 @@ class Bitstream < ApplicationRecord
   # @return [String]
   # @see public_url
   #
-  def presigned_url(content_disposition: "attachment")
+  def presigned_download_url(content_disposition: "attachment")
     key = self.effective_key
     unless key
       raise IOError, "This bitstream has no corresponding storage object."
@@ -577,7 +577,7 @@ class Bitstream < ApplicationRecord
   ##
   # @return [String,nil] URL of the public object, or nil if the instance has
   #         no corresponding storage object.
-  # @see presigned_url
+  # @see presigned_download_url
   #
   def public_url
     key = self.effective_key

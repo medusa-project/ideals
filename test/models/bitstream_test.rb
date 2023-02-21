@@ -756,39 +756,39 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
-  # presigned_url()
+  # presigned_download_url()
 
-  test "presigned_url() returns a presigned URL for an object in staging" do
+  test "presigned_download_url() returns a presigned URL for an object in staging" do
     @instance.staging_key   = "key"
     @instance.permanent_key = nil
-    assert_not_nil @instance.presigned_url
+    assert_not_nil @instance.presigned_download_url
   end
 
-  test "presigned_url() returns a presigned URL for an object in permanent
+  test "presigned_download_url() returns a presigned URL for an object in permanent
   storage" do
     @instance.staging_key   = nil
     @instance.permanent_key = "key"
-    assert_not_nil @instance.presigned_url
+    assert_not_nil @instance.presigned_download_url
   end
 
-  test "presigned_url() returns a presigned URL with a correct
+  test "presigned_download_url() returns a presigned URL with a correct
   response-content-type for an instance with a known format" do
     @instance.filename = "image.jpg"
-    assert @instance.presigned_url.include?("response-content-type=image%2Fjpeg")
+    assert @instance.presigned_download_url.include?("response-content-type=image%2Fjpeg")
   end
 
-  test "presigned_url() returns a presigned URL with a correct
+  test "presigned_download_url() returns a presigned URL with a correct
   response-content-type for an instance with an unknown format" do
     @instance.filename = "image.whatsthis"
-    assert @instance.presigned_url.include?("response-content-type=application%2Foctet-stream")
+    assert @instance.presigned_download_url.include?("response-content-type=application%2Foctet-stream")
   end
 
-  test "presigned_url() raises an IOError if the instance has no corresponding
-  object" do
+  test "presigned_download_url() raises an IOError if the instance has no
+  corresponding object" do
     @instance.staging_key   = nil
     @instance.permanent_key = nil
     assert_raises IOError do
-      @instance.presigned_url
+      @instance.presigned_download_url
     end
   end
 
