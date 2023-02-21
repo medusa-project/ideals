@@ -3,7 +3,9 @@
 # N.B.: staging_key and permanent_key depend on the owning item ID, so must be
 # set in tests via Bitstream.staging_key() and permanent_key().
 # They are set to temporary values here in order to get seeded into the bucket.
-
+#
+# N.B. 2: original_filenames must match the files' physical names, but filename
+# must be unique among bitstreams attached to the same item.
 
 ################################ southwest ##################################
 
@@ -13,7 +15,7 @@ southwest_unit1_collection1_submitting_1:
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
-  filename:          escher_lego.png
+  filename:          submitting.png
   medusa_key:
   medusa_uuid:
   role:              <%= Role::LOGGED_OUT %>
@@ -27,7 +29,7 @@ southwest_unit1_collection1_item1_approved:
   permanent_key:     <%= SecureRandom.hex %>
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
-  filename:          escher_lego.png
+  filename:          approved.png
   medusa_key:
   medusa_uuid:
   role:              <%= Role::LOGGED_OUT %>
@@ -41,7 +43,7 @@ southwest_unit1_collection1_item1_license:
   permanent_key:     <%= SecureRandom.hex %>
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pdf.pdf")) %>
   original_filename: pdf.pdf
-  filename:          pdf.pdf
+  filename:          license.pdf
   medusa_key:
   medusa_uuid:
   role:              <%= Role::LOGGED_OUT %>

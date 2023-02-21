@@ -126,7 +126,7 @@ class ActiveSupport::TestCase
     @@seeding = true
     Bitstream.where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").each do |bs|
       fix_bitstream_keys(bs)
-      File.open(file_fixture(bs.filename), "r") do |file|
+      File.open(file_fixture(bs.original_filename), "r") do |file|
         PersistentStore.instance.put_object(key:  bs.effective_key,
                                             file: file)
       end
