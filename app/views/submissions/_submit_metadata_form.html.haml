@@ -91,25 +91,27 @@
                   -# form but not read server-side.
                   = text_field_tag("family_name", person_name[:family_name],
                                    placeholder: "Family Name/Company",
-                                   data: { for: hidden_input_id },
-                                   class: "form-control")
+                                   data:        { for: hidden_input_id },
+                                   class:       "form-control")
                 .col
                   = text_field_tag("given_name", person_name[:given_name],
                                    placeholder: "Given Name",
-                                   data: { for: hidden_input_id },
-                                   class: "form-control")
+                                   data:        { for: hidden_input_id },
+                                   class:       "form-control")
               - when RegisteredElement::InputType::TEXT_AREA
                 .col
                   = text_area_tag("elements[][string]",
                                   ascribed_element.string,
-                                  class: "form-control",
-                                  required: profile_element.required)
+                                  class:       "form-control",
+                                  placeholder: profile_element.placeholder_text,
+                                  required:    profile_element.required)
               - else
                 .col
                   = text_field_tag("elements[][string]",
                                    ascribed_element.string,
-                                   class: "form-control",
-                                   required: profile_element.required)
+                                   class:       "form-control",
+                                   placeholder: profile_element.placeholder_text,
+                                   required:    profile_element.required)
 
             - if !profile_element.required || profile_element.repeatable
               .col.remove.ps-0.pe-0
