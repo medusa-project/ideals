@@ -35,8 +35,16 @@ xml.tag!('OAI-PMH',
           xml.tag!('header', status) do
             xml.tag!('identifier', oai_pmh_identifier(item: item, host: @host))
             xml.tag!('datestamp', datestamp.strftime('%Y-%m-%d'))
-            xml.tag!('setSpec', oai_pmh_identifier(collection: item.effective_primary_collection,
-                                                   host:       @host))
+            # Items should always belong to a collection, but in practice,
+            # there may be a handful that don't, for whatever reason. Omitting
+            # the setSpec here would violate the XML schema, but better that
+            # than skipping the whole record. (Or maybe we do want to skip the
+            # whole record for such items?)
+            primary_collection = item.effective_primary_collection
+            if primary_collection
+              xml.tag!('setSpec', oai_pmh_identifier(collection: primary_collection,
+                                                     host:       @host))
+            end
           end
           unless deleted
             xml.tag!('metadata') do
