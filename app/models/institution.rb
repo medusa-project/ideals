@@ -185,7 +185,8 @@ class Institution < ApplicationRecord
   #
   def self.file_sizes
     sql = "SELECT ins.id, ins.name, SUM(b.length) AS sum,
-        AVG(b.length) AS mean, MAX(b.length) AS max
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY b.length) AS median,
+        MAX(b.length) AS max
       FROM institutions ins
       LEFT JOIN items i ON i.institution_id = ins.id
       LEFT JOIN bitstreams b ON b.item_id = i.id
