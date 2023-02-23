@@ -103,9 +103,10 @@ class Download < ApplicationRecord
   # @return [String]
   #
   def presigned_url(expiry_seconds: 900)
-    PersistentStore.instance.presigned_url(key:                          self.object_key,
-                                           expires_in:                   expiry_seconds,
-                                           response_content_disposition: content_disposition(self.filename))
+    PersistentStore.instance.presigned_download_url(
+      key:                          self.object_key,
+      expires_in:                   expiry_seconds,
+      response_content_disposition: content_disposition(self.filename))
   end
 
   ##

@@ -136,88 +136,6 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
-  # data?()
-
-  test "data?() returns false with a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @bitstream.institution)
-    policy = BitstreamPolicy.new(context, @bitstream)
-    assert !policy.data?
-  end
-
-  test "data?() does not authorize an incorrect scope" do
-    context = RequestContext.new(user:        users(:southwest_admin),
-                                 institution: institutions(:northeast))
-    policy  = BitstreamPolicy.new(context, @bitstream)
-    assert !policy.data?
-  end
-
-  test "data?() is restrictive by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, @bitstream)
-    assert !policy.data?
-  end
-
-  test "data?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, @bitstream)
-    assert policy.data?
-  end
-
-  test "data?() authorizes unit admins" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-
-    unit = @bitstream.item.primary_collection.units.first
-    unit.administrators.build(user: user)
-    unit.save!
-
-    policy = BitstreamPolicy.new(context, @bitstream)
-    assert policy.data?
-  end
-
-  test "data?() authorizes collection managers" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-
-    collection = @bitstream.item.primary_collection
-    collection.managing_users << user
-    collection.save!
-
-    policy = BitstreamPolicy.new(context, @bitstream)
-    assert policy.data?
-  end
-
-  test "data?() authorizes collection submitters" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-
-    collection = @bitstream.item.primary_collection
-    collection.submitting_users << user
-    collection.save!
-
-    policy = BitstreamPolicy.new(context, @bitstream)
-    assert policy.data?
-  end
-
-  test "data?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution,
-                                 role_limit:  Role::LOGGED_IN)
-
-    policy  = BitstreamPolicy.new(context, @bitstream)
-    assert !policy.data?
-  end
-
   # destroy?()
 
   test "destroy?() returns false with a nil user" do
@@ -354,14 +272,6 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
     policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_embargoed_1))
-    assert !policy.download?
-  end
-
-  test "download?() restricts submitting items by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_submitting_1))
     assert !policy.download?
   end
 
@@ -640,14 +550,6 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.object?
   end
 
-  test "object?() restricts submitting items by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_submitting_1))
-    assert !policy.object?
-  end
-
   test "object?() restricts withdrawn items by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -760,14 +662,6 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
     policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_embargoed_1))
-    assert !policy.show?
-  end
-
-  test "show?() restricts submitting items by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_submitting_1))
     assert !policy.show?
   end
 
@@ -1139,14 +1033,6 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.stream?
   end
 
-  test "stream?() restricts submitting items by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_submitting_1))
-    assert !policy.stream?
-  end
-
   test "stream?() restricts withdrawn items by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -1351,14 +1237,6 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
     policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_embargoed_1))
-    assert !policy.viewer?
-  end
-
-  test "viewer?() restricts submitting items by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_submitting_1))
     assert !policy.viewer?
   end
 

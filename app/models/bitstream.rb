@@ -1,7 +1,13 @@
+# frozen_string_literal: true
+
 ##
 # Binary file/object associated with an {Item}. The "bitstream" terminology
 # comes from DSpace, which is what IDEALS used to be built on, but "file" is
 # used in the user interface.
+#
+# # Uploads
+#
+# See {BitstreamsController}.
 #
 # # Storage locations
 #
@@ -274,13 +280,14 @@ class Bitstream < ApplicationRecord
   # @param length [Integer]
   # @return [Bitstream] New instance.
   #
-  def self.new_in_staging(item:, filename:)
+  def self.new_in_staging(item:, filename:, length:)
     Bitstream.new(item:              item,
                   staging_key:       staging_key(institution_key: item.institution.key,
                                                  item_id:         item.id,
                                                  filename:        filename),
                   original_filename: filename,
-                  filename:          filename)
+                  filename:          filename,
+                  length:            length)
   end
 
   ##
@@ -568,10 +575,27 @@ class Bitstream < ApplicationRecord
       raise IOError, "This bitstream has no corresponding storage object."
     end
     content_type = self.format&.media_types&.first || "application/octet-stream"
-    PersistentStore.instance.presigned_url(key:                          key,
-                                           expires_in:                   900,
-                                           response_content_type:        content_type,
-                                           response_content_disposition: content_disposition)
+    PersistentStore.instance.presigned_download_url(key:                          key,
+                                                    response_content_type:        content_type,
+                                                    response_content_disposition: content_disposition)
+  end
+
+  ##
+  # @return [String]
+  #
+  def presigned_upload_url
+    if self.item.stage >= Item::Stages::APPROVED
+      key = self.class.permanent_key(institution_key: self.institution.key,
+                                     item_id:         self.item_id,
+                                     filename:        self.filename)
+      self.update!(permanent_key: key)
+    else
+      key = self.class.staging_key(institution_key: self.institution.key,
+                                   item_id:         self.item_id,
+                                   filename:        self.filename)
+      self.update!(staging_key: key)
+    end
+    PersistentStore.instance.presigned_upload_url(key: key, expires_in: 30)
   end
 
   ##
@@ -653,6 +677,10 @@ class Bitstream < ApplicationRecord
   ##
   # Writes the given IO to the staging "area" (key prefix) of the application
   # S3 bucket.
+  #
+  # This is used mainly for testing, as uploads normally are directly into the
+  # bucket using presigned URLs (see the documentation of
+  # {BitstreamsController}).
   #
   # @param io [IO]
   #

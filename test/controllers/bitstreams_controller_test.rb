@@ -45,7 +45,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     item = items(:southwest_unit1_collection1_item1)
     post item_bitstreams_path(item), params: {
       bitstream: {
-        filename: "new.jpg"
+        filename: "new.jpg",
+        length:   123
       }
     }
     assert_response :created
@@ -61,7 +62,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "Bitstream.count" do
       post item_bitstreams_path(item), params: {
         bitstream: {
-          filename: "new.jpg"
+          filename: "new.jpg",
+          length:   123
         }
       }
     end
@@ -75,7 +77,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "Event.count", 1 do
       post item_bitstreams_path(item), params: {
         bitstream: {
-          filename: "cats.jpg"
+          filename: "cats.jpg",
+          length:   123
         }
       }
     end
@@ -90,50 +93,6 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_response :bad_request
-  end
-
-  # data()
-
-  test "data() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    bitstream = bitstreams(:southwest_unit1_collection1_item1_approved)
-    put item_bitstream_data_path(bitstream.item, bitstream)
-    assert_response :not_found
-  end
-
-  test "data() redirects to root page for logged-out users" do
-    bitstream = bitstreams(:southwest_unit1_collection1_item1_approved)
-    put item_bitstream_data_path(bitstream.item, bitstream)
-    assert_redirected_to bitstream.institution.scope_url
-  end
-
-  # TODO: figure out how to POST raw data, i.e. not multipart/form-data, and unskip all of these
-  test "data() returns HTTP 200" do
-    skip
-    log_in_as(users(:southwest_admin))
-    bitstream = bitstreams(:southwest_unit1_collection1_item1_approved)
-    put item_bitstream_data_path(bitstream.item, bitstream),
-        file_fixture("escher_lego.png")
-    assert_response :ok
-  end
-
-  test "data() updates the bitstream's length property" do
-    skip
-    log_in_as(users(:southwest_admin))
-    bitstream = bitstreams(:southwest_unit1_collection1_item1_approved)
-    put item_bitstream_data_path(bitstream.item, bitstream),
-        file_fixture("escher_lego.png")
-    bitstream.reload
-    assert bitstream.length > 0
-  end
-
-  test "data() returns HTTP 400 when the Content-Length header does not match
-  the data length" do
-    skip
-  end
-
-  test "data() returns HTTP 400 for illegal arguments" do
-    skip
   end
 
   # destroy()
@@ -350,7 +309,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -368,7 +328,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.staging_key = nil
     bs.save!
     get item_bitstream_object_path(item, bs)
@@ -379,7 +340,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -398,7 +360,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -412,28 +375,12 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "object() returns HTTP 403 for submitting items" do
-    fixture = file_fixture("crane.jpg")
-    item    = items(:southwest_unit1_collection1_submitting)
-    bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: "new.jpg")
-    bs.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bs.upload_to_staging(file)
-      end
-      get item_bitstream_object_path(item, bs)
-      assert_response :forbidden
-    ensure
-      bs.delete_from_staging
-    end
-  end
-
   test "object() returns HTTP 403 for embargoed items" do
     fixture = file_fixture("crane.jpg")
     item    = items(:southwest_unit1_collection1_embargoed)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -450,7 +397,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("crane.jpg")
     item    = items(:southwest_unit1_collection1_withdrawn)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -473,7 +421,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("crane.jpg")
     item    = items(:southwest_unit1_collection1_withdrawn) # (an item that only sysadmins have access to)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -508,28 +457,12 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "show() returns HTTP 403 for submitting items" do
-    fixture = file_fixture("crane.jpg")
-    item    = items(:southwest_unit1_collection1_submitting)
-    bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: "new.jpg")
-    bs.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bs.upload_to_staging(file)
-      end
-      get item_bitstream_path(item, bs)
-      assert_response :forbidden
-    ensure
-      bs.delete_from_staging
-    end
-  end
-
   test "show() returns HTTP 403 for embargoed items" do
     fixture = file_fixture("crane.jpg")
     item    = items(:southwest_unit1_collection1_embargoed)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -546,7 +479,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("crane.jpg")
     item    = items(:southwest_unit1_collection1_withdrawn)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -563,7 +497,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("crane.jpg")
     item    = items(:southwest_unit1_collection1_withdrawn) # (an item that only sysadmins have access to)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -597,7 +532,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -615,7 +551,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -637,28 +574,12 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  test "stream() returns HTTP 403 for submitting items" do
-    fixture = file_fixture("crane.jpg")
-    item    = items(:southwest_unit1_collection1_submitting)
-    bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: "new.jpg")
-    bs.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bs.upload_to_staging(file)
-      end
-      get item_bitstream_stream_path(item, bs)
-      assert_response :forbidden
-    ensure
-      bs.delete_from_staging
-    end
-  end
-
   test "stream() returns HTTP 403 for embargoed items" do
     fixture = file_fixture("crane.jpg")
     item    = items(:southwest_unit1_collection1_embargoed)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -675,7 +596,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("crane.jpg")
     item    = items(:southwest_unit1_collection1_withdrawn)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -697,7 +619,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
   test "stream() returns HTTP 404 when the underlying data is missing" do
     item = items(:southwest_unit1_collection1_item1)
     bs   = Bitstream.new_in_staging(item:     item,
-                                    filename: "cats.jpg")
+                                    filename: "cats.jpg",
+                                    length:   123)
     bs.update!(staging_key: nil)
     get item_bitstream_stream_path(item, bs)
     assert_response :not_found
@@ -707,7 +630,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("crane.jpg")
     item    = items(:southwest_unit1_collection1_withdrawn) # (an item that only sysadmins have access to)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -731,7 +655,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -843,28 +768,12 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "viewer() returns HTTP 403 for submitting items" do
-    fixture   = file_fixture("crane.jpg")
-    item      = items(:southwest_unit1_collection1_submitting)
-    bs = Bitstream.new_in_staging(item:     item,
-                                  filename: "new.jpg")
-    bs.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bs.upload_to_staging(file)
-      end
-      get item_bitstream_viewer_path(item, bs), xhr: true
-      assert_response :forbidden
-    ensure
-      bs.delete_from_staging
-    end
-  end
-
   test "viewer() returns HTTP 403 for embargoed items" do
     fixture = file_fixture("crane.jpg")
     item    = items(:southwest_unit1_collection1_embargoed)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -881,7 +790,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("crane.jpg")
     item    = items(:southwest_unit1_collection1_withdrawn)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture))
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|
@@ -904,7 +814,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture   = file_fixture("crane.jpg")
     item      = items(:southwest_unit1_collection1_withdrawn) # (an item that only sysadmins have access to)
     bs = Bitstream.new_in_staging(item:     item,
-                                  filename: File.basename(fixture))
+                                  filename: File.basename(fixture),
+                                  length:   File.size(fixture))
     bs.save!
     begin
       File.open(fixture, "r") do |file|

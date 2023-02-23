@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_21_173812) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_22_040512) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -60,7 +60,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_21_173812) do
 
   create_table "bitstreams", force: :cascade do |t|
     t.string "staging_key"
-    t.bigint "length"
+    t.bigint "length", null: false
     t.bigint "item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -79,6 +79,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_21_173812) do
     t.index ["filename"], name: "index_bitstreams_on_filename"
     t.index ["full_text_checked_at"], name: "index_bitstreams_on_full_text_checked_at"
     t.index ["item_id"], name: "index_bitstreams_on_item_id"
+    t.index ["length"], name: "index_bitstreams_on_length"
     t.index ["medusa_key"], name: "index_bitstreams_on_medusa_key", unique: true
     t.index ["medusa_uuid"], name: "index_bitstreams_on_medusa_uuid"
     t.index ["original_filename"], name: "index_bitstreams_on_original_filename"

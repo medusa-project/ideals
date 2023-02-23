@@ -3,10 +3,13 @@
 ##
 # # Uploads
 #
-# Uploading is a two-step process:
+# File upload is a three-step process:
 #
-# 1. A new instances is created via {create}.
-# 2. Data is uploaded to that instance via {data}.
+# 1. A new {Bitstream} instance is created via {create}, with `filename` and
+#    `length` properties set.
+# 2. The client retrieves the JSON representation of that instance, which
+#    contains a presigned object URL, via {show}.
+# 3. The client sends data to the object URL via HTTP PUT.
 #
 # # Downloads
 #
@@ -16,16 +19,16 @@
 #    as it ties up a request connection.
 # 2. By redirecting to its public S3 URL using {object}.
 #
-# Every time a [Bitstream] is "downloaded," an [Event] of type
-# [Event::Type::DOWNLOAD] is supposed to get ascribed to it, which effectively
+# Every time a {Bitstream} is "downloaded," an {Event} of type
+# {Event::Type::DOWNLOAD} is supposed to get ascribed to it, which effectively
 # increments its download count. But what is considered a download?
 #
 # 1. Downloading a single bitstream using a download button?
 # 2. Downloading a zip file full of bitstreams using a download button?
-# 2. Loading a bitstream or its representation into the main item viewer?
-# 3. Receiving a request for a pre-signed URL to the bitstream's content via
+# 3. Loading a bitstream or its representation into the main item viewer?
+# 4. Receiving a request for a pre-signed URL to the bitstream's content via
 #    {object}?
-# 4. Streaming a bitstream's content through via {stream}?
+# 5. Streaming a bitstream's content through via {stream}?
 #     a. Are multiple ranged requests to {stream} all considered independent
 #        downloads? Or only non-ranged requests?
 #
@@ -48,6 +51,8 @@ class BitstreamsController < ApplicationController
   rescue_from Aws::S3::Errors::InvalidRange, with: :rescue_invalid_range
 
   ##
+  # Creates a new bitstream in the staging area.
+  #
   # Responds to `POST /items/:item_id/bitstreams`
   #
   def create
@@ -58,7 +63,8 @@ class BitstreamsController < ApplicationController
                               user:        current_user,
                               description: "Added an associated bitstream.").execute do
           bs = Bitstream.new_in_staging(item:     @item,
-                                        filename: bitstream_params[:filename])
+                                        filename: bitstream_params[:filename],
+                                        length:   bitstream_params[:length])
           bs.save!
         end
       end
@@ -66,34 +72,6 @@ class BitstreamsController < ApplicationController
       head :created
     rescue => e
       render plain: "#{e}", status: :bad_request
-    end
-  end
-
-  ##
-  # Used for uploading data to an existing bitstream. The data is uploaded to
-  # the staging area. If the bitstream's item is already {Item#Stages#APPROVED
-  # approved}, the object is moved into permanent storage upon completion of
-  # the upload.
-  #
-  # Responds to `PUT /items/:item_id/bitstreams/:id`
-  #
-  def data
-    length = request.env['HTTP_X_CONTENT_LENGTH'].to_i
-    input  = request.env['rack.input']
-    input.rewind if input.respond_to?(:rewind) # helps ward off a Aws::S3::Errors::BadDigest error
-    input.set_encoding(Encoding::UTF_8) if input.respond_to?(:set_encoding)
-    if length == input.length # don't know why it wouldn't be but can't hurt to check
-      ActiveRecord::Base.transaction do
-        @bitstream.upload_to_staging(input)
-        if @item.stage >= Item::Stages::APPROVED
-          @bitstream.move_into_permanent_storage
-        end
-      end
-      response.header['Location'] = item_bitstream_url(@item, @bitstream)
-      render plain: "200 OK"
-    else
-      render plain: "The value of the Content-Length header does not match "\
-                    "the length provided.", status: :bad_request
     end
   end
 
@@ -165,9 +143,6 @@ class BitstreamsController < ApplicationController
   # If a `dl=1` query argument is supplied, a download event is ascribed to
   # the bitstream.
   #
-  # Note that for XHR requests, this requires an appropriate CORS policy to be
-  # set on the bucket.
-  #
   # Responds to `GET /items/:item_id/bitstreams/:id/object`.
   #
   # @see stream
@@ -202,7 +177,6 @@ class BitstreamsController < ApplicationController
   # Responds to `GET /items/:item_id/bitstreams/:id/stream`.
   #
   # @see object
-  # TODO: merge this into data()
   #
   def stream
     if @bitstream.permanent_key.present?
@@ -316,7 +290,7 @@ class BitstreamsController < ApplicationController
 
   def bitstream_params
     params.require(:bitstream).permit(:bundle, :bundle_position, :description,
-                                      :filename, :primary, :role)
+                                      :filename, :length, :primary, :role)
   end
 
   def download_content_disposition

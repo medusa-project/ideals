@@ -161,22 +161,22 @@ class PersistentStoreTest < ActiveSupport::TestCase
     assert_equal 2, store.objects(key_prefix: "cats").count
   end
 
-  # presigned_url()
+  # presigned_download_url()
 
-  test "presigned_url() returns a presigned URL" do
+  test "presigned_download_url() returns a presigned URL" do
     store = PersistentStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     key   = "cats/siamese"
     store.put_object(key: key, path: file)
-    assert_not_empty store.presigned_url(key:        key,
-                                         expires_in: 1.minute.to_i)
+    assert_not_empty store.presigned_download_url(key:        key,
+                                                  expires_in: 1.minute.to_i)
   end
 
-  test "presigned_url() raises an error when the object does not exist" do
+  test "presigned_upload_url() returns a presigned URL" do
     store = PersistentStore.instance
-    assert_raises do
-      store.presigned_url(key: "bogus")
-    end
+    key   = "cats/siamese"
+    assert_not_empty store.presigned_upload_url(key:        key,
+                                                expires_in: 1.minute.to_i)
   end
 
   # public_url()

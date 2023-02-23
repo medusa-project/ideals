@@ -25,6 +25,8 @@ const IDEALS = {
         const ROOT_URL   = $("input[name=root_url]").val();
         const CSRF_TOKEN = $("meta[name=csrf-token]").attr("content");
 
+        const self = this;
+
         /**
          * Sends an HTTP DELETE request to the given URI.
          *
@@ -98,6 +100,8 @@ const IDEALS = {
          * Creates a new Bitstream attached to an Item on the server, and
          * uploads data to it.
          *
+         * The upload process is documented in the BitstreamsController class.
+         *
          * @param file {File}                  File to upload.
          * @param item_id {Number}             ID of the owning item.
          * @param onProgressChanged {Function} Function accepting an event
@@ -105,35 +109,68 @@ const IDEALS = {
          * @param onSuccess {Function}         Function accepting a string
          *                                     argument. The string is the URI
          *                                     of the created bitstream.
-         * @param onError {Function}           Function accepting an
-         *                                     {XMLHttpRequest} argument.
+         * @param onError {Function}           Function accepting a string
+         *                                     message and an {XMLHttpRequest}
+         *                                     argument.
          */
         this.uploadFile = function(file, item_id, onProgressChanged, onSuccess,
                                    onError) {
+            /**
+             * Sends a POST request to create a Bitstream.
+             */
             const createBitstream = function() {
                 $.ajax({
                     method: "POST",
                     headers: { "X-CSRF-Token": CSRF_TOKEN },
                     url: ROOT_URL + "/items/" + item_id + "/bitstreams",
-                    data: { bitstream: { filename: file.name }},
+                    data: {
+                        bitstream: {
+                            filename: file.name,
+                            length:   file.size
+                        }
+                    },
                     success: function(data, status, xhr) {
-                        uploadData(xhr.getResponseHeader("Location"),
-                            onProgressChanged);
+                        fetchRepresentation(xhr.getResponseHeader("Location"));
                     },
                     error: function(data, status, xhr) {
-                        onError(xhr);
+                        onError(null, xhr);
                     }
                 });
             }
 
-            const uploadData = function(bitstreamURI, onProgressChanged) {
+            /**
+             * Fetches the JSON representation of a bitstream created by
+             * {@link createBitstream}.
+             *
+             * @param bitstreamURI
+             */
+            const fetchRepresentation = function(bitstreamURI) {
+                $.ajax({
+                    method: "GET",
+                    url: bitstreamURI,
+                    success: function(data, status, xhr) {
+                        uploadData(bitstreamURI, data.presigned_upload_url);
+                    },
+                    error: function(data, status, xhr) {
+                        self.delete(bitstreamURI);
+                        onError(null, xhr);
+                    }
+                });
+            };
+
+            /**
+             * Uploads data to the presigned URL provided in the representation
+             * fetched by {@link fetchRepresentation}.
+             *
+             * @param bitstreamURI
+             * @param presignedURL
+             */
+            const uploadData = function(bitstreamURI, presignedURL) {
                 const xhr = new XMLHttpRequest();
                 if (onProgressChanged) {
                     xhr.upload.addEventListener("progress", onProgressChanged);
                 }
-                xhr.open("PUT", bitstreamURI + "/data", true);
-                xhr.setRequestHeader("X-Content-Length", file.size);
-                xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
+                xhr.open("PUT", presignedURL, true);
                 xhr.send(file);
 
                 xhr.onreadystatechange = function () {
@@ -141,12 +178,19 @@ const IDEALS = {
                         if (xhr.status === 0 || (xhr.status >= 200 && xhr.status < 400)) {
                             onSuccess(bitstreamURI);
                         } else if (onError) {
-                            onError(xhr);
+                            self.delete(bitstreamURI);
+                            onError(null, xhr);
                         }
                     }
                 };
             }
-            createBitstream(uploadData);
+
+            if (file.size > parseInt($("[name=max_upload_size]").val())) {
+                onError("The file \"" + file.name + "\" exceeds the maximum " +
+                    "file size of 5 GB. Please contact us to make other arrangements.");
+            } else {
+                createBitstream();
+            }
         };
     },
 
@@ -671,11 +715,13 @@ const IDEALS = {
                 }
                 markRowUploadToStagingComplete(fileRow, bitstreamURI);
             };
-            const onError = function(xhr) {
+            const onError = function(message, xhr) {
                 self.numUploadingFiles--;
                 console.error(xhr);
-                const message = "There was an error uploading the file. " +
-                    "If this error persists, please contact us.";
+                if (!message) {
+                    message = "There was an error uploading the file. " +
+                        "If this error persists, please contact us.";
+                }
                 if (uploadErrorCallback) {
                     uploadErrorCallback(file, message);
                 } else {

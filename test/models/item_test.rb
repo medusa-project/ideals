@@ -332,12 +332,12 @@ class ItemTest < ActiveSupport::TestCase
 
   test "complete_submission() sets correct bitstream bundle positions" do
     item = items(:uiuc_described)
-    item.bitstreams.build(filename: "Test 1")
-    item.bitstreams.build(filename: "Test 6")
-    item.bitstreams.build(filename: "Test 5")
-    item.bitstreams.build(filename: "Test 3")
-    item.bitstreams.build(filename: "Test 2")
-    item.bitstreams.build(filename: "Test 4")
+    item.bitstreams.build(filename: "Test 1", length: 0)
+    item.bitstreams.build(filename: "Test 6", length: 0)
+    item.bitstreams.build(filename: "Test 5", length: 0)
+    item.bitstreams.build(filename: "Test 3", length: 0)
+    item.bitstreams.build(filename: "Test 2", length: 0)
+    item.bitstreams.build(filename: "Test 4", length: 0)
     item.save!
     item.complete_submission
     filenames = item.bitstreams.map(&:filename)

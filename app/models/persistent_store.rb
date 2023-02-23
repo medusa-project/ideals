@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # High-level interface to the application's persistent store (currently an S3
 # bucket). It is recommended to use this class instead of {S3Client} especially
@@ -10,6 +12,7 @@ class PersistentStore
 
   BUCKET              = ::Configuration.instance.storage[:bucket]
   INSTITUTION_KEY_TAG = "institution_key"
+  MAX_UPLOAD_SIZE     = 2 ** 30 * 5 # 5 GB
 
   ##
   # @param source_key [String]
@@ -92,16 +95,16 @@ class PersistentStore
 
   ##
   # @param key [String]
-  # @param expires_in [Integer]
+  # @param expires_in [Integer] Seconds.
   # @param response_content_type [String]
   # @param response_content_disposition [String]
   # @return [String]
   # @see public_url
   #
-  def presigned_url(key:,
-                    expires_in:,
-                    response_content_type:        nil,
-                    response_content_disposition: nil)
+  def presigned_download_url(key:,
+                             expires_in:                   900,
+                             response_content_type:        nil,
+                             response_content_disposition: nil)
     aws_client = S3Client.instance.send(:get_client)
     signer     = Aws::S3::Presigner.new(client: aws_client)
     signer.presigned_url(:get_object,
@@ -110,6 +113,21 @@ class PersistentStore
                          expires_in:                   expires_in,
                          response_content_type:        response_content_type,
                          response_content_disposition: response_content_disposition)
+  end
+
+  ##
+  # @param key [String]
+  # @param expires_in [Integer] Seconds.
+  # @return [String]
+  # @see public_url
+  #
+  def presigned_upload_url(key:, expires_in: 30)
+    aws_client = S3Client.instance.send(:get_client)
+    signer     = Aws::S3::Presigner.new(client: aws_client)
+    signer.presigned_url(:put_object,
+                         bucket:            BUCKET,
+                         key:               key,
+                         expires_in:        expires_in)
   end
 
   ##

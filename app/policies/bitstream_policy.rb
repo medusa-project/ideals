@@ -77,10 +77,6 @@ class BitstreamPolicy < ApplicationPolicy
                   "collections containing the file." }
   end
 
-  def data
-    create
-  end
-
   def destroy
     ItemPolicy.new(@request_context, @bitstream.item).delete_bitstreams
   end
@@ -111,9 +107,9 @@ class BitstreamPolicy < ApplicationPolicy
       return WRONG_SCOPE_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif !@bitstream.item.approved?
+    elsif @bitstream.item.stage > Item::Stages::APPROVED
       return { authorized: false,
-               reason:     "This file's owning item is not approved." }
+               reason:     "This file's owning item is not authorized." }
     elsif @bitstream.bundle != Bitstream::Bundle::CONTENT &&
       (!@user&.effective_manager?(@bitstream.item.effective_primary_collection) ||
         (@role_limit && @role_limit < Role::COLLECTION_MANAGER))
