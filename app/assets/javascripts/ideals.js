@@ -198,7 +198,11 @@ const IDEALS = {
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Downloads"
+                        }
                     }
                 }
             }
