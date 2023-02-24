@@ -96,11 +96,11 @@
 %h2 Collections
 
 - if @collection.parent
-  %h2 Parent Collection
+  %h3 Parent Collection
   = resource_list([@collection.parent])
 
 - if @subcollections.any?
-  %h2 Child Collections
+  %h3 Child Collections
   = resource_list(@subcollections)
 
 - if !@collection.parent && @subcollections.empty?
