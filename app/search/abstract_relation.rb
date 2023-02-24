@@ -53,7 +53,6 @@ class AbstractRelation
     # OpenSearch. Use {sanitize}.
     @query            = nil # Hash<Symbol,String> Hash with :fields and :term keys
     @search_after     = nil
-    @shoulds          = [] # Array<Array<String>> Array of two-element key-value arrays (in order to support multiple identical keys)
     @start            = 0
 
     @loaded = false
@@ -125,13 +124,7 @@ class AbstractRelation
   # @see must_not
   #
   def filter(field, value)
-    if value.respond_to?(:each)
-      value.each do |v|
-        @shoulds << [field, v]
-      end
-    else
-      @filters << [field, value]
-    end
+    @filters << [field, value]
     @loaded = false
     self
   end
@@ -627,7 +620,21 @@ class AbstractRelation
                   end
                 end
                 @filters.each do |key_value|
-                  unless key_value[1].nil?
+                  if key_value[1].respond_to?(:each)
+                    j.child! do
+                      j.bool do
+                        j.should do
+                          key_value[1].each do |term|
+                            j.child! do
+                              j.term do
+                                j.set! key_value[0], term
+                              end
+                            end
+                          end
+                        end
+                      end
+                    end
+                  elsif !key_value[1].nil?
                     j.child! do
                       j.term do
                         j.set! key_value[0], key_value[1]
@@ -640,19 +647,6 @@ class AbstractRelation
                     j.range do
                       j.set! range[:field] do
                         j.set! range[:op], range[:value]
-                      end
-                    end
-                  end
-                end
-              end
-              if @shoulds.any?
-                j.should do
-                  @shoulds.each do |key_value|
-                    unless key_value[1].nil?
-                      j.child! do
-                        j.term do
-                          j.set! key_value[0], key_value[1]
-                        end
                       end
                     end
                   end
