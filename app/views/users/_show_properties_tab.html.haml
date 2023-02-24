@@ -75,7 +75,9 @@
       Never
   - if current_user.sysadmin?
     %dt Last Auth Hash
-    %dd
+    -# some of this content can be very wide and would mess up the page layout
+    -# without the overflow-x
+    %dd{style: "overflow-x: scroll"}
       - if @user.auth_hash
         %pre= JSON.pretty_generate(@user.auth_hash)
       - else
