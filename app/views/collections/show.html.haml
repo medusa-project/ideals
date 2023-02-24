@@ -38,7 +38,7 @@
         %i.fa.fa-tasks
         Submissions In Progress
         - if @submissions_in_progress_count > 0
-          %span.badge.rounded-pill.text-bg-secondary= @submissions_in_progress_count
+          %span.badge.rounded-pill.text-bg-primary= @submissions_in_progress_count
     - if policy(@collection).show_about?
       %button#about-tab.nav-link{"data-bs-target": "#about-tab-content",
                                  "data-bs-toggle": "pill",
