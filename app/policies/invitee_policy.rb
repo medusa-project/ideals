@@ -57,6 +57,9 @@ class InviteePolicy < ApplicationPolicy
   end
 
   def show
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    end
     approve
   end
 
