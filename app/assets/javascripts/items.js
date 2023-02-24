@@ -216,7 +216,8 @@ const FileNavigator = function() {
                         panel_content.html(data);
                         const canvas    = $("#download-chart");
                         const chartData = $.parseJSON($("#chart-data").val());
-                        new IDEALS.Chart(canvas, chartData);
+                        const color     = $("[name=chart_color]").val();
+                        new IDEALS.Chart(canvas, chartData, color);
                     });
                 };
 

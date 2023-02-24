@@ -3,8 +3,6 @@
  */
 const IDEALS = {
 
-    CHART_COLOR: "rgba(19, 41, 75, 0.8)",
-
     /**
      * Application-wide fade time, for consistency.
      */
@@ -198,10 +196,12 @@ const IDEALS = {
      * Renders a chart into a canvas using chart.js (https://www.chartjs.org).
      *
      * @param canvas {jQuery} Canvas element.
-     * @param chart_data Array of objects with `month` and `dl_count` keys.
+     * @param chart_data      Array of objects with `month` and `dl_count`
+     *                        keys.
+     * @param color           CSS color.
      * @constructor
      */
-    Chart: function(canvas, chart_data) {
+    Chart: function(canvas, chart_data, color) {
         // X axis labels
         const labels = $.map(chart_data, function(n, i) {
             const regex = /^(\d+)-(\d+)-(\d+)/;
@@ -215,7 +215,7 @@ const IDEALS = {
         // Colors
         const colors = [];
         for (var i = 0; i < values.length; i++) {
-            colors.push(IDEALS.CHART_COLOR);
+            colors.push(color);
         }
 
         new Chart(canvas, {

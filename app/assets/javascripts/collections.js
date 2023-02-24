@@ -181,7 +181,8 @@ const CollectionView = function() {
                         innerTabContent.html(data);
                         const canvas    = $("#chart");
                         const chartData = $.parseJSON($("#chart-data").val());
-                        new IDEALS.Chart(canvas, chartData);
+                        const color     = $("[name=chart_color]").val();
+                        new IDEALS.Chart(canvas, chartData, color);
                     },
                     error: function(data, status, xhr) {
                         $("#error-flash").text(data.responseText).show();
