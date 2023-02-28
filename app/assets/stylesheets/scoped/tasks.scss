@@ -1,0 +1,7 @@
+body#tasks {
+  #tasks-list {
+    td:first-child {
+      overflow-wrap: anywhere;
+    }
+  }
+}
