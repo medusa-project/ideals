@@ -15,14 +15,10 @@ class TasksController < ApplicationController
   # Responds to `GET /tasks`
   #
   def index
-    @limit = 100
-    @tasks = Task.
-      where(institution: current_institution).
-      order(created_at: :desc).
-      limit(@limit)
+    setup_index(current_institution)
     respond_to do |format|
-      format.js
       format.html
+      format.js { render partial: "tasks" }
     end
   end
 
@@ -33,10 +29,10 @@ class TasksController < ApplicationController
   # Responds to `GET /tasks`
   #
   def index_all
-    @tasks = Task.all.order(created_at: :desc).limit(100)
+    setup_index
     respond_to do |format|
-      format.js
       format.html
+      format.js { render partial: "tasks" }
     end
   end
 
@@ -60,6 +56,20 @@ class TasksController < ApplicationController
 
   def set_task
     @task = Task.find(params[:id])
+  end
+
+  def setup_index(institution = nil)
+    @tasks = Task.all
+    if institution.present?
+      @tasks = @tasks.where(institution: institution)
+    end
+    if params[:q].present?
+      @tasks = @tasks.where("LOWER(status_text) LIKE ?", "%#{params[:q].downcase}%")
+    end
+    if params[:status].present?
+      @tasks = @tasks.where(status: params[:status])
+    end
+    @tasks = @tasks.order(created_at: :desc).limit(100) # TODO: pagination
   end
 
 end

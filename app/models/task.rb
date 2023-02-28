@@ -59,6 +59,13 @@ class Task < ApplicationRecord
     FAILED    = 5
 
     ##
+    # @return [Enumerable<String>]
+    #
+    def self.all
+      self.constants.map{ |k| const_get(k) }
+    end
+
+    ##
     # @param status [Integer] One of the [Status] constant values.
     # @return [String] Human-readable status.
     #

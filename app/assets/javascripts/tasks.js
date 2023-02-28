@@ -46,7 +46,34 @@ const TasksView = function() {
     };
 
     this.init = function() {
+        const filterDiv = $("#task-filter");
         new TaskListRefresher().start();
+
+        const refreshTasks = function() {
+            const form = filterDiv.find("form");
+            $.ajax({
+                method:   "GET",
+                url:      form.attr("action"),
+                data:     form.serialize(),
+                dataType: "script",
+                success: function(data) {
+                    $("#tasks-list").html(data);
+                },
+                error: function(data, status, xhr) {
+                }
+            });
+        };
+
+        let timeout = null;
+        filterDiv.find("input").on("keyup", function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                refreshTasks();
+            }, IDEALS.KEY_DELAY);
+        });
+        filterDiv.find("[name=status]").on("change", function() {
+            refreshTasks();
+        });
 
         $('#show-task-modal').on('show.bs.modal', function(event) {
             const modal   = $(this);
@@ -57,7 +84,6 @@ const TasksView = function() {
                 url: url,
                 success: function (data) {
                     modal.find('.modal-body').html(data);
-                    
                 },
                 error: function(a, b, c) {
                     console.error(a);

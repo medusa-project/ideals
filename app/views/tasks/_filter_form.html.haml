@@ -1,0 +1,14 @@
+.card.mb-3
+  #task-filter.card-body
+    = form_tag(request.path, method: :get, class: "form-inline") do
+      .row
+        .col
+          = label_tag("q", "Status Text", class: "form-label")
+          = filter_field
+
+        .col
+          = label_tag("status", "Status", class: "form-label")
+          = select_tag("status",
+                       options_for_select(Task::Status.all.map{ |t| [Task::Status::to_s(t), t] }),
+                       include_blank: true,
+                       class: "form-select")
