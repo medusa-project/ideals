@@ -341,9 +341,9 @@ const SubmissionForm = function() {
     const wirePersonNameTransformer = function() {
         metadataForm.find("[name=family_name], [name=given_name]").on("change", function () {
             const hiddenInput = $("#" + $(this).data("for"));
-            const parent = hiddenInput.parent();
-            const familyName = parent.find("[name=family_name]").val();
-            const givenName = parent.find("[name=given_name]").val();
+            const parent      = hiddenInput.parent();
+            const familyName  = parent.find("[name=family_name]").val();
+            const givenName   = parent.find("[name=given_name]").val();
             hiddenInput.val(familyName + ", " + givenName);
         });
     }
@@ -390,12 +390,13 @@ const SubmissionForm = function() {
     const wireDependentSelects = function() {
         if ($("[name=institution_key]").val() === "uiuc") {
             metadataForm.find("select").on("change", function () {
-                if ($(this).prev().val() === "dc:type") {
+                if ($(this).parent().prev().val() === "dc:type") {
                     const textField = $(this).next("input");
                     if ($(this).val() === "other") {
                         $(this).attr("name", "disabled");
                         if (textField.length < 1) {
-                            const textField = $("<input type='text' name='elements[][string]' class='form-control' required='required'>");
+                            // N.B. this must remain in sync with the same tag in the view
+                            const textField = $("<input type='text' name='elements[][string]' class='form-control mt-2' required='required'>");
                             $(this).after(textField);
                             wireElementChangeListener(textField);
                         }

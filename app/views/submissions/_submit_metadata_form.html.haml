@@ -37,7 +37,7 @@
                 - if show_text_field
                   = text_field_tag("elements[][string]",
                                    ascribed_element.string == "other" ? "" : ascribed_element.string,
-                                   class: "form-control",
+                                   class: "form-control mt-2",
                                    required: profile_element.required)
             - else
               - case registered_element.input_type
