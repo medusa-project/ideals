@@ -16,6 +16,10 @@ class MessagePolicy < ApplicationPolicy
     effective_sysadmin(@user, @role_limit)
   end
 
+  def resend
+    show
+  end
+
   def show
     index
   end

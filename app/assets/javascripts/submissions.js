@@ -341,9 +341,9 @@ const SubmissionForm = function() {
     const wirePersonNameTransformer = function() {
         metadataForm.find("[name=family_name], [name=given_name]").on("change", function () {
             const hiddenInput = $("#" + $(this).data("for"));
-            const parent = hiddenInput.parent();
-            const familyName = parent.find("[name=family_name]").val();
-            const givenName = parent.find("[name=given_name]").val();
+            const parent      = hiddenInput.parent();
+            const familyName  = parent.find("[name=family_name]").val();
+            const givenName   = parent.find("[name=given_name]").val();
             hiddenInput.val(familyName + ", " + givenName);
         });
     }
@@ -383,27 +383,30 @@ const SubmissionForm = function() {
         });
     }
 
-    // When a "Type of Resource" of "Other" is selected, add a text field next
-    // to it. This is a hack for one element only since submission profiles
-    // don't support this behavior generically.
-    // TODO: add an input type to support this behavior
+    // When a dc:type of "Other" is selected, add a text field next to it.
+    // This is a hack for one UIUC element only since submission profiles don't
+    // support this behavior.
+    // TODO: add an input type to support this behavior?
     const wireDependentSelects = function() {
-        metadataForm.find("select").on("change", function () {
-            if ($(this).prev().val() === "dc:type") {
-                const textField = $(this).next("input");
-                if ($(this).val() === "other") {
-                    $(this).attr("name", "disabled");
-                    if (textField.length < 1) {
-                        const textField = $("<input type='text' name='elements[][string]' class='form-control' required='required'>");
-                        $(this).after(textField);
-                        wireElementChangeListener(textField);
+        if ($("[name=institution_key]").val() === "uiuc") {
+            metadataForm.find("select").on("change", function () {
+                if ($(this).parent().prev().val() === "dc:type") {
+                    const textField = $(this).next("input");
+                    if ($(this).val() === "other") {
+                        $(this).attr("name", "disabled");
+                        if (textField.length < 1) {
+                            // N.B. this must remain in sync with the same tag in the view
+                            const textField = $("<input type='text' name='elements[][string]' class='form-control mt-2' required='required'>");
+                            $(this).after(textField);
+                            wireElementChangeListener(textField);
+                        }
+                    } else {
+                        $(this).attr("name", "elements[][string]");
+                        textField.remove();
                     }
-                } else {
-                    $(this).attr("name", "elements[][string]");
-                    textField.remove();
                 }
-            }
-        });
+            });
+        }
     };
 
     const onElementChanged = function(element) {

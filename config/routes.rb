@@ -158,7 +158,9 @@ Rails.application.routes.draw do
     match "/update-password", to: "local_identities#update_password", via: [:patch, :post],
           constraints: lambda { |request| request.xhr? }
   end
-  resources :messages, only: [:index, :show]
+  resources :messages, only: [:index, :show] do
+    match "/resend", to: "messages#resend", via: :post
+  end
   resources :metadata_profiles, path: "metadata-profiles" do
     match "/clone", to: "metadata_profiles#clone", via: :post
     resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]

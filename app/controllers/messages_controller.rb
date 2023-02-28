@@ -4,8 +4,8 @@ class MessagesController < ApplicationController
 
   before_action :ensure_institution_host, :ensure_logged_in
   before_action :authorize_index, only: :index
-  before_action :load_message, only: :show
-  before_action :authorize_message, only: :show
+  before_action :load_message, except: :index
+  before_action :authorize_message, only: [:resend, :show]
   before_action :store_location, only: [:index, :show]
 
   ##
@@ -32,6 +32,20 @@ class MessagesController < ApplicationController
     @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
   end
 
+  ##
+  # Responds to `POST /messages/:id/resend`.
+  #
+  def resend
+    @message.resend
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    toast!(title:   "Message resent",
+           message: "Message ##{@message.id} has been resent.")
+  ensure
+    redirect_back fallback_location: messages_path
+  end
+
   def show
   end
 
@@ -43,7 +57,7 @@ class MessagesController < ApplicationController
   end
 
   def load_message
-    @message = Message.find(params[:id])
+    @message = Message.find(params[:id] || params[:message_id])
   end
 
   def authorize_message

@@ -45,6 +45,43 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  # resend()
+
+  test "resend() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    message = messages(:ingest_no_response)
+    post message_resend_path(message)
+    assert_response :not_found
+  end
+
+  test "resend() redirects to root page for logged-out users" do
+    message = messages(:ingest_no_response)
+    post message_resend_path(message)
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "resend() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    post message_resend_path(messages(:ingest_no_response))
+    assert_response :forbidden
+  end
+
+  test "resend() redirects back for authorized users" do
+    log_in_as(users(:southwest_sysadmin))
+    post message_resend_path(messages(:ingest_no_response))
+    assert_redirected_to messages_path
+  end
+
+  test "resend() respects role limits" do
+    log_in_as(users(:southwest_sysadmin))
+    post message_resend_path(messages(:ingest_no_response))
+    assert_response :found
+
+    get messages_path(messages(:ingest_no_response),
+                      role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # show()
 
   test "show() returns HTTP 404 for unscoped requests" do

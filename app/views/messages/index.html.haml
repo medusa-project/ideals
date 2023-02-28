@@ -42,6 +42,11 @@
   .card.mb-3
     %h5.card-header
       = message.id
+      - if message.response_time.blank?
+        = link_to("Resend", message_resend_path(message),
+                  role:   "button",
+                  method: :post,
+                  class:  "btn btn-sm btn-primary")
     .card-body
       = render partial: "show", locals: { message: message }
 

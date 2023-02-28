@@ -788,6 +788,7 @@ const IDEALS = {
                         reader.onerror = function(e) {
                             // It's a directory or something else happened that
                             // we can't recover from.
+                            console.log(e);
                         };
                         reader.readAsBinaryString(file);
                     }
