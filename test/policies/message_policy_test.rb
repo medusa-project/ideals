@@ -17,7 +17,7 @@ class MessagePolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy = MessagePolicy.new(context, Message)
+    policy  = MessagePolicy.new(context, Message)
     assert !policy.index?
   end
 
@@ -39,6 +39,39 @@ class MessagePolicyTest < ActiveSupport::TestCase
     assert !policy.index?
   end
 
+  # resend?()
+
+  test "resend?() returns false with a nil user" do
+    policy = MessagePolicy.new(nil, Message)
+    assert !policy.resend?
+  end
+
+  test "resend?() does not authorize non-sysadmins" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MessagePolicy.new(context, Message)
+    assert !policy.resend?
+  end
+
+  test "resend?() authorizes sysadmins" do
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = MessagePolicy.new(context, Message)
+    assert policy.resend?
+  end
+
+  test "resend?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = MessagePolicy.new(context, Message)
+    assert !policy.resend?
+  end
+
   # show?()
 
   test "show?() returns false with a nil user" do
@@ -50,7 +83,7 @@ class MessagePolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy = MessagePolicy.new(context, Message)
+    policy  = MessagePolicy.new(context, Message)
     assert !policy.show?
   end
 
