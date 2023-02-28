@@ -59,17 +59,24 @@ class TasksController < ApplicationController
   end
 
   def setup_index(institution = nil)
-    @tasks = Task.all
-    if institution.present?
+    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+                                        Search::SIMPLE_SEARCH_PARAMS +
+                                        [:status_text, :status])
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    @tasks            = Task.all.order(created_at: :desc)
+    if institution
       @tasks = @tasks.where(institution: institution)
     end
-    if params[:q].present?
-      @tasks = @tasks.where("LOWER(status_text) LIKE ?", "%#{params[:q].downcase}%")
+    if @permitted_params[:q].present?
+      @tasks = @tasks.where("LOWER(status_text) LIKE ?", "%#{@permitted_params[:q]&.downcase}%")
     end
-    if params[:status].present?
-      @tasks = @tasks.where(status: params[:status])
+    if @permitted_params[:status].present?
+      @tasks = @tasks.where(status: @permitted_params[:status])
     end
-    @tasks = @tasks.order(created_at: :desc).limit(100) # TODO: pagination
+    @count            = @tasks.count
+    @tasks            = @tasks.limit(@window).offset(@start)
+    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
   end
 
 end
