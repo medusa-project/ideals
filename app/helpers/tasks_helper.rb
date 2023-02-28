@@ -10,13 +10,13 @@ module TasksHelper
     status = task.kind_of?(Integer) ? task : task.status
     case status
     when ::Task::Status::PENDING
-      class_ = "bg-light"
+      class_ = "bg-secondary"
     when ::Task::Status::PAUSED
       class_ = "bg-warning"
     when ::Task::Status::RUNNING
       class_ = "bg-primary"
     when ::Task::Status::STOPPED
-      class_ = "bg-secondary"
+      class_ = "bg-danger"
     when ::Task::Status::SUCCEEDED
       class_ = "bg-success"
     when ::Task::Status::FAILED
