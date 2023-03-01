@@ -7,7 +7,7 @@ module MetadataSubmission
   include ActiveSupport::Concern
 
   ##
-  # Builds and ascribes [AscribedElement]s to an [Item] based on user input.
+  # Builds and ascribes {AscribedElement}s to an {Item} based on user input.
   # Any existing elements ascribed to the item are deleted. The item is not
   # saved.
   #
@@ -37,7 +37,7 @@ module MetadataSubmission
             position = 1
           end
           reg_e = RegisteredElement.where(name:        element[:name],
-                                          institution: current_institution).limit(1).first
+                                          institution: item.institution).limit(1).first
           # reg_e should never be nil here, but if it is, it would be better to
           # error out (and roll back the transaction) than to discard metadata.
           item.elements.build(registered_element: reg_e,
