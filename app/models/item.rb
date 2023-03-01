@@ -541,6 +541,7 @@ class Item < ApplicationRecord
     else
       self.approve
       self.move_into_permanent_storage
+      self.ingest_into_medusa if self.handle
     end
   end
 
@@ -671,6 +672,11 @@ class Item < ApplicationRecord
   #
   def exists_in_medusa?
     self.bitstreams.where.not(medusa_uuid: nil).count > 0
+  end
+
+  def ingest_into_medusa
+    raise "Cannot ingest into Medusa without a handle" unless self.handle
+    self.bitstreams.each(&:ingest_into_medusa)
   end
 
   ##

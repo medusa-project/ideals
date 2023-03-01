@@ -416,6 +416,7 @@ class ItemsController < ApplicationController
       unless item.withdrawn?
         item.assign_handle
         item.move_into_permanent_storage
+        item.ingest_into_medusa
       end
       item.approve
       item.save!

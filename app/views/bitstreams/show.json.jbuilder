@@ -8,7 +8,7 @@ json.extract! @bitstream, :id, :length, :media_type, :filename,
               :original_filename, :bundle_position, :primary, :description,
               :created_at, :updated_at
 
-if policy(@bitstream).create?
+if policy(@bitstream.item).update?
   json.presigned_upload_url @bitstream.presigned_upload_url
 end
 

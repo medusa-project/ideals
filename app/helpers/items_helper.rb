@@ -264,16 +264,16 @@ module ItemsHelper
             form << "</h3>"
           end
         end
-        form << "<div class=\"media resource-list mb-3 ms-3\">"
+        form << "<div class=\"d-flex resource-list mb-3 ms-3\">"
         form <<   "<div class=\"check\">"
         form <<     check_box_tag("items[]", item.id)
         form <<   "</div>"
-        form <<   "<div class=\"thumbnail ms-2\">"
+        form <<   "<div class=\"flex-shrink-0 icon-thumbnail ms-2\">"
         form <<     link_to(item) do
           icon_for(item)
         end
         form <<   "</div>"
-        form <<   "<div class=\"media-body\">"
+        form <<   "<div class=\"flex-grow-1 ms-3\">"
         form <<     "<h5 class=\"mt-0 mb-0\">"
         form <<       link_to(item.title, item)
         form <<     "</h5>"
