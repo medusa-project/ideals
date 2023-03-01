@@ -562,7 +562,6 @@ class Bitstream < ApplicationRecord
                       target_key: permanent_key)
     self.update_column(:permanent_key, permanent_key) # skip callbacks
     self.update_column(:staging_key, nil)             # skip callbacks
-    self.ingest_into_medusa
   end
 
   ##
