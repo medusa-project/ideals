@@ -162,6 +162,7 @@ class UserGroupsController < ApplicationController
       UserGroup.transaction do
         # Process input from the various edit modals.
         build_ad_groups
+        build_local_users
         build_netid_users
         build_hosts
         build_departments
@@ -218,9 +219,26 @@ class UserGroupsController < ApplicationController
     end
   end
 
+  def build_local_users
+    if params[:user_group][:user_ids]&.respond_to?(:each)
+      UserGroupUser.
+        joins(:user).
+        where("user.type": LocalUser.to_s).
+        where(user_group: @user_group).
+        destroy_all
+      params[:user_group][:user_ids].select(&:present?).each do |id|
+        @user_group.users << LocalUser.find(id)
+      end
+    end
+  end
+
   def build_netid_users
     if params[:user_group][:netid_users]&.respond_to?(:each)
-      UserGroupUser.where(user_group: @user_group).destroy_all
+      UserGroupUser.
+        joins(:user).
+        where("user.type": ShibbolethUser.to_s).
+        where(user_group: @user_group).
+        destroy_all
       params[:user_group][:netid_users].select(&:present?).each do |netid|
         uid   = "#{netid}@illinois.edu"
         email = uid
