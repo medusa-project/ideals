@@ -760,6 +760,28 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  test "move_into_permanent_storage() sends an ingest message to Medusa" do
+    begin
+      fixture     = file_fixture("escher_lego.png")
+      staging_key = nil
+      File.open(fixture, "r") do |file|
+        @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+                                             filename: SecureRandom.hex,
+                                             length:   File.size(fixture))
+        @instance.upload_to_staging(file)
+        staging_key = @instance.staging_key
+        @instance.move_into_permanent_storage
+      end
+      queue = @instance.institution.outgoing_message_queue
+      AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
+        assert_equal "ingest", message['operation']
+      end
+    ensure
+      @instance.delete_from_staging
+      @instance.delete_from_permanent_storage
+    end
+  end
+
   # original_filename
 
   test "original_filename cannot be changed" do
