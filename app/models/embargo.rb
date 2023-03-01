@@ -1,6 +1,6 @@
 ##
-# Restricts [Item] access either perpetually or until a certain date,
-# optionally exempting one or more [UserGroup]s.
+# Restricts {Item} access either perpetually or until a certain date,
+# optionally exempting one or more {UserGroup}s.
 #
 # # Attributes
 #
@@ -8,8 +8,8 @@
 # * `expires_at`  Date/time at which the embargo expires. For embargoes that
 #                 never expire, {perpetual} is `true` and the value of this
 #                 attribute is irrelevant.
-# * `kind`        Value of one of the [Import::Kind] constants.
-# * `item_id`     References the owning [Item].
+# * `kind`        Value of one of the {Embargo::Kind} constants.
+# * `item_id`     References the owning {Item}.
 # * `perpetual`   Whether the embargo ever expires. If `true`, the embargo
 #                 never expires and the value of {expires_at} is irrelevant.
 # * `reason`      Reason for the embargo.
@@ -17,8 +17,8 @@
 #
 # # Relationships
 #
-# * `item`        The owning [Item].
-# * `user_groups` Zero or more [UserGroup]s that are exempt from the embargo.
+# * `item`        The owning {Item}.
+# * `user_groups` Zero or more {UserGroup}s that are exempt from the embargo.
 #
 class Embargo < ApplicationRecord
 
