@@ -1,17 +1,15 @@
 body#list_units {
-  .page-content {
+  ul#expandable-unit-list {
+    font-size: 16pt;
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+    button.btn-link {
+      color: black;
+      padding: 0.1em 0.5em 0.1em 0;
+    }
     ul {
-      font-size: 16pt;
-      list-style: none;
-      margin-left: 0;
-      padding-left: 0;
-      button.btn-link {
-        color: black;
-        padding: 0.1em 0.5em 0.1em 0;
-      }
-      ul {
-        margin-left: 2em;
-      }
+      margin-left: 2em;
     }
   }
 }

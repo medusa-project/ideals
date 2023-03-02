@@ -9,7 +9,7 @@ module UnitsHelper
   #
   def expandable_unit_list(units)
     html = StringIO.new
-    html << "<ul>"
+    html << '<ul id="expandable-unit-list">'
     units.each do |unit|
       html << "<li data-id=\"#{unit.id}\">"
       if unit.units.count > 0 || unit.unit_collection_memberships.count > 0
