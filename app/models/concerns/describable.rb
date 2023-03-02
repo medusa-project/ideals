@@ -42,7 +42,7 @@ module Describable
     #                  association, or an empty string if not found.
     #
     def title
-      self.element(self.institution.title_element&.name)&.string || ""
+      self.element(self.institution&.title_element&.name)&.string || ""
     end
 
   end
