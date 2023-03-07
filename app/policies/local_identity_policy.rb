@@ -27,7 +27,7 @@ class LocalIdentityPolicy < ApplicationPolicy
   end
 
   def register
-    if @ctx_institution != @identity.user.institution
+    if @ctx_institution != @identity.invitee.institution
       return WRONG_SCOPE_RESULT
     end
     AUTHORIZED_RESULT
