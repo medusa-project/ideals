@@ -20,6 +20,26 @@ class UserGroupTest < ActiveSupport::TestCase
     assert_equal 0, groups.length
   end
 
+  # create()
+
+  test "create() ascribes a default key to a non-defining-institution group if
+  no key is set" do
+    group = UserGroup.create!(name: "New Group")
+    assert_not_nil group.key
+  end
+
+  test "create() ascribes a default key to a defining-institution group if no
+  key is set" do
+    group = UserGroup.create!(name: "New Group", defines_institution: true)
+    assert_equal UserGroup::DEFINING_INSTITUTION_KEY, group.key
+  end
+
+  test "create() does not overwrite the key if one is set" do
+    key   = "new"
+    group = UserGroup.create!(key: key, name: "New Group")
+    assert_equal key, group.key
+  end
+
   # sysadmin()
 
   test "sysadmin() returns the sysadmin group" do
@@ -132,6 +152,21 @@ class UserGroupTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::RecordNotUnique do
       UserGroup.create!(key:         "test",
                         name:        SecureRandom.hex,
+                        institution: institution)
+    end
+  end
+
+  test "key can be `sysadmin` within the global scope" do
+    group = UserGroup.create!(key:  UserGroup::SYSADMIN_KEY,
+                              name: "New Group")
+    assert group.valid?
+  end
+
+  test "key cannot be `sysadmin` within an institution's scope" do
+    institution = institutions(:example)
+    assert_raises ActiveRecord::RecordInvalid do
+      UserGroup.create!(key:         UserGroup::SYSADMIN_KEY,
+                        name:        "New Group",
                         institution: institution)
     end
   end

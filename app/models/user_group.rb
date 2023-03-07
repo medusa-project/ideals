@@ -1,6 +1,22 @@
+# frozen_string_literal: true
+
 ##
-# Aggregation of [LocalUser]s, [AdGroup]s, and other dimensions, for the
+# Aggregation of {LocalUser}s, {AdGroup}s, and other dimensions, for the
 # purpose of performing group-based authorization.
+#
+# User groups can be global or scoped to an institution. Global groups can only
+# be created or edited by system administrators.
+#
+# User groups have human-readable {#name names}. They also have a {#key} that
+# is unique within the same scope. The key is generally used only within the
+# application to get a handle on certain {#SYSTEM_REQUIRED_GROUPS
+# system-required groups}. For those groups, it is fixed and known. For other
+# groups, like whatever arbitrary groups are created within an institution, it
+# is auto-filled with a random string.
+#
+# When an {Institution} is created, a group that represents it is created along
+# with it. This group is considered to {UserGroup#defines_institution define
+# the institution}.
 #
 # # Attributes
 #
@@ -8,18 +24,28 @@
 # * `defines_institution` Whether the group defines the users in its owning
 #                         institution. Every institution should have one such
 #                         group.
-# * `institution_id`      Foreign key to [Institution] indicating that the
+# * `institution_id`      Foreign key to {Institution} indicating that the
 #                         group is exclusive to that institution. May also be
 #                         `nil`, indicating that the group is global, available
 #                         to all institutions.
-# * `key`                 Short unique identifying key.
-# * `name`                Arbitrary but unique group name.
+# * `key`                 Short string identifier that is unique within an
+#                         institutional scope. This is generally used only
+#                         within the application to get a handle on certain
+#                         {#SYSTEM_REQUIRED_GROUPS system-required groups}.
+# * `name`                Arbitrary human-readable name that is unique within
+#                         an institutional scope.
 # * `updated_at`          Managed by ActiveRecord.
 #
 class UserGroup < ApplicationRecord
   include Breadcrumb
 
-  SYSTEM_REQUIRED_GROUPS = %w(sysadmin)
+  # The key given to a user group that {#defining_institution defines its
+  # institution}.
+  DEFINING_INSTITUTION_KEY = "institution"
+  # Key of the sysadmin group.
+  SYSADMIN_KEY             = "sysadmin"
+  # The application needs these groups to exist.
+  SYSTEM_REQUIRED_GROUPS   = %w(sysadmin)
 
   belongs_to :institution, optional: true
 
@@ -38,9 +64,12 @@ class UserGroup < ApplicationRecord
 
   validates :name, presence: true # uniqueness enforced by database constraints
   validates :key, presence: true  # uniqueness enforced by database constraints
+  validate :validate_sysadmin_group
 
   after_save :ensure_defines_institution_uniqueness
   before_destroy :prevent_destroy_of_required_group
+
+  before_validation :ascribe_key, if: :new_record?
 
   ##
   # @param hostname [String]
@@ -128,7 +157,18 @@ class UserGroup < ApplicationRecord
     self.defines_institution || SYSTEM_REQUIRED_GROUPS.include?(self.key)
   end
 
+
   private
+
+  def ascribe_key
+    if self.key.blank?
+      if self.defines_institution
+        self.key = DEFINING_INSTITUTION_KEY
+      else
+        self.key = SecureRandom.hex
+      end
+    end
+  end
 
   ##
   # Marks all other instances of the same institution as "not defining the
@@ -147,6 +187,16 @@ class UserGroup < ApplicationRecord
   def prevent_destroy_of_required_group
     if SYSTEM_REQUIRED_GROUPS.include?(self.key)
       errors.add(:base, :undestroyable)
+      throw :abort
+    end
+  end
+
+  ##
+  # Ensures that there is only one group with a key of {SYSADMIN_KEY}.
+  #
+  def validate_sysadmin_group
+    if self.key == SYSADMIN_KEY && self.institution_id.present?
+      errors.add(:key, "cannot be that of the system administrator group")
       throw :abort
     end
   end

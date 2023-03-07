@@ -8,10 +8,6 @@
   = f.hidden_field(:institution_id, value: current_institution.id)
 
   .mb-3
-    = f.label :key
-    = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
-
-  .mb-3
     = f.label :name
     = f.text_field :name, class: 'form-control'
 

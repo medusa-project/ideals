@@ -902,7 +902,7 @@ class Institution < ApplicationRecord
 
   def add_defining_user_group
     self.user_groups.build(name:                "#{self.name} Users",
-                           key:                 "institution",
+                           key:                 UserGroup::DEFINING_INSTITUTION_KEY,
                            defines_institution: true).save!
   end
 

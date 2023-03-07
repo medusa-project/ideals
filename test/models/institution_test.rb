@@ -162,7 +162,10 @@ class InstitutionTest < ActiveSupport::TestCase
                                       key:              "new",
                                       fqdn:             "example.net",
                                       main_website_url: "https://example.net")
-    assert_not_nil institution.defining_user_group
+    group = institution.defining_user_group
+    assert group.defines_institution
+    assert_equal UserGroup::DEFINING_INSTITUTION_KEY, group.key
+    assert_equal "#{institution.name} Users", group.name
   end
 
   # active_link_color

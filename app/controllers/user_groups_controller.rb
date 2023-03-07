@@ -251,7 +251,7 @@ class UserGroupsController < ApplicationController
   end
 
   def user_group_params
-    params.require(:user_group).permit(:institution_id, :key, :name,
+    params.require(:user_group).permit(:institution_id, :name,
                                        affiliation_ids: [],
                                        department_ids: [], user_ids: [])
   end
