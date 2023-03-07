@@ -33,21 +33,20 @@ module UnitsHelper
   # administrator in a series of `option` elements. To render the whole tree
   # instead, use {unit_tree_options}.
   #
-  # @param user [User]                  All units of which this user is an
-  #                                     effective administrator will be
-  #                                     included in the list.
-  # @param include_blank [Boolean]      Whether to include a blank entry at the
-  #                                     top.
-  # @param exclude_unit [Unit]          Unit to exclude from the list.
-  # @return [Enumerable<String>]        Array of options for passing to
-  #                                     {options_for_select}.
+  # @param user [User]             All units of which this user is an effective
+  #                                administrator will be included in the list.
+  # @param include_blank [Boolean] Whether to include a blank entry at the top.
+  # @param exclude_unit [Unit]     Unit to exclude from the list.
+  # @return [Enumerable<String>]   Array of options for passing to
+  #                                {options_for_select}.
   #
   def unit_list_options(user:,
                         include_blank: false,
                         exclude_unit:  nil)
     options  = []
     options << [nil, nil] if include_blank
-    units = Unit.all.
+    units = Unit.
+      where(institution: current_institution)
       order(:title).
       reject{ |u| u == exclude_unit }.
       select{ |u| user.effective_unit_admin?(u) }
