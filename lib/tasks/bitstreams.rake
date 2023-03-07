@@ -38,19 +38,18 @@ namespace :bitstreams do
   end
 
   desc "Ingest bitstreams into Medusa that have not already been ingested"
-  task :ingest_into_medusa, [:limit] => :environment do |task, args|
+  task :ingest_into_medusa => :environment do |task, args|
     bitstreams = Bitstream.
       where(medusa_uuid: nil).
       where("permanent_key IS NOT NULL").
-      reject(&:submitted_for_ingest?)
+      reject(&:submitted_for_ingest?).
+      reject{ |b| !b.item.handle }
     puts "#{bitstreams.count} bitstreams left to ingest"
-    limit      = args[:limit].to_i
-    bitstreams = bitstreams.limit(limit)
-    count      = bitstreams.count
-    progress   = Progress.new(count)
+    count    = bitstreams.count
+    progress = Progress.new(count)
 
     Bitstream.uncached do
-      bitstreams.find_each.with_index do |bs, index|
+      bitstreams.each_with_index do |bs, index|
         begin
           bs.ingest_into_medusa
           progress.report(index, "Ingesting bitstreams into Medusa")
