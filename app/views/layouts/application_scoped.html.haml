@@ -14,8 +14,9 @@
     = institution_favicon_tags
     = stylesheet_link_tag 'scoped/application_scoped', media: 'all'
     %link{rel: "stylesheet", href: custom_styles_path}
-    = javascript_include_tag 'application'
+    = javascript_include_tag "application"
     = csrf_meta_tags
+    = csp_meta_tag
     = yield(:head_content)
 
   %body{id: yield(:body_id).present? ? yield(:body_id) : nil,

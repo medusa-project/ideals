@@ -12,8 +12,9 @@
       |
       = ::Configuration.instance.website[:global_service_name]
     = stylesheet_link_tag 'global/application_global', media: 'all'
-    = javascript_include_tag 'application'
+    = javascript_include_tag "application"
     = csrf_meta_tags
+    = csp_meta_tag
     = yield(:head_content)
 
   %body{id: yield(:body_id).present? ? yield(:body_id) : nil,
