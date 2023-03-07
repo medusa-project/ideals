@@ -10,6 +10,10 @@
   .mb-3
     = f.label :name
     = f.text_field :name, class: 'form-control'
+    %p.form-text
+      = icon_for(:info)
+      The name may describe what the user group is for or who belongs to it.
+      It must be unique among the user groups in your institution.
 
   .clearfix
     .float-end
