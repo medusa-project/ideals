@@ -152,7 +152,7 @@ class Institution < ApplicationRecord
   after_create :add_default_vocabularies, :add_default_elements,
                :add_default_element_mappings, :add_default_metadata_profile,
                :add_default_submission_profile, :add_default_index_pages,
-               :add_defining_user_group
+               :add_default_user_groups
 
   ##
   # @param extension [String]
@@ -900,10 +900,13 @@ class Institution < ApplicationRecord
     vocab.save!
   end
 
-  def add_defining_user_group
+  def add_default_user_groups
     self.user_groups.build(name:                "#{self.name} Users",
                            key:                 UserGroup::DEFINING_INSTITUTION_KEY,
                            defines_institution: true).save!
+    self.user_groups.build(name:                "Institution Administrators",
+                           key:                 "#{self.key}_admin",
+                           defines_institution: false).save!
   end
 
   def disallow_key_changes

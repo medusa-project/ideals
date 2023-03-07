@@ -156,16 +156,23 @@ class InstitutionTest < ActiveSupport::TestCase
     assert vocab.vocabulary_terms.count > 0
   end
 
-  test "create() adds a defining user group" do
+  test "create() adds default user groups" do
     institution = Institution.create!(name:             "New Institution",
                                       service_name:     "New",
                                       key:              "new",
                                       fqdn:             "example.net",
                                       main_website_url: "https://example.net")
+
+    # Defining user group
     group = institution.defining_user_group
     assert group.defines_institution
     assert_equal UserGroup::DEFINING_INSTITUTION_KEY, group.key
     assert_equal "#{institution.name} Users", group.name
+
+    # Administrator group
+    group = institution.user_groups.find_by_key("#{institution.key}_admin")
+    assert !group.defines_institution
+    assert_equal "Institution Administrators", group.name
   end
 
   # active_link_color
