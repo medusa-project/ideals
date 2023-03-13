@@ -57,6 +57,7 @@ uiuc_unit1_empty:
 uiuc_unit1_undescribed:
   unit:         uiuc_unit1
   collection:   uiuc_undescribed
+  primary:      true
 
 uiuc_unit2_collection2:
   unit:         uiuc_unit2

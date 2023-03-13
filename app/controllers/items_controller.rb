@@ -10,6 +10,7 @@ class ItemsController < ApplicationController
                                             :show]
   before_action :set_item, except: [:export, :index, :process_review, :recent,
                                     :review]
+  before_action :redirect_scope, only: :show
   before_action :authorize_item, except: [:export, :index, :process_review,
                                           :recent, :review]
   before_action :store_location, only: [:index, :recent, :review, :show]
@@ -454,6 +455,21 @@ class ItemsController < ApplicationController
                                                                     embargo[:expires_at_month],
                                                                     embargo[:expires_at_day]))
       end
+    end
+  end
+
+  ##
+  # If the client is trying to access an item via a different institution's
+  # host, this method redirects to the same path on the item's host. (Without
+  # this action in place, 403 Forbidden would be returned.) This feature is
+  # needed in order to support items that have been moved to a different
+  # institution (via {Unit#move_to}).
+  #
+  def redirect_scope
+    if @item.institution != current_institution
+      scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
+      redirect_to scheme + "://" + @item.institution.fqdn + item_path(@item),
+                  allow_other_host: true
     end
   end
 

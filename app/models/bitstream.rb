@@ -122,8 +122,9 @@ class Bitstream < ApplicationRecord
   before_save :populate_filename
   before_save :ensure_primary_uniqueness
   before_save :rename_storage_object, if: -> {
-    filename_changed? &&
-      filename_was.present? &&
+    ((filename_changed? && filename_was.present?) ||
+      (staging_key_changed? && staging_key_was.present?) ||
+      (permanent_key_changed? && permanent_key_was.present?)) &&
       (staging_key.present? || permanent_key.present?)
   }
   before_save :delete_from_medusa, if: -> {
@@ -363,22 +364,26 @@ class Bitstream < ApplicationRecord
     rescue Aws::S3::Errors::NoSuchBucket
       # This would hopefully only happen because of a test environment
       # misconfiguration. In any case, it's safe to assume that if the bucket
-      # doesn't exist, there is nothing to delete.
+      # doesn't exist, there is nothing to delete. TODO: does this really need to be rescued?
     end
   end
 
   ##
   # Sends a message to Medusa to delete the corresponding object.
   #
-  def delete_from_medusa
+  # @param institution [Institution] Optional institution whose queue to send
+  #                                  to. Defaults to {institution}.
+  #
+  def delete_from_medusa(institution: nil)
     return nil if self.medusa_uuid.blank?
+    institution ||= self.institution
     # N.B.: MessageHandler will nil out medusa_uuid and medusa_key upon success.
     # See inline comment in ingest_into_medusa() for an explanation of this
     Bitstream.connection_pool.with_connection do
       message = self.messages.build(operation:   Message::Operation::DELETE,
                                     medusa_uuid: self.medusa_uuid,
                                     medusa_key:  self.medusa_key,
-                                    institution: self.institution)
+                                    institution: institution)
       message.save!
       message.send_message
     end
@@ -766,26 +771,37 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # `before_save` callback that renames the corresponding storage object if its
-  # {filename} property has changed.
+  # `before_save` callback that renames the corresponding storage object.
   #
   def rename_storage_object
-    return if !filename_changed? || filename_was.blank?
-    return if staging_key.blank? && permanent_key.blank?
-    if self.permanent_key_was.present?
-      target_key = self.class.permanent_key(institution_key: self.institution.key,
+    if self.permanent_key_was.present? && self.permanent_key.present?
+      target_key = nil
+      if self.permanent_key != self.permanent_key_was
+        target_key = self.permanent_key
+      elsif self.filename != self.filename_was
+        target_key = self.class.permanent_key(institution_key: self.institution.key,
+                                              item_id:         self.item_id,
+                                              filename:        self.filename)
+      end
+      if target_key
+        PersistentStore.instance.move_object(source_key: self.permanent_key_was,
+                                             target_key: target_key)
+        self.update_column(:permanent_key, target_key) # skip callbacks
+      end
+    elsif self.staging_key_was.present? && self.staging_key.present?
+      target_key = nil
+      if self.staging_key != self.staging_key_was
+        target_key = self.staging_key
+      elsif self.filename != self.filename_was
+        target_key = self.class.staging_key(institution_key: self.institution.key,
                                             item_id:         self.item_id,
                                             filename:        self.filename)
-      PersistentStore.instance.move_object(source_key: self.permanent_key_was,
-                                           target_key: target_key)
-      self.update_column(:permanent_key, target_key) # skip callbacks
-    elsif self.staging_key_was.present?
-      target_key = self.class.staging_key(institution_key: self.institution.key,
-                                          item_id:         self.item_id,
-                                          filename:        self.filename)
-      PersistentStore.instance.move_object(source_key: self.staging_key_was,
-                                           target_key: target_key)
-      self.update_column(:staging_key, target_key) # skip callbacks
+      end
+      if target_key
+        PersistentStore.instance.move_object(source_key: self.staging_key_was,
+                                             target_key: target_key)
+        self.update_column(:staging_key, target_key) # skip callbacks
+      end
     end
   end
 

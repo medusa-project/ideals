@@ -14,6 +14,7 @@ class CollectionsController < ApplicationController
                                           :show_review_submissions, :undelete,
                                           :update]
   before_action :set_collection, except: [:create, :index]
+  before_action :redirect_scope, only: :show
   before_action :check_buried, except: [:create, :index, :show, :undelete]
   before_action :authorize_collection, except: [:create, :index]
   before_action :store_location, only: [:index, :show]
@@ -537,6 +538,21 @@ class CollectionsController < ApplicationController
                                        :submission_profile_id,
                                        :submissions_reviewed,
                                        :title, unit_ids: [])
+  end
+
+  ##
+  # If the client is trying to access a collection via a different
+  # institution's host, this method redirects to the same path on the
+  # collection's host. (Without this action in place, 403 Forbidden would be
+  # returned.) This feature is needed in order to support collections that have
+  # been moved to a different institution (via {Unit#move_to}).
+  #
+  def redirect_scope
+    if @collection.institution != current_institution
+      scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
+      redirect_to scheme + "://" + @collection.institution.fqdn + collection_path(@collection),
+                  allow_other_host: true
+    end
   end
 
   def set_item_results_ivars

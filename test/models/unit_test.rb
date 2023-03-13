@@ -4,6 +4,7 @@ class UnitTest < ActiveSupport::TestCase
 
   setup do
     setup_opensearch
+    clear_message_queues
     @instance = units(:uiuc_unit1)
   end
 
@@ -61,7 +62,7 @@ class UnitTest < ActiveSupport::TestCase
 
   test "all_administrator_groups() returns the correct users" do
     groups = units(:uiuc_unit1_unit2_unit1).all_administrator_groups
-    assert_equal 0, groups.length
+    assert_equal 1, groups.length
   end
 
   # all_child_ids()
@@ -292,6 +293,233 @@ class UnitTest < ActiveSupport::TestCase
 
   test "exhume!() does nothing to a non-buried unit" do
     @instance.exhume!
+  end
+
+  # move_to()
+
+  test "move_to() raises an error if an institution is not provided" do
+    assert_raises ArgumentError do
+      @instance.move_to(institution: nil,
+                        user:        users(:uiuc_sysadmin))
+    end
+  end
+
+  test "move_to() raises an error if a user is not provided" do
+    assert_raises ArgumentError do
+      @instance.move_to(institution: institutions(:northeast),
+                        user:        nil)
+    end
+  end
+
+  test "move_to() raises an error when attempting to move to the same
+  institution" do
+    assert_raises ArgumentError do
+      @instance.move_to(institution: @instance.institution,
+                        user:        users(:uiuc_sysadmin))
+    end
+  end
+
+  test "move_to() raises an error when the destination institution already has
+  a unit with the same name" do
+    setup_s3
+    institution = institutions(:northeast)
+    Unit.create!(institution: institution, title: @instance.title)
+    assert_raises do
+      @instance.move_to(institution: institution,
+                        user:        users(:uiuc_sysadmin))
+    end
+  end
+
+  test "move_to() moves all child units" do
+    setup_s3
+    institution = institutions(:northeast)
+    @instance.move_to(institution: institution,
+                      user:        users(:uiuc_sysadmin))
+    ([@instance] + @instance.units).each do |child|
+      assert_equal institution, child.institution
+    end
+  end
+
+  test "move_to() disassociates administrators and administrator groups from
+  units" do
+    setup_s3
+    assert @instance.administrators.count > 0
+    assert @instance.administrator_groups.count > 0
+    @instance.move_to(institution: institutions(:northeast),
+                      user:        users(:uiuc_sysadmin))
+    assert_equal 0, @instance.administrators.count
+    assert_equal 0, @instance.administrator_groups.count
+  end
+
+  test "move_to() moves all collections" do
+    setup_s3
+    institution = institutions(:northeast)
+    @instance.move_to(institution: institution,
+                      user:        users(:uiuc_sysadmin))
+    ([@instance] + @instance.units).each do |unit|
+      unit.collections.each do |collection|
+        assert_equal institution, collection.institution
+      end
+    end
+  end
+
+  test "move_to() disassociates managers and submitters from collections" do
+    setup_s3
+    institution     = institutions(:northeast)
+    # First, make sure there are some managers & submitters to remove.
+    manager_count   = 0
+    submitter_count = 0
+    ([@instance] + @instance.units).each do |unit|
+      unit.collections.each do |collection|
+        manager_count += collection.managers.count
+        submitter_count += collection.submitters.count
+      end
+    end
+    assert manager_count > 0
+    assert submitter_count > 0
+
+    @instance.move_to(institution: institution,
+                      user:        users(:uiuc_sysadmin))
+    ([@instance] + @instance.units).each do |unit|
+      unit.collections.each do |collection|
+        assert_equal 0, collection.managers.count
+        assert_equal 0, collection.submitters.count
+      end
+    end
+  end
+
+  test "move_to() adds any necessary RegisteredElements needed by items" do
+    setup_s3
+    src_institution          = @instance.institution
+    dest_institution         = institutions(:northeast)
+    src_institution_count_1  = src_institution.registered_elements.count
+    dest_institution_count_1 = dest_institution.registered_elements.count
+    assert src_institution_count_1 > dest_institution_count_1
+    @instance.move_to(institution: dest_institution,
+                      user:        users(:uiuc_sysadmin))
+
+    src_institution_count_2  = src_institution.registered_elements.count
+    dest_institution_count_2 = dest_institution.registered_elements.count
+    assert_equal src_institution_count_1, src_institution_count_2
+    assert dest_institution_count_2 > dest_institution_count_1
+  end
+
+  test "move_to() moves all items" do
+    setup_s3
+    institution = institutions(:northeast)
+    @instance.move_to(institution: institution,
+                      user:        users(:uiuc_sysadmin))
+    ([@instance] + @instance.units).each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          assert_equal institution, item.institution
+        end
+      end
+    end
+  end
+
+  test "move_to() reconfigures items' AscribedElements to point to the
+  corresponding new RegisteredElements" do
+    setup_s3
+    institution = institutions(:northeast)
+    @instance.move_to(institution: institution,
+                      user:        users(:uiuc_sysadmin))
+    ([@instance] + @instance.units).each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          item.elements.each do |asc_e|
+            assert_equal asc_e.registered_element.institution, institution
+          end
+        end
+      end
+    end
+  end
+
+  test "move_to() removes all items' BitstreamAuthorizations" do
+    setup_s3
+    # Ensure that there are some BitstreamAuthorizations to remove.
+    ([@instance] + @instance.units).each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          item.bitstream_authorizations.build(user_group: user_groups(:sysadmin)).save!
+        end
+      end
+    end
+
+    institution = institutions(:northeast)
+    @instance.move_to(institution: institution,
+                      user:        users(:uiuc_sysadmin))
+    ([@instance] + @instance.units).each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          assert_equal 0, item.bitstream_authorizations.count
+        end
+      end
+    end
+  end
+
+  test "move_to() updates bitstreams' keys" do
+    setup_s3
+    institution = institutions(:northeast)
+    @instance.move_to(institution: institution,
+                      user:        users(:uiuc_sysadmin))
+    ([@instance] + @instance.units).each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          item.bitstreams.each do |bitstream|
+            assert bitstream.effective_key.start_with?("institutions/#{institution.key}/")
+          end
+        end
+      end
+    end
+  end
+
+  test "move_to() moves bitstreams' corresponding storage objects" do
+    setup_s3
+    institution = institutions(:northeast)
+    @instance.move_to(institution: institution,
+                      user:        users(:uiuc_sysadmin))
+    ([@instance] + @instance.units).each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          item.bitstreams.each do |bitstream|
+            assert PersistentStore.instance.object_exists?(key: bitstream.effective_key)
+          end
+        end
+      end
+    end
+  end
+
+  test "move_to() sends delete and ingest messages to Medusa" do
+    setup_s3
+    institution  = institutions(:northeast)
+    ingest_queue = institution.outgoing_message_queue
+    delete_queue = @instance.institution.outgoing_message_queue
+    @instance.move_to(institution: institution,
+                      user:        users(:uiuc_sysadmin))
+    ([@instance] + @instance.units).each do |unit|
+      unit.collections.each do |collection|
+        collection.items.each do |item|
+          item.bitstreams.each do |bitstream|
+            if bitstream.permanent_key.present?
+              AmqpHelper::Connector[:ideals].with_parsed_message(ingest_queue) do |message|
+                assert_equal "ingest", message['operation']
+                assert_equal [item.id, bitstream.filename].join("/"),
+                             message['staging_key']
+                assert_equal [item.handle.handle, bitstream.filename].join("/"),
+                             message['target_key']
+              end
+            end
+            if bitstream.medusa_uuid_was.present?
+              AmqpHelper::Connector[:ideals].with_parsed_message(delete_queue) do |message|
+                assert_equal "delete", message['operation']
+                assert_not_nil message['uuid']
+              end
+            end
+          end
+        end
+      end
+    end
   end
 
   # parent_id

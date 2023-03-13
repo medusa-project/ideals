@@ -616,6 +616,12 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "show() redirects for an item in another institution" do
+    item = items(:southwest_unit1_collection1_item1)
+    get item_path(item)
+    assert_redirected_to "http://" + item.institution.fqdn + item_path(item)
+  end
+
   test "show() returns HTTP 403 for submitting items for unauthorized users" do
     get item_path(items(:uiuc_submitting))
     assert_response :forbidden

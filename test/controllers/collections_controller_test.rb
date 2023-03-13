@@ -520,6 +520,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "show() redirects for a collection in another institution" do
+    collection = collections(:southwest_unit1_collection1)
+    get collection_path(collection)
+    assert_redirected_to "http://" + collection.institution.fqdn +
+                           collection_path(collection)
+  end
+
   test "show() returns HTTP 410 for a buried collection" do
     get collection_path(collections(:uiuc_buried))
     assert_response :gone

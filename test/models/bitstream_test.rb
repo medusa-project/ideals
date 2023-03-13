@@ -322,6 +322,18 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  test "delete_from_medusa() supports an institution override argument" do
+    queue = institutions(:northeast).outgoing_message_queue
+    @instance = bitstreams(:uiuc_in_medusa)
+    @instance.delete_from_medusa(institution: institutions(:northeast))
+    AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
+      assert_equal "delete", message['operation']
+      assert_equal @instance.medusa_uuid, message['uuid']
+      assert_equal @instance.class.to_s, message['pass_through']['class']
+      assert_equal @instance.id, message['pass_through']['identifier']
+    end
+  end
+
   # delete_from_permanent_storage()
 
   test "delete_from_permanent_storage() does nothing if the instance has no
@@ -997,6 +1009,28 @@ class BitstreamTest < ActiveSupport::TestCase
 
     assert_not_equal old_key, new_key
     assert new_key.end_with?(new_filename)
+    assert !PersistentStore.instance.object_exists?(key: old_key)
+    assert PersistentStore.instance.object_exists?(key: new_key)
+  end
+
+  test "save() moves the storage object in staging when the staging key has
+  changed" do
+    @instance = bitstreams(:uiuc_submitted_in_staging)
+    old_key   = @instance.staging_key
+    @instance.update!(staging_key: "new/key")
+    new_key   = @instance.staging_key
+
+    assert !PersistentStore.instance.object_exists?(key: old_key)
+    assert PersistentStore.instance.object_exists?(key: new_key)
+  end
+
+  test "save() moves the storage object in staging when the permanent key has
+  changed" do
+    @instance = bitstreams(:uiuc_approved_in_permanent)
+    old_key   = @instance.permanent_key
+    @instance.update!(permanent_key: "new/key")
+    new_key   = @instance.permanent_key
+
     assert !PersistentStore.instance.object_exists?(key: old_key)
     assert PersistentStore.instance.object_exists?(key: new_key)
   end

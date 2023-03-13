@@ -402,6 +402,12 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "show() redirects for a unit in another institution" do
+    unit = units(:southwest_unit1)
+    get unit_path(unit)
+    assert_redirected_to "http://" + unit.institution.fqdn + unit_path(unit)
+  end
+
   test "show() returns HTTP 410 for a buried unit" do
     get unit_path(units(:uiuc_buried))
     assert_response :gone

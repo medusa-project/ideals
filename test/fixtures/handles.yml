@@ -18,10 +18,42 @@ uiuc_item1:
   item:   uiuc_item1
   suffix: 5002
 
-uiuc_awaiting_ingest_into_medusa:
-  item:   uiuc_awaiting_ingest_into_medusa
-  suffix: 5003
-
 uiuc_approved:
   item:   uiuc_approved
+  suffix: 5003
+
+uiuc_awaiting_ingest_into_medusa:
+  item:   uiuc_awaiting_ingest_into_medusa
   suffix: 5004
+
+uiuc_in_medusa:
+  item:   uiuc_in_medusa
+  suffix: 5005
+
+uiuc_described:
+  item:   uiuc_described
+  suffix: 5006
+
+uiuc_embargoed:
+  item:   uiuc_embargoed
+  suffix: 5007
+
+uiuc_undescribed:
+  item:   uiuc_undescribed
+  suffix: 5008
+
+uiuc_withdrawn:
+  item:   uiuc_withdrawn
+  suffix: 5009
+
+uiuc_buried:
+  item:   uiuc_buried
+  suffix: 5010
+
+uiuc_multiple_bitstreams:
+  item:   uiuc_multiple_bitstreams
+  suffix: 5011
+
+uiuc_collection1_collection1_item1:
+  item:   uiuc_collection1_collection1_item1
+  suffix: 5012

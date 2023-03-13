@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 ##
-# High-level container for [Collection]s, analogous to a "community" in DSpace.
+# High-level container for {Collection}s, analogous to a "community" in DSpace.
 #
 # # Indexing
 #
-# See the documentation of [Indexed] for a detailed explanation of how indexing
+# See the documentation of {Indexed} for a detailed explanation of how indexing
 # works.
 #
 # # Deletion
@@ -80,8 +80,6 @@ class Unit < ApplicationRecord
           class_name: "UnitAdministrator"
   has_one :primary_administrator, through: :primary_administrator_relationship,
           source: :user
-  scope :top, -> { where(parent_id: nil) }
-  scope :bottom, -> { where(children.count == 0) }
 
   validates :title, presence: true
   validate :validate_buried, if: -> { buried }
@@ -273,6 +271,131 @@ class Unit < ApplicationRecord
   #
   def exhume!
     update!(buried: false) if buried
+  end
+
+  ##
+  # Moves the instance and its whole subtree of child units, {Collection}s, and
+  # {Item}s to another institution. {AscribedElement}s are also moved and
+  # reconfigured to associate with {RegisteredElement}s in the destination
+  # institution, which are created if necessary to match the ones in the source
+  # institution.
+  #
+  # The unit is placed at the root level within the institution and is
+  # disassociated from any {User}s and {MetadataProfile}s. Likewise, its child
+  # collections are disassociated from any {User}s, {MetadataProfile}s, and
+  # {SubmissionProfile}s, and its items are disassociated from any
+  # {BitstreamAuthorization}s.
+  #
+  # {Unit}, {Collection}, and {Item} IDs are not changed. Consideration must be
+  # made to redirect URLs to the new institution's host, which is done in the
+  # controllers.
+  #
+  # Lastly, {Bitstream}s' permanent keys are changed to use the new institution
+  # prefix.
+  #
+  # N.B.: this method could cause some real headaches if it isn't working 100%
+  # correctly, so its implementation should be scrutinized carefully before
+  # use. It is expected to be used very rarely so bugs may rear up at any
+  # point (following design changes elsewhere) even without any test failures.
+  #
+  # @param institution [Institution]
+  # @param user [User] The user performing the action, who should be a
+  #                    sysadmin, although this is enforced in a policy method
+  #                    rather than here.
+  #
+  def move_to(institution:, user:)
+    if !institution
+      raise ArgumentError, "Institution not provided"
+    elsif !user
+      raise ArgumentError, "User not provided"
+    elsif institution == self.institution
+      raise ArgumentError, "Cannot move to the same institution"
+    elsif Unit.find_by(institution: institution, title: self.title)
+      raise "A unit with the same name already exists in the destination institution."
+    end
+    prev_institution = self.institution
+    from_units       = [self] + all_children
+    dest_reg_e_names = institution.registered_elements.pluck(:name)
+    # Compute a count of entities that will need to be traversed in order to
+    # display progress.
+    entity_count = 0
+    from_units.each do |unit|
+      entity_count += 1
+      unit.collections.each do |collection|
+        entity_count += 1
+        entity_count += collection.items.count
+      end
+    end
+    self.update!(parent_id: nil)
+    progress   = Progress.new(entity_count)
+    entity_idx = 0
+    Unit.transaction do
+      Unit.uncached do
+        from_units.each do |unit|
+          progress.report(entity_idx, "Moving #{unit.title} to #{institution.name}")
+          unit.administrators.destroy_all
+          unit.administrator_groups.destroy_all
+          unit.update!(institution_id:   institution.id,
+                       metadata_profile: nil)
+          unit.collections.each do |collection|
+            progress.report(entity_idx, "Moving #{collection.title} to #{institution.name}")
+            collection.managers.destroy_all
+            collection.submitters.destroy_all
+            collection.update!(institution_id:     institution.id,
+                               metadata_profile:   nil,
+                               submission_profile: nil)
+            collection.items.find_each do |item|
+              progress.report(entity_idx, "Moving #{item.title} to #{institution.name}")
+              UpdateItemCommand.new(item:        item,
+                                    user:        user,
+                                    description: "Moved to #{institution.name}").execute do
+                item.update!(institution_id: institution.id)
+                item.bitstream_authorizations.destroy_all
+                # Migrate item elements
+                item.elements.each do |asc_e|
+                  name = asc_e.registered_element.name
+                  unless dest_reg_e_names.include?(name)
+                    clone             = asc_e.registered_element.dup
+                    clone.institution = institution
+                    clone.scope_note  = "Added during a migration of the unit "\
+                         "\"#{self.title}\" from the institution "\
+                         "#{self.institution.name} on "\
+                         "#{Time.now.strftime("%Y-%m-%d")}."
+                    clone.save!
+                    dest_reg_e_names << name
+                  end
+                  asc_e.update!(registered_element:
+                                  institution.registered_elements.find_by_name(name))
+                end
+                # Migrate item bitstreams
+                item.bitstreams.each do |bitstream|
+                  if bitstream.permanent_key.present?
+                    if bitstream.medusa_uuid.present?
+                      bitstream.delete_from_medusa(institution: prev_institution)
+                    end
+                    # Generate a new permanent key (with changed institution prefix)
+                    new_key = Bitstream.permanent_key(institution_key: institution.key,
+                                                      item_id:         item.id,
+                                                      filename:        bitstream.filename)
+                    bitstream.update!(permanent_key: new_key)
+                    bitstream.ingest_into_medusa
+                  elsif bitstream.staging_key.present?
+                    # Generate a new staging key (with changed institution prefix)
+                    new_key = Bitstream.staging_key(institution_key: institution.key,
+                                                    item_id:         item.id,
+                                                    filename:        bitstream.filename)
+                    bitstream.update!(staging_key: new_key)
+                  end
+                end
+              end
+              entity_idx += 1
+            end
+            entity_idx += 1
+          end
+          entity_idx += 1
+        end
+      end
+    end
   end
 
   ##

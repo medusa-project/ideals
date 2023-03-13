@@ -10,6 +10,7 @@ class UnitsController < ApplicationController
                                           :edit_membership, :edit_properties,
                                           :show_access, :undelete, :update]
   before_action :set_unit, except: [:create, :index, :new]
+  before_action :redirect_scope, only: :show
   before_action :check_buried, except: [:create, :index, :new, :show, :undelete]
   before_action :authorize_unit, except: [:create, :index]
   before_action :store_location, only: [:index, :show]
@@ -408,6 +409,21 @@ class UnitsController < ApplicationController
 
   def check_buried
     raise GoneError if @unit&.buried
+  end
+
+  ##
+  # If the client is trying to access a unit via a different institution's
+  # host, this method redirects to the same path on the unit's host. (Without
+  # this action in place, 403 Forbidden would be returned.) This feature is
+  # needed in order to support units that have been moved to a different
+  # institution (via {Unit#move_to}).
+  #
+  def redirect_scope
+    if @unit.institution != current_institution
+      scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
+      redirect_to scheme + "://" + @unit.institution.fqdn + unit_path(@unit),
+                  allow_other_host: true
+    end
   end
 
   def set_item_results_ivars

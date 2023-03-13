@@ -259,12 +259,16 @@ class ItemTest < ActiveSupport::TestCase
 
   test "assign_handle() puts the created handle to the server" do
     item = items(:uiuc_described)
+    item.handle.destroy!
+    item.reload
     item.assign_handle
     assert item.handle.exists_on_server?
   end
 
   test "assign_handle() creates an associated handle URI element" do
     item = items(:uiuc_described)
+    item.handle.destroy!
+    item.reload
     assert_difference "AscribedElement.count", 1 do
       item.assign_handle
       e = item.element(item.institution.handle_uri_element.name)
