@@ -1,19 +1,19 @@
 ################################ northeast ##################################
 
 northeast_unit1:
-  title:       Unit1
+  title:       Northeast Unit1
   institution: northeast
   buried:      false
 
 ################################ southwest ##################################
 
 southwest_unit1:
-  title:       Unit1
+  title:       Southwest Unit1
   institution: southwest
   buried:      false
 
 southwest_unit2:
-  title:       Unit2
+  title:       Southwest Unit2
   institution: southwest
   buried:      false
 
