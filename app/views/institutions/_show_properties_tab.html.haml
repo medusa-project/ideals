@@ -15,12 +15,12 @@
 .clearfix.mb-3
 
 %dl
+  %dt Scope URL
+  %dd
+    %code= link_to(@institution.scope_url, @institution.scope_url)
   %dt Key
   %dd
     %code= @institution.key
-  %dt Fully Qualified Domain Name (FQDN)
-  %dd
-    %code= link_to(@institution.fqdn, @institution.url)
   %dt Organization DN
   %dd
     - if @institution.org_dn.present?

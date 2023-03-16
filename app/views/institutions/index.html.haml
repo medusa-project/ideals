@@ -17,8 +17,7 @@
       %th
       %th Name
       %th Service Name
-      %th Key
-      %th FQDN
+      %th Scope URL
   %tbody
     - @institutions.each do |institution|
       %tr
@@ -28,8 +27,6 @@
         %td= link_to(institution.name, institution)
         %td= link_to(institution.service_name, institution)
         %td
-          %code= institution.key
-        %td
-          %code= link_to(institution.fqdn, institution.url)
+          %code= link_to(institution.scope_url, institution.scope_url)
 
 = render partial: "institutions/add_modal", locals: { institution: @new_institution }
