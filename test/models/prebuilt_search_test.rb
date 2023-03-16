@@ -21,7 +21,7 @@ class PrebuiltSearchTest < ActiveSupport::TestCase
   end
 
   setup do
-    @search = prebuilt_searches(:southwest_creators)
+    @search = prebuilt_searches(:southwest_cats)
     assert @search.valid?
   end
 
@@ -48,9 +48,19 @@ class PrebuiltSearchTest < ActiveSupport::TestCase
 
   # url_query()
 
+  test "url_query() returns an empty string when the instance has no properties
+  set" do
+    assert_equal "", PrebuiltSearch.new.url_query
+  end
+
   test "url_query() returns a correct query string" do
-    assert_equal sprintf("?sort=%s&direction=asc",
-                         @search.ordering_element.indexed_field),
+    parts = []
+    @search.elements.sort_by(&:term).each do |element|
+      parts << ["fq[]", "#{element.registered_element.indexed_keyword_field}:#{element.term}"]
+    end
+    parts << ["sort", @search.ordering_element.indexed_field]
+    parts << ["direction", "asc"]
+    assert_equal "?" + parts.map{ |p| p.map{ |a| StringUtils.url_encode(a) }.join("=") }.join("&"),
                  @search.url_query
   end
 

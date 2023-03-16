@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+southwest_cats_title:
+  prebuilt_search:    southwest_cats
+  registered_element: southwest_dc_title
+  term:               cats
+
+southwest_cats_subject:
+  prebuilt_search:    southwest_cats
+  registered_element: southwest_dc_subject
+  term:               cats

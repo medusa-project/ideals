@@ -17,6 +17,7 @@ class PrebuiltSearchesController < ApplicationController
     @prebuilt_search.institution = current_institution
     begin
       @prebuilt_search.save!
+      build_elements
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @prebuilt_search.errors.any? ? @prebuilt_search : e },
@@ -86,6 +87,7 @@ class PrebuiltSearchesController < ApplicationController
   def update
     begin
       @prebuilt_search.update!(sanitized_params)
+      build_elements
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @prebuilt_search.errors.any? ? @prebuilt_search : e },
@@ -112,6 +114,18 @@ class PrebuiltSearchesController < ApplicationController
 
   def authorize_prebuilt_search
     @prebuilt_search ? authorize(@prebuilt_search) : skip_authorization
+  end
+
+  def build_elements
+    if params[:prebuilt_search_elements].respond_to?(:each)
+      @prebuilt_search.elements.destroy_all
+      params[:prebuilt_search_elements].each do |element_params|
+        next if element_params[:term].blank?
+        @prebuilt_search.elements.build(registered_element_id: element_params[:registered_element_id],
+                                        term:                  element_params[:term])
+      end
+      @prebuilt_search.save!
+    end
   end
 
 end

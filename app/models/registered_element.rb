@@ -52,6 +52,7 @@ class RegisteredElement < ApplicationRecord
   belongs_to :vocabulary, optional: true
 
   has_many :metadata_profile_elements, inverse_of: :registered_element
+  has_many :prebuilt_search_elements, inverse_of: :registered_element
   has_many :submission_profile_elements, inverse_of: :registered_element
 
   has_and_belongs_to_many :index_pages

@@ -23,10 +23,14 @@ const PrebuiltSearchesView = function() {
 const PrebuiltSearchView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
+    const copyButton = $(".copy-search-link");
+    new IDEALS.CopyButton(copyButton, $(".search-link-html"));
+
     $('button.edit-prebuilt-search').on("click", function() {
         const url = ROOT_URL + "/prebuilt-searches/" + $(this).data("id") + "/edit";
         $.get(url, function(data) {
             $("#edit-prebuilt-search-modal .modal-body").html(data);
+            new IDEALS.MultiElementList();
         });
     });
 

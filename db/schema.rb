@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_15_144613) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_16_185217) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -500,6 +500,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_15_144613) do
     t.index ["year"], name: "index_monthly_unit_item_download_counts_on_year"
   end
 
+  create_table "prebuilt_search_elements", force: :cascade do |t|
+    t.bigint "prebuilt_search_id", null: false
+    t.bigint "registered_element_id", null: false
+    t.string "term", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["prebuilt_search_id"], name: "index_prebuilt_search_elements_on_prebuilt_search_id"
+    t.index ["registered_element_id"], name: "index_prebuilt_search_elements_on_registered_element_id"
+  end
+
   create_table "prebuilt_searches", force: :cascade do |t|
     t.string "name", null: false
     t.bigint "institution_id", null: false
@@ -755,6 +765,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_15_144613) do
   add_foreign_key "messages", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "prebuilt_search_elements", "prebuilt_searches", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "prebuilt_search_elements", "registered_elements", on_update: :cascade, on_delete: :restrict
   add_foreign_key "prebuilt_searches", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "prebuilt_searches", "registered_elements", column: "ordering_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "registered_elements", "institutions", on_update: :cascade, on_delete: :cascade

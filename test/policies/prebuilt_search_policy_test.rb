@@ -3,7 +3,7 @@ require 'test_helper'
 class PrebuiltSearchPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @prebuilt_search = prebuilt_searches(:southwest_creators)
+    @prebuilt_search = prebuilt_searches(:southwest_cats)
   end
 
   # create?()

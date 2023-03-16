@@ -1,3 +1,16 @@
+##
+# # Attributes
+#
+# * `created_at`          Managed by ActiveRecord.
+# * `direction`           One of the {PrebuiltSearch::OrderingDirection}
+#                         constant values, used only when {ordering_element_id}
+#                         is set.
+# * `institution_id`      Foreign key to {Institution}.
+# * `name`                Name of the search.
+# * `ordering_element_id` ID of the {RegisteredElement} by which to order the
+#                         results.
+# * `updated_at`          Managed by ActiveRecord.
+#
 class PrebuiltSearch < ApplicationRecord
 
   include Breadcrumb
@@ -31,6 +44,7 @@ class PrebuiltSearch < ApplicationRecord
 
   belongs_to :institution
   belongs_to :ordering_element, class_name: "RegisteredElement", optional: true
+  has_many :elements, class_name: "PrebuiltSearchElement"
 
   validates :name, presence: true
   validate :validate_ordering_element_institution
@@ -48,6 +62,9 @@ class PrebuiltSearch < ApplicationRecord
   #
   def url_query
     pairs = []
+    self.elements.sort_by(&:term).each do |pse|
+      pairs << ["fq[]", "#{pse.registered_element.indexed_keyword_field}:#{pse.term}"]
+    end
     if self.ordering_element
       pairs << ["sort", self.ordering_element.indexed_field]
       case self.direction
@@ -57,7 +74,10 @@ class PrebuiltSearch < ApplicationRecord
         pairs << ["direction", "desc"]
       end
     end
-    "?" + pairs.map{ |p| p.map{ |a| StringUtils.url_encode(a) }.join("=") }.join("&")
+    if pairs.any?
+      return "?" + pairs.map{ |p| p.map{ |a| StringUtils.url_encode(a) }.join("=") }.join("&")
+    end
+    ""
   end
 
 

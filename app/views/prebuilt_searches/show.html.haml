@@ -21,16 +21,35 @@
 
 %h1= @prebuilt_search.name
 
-%dl
-  %dt Order
-  %dd
-    - if @prebuilt_search.ordering_element
-      = @prebuilt_search.ordering_element.label
-      = "(#{PrebuiltSearch::OrderingDirection.label(@prebuilt_search.direction).downcase})"
-    - else
-      Unordered
+%h2.mt-4 Terms
 
+- if @prebuilt_search.elements.any?
+  %dl
+    - @prebuilt_search.elements.each do |element|
+      %dt= "#{element.registered_element.label}:"
+      %dd= element.term
+- else
+  None
+
+%h2.mt-4 Result Ordering
+
+- if @prebuilt_search.ordering_element
+  = @prebuilt_search.ordering_element.label
+  = "(#{PrebuiltSearch::OrderingDirection.label(@prebuilt_search.direction).downcase})"
+- else
+  Unordered
+
+%h2.mt-4
+  Link HTML
+  %button.btn.btn-sm.btn-outline-primary.copy-search-link
+    %i.fa.fa-paste
+    Copy
+
+- url = prebuilt_search_redirect_url(@prebuilt_search)
+%code.search-link-html
+  = "<a href=\"#{url}\">#{@prebuilt_search.name}</a>"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-prebuilt-search-modal",
+                   size: :lg,
                    title: "Edit Prebuilt Search" }

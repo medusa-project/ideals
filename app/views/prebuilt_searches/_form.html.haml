@@ -1,18 +1,41 @@
 = form_for(@prebuilt_search, remote: true) do |f|
+  - element_options = f.object.institution.registered_elements.order(:label).map{ |e| [e.label, e.id] }
+
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
   .mb-3
-    = f.label(:name)
-    = f.text_field(:name, class: 'form-control')
+    = f.label :name
+    = f.text_field :name, class: "form-control"
+
+  .mb-3
+    = label_tag "Elements"
+    = hidden_field_tag "prebuilt_search_elements[][registered_element_id]"
+    = hidden_field_tag "prebuilt_search_elements[][term]"
+    - elements = f.object.elements
+    - elements = [PrebuiltSearchElement.new] if elements.empty?
+    - elements.each do |element|
+      .row.input-group.mb-3
+        .col-sm-5
+          = select_tag "prebuilt_search_elements[][registered_element_id]",
+                       options_for_select(element_options, element.registered_element_id),
+                       class: "form-select"
+        .col-sm-6
+          = text_field_tag "prebuilt_search_elements[][term]",
+                           element.term,
+                           class: "form-control"
+        .col-sm-1
+          %button.btn.btn-outline-danger.remove{type: "button"}
+            %i.fa.fa-minus
+    %button.btn.btn-outline-success.add{type: "button"}
+      %i.fa.fa-plus
 
   .mb-3
     = f.label :ordering_element_id, "Order By"
-    = f.select(:ordering_element_id,
-               options_for_select(f.object.institution.registered_elements.order(:label).map{ |e| [e.label, e.id] },
-                                  f.object.ordering_element_id),
+    = f.select :ordering_element_id,
+               options_for_select(element_options, f.object.ordering_element_id),
                { include_blank: true },
-               { class: "form-select" })
+               { class: "form-select" }
 
   .mb-3
     .form-check
