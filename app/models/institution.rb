@@ -111,6 +111,7 @@ class Institution < ApplicationRecord
   has_many :invitees
   has_many :messages
   has_many :metadata_profiles
+  has_many :prebuilt_searches
   has_many :registered_elements
   has_many :submission_profiles
   has_many :tasks

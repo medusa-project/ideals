@@ -1,0 +1,37 @@
+= form_for(@prebuilt_search, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .mb-3
+    = f.label(:name)
+    = f.text_field(:name, class: 'form-control')
+
+  .mb-3
+    = f.label :ordering_element_id, "Order By"
+    = f.select(:ordering_element_id,
+               options_for_select(f.object.institution.registered_elements.order(:label).map{ |e| [e.label, e.id] },
+                                  f.object.ordering_element_id),
+               { include_blank: true },
+               { class: "form-select" })
+
+  .mb-3
+    .form-check
+      = f.radio_button(:direction,
+                       PrebuiltSearch::OrderingDirection::ASCENDING,
+                       class: "form-check-input")
+      = f.label(:direction,
+                PrebuiltSearch::OrderingDirection.label(PrebuiltSearch::OrderingDirection::ASCENDING),
+                for: "prebuilt_search_direction_0")
+    .form-check
+      = f.radio_button(:direction,
+                       PrebuiltSearch::OrderingDirection::DESCENDING,
+                       class: "form-check-input")
+      = f.label(:direction,
+                PrebuiltSearch::OrderingDirection.label(PrebuiltSearch::OrderingDirection::DESCENDING),
+                for: "prebuilt_search_direction_1")
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = f.submit(f.object.new_record? ? "Create Prebuilt Search" : "Save Changes",
+                 class: "btn btn-primary")

@@ -30,6 +30,7 @@
 //= require invitees
 //= require items
 //= require metadata_profiles
+//= require prebuilt_searches
 //= require registered_elements
 //= require statistics
 //= require submission_profiles

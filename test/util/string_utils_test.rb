@@ -28,6 +28,12 @@ class StringUtilsTest < ActiveSupport::TestCase
     assert !StringUtils.uofi_email?("not an email address")
   end
 
+  # url_encode()
+
+  test "url_encode() returns a URL-encoded string" do
+    assert_equal "word%20word", StringUtils.url_encode("word word")
+  end
+
   # valid_email?()
 
   test "valid_email?() returns true for a valid email" do

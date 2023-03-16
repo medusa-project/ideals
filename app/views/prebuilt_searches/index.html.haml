@@ -1,0 +1,29 @@
+- provide :body_id, "prebuilt_searches"
+- provide :title, "Prebuilt Searches"
+
+-if policy(PrebuiltSearch).new?
+  .btn-group.float-end{role: "group"}
+    -# Add Prebuilt Search button
+    %button.btn.btn-light.add-prebuilt-search{"data-bs-target": "#add-prebuilt-search-modal",
+                                              "data-bs-toggle": "modal",
+                                              type:             "button"}
+      %i.fa.fa-plus
+      Add Prebuilt Search
+
+%h1 Prebuilt Searches
+
+- if @prebuilt_searches.any?
+  %table.table
+    %thead
+      %tr
+        %th Name
+    %tbody
+      - @prebuilt_searches.each do |search|
+        %tr
+          %td= link_to(search.name, search)
+- else
+  %p No prebuilt searches have been created yet.
+
+= render partial: "shared/ajax_modal",
+         locals: { id: "add-prebuilt-search-modal",
+                   title: "Add Prebuilt Search" }

@@ -23,6 +23,16 @@ class StringUtils
   end
 
   ##
+  # @param string [String] String to encode.
+  # @return [String] URL-encoded string.
+  #
+  def self.url_encode(string)
+    # N.B.: CGI.escape() inserts "+" instead of "%20" which Chrome interprets
+    # literally.
+    ERB::Util.url_encode(string)
+  end
+
+  ##
   # @param string [String] Input string in any encoding.
   # @return [String] UTF-8 string.
   #

@@ -84,6 +84,8 @@ module ApplicationHelper
           crumbs.unshift({label: "Invitees", url: invitees_path})
         when "MetadataProfile"
           crumbs.unshift({label: "Metadata Profiles", url: metadata_profiles_path})
+        when "PrebuiltSearch"
+          crumbs.unshift({label: "Prebuilt Searches", url: prebuilt_searches_path})
         when "SubmissionProfile"
           crumbs.unshift({label: "Submission Profiles", url: submission_profiles_path})
         when "Unit"
@@ -402,6 +404,8 @@ module ApplicationHelper
       icon = "fa fa-envelope"
     when "MetadataProfile", "SubmissionProfile"
       icon = "fa fa-list"
+    when "PrebuiltSearch"
+      icon = "fa fa-search"
     when "RegisteredElement", "AscribedElement", "MetadataProfileElement",
         "SubmissionProfileElement"
       icon = "fa fa-tags"

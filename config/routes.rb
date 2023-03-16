@@ -166,6 +166,7 @@ Rails.application.routes.draw do
     resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]
   end
   match '/oai-pmh', to: 'oai_pmh#handle', via: %w(get post), as: 'oai_pmh'
+  resources :prebuilt_searches, path: "prebuilt-searches"
   match "/recent-items", to: "items#recent", via: :get, as: "recent_items"
   match "/reset-password", to: "password_resets#get", via: :get
   match "/reset-password", to: "password_resets#post", via: :post

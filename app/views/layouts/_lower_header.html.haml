@@ -28,16 +28,17 @@
             %ul.dropdown-menu
               %li= link_to "Academic Units and Collections", units_path, class: "dropdown-item"
               %li= link_to "Most Recent Items", recent_items_path, class: "dropdown-item"
-              - re = current_institution.date_published_element
-              - if re # safety check in case this element doesn't exist for some reason
-                %li= link_to("Items By Publication Date",                           |
-                             items_path(sort: re.indexed_sort_field,                |
-                                        direction: "desc"), class: "dropdown-item") |
-              - index_pages = current_institution.index_pages
+              - searches = current_institution.prebuilt_searches.order(:name)
+              - if searches.any?
+                %li
+                  %hr.dropdown-divider
+                  - searches.each do |search|
+                    %li= link_to search.name, prebuilt_search_redirect_path(search), class: "dropdown-item"
+              - index_pages = current_institution.index_pages.order(:name)
               - if index_pages.any?
                 %li
                   %hr.dropdown-divider
-                  - index_pages.order(:name).each do |index_page|
+                  - index_pages.each do |index_page|
                     %li= link_to index_page.name, index_page, class: "dropdown-item"
           - if current_institution.about_url || current_institution.about_html
             %li#policies-nav.nav-item
