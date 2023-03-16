@@ -303,10 +303,11 @@ class PrebuiltSearchPolicyTest < ActiveSupport::TestCase
 
   # show?()
 
-  test "show?() authorizes requests to the same institution" do
-    context = RequestContext.new(institution: @prebuilt_search.institution)
-    policy  = PrebuiltSearchPolicy.new(context, @prebuilt_search)
-    assert policy.show?
+  test "show?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @prebuilt_search.institution)
+    policy = PrebuiltSearchPolicy.new(context, @prebuilt_search)
+    assert !policy.show?
   end
 
   test "show?() does not authorize an incorrect scope" do
@@ -316,8 +317,46 @@ class PrebuiltSearchPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() does not authorize requests to a different institution" do
-    context = RequestContext.new(institution: institutions(:northeast))
+  test "show?() does not authorize non-privileged users" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = PrebuiltSearchPolicy.new(context, @prebuilt_search)
+    assert !policy.show?
+  end
+
+  test "show?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = PrebuiltSearchPolicy.new(context, @prebuilt_search)
+    assert policy.show?
+  end
+
+  test "show?() does not authorize administrators of a different
+  institution than in the request context" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = PrebuiltSearchPolicy.new(context, @prebuilt_search)
+    assert !policy.show?
+  end
+
+  test "show?() does not authorize administrators of a different
+  institution than the prebuilt search" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = PrebuiltSearchPolicy.new(context, @prebuilt_search)
+    assert !policy.show?
+  end
+
+  test "show?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
     policy  = PrebuiltSearchPolicy.new(context, @prebuilt_search)
     assert !policy.show?
   end

@@ -39,10 +39,7 @@ class PrebuiltSearchPolicy < ApplicationPolicy
   end
 
   def show
-    if @ctx_institution != @prebuilt_search.institution
-      return WRONG_SCOPE_RESULT
-    end
-    AUTHORIZED_RESULT
+    update
   end
 
   def update
