@@ -8,7 +8,7 @@
   .mb-3
     = f.label :registered_element_id, "Element"
     - institution = profile.global? ? nil : current_institution
-    = f.select(:registered_element_id, RegisteredElement.where(institution: institution).order(:name).pluck(:name, :id),
+    = f.select(:registered_element_id, RegisteredElement.where(institution: institution).order(:label).map{ |e| ["#{e.label} (#{e.name})", e.id] },
       { selected: f.object.registered_element_id },
       class: "form-select")
   - if profile.elements.any?
