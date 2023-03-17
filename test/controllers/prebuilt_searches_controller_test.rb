@@ -4,6 +4,7 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     host! institutions(:southwest).fqdn
+    @search = prebuilt_searches(:southwest_cats)
   end
 
   teardown do
@@ -80,35 +81,31 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    page = prebuilt_searches(:southwest_cats)
-    delete prebuilt_search_path(page)
+    delete prebuilt_search_path(@search)
     assert_response :not_found
   end
 
   test "destroy() redirects to root page for logged-out users" do
-    page = prebuilt_searches(:southwest_cats)
-    delete prebuilt_search_path(page)
-    assert_redirected_to page.institution.scope_url
+    delete prebuilt_search_path(@search)
+    assert_redirected_to @search.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    delete prebuilt_search_path(prebuilt_searches(:southwest_cats))
+    delete prebuilt_search_path(@search)
     assert_response :forbidden
   end
 
   test "destroy() destroys the prebuilt search" do
     log_in_as(users(:southwest_admin))
-    page = prebuilt_searches(:southwest_cats)
     assert_difference "PrebuiltSearch.count", -1 do
-      delete prebuilt_search_path(page)
+      delete prebuilt_search_path(@search)
     end
   end
 
   test "destroy() returns HTTP 302 for an existing prebuilt search" do
     log_in_as(users(:southwest_admin))
-    page = prebuilt_searches(:southwest_cats)
-    delete prebuilt_search_path(page)
+    delete prebuilt_search_path(@search)
     assert_redirected_to prebuilt_searches_path
   end
 
@@ -122,36 +119,33 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "edit() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    page = prebuilt_searches(:southwest_cats)
-    get edit_prebuilt_search_path(page)
+    get edit_prebuilt_search_path(@search)
     assert_response :not_found
   end
 
   test "edit() redirects to root page for logged-out users" do
-    page = prebuilt_searches(:southwest_cats)
-    get edit_prebuilt_search_path(page)
-    assert_redirected_to page.institution.scope_url
+    get edit_prebuilt_search_path(@search)
+    assert_redirected_to @search.institution.scope_url
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    get edit_prebuilt_search_path(prebuilt_searches(:southwest_cats))
+    get edit_prebuilt_search_path(@search)
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_admin))
-    get edit_prebuilt_search_path(prebuilt_searches(:southwest_cats))
+    get edit_prebuilt_search_path(@search)
     assert_response :ok
   end
 
   test "edit() respects role limits" do
     log_in_as(users(:southwest_admin))
-    get edit_prebuilt_search_path(prebuilt_searches(:southwest_cats))
+    get edit_prebuilt_search_path(@search)
     assert_response :ok
 
-    get edit_prebuilt_search_path(prebuilt_searches(:southwest_cats),
-                             role: Role::LOGGED_OUT)
+    get edit_prebuilt_search_path(@search, role: Role::LOGGED_OUT)
     assert_response :forbidden
   end
 
@@ -218,18 +212,34 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "show() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    get prebuilt_search_path(prebuilt_searches(:northeast_cats))
+    get prebuilt_search_path(@search)
     assert_response :not_found
   end
 
-  test "show() returns HTTP 200 for a page in a different institution" do
-    get prebuilt_search_path(prebuilt_searches(:northeast_cats))
+  test "show() redirects to root page for logged-out users" do
+    get prebuilt_search_path(@search)
+    assert_redirected_to @search.institution.scope_url
+  end
+
+  test "show() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get prebuilt_search_path(@search)
     assert_response :forbidden
   end
 
-  test "show() returns HTTP 200 for a page in the same institution" do
-    get prebuilt_search_path(prebuilt_searches(:southwest_cats))
+  test "show() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get prebuilt_search_path(@search)
     assert_response :ok
+  end
+
+  test "show() respects role limits" do
+    log_in_as(users(:southwest_admin))
+    get prebuilt_search_path(@search)
+    assert_response :ok
+
+    get prebuilt_search_path(@search, role: Role::LOGGED_OUT)
+    assert_response :forbidden
   end
 
   # update()
@@ -247,28 +257,26 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    patch prebuilt_search_path(prebuilt_searches(:southwest_cats))
+    patch prebuilt_search_path(@search)
     assert_response :forbidden
   end
 
   test "update() updates a prebuilt search" do
     log_in_as(users(:southwest_admin))
-    search = prebuilt_searches(:southwest_cats)
-    patch prebuilt_search_path(search),
+    patch prebuilt_search_path(@search),
           xhr: true,
           params: {
             prebuilt_search: {
               name: "cats"
             }
           }
-    search.reload
-    assert_equal "cats", search.name
+    @search.reload
+    assert_equal "cats", @search.name
   end
 
   test "update() returns HTTP 200" do
     log_in_as(users(:southwest_admin))
-    search = prebuilt_searches(:southwest_cats)
-    patch prebuilt_search_path(search),
+    patch prebuilt_search_path(@search),
           xhr: true,
           params: {
             prebuilt_search: {
@@ -280,8 +288,7 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:southwest_admin))
-    search = prebuilt_searches(:southwest_cats)
-    patch prebuilt_search_path(search),
+    patch prebuilt_search_path(@search),
           xhr: true,
           params: {
             prebuilt_search: {

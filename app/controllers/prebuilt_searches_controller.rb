@@ -3,7 +3,7 @@
 class PrebuiltSearchesController < ApplicationController
 
   before_action :ensure_institution_host
-  before_action :ensure_logged_in, except: :show
+  before_action :ensure_logged_in
   before_action :set_prebuilt_search, except: [:create, :index, :new]
   before_action :authorize_prebuilt_search, except: [:create, :index, :new]
   before_action :store_location, only: [:index, :show]
