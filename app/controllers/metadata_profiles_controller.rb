@@ -3,7 +3,7 @@
 class MetadataProfilesController < ApplicationController
 
   before_action :ensure_institution_host, :ensure_logged_in
-  before_action :set_profile, except: [:create, :index]
+  before_action :set_profile, except: [:create, :index, :new]
   before_action :authorize_profile, except: [:create, :index]
   before_action :store_location, only: [:index, :show]
 
@@ -33,7 +33,17 @@ class MetadataProfilesController < ApplicationController
     @profile.institution = current_institution
     authorize @profile
     begin
-      @profile.add_default_elements
+      if params[:elements].respond_to?(:each)
+        params[:elements].each_with_index do |element_id, index|
+          @profile.elements.build(registered_element_id: element_id,
+                                  position:              index,
+                                  relevance_weight:      MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT,
+                                  visible:               true,
+                                  searchable:            true,
+                                  sortable:              true,
+                                  faceted:               true)
+        end
+      end
       @profile.save!
     rescue => e
       render partial: "shared/validation_messages",
@@ -77,9 +87,18 @@ class MetadataProfilesController < ApplicationController
   #
   def index
     authorize MetadataProfile
-    institution  = current_institution
-    @profiles    = MetadataProfile.where(institution: institution).order(:name)
-    @new_profile = MetadataProfile.new(institution: institution)
+    @profiles = MetadataProfile.
+      where(institution: current_institution).
+      order(:name)
+  end
+
+  ##
+  # Responds to `GET /metadata-profiles/new`
+  #
+  def new
+    authorize MetadataProfile
+    @profile = MetadataProfile.new(institution: current_institution)
+    render partial: "form"
   end
 
   ##

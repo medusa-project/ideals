@@ -43,23 +43,20 @@ class SubmissionProfile < ApplicationRecord
   after_save :ensure_default_uniqueness
 
   ##
-  # Ascribes some baseline {SubmissionProfileElement}s to a newly created
-  # profile.
+  # Ascribes system-required {SubmissionProfileElement}s to a newly created
+  # instance.
   #
-  def add_default_elements
-    raise "Instance already has elements ascribed to it" if self.elements.any?
-    required_elements = [
-      self.institution.title_element,
-      self.institution.author_element,
-      self.institution.description_element
-    ]
-    self.institution.registered_elements.order(:label).each_with_index do |reg_e, index|
+  def add_required_elements
+    self_reg_e_ids = self.elements.map(&:registered_element_id)
+    self.institution.required_elements.
+      reject{ |e| self_reg_e_ids.include?(e.id) }.
+      sort_by(&:label).
+      each_with_index do |reg_e, index|
       self.elements.build(registered_element: reg_e,
                           position:           index,
                           repeatable:         false,
-                          required:           required_elements.include?(reg_e))
+                          required:           true).save!
     end
-    self.save!
   end
 
   def breadcrumb_label

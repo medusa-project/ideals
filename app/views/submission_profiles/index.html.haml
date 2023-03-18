@@ -3,9 +3,9 @@
 
 .btn-group.float-end{role: "group"}
   -# Add Profile button
-  %button.btn.btn-light{"data-bs-target": "#add-profile-modal",
-                        "data-bs-toggle": "modal",
-                        type:             "button"}
+  %button.btn.btn-light.add-profile{"data-bs-target": "#add-profile-modal",
+                                    "data-bs-toggle": "modal",
+                                    type:             "button"}
     %i.fa.fa-plus
     Add Profile
 
@@ -23,7 +23,8 @@
           - if profile.institution_default
             %span.badge.text-bg-success DEFAULT
 
-= render partial: 'add_modal'
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-profile-modal", title: "Edit Profile" }
+         locals: { id: "add-profile-modal", title: "Add Submission Profile" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-profile-modal", title: "Edit Submission Profile" }
 

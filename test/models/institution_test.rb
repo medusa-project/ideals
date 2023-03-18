@@ -130,7 +130,7 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal 1, institution.metadata_profiles.count
     profile = institution.metadata_profiles.first
     assert profile.institution_default
-    assert profile.elements.count > 0
+    assert_equal institution.registered_elements.count, profile.elements.count
   end
 
   test "create() adds a default submission profile" do
@@ -142,7 +142,7 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal 1, institution.submission_profiles.count
     profile = institution.submission_profiles.first
     assert profile.institution_default
-    assert profile.elements.count > 0
+    assert_equal institution.required_elements.count, profile.elements.count
   end
 
   test "create() adds default vocabularies" do
@@ -668,6 +668,12 @@ class InstitutionTest < ActiveSupport::TestCase
     end
     task.reload
     assert task.succeeded?
+  end
+
+  # required_elements
+
+  test "required_elements() returns system-required elements" do
+    assert_equal 3, @instance.required_elements.length
   end
 
   # scope_url()

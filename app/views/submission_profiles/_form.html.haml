@@ -1,6 +1,4 @@
--# @param profile [SubmissionProfile]
-
-= form_for(profile, remote: true) do |f|
+= form_for(@profile, remote: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
@@ -11,6 +9,35 @@
     .form-check
       = f.check_box :institution_default, class: 'form-check-input'
       = f.label :institution_default, "Default", class: "form-check-label"
+
+  - if f.object.new_record?
+    .mb-3
+      %h4 Initial Elements
+      %p.text-muted
+        = icon_for(:info)
+        Elements can also be added and removed later.
+      %p.text-muted
+        = icon_for(:info)
+        System-required elements cannot be unchecked. To control which elements
+        are designated as system-required, go to your institution's Element Mappings tab.
+
+      .btn-group.mb-3{role: "group"}
+        %button.check-all.btn.btn-sm.btn-light{type: "button"}
+          %i.far.fa-check-square
+          Check All
+
+      - f.object.institution.registered_elements.order(:label).each do |reg_e|
+        - required = f.object.institution.required_elements.include?(reg_e)
+        .form-check
+          = check_box_tag "elements[]",
+                          reg_e.id,
+                          required || f.object.elements.pluck(:registered_element_id).include?(reg_e.id),
+                          onclick: required ? "return false;" : "return true;",
+                          id:      "elements-#{reg_e.id}",
+                          class:   "form-check-input",
+                          data:    { required: required }
+          = label_tag "elements-#{reg_e.id}", reg_e.label
+
   .clearfix
     .float-end
       %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel

@@ -6,6 +6,14 @@
 const MetadataProfilesView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
+    $('button.add-profile').on("click", function() {
+        const url = ROOT_URL + "/metadata-profiles/new";
+        $.get(url, function(data) {
+            $("#add-profile-modal .modal-body").html(data);
+            new IDEALS.CheckAllButton($('.check-all'),
+                $("input[name='elements[]']"));
+        });
+    });
     $('button.edit-profile').on("click", function() {
         const profile_id = $(this).data("profile-id");
         const url = ROOT_URL + "/metadata-profiles/" + profile_id + "/edit";

@@ -1,8 +1,8 @@
 class SubmissionProfilesController < ApplicationController
 
   before_action :ensure_institution_host, :ensure_logged_in
-  before_action :set_profile, only: [:clone, :edit, :show, :update, :destroy]
-  before_action :authorize_profile, only: [:clone, :edit, :show, :update, :destroy]
+  before_action :set_profile, except: [:create, :index, :new]
+  before_action :authorize_profile, except: [:create, :index]
   before_action :store_location, only: [:index, :show]
 
   ##
@@ -31,7 +31,14 @@ class SubmissionProfilesController < ApplicationController
     @profile.institution = current_institution
     authorize @profile
     begin
-      @profile.add_default_elements
+      if params[:elements].respond_to?(:each)
+        params[:elements].each_with_index do |element_id, index|
+          @profile.elements.build(registered_element_id: element_id,
+                                  position:              index,
+                                  repeatable:            false,
+                                  required:              true)
+        end
+      end
       @profile.save!
     rescue => e
       render partial: "shared/validation_messages",
@@ -75,9 +82,18 @@ class SubmissionProfilesController < ApplicationController
   #
   def index
     authorize SubmissionProfile
-    institution  = current_institution
-    @profiles    = SubmissionProfile.where(institution: institution).order(:name)
-    @new_profile = SubmissionProfile.new(institution: institution)
+    @profiles = SubmissionProfile.
+      where(institution: current_institution).
+      order(:name)
+  end
+
+  ##
+  # Responds to `GET /submission-profiles/new`
+  #
+  def new
+    authorize SubmissionProfile
+    @profile = SubmissionProfile.new(institution: current_institution)
+    render partial: "form"
   end
 
   ##

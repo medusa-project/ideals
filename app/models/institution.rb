@@ -483,6 +483,13 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<RegisteredElement>] All system-required elements.
+  #
+  def required_elements
+    [self.title_element, self.author_element, self.description_element]
+  end
+
+  ##
   # @return [String]
   #
   def scope_url
@@ -752,14 +759,14 @@ class Institution < ApplicationRecord
     profile = self.metadata_profiles.build(name:                "Default Metadata Profile",
                                            institution_default: true)
     profile.save!
-    profile.add_default_elements
+    profile.add_all_registered_elements
   end
 
   def add_default_submission_profile
     profile = self.submission_profiles.build(name:                "Default Submission Profile",
                                              institution_default: true)
     profile.save!
-    profile.add_default_elements
+    profile.add_required_elements
   end
 
   def add_default_vocabularies

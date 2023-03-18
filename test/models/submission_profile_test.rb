@@ -17,40 +17,23 @@ class SubmissionProfileTest < ActiveSupport::TestCase
     end
   end
 
-  # add_default_elements()
+  # add_required_elements()
 
-  test "add_default_elements() adds default elements to an instance that does
-  not have any elements" do
+  test "add_required_elements() adds required elements to an instance" do
     profile = SubmissionProfile.create!(name:        "Test Profile",
                                         institution: institutions(:uiuc))
-    profile.add_default_elements
-    assert profile.elements.count > 1
-  end
-
-  test "add_default_elements() adds only elements of the same institution as
-  the instance" do
-    profile = SubmissionProfile.create!(name:        "Test Profile",
-                                        institution: institutions(:uiuc))
-    profile.add_default_elements
-    profile.elements.each do |e|
-      assert_equal e.registered_element.institution, profile.institution
-    end
-  end
-
-  test "add_default_elements() adds counterparts of all RegisteredElements in
-  the same institution" do
-    profile = SubmissionProfile.create!(name:        "Test Profile",
-                                        institution: institutions(:uiuc))
-    profile.add_default_elements
-    assert_equal profile.institution.registered_elements.count,
+    profile.add_required_elements
+    assert_equal profile.institution.required_elements.length,
                  profile.elements.count
   end
 
-  test "add_default_elements() raises an error if the instance already has
-  elements attached to it" do
-    profile = submission_profiles(:uiuc_default)
-    assert_raises do
-      profile.add_default_elements
+  test "add_required_elements() adds only elements of the same institution as
+  the instance" do
+    profile = SubmissionProfile.create!(name:        "Test Profile",
+                                        institution: institutions(:uiuc))
+    profile.add_required_elements
+    profile.elements.each do |e|
+      assert_equal e.registered_element.institution, profile.institution
     end
   end
 

@@ -92,11 +92,14 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
                metadata_profile: {
                    institution_id: user.institution.id,
                    name:           "cats"
-               }
+               },
+               elements: [
+                 institutions(:uiuc).registered_elements.find_by_name("dc:title").id
+               ]
            }
     end
     profile = MetadataProfile.order(created_at: :desc).limit(1).first
-    assert profile.elements.count > 0
+    assert_equal 1, profile.elements.count
     assert_equal user.institution, profile.institution
   end
 
@@ -220,6 +223,31 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
     get metadata_profiles_path(role: Role::LOGGED_OUT)
     assert_response :forbidden
+  end
+
+  # new()
+
+  test "new() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get new_metadata_profile_path
+    assert_response :not_found
+  end
+
+  test "new() redirects to root page for logged-out users" do
+    get new_metadata_profile_path
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "new() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:uiuc))
+    get new_metadata_profile_path
+    assert_response :forbidden
+  end
+
+  test "new() returns HTTP 200 for authorized users" do
+    log_in_as(users(:uiuc_admin))
+    get new_metadata_profile_path
+    assert_response :ok
   end
 
   # show()

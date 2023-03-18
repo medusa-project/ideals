@@ -32,40 +32,41 @@ class MetadataProfileTest < ActiveSupport::TestCase
     assert_not_nil MetadataProfile.global
   end
 
-  # add_default_elements()
+  # add_all_registered_elements()
 
-  test "add_default_elements() adds default elements to an instance that does
+  test "add_all_registered_elements() adds default elements to an instance that does
   not have any elements" do
     profile = MetadataProfile.create!(name:        "Test Profile",
                                       institution: institutions(:uiuc))
-    profile.add_default_elements
-    assert profile.elements.count > 1
+    profile.add_all_registered_elements
+    assert_equal profile.institution.registered_elements.count,
+                 profile.elements.count
   end
 
-  test "add_default_elements() adds only elements of the same institution as
+  test "add_all_registered_elements() adds only elements of the same institution as
   the instance" do
     profile = MetadataProfile.create!(name:        "Test Profile",
                                       institution: institutions(:uiuc))
-    profile.add_default_elements
+    profile.add_all_registered_elements
     profile.elements.each do |e|
       assert_equal e.registered_element.institution, profile.institution
     end
   end
 
-  test "add_default_elements() adds counterparts of all RegisteredElements in
+  test "add_all_registered_elements() adds counterparts of all RegisteredElements in
   the same institution" do
     profile = MetadataProfile.create!(name:        "Test Profile",
                                       institution: institutions(:uiuc))
-    profile.add_default_elements
+    profile.add_all_registered_elements
     assert_equal profile.institution.registered_elements.count,
                  profile.elements.count
   end
 
-  test "add_default_elements() raises an error if the instance already has
+  test "add_all_registered_elements() raises an error if the instance already has
   elements attached to it" do
     profile = metadata_profiles(:uiuc_default)
     assert_raises do
-      profile.add_default_elements
+      profile.add_all_registered_elements
     end
   end
 

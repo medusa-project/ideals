@@ -61,10 +61,10 @@ class MetadataProfile < ApplicationRecord
   end
 
   ##
-  # Ascribes some baseline {MetadataProfileElement}s to a newly created
-  # profile.
+  # Ascribes {MetadataProfileElement}s corresponding to all
+  # {RegisteredElement}s in the same institution to a newly created profile.
   #
-  def add_default_elements
+  def add_all_registered_elements
     raise "Instance already has elements ascribed to it" if self.elements.any?
     self.institution.registered_elements.order(:label).each_with_index do |reg_e, index|
       self.elements.build(registered_element: reg_e,
