@@ -10,11 +10,11 @@
 # The process by which a user is made a member of an institution varies
 # depending on the subclass:
 #
-# * For [LocalUser]s, the user either requests to join a particular
+# * For {LocalUser}s, the user either requests to join a particular
 #   institution, or is invited into a particular institution by a sysadmin at
 #   the time they are invited to register.
-# * For [ShibbolethUser]s, the user's "org DN" provided by the IdP is matched
-#   against an [Institution]'s {Institution#org_dn} property at login.
+# * For {ShibbolethUser}s, the user's "org DN" provided by the IdP is matched
+#   against an {Institution}'s {Institution#org_dn} property at login.
 #
 # # Attributes
 #
@@ -23,21 +23,21 @@
 # * `created_at`        Managed by ActiveRecord.
 # * `email`             Email address.
 # * `enabled`           Whether the user is able to log in.
-# * `institution_id`    Foreign key to [Institution] representing the
+# * `institution_id`    Foreign key to {Institution} representing the
 #                       institution of which the instance is a member.
 # * `last_logged_in_at` Date/time of last login.
-# * `local_identity_id` Foreign key to [LocalIdentity]. Used only by
-#                       [LocalUser]s; set during processing of the
+# * `local_identity_id` Foreign key to {LocalIdentity}. Used only by
+#                       {LocalUser}s; set during processing of the
 #                       registration form.
 # * `name`              The user's name in whatever format they choose to
 #                       provide it.
 # * `org_dn`            `eduPersonOrgDN` property supplied by Shibboleth. Only
-#                       [ShibbolethUser]s have this. TODO: this is probably not needed anymore now that we have institution_id
+#                       {ShibbolethUser}s have this. TODO: this is probably not needed anymore now that we have institution_id
 # * `phone`             The user's phone number.
 # * `type`              Supports Rails single-table inheritance (STI).
-# * `uid`               For [ShibbolethUser]s, this is the UID provided by
+# * `uid`               For {ShibbolethUser}s, this is the UID provided by
 #                       Shibboleth (which is probably the EPPN). For
-#                       [IdentityUser]s, it's the email address.
+#                       {LocalUser}s, it's the email address.
 # * `updated_at:        Managed by ActiveRecord.
 #
 class User < ApplicationRecord
@@ -150,11 +150,12 @@ class User < ApplicationRecord
   #
   def effective_submittable_collections
     if effective_institution_admin?(self.institution)
-      return Collection.joins(:units).where("units.institution_id = ?",
-                                            self.institution_id)
+      return Collection.joins(:units).
+        where(buried: false).
+        where("units.institution_id = ?", self.institution_id)
     end
     collections  = Set.new
-    collections += self.administering_units.map(&:collections).flatten
+    collections += self.administering_units.map(&:collections).flatten.reject(&:buried)
     collections += self.managing_collections
     collections += self.submitting_collections
     collections
