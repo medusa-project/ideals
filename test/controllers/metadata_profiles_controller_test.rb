@@ -235,7 +235,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "new() redirects to root page for logged-out users" do
     get new_metadata_profile_path
-    assert_redirected_to @institution.scope_url
+    assert_redirected_to @profile.institution.scope_url
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
