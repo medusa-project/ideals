@@ -107,8 +107,12 @@ class PersistentStoreTest < ActiveSupport::TestCase
     assert !store.object_exists?(key: source_key)
   end
 
-  test "move_object() copies the ACL of the copied object" do
-    skip # we can't test this because MinIO doesn't support ACLs # TODO: is this still the case?
+  test "move_object() copies the ACL of the copied object if told to" do
+    skip # we can't test this because MinIO doesn't support ACLs
+  end
+
+  test "move_object() does not copy the ACL of the copied object if told not to" do
+    skip # we can't test this because MinIO doesn't support ACLs
   end
 
   # object_count()
@@ -223,7 +227,13 @@ class PersistentStoreTest < ActiveSupport::TestCase
     assert store.object_exists?(key: key)
   end
 
-  test "put_object() sets the ACL of the uploaded object" do
+  test "put_object() sets the ACL of the uploaded object if the public argument
+  is true" do
+    skip # we can't test this because MinIO doesn't support ACLs
+  end
+
+  test "put_object() does not set the ACL of the uploaded object if the public
+  argument is false" do
     skip # we can't test this because MinIO doesn't support ACLs
   end
 

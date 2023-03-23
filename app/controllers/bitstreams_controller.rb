@@ -15,9 +15,15 @@
 #
 # Bitstreams can be downloaded in two ways:
 #
-# 1. Streaming them through the application via {data}. This is not advised,
+# 1. By proxying them through the application via {data}. This is not advised,
 #    as it ties up a request connection.
-# 2. By redirecting to its public S3 URL using {object}.
+# 2. By redirecting to a presigned S3 URL using {object}.
+#
+# Bitstreams do not have public URLs because they do not have public-read ACLs.
+# (Some non-bitstream objects in the application bucket do have such ACLs, such
+# as the theme images.)
+#
+# ## Statistics
 #
 # Every time a {Bitstream} is "downloaded," an {Event} of type
 # {Event::Type::DOWNLOAD} is supposed to get ascribed to it, which effectively
@@ -207,7 +213,8 @@ class BitstreamsController < ApplicationController
   end
 
   ##
-  # Redirects to the {Bitstream}'s content via HTTP 307.
+  # Creates a presigned URL for downloading the {Bitstream} and redirects to it
+  # via HTTP 307.
   #
   # If a `dl=1` query argument is supplied, a download event is ascribed to
   # the bitstream.
@@ -217,7 +224,7 @@ class BitstreamsController < ApplicationController
   # @see data
   #
   def object
-    url = @bitstream.public_url
+    url = @bitstream.presigned_download_url(content_disposition: download_content_disposition)
     if url
       @bitstream.add_download(user: current_user) if params[:dl] == "1"
       redirect_to url,
@@ -227,6 +234,8 @@ class BitstreamsController < ApplicationController
       render plain:  "This bitstream has no corresponding storage object.",
              status: :not_found
     end
+  rescue IOError => e
+    render plain: "#{e}", status: :not_found
   end
 
   ##

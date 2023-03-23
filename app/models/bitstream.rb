@@ -7,7 +7,15 @@
 #
 # # Uploads
 #
-# See {BitstreamsController}.
+# See {BitstreamsController} documentation.
+#
+# # Downloads
+#
+# See {BitstreamsController} documentation.
+#
+# ## Statistics
+#
+# See {BitstreamsController} documentation.
 #
 # # Storage locations
 #
@@ -57,10 +65,6 @@
 # # Full text
 #
 # See {FullText}.
-#
-# # Download statistics
-#
-# See {BitstreamsController} documentation.
 #
 # # Attributes
 #
@@ -441,7 +445,7 @@ class Bitstream < ApplicationRecord
         generate_derivative(region: region, size: size, format: :jpg)
       end
     end
-    store.public_url(key: key)
+    store.presigned_download_url(key: key, expires_in: 1.hour.to_i)
   end
 
   ##
@@ -572,7 +576,6 @@ class Bitstream < ApplicationRecord
   ##
   # @param content_disposition [String]
   # @return [String]
-  # @see public_url
   #
   def presigned_download_url(content_disposition: "attachment")
     key = self.effective_key
@@ -601,16 +604,6 @@ class Bitstream < ApplicationRecord
       self.update!(staging_key: key)
     end
     PersistentStore.instance.presigned_upload_url(key: key, expires_in: 30)
-  end
-
-  ##
-  # @return [String,nil] URL of the public object, or nil if the instance has
-  #         no corresponding storage object.
-  # @see presigned_download_url
-  #
-  def public_url
-    key = self.effective_key
-    key ? PersistentStore.instance.public_url(key: key) : nil
   end
 
   ##

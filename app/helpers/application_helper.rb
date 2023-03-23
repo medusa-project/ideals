@@ -336,7 +336,7 @@ module ApplicationHelper
     if entity.kind_of?(Item)
       entity.bitstreams.
         select{ |b| b.bundle == Bitstream::Bundle::CONTENT &&
-          b.public_url &&
+          b.effective_key &&
           b.format &&
           b.format.media_types.include?("application/pdf") }.each do |bs|
         bs_authorized = true
@@ -347,8 +347,11 @@ module ApplicationHelper
           end
         end
         if bs_authorized
-          html << "<meta name=\"citation_pdf_url\" "\
-                  "content=\"#{item_bitstream_data_url(bs.item, bs, format: bs.filename.split(".").last)}\">\n"
+          # Google Scholar needs a stable URL, it wants to see a .pdf
+          # extension, and it doesn't want to follow redirects. Our only choice
+          # is to proxy the bitstream's data.
+          url = item_bitstream_data_url(bs.item, bs, format: bs.filename.split(".").last)
+          html << "<meta name=\"citation_pdf_url\" content=\"#{url}\">\n"
         end
       end
     end

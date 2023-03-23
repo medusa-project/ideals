@@ -17,13 +17,15 @@ class PersistentStore
   ##
   # @param source_key [String]
   # @param target_key [String]
+  # @param public [Boolean] Whether the target object should have a public-read
+  #                         ACL attached to it.
   #
-  def copy_object(source_key:, target_key:)
+  def copy_object(source_key:, target_key:, public: false)
     client = S3Client.instance
     client.copy_object(copy_source: "/#{BUCKET}/#{source_key}", # source bucket+key
                        bucket:      BUCKET,                     # destination bucket
                        key:         target_key)                 # destination key
-    update_acl(target_key)
+    attach_public_acl(target_key) if public
   end
 
   ##
@@ -55,7 +57,7 @@ class PersistentStore
   # @param target_key [String]
   #
   def move_object(source_key:, target_key:)
-    copy_object(source_key: source_key, target_key: target_key)
+    copy_object(source_key: source_key, target_key: target_key, public: false)
     delete_object(key: source_key)
   end
 
@@ -143,19 +145,22 @@ class PersistentStore
 
   ##
   # @param key [String]
-  # @param institution_key [String] Optional--if not provided, it will be
-  #                                 extracted from the key.
-  # @param data [String] Raw data.
-  # @param path [String] Pathname of a file to upload.
+  # @param institution_key [String]        Optional--if not provided, it will
+  #                                        be extracted from the key.
+  # @param data [String]                   Raw data.
+  # @param path [String]                   Pathname of a file to upload.
   # @param file [File, Pathname, Tempfile] File to upload.
-  # @param io [IO] Stream to upload.
+  # @param io [IO]                         Stream to upload.
+  # @param public [Boolean]                Whether the object should have a
+  #                                        public-read ACL assigned to it.
   #
   def put_object(key:,
                  institution_key: nil,
                  data:            nil,
                  path:            nil,
                  file:            nil,
-                 io:              nil)
+                 io:              nil,
+                 public:          false)
     if !data && !path && !file && !io
       raise ArgumentError, "One of the source arguments must be provided."
     end
@@ -179,7 +184,7 @@ class PersistentStore
       s3.bucket(BUCKET).
         object(key).
         upload_file(path || file)
-      update_acl(key)
+      attach_public_acl(key) if public
       if institution_key
         S3Client.instance.set_tag(bucket:    BUCKET,
                                   key:       key,
@@ -189,7 +194,7 @@ class PersistentStore
     else
       S3Client.instance.put_object(bucket:  BUCKET,
                                    key:     key,
-                                   acl:     "public-read",
+                                   acl:     public ? "public-read" : "private",
                                    body:    data || io,
                                    tagging: tagging)
     end
@@ -213,7 +218,7 @@ class PersistentStore
 
   private
 
-  def update_acl(key)
+  def attach_public_acl(key)
     # MinIO (used in development & test) doesn't support ACLs
     unless Rails.env.development? || Rails.env.test?
       S3Client.instance.put_object_acl(

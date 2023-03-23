@@ -50,35 +50,17 @@ namespace :storage do
     end
   end
 
-  # TODO: this can be removed after it has been done in all environments
-  desc "Add institution tags to all objects"
-  task :add_institution_tags => :environment do
-    client   = S3Client.instance
-    store    = PersistentStore.instance
-    bucket   = ::Configuration.instance.storage[:bucket]
-    count    = store.object_count(key_prefix: "institutions")
-    progress = Progress.new(count)
-
-    store.objects(key_prefix: "institutions").each_with_index do |obj, index|
-      ins_key = obj.key.match(/^institutions\/(\w+)/i).captures[0]
-      client.set_tag(bucket:    bucket,
-                     key:       obj.key,
-                     tag_key:   "institution_key",
-                     tag_value: ins_key)
-      progress.report(index, "Adding institution tags to bucket objects")
-    end
-  end
-
   # TODO: this can be removed once it has been done in demo and production
-  desc "Make all bucket objects public"
-  task make_all_objects_public: :environment do
+  desc "Make all bitstream objects private"
+  task make_bitstream_objects_private: :environment do
     client   = S3Client.instance
     bucket   = ::Configuration.instance.storage[:bucket]
     count    = client.objects(bucket: bucket, key_prefix: "").count
     progress = Progress.new(count)
     client.objects(bucket: bucket, key_prefix: "").each_with_index do |obj, index|
+      next if obj.key.match?(/institutions\/\w+\/theme/)
       client.put_object_acl(
-        acl:    "public-read",
+        acl:    "private",
         bucket: bucket,
         key:    obj.key
       )
@@ -88,6 +70,10 @@ namespace :storage do
 
   desc "Purge all objects from the application storage bucket"
   task :purge => :environment do
+    if Rails.env.demo? || Rails.env.production?
+      puts "This can only be done in development or test."
+      return
+    end
     config = ::Configuration.instance
     S3Client.instance.delete_objects(bucket: config.storage[:bucket])
   end
