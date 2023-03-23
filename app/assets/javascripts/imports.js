@@ -9,6 +9,7 @@ const ImportsView = function() {
     const ROOT_URL   = $("input[name=root_url]").val();
 
     const UploadPackagePanel = function() {
+        console.debug("Initializing UploadPackagePanel");
         const dropZone    = $(".file-drop-zone");
         const waitMessage = $("#wait-message");
 
@@ -16,11 +17,14 @@ const ImportsView = function() {
          * @param entry {FileSystemFileEntry}
          */
         function deleteAllFiles() {
+            console.debug("deleteAllFiles()");
             $.ajax({
                 method:  "POST",
                 url:     $("input[name=import_uri]").val() + "/delete-all-files",
                 headers: { "X-CSRF-Token": CSRF_TOKEN },
-                success: function() {},
+                success: function() {
+                    console.debug("deleteAllFiles() succeeded");
+                },
                 error:   function(data, status, xhr) {
                     console.error(data);
                     dropZone.before(
@@ -35,6 +39,7 @@ const ImportsView = function() {
          * @parma onUploadedCallback {Function}
          */
         function addFile(entry, onUploadedCallback) {
+            console.debug("addFile(): " + entry.name);
             entry.file(function(file) {
                 const uri = $("input[name=import_uri]").val() + "/upload-file";
                 const xhr = new XMLHttpRequest();
@@ -47,7 +52,7 @@ const ImportsView = function() {
                 // package root, so we will have to trim off the package dir
                 // itself. But we may also be dealing with individual files
                 // that are not packages, like CSVs, for which this will simply
-                // be the filename..
+                // be the filename.
                 let relativePath = entry.fullPath.split("/").slice(2).join("/");
                 if (relativePath === "") { // root-level files
                     const parts  = entry.fullPath.split("/");
@@ -57,7 +62,10 @@ const ImportsView = function() {
                 xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
                 xhr.onloadend = onUploadedCallback;
                 xhr.onerror   = function(e) { console.error(e); };
+                console.debug("POST " + uri);
                 xhr.send(file);
+            }, function(e) {
+                console.error(e);
             });
         }
 
@@ -67,6 +75,7 @@ const ImportsView = function() {
                 url:     $("input[name=import_uri]").val(),
                 headers: { "X-CSRF-Token": CSRF_TOKEN },
                 success: function() {
+                    console.debug("completeUpload() succeeded");
                     // the page is going to reload
                 },
                 error: function(data, status, xhr) {
@@ -82,6 +91,7 @@ const ImportsView = function() {
         // selection dialog.
         const fileChooser = $(".file-chooser");
         fileChooser.on("change", function() {
+            console.debug("File chooser changed");
             waitMessage.show();
             dropZone.hide();
             deleteAllFiles();
