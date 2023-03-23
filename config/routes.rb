@@ -121,9 +121,9 @@ Rails.application.routes.draw do
   resources :items, except: [:destroy, :new] do
     match "/approve", to: "items#approve", via: :patch
     resources :bitstreams do
+      match "/data", to: "bitstreams#data", via: :get
       match "/ingest", to: "bitstreams#ingest", via: :post
       match "/object", to: "bitstreams#object", via: :get
-      match "/stream", to: "bitstreams#stream", via: :get
       match "/viewer", to: "bitstreams#viewer", via: :get,
             constraints: lambda { |request| request.xhr? }
     end

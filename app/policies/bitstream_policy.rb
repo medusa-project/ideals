@@ -77,6 +77,10 @@ class BitstreamPolicy < ApplicationPolicy
                   "collections containing the file." }
   end
 
+  def data
+    download
+  end
+
   def destroy
     ItemPolicy.new(@request_context, @bitstream.item).delete_bitstreams
   end
@@ -176,10 +180,6 @@ class BitstreamPolicy < ApplicationPolicy
     end
     { authorized: false,
       reason:     "You are not authorized to access this file." }
-  end
-
-  def stream
-    download
   end
 
   def update

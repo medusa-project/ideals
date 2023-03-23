@@ -136,6 +136,121 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
+  # data?()
+
+  test "data?() returns true with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @bitstream.institution)
+    policy = BitstreamPolicy.new(context, @bitstream)
+    assert policy.data?
+  end
+
+  test "data?() restricts embargoed items by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @bitstream.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_embargoed_1))
+    assert !policy.data?
+  end
+
+  test "data?() restricts withdrawn items by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @bitstream.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_withdrawn_1))
+    assert !policy.data?
+  end
+
+  test "data?() authorizes sysadmins to embargoed items" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @bitstream.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_embargoed_1))
+    assert policy.data?
+  end
+
+  test "data?() authorizes sysadmins to submitting items" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @bitstream.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_submitting_1))
+    assert policy.data?
+  end
+
+  test "data?() authorizes sysadmins to withdrawn items" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @bitstream.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_withdrawn_1))
+    assert policy.data?
+  end
+
+  test "data?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @bitstream.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_withdrawn_1))
+    assert !policy.data?
+  end
+
+  test "data?() respects bitstream role limits" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @bitstream.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_item1_role_limited))
+    assert !policy.data?
+  end
+
+  test "data?() restricts non-content bitstreams to non-collection managers" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @bitstream.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_item1_license))
+    assert !policy.data?
+  end
+
+  test "data?() restricts bitstreams whose owning items are embargoed" do
+    user      = users(:southwest)
+    context   = RequestContext.new(user:        user,
+                                   institution: @bitstream.institution)
+    bitstream = bitstreams(:southwest_unit1_collection1_item1_approved)
+    policy    = BitstreamPolicy.new(context, bitstream)
+
+    assert policy.data?
+    bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
+                                   kind:       Embargo::Kind::DOWNLOAD).save!
+    assert !policy.data?
+  end
+
+  test "data?() does not restrict bitstreams whose owning items are embargoed
+  when the current user is exempt from all embargoes" do
+    user         = users(:southwest)
+    group        = user_groups(:southwest_unused)
+    group.users << user
+
+    context   = RequestContext.new(user:        user,
+                                   institution: @bitstream.institution)
+    bitstream = bitstreams(:southwest_unit1_collection1_item1_approved)
+    policy    = BitstreamPolicy.new(context, bitstream)
+    assert policy.data?
+
+    bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
+                                   kind:        Embargo::Kind::ALL_ACCESS,
+                                   user_groups: [group]).save!
+    assert policy.data?
+  end
+
+  test "data?() authorizes non-content bitstreams to collection managers" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @bitstream.institution)
+    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_item1_license))
+    assert policy.data?
+  end
+
   # destroy?()
 
   test "destroy?() returns false with a nil user" do
@@ -1014,121 +1129,6 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
 
     policy  = BitstreamPolicy.new(context, @bitstream)
     assert !policy.show_role?
-  end
-
-  # stream?()
-
-  test "stream?() returns true with a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @bitstream.institution)
-    policy = BitstreamPolicy.new(context, @bitstream)
-    assert policy.stream?
-  end
-
-  test "stream?() restricts embargoed items by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_embargoed_1))
-    assert !policy.stream?
-  end
-
-  test "stream?() restricts withdrawn items by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_withdrawn_1))
-    assert !policy.stream?
-  end
-
-  test "stream?() authorizes sysadmins to embargoed items" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_embargoed_1))
-    assert policy.stream?
-  end
-
-  test "stream?() authorizes sysadmins to submitting items" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_submitting_1))
-    assert policy.stream?
-  end
-
-  test "stream?() authorizes sysadmins to withdrawn items" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_withdrawn_1))
-    assert policy.stream?
-  end
-
-  test "stream?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution,
-                                 role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_withdrawn_1))
-    assert !policy.stream?
-  end
-
-  test "stream?() respects bitstream role limits" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution,
-                                 role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_item1_role_limited))
-    assert !policy.stream?
-  end
-
-  test "stream?() restricts non-content bitstreams to non-collection managers" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_item1_license))
-    assert !policy.stream?
-  end
-
-  test "stream?() restricts bitstreams whose owning items are embargoed" do
-    user      = users(:southwest)
-    context   = RequestContext.new(user:        user,
-                                   institution: @bitstream.institution)
-    bitstream = bitstreams(:southwest_unit1_collection1_item1_approved)
-    policy    = BitstreamPolicy.new(context, bitstream)
-
-    assert policy.stream?
-    bitstream.item.embargoes.build(expires_at: Time.now + 1.hour,
-                                   kind:       Embargo::Kind::DOWNLOAD).save!
-    assert !policy.stream?
-  end
-
-  test "stream?() does not restrict bitstreams whose owning items are embargoed
-  when the current user is exempt from all embargoes" do
-    user         = users(:southwest)
-    group        = user_groups(:southwest_unused)
-    group.users << user
-
-    context   = RequestContext.new(user:        user,
-                                   institution: @bitstream.institution)
-    bitstream = bitstreams(:southwest_unit1_collection1_item1_approved)
-    policy    = BitstreamPolicy.new(context, bitstream)
-    assert policy.stream?
-
-    bitstream.item.embargoes.build(expires_at:  Time.now + 1.hour,
-                                   kind:        Embargo::Kind::ALL_ACCESS,
-                                   user_groups: [group]).save!
-    assert policy.stream?
-  end
-
-  test "stream?() authorizes non-content bitstreams to collection managers" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @bitstream.institution)
-    policy  = BitstreamPolicy.new(context, bitstreams(:southwest_unit1_collection1_item1_license))
-    assert policy.stream?
   end
 
   # update?()

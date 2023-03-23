@@ -15,7 +15,7 @@
 #
 # Bitstreams can be downloaded in two ways:
 #
-# 1. Streaming them through the application via {stream}. This is not advised,
+# 1. Streaming them through the application via {data}. This is not advised,
 #    as it ties up a request connection.
 # 2. By redirecting to its public S3 URL using {object}.
 #
@@ -28,8 +28,8 @@
 # 3. Loading a bitstream or its representation into the main item viewer?
 # 4. Receiving a request for a pre-signed URL to the bitstream's content via
 #    {object}?
-# 5. Streaming a bitstream's content through via {stream}?
-#     a. Are multiple ranged requests to {stream} all considered independent
+# 5. Streaming a bitstream's content through via {data}?
+#     a. Are multiple ranged requests to {data} all considered independent
 #        downloads? Or only non-ranged requests?
 #
 # It turns out that we are considering only #1 and #2 to be downloads, so
@@ -40,10 +40,10 @@ class BitstreamsController < ApplicationController
   LOGGER = CustomLogger.new(BitstreamsController)
 
   before_action :ensure_institution_host
-  before_action :ensure_logged_in, except: [:index, :object, :show, :stream,
+  before_action :ensure_logged_in, except: [:data, :index, :object, :show,
                                             :viewer]
 
-  before_action :set_item, only: [:create, :data, :index]
+  before_action :set_item, only: [:create, :index]
   before_action :set_bitstream, except: [:create, :index]
   before_action :authorize_item, only: :index
   before_action :authorize_bitstream, except: [:create, :index]
@@ -73,6 +73,75 @@ class BitstreamsController < ApplicationController
     rescue => e
       render plain: "#{e}", status: :bad_request
     end
+  end
+
+  ##
+  # Retrieves a bitstream's data by proxying the S3 bucket. This is not very
+  # efficient but may be useful or necessary in some cases. Generally, {object}
+  # is preferred, as it will redirect to the S3 object, thereby not tying up a
+  # request connection.
+  #
+  # Responds to `GET /items/:item_id/bitstreams/:id/data`.
+  #
+  # @see object
+  #
+  def data
+    if @bitstream.permanent_key.present?
+      key = @bitstream.permanent_key
+    elsif @bitstream.staging_key.present?
+      key = @bitstream.staging_key
+    else
+      Rails.logger.warn("Bitstream ID #{@bitstream.id} has no corresponding storage object")
+      render plain:  "This bitstream has no corresponding storage object.",
+             status: :not_found
+      return
+    end
+
+    s3_request = {
+      bucket: ::Configuration.instance.storage[:bucket],
+      key:    key
+    }
+
+    if !request.headers['Range']
+      status = "200 OK"
+    else
+      status       = "206 Partial Content"
+      start_offset = 0
+      length       = @bitstream.length
+      end_offset   = length - 1
+      match        = request.headers['Range'].match(/bytes=(\d+)-(\d*)/)
+      if match
+        start_offset = match[1].to_i
+        end_offset   = match[2].to_i if match[2]&.present?
+      end
+      response.headers['Content-Range'] = sprintf("bytes %d-%d/%d",
+                                                  start_offset, end_offset, length)
+      s3_request[:range]                = sprintf("bytes=%d-%d",
+                                                  start_offset, end_offset)
+    end
+
+    LOGGER.debug('show(): requesting %s', s3_request)
+
+    client      = S3Client.instance
+    s3_response = client.head_object(s3_request.except(:range))
+
+    response.status                         = status
+    response.headers['Content-Type']        = @bitstream.media_type
+    response.headers['Content-Disposition'] = params[:'response-content-disposition'] ||
+      download_content_disposition
+    response.headers['Content-Length']      = s3_response.content_length.to_s
+    response.headers['Last-Modified']       = s3_response.last_modified.utc.strftime("%a, %d %b %Y %T GMT")
+    response.headers['Cache-Control']       = "public, must-revalidate, max-age=0"
+    response.headers['Accept-Ranges']       = "bytes"
+
+    client.get_object(s3_request) do |chunk|
+      response.stream.write chunk
+    end
+  rescue ActionController::Live::ClientDisconnected => e
+    # Rescue this or else Rails will log it at error level.
+    LOGGER.debug('show(): %s', e)
+  ensure
+    response.stream.close
   end
 
   ##
@@ -145,7 +214,7 @@ class BitstreamsController < ApplicationController
   #
   # Responds to `GET /items/:item_id/bitstreams/:id/object`.
   #
-  # @see stream
+  # @see data
   #
   def object
     url = @bitstream.public_url
@@ -167,74 +236,6 @@ class BitstreamsController < ApplicationController
   #
   def show
     render formats: :json
-  end
-
-  ##
-  # Streams a bitstream's data.
-  #
-  # N.B.: {object} is preferred, as it won't tie up a request connection.
-  #
-  # Responds to `GET /items/:item_id/bitstreams/:id/stream`.
-  #
-  # @see object
-  #
-  def stream
-    if @bitstream.permanent_key.present?
-      key = @bitstream.permanent_key
-    elsif @bitstream.staging_key.present?
-      key = @bitstream.staging_key
-    else
-      Rails.logger.warn("Bitstream ID #{@bitstream.id} has no corresponding storage object")
-      render plain:  "This bitstream has no corresponding storage object.",
-             status: :not_found
-      return
-    end
-
-    s3_request = {
-      bucket: ::Configuration.instance.storage[:bucket],
-      key:    key
-    }
-
-    if !request.headers['Range']
-      status = "200 OK"
-    else
-      status       = "206 Partial Content"
-      start_offset = 0
-      length       = @bitstream.length
-      end_offset   = length - 1
-      match        = request.headers['Range'].match(/bytes=(\d+)-(\d*)/)
-      if match
-        start_offset = match[1].to_i
-        end_offset   = match[2].to_i if match[2]&.present?
-      end
-      response.headers['Content-Range'] = sprintf("bytes %d-%d/%d",
-                                                  start_offset, end_offset, length)
-      s3_request[:range]                = sprintf("bytes=%d-%d",
-                                                  start_offset, end_offset)
-    end
-
-    LOGGER.debug('show(): requesting %s', s3_request)
-
-    client      = S3Client.instance
-    s3_response = client.head_object(s3_request.except(:range))
-
-    response.status                         = status
-    response.headers['Content-Type']        = @bitstream.media_type
-    response.headers['Content-Disposition'] = params[:'response-content-disposition'] ||
-                                                download_content_disposition
-    response.headers['Content-Length']      = s3_response.content_length.to_s
-    response.headers['Last-Modified']       = s3_response.last_modified.utc.strftime("%a, %d %b %Y %T GMT")
-    response.headers['Cache-Control']       = "public, must-revalidate, max-age=0"
-    response.headers['Accept-Ranges']       = "bytes"
-
-    client.get_object(s3_request) do |chunk|
-      response.stream.write chunk
-    end
-  rescue ActionController::Live::ClientDisconnected => e
-    # Rescue this or else Rails will log it at error level.
-    LOGGER.debug('show(): %s', e)
-  ensure
-    response.stream.close
   end
 
   ##

@@ -95,6 +95,159 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  # data()
+
+  test "data() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:southwest_unit1_collection1_item1)
+    bs   = bitstreams(:southwest_unit1_collection1_item1_approved)
+    get item_bitstream_data_path(item, bs)
+    assert_response :not_found
+  end
+
+  test "data() returns HTTP 200 for bitstreams in staging" do
+    fixture = file_fixture("pdf.pdf")
+    item    = items(:southwest_unit1_collection1_item1)
+    bs      = Bitstream.new_in_staging(item:     item,
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
+    bs.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+      get item_bitstream_data_path(item, bs)
+      assert_response :ok
+      assert_equal File.size(fixture), response.body.length
+    ensure
+      bs.delete_from_staging
+    end
+  end
+
+  test "data() returns HTTP 200 for bitstreams in permanent storage" do
+    fixture = file_fixture("pdf.pdf")
+    item    = items(:southwest_unit1_collection1_item1)
+    bs      = Bitstream.new_in_staging(item:     item,
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
+    bs.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+      bs.move_into_permanent_storage
+      get item_bitstream_data_path(item, bs)
+      assert_response :ok
+      assert_equal File.size(fixture), response.body.length
+    ensure
+      bs.delete_from_permanent_storage
+    end
+  end
+
+  test "data() returns HTTP 400 for an invalid range" do
+    bs = bitstreams(:southwest_unit1_collection1_item1_approved)
+    get item_bitstream_data_path(bs.item, bs),
+        headers: { Range: "bytes=#{bs.length}-#{bs.length + 100}"}
+    assert_response :bad_request
+  end
+
+  test "data() returns HTTP 403 for embargoed items" do
+    fixture = file_fixture("crane.jpg")
+    item    = items(:southwest_unit1_collection1_embargoed)
+    bs      = Bitstream.new_in_staging(item:     item,
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
+    bs.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+      get item_bitstream_data_path(item, bs)
+      assert_response :forbidden
+    ensure
+      bs.delete_from_staging
+    end
+  end
+
+  test "data() returns HTTP 403 for withdrawn items" do
+    fixture = file_fixture("crane.jpg")
+    item    = items(:southwest_unit1_collection1_withdrawn)
+    bs      = Bitstream.new_in_staging(item:     item,
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
+    bs.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+      get item_bitstream_data_path(item, bs)
+      assert_response :forbidden
+    ensure
+      bs.delete_from_staging
+    end
+  end
+
+  test "data() returns HTTP 404 for missing bitstreams" do
+    item = items(:southwest_unit1_collection1_item1)
+    get item_bitstream_data_path(item, 9999999)
+    assert_response :not_found
+  end
+
+  test "data() returns HTTP 404 when the underlying data is missing" do
+    item = items(:southwest_unit1_collection1_item1)
+    bs   = Bitstream.new_in_staging(item:     item,
+                                    filename: "cats.jpg",
+                                    length:   123)
+    bs.update!(staging_key: nil)
+    get item_bitstream_data_path(item, bs)
+    assert_response :not_found
+  end
+
+  test "data() respects role limits" do
+    fixture = file_fixture("crane.jpg")
+    item    = items(:southwest_unit1_collection1_withdrawn) # (an item that only sysadmins have access to)
+    bs      = Bitstream.new_in_staging(item:     item,
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
+    bs.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+
+      # Assert that sysadmins can access it
+      log_in_as(users(:southwest_sysadmin))
+      get item_bitstream_data_path(item, bs)
+      assert_response :ok
+
+      # Assert that role-limited sysadmins can't
+      get item_bitstream_data_path(item, bs, role: Role::LOGGED_OUT)
+      assert_response :forbidden
+    ensure
+      bs.delete_from_staging
+    end
+  end
+
+  test "data() supports a response-content-disposition argument" do
+    fixture = file_fixture("pdf.pdf")
+    item    = items(:southwest_unit1_collection1_item1)
+    bs      = Bitstream.new_in_staging(item:     item,
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
+    bs.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+      bs.move_into_permanent_storage
+      get item_bitstream_data_path(item, bs,
+                                   "response-content-disposition": "inline")
+      assert_equal "inline", response.header['Content-Disposition']
+    ensure
+      bs.delete_from_permanent_storage
+    end
+  end
+
   # destroy()
 
   test "destroy() returns HTTP 404 for unscoped requests" do
@@ -515,159 +668,6 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
       assert_response :forbidden
     ensure
       bs.delete_from_staging
-    end
-  end
-
-  # stream()
-
-  test "stream() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    item = items(:southwest_unit1_collection1_item1)
-    bs   = bitstreams(:southwest_unit1_collection1_item1_approved)
-    get item_bitstream_stream_path(item, bs)
-    assert_response :not_found
-  end
-
-  test "stream() returns HTTP 200 for bitstreams in staging" do
-    fixture = file_fixture("pdf.pdf")
-    item    = items(:southwest_unit1_collection1_item1)
-    bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
-                                       length:   File.size(fixture))
-    bs.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bs.upload_to_staging(file)
-      end
-      get item_bitstream_stream_path(item, bs)
-      assert_response :ok
-      assert_equal File.size(fixture), response.body.length
-    ensure
-      bs.delete_from_staging
-    end
-  end
-
-  test "stream() returns HTTP 200 for bitstreams in permanent storage" do
-    fixture = file_fixture("pdf.pdf")
-    item    = items(:southwest_unit1_collection1_item1)
-    bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
-                                       length:   File.size(fixture))
-    bs.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bs.upload_to_staging(file)
-      end
-      bs.move_into_permanent_storage
-      get item_bitstream_stream_path(item, bs)
-      assert_response :ok
-      assert_equal File.size(fixture), response.body.length
-    ensure
-      bs.delete_from_permanent_storage
-    end
-  end
-
-  test "stream() returns HTTP 400 for an invalid range" do
-    bs = bitstreams(:southwest_unit1_collection1_item1_approved)
-    get item_bitstream_stream_path(bs.item, bs),
-        headers: { Range: "bytes=#{bs.length}-#{bs.length + 100}"}
-    assert_response :bad_request
-  end
-
-  test "stream() returns HTTP 403 for embargoed items" do
-    fixture = file_fixture("crane.jpg")
-    item    = items(:southwest_unit1_collection1_embargoed)
-    bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
-                                       length:   File.size(fixture))
-    bs.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bs.upload_to_staging(file)
-      end
-      get item_bitstream_stream_path(item, bs)
-      assert_response :forbidden
-    ensure
-      bs.delete_from_staging
-    end
-  end
-
-  test "stream() returns HTTP 403 for withdrawn items" do
-    fixture = file_fixture("crane.jpg")
-    item    = items(:southwest_unit1_collection1_withdrawn)
-    bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
-                                       length:   File.size(fixture))
-    bs.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bs.upload_to_staging(file)
-      end
-      get item_bitstream_stream_path(item, bs)
-      assert_response :forbidden
-    ensure
-      bs.delete_from_staging
-    end
-  end
-
-  test "stream() returns HTTP 404 for missing bitstreams" do
-    item = items(:southwest_unit1_collection1_item1)
-    get item_bitstream_stream_path(item, 9999999)
-    assert_response :not_found
-  end
-
-  test "stream() returns HTTP 404 when the underlying data is missing" do
-    item = items(:southwest_unit1_collection1_item1)
-    bs   = Bitstream.new_in_staging(item:     item,
-                                    filename: "cats.jpg",
-                                    length:   123)
-    bs.update!(staging_key: nil)
-    get item_bitstream_stream_path(item, bs)
-    assert_response :not_found
-  end
-
-  test "stream() respects role limits" do
-    fixture = file_fixture("crane.jpg")
-    item    = items(:southwest_unit1_collection1_withdrawn) # (an item that only sysadmins have access to)
-    bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
-                                       length:   File.size(fixture))
-    bs.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bs.upload_to_staging(file)
-      end
-
-      # Assert that sysadmins can access it
-      log_in_as(users(:southwest_sysadmin))
-      get item_bitstream_stream_path(item, bs)
-      assert_response :ok
-
-      # Assert that role-limited sysadmins can't
-      get item_bitstream_stream_path(item, bs, role: Role::LOGGED_OUT)
-      assert_response :forbidden
-    ensure
-      bs.delete_from_staging
-    end
-  end
-
-  test "stream() supports a response-content-disposition argument" do
-    fixture = file_fixture("pdf.pdf")
-    item    = items(:southwest_unit1_collection1_item1)
-    bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
-                                       length:   File.size(fixture))
-    bs.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bs.upload_to_staging(file)
-      end
-      bs.move_into_permanent_storage
-      get item_bitstream_stream_path(item, bs,
-                                     "response-content-disposition": "inline")
-      assert_equal "inline", response.header['Content-Disposition']
-    ensure
-      bs.delete_from_permanent_storage
     end
   end
 
