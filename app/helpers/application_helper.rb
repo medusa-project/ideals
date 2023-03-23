@@ -347,7 +347,8 @@ module ApplicationHelper
           end
         end
         if bs_authorized
-          html << "<meta name=\"citation_pdf_url\" content=\"#{bs.public_url}\">\n"
+          html << "<meta name=\"citation_pdf_url\" "\
+                  "content=\"#{item_bitstream_data_url(bs.item, bs, format: bs.filename.split(".").last)}\">\n"
         end
       end
     end
