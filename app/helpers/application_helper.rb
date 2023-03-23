@@ -337,7 +337,16 @@ module ApplicationHelper
           b.public_url &&
           b.format &&
           b.format.media_types.include?("application/pdf") }.each do |bs|
-        html << "<meta name=\"citation_pdf_url\" content=\"#{bs.public_url}\">\n"
+        bs_authorized = true
+        entity.current_embargoes.each do |embargo|
+          unless current_user && embargo.exempt?(current_user)
+            bs_authorized = false
+            break
+          end
+        end
+        if bs_authorized
+          html << "<meta name=\"citation_pdf_url\" content=\"#{bs.public_url}\">\n"
+        end
       end
     end
     # Find all registered elements that have Highwire mappings.
