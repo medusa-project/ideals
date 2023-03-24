@@ -6,7 +6,11 @@ const RegisteredElementsView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
     // Implement a simple client-side search.
-    $("[name=q]").on("keyup", function() {
+    $("[name=q]").on("keyup", function(e) {
+        if (e.which === 13) { // disable submission on enter
+            e.preventDefault();
+            return false;
+        }
         const q      = $(this).val().toLowerCase();
         const names  = $(".element-name");
         const labels = $(".element-label");

@@ -13,9 +13,7 @@
 
 .card.mb-3
   .card-body
-    = form_tag do
-      .form-inline
-        = search_field_tag(:q, "", placeholder: "Filter", class: "form-control")
+    = filter_field(placeholder: "Filter")
 
 - @elements.each do |element|
   .card.mb-3
