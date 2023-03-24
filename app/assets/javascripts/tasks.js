@@ -36,7 +36,7 @@ const TasksView = function() {
     };
 
     setInterval(function() {
-        refreshResults(form.find(".page-item.active a").attr("href"));
+        refreshResults($(".page-item.active a").attr("href"));
     }, REFRESH_FREQUENCY);
 
     let timeout = null;
