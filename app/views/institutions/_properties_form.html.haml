@@ -12,28 +12,30 @@
     = f.label :key, "Key"
     = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
     %p.form-text
-      %i.fa.fa-info-circle
+      = icon_for(:info)
       A short alphanumeric string that uniquely identifies the institution.
       Used only internally and cannot be changed later.
 
   .mb-3
     = f.label :fqdn, "Fully Qualified Domain Name (FQDN)"
     = f.text_field :fqdn, class: 'form-control'
-    %p.form-text
-      %i.fa.fa-info-circle
-      This must be present in the
-      %code config.hosts
-      key in the
-      %code= "config/environments/#{Rails.env}.rb"
-      file.
+    - if Rails.env.development? || Rails.env.test?
+      %p.form-text
+        = icon_for(:info)
+        This must be present in the
+        %code config.hosts
+        key in the
+        %code= "config/environments/#{Rails.env}.rb"
+        file.
 
-  .mb-3
-    = f.label :org_dn, "Organization DN"
-    = f.text_field :org_dn, class: 'form-control'
-    %p.form-text
-      %i.fa.fa-info-circle
-      Copy this value from the properties page of a user of this institution
-      who has signed in via Shibboleth.
+  - if f.object.key == "uiuc"
+    .mb-3
+      = f.label :org_dn, "Organization DN"
+      = f.text_field :org_dn, class: 'form-control'
+      %p.form-text
+        = icon_for(:info)
+        Copy this value from the properties page of a user of this institution
+        who has signed in via Shibboleth.
 
   .mb-3
     = f.label :latitude, "Latitude"
@@ -60,6 +62,11 @@
       .col
         = f.text_field :longitude_seconds, class: "form-control",
                         placeholder: "Seconds"
+    %p.form-text
+      = icon_for(:info)
+      These spatial coordinates affect the location of the institution's dot on
+      the map on the global landing page. If they are left blank, the dot won't
+      appear.
 
   .clearfix
     .float-end
