@@ -85,6 +85,16 @@ class MessageHandler
                       error_text:    nil,
                       response_time: Time.now,
                       raw_response:  message_json)
+      bitstream = message.bitstream
+      if bitstream
+        bitstream.update!(medusa_uuid: message_hash['uuid'],
+                          medusa_key:  message_hash['medusa_key'])
+        # Now that it has been successfully ingested, delete it from staging.
+        bitstream.delete_from_staging
+      else
+        raise "Bitstream not found for message:\n\n"\
+            "#{message_hash.to_yaml}"
+      end
     else
       # The first two possibilities are not a problem and the third we can do
       # nothing about
@@ -92,17 +102,6 @@ class MessageHandler
                   "but an outgoing message object was not found.\n\n"\
                   "Response: %s",
                   message_hash['staging_key'], message_hash.to_yaml)
-    end
-
-    bitstream = message.bitstream
-    if bitstream
-      bitstream.update!(medusa_uuid: message_hash['uuid'],
-                        medusa_key:  message_hash['medusa_key'])
-      # Now that it has been successfully ingested, delete it from staging.
-      bitstream.delete_from_staging
-    else
-      raise "Bitstream not found for message:\n\n"\
-            "#{message_hash.to_yaml}"
     end
   end
 
