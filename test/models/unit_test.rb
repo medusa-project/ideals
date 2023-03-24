@@ -503,11 +503,16 @@ class UnitTest < ActiveSupport::TestCase
           item.bitstreams.each do |bitstream|
             if bitstream.permanent_key.present?
               AmqpHelper::Connector[:ideals].with_parsed_message(ingest_queue) do |message|
-                assert_equal "ingest", message['operation']
-                assert_equal [item.id, bitstream.filename].join("/"),
-                             message['staging_key']
-                assert_equal [item.handle.handle, bitstream.filename].join("/"),
-                             message['target_key']
+                case message['operation']
+                when "ingest"
+                  assert_equal [item.id, bitstream.filename].join("/"),
+                               message['staging_key']
+                  assert_equal [item.handle.handle, bitstream.filename].join("/"),
+                               message['target_key']
+                else
+                  assert_equal "delete", message['operation']
+                  assert_not_nil message['uuid']
+                end
               end
             end
             if bitstream.medusa_uuid_was.present?
