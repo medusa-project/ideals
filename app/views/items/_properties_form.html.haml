@@ -17,7 +17,7 @@
 
   .mb-3
     = hidden_field_tag("item_bitstream_authorized_groups[]", nil)
-    - UserGroup.order(:name).each do |group|
+    - f.object.institution.user_groups.order(:name).each do |group|
       .form-check
         = check_box_tag("item_bitstream_authorized_groups[]", group.id,
                         f.object.bitstream_authorizations.map(&:user_group_id).include?(group.id),
