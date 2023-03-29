@@ -190,7 +190,7 @@ const SubmissionForm = function() {
         if (collectionsMenu.val() > 0) {
             setPropertiesError(null);
         } else {
-            setPropertiesError("Please ensure that a collection has been selected.");
+            setPropertiesError("Please select a unit and collection.");
             return false;
         }
         return true;

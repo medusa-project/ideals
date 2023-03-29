@@ -82,7 +82,7 @@ module UnitsHelper
                         options: [],
                         level: 0)
     if include_blank && level == 0
-      options << [nil, nil]
+      options << [raw("Select a unit&hellip;"), nil]
     end
     if include_root && level == 0
       options << ["None (Root Level)", nil]

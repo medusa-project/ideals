@@ -3,7 +3,7 @@
   = token_tag(nil)
 
   #properties-messages.error-messages
-    - # populated via ajax by shared/_validation_messages.js.erb
+    -# populated via ajax by shared/_validation_messages.js.erb
 
   = f.hidden_field :submitter_id, value: current_user.id
   = f.hidden_field :initial_primary_collection_unit_id, value: f.object&.primary_collection&.primary_unit&.id
