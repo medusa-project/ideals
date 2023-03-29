@@ -54,6 +54,7 @@
                 .col.pe-0
                   -# N.B.: these are submitted incidentally as part of the
                   -# form but not read server-side.
+                  = label_tag("Year")
                   = text_field_tag("year", date&.year,
                                    size: 4,
                                    maxlength: 4,
@@ -62,6 +63,7 @@
                                    required: profile_element.required,
                                    class: "form-control")
                 .col.pe-0
+                  = label_tag("Month")
                   = select_tag("month",
                                options_for_select((1..12).map{ |m| [m, m.to_s.rjust(2, "0")] },
                                                   date&.month&.to_s&.rjust(2, "0")),
@@ -69,6 +71,7 @@
                                data: { for: hidden_input_id },
                                class: "form-select")
                 .col
+                  = label_tag("Day")
                   = select_tag("day",
                                options_for_select((1..31).map{ |d| [d, d.to_s.rjust(2, "0")] },
                                                   date&.day&.to_s&.rjust(2, "0")),
@@ -114,7 +117,7 @@
                                    required:    profile_element.required)
 
             - if !profile_element.required || profile_element.repeatable
-              .col.remove.ps-0.pe-0
+              .col.remove.ps-0.pe-0.d-flex.align-items-center
                 %button.btn.btn-sm.btn-outline-danger.remove{type: "button"}
                   %i.fa.fa-minus
                   Remove
