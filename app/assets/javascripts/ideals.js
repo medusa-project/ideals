@@ -1063,6 +1063,11 @@ const idealsReady = function () {
         return false;
     });
 
+    // When a modal is closed, clear its form.
+    $(".modal").on("hidden.bs.modal", function() {
+        $(this).find("input, select, textarea").not("input[type=submit]").val("");
+    });
+
     // Copy the URL "q" argument into the filter field, as the browser won't do
     // this automatically.
     const queryArgs = new URLSearchParams(location.search);
