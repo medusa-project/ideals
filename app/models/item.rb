@@ -541,7 +541,9 @@ class Item < ApplicationRecord
     else
       self.approve
       self.move_into_permanent_storage
-      self.ingest_into_medusa if self.handle
+      if self.handle && self.institution.outgoing_message_queue.present?
+        self.ingest_into_medusa
+      end
     end
   end
 
