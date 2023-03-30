@@ -163,6 +163,10 @@ class ItemsController < ApplicationController
       units           = handles.select{ |h| h.unit_id.present? }.
         map(&:unit).
         select{ |c| c.institution == current_institution }
+      if collections.empty? && units.empty?
+        flash['error'] = "The handles provided do not correspond to valid units or collections."
+        render "export", status: :bad_request and return
+      end
       csv             = CsvExporter.new.export(units:       units,
                                                collections: collections,
                                                elements:    elements)

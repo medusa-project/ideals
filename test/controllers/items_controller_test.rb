@@ -372,6 +372,15 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  test "export() via POST returns HTTP 400 for an invalid handles argument" do
+    log_in_as(users(:uiuc_admin))
+    post items_export_path, params: {
+      handles: "bogus/3",
+      elements: ["dc:title"]
+    }
+    assert_response :bad_request
+  end
+
   test "export() via POST exports CSV" do
     log_in_as(users(:uiuc_admin))
     post items_export_path, params: {
