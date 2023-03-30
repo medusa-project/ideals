@@ -496,6 +496,17 @@ class Bitstream < ApplicationRecord
   end
 
   ##
+  # Returns whether the instance has full text without loading the associated
+  # {FullText} instance (because it may be very large).
+  #
+  # @return [Boolean]
+  #
+  def has_full_text?
+    return false if full_text_checked_at.blank?
+    FullText.where(bitstream_id: self.id).count > 0
+  end
+
+  ##
   # @return [Boolean]
   #
   def has_representative_image?

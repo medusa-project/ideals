@@ -580,6 +580,27 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_nil @instance.format
   end
 
+  # has_full_text?()
+
+  test "has_full_text?() returns false for an instance that does not have full
+  text" do
+    @instance.full_text_checked_at = Time.now
+    @instance.full_text            = nil
+    assert !@instance.has_full_text?
+  end
+
+  test "has_full_text?() returns false for an instance that has a nil
+  full_text_checked_at property" do
+    @instance.full_text_checked_at = nil
+    assert !@instance.has_full_text?
+  end
+
+  test "has_full_text?() returns true for an instance that has full text" do
+    @instance.full_text_checked_at = Time.now
+    FullText.create!(bitstream: @instance, text: "cats").save!
+    assert @instance.has_full_text?
+  end
+
   # has_representative_image?()
 
   test "has_representative_image?() returns true for an instance that is in a

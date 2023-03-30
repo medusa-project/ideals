@@ -88,5 +88,7 @@
             = local_time(@bitstream.full_text_checked_at)
           - else
             = boolean(false, style: :word)
+        %dt Full Text
+        %dd= boolean(@bitstream.has_full_text?, style: :word, true_value: "EXISTS", false_value: "DOES NOT EXIST")
       %dt Downloads
       %dd= number_with_delimiter(@bitstream.download_count)
