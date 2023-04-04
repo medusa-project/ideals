@@ -46,7 +46,7 @@ module UnitsHelper
     options  = []
     options << [nil, nil] if include_blank
     units = Unit.
-      where(institution: current_institution)
+      where(institution: current_institution).
       order(:title).
       reject{ |u| u == exclude_unit }.
       select{ |u| user.effective_unit_admin?(u) }
