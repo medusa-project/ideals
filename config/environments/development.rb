@@ -54,12 +54,6 @@ Rails.application.configure do
   # Highlight code that triggered database queries in logs.
   config.active_record.verbose_query_logs = true
 
-  config.active_record.yaml_column_permitted_classes = [
-    OmniAuth::AuthHash,
-    OmniAuth::AuthHash::InfoHash,
-    Symbol
-  ]
-
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
