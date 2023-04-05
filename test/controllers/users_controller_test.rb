@@ -236,6 +236,47 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  # show_logins()
+
+  test "show_logins() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get user_logins_path(users(:southwest)), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_logins() returns HTTP 403 for logged-out users" do
+    get user_logins_path(users(:southwest)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_logins() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get user_logins_path(users(:southwest_admin)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_logins() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:southwest))
+    get user_logins_path(users(:southwest))
+    assert_response :not_found
+  end
+
+  test "show_logins() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get user_logins_path(users(:southwest)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_logins() respects role limits" do
+    user = users(:southwest)
+    log_in_as(user)
+    get user_logins_path(user), xhr: true
+    assert_response :ok
+
+    get user_logins_path(user, role: Role::LOGGED_OUT), xhr: true
+    assert_response :forbidden
+  end
+
   # show_properties()
 
   test "show_properties() returns HTTP 404 for unscoped requests" do

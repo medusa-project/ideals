@@ -85,6 +85,14 @@ class UsersController < ApplicationController
   end
 
   ##
+  # Responds to `GET /users/:id/logins` (XHR only)
+  #
+  def show_logins
+    @logins = @user.logins.order(created_at: :desc).limit(20)
+    render partial: "show_logins_tab"
+  end
+
+  ##
   # Responds to `GET /users/:id/properties` (XHR only)
   #
   def show_properties

@@ -63,26 +63,19 @@ const UserView = function() {
         });
     }).trigger("show.bs.tab");
 
-    $("#privileges-tab").on("show.bs.tab", function() {
-        const url = ROOT_URL + "/users/" + userID + "/privileges";
+    $("#logins-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/users/" + userID + "/logins";
         $.get(url, function (data) {
-            $("#privileges-tab-content").html(data);
-            $('button.edit-privileges').on("click", function() {
-                const id = $(this).data("user-id");
-                const url = ROOT_URL + "/users/" + id + "/edit-privileges";
-                $.get(url, function(data) {
-                    $("#edit-privileges-modal .modal-body").html(data);
-                });
-            });
+            $("#logins-tab-content").html(data);
         });
-    }).trigger("show.bs.tab");
+    });
 
     $("#submittable-collections-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/users/" + userID + "/submittable-collections";
         $.get(url, function (data) {
             $("#submittable-collections-tab-content").html(data);
         });
-    }).trigger("show.bs.tab");
+    });
 
     $("#submitted-items-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/users/" + userID + "/submitted-items";
@@ -159,7 +152,7 @@ const UserView = function() {
         $.get(url, function (data) {
             $("#submissions-in-progress-tab-content").html(data);
         });
-    }).trigger("show.bs.tab");
+    });
 
 };
 

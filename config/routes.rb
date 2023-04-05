@@ -236,6 +236,8 @@ Rails.application.routes.draw do
   resources :users, only: [:index, :show] do
     match "/disable", to: "users#disable", via: :patch
     match "/enable", to: "users#enable", via: :patch
+    match "/logins", to: "users#show_logins", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/submitted-item-results", to: "users#submitted_item_results", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/privileges", to: "users#show_privileges", via: :get,

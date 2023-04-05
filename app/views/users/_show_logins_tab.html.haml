@@ -1,0 +1,27 @@
+#login-accordion.accordion
+  - @logins.each do |login|
+    .accordion-item
+      %h2.accordion-header
+        %button.accordion-button.collapsed{type:             "button",
+                                           "data-bs-toggle": "collapse",
+                                           "data-bs-target": "#login-#{login.id}",
+                                           "aria-expanded":  "false",
+                                           "aria-controls":  "login-#{login.id}"}
+          = local_time(login.created_at)
+      .accordion-collapse.collapse{id:               "login-#{login.id}",
+                                   "data-bs-parent": "#login-accordion"}
+        .accordion-body
+          %dl
+            %dt Host
+            %dd
+              %code= login.hostname
+              = " (#{login.ip_address})"
+            - if current_user.sysadmin?
+              %dt Auth Hash
+              -# some of this content can be very wide and would mess up the page layout
+              -# without the overflow-x
+              %dd{style: "overflow-x: scroll"}
+                - if login.auth_hash
+                  %pre= JSON.pretty_generate(login.auth_hash)
+                - else
+                  Not Recorded

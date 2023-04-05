@@ -80,25 +80,20 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @institution.scope_url
   end
 
-  test "create() with valid credentials sets the user's auth hash" do
+  test "create() with valid credentials ascribes a correct Login object" do
     user = users(:example)
-    user.update!(auth_hash: nil)
+    user.logins.destroy_all
     post "/auth/identity/callback", params: {
       auth_key: user.email,
       password: "password"
     }
     user.reload
-    assert_not_nil user.auth_hash
-  end
-
-  test "create() with valid credentials sets the user's last-logged-in time" do
-    user = users(:example)
-    post "/auth/identity/callback", params: {
-      auth_key: user.email,
-      password: "password"
-    }
-    user.reload
-    assert user.last_logged_in_at > 5.seconds.ago
+    assert_equal 1, user.logins.count
+    login = user.logins.first
+    assert Time.now - login.created_at < 1.second
+    assert_not_nil login.hostname
+    assert_not_nil login.ip_address
+    assert_not_nil login.auth_hash
   end
 
   # destroy()

@@ -67,21 +67,6 @@
   %dd= @user.type.chomp('User')
   %dt Account Created
   %dd= local_time(@user.created_at)
-  %dt Last Login
-  %dd
-    - if @user.last_logged_in_at
-      = local_time(@user.last_logged_in_at)
-    - else
-      Never
-  - if current_user.sysadmin?
-    %dt Last Auth Hash
-    -# some of this content can be very wide and would mess up the page layout
-    -# without the overflow-x
-    %dd{style: "overflow-x: scroll"}
-      - if @user.auth_hash
-        %pre= JSON.pretty_generate(@user.auth_hash)
-      - else
-        None
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-properties-modal", title: "Edit Properties" }

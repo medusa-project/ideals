@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_16_185217) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_05_192703) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -384,6 +384,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_16_185217) do
     t.index ["lowercase_email"], name: "index_local_identities_on_lowercase_email", unique: true
   end
 
+  create_table "logins", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "ip_address"
+    t.string "hostname"
+    t.text "auth_hash"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_logins_on_created_at"
+    t.index ["user_id"], name: "index_logins_on_user_id"
+  end
+
   create_table "manager_groups", force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "user_group_id", null: false
@@ -676,8 +687,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_16_185217) do
     t.bigint "local_identity_id"
     t.string "org_dn"
     t.bigint "affiliation_id"
-    t.datetime "last_logged_in_at"
-    t.text "auth_hash"
     t.bigint "institution_id", null: false
     t.boolean "enabled", default: true, null: false
     t.index ["affiliation_id"], name: "index_users_on_affiliation_id"
@@ -759,6 +768,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_16_185217) do
   add_foreign_key "items", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "logins", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "manager_groups", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "manager_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :nullify

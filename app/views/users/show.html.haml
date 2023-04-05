@@ -16,6 +16,12 @@
                                            type:             "button",
                                            "aria-controls":  "properties-tab-content",
                                            "aria-selected":  "true"} Properties
+    %button#logins-tab.nav-link{"data-bs-toggle": "pill",
+                                "data-bs-target": "#logins-tab-content",
+                                role:             "tab",
+                                type:             "button",
+                                "aria-controls":  "logins-tab-content",
+                                "aria-selected":  "true"} Logins
     %button#submittable-collections-tab.nav-link{"data-bs-toggle": "pill",
                                                  "data-bs-target": "#submittable-collections-tab-content",
                                                  role:             "tab",
@@ -47,6 +53,10 @@
   .tab-content.w-100
     #properties-tab-content.tab-pane.fade.show.active{role:              "tabpanel",
                                                       "aria-labelledby": "properties-tab"}
+      = spinner
+
+    #logins-tab-content.tab-pane.fade{role:              "tabpanel",
+                                      "aria-labelledby": "logins-tab"}
       = spinner
 
     #submittable-collections-tab-content.tab-pane.fade{role:              "tabpanel",

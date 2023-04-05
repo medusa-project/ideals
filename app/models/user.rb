@@ -18,14 +18,11 @@
 #
 # # Attributes
 #
-# * `auth_hash`         Serialized OmniAuth hash that was supplied at last
-#                       login, composed of information from the Shibboleth IdP.
 # * `created_at`        Managed by ActiveRecord.
 # * `email`             Email address.
 # * `enabled`           Whether the user is able to log in.
 # * `institution_id`    Foreign key to {Institution} representing the
 #                       institution of which the instance is a member.
-# * `last_logged_in_at` Date/time of last login.
 # * `local_identity_id` Foreign key to {LocalIdentity}. Used only by
 #                       {LocalUser}s; set during processing of the
 #                       registration form.
@@ -55,6 +52,7 @@ class User < ApplicationRecord
   has_many :administering_institutions, through: :institution_administrators,
            source: :institution
   has_many :invitees, inverse_of: :inviting_user, foreign_key: :inviting_user_id
+  has_many :logins
   has_many :managers, class_name: "CollectionManager"
   has_many :managing_collections, through: :managers, source: :collection
   has_many :primary_administering_units, class_name: "Unit",
@@ -76,8 +74,6 @@ class User < ApplicationRecord
   validates :name, presence: true
   validates :uid, presence: true
   validates_uniqueness_of :uid, case_sensitive: false
-
-  serialize :auth_hash
 
   ##
   # @param string [String] Autocomplete text field string.

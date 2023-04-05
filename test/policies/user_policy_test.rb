@@ -394,6 +394,41 @@ class UserPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
+  # show_logins?()
+
+  test "show_logins?() returns false with a nil request context user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @object_user.institution)
+    policy = UserPolicy.new(context, @object_user)
+    assert !policy.show_logins?
+  end
+
+  test "show_logins?() does not authorize non-sysadmins" do
+    user    = users(:southwest_shibboleth)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserPolicy.new(context, @object_user)
+    assert !policy.show_logins?
+  end
+
+  test "show_logins?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserPolicy.new(context, @object_user)
+    assert policy.show_logins?
+  end
+
+  test "show_logins?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UserPolicy.new(context, @object_user)
+    assert !policy.show_logins?
+  end
+
   # show_properties?()
 
   test "show_properties?() returns false with a nil request context user" do
