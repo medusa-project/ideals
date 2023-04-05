@@ -4,13 +4,15 @@
  * @constructor
  */
 const UnitsView = function() {
+    const institutionID = $("[name=institution_id]").val();
+
     new IDEALS.ExpandableResourceList();
     new IDEALS.LocalUserAutocompleter(
         $("input[name=primary_administrator], input[name='administering_users[]']"));
     new IDEALS.MultiElementList();
 
     $(".add-unit").on("click", function() {
-        const url = "/units/new";
+        const url = "/units/new?institution_id=" + institutionID;
         $.get(url, function(data) {
             $("#add-unit-modal .modal-body").html(data);
         });
@@ -23,8 +25,9 @@ const UnitsView = function() {
  * @constructor
  */
 const UnitView = function() {
-    const ROOT_URL = $('input[name="root_url"]').val();
-    const unitID   = $("[name=unit_id]").val();
+    const ROOT_URL      = $('input[name="root_url"]').val();
+    const institutionID = $("[name=institution_id]").val();
+    const unitID        = $("[name=unit_id]").val();
 
     $("#about-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/units/" + unitID + "/about";
@@ -37,7 +40,8 @@ const UnitView = function() {
                 });
             });
             $(".add-child-unit").on("click", function() {
-                const url = "/units/new?parent_id=" + unitID;
+                const url = "/units/new?unit%5Binstitution_id%5D=" + institutionID +
+                    "&parent_id=" + unitID;
                 $.get(url, function(data) {
                     $("#add-child-unit-modal .modal-body").html(data);
                 });
@@ -46,6 +50,14 @@ const UnitView = function() {
                 const url = ROOT_URL + "/units/" + unitID + "/edit-membership";
                 $.get(url, function (data) {
                     $("#edit-unit-membership-modal .modal-body").html(data);
+                });
+            });
+            $('.add-collection').on("click", function() {
+                const url = ROOT_URL + "/collections/new" +
+                    "?collection%5Binstitution_id%5D=" + institutionID +
+                    "&primary_unit_id=" + unitID;
+                $.get(url, function(data) {
+                    $("#add-collection-modal .modal-body").html(data);
                 });
             });
         });

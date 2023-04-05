@@ -1,6 +1,7 @@
 - provide :body_id, "show_unit"
 - provide :title, @unit.title
 
+= hidden_field_tag :institution_id, @unit.institution.id
 = hidden_field_tag :unit_id, @unit.id
 
 = render partial: "show_button_group"
@@ -74,8 +75,10 @@
 = render partial: "shared/ajax_modal",
          locals: { id:    "add-child-unit-modal",
                    title: "Add Child Unit" }
-= render partial: "collections/add_modal",
-         locals: { primary_unit: @unit,
-                   title: "Add Collection" }
+= render partial: "shared/ajax_modal",
+         locals: { id:           "add-collection-modal",
+                   title:        "Add Collection",
+                   primary_unit: @unit,
+                   institution:  @unit.institution }
 
 = include_chart_library

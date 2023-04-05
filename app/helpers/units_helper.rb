@@ -33,20 +33,24 @@ module UnitsHelper
   # administrator in a series of `option` elements. To render the whole tree
   # instead, use {unit_tree_options}.
   #
-  # @param user [User]             All units of which this user is an effective
-  #                                administrator will be included in the list.
-  # @param include_blank [Boolean] Whether to include a blank entry at the top.
-  # @param exclude_unit [Unit]     Unit to exclude from the list.
-  # @return [Enumerable<String>]   Array of options for passing to
-  #                                {options_for_select}.
+  # @param user [User]               All units of which this user is an
+  #                                  effective administrator will be included
+  #                                  in the list.
+  # @param institution [Institution] Defaults to the current institution.
+  # @param include_blank [Boolean]   Whether to include a blank entry at the
+  #                                  top.
+  # @param exclude_unit [Unit]       Unit to exclude from the list.
+  # @return [Enumerable<String>]     Array of options for passing to
+  #                                  {options_for_select}.
   #
   def unit_list_options(user:,
+                        institution:   nil,
                         include_blank: false,
                         exclude_unit:  nil)
     options  = []
     options << [nil, nil] if include_blank
     units = Unit.
-      where(institution: current_institution).
+      where(institution: institution || current_institution).
       order(:title).
       reject{ |u| u == exclude_unit }.
       select{ |u| user.effective_unit_admin?(u) }
@@ -68,19 +72,22 @@ module UnitsHelper
   #                                     current user} is an effective
   #                                     administrator.
   # @param exclude_unit [Unit]          Unit to exclude from the list.
+  # @param institution [Institution]    Defaults to the current institution if
+  #                                     not provided.
   # @param parent_unit [Unit]           Not part of the public contract--ignore.
   # @param options [Enumerable<String>] Not part of the public contract--ignore.
   # @param level [Integer]              Not part of the public contract--ignore.
   # @return [Enumerable<String>]        Array of options for passing to
   #                                     {options_for_select}.
   #
-  def unit_tree_options(include_blank: false,
-                        include_root: false,
+  def unit_tree_options(include_blank:      false,
+                        include_root:       false,
                         include_only_admin: false,
-                        exclude_unit: nil,
-                        parent_unit: nil,
-                        options: [],
-                        level: 0)
+                        exclude_unit:       nil,
+                        institution:        nil,
+                        parent_unit:        nil,
+                        options:            [],
+                        level:              0)
     if include_blank && level == 0
       options << [raw("Select a unit&hellip;"), nil]
     end
@@ -88,7 +95,7 @@ module UnitsHelper
       options << ["None (Root Level)", nil]
     end
     units = Unit.search.
-        institution(current_institution).
+        institution(institution || current_institution).
         order("#{Unit::IndexFields::TITLE}.sort").
         limit(999)
     if parent_unit

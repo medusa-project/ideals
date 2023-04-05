@@ -20,9 +20,12 @@ module Breadcrumb
   # {ApplicationHelper#breadcrumbs} must recognize this class in order to
   # label and hyperlink it properly.
   #
+  # @param institution [Institution] Optional scoping institution, i.e. the
+  #                                  institutional scope through which the
+  #                                  instance is being viewed.
   # @return [Breadcrumb, Class]
   #
-  def breadcrumb_parent
+  def breadcrumb_parent(institution = nil)
   end
 
 end

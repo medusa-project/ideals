@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   match '/all-invitees', to: "invitees#index_all", via: :get, as: "all_invitees"
   match '/all-tasks', to: "tasks#index_all", via: :get, as: "all_tasks"
   match '/all-users', to: "users#index_all", via: :get, as: "all_users"
-  resources :collections, except: [:destroy, :edit, :new] do
+  resources :collections, except: [:destroy, :edit] do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/about", to: "collections#show_about", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -91,6 +91,8 @@ Rails.application.routes.draw do
     match "/statistics", to: "institutions#show_statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/theme", to: "institutions#show_theme", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/units", to: "institutions#show_units", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/users", to: "institutions#show_users", via: :get,
           constraints: lambda { |request| request.xhr? }

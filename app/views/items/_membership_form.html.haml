@@ -9,11 +9,13 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  - if current_user.effective_institution_admin?(current_institution)
-    - unit_options = unit_tree_options(include_only_admin: true,
+  - if current_user.effective_institution_admin?(f.object.institution)
+    - unit_options = unit_tree_options(institution:        f.object.institution,
+                                       include_only_admin: true,
                                        include_blank:      false)
   - else
-    - unit_options = unit_list_options(user: current_user)
+    - unit_options = unit_list_options(user:        current_user,
+                                       institution: f.object.institution)
   - f.object.collection_item_memberships.each do |membership|
     .row.unit-collection-combo
       = hidden_field_tag "initial_unit_ids[]", membership.collection.primary_unit.id

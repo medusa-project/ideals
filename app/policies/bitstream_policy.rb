@@ -58,12 +58,12 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def create
-    if @ctx_institution != @bitstream.institution
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @bitstream.institution
       return WRONG_SCOPE_RESULT
     elsif !@user
       return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(@user, @role_limit) # sysadmins can do anything
-      return AUTHORIZED_RESULT
     else
       @bitstream.item.collections.each do |collection|
         # non-sysadmins can submit to collections for which they have submitter
@@ -107,10 +107,10 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def show
-    if @ctx_institution != @bitstream.institution
-      return WRONG_SCOPE_RESULT
-    elsif effective_sysadmin?(@user, @role_limit)
+    if effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
+    elsif @ctx_institution != @bitstream.institution
+      return WRONG_SCOPE_RESULT
     elsif @bitstream.item.stage > Item::Stages::APPROVED
       return { authorized: false,
                reason:     "This file's owning item is not authorized." }
@@ -183,12 +183,12 @@ class BitstreamPolicy < ApplicationPolicy
   end
 
   def update
-    if @ctx_institution != @bitstream.institution
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @bitstream.institution
       return WRONG_SCOPE_RESULT
     elsif !@user
       return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(@user, @role_limit)
-      return AUTHORIZED_RESULT
     else
       @bitstream.item.collections.each do |collection|
         # collection managers can update bitstreams within their collections

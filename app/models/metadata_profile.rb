@@ -82,8 +82,8 @@ class MetadataProfile < ApplicationRecord
     name
   end
 
-  def breadcrumb_parent
-    MetadataProfile
+  def breadcrumb_parent(institution = nil)
+    institution ? self.institution : MetadataProfile
   end
 
   ##

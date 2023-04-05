@@ -109,14 +109,14 @@ module ItemsHelper
 
   ##
   # @param embargo [Embargo] Optional.
+  # @param institution [Institution] Required if `embargo` is not provided.
   # @param index [Integer] Row index.
   # @return [String] HTML string.
   #
-  def embargoes_form_card(embargo: nil, index: 0)
+  def embargoes_form_card(embargo: nil, institution: nil, index: 0)
     selected_year = Time.now.year
     latest_year   = selected_year + 100
-
-    html = StringIO.new
+    html          = StringIO.new
     html << '<div class="card mb-3">'
     html <<   '<div class="card-header pt-3">'
     html <<     '<div class="float-end">'
@@ -185,7 +185,7 @@ module ItemsHelper
         html << embargo_user_group_row(group: group, index: index2)
       end
     else
-      html << embargo_user_group_row
+      html << embargo_user_group_row(institution: institution)
     end
     html <<           '<button class="btn btn-outline-success btn-sm add-user-group" type="button">'
     html <<             '<i class="fa fa-plus"></i>'
@@ -297,12 +297,13 @@ module ItemsHelper
 
   private
 
-  def embargo_user_group_row(group: nil, index: 0)
+  def embargo_user_group_row(group: nil, institution: nil, index: 0)
+    institution ||= group&.institution
     html  = StringIO.new
     html << "<div class=\"user-group input-group mb-2\" "\
                   "style=\"#{group ? "" : "display: none"}\">"
     html <<   select_tag("embargoes[#{index}][user_group_ids][]",
-                         options_for_select(UserGroup.all.order(:name).pluck(:name, :id), group&.id),
+                         options_for_select(institution.user_groups.order(:name).pluck(:name, :id), group&.id),
                          disabled: group.blank?,
                          class:    "form-select",
                          style:    "width: 90%")

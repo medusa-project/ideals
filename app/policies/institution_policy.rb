@@ -107,6 +107,10 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
+  def show_units
+    effective_sysadmin(@user, @role_limit)
+  end
+
   def show_users
     show
   end

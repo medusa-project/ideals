@@ -5,9 +5,10 @@
 -# collection [Collection]
 -# primary_unit [Unit]
 
-- options = unit_tree_options(include_only_admin: true)
-
 = form_for(collection, remote: true) do |f|
+  - options = unit_tree_options(institution:        f.object.institution,
+                                include_only_admin: true)
+
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 

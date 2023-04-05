@@ -38,7 +38,7 @@
       - elsif @collection.primary_unit&.metadata_profile
         = raw("Not assigned (falling back to primary unit's profile: #{link_to(@metadata_profile.name, @metadata_profile)})")
       - else
-        = raw("Not assigned (falling back to global #{link_to(@metadata_profile.name, @metadata_profile)})")
+        = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
     %dt Submission Profile
     %dd
       - if @collection.submission_profile
@@ -54,7 +54,6 @@
     %dd= number_with_delimiter(@num_downloads)
     %dt Items Awaiting Review
     %dd= number_with_delimiter(@num_submitted_items)
-%dl
   %dt Created
   %dd= local_time @collection.created_at
   %dt Last Updated
@@ -86,10 +85,10 @@
                                                      role:                 "button"}
       %i.fas.fa-pencil-alt
       Change Collection Membership
-    %button.btn.btn-light.add-sub-collection{"data-collection-id": @collection.id,
-                                             "data-bs-target":     "#add-collection-modal",
-                                             "data-bs-toggle":     "modal",
-                                             role:                 "button"}
+    %button.btn.btn-light.add-subcollection{"data-collection-id": @collection.id,
+                                            "data-bs-target":     "#add-collection-modal",
+                                            "data-bs-toggle":     "modal",
+                                            role:                 "button"}
       %i.fa.fa-plus
       Add Child Collection
 
@@ -97,11 +96,11 @@
 
 - if @collection.parent
   %h3 Parent Collection
-  = resource_list([@collection.parent])
+  = resource_list([@collection.parent], use_resource_host: false)
 
 - if @subcollections.any?
   %h3 Child Collections
-  = resource_list(@subcollections)
+  = resource_list(@subcollections, use_resource_host: false)
 
 - if !@collection.parent && @subcollections.empty?
   %p This collection has no parent or sub-collections.

@@ -625,10 +625,18 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "show() redirects for an item in another institution" do
+  test "show() redirects for an item in another institution for non-sysadmins" do
     item = items(:southwest_unit1_collection1_item1)
     get item_path(item)
     assert_redirected_to "http://" + item.institution.fqdn + item_path(item)
+  end
+
+  test "show() does not redirect for an item in another institution for
+  sysadmins" do
+    log_in_as(users(:uiuc_sysadmin))
+    item = items(:southwest_unit1_collection1_item1)
+    get item_path(item)
+    assert_response :ok
   end
 
   test "show() returns HTTP 403 for submitting items for unauthorized users" do

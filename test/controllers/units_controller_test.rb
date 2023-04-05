@@ -173,7 +173,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to unit_path(unit)
   end
 
-  test "delete() redirects to the parent unit, if available, if the delete
+  test "delete() redirects to the parent unit, if available, when the delete
   succeeds" do
     log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1_unit1)
@@ -181,12 +181,21 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to unit_path(unit.parent)
   end
 
-  test "delete() redirects to the units path if there is no parent unit and
-  the delete succeeds" do
+  test "delete() redirects to the units path if the unit is in the current
+  institution's scope and there is no parent unit and the delete succeeds" do
     log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_empty)
     post unit_delete_path(unit)
     assert_redirected_to units_path
+  end
+
+  test "delete() redirects to the owning institution if the unit is in a
+  different institution than the current institution's scope and there is no
+  parent unit and the delete succeeds" do
+    log_in_as(users(:uiuc_admin))
+    unit = units(:southwest_unit2)
+    post unit_delete_path(unit)
+    assert_redirected_to institution_path(unit.institution)
   end
 
   test "delete() returns HTTP 404 for a missing unit" do
@@ -382,6 +391,37 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :gone
   end
 
+  # new()
+
+  test "new() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get new_unit_path
+    assert_response :not_found
+  end
+
+  test "new() redirects to root page for logged-out users" do
+    get new_unit_path
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "new() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:uiuc))
+    get new_unit_path
+    assert_response :forbidden
+  end
+
+  test "new() returns HTTP 400 for a missing institution_id argument" do
+    log_in_as(users(:uiuc_admin))
+    get new_unit_path
+    assert_response :bad_request
+  end
+
+  test "new() returns HTTP 200 for authorized users" do
+    log_in_as(users(:uiuc_admin))
+    get new_unit_path(unit: { institution_id: institutions(:uiuc).id })
+    assert_response :ok
+  end
+
   # show()
 
   test "show() returns HTTP 404 for unscoped requests" do
@@ -402,10 +442,18 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "show() redirects for a unit in another institution" do
+  test "show() redirects for a unit in another institution for non-sysadmins" do
     unit = units(:southwest_unit1)
     get unit_path(unit)
     assert_redirected_to "http://" + unit.institution.fqdn + unit_path(unit)
+  end
+
+  test "show() does not redirect for a unit in another institution for
+  sysadmins" do
+    log_in_as(users(:uiuc_sysadmin))
+    unit = units(:southwest_unit1)
+    get unit_path(unit)
+    assert_response :ok
   end
 
   test "show() returns HTTP 410 for a buried unit" do

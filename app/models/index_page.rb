@@ -23,7 +23,7 @@ class IndexPage < ApplicationRecord
     name
   end
 
-  def breadcrumb_parent
+  def breadcrumb_parent(institution = nil)
     IndexPage
   end
 

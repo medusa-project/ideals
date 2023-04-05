@@ -99,7 +99,7 @@ class Invitee < ApplicationRecord
     self.email
   end
 
-  def breadcrumb_parent
+  def breadcrumb_parent(institution = nil)
     Invitee
   end
 

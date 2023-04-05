@@ -30,7 +30,7 @@
         - else
           = @metadata_profile.name
       - else
-        = raw("Not assigned (falling back to global #{link_to(@metadata_profile.name, @metadata_profile)})")
+        = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
     %dt File Downloads
     %dd= number_with_delimiter(@num_downloads)
     %dt Items Awaiting Review
@@ -59,11 +59,11 @@
 
 - if @unit.parent
   %h2 Parent Unit
-  = resource_list([@unit.parent])
+  = resource_list([@unit.parent], use_resource_host: false)
 
 - if @subunits.any?
   %h2 Child Units
-  = resource_list(@subunits)
+  = resource_list(@subunits, use_resource_host: false)
 
 - if !@unit.parent && @subunits.empty?
   %h2 Units
@@ -74,19 +74,15 @@
 - if policy(@unit).new_collection?
   .btn-group.float-end{role: "group"}
     -# Add Collection button
-    %button.btn.btn-light{"data-bs-target": "#add-collection-modal",
-                          "data-bs-toggle": "modal",
-                          type:             "button"}
+    %button.btn.btn-light.add-collection{"data-bs-target": "#add-collection-modal",
+                                         "data-bs-toggle": "modal",
+                                         type:             "button"}
       %i.fa.fa-plus
       Add Collection
 
 %h2 Collections
 
 - if @collections.any?
-  = resource_list(@collections)
+  = resource_list(@collections, use_resource_host: false)
 - else
   %p This unit does not contain any collections.
-
-
-
-

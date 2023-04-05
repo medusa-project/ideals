@@ -4,7 +4,8 @@
  * @constructor
  */
 const InstitutionView = function() {
-    const ROOT_URL = $('input[name="root_url"]').val();
+    const ROOT_URL       = $('input[name="root_url"]').val();
+    const institutionID  = $("[name=institution_id]").val();
     const institutionKey = $("[name=institution_key]").val();
 
     $("#preservation-tab").on("show.bs.tab", function() {
@@ -54,6 +55,19 @@ const InstitutionView = function() {
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-theme";
                 $.get(url, function(data) {
                     $("#edit-theme-modal .modal-body").html(data);
+                });
+            });
+        });
+    }).trigger("show.bs.tab");
+
+    $("#units-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/units";
+        $.get(url, function (data) {
+            $("#units-tab-content").html(data);
+            $("button.add-unit").on("click", function() {
+                const url = "/units/new?unit%5Binstitution_id%5D=" + institutionID;
+                $.get(url, function(data) {
+                    $("#add-unit-modal .modal-body").html(data);
                 });
             });
         });

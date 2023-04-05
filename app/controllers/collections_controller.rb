@@ -10,13 +10,14 @@ class CollectionsController < ApplicationController
                                           :edit_managers, :edit_properties,
                                           :edit_submitters,
                                           :edit_unit_membership,
-                                          :edit_user_access, :show_access,
+                                          :edit_user_access, :new,
+                                          :show_access,
                                           :show_review_submissions, :undelete,
                                           :update]
-  before_action :set_collection, except: [:create, :index]
+  before_action :set_collection, except: [:create, :index, :new]
   before_action :redirect_scope, only: :show
   before_action :check_buried, except: [:create, :index, :show, :undelete]
-  before_action :authorize_collection, except: [:create, :index]
+  before_action :authorize_collection, except: [:create, :index, :new]
   before_action :store_location, only: [:index, :show]
 
   ##
@@ -48,7 +49,7 @@ class CollectionsController < ApplicationController
   #
   def children
     @collections = Collection.search.
-        institution(current_institution).
+        institution(@collection.institution).
         filter(Collection::IndexFields::PARENT, @collection.id).
         order("#{Collection::IndexFields::TITLE}.sort").
         limit(999)
@@ -62,7 +63,6 @@ class CollectionsController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         @collection              = Collection.new(collection_params)
-        @collection.institution  = current_institution
         @collection.primary_unit = Unit.find_by_id(params[:primary_unit_id])
         # We need to save now in order to assign the collection an ID which
         # many of the authorization methods will need. If authorization fails,
@@ -80,7 +80,7 @@ class CollectionsController < ApplicationController
     else
       RefreshOpensearchJob.perform_later
       toast!(title:   "Collection created",
-             message: "The \"#{@collection.title}\" collection has been created.")
+             message: "The collection \"#{@collection.title}\" has been created.")
       render 'shared/reload'
     end
   end
@@ -106,7 +106,7 @@ class CollectionsController < ApplicationController
     else
       RefreshOpensearchJob.perform_later
       toast!(title:   "Collection deleted",
-             message: "The \"#{title}\" collection has been deleted.")
+             message: "The collection \"#{title}\" has been deleted.")
       redirect_to(parent || primary_unit)
     end
   end
@@ -202,7 +202,7 @@ class CollectionsController < ApplicationController
     # The items array contains item IDs and download counts but not titles.
     # So here we will insert them.
     AscribedElement.
-      where(registered_element: current_institution.title_element).
+      where(registered_element: @collection.institution.title_element).
       where(item_id: @items.map{ |row| row['id'] }).pluck(:item_id, :string).each do |asc_e|
       row = @items.find{ |r| r['id'] == asc_e[0] }
       row['title'] = asc_e[1] if row
@@ -238,6 +238,33 @@ class CollectionsController < ApplicationController
   end
 
   ##
+  # N.B.: the following query arguments are accepted:
+  #
+  # * `institution_id`:  ID of the owning institution.
+  # * `primary_unit_id`: ID of the primary unit.
+  # * `parent_id`:       ID of a parent collection (optional).
+  #
+  # Responds to `GET /collections/new`
+  #
+  def new
+    authorize(Collection)
+    if params[:primary_unit_id].blank?
+      render plain: "Missing primary unit ID", status: :bad_request
+      return
+    elsif params.dig(:collection, :institution_id).blank?
+      render plain: "Missing institution ID", status: :bad_request
+      return
+    end
+    @collection              = Collection.new(collection_params)
+    @collection.primary_unit = Unit.find_by_id(params[:primary_unit_id])
+    render partial: "new_form", locals: {
+      institution:  @collection.institution,
+      primary_unit: @collection.primary_unit,
+      parent:       @collection.parent
+    }
+  end
+
+  ##
   # Responds to `GET /collections/:id`
   #
   def show
@@ -259,7 +286,7 @@ class CollectionsController < ApplicationController
     @num_downloads       = MonthlyCollectionItemDownloadCount.sum_for_collection(collection: @collection)
     @num_submitted_items = @collection.submitted_item_count
     @subcollections      = Collection.search.
-      institution(current_institution).
+      institution(@collection.institution).
       parent_collection(@collection).
       include_children(true).
       order("#{Collection::IndexFields::TITLE}.sort").
@@ -404,7 +431,7 @@ class CollectionsController < ApplicationController
   else
     RefreshOpensearchJob.perform_later
     toast!(title:   "Collection undeleted",
-           message: "The \"#{@collection.title}\" collection has been undeleted.")
+           message: "The collection \"#{@collection.title}\" has been undeleted.")
   ensure
     redirect_to @collection
   end
@@ -432,7 +459,7 @@ class CollectionsController < ApplicationController
     else
       RefreshOpensearchJob.perform_later
       toast!(title:   "Collection updated",
-             message: "Collection \"#{@collection.title}\" has been updated.")
+             message: "The collection \"#{@collection.title}\" has been updated.")
       render 'shared/reload'
     end
   end
@@ -504,7 +531,7 @@ class CollectionsController < ApplicationController
 
   def review_items(start, limit)
     Item.search.
-      institution(current_institution).
+      institution(@collection.institution).
       aggregations(false).
       filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
       filter(Item::IndexFields::COLLECTIONS, @collection.id).
@@ -515,7 +542,7 @@ class CollectionsController < ApplicationController
 
   def submissions_in_progress(start, limit)
     Item.search.
-      institution(current_institution).
+      institution(@collection.institution).
       aggregations(false).
       filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
       filter(Item::IndexFields::COLLECTIONS, @collection.id).
@@ -532,8 +559,8 @@ class CollectionsController < ApplicationController
 
   def collection_params
     params.require(:collection).permit(:description, :introduction,
-                                       :metadata_profile_id, :parent_id,
-                                       :provenance, :rights,
+                                       :institution_id, :metadata_profile_id,
+                                       :parent_id, :provenance, :rights,
                                        :short_description,
                                        :submission_profile_id,
                                        :submissions_reviewed,
@@ -541,14 +568,22 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # If the client is trying to access a collection via a different
-  # institution's host, this method redirects to the same path on the
-  # collection's host. (Without this action in place, 403 Forbidden would be
-  # returned.) This feature is needed in order to support collections that have
-  # been moved to a different institution (via {Unit#move_to}).
+  # This action works differently depending on whether the current user is a
+  # system administrator:
+  #
+  # * If the current user **is not** a system administrator, and the client is
+  #   trying to access a collection via a different institution's host, this
+  #   action redirects to the same path on the collection's host. (Without this
+  #   action in place, 403 Forbidden would be returned.) This feature prevents
+  #   breakage of external links to collections that have been moved to a
+  #   different institution (via {Unit#move_to}).
+  # * If the current user **is** a system administrator, this action does
+  #   nothing. This is because system administrators require the ability to
+  #   browse other institutions' collections within their own institutional
+  #   host scope.
   #
   def redirect_scope
-    if @collection.institution != current_institution
+    if @collection.institution != current_institution && !current_user&.sysadmin?
       scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
       redirect_to scheme + "://" + @collection.institution.fqdn + collection_path(@collection),
                   allow_other_host: true
@@ -560,7 +595,7 @@ class CollectionsController < ApplicationController
     @start            = @permitted_params[:start].to_i
     @window           = window_size
     @items            = Item.search.
-      institution(current_institution).
+      institution(@collection.institution).
       aggregations(false).
       metadata_profile(@collection.effective_metadata_profile).
       filter(Item::IndexFields::COLLECTIONS, @permitted_params[:collection_id]).

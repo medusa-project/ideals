@@ -98,13 +98,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     post collections_path,
          xhr: true,
          params: {
-             primary_unit_id: units(:uiuc_unit1).id,
-             collection: {
-                 metadata_profile_id: metadata_profiles(:uiuc_empty).id
-             },
-             elements: {
-                 title: "New Collection"
-             }
+           primary_unit_id: units(:uiuc_unit1).id,
+           collection: {
+             institution_id: @institution.id,
+             metadata_profile_id: metadata_profiles(:uiuc_empty).id
+           },
+           elements: {
+             title: "New Collection"
+           }
          }
     assert_response :forbidden
   end
@@ -114,13 +115,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     post collections_path,
          xhr: true,
          params: {
-             primary_unit_id: units(:uiuc_unit1).id,
-             collection: {
-                 manager_id: users(:example_sysadmin).id
-             },
-             elements: {
-                 title: "New Collection"
-             }
+           primary_unit_id: units(:uiuc_unit1).id,
+           collection: {
+             institution_id: @institution.id,
+             manager_id:     users(:example_sysadmin).id
+           },
+           elements: {
+             title: "New Collection"
+           }
          }
     assert_response :ok
   end
@@ -131,13 +133,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
       post collections_path,
            xhr: true,
            params: {
-               primary_unit_id: units(:uiuc_unit1).id,
-               collection: {
-                   manager_id: users(:example_sysadmin).id
-               },
-               elements: {
-                   title: "New Collection"
-               }
+             primary_unit_id: units(:uiuc_unit1).id,
+             collection: {
+               institution_id: @institution.id,
+               manager_id:     users(:example_sysadmin).id
+             },
+             elements: {
+               title: "New Collection"
+             }
            }
     end
   end
@@ -147,9 +150,9 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     post collections_path,
          xhr: true,
          params: {
-             collection: {
-                 metadata_profile_id: 99999
-             }
+           collection: {
+             metadata_profile_id: 99999
+           }
          }
     assert_response :bad_request
   end
@@ -479,6 +482,44 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :gone
   end
 
+  # new()
+
+  test "new() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get new_collection_path
+    assert_response :not_found
+  end
+
+  test "new() redirects to root page for logged-out users" do
+    get new_collection_path
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "new() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:uiuc))
+    get new_collection_path
+    assert_response :forbidden
+  end
+
+  test "new() returns HTTP 400 for a missing institution_id argument" do
+    log_in_as(users(:uiuc_admin))
+    get new_collection_path(primary_unit_id: units(:uiuc_unit1).id)
+    assert_response :bad_request
+  end
+
+  test "new() returns HTTP 400 for a missing primary_unit_id argument" do
+    log_in_as(users(:uiuc_admin))
+    get new_collection_path(collection: { institution_id: institutions(:uiuc).id })
+    assert_response :bad_request
+  end
+
+  test "new() returns HTTP 200 for authorized users" do
+    log_in_as(users(:uiuc_admin))
+    get new_collection_path(primary_unit_id: units(:uiuc_unit1).id,
+                            collection: { institution_id: institutions(:uiuc).id })
+    assert_response :ok
+  end
+
   # show_item_results()
 
   test "show_item_results() returns HTTP 404 for unscoped requests" do
@@ -520,11 +561,20 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "show() redirects for a collection in another institution" do
+  test "show() redirects for a collection in another institution for
+  non-sysadmins" do
     collection = collections(:southwest_unit1_collection1)
     get collection_path(collection)
     assert_redirected_to "http://" + collection.institution.fqdn +
                            collection_path(collection)
+  end
+
+  test "show() does not redirect for a collection in another institution for
+  sysadmins" do
+    log_in_as(users(:uiuc_sysadmin))
+    collection = collections(:southwest_unit1_collection1)
+    get collection_path(collection)
+    assert_response :ok
   end
 
   test "show() returns HTTP 410 for a buried collection" do
@@ -887,10 +937,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     patch collection_path(collection),
           xhr: true,
           params: {
-              collection: {
-                  description: "New description",
-                  metadata_profile_id: metadata_profiles(:uiuc_empty).id
-              }
+            collection: {
+              description: "New description",
+              metadata_profile_id: metadata_profiles(:uiuc_empty).id
+            }
           }
     collection.reload
     assert_equal "New description", collection.description
@@ -902,9 +952,9 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     patch collection_path(collection),
           xhr: true,
           params: {
-              collection: {
-                  managing_user_ids: [ users(:example_sysadmin).id ]
-              }
+            collection: {
+              managing_user_ids: [ users(:example_sysadmin).id ]
+            }
           }
     assert_response :ok
   end
@@ -915,9 +965,9 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     patch collection_path(collection),
           xhr: true,
           params: {
-              collection: {
-                  metadata_profile_id: 99999
-              }
+            collection: {
+              metadata_profile_id: 99999
+            }
           }
     assert_response :bad_request
   end

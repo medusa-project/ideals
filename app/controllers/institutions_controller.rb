@@ -299,6 +299,20 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the units tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/units` (XHR only)
+  #
+  def show_units
+    @units = Unit.search.
+      institution(@institution).
+      include_children(false).
+      order("#{Unit::IndexFields::TITLE}.sort").
+      limit(9999)
+    render partial: "show_units_tab"
+  end
+
+  ##
   # Renders HTML for the users tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/users` (XHR only)

@@ -9,7 +9,7 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  = f.hidden_field :institution_id, value: current_institution.id
+  = f.hidden_field :institution_id, value: f.object.institution.id
   = f.hidden_field :parent_id, value: parent_id
 
   .mb-3
@@ -20,7 +20,7 @@
     .mb-3
       = f.label :parent_id, "Parent Unit"
       = f.select(:parent_id,
-          options_for_select(unit_tree_options(include_root: true, include_only_admin: true),
+          options_for_select(unit_tree_options(institution: f.object.institution, include_root: true, include_only_admin: true),
           f.object.parent&.id),
           {}, { class: "form-select" })
 

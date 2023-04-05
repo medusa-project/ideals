@@ -63,6 +63,10 @@ class SubmissionProfile < ApplicationRecord
     name
   end
 
+  def breadcrumb_parent(institution = nil)
+    institution ? self.institution : SubmissionProfile
+  end
+
   ##
   # Overrides parent to intelligently clone an instance including all of its
   # elements.

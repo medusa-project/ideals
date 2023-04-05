@@ -8,11 +8,12 @@ class UnitsController < ApplicationController
   before_action :ensure_logged_in, only: [:create, :delete,
                                           :edit_administrators,
                                           :edit_membership, :edit_properties,
-                                          :show_access, :undelete, :update]
+                                          :new, :show_access, :undelete,
+                                          :update]
   before_action :set_unit, except: [:create, :index, :new]
   before_action :redirect_scope, only: :show
   before_action :check_buried, except: [:create, :index, :new, :show, :undelete]
-  before_action :authorize_unit, except: [:create, :index]
+  before_action :authorize_unit, except: [:create, :index, :new]
   before_action :store_location, only: [:index, :show]
 
   ##
@@ -24,7 +25,7 @@ class UnitsController < ApplicationController
   def children
     raise ActionController::BadRequest if params[:unit_id].blank?
     @units = Unit.search.
-        institution(current_institution).
+        institution(@unit.institution).
         filter(Unit::IndexFields::PARENT, params[:unit_id].to_i).
         include_children(true).
         order("#{Unit::IndexFields::TITLE}.sort").
@@ -44,7 +45,7 @@ class UnitsController < ApplicationController
   def collections_tree_fragment
     raise ActionController::BadRequest if params[:unit_id].blank?
     @collections = Collection.search.
-        institution(current_institution).
+        institution(@unit.institution).
         filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
         include_children(false).
         order("#{Collection::IndexFields::TITLE}.sort").
@@ -60,8 +61,7 @@ class UnitsController < ApplicationController
   # Responds to `POST /units`
   #
   def create
-    @unit             = Unit.new(unit_params)
-    @unit.institution = current_institution
+    @unit = Unit.new(unit_params)
     authorize @unit
     begin
       ActiveRecord::Base.transaction do
@@ -87,6 +87,7 @@ class UnitsController < ApplicationController
   # @see undelete
   #
   def delete
+    unit_institution = @unit.institution
     ActiveRecord::Base.transaction do
       @unit.bury!
     end
@@ -97,7 +98,11 @@ class UnitsController < ApplicationController
     RefreshOpensearchJob.perform_later
     toast!(title:   "Unit deleted",
            message: "The unit \"#{@unit.title}\" has been deleted.")
-    redirect_to(@unit.parent || units_path)
+    if current_institution == unit_institution
+      redirect_to(@unit.parent || units_path)
+    else
+      redirect_to(@unit.parent || institution_path(unit_institution))
+    end
   end
 
   ##
@@ -154,7 +159,7 @@ class UnitsController < ApplicationController
     # The items array contains item IDs and download counts but not titles.
     # So here we will insert them.
     AscribedElement.
-      where(registered_element: current_institution.title_element).
+      where(registered_element: @unit.institution.title_element).
       where(item_id: @items.map{ |row| row['id'] }).pluck(:item_id, :string).each do |asc_e|
       row = @items.find{ |r| r['id'] == asc_e[0] }
       row['title'] = asc_e[1] if row
@@ -196,7 +201,14 @@ class UnitsController < ApplicationController
   # Responds to `GET /units/new` (XHR only)
   #
   def new
-    @unit = Unit.new
+    authorize(Unit)
+    institution_id = params.dig(:unit, :institution_id)
+    if institution_id.blank?
+      render plain: "Missing institution ID", status: :bad_request
+      return
+    end
+    @unit             = Unit.new
+    @unit.institution = Institution.find(institution_id)
     render partial: "new_form", locals: { parent_id: params[:parent_id] }
   end
 
@@ -220,12 +232,12 @@ class UnitsController < ApplicationController
     @num_downloads       = MonthlyUnitItemDownloadCount.sum_for_unit(unit: @unit)
     @num_submitted_items = @unit.submitted_item_count
     @collections         = Collection.search.
-      institution(current_institution).
+      institution(@unit.institution).
       filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
       order("#{Collection::IndexFields::TITLE}.sort").
       limit(999)
     @subunits            = Unit.search.
-      institution(current_institution).
+      institution(@unit.institution).
       parent_unit(@unit).
       order("#{Unit::IndexFields::TITLE}.sort").
       limit(999)
@@ -412,14 +424,22 @@ class UnitsController < ApplicationController
   end
 
   ##
-  # If the client is trying to access a unit via a different institution's
-  # host, this method redirects to the same path on the unit's host. (Without
-  # this action in place, 403 Forbidden would be returned.) This feature is
-  # needed in order to support units that have been moved to a different
-  # institution (via {Unit#move_to}).
+  # This action works differently depending on whether the current user is a
+  # system administrator:
+  #
+  # * If the current user **is not** a system administrator, and the client is
+  #   trying to access a unit via a different institution's host, this action
+  #   redirects to the same path on the unit's host. (Without this action in
+  #   place, 403 Forbidden would be returned.) This feature prevents breakage
+  #   of external links to units that have been moved to a different
+  #   institution (via {Unit#move_to}).
+  # * If the current user **is** a system administrator, this action does
+  #   nothing. This is because system administrators require the ability to
+  #   browse other institutions' units within their own institutional host
+  #   scope.
   #
   def redirect_scope
-    if @unit.institution != current_institution
+    if @unit.institution != current_institution && !current_user&.sysadmin?
       scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
       redirect_to scheme + "://" + @unit.institution.fqdn + unit_path(@unit),
                   allow_other_host: true
@@ -431,7 +451,7 @@ class UnitsController < ApplicationController
     @start            = @permitted_params[:start].to_i
     @window           = window_size
     @items            = Item.search.
-      institution(current_institution).
+      institution(@unit.institution).
       aggregations(false).
       filter(Item::IndexFields::UNITS, @permitted_params[:unit_id]).
       # A blank sort means sort by relevance, which is always descending,

@@ -439,7 +439,7 @@ class ItemsController < ApplicationController
   end
 
   def set_item
-    @item = Item.find(params[:id] || params[:item_id])
+    @item           = Item.find(params[:id] || params[:item_id])
     @breadcrumbable = @item
   end
 
@@ -463,14 +463,22 @@ class ItemsController < ApplicationController
   end
 
   ##
-  # If the client is trying to access an item via a different institution's
-  # host, this method redirects to the same path on the item's host. (Without
-  # this action in place, 403 Forbidden would be returned.) This feature is
-  # needed in order to support items that have been moved to a different
-  # institution (via {Unit#move_to}).
+  # This action works differently depending on whether the current user is a
+  # system administrator:
+  #
+  # * If the current user **is not** a system administrator, and the client is
+  #   trying to access an item via a different institution's host, this action
+  #   redirects to the same path on the item's host. (Without this action in
+  #   place, 403 Forbidden would be returned.) This feature prevents breakage
+  #   of external links to items that have been moved to a different
+  #   institution (via {Unit#move_to}).
+  # * If the current user **is** a system administrator, this action does
+  #   nothing. This is because system administrators require the ability to
+  #   browse other institutions' items within their own institutional host
+  #   scope.
   #
   def redirect_scope
-    if @item.institution != current_institution
+    if @item.institution != current_institution && !current_user&.sysadmin?
       scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
       redirect_to scheme + "://" + @item.institution.fqdn + item_path(@item),
                   allow_other_host: true

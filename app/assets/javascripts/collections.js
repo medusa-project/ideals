@@ -4,8 +4,10 @@
  * @constructor
  */
 const CollectionView = function() {
-    const ROOT_URL     = $('input[name="root_url"]').val();
-    const collectionID = $("[name=collection_id]").val();
+    const ROOT_URL      = $('input[name="root_url"]').val();
+    const collectionID  = $("[name=collection_id]").val();
+    const primaryUnitID = $("[name=primary_unit_id]").val();
+    const institutionID = $("[name=institution_id]").val();
 
     $("#about-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/collections/" + collectionID + "/about";
@@ -29,6 +31,15 @@ const CollectionView = function() {
                 $.get(url, function(data) {
                     $("#edit-collection-membership-modal .modal-body").html(data);
                     new IDEALS.MultiElementList(0);
+                });
+            });
+            $('.add-subcollection').on("click", function() {
+                const url = ROOT_URL + "/collections/new" +
+                    "?collection%5Binstitution_id%5D=" + institutionID +
+                    "&collection%5Bparent_id%5D=" + collectionID +
+                    "&primary_unit_id=" + primaryUnitID;
+                $.get(url, function(data) {
+                    $("#add-collection-modal .modal-body").html(data);
                 });
             });
         });

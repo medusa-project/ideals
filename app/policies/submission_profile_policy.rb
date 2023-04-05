@@ -17,7 +17,9 @@ class SubmissionProfilePolicy < ApplicationPolicy
   end
 
   def clone
-    if !@user
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif !@user
       return LOGGED_OUT_RESULT
     elsif @ctx_institution != @profile.institution
       return WRONG_SCOPE_RESULT
@@ -55,6 +57,8 @@ class SubmissionProfilePolicy < ApplicationPolicy
   def update
     if !@user
       return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
     elsif @ctx_institution != @profile.institution
       return WRONG_SCOPE_RESULT
     end

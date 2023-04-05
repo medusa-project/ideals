@@ -2,15 +2,18 @@
 -#
 -# Required arguments:
 -#
+-# institution [Institution]
 -# primary_unit [Unit]
 -# parent [Collection] Optional.
 
-- parent = nil unless defined?(:parent)
+- parent     = nil unless defined?(parent)
+- collection = Collection.new
 
-= form_for(Collection.new, remote: true) do |f|
+= form_for(collection, remote: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
+  = f.hidden_field :institution_id, value: institution.id
   = hidden_field_tag :primary_unit_id, primary_unit.id
   - if parent
     = f.hidden_field :parent_id, value: parent.id

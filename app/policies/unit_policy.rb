@@ -23,16 +23,15 @@ class UnitPolicy < ApplicationPolicy
   # unit to another unit of which s/he is not an effective administrator.
   #
   def change_parent(new_parent_id)
-    if @ctx_institution != @unit.institution
-      return WRONG_SCOPE_RESULT
-    elsif !@user
+    if !@user
       return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @unit.institution
+      return WRONG_SCOPE_RESULT
     elsif new_parent_id == @unit.parent_id
       return AUTHORIZED_RESULT
-    elsif @role_limit >= Role::SYSTEM_ADMINISTRATOR && @user.sysadmin?
-      return AUTHORIZED_RESULT
-    elsif @role_limit >= Role::UNIT_ADMINISTRATOR &&
-      @user.effective_unit_admin?(Unit.find(new_parent_id))
+    elsif effective_unit_admin?
       return AUTHORIZED_RESULT
     end
     { authorized: false,
@@ -50,10 +49,9 @@ class UnitPolicy < ApplicationPolicy
   def create
     if !@user
       return LOGGED_OUT_RESULT
-    elsif @role_limit >= Role::SYSTEM_ADMINISTRATOR && @user.sysadmin?
+    elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif @role_limit >= Role::INSTITUTION_ADMINISTRATOR &&
-      @user.institution_admin?(@user.institution)
+    elsif effective_institution_admin?(@user, @user.institution, @role_limit)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
@@ -107,7 +105,9 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def show
-    if @ctx_institution != @unit.institution
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @unit.institution
       return WRONG_SCOPE_RESULT
     end
     AUTHORIZED_RESULT
@@ -153,16 +153,13 @@ class UnitPolicy < ApplicationPolicy
     effective_unit_admin
   end
 
-
-  private
-
   def effective_unit_admin
-    if @unit.kind_of?(Unit) && @ctx_institution != @unit.institution
-      return WRONG_SCOPE_RESULT
-    elsif !@user
+    if !@user
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
+    elsif @unit.kind_of?(Unit) && @ctx_institution != @unit.institution
+      return WRONG_SCOPE_RESULT
     elsif @role_limit >= Role::UNIT_ADMINISTRATOR && @user.effective_unit_admin?(@unit)
       return AUTHORIZED_RESULT
     end

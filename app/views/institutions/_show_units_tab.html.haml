@@ -1,0 +1,10 @@
+-if policy(Unit).new?
+  .btn-group.float-end{role: "group"}
+    -# Add Unit button
+    %button.btn.btn-light.add-unit{"data-bs-target": "#add-unit-modal",
+                                   "data-bs-toggle": "modal",
+                                   type:             "button"}
+      %i.fa.fa-plus
+      Add Unit
+
+= resource_list(@units, use_resource_host: false)

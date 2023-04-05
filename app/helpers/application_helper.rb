@@ -1,7 +1,7 @@
 module ApplicationHelper
 
   # These tags will not be filtered out when displaying user-entered HTML.
-  ALLOWED_HTML_TAGS           = %w(a b dd dl dt em h1 h2 h3 h4 h5 h6 i li ol p strong ul)
+  ALLOWED_HTML_TAGS           = %w(a b dd dl dt em h1 h2 h3 h4 h5 h6 i li ol p strong sub sup ul)
   ALLOWED_HTML_TAG_ATTRIBUTES = %w(href title)
   CAPTCHA_SALT                = ::Configuration.instance.secret_key_base
   MAX_PAGINATION_LINKS        = 5
@@ -67,15 +67,16 @@ module ApplicationHelper
   ##
   # Invoked from the layout to render the breadcrumbs.
   #
-  # @param object [ApplicationRecord] Model object.
+  # @param object [Breadcrumb] Model object that includes {Breadcrumb}.
   # @return [String] HTML string.
   #
   def breadcrumbs(object)
+    crumb_obj  = object
     crumbs = []
     loop do
-      break unless object
+      break unless crumb_obj
       if crumbs.any?
-        case object.to_s
+        case crumb_obj.to_s
         when "IndexPage"
           crumbs.unshift({label: "Index Pages", url: index_pages_path})
         when "Institution"
@@ -89,7 +90,7 @@ module ApplicationHelper
         when "SubmissionProfile"
           crumbs.unshift({label: "Submission Profiles", url: submission_profiles_path})
         when "Unit"
-          crumbs.unshift({icon: icon_for(object), label: "Academic Units", url: units_path})
+          crumbs.unshift({icon: icon_for(crumb_obj), label: "Academic Units", url: units_path})
         when "User"
           crumbs.unshift({label: "Users", url: users_path})
         when "UserGroup"
@@ -97,19 +98,28 @@ module ApplicationHelper
         when "Vocabulary"
           crumbs.unshift({label: "Vocabularies", url: vocabularies_path})
         else
-          crumbs.unshift({icon: icon_for(object), label: object.breadcrumb_label, url: url_for(object)})
+          crumbs.unshift({icon: icon_for(crumb_obj), label: crumb_obj.breadcrumb_label,
+                          url: url_for(crumb_obj)})
         end
       else # the last crumb is never hyperlinked
-        crumbs << {icon: icon_for(object), label: object.breadcrumb_label}
+        crumbs << {icon: icon_for(crumb_obj), label: crumb_obj.breadcrumb_label}
       end
-      object = object.respond_to?(:breadcrumb_parent) ?
-                 object.breadcrumb_parent : nil
+      crumb_obj = crumb_obj.respond_to?(:breadcrumb_parent) ?
+                    crumb_obj.breadcrumb_parent(current_institution) : nil
     end
+
+    # Most institution-scoped models have an `institution` getter linking them
+    # to their owning institution. If this institution is different from the
+    # current institution host, we want to render the breadcrumbs differently,
+    # with a notice that we are looking at something in a different
+    # institution. (This only applies to sysadmins.)
+    in_scope = (object.respond_to?(:institution) && object.institution == current_institution) ||
+      (object.kind_of?(Institution) && object == current_institution)
 
     html = StringIO.new
     html << "<nav aria-label=\"breadcrumb\">"
-    html <<   "<ol class=\"breadcrumb\">"
-    crumbs.each do |crumb|
+    html <<   "<ol class=\"breadcrumb #{in_scope ? nil : "bg-warning" }\">"
+    crumbs.each_with_index do |crumb, index|
       html << "<li class=\"breadcrumb-item\">"
       if crumb[:url]
         if crumb[:icon]
@@ -123,6 +133,11 @@ module ApplicationHelper
         html << crumb[:icon] + " " + crumb[:label]
       else
         html << crumb[:label]
+      end
+      if !in_scope && index == crumbs.length - 1
+        html << "<span class=\"badge badge-pill text-bg-light\">"
+        html <<   "<i class=\"fa fa-exclamation-triangle\"></i> OTHER INSTITUTION"
+        html << "</span>"
       end
       html << "</li>"
     end
@@ -626,16 +641,19 @@ module ApplicationHelper
   # @param primary_id [Integer] ID of a resource in `resources` to indicate as
   #                             primary.
   # @param show_submitters [Boolean]
+  # @param use_resource_host [Boolean]
   # @return [String] HTML listing.
   #
   def resource_list(resources,
-                    primary_id:      nil,
-                    show_submitters: false)
+                    primary_id:        nil,
+                    show_submitters:   false,
+                    use_resource_host: true)
     html = StringIO.new
     resources.each do |resource|
       html << resource_list_row(resource,
-                                primary:        (primary_id == resource.id),
-                                show_submitter: show_submitters)
+                                primary:           (primary_id == resource.id),
+                                show_submitter:    show_submitters,
+                                use_resource_host: use_resource_host)
     end
     raw(html.string)
   end
@@ -643,15 +661,21 @@ module ApplicationHelper
   ##
   # @param resource [Describable]
   # @param primary [Boolean] Whether to mark the resource as primary.
+  # @param use_resource_host [Boolean]
   # @return [String] HTML string.
   #
   def resource_list_row(resource,
-                        primary:        false,
-                        show_submitter: false)
+                        primary:           false,
+                        show_submitter:    false,
+                        use_resource_host: true)
     embargoed_item = resource.kind_of?(Item) &&
       resource.embargoed_for?(current_user)
     thumb          = thumbnail_for(resource)
-    resource_url   = polymorphic_url(resource, host: resource.institution.fqdn)
+    if use_resource_host
+      resource_url = polymorphic_url(resource, host: resource.institution.fqdn)
+    else
+      resource_url = polymorphic_url(resource)
+    end
     html           = StringIO.new
     html << "<div class=\"d-flex resource-list mb-3\">"
     if embargoed_item

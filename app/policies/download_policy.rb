@@ -23,13 +23,13 @@ class DownloadPolicy < ApplicationPolicy
   end
 
   def show
-    if @ctx_institution != @download.institution
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @download.institution
       return WRONG_SCOPE_RESULT
     elsif @download.expired # even sysadmins can't access expired downloads
       return { authorized: false,
                reason:     "This download is expired." }
-    elsif effective_sysadmin?(@user, @role_limit)
-      return AUTHORIZED_RESULT
     elsif @download.ip_address.present? && @download.ip_address != @client_ip
       return { authorized: false,
                reason:     "You are not authorized to access this download." }

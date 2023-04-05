@@ -1,6 +1,8 @@
 - provide :body_id, "show_collection"
 - provide :title, @collection.title
 
+= hidden_field_tag :institution_id, @collection.institution.id
+= hidden_field_tag :primary_unit_id, @collection.primary_unit.id
 = hidden_field_tag :collection_id, @collection.id
 
 = render partial: "show_button_group"
@@ -90,22 +92,23 @@
                                         "aria-labelledby": "access-tab"}
         = spinner
 
-= render partial: "collections/add_modal",
-         locals: { primary_unit: @collection.primary_unit,
-                   parent: @collection,
-                   title: "Add Child Collection" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "download-files-modal",
+         locals: { id:           "add-collection-modal",
+                   title:        "Add Child Collection",
+                   primary_unit: @collection.primary_unit,
+                   parent:       @collection }
+= render partial: "shared/ajax_modal",
+         locals: { id:    "download-files-modal",
                    title: "Download All Files" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-collection-properties-modal",
+         locals: { id:    "edit-collection-properties-modal",
                    title: "Edit Properties" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-collection-membership-modal",
+         locals: { id:    "edit-collection-membership-modal",
                    title: "Change Collection Membership" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-unit-membership-modal",
+         locals: { id:    "edit-unit-membership-modal",
                    title: "Change Unit Membership",
-                   size: :lg }
+                   size:  :lg }
 
 = include_chart_library

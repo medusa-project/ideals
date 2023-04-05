@@ -498,7 +498,7 @@ class Item < ApplicationRecord
     self.title
   end
 
-  def breadcrumb_parent
+  def breadcrumb_parent(institution = nil)
     self.primary_collection
   end
 

@@ -33,16 +33,6 @@ class DownloadPolicyTest < ActiveSupport::TestCase
     assert !policy.file?
   end
 
-  test "file?() restricts even sysadmins from expired downloads" do
-    @download = downloads(:uiuc_expired)
-    user      = users(:southwest_sysadmin)
-    context   = RequestContext.new(user:        user,
-                                   client_ip:   @download.ip_address,
-                                   institution: @download.institution)
-    policy    = DownloadPolicy.new(context, @download)
-    assert !policy.file?
-  end
-
   test "file?() authorizes sysadmins to downloads with different IP
   addresses" do
     user    = users(:southwest_sysadmin)
@@ -74,16 +64,6 @@ class DownloadPolicyTest < ActiveSupport::TestCase
   test "show?() restricts expired downloads" do
     @download = downloads(:uiuc_expired)
     context   = RequestContext.new(user:        nil,
-                                   client_ip:   @download.ip_address,
-                                   institution: @download.institution)
-    policy    = DownloadPolicy.new(context, @download)
-    assert !policy.show?
-  end
-
-  test "show?() restricts even sysadmins from expired downloads" do
-    @download = downloads(:uiuc_expired)
-    user      = users(:southwest_sysadmin)
-    context   = RequestContext.new(user:        user,
                                    client_ip:   @download.ip_address,
                                    institution: @download.institution)
     policy    = DownloadPolicy.new(context, @download)

@@ -20,7 +20,7 @@
     - embargoes.each_with_index do |embargo, index|
       = embargoes_form_card(embargo: embargo, index: index)
   - else
-    = embargoes_form_card
+    = embargoes_form_card(institution: f.object.institution)
 
   %button.btn.btn-outline-success.btn-sm.add-embargo{type: "button"}
     %i.fa.fa-plus

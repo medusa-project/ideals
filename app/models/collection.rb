@@ -272,7 +272,7 @@ class Collection < ApplicationRecord
     self.title
   end
 
-  def breadcrumb_parent
+  def breadcrumb_parent(institution = nil)
     self.parent || self.primary_unit
   end
 

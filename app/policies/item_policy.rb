@@ -51,10 +51,12 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def create
-    if @ctx_institution != @item.institution
-      return WRONG_SCOPE_RESULT
+    if !@user
+      return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
+      return WRONG_SCOPE_RESULT
     else
       @item.collections.each do |collection|
         # non-sysadmins can submit to collections for which they have submitter
@@ -68,12 +70,12 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def delete
-    if @ctx_institution != @item.institution
-      return WRONG_SCOPE_RESULT
-    elsif !@user
+    if !@user
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
+      return WRONG_SCOPE_RESULT
     elsif (!@role_limit || @role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
       @user.effective_institution_admin?(@item.institution)
       return AUTHORIZED_RESULT
@@ -85,12 +87,12 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def delete_bitstreams
-    if @ctx_institution != @item.institution
-      return WRONG_SCOPE_RESULT
-    elsif !@user
+    if !@user
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
+      return WRONG_SCOPE_RESULT
     elsif @item.stage == Item::Stages::SUBMITTING
       return update
     elsif effective_institution_admin?(@user, @ctx_institution, @role_limit)
@@ -158,14 +160,20 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def review
-    if @item.kind_of?(Item) && @ctx_institution != @item.institution
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @item.kind_of?(Item) && @ctx_institution != @item.institution
       return WRONG_SCOPE_RESULT
     end
     effective_institution_admin(@user, @ctx_institution, @role_limit)
   end
 
   def show
-    if @ctx_institution != @item.institution
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
       return WRONG_SCOPE_RESULT
     # Withdrawn & buried items are authorized but are shown in a special,
     # limited view.
@@ -184,10 +192,12 @@ class ItemPolicy < ApplicationPolicy
   # N.B.: this is not a controller method.
   #
   def show_access
-    if @ctx_institution != @item.institution
-      return WRONG_SCOPE_RESULT
+    if !@user
+      return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
+      return WRONG_SCOPE_RESULT
     elsif @user
       @item.collections.each do |collection|
         # collection managers can see access of items within their collections
@@ -216,9 +226,6 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def show_collections
-    if @ctx_institution != @item.institution
-      return WRONG_SCOPE_RESULT
-    end
     show_metadata
   end
 
@@ -235,10 +242,12 @@ class ItemPolicy < ApplicationPolicy
   # authorized access to the view, so it only contains limited additional logic.
   #
   def show_file_navigator
-    if @ctx_institution != @item.institution
-      return WRONG_SCOPE_RESULT
+    if !@user
+      return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
+      return WRONG_SCOPE_RESULT
     end
     @item.current_embargoes.each do |embargo|
       unless @user && embargo.exempt?(@user)
@@ -276,7 +285,9 @@ class ItemPolicy < ApplicationPolicy
   # @see show_all_metadata
   #
   def show_metadata
-    if @ctx_institution != @item.institution
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
       return WRONG_SCOPE_RESULT
     end
     result = show_access
@@ -304,12 +315,12 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def undelete
-    if @ctx_institution != @item.institution
-      return WRONG_SCOPE_RESULT
-    elsif !@user
+    if !@user
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
+      return WRONG_SCOPE_RESULT
     elsif (!@role_limit || @role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
       @user.effective_institution_admin?(@item.institution)
       return AUTHORIZED_RESULT
@@ -318,10 +329,12 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def update
-    if @ctx_institution != @item.institution
-      return WRONG_SCOPE_RESULT
+    if !@user
+      return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
+      return WRONG_SCOPE_RESULT
     elsif (!@role_limit || @role_limit >= Role::COLLECTION_SUBMITTER) &&
       @user == @item.submitter && @item.submitting?
       return AUTHORIZED_RESULT
@@ -348,7 +361,11 @@ class ItemPolicy < ApplicationPolicy
   end
 
   def withdraw
-    if @ctx_institution != @item.institution
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
       return WRONG_SCOPE_RESULT
     elsif (!@role_limit || @role_limit >= Role::UNIT_ADMINISTRATOR) &&
       @user&.effective_unit_admin?(@item.effective_primary_unit)

@@ -22,6 +22,8 @@ class MetadataProfilePolicy < ApplicationPolicy
     if @profile.global?
       return { authorized: false,
                reason:     "The global metadata profile cannot be cloned." }
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
     elsif @ctx_institution != @profile.institution
       return WRONG_SCOPE_RESULT
     end
@@ -36,6 +38,8 @@ class MetadataProfilePolicy < ApplicationPolicy
     if @profile.global?
       return { authorized: false,
                reason:     "The global metadata profile cannot be deleted." }
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
     elsif @ctx_institution != @profile.institution
       return WRONG_SCOPE_RESULT
     end
@@ -61,6 +65,8 @@ class MetadataProfilePolicy < ApplicationPolicy
   def update
     if !@user
       return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
     elsif @profile.global?
       return effective_sysadmin(@user, @role_limit)
     elsif @ctx_institution != @profile.institution
