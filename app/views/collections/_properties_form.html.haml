@@ -26,9 +26,10 @@
   .mb-3
     = f.label :introduction
     = f.text_area :introduction, class: "form-control"
-    %p.text-info
+    %p.form-text
       %i.fa.fa-info-circle
-      HTML is allowed.
+      The following HTML tags are allowed:
+      = allowed_html_tags
 
   .mb-3
     = f.label :rights

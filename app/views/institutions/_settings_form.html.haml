@@ -20,7 +20,7 @@
     %p.form-text
       %i.fa.fa-info-circle
       The following HTML tags are allowed:
-      = raw(ApplicationHelper::ALLOWED_HTML_TAGS.map{ |t| "<code>&lt;#{t}&gt;</code>" }.join(", "))
+      = allowed_html_tags
 
   .mb-3
     = f.label :about_html, "About HTML"
@@ -28,7 +28,7 @@
     %p.form-text
       %i.fa.fa-info-circle
       The following HTML tags are allowed:
-      = raw(ApplicationHelper::ALLOWED_HTML_TAGS.map{ |t| raw("<code>&lt;#{t}&gt;</code>") }.join(", "))
+      = allowed_html_tags
 
   .mb-3
     = f.label :about_url, "About URL"
@@ -43,7 +43,7 @@
     %p.form-text
       %i.fa.fa-info-circle
       The following HTML tags are allowed:
-      = raw(ApplicationHelper::ALLOWED_HTML_TAGS.map{ |t| raw("<code>&lt;#{t}&gt;</code>") }.join(", "))
+      = allowed_html_tags
 
   .mb-3
     = f.label :copyright_notice, "Copyright Notice"
