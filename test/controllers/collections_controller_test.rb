@@ -117,8 +117,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
          params: {
            primary_unit_id: units(:uiuc_unit1).id,
            collection: {
-             institution_id: @institution.id,
-             manager_id:     users(:example_sysadmin).id
+             institution_id:   @institution.id,
+             administrator_id: users(:example_sysadmin).id
            },
            elements: {
              title: "New Collection"
@@ -135,8 +135,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
            params: {
              primary_unit_id: units(:uiuc_unit1).id,
              collection: {
-               institution_id: @institution.id,
-               manager_id:     users(:example_sysadmin).id
+               institution_id:   @institution.id,
+               administrator_id: users(:example_sysadmin).id
              },
              elements: {
                title: "New Collection"
@@ -265,46 +265,46 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # edit_managers()
+  # edit_administrators()
 
-  test "edit_managers() returns HTTP 404 for unscoped requests" do
+  test "edit_administrators() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
     collection = collections(:uiuc_collection1)
-    get collection_edit_managers_path(collection), xhr: true
+    get collection_edit_administrators_path(collection), xhr: true
     assert_response :not_found
   end
 
-  test "edit_managers() returns HTTP 403 for logged-out users" do
+  test "edit_administrators() returns HTTP 403 for logged-out users" do
     collection = collections(:uiuc_collection1)
-    get collection_edit_managers_path(collection), xhr: true
+    get collection_edit_administrators_path(collection), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_managers() returns HTTP 403 for unauthorized users" do
+  test "edit_administrators() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:example))
     collection = collections(:uiuc_collection1)
-    get collection_edit_managers_path(collection), xhr: true
+    get collection_edit_administrators_path(collection), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_managers() returns HTTP 404 for non-XHR requests" do
+  test "edit_administrators() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:example_sysadmin))
     collection = collections(:uiuc_collection1)
-    get collection_edit_managers_path(collection)
+    get collection_edit_administrators_path(collection)
     assert_response :not_found
   end
 
-  test "edit_managers() returns HTTP 410 for a buried collection" do
+  test "edit_administrators() returns HTTP 410 for a buried collection" do
     log_in_as(users(:uiuc_admin))
     collection = collections(:uiuc_buried)
-    get collection_edit_managers_path(collection), xhr: true
+    get collection_edit_administrators_path(collection), xhr: true
     assert_response :gone
   end
 
-  test "edit_managers() returns HTTP 200 for XHR requests" do
+  test "edit_administrators() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_admin))
     collection = collections(:uiuc_collection1)
-    get collection_edit_managers_path(collection), xhr: true
+    get collection_edit_administrators_path(collection), xhr: true
     assert_response :ok
   end
 
@@ -664,10 +664,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:uiuc_admin))
     collection = collections(:uiuc_collection1)
     get collection_access_path(collection), xhr: true
-    assert_select(".edit-collection-managers")
+    assert_select(".edit-collection-administrators")
 
     get collection_access_path(collection, role: Role::LOGGED_OUT), xhr: true
-    assert_select(".edit-collection-managers", false)
+    assert_select(".edit-collection-administrators", false)
   end
 
   # show_items()
@@ -953,7 +953,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             collection: {
-              managing_user_ids: [ users(:example_sysadmin).id ]
+              administering_user_ids: [ users(:example_sysadmin).id ]
             }
           }
     assert_response :ok
@@ -973,8 +973,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 403 when updating the collection parent_id to a
-  collection of which the current user is not an effective manager" do
-    log_in_as(users(:uiuc_collection1_collection1_manager))
+  collection of which the current user is not an effective administrator" do
+    log_in_as(users(:uiuc_collection1_collection1_admin))
     collection = collections(:uiuc_collection1_collection1)
     patch collection_path(collection),
           xhr: true,

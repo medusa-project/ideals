@@ -343,7 +343,7 @@ class Unit < ApplicationRecord
                        metadata_profile: nil)
           unit.collections.each do |collection|
             progress.report(entity_idx, "Moving #{collection.title} to #{institution.name}")
-            collection.managers.destroy_all
+            collection.administrators.destroy_all
             collection.submitters.destroy_all
             collection.update!(institution_id:     institution.id,
                                metadata_profile:   nil,

@@ -238,10 +238,10 @@
         .card
           .card-body
             %h4.card-title Collections
-            %h5 Allowed to manage
-            - if @user_group.manager_groups.any?
+            %h5 Allowed to administer
+            - if @user_group.collection_administrator_groups.any?
               %ul
-                - @user_group.manager_groups.each do |group|
+                - @user_group.collection_administrator_groups.each do |group|
                   %li= link_to(group.collection.title, group.collection)
             - else
               None

@@ -25,7 +25,7 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
       assert count > 0
 
       # Assign one of the bitstreams to a non-content bundle, which only
-      # collection managers and above are allowed to access.
+      # collection administrators and above are allowed to access.
       relation.first.update!(bundle: Bitstream::Bundle::LICENSE)
       relation = owning_item.bitstreams
       scope    = BitstreamPolicy::Scope.new(context, relation,
@@ -99,13 +99,13 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.create?
   end
 
-  test "create?() authorizes collection managers" do
+  test "create?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
 
     collection = @bitstream.item.primary_collection
-    collection.managing_users << user
+    collection.administering_users << user
     collection.save!
 
     policy = BitstreamPolicy.new(context, @bitstream)
@@ -204,7 +204,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.data?
   end
 
-  test "data?() restricts non-content bitstreams to non-collection managers" do
+  test "data?() restricts non-content bitstreams to non-collection
+  administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
@@ -243,7 +244,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.data?
   end
 
-  test "data?() authorizes non-content bitstreams to collection managers" do
+  test "data?() authorizes non-content bitstreams to collection
+  administrators" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
@@ -281,13 +283,13 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  test "destroy?() authorizes managers of the bitstream's collection to
+  test "destroy?() authorizes administrators of the bitstream's collection to
   submitting items" do
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
     collection = collections(:southwest_unit1_collection1)
-    collection.managing_users << doing_user
+    collection.administering_users << doing_user
     collection.save!
 
     item = @bitstream.item
@@ -299,13 +301,13 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.destroy?
   end
 
-  test "destroy?() does not authorize managers of the bitstream's collection to
-  non-submitting items" do
+  test "destroy?() does not authorize administrators of the bitstream's
+  collection to non-submitting items" do
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
     collection = collections(:southwest_unit1_collection1)
-    collection.managing_users << doing_user
+    collection.administering_users << doing_user
     collection.save!
 
     item = @bitstream.item
@@ -441,7 +443,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.download?
   end
 
-  test "download?() restricts non-content bitstreams to non-collection managers" do
+  test "download?() restricts non-content bitstreams to non-collection
+  administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
@@ -480,7 +483,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.download?
   end
 
-  test "download?() authorizes non-content bitstreams to collection managers" do
+  test "download?() authorizes non-content bitstreams to collection
+  administrators" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
@@ -553,12 +557,12 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.edit?
   end
 
-  test "edit?() authorizes collection managers" do
+  test "edit?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
     collection = @bitstream.item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = BitstreamPolicy.new(context, @bitstream)
     assert policy.edit?
@@ -627,12 +631,12 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.ingest?
   end
 
-  test "ingest?() authorizes collection managers" do
+  test "ingest?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
     collection = @bitstream.item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = BitstreamPolicy.new(context, @bitstream)
     assert policy.ingest?
@@ -716,7 +720,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.object?
   end
 
-  test "object?() restricts non-content bitstreams to non-collection managers" do
+  test "object?() restricts non-content bitstreams to non-collection
+  administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
@@ -755,7 +760,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.object?
   end
 
-  test "object?() authorizes non-content bitstreams to collection managers" do
+  test "object?() authorizes non-content bitstreams to collection
+  administrators" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
@@ -865,23 +871,23 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() authorizes bitstreams limited to the collection manager role
-  to collection managers" do
+  test "show?() authorizes bitstreams limited to the collection administrator
+  role to collection administrators" do
     user      = users(:southwest)
     bitstream = bitstreams(:southwest_unit1_collection1_item1_role_limited)
-    bitstream.item.primary_collection.managing_users << user
-    bitstream.update!(role: Role::COLLECTION_MANAGER)
+    bitstream.item.primary_collection.administering_users << user
+    bitstream.update!(role: Role::COLLECTION_ADMINISTRATOR)
     context   = RequestContext.new(user:        user,
                                    institution: @bitstream.institution)
     policy    = BitstreamPolicy.new(context, bitstream)
     assert policy.show?
   end
 
-  test "show?() does not authorize bitstreams limited to the collection manager
-  role to non-collection submitters" do
+  test "show?() does not authorize bitstreams limited to the collection
+  administrator role to non-collection submitters" do
     user      = users(:southwest)
     bitstream = bitstreams(:southwest_unit1_collection1_item1_role_limited)
-    bitstream.update!(role: Role::COLLECTION_MANAGER)
+    bitstream.update!(role: Role::COLLECTION_ADMINISTRATOR)
     context   = RequestContext.new(user:        user,
                                    institution: @bitstream.institution)
     policy    = BitstreamPolicy.new(context, bitstream)
@@ -956,7 +962,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() restricts non-content bitstreams to non-collection managers" do
+  test "show?() restricts non-content bitstreams to non-collection
+  administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
@@ -1107,13 +1114,13 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.show_role?
   end
 
-  test "show_role?() authorizes collection managers" do
+  test "show_role?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
 
     collection = @bitstream.item.primary_collection
-    collection.managing_users << user
+    collection.administering_users << user
     collection.save!
 
     policy = BitstreamPolicy.new(context, @bitstream)
@@ -1172,12 +1179,12 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
-  test "update?() authorizes managers of the submission's collection" do
+  test "update?() authorizes administrators of the submission's collection" do
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
     collection = collections(:uiuc_collection1)
-    collection.managing_users << doing_user
+    collection.administering_users << doing_user
     collection.save!
 
     item = @bitstream.item
@@ -1291,7 +1298,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert !policy.viewer?
   end
 
-  test "viewer?() restricts non-content bitstreams to non-collection managers" do
+  test "viewer?() restricts non-content bitstreams to non-collection
+  administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)
@@ -1334,7 +1342,8 @@ class BitstreamPolicyTest < ActiveSupport::TestCase
     assert policy.viewer?
   end
 
-  test "viewer?() authorizes non-content bitstreams to collection managers" do
+  test "viewer?() authorizes non-content bitstreams to collection
+  administrators" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: @bitstream.institution)

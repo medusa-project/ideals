@@ -134,9 +134,9 @@ uiuc_unit1_unit2_unit1_admin:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
 
-uiuc_collection1_collection1_manager:
+uiuc_collection1_collection1_admin:
   institution:       uiuc
-  email:             uiuc_collection1_collection1_manager@illinois.edu
+  email:             uiuc_collection1_collection1_admin@illinois.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
   note:              Sample note
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>

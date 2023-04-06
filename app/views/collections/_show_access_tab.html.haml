@@ -1,10 +1,10 @@
 %ul.nav.nav-tabs{role: "tablist"}
   %li.nav-item{role: "presentation"}
-    %button#managers-tab.nav-link.active{"data-bs-toggle": "tab",
-                                         "data-bs-target": "#managers",
-                                         role:             "tab",
-                                         "aria-controls":  "managers",
-                                         "aria-selected":  "true"} Managers
+    %button#administrators-tab.nav-link.active{"data-bs-toggle": "tab",
+                                               "data-bs-target": "#administrators",
+                                               role:             "tab",
+                                               "aria-controls":  "administrators",
+                                               "aria-selected":  "true"} Administrators
   %li.nav-item{role: "presentation"}
     %button#submitters-tab.nav-link{"data-bs-toggle": "tab",
                                     "data-bs-target": "#submitters",
@@ -14,16 +14,16 @@
 
 
 .tab-content
-  #managers.tab-pane.fade.show.active{role:              "tabpanel",
-                                      "aria-labelledby": "managers-tab"}
+  #administrators.tab-pane.fade.show.active{role:              "tabpanel",
+                                            "aria-labelledby": "administrators-tab"}
     .btn-group.float-end{role: "group"}
-      - if policy(@collection).edit_managers?
-        %button.btn.btn-light.edit-collection-managers{"data-collection-id": @collection.id,
-                                                       "data-bs-target":     "#edit-collection-managers-modal",
-                                                       "data-bs-toggle":     "modal",
-                                                       role:                 "button"}
+      - if policy(@collection).edit_administrators?
+        %button.btn.btn-light.edit-collection-administrators{"data-collection-id": @collection.id,
+                                                             "data-bs-target":     "#edit-collection-administrators-modal",
+                                                             "data-bs-toggle":     "modal",
+                                                             role:                 "button"}
           %i.fas.fa-pencil-alt
-          Edit Managers
+          Edit Administrators
 
     .clearfix.mb-3
 
@@ -32,9 +32,9 @@
         .card
           .card-body
             %h5.card-title Groups
-            - if @collection.managing_groups.any?
+            - if @collection.administering_groups.any?
               %ul
-                - @collection.managing_groups.each do |group|
+                - @collection.administering_groups.each do |group|
                   %li= link_to(group.name, group)
             - else
               None
@@ -42,9 +42,9 @@
         .card
           .card-body
             %h5.card-title Users
-            - if @collection.managing_users.any?
+            - if @collection.administering_users.any?
               %ul
-                - @collection.managing_users.each do |user|
+                - @collection.administering_users.each do |user|
                   %li= link_to(user.name, "mailto:#{user.email}")
             - else
               None
@@ -84,8 +84,8 @@
               None
 
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-collection-managers-modal",
-                   title: "Edit Managers" }
+         locals: { id: "edit-collection-administrators-modal",
+                   title: "Edit Administrators" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-collection-submitters-modal",
                    title: "Edit Submitters" }

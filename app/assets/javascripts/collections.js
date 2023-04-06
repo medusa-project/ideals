@@ -236,11 +236,11 @@ const CollectionView = function() {
         const url = ROOT_URL + "/collections/" + collectionID + "/access";
         $.get(url, function (data) {
             $("#access-tab-content").html(data);
-            $('.edit-collection-managers').on("click", function() {
-                const url = ROOT_URL + "/collections/" + collectionID + "/edit-managers";
+            $(".edit-collection-administrators").on("click", function() {
+                const url = ROOT_URL + "/collections/" + collectionID + "/edit-administrators";
                 $.get(url, function(data) {
-                    $("#edit-collection-managers-modal .modal-body").html(data);
-                    new IDEALS.LocalUserAutocompleter($("input[name='managers[]']"));
+                    $("#edit-collection-administrators-modal .modal-body").html(data);
+                    new IDEALS.LocalUserAutocompleter($("input[name='administrators[]']"));
                     new IDEALS.MultiElementList();
                 });
             });

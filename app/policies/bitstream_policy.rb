@@ -27,9 +27,9 @@ class BitstreamPolicy < ApplicationPolicy
     #
     def resolve
       unless BitstreamPolicy.new(@request_context, nil).effective_sysadmin?(@user, @role_limit)
-        # Only collection managers and above can download bitstreams outside
-        # of the content bundle.
-        unless @user&.effective_manager?(@owning_item.primary_collection)
+        # Only collection admins and above can download bitstreams outside of
+        # the content bundle.
+        unless @user&.effective_collection_admin?(@owning_item.primary_collection)
           @relation = @relation.where(bundle: Bitstream::Bundle::CONTENT)
         end
         @relation = @relation.where("role <= ?", @role_limit) if @role_limit
@@ -115,12 +115,12 @@ class BitstreamPolicy < ApplicationPolicy
       return { authorized: false,
                reason:     "This file's owning item is not authorized." }
     elsif @bitstream.bundle != Bitstream::Bundle::CONTENT &&
-      (!@user&.effective_manager?(@bitstream.item.effective_primary_collection) ||
-        (@role_limit && @role_limit < Role::COLLECTION_MANAGER))
+      (!@user&.effective_collection_admin?(@bitstream.item.effective_primary_collection) ||
+        (@role_limit && @role_limit < Role::COLLECTION_ADMINISTRATOR))
       return {
         authorized: false,
-        reason:     "You must be a manager of the primary collection in "\
-                    "which the file's item resides."
+        reason:     "You must be an administrator of the primary collection "\
+                    "in which the file's item resides."
       }
     elsif @bitstream.item.current_embargoes.any?
       @bitstream.item.current_embargoes.each do |embargo|
@@ -133,7 +133,7 @@ class BitstreamPolicy < ApplicationPolicy
       (!@user && @bitstream.role > Role::LOGGED_OUT) ||
       (@user && @bitstream.role >= Role::SYSTEM_ADMINISTRATOR) ||
       (@user && @bitstream.role >= Role::COLLECTION_SUBMITTER && !@user.effective_submitter?(@bitstream.item.effective_primary_collection)) ||
-      (@user && @bitstream.role >= Role::COLLECTION_MANAGER && !@user.effective_manager?(@bitstream.item.effective_primary_collection)) ||
+      (@user && @bitstream.role >= Role::COLLECTION_ADMINISTRATOR && !@user.effective_collection_admin?(@bitstream.item.effective_primary_collection)) ||
       (@user && @bitstream.role >= Role::UNIT_ADMINISTRATOR && !@user.effective_unit_admin?(@bitstream.item.effective_primary_unit)) ||
       (@user && @bitstream.role >= Role::INSTITUTION_ADMINISTRATOR && !@user.effective_institution_admin?(@bitstream.institution))
       return { authorized: false,
@@ -174,7 +174,8 @@ class BitstreamPolicy < ApplicationPolicy
       return LOGGED_OUT_RESULT
     end
     @bitstream.item.collections.each do |col|
-      if @role_limit >= Role::COLLECTION_MANAGER && @user.effective_manager?(col)
+      if @role_limit >= Role::COLLECTION_ADMINISTRATOR &&
+        @user.effective_collection_admin?(col)
         return AUTHORIZED_RESULT
       end
     end
@@ -191,9 +192,9 @@ class BitstreamPolicy < ApplicationPolicy
       return LOGGED_OUT_RESULT
     else
       @bitstream.item.collections.each do |collection|
-        # collection managers can update bitstreams within their collections
-        return AUTHORIZED_RESULT if @role_limit >= Role::COLLECTION_MANAGER &&
-          @user.effective_manager?(collection)
+        # collection admins can update bitstreams within their collections
+        return AUTHORIZED_RESULT if @role_limit >= Role::COLLECTION_ADMINISTRATOR &&
+          @user.effective_collection_admin?(collection)
         # unit admins can update bitstreams within their units
         collection.units.each do |unit|
           return AUTHORIZED_RESULT if @role_limit >= Role::UNIT_ADMINISTRATOR &&
@@ -202,9 +203,8 @@ class BitstreamPolicy < ApplicationPolicy
       end
     end
     { authorized: false,
-      reason:     "You must be either an administrator of a unit, or a "\
-                  "manager of a collection, containing the item associated "\
-                  "with this file." }
+      reason:     "You must be an administrator of a unit or collection "\
+                  "containing the item associated with this file." }
   end
 
   def viewer

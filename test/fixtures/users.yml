@@ -165,12 +165,12 @@ uiuc_sysadmin:
   user_groups:
     - sysadmin
 
-uiuc_collection1_collection1_manager:
+uiuc_collection1_collection1_admin:
   type:        LocalUser
   institution: uiuc
-  uid:         uiuc_collection1_collection1_manager@illinois.edu
-  name:        Collection1 Collection1 Manager
-  email:       uiuc_collection1_collection1_manager@illinois.edu
+  uid:         uiuc_collection1_collection1_admin@illinois.edu
+  name:        Collection1 Collection1 Administrator
+  email:       uiuc_collection1_collection1_admin@illinois.edu
   phone:       (888) 555-1234
   enabled:     true
 

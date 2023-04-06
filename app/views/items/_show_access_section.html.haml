@@ -11,12 +11,12 @@
             %li= link_to(user.name, "mailto:#{user.email}")
       - else
         None
-    %dt Collection Managers
+    %dt Collection Administrators
     %dd
-      - managers = @item.all_collection_managers
-      - if managers.any?
+      - administrators = @item.all_collection_admins
+      - if administrators.any?
         %ul
-          - managers.each do |user|
+          - administrators.each do |user|
             %li= link_to(user.name, "mailto:#{user.email}")
       - else
         None

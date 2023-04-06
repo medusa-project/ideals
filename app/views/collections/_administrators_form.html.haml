@@ -14,13 +14,13 @@
   %h5 Groups
 
   .mb-3
-    = hidden_field_tag "managing_user_group_ids[]"
+    = hidden_field_tag "administering_user_group_ids[]"
     - UserGroup.order(:name).each do |user_group|
       .form-check
-        = check_box_tag "managing_user_group_ids[]", user_group.id,
-                        f.object.manager_groups.where(user_group: user_group).any?,
-                        { id: "managing_user_group_ids_#{user_group.id}", class: "form-check-input" }
-        = label_tag "managing_user_group_ids_#{user_group.id}",
+        = check_box_tag "administering_user_group_ids[]", user_group.id,
+                        f.object.administrator_groups.where(user_group: user_group).any?,
+                        { id: "administering_user_group_ids_#{user_group.id}", class: "form-check-input" }
+        = label_tag "administering_user_group_ids_#{user_group.id}",
           user_group.name, class: "form-check-label"
 
   %hr
@@ -28,11 +28,11 @@
   %h5 Users
 
   .mb-3
-    - user_strings = f.object.managing_users.each.map(&:to_autocomplete)
+    - user_strings = f.object.administering_users.each.map(&:to_autocomplete)
     - user_strings << "" if user_strings.empty?
     - user_strings.each do |user_str|
       .input-group.mb-3.user
-        = text_field_tag "managers[]", user_str,
+        = text_field_tag "administrators[]", user_str,
                          autocomplete: "off",
                          class: "form-control"
         %button.btn.btn-sm.btn-outline-danger.remove{type: "button"}

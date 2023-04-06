@@ -89,10 +89,10 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 1, @instance.all_access_embargoes.length
   end
 
-  # all_collection_managers()
+  # all_collection_admins()
 
-  test "all_collection_managers() returns the expected users" do
-    assert_equal 1, @instance.all_collection_managers.length
+  test "all_collection_admins() returns the expected users" do
+    assert_equal 1, @instance.all_collection_admins.length
   end
 
   # all_collection_submitters()

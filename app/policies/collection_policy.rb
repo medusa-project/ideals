@@ -25,7 +25,7 @@ class CollectionPolicy < ApplicationPolicy
   ##
   # Invoked from {CollectionsController#update} to ensure that a user cannot
   # move a collection to another collection of which s/he is not an effective
-  # manager.
+  # administrator.
   #
   def change_parent(new_parent_id)
     if effective_sysadmin?(@user, @role_limit)
@@ -36,13 +36,13 @@ class CollectionPolicy < ApplicationPolicy
       return LOGGED_OUT_RESULT
     elsif new_parent_id == @collection.parent_id # no change
       return AUTHORIZED_RESULT
-    elsif @role_limit >= Role::COLLECTION_MANAGER &&
-      @user.effective_manager?(Collection.find(new_parent_id))
+    elsif @role_limit >= Role::COLLECTION_ADMINISTRATOR &&
+      @user.effective_collection_admin?(Collection.find(new_parent_id))
       return AUTHORIZED_RESULT
     end
     { authorized: false,
-      reason: "You must be a manager of the desired collection in order to "\
-              "move it into that collection." }
+      reason: "You must be an administrator of the desired collection in "\
+              "order to move it into that collection." }
   end
 
   def children
@@ -50,7 +50,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def create
-    effective_manager
+    effective_admin
   end
 
   def delete
@@ -73,7 +73,7 @@ class CollectionPolicy < ApplicationPolicy
     update
   end
 
-  def edit_managers
+  def edit_administrators
     update
   end
 
@@ -90,7 +90,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def export_items
-    effective_manager
+    effective_admin
   end
 
   def index
@@ -131,7 +131,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def show_extended_about
-    effective_manager
+    effective_admin
   end
 
   def show_items
@@ -139,7 +139,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def show_review_submissions
-    effective_manager
+    effective_admin
   end
 
   def show_statistics
@@ -172,7 +172,7 @@ class CollectionPolicy < ApplicationPolicy
 
   private
 
-  def effective_manager
+  def effective_admin
     if effective_sysadmin?(@user, @role_limit) ||
       effective_institution_admin?(@user, @ctx_institution, @role_limit)
       return AUTHORIZED_RESULT
@@ -181,11 +181,13 @@ class CollectionPolicy < ApplicationPolicy
     elsif @collection.kind_of?(Collection) &&
       @ctx_institution != @collection.institution
       return WRONG_SCOPE_RESULT
-    elsif @role_limit >= Role::COLLECTION_MANAGER && @collection.kind_of?(Collection) &&
-      @user.effective_manager?(@collection)
+    elsif @role_limit >= Role::COLLECTION_ADMINISTRATOR &&
+      @collection.kind_of?(Collection) &&
+      @user.effective_collection_admin?(@collection)
       return AUTHORIZED_RESULT
     end
-    { authorized: false, reason: "You must be a manager of the collection." }
+    { authorized: false,
+      reason: "You must be an administrator of the collection." }
   end
 
   def effective_submitter

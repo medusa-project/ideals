@@ -51,10 +51,10 @@ class UserGroup < ApplicationRecord
 
   has_many :ad_groups
   has_many :bitstream_authorizations
+  has_many :collection_administrator_groups
   has_many :departments
   has_many :email_patterns
   has_many :hosts
-  has_many :manager_groups
   has_many :submitter_groups
   has_many :unit_administrator_groups
 

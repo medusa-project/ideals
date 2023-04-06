@@ -122,13 +122,13 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.create?
   end
 
-  test "create?() authorizes collection managers" do
+  test "create?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution)
 
     collection = @item.primary_collection
-    collection.managing_users << user
+    collection.administering_users << user
     collection.save!
 
     policy = ItemPolicy.new(context, @item)
@@ -286,13 +286,13 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.delete_bitstreams?
   end
 
-  test "delete_bitstreams?() authorizes managers of the bitstream's collection
-  to submitting items" do
+  test "delete_bitstreams?() authorizes administrators of the bitstream's
+  collection to submitting items" do
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
     collection = collections(:uiuc_collection1)
-    collection.managing_users << doing_user
+    collection.administering_users << doing_user
     collection.save!
 
     @item.update!(submitter:          users(:southwest), # somebody else
@@ -303,13 +303,13 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.delete_bitstreams?
   end
 
-  test "delete_bitstreams?() does not authorize managers of the bitstream's
-  collection to non-submitting items" do
+  test "delete_bitstreams?() does not authorize administrators of the
+  bitstream's collection to non-submitting items" do
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
     collection = collections(:uiuc_collection1)
-    collection.managing_users << doing_user
+    collection.administering_users << doing_user
     collection.save!
 
     @item.update!(submitter:          users(:southwest), # somebody else
@@ -511,12 +511,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.edit_embargoes?
   end
 
-  test "edit_embargoes?() authorizes collection managers" do
+  test "edit_embargoes?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.edit_embargoes?
@@ -575,12 +575,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.edit_membership?
   end
 
-  test "edit_membership?() authorizes collection managers" do
+  test "edit_membership?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.edit_membership?
@@ -639,12 +639,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.edit_metadata?
   end
 
-  test "edit_metadata?() authorizes collection managers" do
+  test "edit_metadata?() authorizes collection administrators" do
     user       = users(:southwest)
     context    = RequestContext.new(user:        user,
                                     institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.edit_metadata?
@@ -703,12 +703,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.edit_properties?
   end
 
-  test "edit_properties?() authorizes collection managers" do
+  test "edit_properties?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.edit_properties?
@@ -962,12 +962,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.ingest?
   end
 
-  test "ingest?() authorizes collection managers" do
+  test "ingest?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.ingest?
@@ -1262,12 +1262,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show_access?
   end
 
-  test "show_access?() authorizes collection managers" do
+  test "show_access?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.show_access?
@@ -1326,12 +1326,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show_all_metadata?
   end
 
-  test "show_all_metadata?() authorizes collection managers" do
+  test "show_all_metadata?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.show_all_metadata?
@@ -1383,19 +1383,19 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show_collections?
   end
 
-  test "show_collections?() authorizes collection managers" do
+  test "show_collections?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.show_collections?
   end
 
   test "show_collections?() does not authorize access to withdrawn items by
-  roles beneath collection manager" do
+  roles beneath collection administrator" do
     @item   = items(:southwest_unit1_collection1_withdrawn)
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -1405,7 +1405,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_collections?() does not authorize access to buried items by
-  roles beneath collection manager" do
+  roles beneath collection administrator" do
     @item   = items(:southwest_unit1_collection1_buried)
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -1468,12 +1468,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show_embargoes?
   end
 
-  test "show_embargoes?() authorizes collection managers" do
+  test "show_embargoes?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.show_embargoes?
@@ -1532,12 +1532,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show_events?
   end
 
-  test "show_events?() authorizes collection managers" do
+  test "show_events?() authorizes collection administrators" do
     user       = users(:southwest)
     context    = RequestContext.new(user:        user,
                                     institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.show_events?
@@ -1631,19 +1631,19 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show_metadata?
   end
 
-  test "show_metadata?() authorizes collection managers" do
+  test "show_metadata?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.show_metadata?
   end
 
   test "show_metadata?() does not authorize access to withdrawn items by
-  roles beneath collection manager" do
+  roles beneath collection administrator" do
     @item   = items(:southwest_unit1_collection1_withdrawn)
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -1653,7 +1653,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_metadata?() does not authorize access to buried items by
-  roles beneath collection manager" do
+  roles beneath collection administrator" do
     @item   = items(:southwest_unit1_collection1_buried)
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -1716,12 +1716,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.show_properties?
   end
 
-  test "show_properties?() authorizes collection managers" do
+  test "show_properties?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.show_properties?
@@ -1920,12 +1920,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
-  test "update?() authorizes managers of the submission's collection" do
+  test "update?() authorizes administrators of the submission's collection" do
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
     collection = collections(:uiuc_collection1)
-    collection.managing_users << doing_user
+    collection.administering_users << doing_user
     collection.save!
     @item.submitter          = users(:southwest) # somebody else
     @item.primary_collection = collection
@@ -2010,12 +2010,12 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert policy.upload_bitstreams?
   end
 
-  test "upload_bitstreams?() authorizes collection managers" do
+  test "upload_bitstreams?() authorizes collection administrators" do
     user       = users(:southwest)
     context    = RequestContext.new(user:        user,
                                     institution: @item.institution)
     collection = @item.primary_collection
-    collection.managers.build(user: user)
+    collection.administrators.build(user: user)
     collection.save!
     policy = ItemPolicy.new(context, @item)
     assert policy.upload_bitstreams?

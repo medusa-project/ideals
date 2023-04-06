@@ -38,9 +38,9 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.all_files?
   end
 
-  test "all_files?() authorizes collection managers" do
+  test "all_files?() authorizes collection administrators" do
     user = users(:southwest)
-    user.managing_collections << @collection
+    user.administering_collections << @collection
     user.save!
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -176,12 +176,12 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.create?
   end
 
-  test "create?() authorizes collection managers" do
+  test "create?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
 
-    @collection.managing_users << user
+    @collection.administering_users << user
     @collection.save!
 
     policy = CollectionPolicy.new(context, @collection)
@@ -298,46 +298,46 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_collection_membership?
   end
 
-  # edit_managers?()
+  # edit_administrators?()
 
-  test "edit_managers?() returns false with a nil user" do
+  test "edit_administrators?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @collection.institution)
     policy = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_managers?
+    assert !policy.edit_administrators?
   end
 
-  test "edit_managers?() does not authorize an incorrect scope" do
+  test "edit_administrators?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
     policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_managers?
+    assert !policy.edit_administrators?
   end
 
-  test "edit_managers?() is restrictive by default" do
+  test "edit_administrators?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_managers?
+    assert !policy.edit_administrators?
   end
 
-  test "edit_managers?() authorizes sysadmins" do
+  test "edit_administrators?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy   = CollectionPolicy.new(context, @collection)
-    assert policy.edit_managers?
+    assert policy.edit_administrators?
   end
 
-  test "edit_managers?() respects role limits" do
+  test "edit_administrators?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_managers?
+    assert !policy.edit_administrators?
   end
 
   # edit_properties?()
@@ -498,9 +498,9 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.export_items?
   end
 
-  test "export_items?() authorizes collection managers" do
+  test "export_items?() authorizes collection administrators" do
     user = users(:southwest)
-    user.managing_collections << @collection
+    user.administering_collections << @collection
     user.save!
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -763,9 +763,9 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.show_extended_about?
   end
 
-  test "show_extended_about?() authorizes collection managers" do
+  test "show_extended_about?() authorizes collection administrators" do
     user = users(:southwest)
-    user.managing_collections << @collection
+    user.administering_collections << @collection
     user.save!
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -840,9 +840,9 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.show_review_submissions?
   end
 
-  test "show_review_submissions?() authorizes collection managers" do
+  test "show_review_submissions?() authorizes collection administrators" do
     user = users(:southwest)
-    user.managing_collections << @collection
+    user.administering_collections << @collection
     user.save!
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -917,9 +917,9 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.show_submissions_in_progress?
   end
 
-  test "show_submissions_in_progress?() authorizes collection managers" do
+  test "show_submissions_in_progress?() authorizes collection administrators" do
     user    = users(:southwest)
-    user.managing_collections << @collection
+    user.administering_collections << @collection
     user.save!
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -1007,12 +1007,12 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.submit_item?
   end
 
-  test "submit_item?() authorizes collection managers" do
+  test "submit_item?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
 
-    @collection.managing_users << user
+    @collection.administering_users << user
     @collection.save!
 
     policy = CollectionPolicy.new(context, @collection)
@@ -1136,12 +1136,12 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.update?
   end
 
-  test "update?() authorizes collection managers" do
+  test "update?() authorizes collection administrators" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
 
-    @collection.managing_users << user
+    @collection.administering_users << user
     @collection.save!
 
     policy = CollectionPolicy.new(context, @collection)

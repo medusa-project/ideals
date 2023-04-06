@@ -283,13 +283,13 @@ class Item < ApplicationRecord
   end
 
   ##
-  # @return [Enumerable<User>] All managers of all owning collections,
+  # @return [Enumerable<User>] All administrators of all owning collections,
   #                            including the primary one.
   #
-  def all_collection_managers
+  def all_collection_admins
     bucket = Set.new
     collections.each do |col|
-      bucket += col.managing_users
+      bucket += col.administering_users
     end
     bucket
   end

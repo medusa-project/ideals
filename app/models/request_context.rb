@@ -39,9 +39,9 @@ class RequestContext
   ##
   # One of the {Role} constant values indicating the limit of the {User}'s
   # privileges. For example, if the user is a {User#sysadmin? system
-  # administrator}, but the role limit is {Role#COLLECTION_MANAGER}, the policy
-  # method will consider the user's privileges only up to that level. This
-  # enables the user to "role play" as someone with different privileges.
+  # administrator}, but the role limit is {Role#COLLECTION_ADMINISTRATOR}, the
+  # policy method will consider the user's privileges only up to that level.
+  # This enables the user to "role play" as someone with different privileges.
   #
   # @return [Integer]
   #

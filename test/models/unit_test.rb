@@ -363,26 +363,27 @@ class UnitTest < ActiveSupport::TestCase
     end
   end
 
-  test "move_to() disassociates managers and submitters from collections" do
+  test "move_to() disassociates administrators and submitters from
+  collections" do
     setup_s3
     institution     = institutions(:northeast)
-    # First, make sure there are some managers & submitters to remove.
-    manager_count   = 0
+    # First, make sure there are some administrators & submitters to remove.
+    admin_count     = 0
     submitter_count = 0
     ([@instance] + @instance.units).each do |unit|
       unit.collections.each do |collection|
-        manager_count += collection.managers.count
+        admin_count += collection.administrators.count
         submitter_count += collection.submitters.count
       end
     end
-    assert manager_count > 0
+    assert admin_count > 0
     assert submitter_count > 0
 
     @instance.move_to(institution: institution,
                       user:        users(:uiuc_sysadmin))
     ([@instance] + @instance.units).each do |unit|
       unit.collections.each do |collection|
-        assert_equal 0, collection.managers.count
+        assert_equal 0, collection.administrators.count
         assert_equal 0, collection.submitters.count
       end
     end

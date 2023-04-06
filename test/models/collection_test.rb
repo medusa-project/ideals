@@ -53,10 +53,10 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal collection, children.first.parent
   end
 
-  # all_managing_groups()
+  # all_administering_groups()
 
-  test "all_managing_groups() returns the correct groups" do
-    groups = collections(:uiuc_collection1_collection1_collection1).all_managing_groups
+  test "all_administering_groups() returns the correct groups" do
+    groups = collections(:uiuc_collection1_collection1_collection1).all_administering_groups
     assert_equal 0, groups.length
   end
 
@@ -301,24 +301,25 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal expected, actual[1]['dl_count']
   end
 
-  # effective_managers()
+  # effective_administrators()
 
-  test "effective_managers() includes sysadmins" do
-    @instance.effective_managers.include?(users(:example_sysadmin))
+  test "effective_administrators() includes sysadmins" do
+    @instance.effective_administrators.include?(users(:example_sysadmin))
   end
 
-  test "effective_managers() includes unit admins" do
-    @instance.effective_managers.include?(@instance.primary_unit.administering_users.first)
+  test "effective_administrators() includes unit admins" do
+    @instance.effective_administrators.include?(@instance.primary_unit.administering_users.first)
   end
 
-  test "effective_managers() includes managers of parent collections" do
+  test "effective_administrators() includes administrators of parent
+  collections" do
     parent    = collections(:uiuc_collection1)
     @instance = collections(:uiuc_collection1_collection1)
-    @instance.effective_managers.include?(parent.managing_users.first)
+    @instance.effective_administrators.include?(parent.administering_users.first)
   end
 
-  test "effective_managers() includes direct managers" do
-    @instance.effective_managers.include?(@instance.managing_users.first)
+  test "effective_administrators() includes direct administrators" do
+    @instance.effective_administrators.include?(@instance.administering_users.first)
   end
 
   # effective_metadata_profile()
@@ -370,14 +371,14 @@ class CollectionTest < ActiveSupport::TestCase
     @instance.effective_submitters.include?(@instance.primary_unit.administering_users.first)
   end
 
-  test "effective_submitters() includes managers of parent collections" do
+  test "effective_submitters() includes administrators of parent collections" do
     parent    = collections(:uiuc_collection1)
     @instance = collections(:uiuc_collection1_collection1)
-    @instance.effective_submitters.include?(parent.managing_users.first)
+    @instance.effective_submitters.include?(parent.administering_users.first)
   end
 
-  test "effective_submitters() includes direct managers" do
-    @instance.effective_submitters.include?(@instance.managing_users.first)
+  test "effective_submitters() includes direct administrators" do
+    @instance.effective_submitters.include?(@instance.administering_users.first)
   end
 
   test "effective_submitters() includes submitters into parent collections" do

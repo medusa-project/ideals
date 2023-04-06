@@ -54,15 +54,16 @@
 #
 # # Relationships
 #
+# * `administrators`      References the {CollectionAdministrator}s that are
+#                         allowed to manage the instance. This does not include
+#                         all "effective" administrators, such as
+#                         administrators of owning units or system
+#                         administrators; see
+#                         {User#effective_collection_admin()?}.
+# * `administering_users` More useful alternative to {administrators} that
+#                         returns {User}s instead.
 # * `collections`         References zero-to-many sub-{Collection}s.
 # * `items`               References all {Item}s contained within the instance.
-# * `managers`            References the {CollectionManager}s that are allowed
-#                         to manage the instance. This does not include all
-#                         "effective" managers, such as administrators of
-#                         owning units or system administrators; see
-#                         {User#effective_manager()?}.
-# * `managing_users`      More useful alternative to {managers} that returns
-#                         {User}s instead.
 # * `metadata_profile`    References the {MetadataProfile} directly assigned
 #                         to the instance, if any (see the documentation of the
 #                         `metadata_profile_id` attribute).
@@ -84,6 +85,7 @@ class Collection < ApplicationRecord
   include Handled
 
   class IndexFields
+    ADMINISTRATORS    = "i_administrator_id"
     BURIED            = "b_buried"
     CLASS             = OpenSearchIndex::StandardFields::CLASS
     CREATED           = OpenSearchIndex::StandardFields::CREATED
@@ -95,7 +97,6 @@ class Collection < ApplicationRecord
     INTRODUCTION      = "t_introduction"
     LAST_INDEXED      = OpenSearchIndex::StandardFields::LAST_INDEXED
     LAST_MODIFIED     = OpenSearchIndex::StandardFields::LAST_MODIFIED
-    MANAGERS          = "i_manager_id"
     PARENT            = "i_parent_id"
     PRIMARY_UNIT      = "i_primary_unit_id"
     PROVENANCE        = "t_provenance"
@@ -107,27 +108,27 @@ class Collection < ApplicationRecord
     UNITS             = "i_units"
   end
 
-  has_many :collections, foreign_key: "parent_id",
-           dependent: :restrict_with_exception
-  has_one :handle
-  has_many :collection_item_memberships
   belongs_to :institution
-  has_many :imports
-  has_many :items, through: :collection_item_memberships
   belongs_to :metadata_profile, inverse_of: :collections, optional: true
-  has_many :manager_groups
-  has_many :managing_groups, through: :manager_groups,
-           class_name: "UserGroup", source: :user_group
-  has_many :managers, class_name: "CollectionManager"
-  has_many :managing_users, through: :managers,
-           class_name: "User", source: :user
   belongs_to :parent, class_name: "Collection",
              foreign_key: "parent_id", optional: true
+  belongs_to :submission_profile, inverse_of: :collections, optional: true
+  has_one :handle
   has_one :primary_unit_membership, -> { where(primary: true) },
           class_name: "UnitCollectionMembership"
   has_one :primary_unit, through: :primary_unit_membership,
           class_name: "Unit", source: :unit
-  belongs_to :submission_profile, inverse_of: :collections, optional: true
+  has_many :administrator_groups, class_name: "CollectionAdministratorGroup"
+  has_many :administrators, class_name: "CollectionAdministrator"
+  has_many :administering_users, through: :administrators,
+           class_name: "User", source: :user
+  has_many :collections, foreign_key: "parent_id",
+           dependent: :restrict_with_exception
+  has_many :collection_item_memberships
+  has_many :imports
+  has_many :items, through: :collection_item_memberships
+  has_many :administering_groups, through: :administrator_groups,
+           class_name: "UserGroup", source: :user_group
   has_many :submitter_groups
   has_many :submitting_groups, through: :submitter_groups,
            class_name: "UserGroup", source: :user_group
@@ -183,11 +184,11 @@ class Collection < ApplicationRecord
   ##
   # @return [Enumerable<UserGroup>]
   #
-  def all_managing_groups
+  def all_administering_groups
     groups  = Set.new
-    groups += self.managing_groups
+    groups += self.administering_groups
     all_parents.each do |parent|
-      groups += parent.managing_groups
+      groups += parent.administering_groups
     end
     groups
   end
@@ -342,9 +343,10 @@ class Collection < ApplicationRecord
   end
 
   ##
-  # @return [Set<User>] All users who are effectively managers of the instance.
+  # @return [Set<User>] All users who are effectively administrators of the
+  #                     instance.
   #
-  def effective_managers
+  def effective_administrators
     set = Set.new
     # Add sysadmins.
     set += UserGroup.sysadmin.all_users
@@ -352,11 +354,11 @@ class Collection < ApplicationRecord
     self.units.each do |unit|
       set += unit.all_administrators
     end
-    # Add direct managers.
-    set += self.managing_users
-    # Add managers of parent collections.
+    # Add direct administrators.
+    set += self.administering_users
+    # Add administrators of parent collections.
     all_parents.each do |parent|
-      set += parent.managing_users
+      set += parent.administering_users
     end
     set
   end
@@ -387,7 +389,7 @@ class Collection < ApplicationRecord
   #
   def effective_submitters
     set = Set.new
-    set += effective_managers
+    set += effective_administrators
     # Add direct submitters.
     set += self.submitting_users
     # Add submitters into parent collections.

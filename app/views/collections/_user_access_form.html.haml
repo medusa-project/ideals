@@ -12,19 +12,19 @@
   = f.hidden_field :id, value: f.object.id
 
   .mb-3
-    %h5 Managers
-    - user_strings = f.object.managing_users.each.map(&:to_autocomplete)
+    %h5 Administrators
+    - user_strings = f.object.administering_users.each.map(&:to_autocomplete)
     - user_strings << "" if user_strings.empty?
     - user_strings.each do |user_str|
       .input-group.mb-3.user
-        = text_field_tag "managers[]", user_str,
+        = text_field_tag "administrators[]", user_str,
                          autocomplete: "off",
                          class: "form-control"
         %button.btn.btn-sm.btn-outline-danger.remove{type: "button"}
           %i.fa.fa-minus
           Remove
         .dropdown-menu
-          - # populated by javascript
+          -# populated by javascript
     %button.btn.btn-sm.btn-outline-success.add
       %i.fa.fa-plus
       Add Submitter

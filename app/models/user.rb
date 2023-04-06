@@ -47,14 +47,15 @@ class User < ApplicationRecord
              foreign_key: "local_identity_id", inverse_of: :user, optional: true
   belongs_to :institution, optional: true
   has_one :department
+  has_many :collection_administrators, class_name: "CollectionAdministrator"
   has_many :events
   has_many :institution_administrators
   has_many :administering_institutions, through: :institution_administrators,
            source: :institution
   has_many :invitees, inverse_of: :inviting_user, foreign_key: :inviting_user_id
   has_many :logins
-  has_many :managers, class_name: "CollectionManager"
-  has_many :managing_collections, through: :managers, source: :collection
+  has_many :administering_collections, through: :collection_administrators,
+           source: :collection
   has_many :primary_administering_units, class_name: "Unit",
            inverse_of: :primary_administrator
   has_many :submitted_items, class_name: "Item", foreign_key: "submitter_id",
@@ -107,22 +108,27 @@ class User < ApplicationRecord
   end
 
   ##
-  # @param institution [Institution]
-  # @return [Boolean] Whether the instance is effectively an administrator of
-  #                   the given institution.
+  # @param collection [Collection]
+  # @return [Boolean] Whether the instance is a direct administrator of the
+  #                   given collection.
+  # @see #effective_collection_admin?
   #
-  def effective_institution_admin?(institution)
-    sysadmin? || institution_admin?(institution)
+  def collection_admin?(collection)
+    return true if collection.administrators.where(user_id: self.id).count > 0
+    collection.administering_groups.each do |group|
+      return true if self.belongs_to_user_group?(group)
+    end
+    false
   end
 
   ##
   # @param collection [Collection]
-  # @return [Boolean] Whether the instance is an effective manager of the given
-  #                   collection, either directly or as a unit or system
+  # @return [Boolean] Whether the instance is an effective administrator of the
+  #                   given collection, either directly or as a unit or system
   #                   administrator.
-  # @see #manager?
+  # @see #collection_administrator?
   #
-  def effective_manager?(collection) # TODO: rename to effective_collection_manager?
+  def effective_collection_admin?(collection)
     # Check for sysadmin.
     return true if sysadmin?
     # Check for institution admin.
@@ -131,13 +137,22 @@ class User < ApplicationRecord
     collection.all_units.each do |unit|
       return true if effective_unit_admin?(unit)
     end
-    # Check for manager of the collection itself.
-    return true if manager?(collection)
+    # Check for administrator of the collection itself.
+    return true if collection_admin?(collection)
     # Check all of its parent collections.
     collection.all_parents.each do |parent|
-      return true if manager?(parent)
+      return true if collection_admin?(parent)
     end
     false
+  end
+
+  ##
+  # @param institution [Institution]
+  # @return [Boolean] Whether the instance is effectively an administrator of
+  #                   the given institution.
+  #
+  def effective_institution_admin?(institution)
+    sysadmin? || institution_admin?(institution)
   end
 
   ##
@@ -152,7 +167,7 @@ class User < ApplicationRecord
     end
     collections  = Set.new
     collections += self.administering_units.map(&:collections).flatten.reject(&:buried)
-    collections += self.managing_collections
+    collections += self.administering_collections
     collections += self.submitting_collections
     collections
   end
@@ -160,12 +175,12 @@ class User < ApplicationRecord
   ##
   # @param collection [Collection]
   # @return [Boolean] Whether the instance is an effective submitter in the
-  #                   given collection, either directly or as a collection
-  #                   manager or unit, institution, or system administrator.
+  #                   given collection, either directly or as a collection,
+  #                   unit, institution, or system administrator.
   # @see #submitter?
   #
   def effective_submitter?(collection) # TODO: rename to effective_collection_submitter?
-    return true if effective_manager?(collection)
+    return true if effective_collection_admin?(collection)
     # Check the collection itself.
     return true if submitter?(collection)
     # Check all of its parent collections.
@@ -205,20 +220,6 @@ class User < ApplicationRecord
     return true if institution.administrators.where(user_id: self.id).count > 0
     # Check for membership in an administering user group.
     institution.administering_groups.each do |group|
-      return true if self.belongs_to_user_group?(group)
-    end
-    false
-  end
-
-  ##
-  # @param collection [Collection]
-  # @return [Boolean] Whether the instance is a direct manager of the given
-  #                   collection.
-  # @see #effective_manager?
-  #
-  def manager?(collection) # TODO: rename to collection_manager?
-    return true if collection.managers.where(user_id: self.id).count > 0
-    collection.managing_groups.each do |group|
       return true if self.belongs_to_user_group?(group)
     end
     false

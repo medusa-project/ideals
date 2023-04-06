@@ -3,8 +3,8 @@
 ##
 # Conceptual "role" into which a {User} can be categorized. This exists mainly
 # to support "role playing": for example, a system administrator masquerading
-# as a lesser-privileged user (like a collection manager) in order to view a
-# web page as a lesser-privileged user would see it, without having to
+# as a lesser-privileged user (like a collection administrator) in order to
+# view a web page as a lesser-privileged user would see it, without having to
 # literally alter their own privileges.
 #
 # @see RequestContext
@@ -18,7 +18,7 @@ class Role
   SYSTEM_ADMINISTRATOR      = 300
   INSTITUTION_ADMINISTRATOR = 250
   UNIT_ADMINISTRATOR        = 200
-  COLLECTION_MANAGER        = 150
+  COLLECTION_ADMINISTRATOR  = 150
   COLLECTION_SUBMITTER      = 100
   LOGGED_IN                 = 50
   LOGGED_OUT                = 0
@@ -43,7 +43,7 @@ class Role
     when 200
       "Unit Administrator"
     when 150
-      "Collection Manager"
+      "Collection Administrator"
     when 100
       "Collection Submitter"
     when 50

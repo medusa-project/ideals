@@ -200,9 +200,9 @@ class ItemPolicy < ApplicationPolicy
       return WRONG_SCOPE_RESULT
     elsif @user
       @item.collections.each do |collection|
-        # collection managers can see access of items within their collections
-        return AUTHORIZED_RESULT if (!@role_limit || @role_limit >= Role::COLLECTION_MANAGER) &&
-          @user.effective_manager?(collection)
+        # collection admins can see access of items within their collections
+        return AUTHORIZED_RESULT if (!@role_limit || @role_limit >= Role::COLLECTION_ADMINISTRATOR) &&
+          @user.effective_collection_admin?(collection)
         # unit admins can see access of items within their units
         collection.units.each do |unit|
           return AUTHORIZED_RESULT if (!@role_limit || @role_limit >= Role::UNIT_ADMINISTRATOR) &&
@@ -211,9 +211,8 @@ class ItemPolicy < ApplicationPolicy
       end
     end
     { authorized: false,
-      reason:     "You must be either a manager of one of the collections, or "\
-                  "an administrator of one of the units, in which this item "\
-                  "resides." }
+      reason:     "You must be an administrator of one of the collections or "\
+                  "units in which this item resides." }
   end
 
   ##
@@ -293,7 +292,7 @@ class ItemPolicy < ApplicationPolicy
     result = show_access
     return result if result[:authorized]
     # At this point we know that the user's role is beneath that of collection
-    # manager, so they are authorized except to withdrawn/buried items.
+    # administrator, so they are authorized except to withdrawn/buried items.
     case @item.stage
     when Item::Stages::WITHDRAWN
       { authorized: false, reason: "This item has been withdrawn." }
@@ -340,9 +339,9 @@ class ItemPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif @user
       @item.collections.each do |collection|
-        # collection managers can update items within their collections
-        return AUTHORIZED_RESULT if (!@role_limit || @role_limit >= Role::COLLECTION_MANAGER) &&
-          @user.effective_manager?(collection)
+        # collection admins can update items within their collections
+        return AUTHORIZED_RESULT if (!@role_limit || @role_limit >= Role::COLLECTION_ADMINISTRATOR) &&
+          @user.effective_collection_admin?(collection)
         # unit admins can update items within their units
         collection.units.each do |unit|
           return AUTHORIZED_RESULT if (!@role_limit || @role_limit >= Role::UNIT_ADMINISTRATOR) &&
@@ -351,9 +350,9 @@ class ItemPolicy < ApplicationPolicy
       end
     end
     { authorized: false,
-      reason:     "You must be either the submitter of the item, a manager "\
-                  "of one of the collections in which it resides, or an "\
-                  "administrator of one of the units in which it resides." }
+      reason:     "You must be either the submitter of the item or an "\
+                  "administrator of one of the collections or units in "\
+                  "which it resides." }
   end
 
   def upload_bitstreams

@@ -58,12 +58,12 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     assert !policy.complete?
   end
 
-  test "complete?() authorizes managers of the item's collection" do
+  test "complete?() authorizes administrators of the item's collection" do
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
     collection = collections(:southwest_unit1_collection1)
-    collection.managing_users << doing_user
+    collection.administering_users << doing_user
     collection.save!
     @item.submitter          = users(:southwest) # somebody else
     @item.primary_collection = collection
@@ -184,12 +184,12 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  test "destroy?() authorizes managers of the submission's collection" do
+  test "destroy?() authorizes administrators of the submission's collection" do
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
     collection = collections(:southwest_unit1_collection1)
-    collection.managing_users << doing_user
+    collection.administering_users << doing_user
     collection.save!
     @item.submitter          = users(:southwest) # somebody else
     @item.primary_collection = collection
@@ -283,12 +283,12 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit?
   end
 
-  test "edit?() authorizes managers of the item's collection" do
+  test "edit?() authorizes administrators of the item's collection" do
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
     collection = collections(:southwest_unit1_collection1)
-    collection.managing_users << doing_user
+    collection.administering_users << doing_user
     collection.save!
     @item.submitter          = users(:southwest) # somebody else
     @item.primary_collection = collection
@@ -409,12 +409,12 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
-  test "update?() authorizes managers of the submission's collection" do
+  test "update?() authorizes administrators of the submission's collection" do
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
     collection = collections(:southwest_unit1_collection1)
-    collection.managing_users << doing_user
+    collection.administering_users << doing_user
     collection.save!
     @item.submitter          = users(:southwest) # somebody else
     @item.primary_collection = collection

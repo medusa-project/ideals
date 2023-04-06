@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ManagerGroupTest < ActiveSupport::TestCase
+class CollectionAdministratorGroupTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

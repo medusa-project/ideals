@@ -6,9 +6,9 @@ class CollectionsController < ApplicationController
 
   before_action :ensure_institution_host
   before_action :ensure_logged_in, only: [:all_files, :create, :delete,
+                                          :edit_administrators,
                                           :edit_collection_membership,
-                                          :edit_managers, :edit_properties,
-                                          :edit_submitters,
+                                          :edit_properties, :edit_submitters,
                                           :edit_unit_membership,
                                           :edit_user_access, :new,
                                           :show_access,
@@ -112,20 +112,20 @@ class CollectionsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /collections/:collection_id/edit-administrators`
+  # (XHR only)
+  #
+  def edit_administrators
+    render partial: 'collections/administrators_form',
+           locals: { collection: @collection }
+  end
+
+  ##
   # Responds to `GET /collections/:collection_id/edit-collection-membership`
   # (XHR only)
   #
   def edit_collection_membership
     render partial: 'collections/collection_membership_form',
-           locals: { collection: @collection }
-  end
-
-  ##
-  # Responds to `GET /collections/:collection_id/edit-managers`
-  # (XHR only)
-  #
-  def edit_managers
-    render partial: 'collections/managers_form',
            locals: { collection: @collection }
   end
 
@@ -443,7 +443,7 @@ class CollectionsController < ApplicationController
     if params[:collection] && params[:collection][:parent_id] &&
         !policy(@collection).change_parent?(params[:collection][:parent_id])
       raise NotAuthorizedError,"Cannot move a collection into a "\
-            "collection of which you are not an effective manager."
+            "collection of which you are not an effective administrator."
     end
     begin
       ActiveRecord::Base.transaction do
@@ -478,11 +478,11 @@ class CollectionsController < ApplicationController
   end
 
   def assign_user_groups
-    # Managers
-    if params[:managing_user_group_ids]
-      @collection.manager_groups.destroy_all
-      params[:managing_user_group_ids].select(&:present?).each do |user_group_id|
-        @collection.manager_groups.build(user_group_id: user_group_id).save!
+    # Administrators
+    if params[:administering_user_group_ids]
+      @collection.administrator_groups.destroy_all
+      params[:administering_user_group_ids].select(&:present?).each do |user_group_id|
+        @collection.administrator_groups.build(user_group_id: user_group_id).save!
       end
     end
     # Submitters
@@ -495,15 +495,15 @@ class CollectionsController < ApplicationController
   end
 
   def assign_users
-    # Managers
-    if params[:managers]
-      @collection.managers.destroy_all
-      if params[:managers].respond_to?(:each)
-        params[:managers].select(&:present?).each do |user_str|
+    # Administrators
+    if params[:administrators]
+      @collection.administrators.destroy_all
+      if params[:administrators].respond_to?(:each)
+        params[:administrators].select(&:present?).each do |user_str|
           user = User.from_autocomplete_string(user_str)
-          @collection.errors.add(:managers,
+          @collection.errors.add(:administrators,
                                "includes a user that does not exist") unless user
-          @collection.managing_users << user
+          @collection.administering_users << user
         end
       end
     end
