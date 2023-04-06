@@ -343,6 +343,27 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # @return [Set<UserGroup>] All user groups that are effectively
+  #                          administrators of the instance.
+  #
+  def effective_administering_groups
+    set = Set.new
+    # Add the sysadmin group.
+    set << UserGroup.sysadmin
+    # Add unit administrator groups.
+    self.units.each do |unit|
+      set += unit.all_administrator_groups
+    end
+    # Add direct administrator groups.
+    set += self.administering_groups
+    # Add administrator groups of parent collections.
+    all_parents.each do |parent|
+      set += parent.administering_groups
+    end
+    set
+  end
+
+  ##
   # @return [Set<User>] All users who are effectively administrators of the
   #                     instance.
   #

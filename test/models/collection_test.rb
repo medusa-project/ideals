@@ -301,6 +301,27 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal expected, actual[1]['dl_count']
   end
 
+  # effective_administering_groups()
+
+  test "effective_administering_groups() includes sysadmins" do
+    @instance.effective_administering_groups.include?(users(:example_sysadmin))
+  end
+
+  test "effective_administering_groups() includes unit admins" do
+    @instance.effective_administering_groups.include?(@instance.primary_unit.administrator_groups.first)
+  end
+
+  test "effective_administering_groups() includes administrators of parent
+  collections" do
+    parent    = collections(:uiuc_collection1)
+    @instance = collections(:uiuc_collection1_collection1)
+    @instance.effective_administering_groups.include?(parent.administrator_groups.first)
+  end
+
+  test "effective_administering_groups() includes direct administrators" do
+    @instance.effective_administering_groups.include?(@instance.administrator_groups.first)
+  end
+
   # effective_administrators()
 
   test "effective_administrators() includes sysadmins" do
