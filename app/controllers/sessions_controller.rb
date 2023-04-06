@@ -43,7 +43,6 @@ class SessionsController < ApplicationController
 
     if user&.id && user.enabled && user.institution == current_institution
       user.logins.build(ip_address: request.remote_ip,
-                        hostname:   request.hostname,
                         auth_hash:  auth).save!
       session[:user_id] = user.id
       redirect_to return_url
