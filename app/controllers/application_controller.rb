@@ -141,8 +141,13 @@ class ApplicationController < ActionController::Base
       role_limit         ||= Role::NO_LIMIT
       session[:role_limit] = role_limit
     end
+    begin
+      hostname = Resolv.getname(request.remote_ip)
+    rescue Resolv::ResolvError
+      hostname = nil
+    end
     RequestContext.new(client_ip:       request.remote_ip,
-                       client_hostname: request.hostname,
+                       client_hostname: hostname,
                        user:            current_user,
                        institution:     current_institution,
                        role_limit:      role_limit)
