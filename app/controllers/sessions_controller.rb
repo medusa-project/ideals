@@ -42,7 +42,13 @@ class SessionsController < ApplicationController
     end
 
     if user&.id && user.enabled && user.institution == current_institution
+      begin
+        hostname = Resolv.getname(request.remote_ip)
+      rescue Resolv::ResolvError
+        hostname = nil
+      end
       user.logins.build(ip_address: request.remote_ip,
+                        hostname:   hostname,
                         auth_hash:  auth).save!
       session[:user_id] = user.id
       redirect_to return_url

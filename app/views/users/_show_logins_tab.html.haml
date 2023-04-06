@@ -13,7 +13,12 @@
         .accordion-body
           %dl
             %dt Host
-            %dd= login.ip_address
+            %dd
+              - if login.hostname.present?
+                %code= login.hostname
+                = " (#{login.ip_address})"
+              - else
+                = login.ip_address
             - if current_user.sysadmin?
               %dt Auth Hash
               -# some of this content can be very wide and would mess up the page layout

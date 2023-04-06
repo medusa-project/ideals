@@ -91,6 +91,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, user.logins.count
     login = user.logins.first
     assert Time.now - login.created_at < 1.second
+    assert_not_nil login.hostname
     assert_not_nil login.ip_address
     assert_not_nil login.auth_hash
   end
