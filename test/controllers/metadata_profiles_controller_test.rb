@@ -61,9 +61,9 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     post metadata_profiles_path,
          xhr: true,
          params: {
-             metadata_profile: {
-                 name: "cats"
-             }
+           metadata_profile: {
+             name: "cats"
+           }
          }
     assert_response :forbidden
   end
@@ -74,10 +74,10 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     post metadata_profiles_path,
          xhr: true,
          params: {
-             metadata_profile: {
-                 name:           "cats",
-                 institution_id: user.institution.id
-             }
+           metadata_profile: {
+             name:           "cats",
+             institution_id: user.institution.id
+           }
          }
     assert_response :ok
   end
@@ -89,13 +89,13 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
       post metadata_profiles_path,
            xhr: true,
            params: {
-               metadata_profile: {
-                   institution_id: user.institution.id,
-                   name:           "cats"
-               },
-               elements: [
-                 institutions(:uiuc).registered_elements.find_by_name("dc:title").id
-               ]
+             metadata_profile: {
+               institution_id: user.institution.id,
+               name:           "cats"
+             },
+             elements: [
+               institutions(:uiuc).registered_elements.find_by_name("dc:title").id
+             ]
            }
     end
     profile = MetadataProfile.order(created_at: :desc).limit(1).first
@@ -108,9 +108,9 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     post metadata_profiles_path,
          xhr: true,
          params: {
-             metadata_profile: {
-                 name: ""
-             }
+           metadata_profile: {
+             name: ""
+           }
          }
     assert_response :bad_request
   end
@@ -144,11 +144,18 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "destroy() returns HTTP 302 for an existing profile" do
+  test "destroy() redirects to metadata profiles view for non-sysadmins" do
     log_in_as(users(:uiuc_admin))
     profile = metadata_profiles(:uiuc_unused)
     delete metadata_profile_path(profile)
     assert_redirected_to metadata_profiles_path
+  end
+
+  test "destroy() redirects to the profile's institution for sysadmins" do
+    log_in_as(users(:uiuc_sysadmin))
+    profile = metadata_profiles(:uiuc_unused)
+    delete metadata_profile_path(profile)
+    assert_redirected_to institution_path(profile.institution)
   end
 
   test "destroy() returns HTTP 404 for a missing profile" do
@@ -191,40 +198,6 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  # index()
-
-  test "index() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    get metadata_profiles_path
-    assert_response :not_found
-  end
-
-  test "index() redirects to root page for logged-out users" do
-    get metadata_profiles_path
-    assert_redirected_to @profile.institution.scope_url
-  end
-
-  test "index() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:uiuc))
-    get metadata_profiles_path
-    assert_response :forbidden
-  end
-
-  test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:uiuc_admin))
-    get metadata_profiles_path
-    assert_response :ok
-  end
-
-  test "index() respects role limits" do
-    log_in_as(users(:uiuc_admin))
-    get metadata_profiles_path
-    assert_response :ok
-
-    get metadata_profiles_path(role: Role::LOGGED_OUT)
-    assert_response :forbidden
-  end
-
   # new()
 
   test "new() returns HTTP 404 for unscoped requests" do
@@ -246,7 +219,12 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "new() returns HTTP 200 for authorized users" do
     log_in_as(users(:uiuc_admin))
-    get new_metadata_profile_path
+    get new_metadata_profile_path,
+        params: {
+          metadata_profile: {
+            institution_id: institutions(:uiuc).id
+          }
+        }
     assert_response :ok
   end
 
@@ -309,9 +287,10 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     patch metadata_profile_path(@profile),
           xhr: true,
           params: {
-              metadata_profile: {
-                  name: "cats"
-              }
+            metadata_profile: {
+              institution_id: institutions(:uiuc).id,
+              name: "cats"
+            }
           }
     @profile.reload
     assert_equal "cats", @profile.name
@@ -322,9 +301,10 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     patch metadata_profile_path(@profile),
           xhr: true,
           params: {
-              metadata_profile: {
-                  name: "cats"
-              }
+            metadata_profile: {
+              institution_id: institutions(:uiuc).id,
+              name:           "cats"
+            }
           }
     assert_response :ok
   end
@@ -334,9 +314,9 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     patch metadata_profile_path(@profile),
           xhr: true,
           params: {
-              metadata_profile: {
-                  name: "" # invalid
-              }
+            metadata_profile: {
+              name: "" # invalid
+            }
           }
     assert_response :bad_request
   end

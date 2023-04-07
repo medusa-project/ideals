@@ -19,7 +19,7 @@ const InstitutionView = function() {
                 });
             });
         });
-    }).trigger("show.bs.tab");
+    });
 
     $("#properties-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/properties";
@@ -45,7 +45,23 @@ const InstitutionView = function() {
                 });
             });
         });
-    }).trigger("show.bs.tab");
+    });
+
+    $("#metadata-profiles-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/metadata-profiles";
+        $.get(url, function (data) {
+            $("#metadata-profiles-tab-content").html(data);
+            $('button.add-metadata-profile').on("click", function() {
+                const url = ROOT_URL + "/metadata-profiles/new?" +
+                    "metadata_profile%5Binstitution_id%5D=" + institutionID;
+                $.get(url, function(data) {
+                    $("#add-metadata-profile-modal .modal-body").html(data);
+                    new IDEALS.CheckAllButton($('.check-all'),
+                        $("input[name='elements[]']"));
+                });
+            });
+        });
+    });
 
     $("#theme-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/theme";
@@ -58,7 +74,7 @@ const InstitutionView = function() {
                 });
             });
         });
-    }).trigger("show.bs.tab");
+    });
 
     $("#units-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/units";
@@ -71,14 +87,14 @@ const InstitutionView = function() {
                 });
             });
         });
-    }).trigger("show.bs.tab");
+    });
 
     $("#users-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/users";
         $.get(url, function (data) {
             $("#users-tab-content").html(data);
         });
-    }).trigger("show.bs.tab");
+    });
 
     $("#statistics-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/statistics";

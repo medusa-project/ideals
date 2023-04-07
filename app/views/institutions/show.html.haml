@@ -49,6 +49,15 @@
                                               "aria-selected":  "false"}
           = icon_for(RegisteredElement)
           Element Mappings
+      - if policy(@institution).show_metadata_profiles?
+        %button#metadata-profiles-tab.nav-link{"data-bs-target": "#metadata-profiles-tab-content",
+                                               "data-bs-toggle": "pill",
+                                               role:             "tab",
+                                               type:             "button",
+                                               "aria-controls":  "metadata-profiles-tab-content",
+                                               "aria-selected":  "false"}
+          = icon_for(MetadataProfile)
+          Metadata Profiles
       - if policy(@institution).show_preservation?
         %button#preservation-tab.nav-link{"data-bs-target": "#preservation-tab-content",
                                           "data-bs-toggle": "pill",
@@ -123,6 +132,11 @@
     - if policy(@institution).show_element_mappings?
       #element-mappings-tab-content.tab-pane.fade{role:              "tabpanel",
                                                   "aria-labelledby": "element-mappings-tab"}
+        = spinner
+
+    - if policy(@institution).show_metadata_profiles?
+      #metadata-profiles-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                   "aria-labelledby": "metadata-profiles-tab"}
         = spinner
 
     - if policy(@institution).show_preservation?

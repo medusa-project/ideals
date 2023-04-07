@@ -4,21 +4,23 @@
  * @constructor
  */
 const MetadataProfilesView = function() {
-    const ROOT_URL = $('input[name="root_url"]').val();
+    const ROOT_URL      = $("input[name=root_url]").val();
+    const institutionID = $("input[name=institution_id]").val();
 
-    $('button.add-profile').on("click", function() {
-        const url = ROOT_URL + "/metadata-profiles/new";
+    $('button.add-metadata-profile').on("click", function() {
+        const url = ROOT_URL + "/metadata-profiles/new?" +
+            "metadata_profile%5Binstitution_id%5D=" + institutionID;
         $.get(url, function(data) {
-            $("#add-profile-modal .modal-body").html(data);
+            $("#add-metadata-profile-modal .modal-body").html(data);
             new IDEALS.CheckAllButton($('.check-all'),
                 $("input[name='elements[]']"));
         });
     });
-    $('button.edit-profile').on("click", function() {
-        const profile_id = $(this).data("profile-id");
+    $('button.edit-metadata-profile').on("click", function() {
+        const profile_id = $(this).data("metadata-profile-id");
         const url = ROOT_URL + "/metadata-profiles/" + profile_id + "/edit";
         $.get(url, function(data) {
-            $("#edit-profile-modal .modal-body").html(data);
+            $("#edit-metadata-profile-modal .modal-body").html(data);
         });
     });
 };
@@ -31,15 +33,15 @@ const MetadataProfilesView = function() {
 const MetadataProfileView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
-    $('button.edit-profile').on("click", function() {
-        const profile_id = $(this).data("profile-id");
+    $('button.edit-metadata-profile').on("click", function() {
+        const profile_id = $(this).data("metadata-profile-id");
         const url = ROOT_URL + "/metadata-profiles/" + profile_id + "/edit";
         $.get(url, function(data) {
-            $("#edit-profile-modal .modal-body").html(data);
+            $("#edit-metadata-profile-modal .modal-body").html(data);
         });
     });
     $("button.edit-element").on("click", function() {
-        const profile_id = $(this).data("profile-id");
+        const profile_id = $(this).data("metadata-profile-id");
         const element_id = $(this).data("element-id");
         const url = ROOT_URL + "/metadata-profiles/" + profile_id +
             "/elements/" + element_id + "/edit";

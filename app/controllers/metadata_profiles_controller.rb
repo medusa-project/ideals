@@ -29,8 +29,7 @@ class MetadataProfilesController < ApplicationController
   # Responds to `POST /metadata-profiles` (XHR only)
   #
   def create
-    @profile             = MetadataProfile.new(metadata_profile_params)
-    @profile.institution = current_institution
+    @profile = MetadataProfile.new(metadata_profile_params)
     authorize @profile
     begin
       if params[:elements].respond_to?(:each)
@@ -61,6 +60,7 @@ class MetadataProfilesController < ApplicationController
   # Responds to `DELETE /metadata-profiles/:id`
   #
   def destroy
+    institution = @profile.institution
     begin
       @profile.destroy!
     rescue => e
@@ -70,7 +70,11 @@ class MetadataProfilesController < ApplicationController
              message: "The metadata profile \"#{@profile.name}\" has been "\
                       "deleted.")
     ensure
-      redirect_to metadata_profiles_path
+      if current_user.sysadmin?
+        redirect_to institution_path(institution)
+      else
+        redirect_to metadata_profiles_path
+      end
     end
   end
 
@@ -95,9 +99,17 @@ class MetadataProfilesController < ApplicationController
   ##
   # Responds to `GET /metadata-profiles/new`
   #
+  # The following query arguments are accepted:
+  #
+  # * `institution_id`: ID of the owning institution.
+  #
   def new
     authorize MetadataProfile
-    @profile = MetadataProfile.new(institution: current_institution)
+    if params.dig(:metadata_profile, :institution_id).blank?
+      render plain: "Missing institution ID", status: :bad_request
+      return
+    end
+    @profile = MetadataProfile.new(metadata_profile_params)
     render partial: "form"
   end
 
@@ -135,7 +147,7 @@ class MetadataProfilesController < ApplicationController
   def metadata_profile_params
     params.require(:metadata_profile).permit(:full_text_relevance_weight,
                                              :institution_default,
-                                             :name)
+                                             :institution_id, :name)
   end
 
   def set_profile

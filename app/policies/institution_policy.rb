@@ -87,6 +87,10 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
+  def show_metadata_profiles
+    effective_sysadmin(@user, @role_limit)
+  end
+
   def show_preservation
     effective_sysadmin(@user, @role_limit)
   end

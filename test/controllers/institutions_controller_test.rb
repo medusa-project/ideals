@@ -658,6 +658,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_metadata_profiles()
+
+  test "show_metadata_profiles() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_metadata_profiles_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_metadata_profiles() returns HTTP 403 for logged-out users" do
+    get institution_metadata_profiles_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_metadata_profiles() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_metadata_profiles_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_metadata_profiles() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_sysadmin))
+    get institution_metadata_profiles_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # show_preservation()
 
   test "show_preservation() returns HTTP 404 for unscoped requests" do

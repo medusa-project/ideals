@@ -253,6 +253,16 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the metadata profiles tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/metadata-profiles` (XHR only)
+  #
+  def show_metadata_profiles
+    @profiles = @institution.metadata_profiles.order(:name)
+    render partial: "show_metadata_profiles_tab"
+  end
+
+  ##
   # Renders HTML for the preservation tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/preservation` (XHR only)
