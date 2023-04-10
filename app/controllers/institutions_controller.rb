@@ -253,6 +253,16 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the elements tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/elements` (XHR only)
+  #
+  def show_element_registry
+    @elements = @institution.registered_elements.order(:label)
+    render partial: "show_element_registry_tab"
+  end
+
+  ##
   # Renders HTML for the metadata profiles tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/metadata-profiles` (XHR only)

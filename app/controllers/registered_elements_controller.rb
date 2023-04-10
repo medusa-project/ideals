@@ -11,8 +11,7 @@ class RegisteredElementsController < ApplicationController
   # Responds to `POST /elements` (XHR only)
   #
   def create
-    @element             = RegisteredElement.new(registered_element_params)
-    @element.institution = current_institution
+    @element = RegisteredElement.new(registered_element_params)
     authorize @element
     begin
       @element.save!
@@ -31,6 +30,7 @@ class RegisteredElementsController < ApplicationController
   # Responds to `DELETE /elements/:name`
   #
   def destroy
+    institution = @element.institution
     begin
       @element.destroy!
     rescue ActiveRecord::InvalidForeignKey
@@ -42,7 +42,11 @@ class RegisteredElementsController < ApplicationController
       toast!(title:   "Element deleted",
              message: "The element \"#{@element.name}\" has been deleted.")
     ensure
-      redirect_back fallback_location: registered_elements_path
+      if current_user.sysadmin?
+        redirect_to institution_path(institution)
+      else
+        redirect_to registered_elements_path
+      end
     end
   end
 
@@ -65,6 +69,23 @@ class RegisteredElementsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /elements/new` (XHR only).
+  #
+  # The following query arguments are accepted:
+  #
+  # * `institution_id`: ID of the owning institution.
+  #
+  def new
+    authorize RegisteredElement
+    if params.dig(:registered_element, :institution_id).blank?
+      render plain: "Missing institution ID", status: :bad_request
+      return
+    end
+    @element = RegisteredElement.new(registered_element_params)
+    render partial: "form"
+  end
+
+  ##
   # Responds to `PATCH /elements/:name` (XHR only)
   #
   def update
@@ -81,17 +102,18 @@ class RegisteredElementsController < ApplicationController
     end
   end
 
+
   private
 
   def registered_element_params
     params.require(:registered_element).permit(:highwire_mapping, :input_type,
-                                               :label, :name, :scope_note, :uri,
+                                               :institution_id, :label, :name,
+                                               :scope_note, :uri,
                                                :vocabulary_id)
   end
 
   def set_element
-    @element = RegisteredElement.find_by(name:        params[:name],
-                                         institution: current_institution)
+    @element = RegisteredElement.find(params[:id])
     raise ActiveRecord::RecordNotFound unless @element
   end
 

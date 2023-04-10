@@ -1,8 +1,8 @@
--# @param element [RegisteredElement]
-
-= form_for(element, remote: true) do |f|
+= form_for(@element, remote: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
+
+  = f.hidden_field :institution_id, value: f.object.institution.id
 
   .mb-3
     = f.label :name

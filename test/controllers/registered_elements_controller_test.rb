@@ -112,10 +112,18 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "destroy() returns HTTP 302 for an existing element" do
+  test "destroy() redirects to registered elements view for non-sysadmins" do
     log_in_as(users(:uiuc_admin))
-    delete registered_element_path(@element)
+    element = registered_elements(:uiuc_unused)
+    delete registered_element_path(element)
     assert_redirected_to registered_elements_path
+  end
+
+  test "destroy() redirects to the element's institution for sysadmins" do
+    log_in_as(users(:uiuc_sysadmin))
+    element = registered_elements(:uiuc_unused)
+    delete registered_element_path(element)
+    assert_redirected_to institution_path(element.institution)
   end
 
   test "destroy() returns HTTP 404 for a missing element" do
@@ -181,6 +189,36 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
     get registered_elements_path(role: Role::LOGGED_OUT)
     assert_response :forbidden
+  end
+
+  # new()
+
+  test "new() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get new_registered_element_path
+    assert_response :not_found
+  end
+
+  test "new() redirects to root page for logged-out users" do
+    get new_registered_element_path
+    assert_redirected_to institutions(:uiuc).scope_url
+  end
+
+  test "new() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:uiuc))
+    get new_registered_element_path
+    assert_response :forbidden
+  end
+
+  test "new() returns HTTP 200 for authorized users" do
+    log_in_as(users(:uiuc_admin))
+    get new_registered_element_path,
+        params: {
+          registered_element: {
+            institution_id: institutions(:uiuc).id
+          }
+        }
+    assert_response :ok
   end
 
   # update()

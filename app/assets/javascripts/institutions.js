@@ -38,7 +38,7 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/settings";
         $.get(url, function (data) {
             $("#settings-tab-content").html(data);
-            $('button.edit-settings').on("click", function() {
+            $("button.edit-settings").on("click", function() {
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-settings";
                 $.get(url, function(data) {
                     $("#edit-settings-modal .modal-body").html(data);
@@ -47,11 +47,22 @@ const InstitutionView = function() {
         });
     });
 
+    $("#element-registry-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/elements";
+        $.get(url, function (data) {
+            $("#element-registry-tab-content").html(data);
+            $("button.add-element").on("click",
+                RegisteredElements.AddRegisteredElementClickHandler);
+            $('button.edit-element').on("click",
+                RegisteredElements.EditRegisteredElementClickHandler);
+        });
+    });
+
     $("#metadata-profiles-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/metadata-profiles";
         $.get(url, function (data) {
             $("#metadata-profiles-tab-content").html(data);
-            $('button.add-metadata-profile').on("click", function() {
+            $("button.add-metadata-profile").on("click", function() {
                 const url = ROOT_URL + "/metadata-profiles/new?" +
                     "metadata_profile%5Binstitution_id%5D=" + institutionID;
                 $.get(url, function(data) {

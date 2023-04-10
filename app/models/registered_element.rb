@@ -119,10 +119,6 @@ class RegisteredElement < ApplicationRecord
      name.gsub(OpenSearchClient::RESERVED_CHARACTERS, "_")].join("_")
   end
 
-  def to_param
-    name
-  end
-
   ##
   # Override that converts empty values to nil.
   #

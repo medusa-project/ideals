@@ -246,36 +246,28 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
-  test "new?() does not authorize users with no privileges" do
+  test "new?() does not authorize non-privileged users" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: @element.institution)
-    policy  = RegisteredElementPolicy.new(context, @element)
+                                 institution: user.institution)
+    policy = RegisteredElementPolicy.new(context, @element)
     assert !policy.new?
   end
 
-  test "new?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
+  test "new?() authorizes institution administrators" do
+    user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: @element.institution)
-    policy = RegisteredElementPolicy.new(context, @element)
+                                 institution: user.institution)
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert policy.new?
   end
 
-  test "new?() authorizes administrators of the same institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @element.institution)
-    policy  = RegisteredElementPolicy.new(context, RegisteredElement)
-    assert policy.new?
-  end
-
-  test "new?() does not authorize administrators of a different institution
-  than the request context" do
+  test "new?() does not authorize administrators of a different
+  institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
-    policy  = RegisteredElementPolicy.new(context, RegisteredElement)
+    policy  = RegisteredElementPolicy.new(context, @element)
     assert !policy.new?
   end
 

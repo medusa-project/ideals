@@ -41,7 +41,9 @@ class RegisteredElementPolicy < ApplicationPolicy
   end
 
   def update
-    if @ctx_institution != @element.institution
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @element.institution
       return WRONG_SCOPE_RESULT
     end
     effective_institution_admin(@user, @element.institution, @role_limit)

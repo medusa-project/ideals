@@ -1,35 +1,21 @@
-/**
- * @constructor
- */
-const RegisteredElementsView = function() {
+const RegisteredElements = {
 
-    const ROOT_URL = $('input[name="root_url"]').val();
+    AddRegisteredElementClickHandler: function() {
+        const ROOT_URL      = $("input[name=root_url]").val();
+        const institutionID = $("input[name=institution_id]").val();
+        const url           = ROOT_URL + "/elements/new?" +
+            "registered_element%5Binstitution_id%5D=" + institutionID;
+        $.get(url, function (data) {
+            $("#add-element-modal .modal-body").html(data);
+            new IDEALS.CheckAllButton($('.check-all'),
+                $("input[name='elements[]']"));
+        });
+    },
 
-    // Implement a simple client-side search.
-    $("[name=q]").on("keyup", function(e) {
-        if (e.which === 13) { // disable submission on enter
-            e.preventDefault();
-            return false;
-        }
-        const q      = $(this).val().toLowerCase();
-        const names  = $(".element-name");
-        const labels = $(".element-label");
-        for (let i = 0; i < names.length; i++) {
-            const nameNode  = $(names[i]);
-            const labelNode = $(labels[i]);
-            const card      = nameNode.parents(".card");
-            if (nameNode.text().toLowerCase().includes(q) ||
-                    labelNode.text().toLowerCase().includes(q)) {
-                card.show();
-            } else {
-                card.hide();
-            }
-        }
-    });
-
-    $('button.edit-element').on('click', function() {
-        const element_name = $(this).data('element-name');
-        const url = ROOT_URL + '/elements/' + element_name + '/edit';
+    EditRegisteredElementClickHandler: function() {
+        const ROOT_URL  = $("input[name=root_url]").val();
+        const elementID = $(this).data('element-id');
+        const url       = ROOT_URL + "/elements/" + elementID + "/edit";
         $.get(url, function(data) {
             const modalBody = $("#edit-element-modal .modal-body");
             modalBody.html(data);
@@ -40,14 +26,43 @@ const RegisteredElementsView = function() {
                 modalBody.find("#registered_element_input_type").prop("disabled", disabled);
             }).trigger("change");
         });
-    });
+    },
 
-};
-
-var ready = function() {
-    if ($('body#registered_elements').length) {
-        new RegisteredElementsView();
+    /**
+     * @constructor
+     */
+    RegisteredElementsView: function() {
+        // Implement a simple client-side search.
+        $("[name=q]").on("keyup", function(e) {
+            if (e.which === 13) { // disable submission on enter
+                e.preventDefault();
+                return false;
+            }
+            const q      = $(this).val().toLowerCase();
+            const names  = $(".element-name");
+            const labels = $(".element-label");
+            for (let i = 0; i < names.length; i++) {
+                const nameNode  = $(names[i]);
+                const labelNode = $(labels[i]);
+                const card      = nameNode.parents(".card");
+                if (nameNode.text().toLowerCase().includes(q) ||
+                    labelNode.text().toLowerCase().includes(q)) {
+                    card.show();
+                } else {
+                    card.hide();
+                }
+            }
+        });
+        $("button.add-element").on("click",
+            RegisteredElements.AddRegisteredElementClickHandler);
+        $('button.edit-element').on('click',
+            RegisteredElements.EditRegisteredElementClickHandler);
     }
-};
 
-$(document).ready(ready);
+}
+
+$(document).ready(function() {
+    if ($('body#registered_elements').length) {
+        new RegisteredElements.RegisteredElementsView();
+    }
+});

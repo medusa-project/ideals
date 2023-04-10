@@ -82,6 +82,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/element-mappings", to: "institutions#show_element_mappings", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/elements", to: "institutions#show_element_registry", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/metadata-profiles", to: "institutions#show_metadata_profiles", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/preservation", to: "institutions#show_preservation", via: :get,
@@ -176,7 +178,7 @@ Rails.application.routes.draw do
   match "/recent-items", to: "items#recent", via: :get, as: "recent_items"
   match "/reset-password", to: "password_resets#get", via: :get
   match "/reset-password", to: "password_resets#post", via: :post
-  resources :registered_elements, except: :show, param: :name, path: "elements"
+  resources :registered_elements, except: :show, path: "elements"
   match "/robots", to: "robots#show", via: :get
   match "/settings", to: "settings#index", via: :get
   match "/settings", to: "settings#update", via: :patch
