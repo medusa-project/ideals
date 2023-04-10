@@ -27,8 +27,7 @@ class SubmissionProfilesController < ApplicationController
   # Responds to `POST /submission-profiles` (XHR only)
   #
   def create
-    @profile             = SubmissionProfile.new(submission_profile_params)
-    @profile.institution = current_institution
+    @profile = SubmissionProfile.new(submission_profile_params)
     authorize @profile
     begin
       if params[:elements].respond_to?(:each)
@@ -56,6 +55,7 @@ class SubmissionProfilesController < ApplicationController
   # Responds to `DELETE /submission-profiles/:id`
   #
   def destroy
+    institution = @profile.institution
     begin
       @profile.destroy!
     rescue => e
@@ -65,7 +65,11 @@ class SubmissionProfilesController < ApplicationController
              message: "The submission profile \"#{@profile.name}\" has been "\
                       "deleted.")
     ensure
-      redirect_to submission_profiles_path
+      if current_user.sysadmin?
+        redirect_to institution_path(institution)
+      else
+        redirect_to submission_profiles_path
+      end
     end
   end
 
@@ -90,9 +94,17 @@ class SubmissionProfilesController < ApplicationController
   ##
   # Responds to `GET /submission-profiles/new`
   #
+  # The following query arguments are accepted:
+  #
+  # * `institution_id`: ID of the owning institution.
+  #
   def new
     authorize SubmissionProfile
-    @profile = SubmissionProfile.new(institution: current_institution)
+    if params.dig(:submission_profile, :institution_id).blank?
+      render plain: "Missing institution ID", status: :bad_request
+      return
+    end
+    @profile = SubmissionProfile.new(submission_profile_params)
     render partial: "form"
   end
 
@@ -128,7 +140,8 @@ class SubmissionProfilesController < ApplicationController
   private
 
   def submission_profile_params
-    params.require(:submission_profile).permit(:institution_default, :name)
+    params.require(:submission_profile).permit(:institution_default,
+                                               :institution_id, :name)
   end
 
   def set_profile

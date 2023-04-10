@@ -92,6 +92,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "institutions#show_statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/submission-profiles", to: "institutions#show_submission_profiles", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/theme", to: "institutions#show_theme", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/units", to: "institutions#show_units", via: :get,

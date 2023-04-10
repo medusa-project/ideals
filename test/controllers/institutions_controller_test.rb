@@ -783,6 +783,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_submission_profiles()
+
+  test "show_submission_profiles() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_submission_profiles_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_submission_profiles() returns HTTP 403 for logged-out users" do
+    get institution_submission_profiles_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submission_profiles() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_submission_profiles_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submission_profiles() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_sysadmin))
+    get institution_submission_profiles_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # show_theme()
 
   test "show_theme() returns HTTP 404 for unscoped requests" do

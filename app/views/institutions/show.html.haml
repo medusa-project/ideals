@@ -58,6 +58,15 @@
                                                "aria-selected":  "false"}
           = icon_for(MetadataProfile)
           Metadata Profiles
+      - if policy(@institution).show_submission_profiles?
+        %button#submission-profiles-tab.nav-link{"data-bs-target": "#submission-profiles-tab-content",
+                                                 "data-bs-toggle": "pill",
+                                                 role:             "tab",
+                                                 type:             "button",
+                                                 "aria-controls":  "submission-profiles-tab-content",
+                                                 "aria-selected":  "false"}
+          = icon_for(SubmissionProfile)
+          Submission Profiles
       - if policy(@institution).show_preservation?
         %button#preservation-tab.nav-link{"data-bs-target": "#preservation-tab-content",
                                           "data-bs-toggle": "pill",
@@ -137,6 +146,11 @@
     - if policy(@institution).show_metadata_profiles?
       #metadata-profiles-tab-content.tab-pane.fade{role:              "tabpanel",
                                                    "aria-labelledby": "metadata-profiles-tab"}
+        = spinner
+
+    - if policy(@institution).show_submission_profiles?
+      #submission-profiles-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                     "aria-labelledby": "submission-profiles-tab"}
         = spinner
 
     - if policy(@institution).show_preservation?

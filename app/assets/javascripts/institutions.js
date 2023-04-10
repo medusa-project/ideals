@@ -63,6 +63,22 @@ const InstitutionView = function() {
         });
     });
 
+    $("#submission-profiles-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/submission-profiles";
+        $.get(url, function (data) {
+            $("#submission-profiles-tab-content").html(data);
+            $('button.add-submission-profile').on("click", function() {
+                const url = ROOT_URL + "/submission-profiles/new?" +
+                    "submission_profile%5Binstitution_id%5D=" + institutionID;
+                $.get(url, function(data) {
+                    $("#add-submission-profile-modal .modal-body").html(data);
+                    new IDEALS.CheckAllButton($('.check-all'),
+                        $("input[name='elements[]'][data-required=false]"));
+                });
+            });
+        });
+    });
+
     $("#theme-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/theme";
         $.get(url, function (data) {

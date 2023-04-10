@@ -300,6 +300,16 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the submission profiles tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/submission-profiles` (XHR only)
+  #
+  def show_submission_profiles
+    @profiles = @institution.submission_profiles.order(:name)
+    render partial: "show_submission_profiles_tab"
+  end
+
+  ##
   # Renders HTML for the theme tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/theme` (XHR only)

@@ -62,9 +62,10 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
     post submission_profiles_path,
          xhr: true,
          params: {
-             submission_profile: {
-                 name: "cats"
-             }
+           submission_profile: {
+             institution_id: @institution.id,
+             name: "cats"
+           }
          }
     assert_response :forbidden
   end
@@ -75,10 +76,10 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
     post submission_profiles_path,
          xhr: true,
          params: {
-             submission_profile: {
-                 institution_id: user.institution.id,
-                 name:           "cats"
-             }
+           submission_profile: {
+             institution_id: user.institution.id,
+             name:           "cats"
+           }
          }
     assert_response :ok
   end
@@ -90,11 +91,11 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
       post submission_profiles_path,
            xhr: true,
            params: {
-               submission_profile: {
-                   institution_id: user.institution.id,
-                   name:           "cats"
-               },
-               elements: institutions(:southwest).required_elements.pluck(:id)
+             submission_profile: {
+               institution_id: user.institution.id,
+               name:           "cats"
+             },
+             elements: institutions(:southwest).required_elements.pluck(:id)
            }
     end
     profile = SubmissionProfile.order(created_at: :desc).limit(1).first
@@ -142,11 +143,18 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "destroy() returns HTTP 302 for an existing profile" do
+  test "destroy() redirects to metadata profiles view for non-sysadmins" do
     log_in_as(users(:southwest_admin))
-    @profile = submission_profiles(:southwest_default)
-    delete submission_profile_path(@profile)
+    profile = submission_profiles(:southwest_default)
+    delete submission_profile_path(profile)
     assert_redirected_to submission_profiles_path
+  end
+
+  test "destroy() redirects to the profile's institution for sysadmins" do
+    log_in_as(users(:southwest_sysadmin))
+    profile = submission_profiles(:southwest_default)
+    delete submission_profile_path(profile)
+    assert_redirected_to institution_path(profile.institution)
   end
 
   test "destroy() returns HTTP 404 for a missing profile" do
@@ -235,7 +243,12 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "new() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_admin))
-    get new_submission_profile_path
+    get new_submission_profile_path,
+        params: {
+          submission_profile: {
+            institution_id: @institution.id
+          }
+        }
     assert_response :ok
   end
 
@@ -297,9 +310,10 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
     patch submission_profile_path(@profile),
           xhr: true,
           params: {
-              submission_profile: {
-                  name: "cats"
-              }
+            submission_profile: {
+              institution_id: @institution.id,
+              name:           "cats"
+            }
           }
     @profile.reload
     assert_equal "cats", @profile.name
@@ -310,9 +324,10 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
     patch submission_profile_path(@profile),
           xhr: true,
           params: {
-              submission_profile: {
-                  name: "cats"
-              }
+            submission_profile: {
+              institution_id: @institution.id,
+              name:           "cats"
+            }
           }
     assert_response :ok
   end

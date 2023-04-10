@@ -4,25 +4,25 @@
 .btn-group.float-end{role: "group"}
   - if policy(@profile).edit?
     -# Edit button
-    %button.btn.btn-light.edit-profile{"data-bs-target":  "#edit-profile-modal",
-                                       "data-bs-toggle":  "modal",
-                                       "data-profile-id": @profile.id,
-                                       type:              "button"}
+    %button.btn.btn-light.edit-profile{"data-bs-target":             "#edit-submission-profile-modal",
+                                       "data-bs-toggle":             "modal",
+                                       "data-submission-profile-id": @profile.id,
+                                       type:                         "button"}
       %i.fa.fa-pencil-alt
       Edit
   - if policy(@profile).clone?
     -# Clone button
     = link_to(submission_profile_clone_path(@profile), method: "post",
-                                                       role: "button",
-                                                       class: "btn btn-light") do
+                                                       role:   "button",
+                                                       class:  "btn btn-light") do
       %i.fa.fa-copy
       Clone
   - if policy(@profile).destroy?
     -# Delete button
-    = link_to(submission_profile_path(@profile), class: "btn btn-danger",
-                                                 role: "button",
+    = link_to(submission_profile_path(@profile), class:  "btn btn-danger",
+                                                 role:   "button",
                                                  method: :delete,
-                                                 data: { confirm: "Are you sure you want to delete this profile?" }) do
+                                                 data:   { confirm: "Are you sure you want to delete this profile?" }) do
       %i.fa.fa-trash
       Delete
 
@@ -69,11 +69,11 @@
       .card.mb-3
         .card-body
           .btn-group.float-end
-            %button.btn.btn-light.btn-sm.edit-element{type:              "button",
-                                                      "data-bs-toggle":  "modal",
-                                                      "data-bs-target":  "#edit-element-modal",
-                                                      "data-profile-id": @profile.id,
-                                                      "data-element-id": element.id}
+            %button.btn.btn-light.btn-sm.edit-element{type:                         "button",
+                                                      "data-bs-toggle":             "modal",
+                                                      "data-bs-target":             "#edit-element-modal",
+                                                      "data-submission-profile-id": @profile.id,
+                                                      "data-element-id":            element.id}
               %i.fa.fa-pencil-alt
               Edit
             - unless @profile.institution.required_elements.map(&:id).include?(element.registered_element_id)

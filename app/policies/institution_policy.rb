@@ -107,6 +107,10 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
+  def show_submission_profiles
+    show_metadata_profiles
+  end
+
   def show_theme
     show
   end
