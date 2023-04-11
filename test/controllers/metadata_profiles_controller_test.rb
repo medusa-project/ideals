@@ -198,6 +198,40 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  # index()
+
+  test "index() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get metadata_profiles_path
+    assert_response :not_found
+  end
+
+  test "index() redirects to root page for logged-out users" do
+    get metadata_profiles_path
+    assert_redirected_to @profile.institution.scope_url
+  end
+
+  test "index() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:uiuc))
+    get metadata_profiles_path
+    assert_response :forbidden
+  end
+
+  test "index() returns HTTP 200 for authorized users" do
+    log_in_as(users(:uiuc_admin))
+    get metadata_profiles_path
+    assert_response :ok
+  end
+
+  test "index() respects role limits" do
+    log_in_as(users(:uiuc_admin))
+    get metadata_profiles_path
+    assert_response :ok
+
+    get metadata_profiles_path(role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
   # new()
 
   test "new() returns HTTP 404 for unscoped requests" do
