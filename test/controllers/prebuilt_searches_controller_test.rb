@@ -3,7 +3,8 @@ require 'test_helper'
 class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    host! institutions(:southwest).fqdn
+    @institution = institutions(:southwest)
+    host! @institution.fqdn
     @search = prebuilt_searches(:southwest_cats)
   end
 
@@ -21,7 +22,7 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "create() redirects to root page for logged-out users" do
     post prebuilt_searches_path
-    assert_redirected_to institutions(:southwest).scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
@@ -30,7 +31,8 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            prebuilt_search: {
-             name: "cats"
+             institution_id: @institution.id,
+             name:           "cats"
            }
          }
     assert_response :forbidden
@@ -43,7 +45,8 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            prebuilt_search: {
-             name: "cats"
+             institution_id: @institution.id,
+             name:           "cats"
            }
          }
     assert_response :ok
@@ -57,7 +60,8 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
              prebuilt_search: {
-               name: "cats"
+               institution_id: @institution.id,
+               name:           "cats"
              }
            }
     end
@@ -71,7 +75,8 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            prebuilt_search: {
-             name: ""
+             institution_id: @institution.id,
+             name:           ""
            }
          }
     assert_response :bad_request
@@ -103,10 +108,16 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "destroy() returns HTTP 302 for an existing prebuilt search" do
+  test "destroy() redirects to prebuilt searches view for non-sysadmins" do
     log_in_as(users(:southwest_admin))
     delete prebuilt_search_path(@search)
     assert_redirected_to prebuilt_searches_path
+  end
+
+  test "destroy() redirects to the prebuilt search's institution for sysadmins" do
+    log_in_as(users(:southwest_sysadmin))
+    delete prebuilt_search_path(@search)
+    assert_redirected_to institution_path(@search.institution)
   end
 
   test "destroy() returns HTTP 404 for a missing prebuilt search" do
@@ -159,7 +170,7 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "index() redirects to root page for logged-out users" do
     get prebuilt_searches_path
-    assert_redirected_to institutions(:southwest).scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
@@ -193,7 +204,7 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "new() redirects to root page for logged-out users" do
     get new_import_path
-    assert_redirected_to institutions(:southwest).scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
@@ -204,7 +215,12 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "new() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_admin))
-    get new_import_path
+    get new_import_path,
+        params: {
+          prebuilt_search: {
+            institution_id: @institution.id
+          }
+        }
     assert_response :ok
   end
 
@@ -252,7 +268,7 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() redirects to root page for logged-out users" do
     patch "/prebuilt-searches/99999"
-    assert_redirected_to institutions(:southwest).scope_url
+    assert_redirected_to @institution.scope_url
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
@@ -267,7 +283,8 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             prebuilt_search: {
-              name: "cats"
+              institution_id: @institution.id,
+              name:           "cats"
             }
           }
     @search.reload
@@ -280,7 +297,8 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             prebuilt_search: {
-              name: "cats"
+              institution_id: @institution.id,
+              name:           "cats"
             }
           }
     assert_response :ok
@@ -292,7 +310,8 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             prebuilt_search: {
-              name: "" # invalid
+              institution_id: @institution.id,
+              name:           "" # invalid
             }
           }
     assert_response :bad_request

@@ -273,6 +273,16 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the prebuilt searches tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/prebuilt-searches` (XHR only)
+  #
+  def show_prebuilt_searches
+    @prebuilt_searches = @institution.prebuilt_searches.order(:name)
+    render partial: "show_prebuilt_searches_tab"
+  end
+
+  ##
   # Renders HTML for the preservation tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/preservation` (XHR only)

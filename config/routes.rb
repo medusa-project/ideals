@@ -86,6 +86,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/metadata-profiles", to: "institutions#show_metadata_profiles", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/prebuilt-searches", to: "institutions#show_prebuilt_searches", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/preservation", to: "institutions#show_preservation", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,

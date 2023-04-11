@@ -12,7 +12,7 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/preservation";
         $.get(url, function (data) {
             $("#preservation-tab-content").html(data);
-            $('button.edit-preservation').on("click", function() {
+            $("button.edit-preservation").on("click", function() {
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-preservation";
                 $.get(url, function(data) {
                     $("#edit-preservation-modal .modal-body").html(data);
@@ -25,7 +25,7 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/properties";
         $.get(url, function (data) {
             $("#properties-tab-content").html(data);
-            $('button.edit-properties').on("click", function() {
+            $("button.edit-properties").on("click", function() {
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-properties";
                 $.get(url, function(data) {
                     $("#edit-properties-modal .modal-body").html(data);
@@ -99,6 +99,20 @@ const InstitutionView = function() {
                     "vocabulary%5Binstitution_id%5D=" + institutionID;
                 $.get(url, function(data) {
                     $("#add-vocabulary-modal .modal-body").html(data);
+                });
+            });
+        });
+    });
+
+    $("#prebuilt-searches-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/prebuilt-searches";
+        $.get(url, function (data) {
+            $("#prebuilt-searches-tab-content").html(data);
+            $("button.add-prebuilt-search").on("click", function() {
+                const url = ROOT_URL + "/prebuilt-searches/new?" +
+                    "prebuilt_search%5Binstitution_id%5D=" + institutionID;
+                $.get(url, function(data) {
+                    $("#add-prebuilt-search-modal .modal-body").html(data);
                 });
             });
         });

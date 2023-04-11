@@ -5,9 +5,11 @@
  */
 const PrebuiltSearchesView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
+    const institutionID  = $("[name=institution_id]").val();
 
-    $('button.add-prebuilt-search').on("click", function() {
-        const url = ROOT_URL + "/prebuilt-searches/new";
+    $("button.add-prebuilt-search").on("click", function() {
+        const url = ROOT_URL + "/prebuilt-searches/new?" +
+            "prebuilt_search%5Binstitution_id%5D=" + institutionID;
         $.get(url, function(data) {
             $("#add-prebuilt-search-modal .modal-body").html(data);
         });

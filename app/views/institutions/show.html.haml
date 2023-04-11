@@ -85,6 +85,15 @@
                                           "aria-selected":  "false"}
           = icon_for(Vocabulary)
           Vocabularies
+      - if policy(@institution).show_prebuilt_searches?
+        %button#prebuilt-searches-tab.nav-link{"data-bs-target": "#prebuilt-searches-tab-content",
+                                               "data-bs-toggle": "pill",
+                                               role:             "tab",
+                                               type:             "button",
+                                               "aria-controls":  "prebuilt-searches-tab-content",
+                                               "aria-selected":  "false"}
+          = icon_for(PrebuiltSearch)
+          Prebuilt Searches
       - if policy(@institution).show_preservation?
         %button#preservation-tab.nav-link{"data-bs-target": "#preservation-tab-content",
                                           "data-bs-toggle": "pill",
@@ -179,6 +188,11 @@
     - if policy(@institution).show_vocabularies?
       #vocabularies-tab-content.tab-pane.fade{role:              "tabpanel",
                                               "aria-labelledby": "vocabularies-tab"}
+        = spinner
+
+    - if policy(@institution).show_prebuilt_searches?
+      #prebuilt-searches-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                   "aria-labelledby": "prebuilt-searches-tab"}
         = spinner
 
     - if policy(@institution).show_preservation?

@@ -95,6 +95,10 @@ class InstitutionPolicy < ApplicationPolicy
     effective_sysadmin(@user, @role_limit)
   end
 
+  def show_prebuilt_searches
+    show_metadata_profiles
+  end
+
   def show_preservation
     effective_sysadmin(@user, @role_limit)
   end

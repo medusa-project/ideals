@@ -13,8 +13,7 @@ class PrebuiltSearchesController < ApplicationController
   #
   def create
     authorize PrebuiltSearch
-    @prebuilt_search             = PrebuiltSearch.new(sanitized_params)
-    @prebuilt_search.institution = current_institution
+    @prebuilt_search = PrebuiltSearch.new(sanitized_params)
     begin
       @prebuilt_search.save!
       build_elements
@@ -33,6 +32,7 @@ class PrebuiltSearchesController < ApplicationController
   # Responds to `DELETE /prebuilt-searches/:id`
   #
   def destroy
+    institution = @prebuilt_search.institution
     begin
       @prebuilt_search.destroy!
     rescue => e
@@ -41,7 +41,11 @@ class PrebuiltSearchesController < ApplicationController
       toast!(title:   "Prebuilt search deleted",
              message: "Prebuilt search \"#{@prebuilt_search.name}\" has been deleted.")
     ensure
-      redirect_to prebuilt_searches_path
+      if current_user.sysadmin?
+        redirect_to institution_path(institution)
+      else
+        redirect_to prebuilt_searches_path
+      end
     end
   end
 
@@ -69,9 +73,17 @@ class PrebuiltSearchesController < ApplicationController
   #
   # Responds to `GET /prebuilt-searches/new` (XHR only)
   #
+  # The following query arguments are accepted:
+  #
+  # * `institution_id`: ID of the owning institution.
+  #
   def new
     authorize PrebuiltSearch
-    @prebuilt_search = PrebuiltSearch.new(institution: current_institution)
+    if params.dig(:prebuilt_search, :institution_id).blank?
+      render plain: "Missing institution ID", status: :bad_request
+      return
+    end
+    @prebuilt_search = PrebuiltSearch.new(sanitized_params)
     render partial: "form"
   end
 
@@ -103,7 +115,7 @@ class PrebuiltSearchesController < ApplicationController
   private
 
   def sanitized_params
-    params.require(:prebuilt_search).permit(:direction, :name,
+    params.require(:prebuilt_search).permit(:direction, :institution_id, :name,
                                             :ordering_element_id)
   end
 

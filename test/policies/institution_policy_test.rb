@@ -888,6 +888,41 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_metadata_profiles?
   end
 
+  # show_prebuilt_searches?()
+
+  test "show_prebuilt_searches?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_prebuilt_searches?
+  end
+
+  test "show_prebuilt_searches?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_prebuilt_searches?
+  end
+
+  test "show_prebuilt_searches?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_prebuilt_searches?
+  end
+
+  test "show_prebuilt_searches?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_prebuilt_searches?
+  end
+
   # show_preservation?()
 
   test "show_preservation?() returns false with a nil request context" do
@@ -1286,7 +1321,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.show_vocabularies?
   end
-
 
   # statistics_by_range?()
 
