@@ -29,7 +29,8 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            vocabulary: {
-             name: "New"
+             institution_id: institutions(:southwest).id,
+             name:           "New"
            }
          }
     assert_response :forbidden
@@ -42,7 +43,8 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            vocabulary: {
-             name: "New"
+             institution_id: institutions(:southwest).id,
+             name:           "New"
            }
          }
     assert_response :ok
@@ -55,7 +57,8 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            vocabulary: {
-             name: "New"
+             institution_id: institutions(:southwest).id,
+             name:           "New"
            }
          }
     vocab = Vocabulary.order(created_at: :desc).limit(1).first
@@ -103,11 +106,18 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "destroy() returns HTTP 302 for an existing vocabulary" do
+  test "destroy() redirects to vocabularies view for non-sysadmins" do
     log_in_as(users(:southwest_admin))
     vocab = vocabularies(:southwest_one)
     delete vocabulary_path(vocab)
     assert_redirected_to vocabularies_path
+  end
+
+  test "destroy() redirects to the profile's institution for sysadmins" do
+    log_in_as(users(:southwest_sysadmin))
+    vocabulary = vocabularies(:southwest_one)
+    delete vocabulary_path(vocabulary)
+    assert_redirected_to institution_path(vocabulary.institution)
   end
 
   test "destroy() returns HTTP 404 for a missing vocabulary" do
@@ -208,13 +218,23 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
 
   test "new() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_admin))
-    get new_vocabulary_path
+    get new_vocabulary_path,
+        params: {
+          vocabulary: {
+            institution_id: institutions(:southwest).id
+          }
+        }
     assert_response :ok
   end
 
   test "new() respects role limits" do
     log_in_as(users(:southwest_admin))
-    get new_vocabulary_path
+    get new_vocabulary_path,
+        params: {
+          vocabulary: {
+            institution_id: institutions(:southwest).id
+          }
+        }
     assert_response :ok
 
     get new_vocabulary_path(role: Role::LOGGED_OUT)
@@ -286,7 +306,8 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             vocabulary: {
-              name: "New"
+              institution_id: institutions(:southwest).id,
+              name:           "New"
             }
           }
     vocab.reload
@@ -300,7 +321,8 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             vocabulary: {
-              name: "Cats"
+              institution_id: institutions(:southwest).id,
+              name:           "Cats"
             }
           }
     assert_response :ok

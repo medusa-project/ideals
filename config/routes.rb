@@ -102,6 +102,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/users", to: "institutions#show_users", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/vocabularies", to: "institutions#show_vocabularies", via: :get,
+          constraints: lambda { |request| request.xhr? }
 
     match "/banner-image", to: "institutions#remove_banner_image", via: :delete
     match "/favicon", to: "institutions#remove_favicon", via: :delete

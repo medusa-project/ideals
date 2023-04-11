@@ -11,8 +11,7 @@ class VocabulariesController < ApplicationController
   # Responds to `POST /vocabularies`
   #
   def create
-    @vocabulary             = Vocabulary.new(vocabulary_params)
-    @vocabulary.institution = current_institution
+    @vocabulary = Vocabulary.new(vocabulary_params)
     authorize @vocabulary
     begin
       @vocabulary.save!
@@ -31,6 +30,7 @@ class VocabulariesController < ApplicationController
   # Responds to `DELETE /vocabularies/:id`
   #
   def destroy
+    institution = @vocabulary.institution
     begin
       @vocabulary.destroy!
     rescue => e
@@ -39,7 +39,11 @@ class VocabulariesController < ApplicationController
       toast!(title:   "Vocabulary deleted",
              message: "The vocabulary \"#{@vocabulary.name}\" has been deleted.")
     ensure
-      redirect_to vocabularies_path
+      if current_user.sysadmin?
+        redirect_to institution_path(institution)
+      else
+        redirect_to vocabularies_path
+      end
     end
   end
 
@@ -72,9 +76,17 @@ class VocabulariesController < ApplicationController
   ##
   # Responds to `GET /vocabularies/new`
   #
+  # The following query arguments are accepted:
+  #
+  # * `institution_id`: ID of the owning institution.
+  #
   def new
-    @vocabulary = Vocabulary.new
-    authorize(@vocabulary)
+    authorize(Vocabulary)
+    if params.dig(:vocabulary, :institution_id).blank?
+      render plain: "Missing institution ID", status: :bad_request
+      return
+    end
+    @vocabulary = Vocabulary.new(vocabulary_params)
     render partial: "form", locals: { vocabulary: @vocabulary }
   end
 
@@ -114,7 +126,7 @@ class VocabulariesController < ApplicationController
   end
 
   def vocabulary_params
-    params.require(:vocabulary).permit(:name)
+    params.require(:vocabulary).permit(:institution_id, :name)
   end
 
 end

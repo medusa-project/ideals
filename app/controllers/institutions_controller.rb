@@ -352,6 +352,26 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the vocabularies tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/vocabularies` (XHR only)
+  #
+  def show_vocabularies
+    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+                                        Search::SIMPLE_SEARCH_PARAMS +
+                                        [:institution_id])
+    @start            = @permitted_params[:start].to_i
+    @window           = window_size
+    @vocabularies     = Vocabulary.
+      where(institution: @institution).
+      order(:name)
+    @count            = @vocabularies.count
+    @vocabularies     = @vocabularies.limit(@window).offset(@start)
+    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
+    render partial: "show_vocabularies_tab"
+  end
+
+  ##
   # Provides statistics within a date range as CSV.
   #
   # Responds to `GET /institutions/:key/statistics-by-range`

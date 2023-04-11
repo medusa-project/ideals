@@ -4,10 +4,12 @@
  * @constructor
  */
 const VocabulariesView = function() {
-    const ROOT_URL = $('input[name="root_url"]').val();
+    const ROOT_URL      = $('input[name="root_url"]').val();
+    const institutionID = $("[name=institution_id]").val();
 
     $('button.add-vocabulary').on("click", function() {
-        const url = ROOT_URL + "/vocabularies/new";
+        const url = ROOT_URL + "/vocabularies/new?" +
+            "vocabulary%5Binstitution_id%5D=" + institutionID;
         $.get(url, function(data) {
             $("#add-vocabulary-modal .modal-body").html(data);
         });

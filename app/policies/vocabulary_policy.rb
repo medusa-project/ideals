@@ -43,6 +43,8 @@ class VocabularyPolicy < ApplicationPolicy
   def update
     if !@user
       return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
     elsif @ctx_institution != @vocabulary.institution
       return WRONG_SCOPE_RESULT
     end

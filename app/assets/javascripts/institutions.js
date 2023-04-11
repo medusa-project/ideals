@@ -78,13 +78,27 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/submission-profiles";
         $.get(url, function (data) {
             $("#submission-profiles-tab-content").html(data);
-            $('button.add-submission-profile').on("click", function() {
+            $("button.add-submission-profile").on("click", function() {
                 const url = ROOT_URL + "/submission-profiles/new?" +
                     "submission_profile%5Binstitution_id%5D=" + institutionID;
                 $.get(url, function(data) {
                     $("#add-submission-profile-modal .modal-body").html(data);
                     new IDEALS.CheckAllButton($('.check-all'),
                         $("input[name='elements[]'][data-required=false]"));
+                });
+            });
+        });
+    });
+
+    $("#vocabularies-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/vocabularies";
+        $.get(url, function (data) {
+            $("#vocabularies-tab-content").html(data);
+            $("button.add-vocabulary").on("click", function() {
+                const url = ROOT_URL + "/vocabularies/new?" +
+                    "vocabulary%5Binstitution_id%5D=" + institutionID;
+                $.get(url, function(data) {
+                    $("#add-vocabulary-modal .modal-body").html(data);
                 });
             });
         });

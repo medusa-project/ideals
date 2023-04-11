@@ -76,6 +76,15 @@
                                                  "aria-selected":  "false"}
           = icon_for(SubmissionProfile)
           Submission Profiles
+      - if policy(@institution).show_vocabularies?
+        %button#vocabularies-tab.nav-link{"data-bs-target": "#vocabularies-tab-content",
+                                          "data-bs-toggle": "pill",
+                                          role:             "tab",
+                                          type:             "button",
+                                          "aria-controls":  "vocabularies-tab-content",
+                                          "aria-selected":  "false"}
+          = icon_for(Vocabulary)
+          Vocabularies
       - if policy(@institution).show_preservation?
         %button#preservation-tab.nav-link{"data-bs-target": "#preservation-tab-content",
                                           "data-bs-toggle": "pill",
@@ -165,6 +174,11 @@
     - if policy(@institution).show_submission_profiles?
       #submission-profiles-tab-content.tab-pane.fade{role:              "tabpanel",
                                                      "aria-labelledby": "submission-profiles-tab"}
+        = spinner
+
+    - if policy(@institution).show_vocabularies?
+      #vocabularies-tab-content.tab-pane.fade{role:              "tabpanel",
+                                              "aria-labelledby": "vocabularies-tab"}
         = spinner
 
     - if policy(@institution).show_preservation?

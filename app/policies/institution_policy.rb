@@ -88,7 +88,7 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show_element_registry
-    effective_sysadmin(@user, @role_limit)
+    show_metadata_profiles
   end
 
   def show_metadata_profiles
@@ -125,6 +125,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def show_users
     show
+  end
+
+  def show_vocabularies
+    show_metadata_profiles
   end
 
   def statistics_by_range

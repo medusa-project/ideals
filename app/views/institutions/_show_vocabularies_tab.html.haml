@@ -1,11 +1,4 @@
--# N.B.: this template must be kept aligned with institutions/_show_vocabularies_tab
-
-- provide :body_id, "vocabularies"
-- provide :title, "Vocabularies"
-
-= hidden_field_tag :institution_id, current_institution.id
-
--if policy(Vocabulary).new?
+- if policy(Vocabulary).new?
   .btn-group.float-end{role: "group"}
     -# Add button
     %button.btn.btn-light.add-vocabulary{"data-bs-target": "#add-vocabulary-modal",
@@ -14,10 +7,8 @@
       %i.fa.fa-plus
       Add Vocabulary
 
-%h1 Vocabularies
-
 #vocabularies-list
-  = render partial: "vocabularies"
+  = render partial: "vocabularies/vocabularies"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "add-vocabulary-modal", title: "Add Vocabulary" }
