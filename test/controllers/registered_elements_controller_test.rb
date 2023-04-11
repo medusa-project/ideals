@@ -243,7 +243,7 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
 
   test "update() updates an element" do
     log_in_as(users(:uiuc_admin))
-    patch "/elements/#{@element.name}",
+    patch registered_element_path(@element),
           xhr: true,
           params: {
               registered_element: {
