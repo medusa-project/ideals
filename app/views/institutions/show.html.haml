@@ -40,6 +40,36 @@
                                       "aria-selected":  "false"}
           %i.fa.fa-cog
           Settings
+      - if policy(@institution).show_preservation?
+        %button#preservation-tab.nav-link{"data-bs-target": "#preservation-tab-content",
+                                          "data-bs-toggle": "pill",
+                                          role:             "tab",
+                                          type:             "button",
+                                          "aria-controls":  "preservation-tab-content",
+                                          "aria-selected":  "false"}
+          %i.fa.fa-box-open
+          Preservation
+          - if @institution.outgoing_message_queue.blank?
+            %i.fa.fa-exclamation-triangle.text-danger
+      - if policy(@institution).show_theme?
+        %button#theme-tab.nav-link{"data-bs-target":       "#theme-tab-content",
+                                   "data-bs-toggle":       "pill",
+                                   role:                   "tab",
+                                   type:                   "button",
+                                   "aria-controls":        "theme-tab-content",
+                                   "aria-selected":        "false",
+                                   "data-institution-key": @institution.key}
+          %i.fa.fa-palette
+          Theme
+      - if policy(@institution).show_units?
+        %button#units-tab.nav-link{"data-bs-target": "#units-tab-content",
+                                   "data-bs-toggle": "pill",
+                                   role:             "tab",
+                                   type:             "button",
+                                   "aria-controls":  "units-tab-content",
+                                   "aria-selected":  "false"}
+          = icon_for(Unit)
+          Units
       - if policy(@institution).show_element_mappings?
         %button#element-mappings-tab.nav-link{"data-bs-target": "#element-mappings-tab-content",
                                               "data-bs-toggle": "pill",
@@ -94,36 +124,15 @@
                                                "aria-selected":  "false"}
           = icon_for(PrebuiltSearch)
           Prebuilt Searches
-      - if policy(@institution).show_preservation?
-        %button#preservation-tab.nav-link{"data-bs-target": "#preservation-tab-content",
-                                          "data-bs-toggle": "pill",
-                                          role:             "tab",
-                                          type:             "button",
-                                          "aria-controls":  "preservation-tab-content",
-                                          "aria-selected":  "false"}
-          %i.fa.fa-box-open
-          Preservation
-          - if @institution.outgoing_message_queue.blank?
-            %i.fa.fa-exclamation-triangle.text-danger
-      - if policy(@institution).show_theme?
-        %button#theme-tab.nav-link{"data-bs-target":       "#theme-tab-content",
-                                   "data-bs-toggle":       "pill",
-                                   role:                   "tab",
-                                   type:                   "button",
-                                   "aria-controls":        "theme-tab-content",
-                                   "aria-selected":        "false",
-                                   "data-institution-key": @institution.key}
-          %i.fa.fa-palette
-          Theme
-      - if policy(@institution).show_units?
-        %button#units-tab.nav-link{"data-bs-target": "#units-tab-content",
-                                   "data-bs-toggle": "pill",
-                                   role:             "tab",
-                                   type:             "button",
-                                   "aria-controls":  "units-tab-content",
-                                   "aria-selected":  "false"}
-          = icon_for(Unit)
-          Units
+      - if policy(@institution).show_index_pages?
+        %button#index-pages-tab.nav-link{"data-bs-target": "#index-pages-tab-content",
+                                         "data-bs-toggle": "pill",
+                                         role:             "tab",
+                                         type:             "button",
+                                         "aria-controls":  "index-pages-tab-content",
+                                         "aria-selected":  "false"}
+          = icon_for(IndexPage)
+          Index Pages
       - if policy(@institution).show_users?
         %button#users-tab.nav-link{"data-bs-target": "#users-tab-content",
                                    "data-bs-toggle": "pill",
@@ -193,6 +202,11 @@
     - if policy(@institution).show_prebuilt_searches?
       #prebuilt-searches-tab-content.tab-pane.fade{role:              "tabpanel",
                                                    "aria-labelledby": "prebuilt-searches-tab"}
+        = spinner
+
+    - if policy(@institution).show_index_pages?
+      #index-pages-tab-content.tab-pane.fade{role:              "tabpanel",
+                                             "aria-labelledby": "index-pages-tab"}
         = spinner
 
     - if policy(@institution).show_preservation?

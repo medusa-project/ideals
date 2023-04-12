@@ -1,10 +1,3 @@
--# N.B.: this template must be kept aligned with institutions/_show_index_pages_tab
-
-- provide :body_id, "index_pages"
-- provide :title, "Index Pages"
-
-= hidden_field_tag :institution_id, current_institution.id
-
 - if policy(IndexPage).new?
   .btn-group.float-end{role: "group"}
     -# Add Index Page button
@@ -13,8 +6,6 @@
                                          type:             "button"}
       %i.fa.fa-plus
       Add Index Page
-
-%h1 Index Pages
 
 - if @index_pages.any?
   %table.table

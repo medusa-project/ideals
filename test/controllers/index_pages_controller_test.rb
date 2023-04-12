@@ -3,7 +3,8 @@ require 'test_helper'
 class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    host! institutions(:southwest).fqdn
+    @institution = institutions(:southwest)
+    host! @institution.fqdn
   end
 
   teardown do
@@ -29,7 +30,8 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            index_page: {
-             name: "cats"
+             institution_id: @institution.id,
+             name:           "cats"
            }
          }
     assert_response :forbidden
@@ -42,7 +44,8 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            index_page: {
-             name: "cats"
+             institution_id: @institution.id,
+             name:           "cats"
            }
          }
     assert_response :ok
@@ -56,7 +59,8 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
              index_page: {
-               name: "cats"
+               institution_id: @institution.id,
+               name:           "cats"
              }
            }
     end
@@ -105,11 +109,18 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "destroy() returns HTTP 302 for an existing index page" do
+  test "destroy() redirects to index pages view for non-sysadmins" do
     log_in_as(users(:southwest_admin))
     page = index_pages(:southwest_creators)
     delete index_page_path(page)
     assert_redirected_to index_pages_path
+  end
+
+  test "destroy() redirects to the index page's institution for sysadmins" do
+    log_in_as(users(:southwest_sysadmin))
+    page = index_pages(:southwest_creators)
+    delete index_page_path(page)
+    assert_redirected_to institution_path(page.institution)
   end
 
   test "destroy() returns HTTP 404 for a missing index page" do
@@ -210,7 +221,12 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
 
   test "new() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_admin))
-    get new_index_page_path
+    get new_index_page_path,
+        params: {
+          index_page: {
+            institution_id: @institution.id
+          }
+        }
     assert_response :ok
   end
 
@@ -258,7 +274,8 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             index_page: {
-              name: "cats"
+              institution_id: @institution.id,
+              name:           "cats"
             }
           }
     page.reload
@@ -272,7 +289,8 @@ class IndexPagesControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             index_page: {
-              name: "cats"
+              institution_id: @institution.id,
+              name:           "cats"
             }
           }
     assert_response :ok

@@ -39,14 +39,20 @@ class IndexPagePolicy < ApplicationPolicy
   end
 
   def show
-    if @ctx_institution != @index_page.institution
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @index_page.institution
       return WRONG_SCOPE_RESULT
     end
     AUTHORIZED_RESULT
   end
 
   def update
-    if @ctx_institution != @index_page.institution
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @index_page.institution
       return WRONG_SCOPE_RESULT
     end
     effective_institution_admin(@user, @ctx_institution, @role_limit)    

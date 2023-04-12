@@ -853,6 +853,41 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_element_registry?
   end
 
+  # show_index_pages?()
+
+  test "show_index_pages?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_index_pages?
+  end
+
+  test "show_index_pages?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_index_pages?
+  end
+
+  test "show_index_pages?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_index_pages?
+  end
+
+  test "show_index_pages?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_index_pages?
+  end
+
   # show_metadata_profiles?()
 
   test "show_metadata_profiles?() returns false with a nil request context" do

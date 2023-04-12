@@ -13,8 +13,7 @@ class IndexPagesController < ApplicationController
   #
   def create
     authorize IndexPage
-    @index_page             = IndexPage.new(sanitized_params)
-    @index_page.institution = current_institution
+    @index_page = IndexPage.new(sanitized_params)
     begin
       assign_elements
       @index_page.save!
@@ -33,6 +32,7 @@ class IndexPagesController < ApplicationController
   # Responds to `DELETE /index-pages/:id`
   #
   def destroy
+    institution = @index_page.institution
     begin
       @index_page.destroy!
     rescue => e
@@ -41,7 +41,11 @@ class IndexPagesController < ApplicationController
       toast!(title:   "Index page deleted",
              message: "Index page \"#{@index_page.name}\" has been deleted.")
     ensure
-      redirect_to index_pages_path
+      if current_user.sysadmin?
+        redirect_to institution_path(institution)
+      else
+        redirect_to index_pages_path
+      end
     end
   end
 
@@ -69,9 +73,17 @@ class IndexPagesController < ApplicationController
   #
   # Responds to `GET /index-pages/new` (XHR only)
   #
+  # The following query arguments are accepted:
+  #
+  # * `institution_id`: ID of the owning institution.
+  #
   def new
     authorize IndexPage
-    @index_page = IndexPage.new
+    if params.dig(:index_page, :institution_id).blank?
+      render plain: "Missing institution ID", status: :bad_request
+      return
+    end
+    @index_page = IndexPage.new(sanitized_params)
     render partial: "form"
   end
 
@@ -141,7 +153,7 @@ class IndexPagesController < ApplicationController
   private
 
   def sanitized_params
-    params.require(:index_page).permit(:name)
+    params.require(:index_page).permit(:institution_id, :name)
   end
 
   def set_index_page

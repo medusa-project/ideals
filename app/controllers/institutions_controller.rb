@@ -263,6 +263,16 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the index pages tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/index-pages` (XHR only)
+  #
+  def show_index_pages
+    @index_pages = @institution.index_pages.order(:name)
+    render partial: "show_index_pages_tab"
+  end
+
+  ##
   # Renders HTML for the metadata profiles tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/metadata-profiles` (XHR only)
