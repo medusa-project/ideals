@@ -16,17 +16,7 @@
 
 %h1 Prebuilt Searches
 
-- if @prebuilt_searches.any?
-  %table.table
-    %thead
-      %tr
-        %th Name
-    %tbody
-      - @prebuilt_searches.each do |search|
-        %tr
-          %td= link_to(search.name, search)
-- else
-  %p No prebuilt searches have been created yet.
+= render partial: "listing"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "add-prebuilt-search-modal",

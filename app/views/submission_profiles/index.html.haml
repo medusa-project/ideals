@@ -15,17 +15,7 @@
 
 %h1 Submission Profiles
 
-%table.table
-  %thead
-    %tr
-      %th Name
-  %tbody
-    - @profiles.each do |profile|
-      %tr
-        %td
-          = link_to(profile.name, profile)
-          - if profile.institution_default
-            %span.badge.text-bg-success DEFAULT
+= render partial: "listing"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "add-submission-profile-modal", title: "Add Submission Profile" }

@@ -1,4 +1,6 @@
--if policy(Unit).new?
+-# N.B.: this template must be kept aligned with units/index
+
+- if policy(Unit).new?
   .btn-group.float-end{role: "group"}
     -# Add Unit button
     %button.btn.btn-light.add-unit{"data-bs-target": "#add-unit-modal",

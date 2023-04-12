@@ -16,19 +16,7 @@
 
 %h1 Index Pages
 
-- if @index_pages.any?
-  %table.table
-    %thead
-      %tr
-        %th Name
-        %th Elements
-    %tbody
-      - @index_pages.each do |index_page|
-        %tr
-          %td= link_to(index_page.name, index_page)
-          %td= raw(index_page.registered_elements.order(:label).pluck(:label).join(", "))
-- else
-  %p No index pages have been created yet.
+= render partial: "listing"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "add-index-page-modal",

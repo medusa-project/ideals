@@ -19,59 +19,7 @@
   .card-body
     = filter_field(placeholder: "Filter")
 
-- @elements.each do |element|
-  .card.mb-3
-    .card-body
-      .btn-group.float-end
-        %button.btn.btn-light.btn-sm.edit-element{"data-element-id": element.id,
-                                                  "data-bs-target":  "#edit-element-modal",
-                                                  "data-bs-toggle":  "modal",
-                                                  type:              "button"}
-          %i.fas.fa-pencil-alt
-          Edit
-        = link_to(registered_element_path(element), class:  "btn btn-sm btn-danger",
-                                                    method: :delete,
-                                                    data: { confirm: "Are you sure you want to delete this element?" }) do
-          %i.fa.fa-trash
-          Delete
-
-      %h5.card-title.mb-3.element-labe
-        = element.label
-
-      %dl.mb-0
-        %dt Name
-        %dd
-          %code.element-name= element.name
-        %dt URI
-        %dd
-          - if element.uri.present?
-            %code= element.uri
-          - else
-            None
-        %dt Vocabulary
-        %dd= element.vocabulary ? element.vocabulary&.name : "None"
-        %dt Input Type
-        %dd= element.vocabulary ? "Menu" : element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
-        %dt Highwire Press Mapping
-        %dd
-          - if element.highwire_mapping.present?
-            %code= element.highwire_mapping
-          - else
-            None
-        %dt Metadata Profiles
-        %dd
-          - if element.metadata_profile_elements.any?
-            = raw(element.metadata_profile_elements.map{ |mpe| link_to(mpe.metadata_profile.name, mpe.metadata_profile) }.join(", "))
-          - else
-            None
-        %dt Submission Profiles
-        %dd
-          - if element.submission_profile_elements.any?
-            = raw(element.submission_profile_elements.map{ |spe| link_to(spe.submission_profile.name, spe.submission_profile) }.join(", "))
-          - else
-            None
-        %dt Scope Note
-        %dd= simple_format(element.scope_note)
+= render partial: "listing"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "add-element-modal", title: "Add Element" }

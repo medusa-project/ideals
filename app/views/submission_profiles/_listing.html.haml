@@ -1,0 +1,11 @@
+%table.table
+  %thead
+    %tr
+      %th Name
+  %tbody
+    - @profiles.each do |profile|
+      %tr
+        %td
+          = link_to(profile.name, profile)
+          - if profile.institution_default
+            %span.badge.text-bg-success DEFAULT

@@ -1,3 +1,5 @@
+-# N.B.: this template must be kept aligned with prebuilt_searches/index
+
 - if policy(PrebuiltSearch).new?
   .btn-group.float-end{role: "group"}
     -# Add Prebuilt Search button
@@ -9,17 +11,7 @@
 
 .clearfix
 
-- if @prebuilt_searches.any?
-  %table.table
-    %thead
-      %tr
-        %th Name
-    %tbody
-      - @prebuilt_searches.each do |search|
-        %tr
-          %td= link_to(search.name, search)
-- else
-  %p No prebuilt searches have been created yet.
+= render partial: "prebuilt_searches/listing"
 
 = render partial: "shared/ajax_modal",
          locals: { id: "add-prebuilt-search-modal",
