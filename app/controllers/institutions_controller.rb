@@ -253,7 +253,8 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Renders HTML for the elements tab in show-institution view.
+  # Renders HTML for the sysadmin-only element registry tab in show-institution
+  # view.
   #
   # Responds to `GET /institutions/:key/elements` (XHR only)
   #
@@ -263,7 +264,7 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Renders HTML for the index pages tab in show-institution view.
+  # Renders HTML for the sysadmin-only index pages tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/index-pages` (XHR only)
   #
@@ -273,7 +274,8 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Renders HTML for the metadata profiles tab in show-institution view.
+  # Renders HTML for the sysadmin-only metadata profiles tab in
+  # show-institution view.
   #
   # Responds to `GET /institutions/:key/metadata-profiles` (XHR only)
   #
@@ -283,7 +285,8 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Renders HTML for the prebuilt searches tab in show-institution view.
+  # Renders HTML for the sysadmin-only prebuilt searches tab in
+  # show-institution view.
   #
   # Responds to `GET /institutions/:key/prebuilt-searches` (XHR only)
   #
@@ -330,7 +333,8 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Renders HTML for the submission profiles tab in show-institution view.
+  # Renders HTML for the sysadmin-only submission profiles tab in
+  # show-institution view.
   #
   # Responds to `GET /institutions/:key/submission-profiles` (XHR only)
   #
@@ -349,7 +353,7 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Renders HTML for the units tab in show-institution view.
+  # Renders HTML for the sysadmin-only units tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/units` (XHR only)
   #
@@ -372,7 +376,8 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Renders HTML for the vocabularies tab in show-institution view.
+  # Renders HTML for the sysadmin-only vocabularies tab in show-institution
+  # view.
   #
   # Responds to `GET /institutions/:key/vocabularies` (XHR only)
   #
