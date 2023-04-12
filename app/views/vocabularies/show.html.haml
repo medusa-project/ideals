@@ -3,6 +3,13 @@
 
 .btn-group.float-end{role: "group"}
   - if policy(@vocabulary).edit?
+    -# Add Term button
+    %button.btn.btn-light.add-term{"data-bs-target":     "#add-term-modal",
+                                   "data-bs-toggle":     "modal",
+                                   "data-vocabulary-id": @vocabulary.id,
+                                   type:                 "button"}
+      %i.fa.fa-plus
+      Add Term
     -# Edit button
     %button.btn.btn-light.edit-vocabulary{"data-bs-target":     "#edit-vocabulary-modal",
                                           "data-bs-toggle":     "modal",
@@ -20,16 +27,6 @@
       Delete
 
 %h1= @vocabulary.name
-
-- if policy(@vocabulary).edit?
-  .btn-group.float-end.mb-3{role: "group"}
-    -# Add Term button
-    %button.btn.btn-light.add-term{"data-bs-target":     "#add-term-modal",
-                                   "data-bs-toggle":     "modal",
-                                   "data-vocabulary-id": @vocabulary.id,
-                                   type:                 "button"}
-      %i.fa.fa-plus
-      Add Term
 
 %table.table
   %thead

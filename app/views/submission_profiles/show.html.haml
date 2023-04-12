@@ -4,10 +4,10 @@
 .btn-group.float-end{role: "group"}
   - if policy(@profile).edit?
     -# Edit button
-    %button.btn.btn-light.edit-profile{"data-bs-target":             "#edit-submission-profile-modal",
-                                       "data-bs-toggle":             "modal",
-                                       "data-submission-profile-id": @profile.id,
-                                       type:                         "button"}
+    %button.btn.btn-light.edit-submission-profile{"data-bs-target":             "#edit-submission-profile-modal",
+                                                  "data-bs-toggle":             "modal",
+                                                  "data-submission-profile-id": @profile.id,
+                                                  type:                         "button"}
       %i.fa.fa-pencil-alt
       Edit
   - if policy(@profile).clone?
@@ -107,7 +107,7 @@
         This submission profile is not in use by any collections.
 
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-profile-modal", title: "Edit Profile" }
+         locals: { id: "edit-submission-profile-modal", title: "Edit Submission Profile" }
 = render partial: "submission_profile_elements/add_modal"
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-element-modal", title: "Edit Element" }

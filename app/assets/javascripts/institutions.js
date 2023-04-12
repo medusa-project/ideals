@@ -5,7 +5,6 @@
  */
 const InstitutionView = function() {
     const ROOT_URL       = $('input[name="root_url"]').val();
-    const institutionID  = $("[name=institution_id]").val();
     const institutionKey = $("[name=institution_key]").val();
 
     $("#preservation-tab").on("show.bs.tab", function() {
@@ -62,15 +61,8 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/metadata-profiles";
         $.get(url, function (data) {
             $("#metadata-profiles-tab-content").html(data);
-            $("button.add-metadata-profile").on("click", function() {
-                const url = ROOT_URL + "/metadata-profiles/new?" +
-                    "metadata_profile%5Binstitution_id%5D=" + institutionID;
-                $.get(url, function(data) {
-                    $("#add-metadata-profile-modal .modal-body").html(data);
-                    new IDEALS.CheckAllButton($('.check-all'),
-                        $("input[name='elements[]']"));
-                });
-            });
+            $("button.add-metadata-profile").on("click",
+                MetadataProfiles.AddMetadataProfileClickHandler);
         });
     });
 
@@ -78,15 +70,8 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/submission-profiles";
         $.get(url, function (data) {
             $("#submission-profiles-tab-content").html(data);
-            $("button.add-submission-profile").on("click", function() {
-                const url = ROOT_URL + "/submission-profiles/new?" +
-                    "submission_profile%5Binstitution_id%5D=" + institutionID;
-                $.get(url, function(data) {
-                    $("#add-submission-profile-modal .modal-body").html(data);
-                    new IDEALS.CheckAllButton($('.check-all'),
-                        $("input[name='elements[]'][data-required=false]"));
-                });
-            });
+            $("button.add-submission-profile").on("click",
+                SubmissionProfiles.AddSubmissionProfileClickHandler);
         });
     });
 
@@ -94,13 +79,8 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/vocabularies";
         $.get(url, function (data) {
             $("#vocabularies-tab-content").html(data);
-            $("button.add-vocabulary").on("click", function() {
-                const url = ROOT_URL + "/vocabularies/new?" +
-                    "vocabulary%5Binstitution_id%5D=" + institutionID;
-                $.get(url, function(data) {
-                    $("#add-vocabulary-modal .modal-body").html(data);
-                });
-            });
+            $("button.add-vocabulary").on("click",
+                Vocabularies.AddVocabularyClickHandler);
         });
     });
 
@@ -108,13 +88,8 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/prebuilt-searches";
         $.get(url, function (data) {
             $("#prebuilt-searches-tab-content").html(data);
-            $("button.add-prebuilt-search").on("click", function() {
-                const url = ROOT_URL + "/prebuilt-searches/new?" +
-                    "prebuilt_search%5Binstitution_id%5D=" + institutionID;
-                $.get(url, function(data) {
-                    $("#add-prebuilt-search-modal .modal-body").html(data);
-                });
-            });
+            $("button.add-prebuilt-search").on("click",
+                PrebuiltSearches.AddPrebuiltSearchClickHandler);
         });
     });
 
@@ -122,13 +97,8 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/index-pages";
         $.get(url, function (data) {
             $("#index-pages-tab-content").html(data);
-            $("button.add-index-page").on("click", function() {
-                const url = ROOT_URL + "/index-pages/new?" +
-                    "index_page%5Binstitution_id%5D=" + institutionID;
-                $.get(url, function(data) {
-                    $("#add-index-page-modal .modal-body").html(data);
-                });
-            });
+            $("button.add-index-page").on("click",
+                IndexPages.AddIndexPageClickHandler);
         });
     });
 
@@ -149,12 +119,7 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/units";
         $.get(url, function (data) {
             $("#units-tab-content").html(data);
-            $("button.add-unit").on("click", function() {
-                const url = "/units/new?unit%5Binstitution_id%5D=" + institutionID;
-                $.get(url, function(data) {
-                    $("#add-unit-modal .modal-body").html(data);
-                });
-            });
+            $("button.add-unit").on("click", Units.AddUnitClickHandler);
         });
     });
 

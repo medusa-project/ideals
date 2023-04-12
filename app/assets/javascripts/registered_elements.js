@@ -62,7 +62,7 @@ const RegisteredElements = {
 }
 
 $(document).ready(function() {
-    if ($('body#registered_elements').length) {
+    if ($("body#registered_elements").length) {
         new RegisteredElements.RegisteredElementsView();
     }
 });

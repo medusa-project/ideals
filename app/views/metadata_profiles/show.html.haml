@@ -4,10 +4,10 @@
 .btn-group.float-end{role: "group"}
   - if policy(@profile).edit?
     -# Edit button
-    %button.btn.btn-light.edit-profile{"data-bs-target":           "#edit-profile-modal",
-                                       "data-bs-toggle":           "modal",
-                                       "data-metadata-profile-id": @profile.id,
-                                       type:                       "button"}
+    %button.btn.btn-light.edit-metadata-profile{"data-bs-target":           "#edit-metadata-profile-modal",
+                                                "data-bs-toggle":           "modal",
+                                                "data-metadata-profile-id": @profile.id,
+                                                type:                       "button"}
       %i.fa.fa-pencil-alt
       Edit
   - if policy(@profile).clone?
@@ -85,10 +85,10 @@
         %tr
           %td{style: "width: 1px; white-space: nowrap"}
             .btn-group
-              %button.btn.btn-light.btn-sm.edit-profile{"data-bs-target":           "#edit-metadata-profile-modal",
-                                                        "data-bs-toggle":           "modal",
-                                                        "data-metadata-profile-id": @profile.id,
-                                                        type:                       "button"}
+              %button.btn.btn-light.btn-sm.edit-metadata-profile{"data-bs-target":           "#edit-metadata-profile-modal",
+                                                                 "data-bs-toggle":           "modal",
+                                                                 "data-metadata-profile-id": @profile.id,
+                                                                 type:                       "button"}
                 %i.fa.fa-pencil-alt
                 Edit
           %td Full Text
@@ -150,7 +150,7 @@
         This metadata profile is not directly assigned to any collections.
 
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-profile-modal", title: "Edit Profile" }
+         locals: { id: "edit-metadata-profile-modal", title: "Edit Metadata Profile" }
 = render partial: "metadata_profile_elements/add_modal"
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-element-modal", title: "Edit Element" }
