@@ -2,6 +2,8 @@
 
 class WelcomeController < ApplicationController
 
+  LOGGER = CustomLogger.new(WelcomeController)
+
   before_action :ensure_institution_host, only: :about
   before_action :store_location, only: :index
 
@@ -10,6 +12,36 @@ class WelcomeController < ApplicationController
   #
   def about
     @about_html = current_institution&.about_html
+  end
+
+  ##
+  # Responds to `POST /contact` (XHR only)
+  #
+  def contact
+    # These error messages are injected into the contact form alert via JS.
+    if !current_user && !check_captcha # the captcha is not used if there is a logged-in user
+      render plain: "Incorrect math question response.", status: :bad_request
+      return
+    elsif params[:comment]&.blank? # name and email are optional, but comment is required
+      render plain: "Please enter a comment.", status: :bad_request
+      return
+    end
+    feedback_email = current_institution&.feedback_email ||
+      Institution.find_by_key("uiuc").feedback_email # TODO: we need a global feedback email
+    begin
+      IdealsMailer.contact(page_url:   params[:page_url],
+                           from_name:  params[:name],
+                           from_email: params[:email],
+                           comment:    params[:comment],
+                           to_email:   feedback_email).deliver_now
+    rescue => e
+      LOGGER.error("#{e}")
+      render plain: "An error occurred on the server. If this error " +
+                    "persists, please email us at: " + feedback_email,
+             status: :internal_server_error
+    else
+      render plain: "OK"
+    end
   end
 
   ##

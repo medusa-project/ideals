@@ -111,6 +111,26 @@ class IdealsMailer < ApplicationMailer
          subject: "Your #{@institution.service_name} account request")
   end
 
+  ##
+  # Used for user feedback from a contact form.
+  #
+  # @param from_email [String] Email address entered into a contact form.
+  # @param from_name [String]  Name entered into a contact form.
+  # @param page_url [String]   URL on which the contact form appears.
+  # @param comment [String]    Comment entered into a contact form.
+  # @param to_email [String]   Email address to which the feedback is to be
+  #                            routed.
+  #
+  def contact(from_email:, from_name:, page_url:, comment:, to_email:)
+    @from_email = from_email.present? ? from_email : "Not Supplied"
+    @from_name  = from_name.present? ? from_name: "Not Supplied"
+    @page_url   = page_url
+    @comment    = comment
+    mail(from:    from_email.present? ? from_email : NO_REPLY_ADDRESS,
+         to:      to_email,
+         subject: "#{subject_prefix} User feedback received")
+  end
+
   def error(error_text)
     @error_text = error_text
     mail(to:      ::Configuration.instance.admin[:tech_mail_list],

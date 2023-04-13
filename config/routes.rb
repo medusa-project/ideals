@@ -48,6 +48,8 @@ Rails.application.routes.draw do
     match "/submit", to: "submissions#new", via: :get
     match "/undelete", to: "collections#undelete", via: :post
   end
+  match "/contact", to: "welcome#contact", via: :post,
+        constraints: lambda { |request| request.xhr? }
   match "/custom-styles", to: "stylesheets#show", via: :get
   # This is an old DSpace route.
   match "/dspace-oai/request", to: redirect('/oai-pmh', status: 301), via: :all

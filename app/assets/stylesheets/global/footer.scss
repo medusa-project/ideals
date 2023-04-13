@@ -1,6 +1,5 @@
 footer {
   margin: 1em 0em 0em 0em;
-  text-align: center;
   .row {
     margin-left: 0px;
     margin-right: 0px;
@@ -9,7 +8,7 @@ footer {
     background-color: inherit;
     border: 1px solid white;
   }
-  .text-line {
+  .contact-area {
     background-color: $gray-100;
     border-bottom: 4px solid $gray-400;
     padding: 1em;
@@ -20,6 +19,7 @@ footer {
     font-family: "Open Sans", sans-serif;
     font-size: 0.9em;
     padding: 1em 0em 2em 0em;
+    text-align: center;
     a {
       color: white;
     }

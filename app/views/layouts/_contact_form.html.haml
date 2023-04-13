@@ -1,0 +1,32 @@
+.text-center
+  = link_to("Contact us", "#contact-form",
+                role:             "button",
+                "data-bs-toggle": "collapse",
+                "aria-expanded":  "false",
+                "aria-controls":  "contact-form")
+  for questions and to provide feedback.
+
+#contact-form.collapse.mt-3
+  #contact-form-alert.alert{style: "display: none"}
+
+  = form_tag(controller: "welcome", action: "contact", method: :post) do
+    = hidden_field_tag(:page_url, request.url)
+    .row
+      .col-sm-6
+        .mb-3
+          = label_tag(:name, "Your Name (optional)", class: "form-label")
+          = text_field_tag(:name, current_user&.name, class: "form-control")
+        .mb-3
+          = label_tag(:email, "Your Email (optional)", class: "form-label")
+          = text_field_tag(:email, current_user&.email, class: "form-control")
+      .col-sm-6
+        .mb-3
+          = label_tag(:comment, "Your Comment", class: "form-label")
+          = text_area_tag(:comment, nil, rows: 5, class: "form-control")
+      - unless current_user
+        .mb-3
+          - captcha_hash = captcha
+          = captcha_hash[:label]
+          = captcha_hash[:field]
+    .mb-3
+      = submit_tag("Submit", class: "btn btn-primary")

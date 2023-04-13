@@ -373,6 +373,38 @@ const IDEALS = {
         attachEventListeners();
     },
 
+    ContactForm: function() {
+        const ROOT_URL  = $("input[name=root_url]").val();
+        const container = $("#contact-form");
+        const form      = container.find("form");
+        const alert     = container.find("#contact-form-alert");
+        form.on("submit", function() {
+            $.ajax({
+                method:  "POST",
+                url:     ROOT_URL + "/contact",
+                data:    $(this).serialize(),
+                success: function() {
+                    alert.text("Thanks for your feedback! If you requested " +
+                        "a reply, we will get back to you as soon as we can.")
+                        .removeClass("alert-danger")
+                        .addClass("alert-success")
+                        .show();
+                    form.children().remove();
+                },
+                error: function(data, status, xhr) {
+                    console.log(data);
+                    console.log(status);
+                    console.log(xhr);
+                    alert.removeClass("alert-success")
+                        .addClass("alert-danger")
+                        .text(data.responseText)
+                        .show();
+                }
+            });
+            return false;
+        });
+    },
+
     /**
      * Enables a copy button that copies text to the clipboard.
      *
@@ -1028,8 +1060,8 @@ const IDEALS = {
 /**
  * The first function invoked upon document-ready.
  */
-const idealsReady = function () {
-
+$(document).ready(function() {
+    new IDEALS.ContactForm();
     new IDEALS.NonNetIDLoginForm();
 
     // Reimplement the form element data-confirm functionality that used to be
@@ -1103,5 +1135,4 @@ const idealsReady = function () {
     const toastList = [...toasts]
         .map(toast => new bootstrap.Toast(toast, {}))
         .forEach(toast => toast.show());
-};
-$(document).ready(idealsReady);
+});

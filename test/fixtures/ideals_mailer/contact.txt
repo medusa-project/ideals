@@ -1,0 +1,9 @@
+Name: {{{from_name}}}
+
+Email: {{{from_email}}}
+
+Page URL: {{{page_url}}}
+
+Comment: {{{comment}}}
+
+

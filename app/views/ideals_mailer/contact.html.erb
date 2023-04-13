@@ -1,0 +1,16 @@
+<dl>
+  <dt>Name</dt>
+  <dd><%= @from_name %></dd>
+  <dt>Email</dt>
+  <dd>
+    <% if @from_email.include?("@") %>
+      <a href="mailto:<%= @from_email %>"><%= @from_email %></a>
+    <% else %>
+      <%= @from_email %>
+    <% end %>
+  </dd>
+  <dt>Page URL</dt>
+  <dd><%= link_to(@page_url, @page_url) %></dd>
+  <dt>Comment</dt>
+  <dd><%= sanitize(@comment.gsub("\n", "<br>"), tags: %w(br)) %></dd>
+</dl>

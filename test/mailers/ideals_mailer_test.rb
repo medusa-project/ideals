@@ -107,6 +107,40 @@ class IdealsMailerTest < ActionMailer::TestCase
                  email.html_part.body.raw_source
   end
 
+  # contact()
+
+  test "contact() sends the expected email" do
+    from_email = "george@example.org"
+    from_name  = "George Washington"
+    page_url   = "https://example.org/page"
+    comment    = "Hello"
+    to_email   = "ideals@example.edu"
+    email      = IdealsMailer.contact(from_email: from_email,
+                                      from_name:  from_name,
+                                      page_url:   page_url,
+                                      comment:    comment,
+                                      to_email:   to_email).deliver_now
+    assert !ActionMailer::Base.deliveries.empty?
+
+    assert_equal [from_email], email.from
+    assert_equal [to_email], email.to
+    assert_equal "[TEST: IDEALS] User feedback received", email.subject
+    assert_equal render_template("contact.txt",
+                                 from_email: from_email,
+                                 from_name:  from_name,
+                                 page_url:   page_url,
+                                 comment:    comment,
+                                 to_email:   to_email),
+                 email.text_part.body.raw_source
+    assert_equal render_template("contact.html",
+                                 from_email: from_email,
+                                 from_name:  from_name,
+                                 page_url:   page_url,
+                                 comment:    comment,
+                                 to_email:   to_email),
+                 email.html_part.body.raw_source
+  end
+
   # error()
 
   test "error() sends the expected email" do
