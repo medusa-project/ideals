@@ -76,6 +76,20 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show
+    # This is a hack for UIUC only that prevents non-UIUC sysadmins from
+    # accessing it, requested here:
+    # https://github.com/medusa-project/ideals-issues/issues/107
+    # An alternate approach could be to add another access level beyond
+    # sysadmin, like super admin, and make us at UIUC super admins while CARLI
+    # remains sysadmins, and make UIUC super admin-only.
+    uiuc = Institution.find_by_key("uiuc")
+    if @institution == uiuc && (@ctx_institution != uiuc || @user.institution != uiuc)
+      return {
+        authorized: false,
+        reason:     "Only UIUC administrators (via the UIUC scope) are " +
+                    "allowed to access this institution."
+      }
+    end
     effective_institution_admin(@user, @institution, @role_limit)
   end
 
