@@ -50,8 +50,12 @@ class SessionsController < ApplicationController
       user.logins.build(ip_address: request.remote_ip,
                         hostname:   hostname,
                         auth_hash:  auth).save!
+      return_url_ = return_url
+      # Protect against session fixation:
+      # https://guides.rubyonrails.org/security.html#session-fixation-countermeasures
+      reset_session
       session[:user_id] = user.id
-      redirect_to return_url
+      redirect_to return_url_
     else
       unauthorized
     end
