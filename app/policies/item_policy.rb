@@ -249,7 +249,7 @@ class ItemPolicy < ApplicationPolicy
       return WRONG_SCOPE_RESULT
     end
     @item.current_embargoes.each do |embargo|
-      unless @user && embargo.exempt?(@user)
+      if !@user || !embargo.exempt?(@user) || (@role_limit && @role_limit <= Role::LOGGED_OUT)
         if embargo.user_groups.length > 1
           reason = "This item's files can only be accessed by the "\
                    "following groups: " + embargo.user_groups.map(&:name).join(", ")
