@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_06_215819) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_14_154839) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -547,6 +547,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_06_215819) do
     t.index ["institution_id"], name: "index_registered_elements_on_institution_id"
     t.index ["name", "institution_id"], name: "index_registered_elements_on_name_and_institution_id", unique: true
     t.index ["vocabulary_id"], name: "index_registered_elements_on_vocabulary_id"
+  end
+
+  create_table "sessions", force: :cascade do |t|
+    t.string "session_id", null: false
+    t.text "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
+    t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
   create_table "settings", force: :cascade do |t|
