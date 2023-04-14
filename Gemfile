@@ -5,6 +5,10 @@ git_source(:github) {|repo| "https://github.com/#{repo}.git" }
 
 ruby "3.2.2"
 
+# We store our sessions in the database. (The Rails default is to store them
+# in an encrypted cookie, but we've run into problems with the 4KB cookie size
+# limit.)
+gem "activerecord-session_store"
 gem "aws-sdk-s3", "~> 1"
 # Use ActiveModel has_secure_password for local identity users
 gem "bcrypt", "~> 3"
