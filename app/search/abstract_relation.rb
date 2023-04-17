@@ -518,10 +518,14 @@ class AbstractRelation
       last_hit = @response_json['hits']['hits'].last
       @last_sort_value = last_hit ? last_hit['sort'] : nil
     else
-      @result_count = 0
-      raise IOError, "#{@response_json['error']['type']}: "\
-          "#{@response_json['error']['reason']}\n"\
-          "Request: #{JSON.generate(@request_json)}"
+      @result_count     = 0
+      type              = @response_json.dig("error", "type")
+      reason            = @response_json.dig("error", "reason")
+      root_cause_type   = @response_json.dig("error", "root_cause")&.first['type']
+      root_cause_reason = @response_json.dig("error", "root_cause")&.first['reason']
+      raise IOError, "#{type}: #{reason}\n"\
+          "    Root cause: #{root_cause_type}: #{root_cause_reason}\n"\
+          "    Request: #{JSON.generate(@request_json)}"
     end
 
     @loaded = true
