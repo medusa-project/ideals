@@ -178,7 +178,7 @@ class ItemsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /items/:id/file_navigator` (XHR only)
+  # Responds to `GET /items/:id/file-navigator` (XHR only)
   #
   def file_navigator
     if [Item::Stages::BURIED, Item::Stages::WITHDRAWN].include?(@item.stage)
