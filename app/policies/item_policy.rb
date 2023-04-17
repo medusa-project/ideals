@@ -139,8 +139,47 @@ class ItemPolicy < ApplicationPolicy
     NOT_INSTITUTION_ADMIN_RESULT
   end
 
+  ##
+  # N.B. This method includes all of the rules of {show} but is more
+  # restrictive as it takes into account download-only embargoes.
+  #
   def file_navigator
-    show
+    result = show
+    return result if !result[:authorized]
+
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
+      return WRONG_SCOPE_RESULT
+    end
+    @item.current_embargoes.each do |embargo|
+      if !@user || !embargo.exempt?(@user) || (@role_limit && @role_limit <= Role::LOGGED_OUT)
+        if embargo.user_groups.length > 1
+          reason = "This item's files can only be accessed by the "\
+                   "following groups: " + embargo.user_groups.map(&:name).join(", ")
+        elsif embargo.user_groups.length == 1
+          if embargo.user_groups.first.key == "uiuc"
+            # This is a special UIUC exception from IR-242
+            reason = "This item is only available for download by members of "\
+                     "the University of Illinois community. Students, "\
+                     "faculty, and staff at the U of I may log in with your "\
+                     "NetID and password to view the item. If you are trying "\
+                     "to access an Illinois-restricted dissertation or "\
+                     "thesis, you can request a copy through your library's "\
+                     "Inter-Library Loan office or purchase a copy directly "\
+                     "from ProQuest."
+          else
+            reason = "This item's files can only be accessed by the "\
+                   "#{embargo.user_groups.first.name} group."
+          end
+        else
+          # Verbiage also from IR-242
+          reason = "This item is closed and only viewable by specific users."
+        end
+        return { authorized: false, reason: reason }
+      end
+    end
+    AUTHORIZED_RESULT
   end
 
   def index
@@ -234,46 +273,6 @@ class ItemPolicy < ApplicationPolicy
 
   def show_events
     show_access
-  end
-
-  ##
-  # This method is used only in a view template after {show} has already
-  # authorized access to the view, so it only contains limited additional logic.
-  #
-  def show_file_navigator
-    if effective_sysadmin?(@user, @role_limit)
-      return AUTHORIZED_RESULT
-    elsif @ctx_institution != @item.institution
-      return WRONG_SCOPE_RESULT
-    end
-    @item.current_embargoes.each do |embargo|
-      if !@user || !embargo.exempt?(@user) || (@role_limit && @role_limit <= Role::LOGGED_OUT)
-        if embargo.user_groups.length > 1
-          reason = "This item's files can only be accessed by the "\
-                   "following groups: " + embargo.user_groups.map(&:name).join(", ")
-        elsif embargo.user_groups.length == 1
-          if embargo.user_groups.first.key == "uiuc"
-            # This is a special UIUC exception from IR-242
-            reason = "This item is only available for download by members of "\
-                     "the University of Illinois community. Students, "\
-                     "faculty, and staff at the U of I may log in with your "\
-                     "NetID and password to view the item. If you are trying "\
-                     "to access an Illinois-restricted dissertation or "\
-                     "thesis, you can request a copy through your library's "\
-                     "Inter-Library Loan office or purchase a copy directly "\
-                     "from ProQuest."
-          else
-            reason = "This item's files can only be accessed by the "\
-                   "#{embargo.user_groups.first.name} group."
-          end
-        else
-          # Verbiage also from IR-242
-          reason = "This item is closed and only viewable by specific users."
-        end
-        return { authorized: false, reason: reason }
-      end
-    end
-    AUTHORIZED_RESULT
   end
 
   ##

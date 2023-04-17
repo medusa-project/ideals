@@ -811,7 +811,8 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   # file_navigator?()
 
-  test "file_navigator?() returns true with a nil user" do
+  test "file_navigator?() returns true with an unrestricted approved item and a
+  nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @item.institution)
     policy = ItemPolicy.new(context, @item)
@@ -890,6 +891,32 @@ class ItemPolicyTest < ActiveSupport::TestCase
                                  institution: @item.institution)
     policy  = ItemPolicy.new(context, items(:southwest_unit1_collection1_buried))
     assert policy.file_navigator?
+  end
+
+  test "file_navigator?() authorizes users belonging to an exempted user group
+  on an embargo" do
+    user              = users(:southwest)
+    user_group        = user_groups(:southwest_unused)
+    user_group.users << user
+    user_group.save!
+    @item.embargoes.build(kind:        Embargo::Kind::DOWNLOAD,
+                          perpetual:   true,
+                          user_groups: [user_group])
+
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.file_navigator?
+  end
+
+  test "file_navigator?() does not authorize download-embargoed items to
+  ordinary users" do
+    @item   = items(:southwest_unit1_collection1_embargoed)
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.file_navigator?
   end
 
   test "file_navigator?() respects role limits" do
@@ -1551,55 +1578,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.show_events?
-  end
-
-  # show_file_navigator?()
-
-  test "show_file_navigator?() returns true with a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @item.institution)
-    policy = ItemPolicy.new(context, @item)
-    assert policy.show_file_navigator?
-  end
-
-  test "show_file_navigator?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert policy.show_file_navigator?
-  end
-
-  test "show_file_navigator?() does not authorize an incorrect scope" do
-    context = RequestContext.new(user:        users(:southwest_admin),
-                                 institution: institutions(:northeast))
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.show_file_navigator?
-  end
-
-  test "show_file_navigator?() authorizes users belonging to an exempted user
-  group on an embargo" do
-    user              = users(:southwest)
-    user_group        = user_groups(:southwest_unused)
-    user_group.users << user
-    user_group.save!
-    @item.embargoes.build(kind:        Embargo::Kind::DOWNLOAD,
-                          perpetual:   true,
-                          user_groups: [user_group])
-
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert policy.show_file_navigator?
-  end
-
-  test "show_file_navigator?() does not authorize download-embargoed items" do
-    @item   = items(:southwest_unit1_collection1_embargoed)
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.show_file_navigator?
   end
 
   # show_metadata?()
