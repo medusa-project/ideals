@@ -241,9 +241,7 @@ class ItemPolicy < ApplicationPolicy
   # authorized access to the view, so it only contains limited additional logic.
   #
   def show_file_navigator
-    if !@user
-      return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(@user, @role_limit)
+    if effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
     elsif @ctx_institution != @item.institution
       return WRONG_SCOPE_RESULT

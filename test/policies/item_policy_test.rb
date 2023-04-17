@@ -1555,6 +1555,13 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   # show_file_navigator?()
 
+  test "show_file_navigator?() returns true with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @item.institution)
+    policy = ItemPolicy.new(context, @item)
+    assert policy.show_file_navigator?
+  end
+
   test "show_file_navigator?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
