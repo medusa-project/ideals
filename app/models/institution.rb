@@ -185,7 +185,7 @@ class Institution < ApplicationRecord
   # @return [Enumerable<Hash>]
   #
   def self.file_sizes
-    sql = "SELECT ins.id, ins.name, SUM(b.length) AS sum,
+    sql = "SELECT ins.id, ins.name, COUNT(b.id) AS count, SUM(b.length) AS sum,
         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY b.length) AS median,
         MAX(b.length) AS max
       FROM institutions ins

@@ -1,6 +1,7 @@
 %table.table
   %thead
     %th Institution
+    %th Count
     %th Median File Size
     %th Max File Size
     %th Total File Size
@@ -9,6 +10,7 @@
     - @file_sizes.each do |row|
       %tr
         %td= link_to(row['name'], institution_path(row['id']))
+        %td= number_with_delimiter(row['count'].to_i)
         %td= number_to_human_size(row['median'].to_i)
         %td= number_to_human_size(row['max'].to_i)
         %td= number_to_human_size(row['sum'].to_i)

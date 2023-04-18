@@ -32,6 +32,7 @@ class InstitutionTest < ActiveSupport::TestCase
     sizes = Institution.file_sizes
     assert_equal Institution.count, sizes.count
     size = sizes.find{ |row| row['name'] == institutions(:southwest).name }
+    assert_not_nil size['count']
     assert_not_nil size['median']
     assert_not_nil size['max']
     assert_not_nil size['sum']
