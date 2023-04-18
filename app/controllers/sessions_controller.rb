@@ -12,7 +12,8 @@ class SessionsController < ApplicationController
     if Rails.env.development? || Rails.env.test?
       redirect_to "/auth/developer"
     else
-      redirect_to shibboleth_login_path(Ideals::Application.shibboleth_host)
+      shib_opts = YAML.load_file(File.join(Rails.root, 'config', 'shibboleth.yml'))[Rails.env]
+      redirect_to shibboleth_login_path(shib_opts['host'])
     end
   end
 

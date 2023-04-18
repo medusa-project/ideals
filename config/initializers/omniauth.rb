@@ -1,5 +1,3 @@
-shib_opts = YAML.load_file(File.join(Rails.root, 'config', 'shibboleth.yml'))[Rails.env]
-
 OmniAuth.config.logger = Rails.logger
 
 Rails.application.config.middleware.use OmniAuth::Builder do
@@ -14,6 +12,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   if Rails.env.development? || Rails.env.test?
     provider :developer
   else
+    shib_opts = YAML.load_file(File.join(Rails.root, 'config', 'shibboleth.yml'))[Rails.env]
     provider :shibboleth, shib_opts.symbolize_keys
   end
 end
@@ -21,5 +20,3 @@ end
 OmniAuth.config.on_failure = Proc.new { |env|
   OmniAuth::FailureEndpoint.new(env).redirect_to_failure
 }
-
-Ideals::Application.shibboleth_host = shib_opts['host']
