@@ -58,7 +58,7 @@ class PrebuiltSearchTest < ActiveSupport::TestCase
     @search.elements.sort_by(&:term).each do |element|
       parts << ["fq[]", "#{element.registered_element.indexed_keyword_field}:#{element.term}"]
     end
-    parts << ["sort", @search.ordering_element.indexed_field]
+    parts << ["sort", @search.ordering_element.indexed_sort_field]
     parts << ["direction", "asc"]
     assert_equal "?" + parts.map{ |p| p.map{ |a| StringUtils.url_encode(a) }.join("=") }.join("&"),
                  @search.url_query

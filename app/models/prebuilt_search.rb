@@ -66,7 +66,7 @@ class PrebuiltSearch < ApplicationRecord
       pairs << ["fq[]", "#{pse.registered_element.indexed_keyword_field}:#{pse.term}"]
     end
     if self.ordering_element
-      pairs << ["sort", self.ordering_element.indexed_field]
+      pairs << ["sort", self.ordering_element.indexed_sort_field]
       case self.direction
       when PrebuiltSearch::OrderingDirection::ASCENDING
         pairs << ["direction", "asc"]
