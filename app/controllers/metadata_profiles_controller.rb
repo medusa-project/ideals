@@ -152,7 +152,7 @@ class MetadataProfilesController < ApplicationController
 
   def set_profile
     @profile = MetadataProfile.find(params[:id] || params[:metadata_profile_id])
-    @breadcrumbable = @profile
+    @breadcrumbable = @profile if @profile.institution
   end
 
   def authorize_profile

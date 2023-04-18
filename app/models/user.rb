@@ -103,7 +103,7 @@ class User < ApplicationRecord
     self.name
   end
 
-  def breadcrumb_parent(institution = nil)
+  def breadcrumb_parent
     User
   end
 

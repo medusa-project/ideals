@@ -101,7 +101,7 @@ class UserGroup < ApplicationRecord
     name
   end
 
-  def breadcrumb_parent(institution = nil)
+  def breadcrumb_parent
     UserGroup
   end
 

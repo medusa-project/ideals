@@ -63,8 +63,8 @@ class SubmissionProfile < ApplicationRecord
     name
   end
 
-  def breadcrumb_parent(institution = nil)
-    institution ? self.institution : SubmissionProfile
+  def breadcrumb_parent
+    SubmissionProfile
   end
 
   ##

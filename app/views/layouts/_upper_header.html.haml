@@ -93,6 +93,7 @@
                 Medusa Messages
 
         - if current_user.effective_institution_admin?(current_institution)
+          - scope_match = current_institution == current_user.institution
           -# Institution Administration menu
           .btn-group{role: "group"}
             %button#institution-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded":  "false",
@@ -100,12 +101,12 @@
                                                                                 "data-bs-toggle": "dropdown",
                                                                                 type:             "button"}
               = icon_for(Institution)
-              My Institution
+              = scope_match ? "My Institution" : "This Institution"
             .dropdown-menu{"aria-labelledby": "administration-dropdown"}
               = link_to(institution_path(current_institution),
                         class: "dropdown-item") do
                 = icon_for(Institution)
-                My Institution
+                = scope_match ? "My Institution" : "This Institution"
               %li
                 %hr.dropdown-divider
               = link_to(items_review_path, class: "dropdown-item") do
@@ -180,8 +181,11 @@
                     = item[:message]
               %li
                 %hr.dropdown-divider
+            = link_to(institution_path(current_user.institution), class: "dropdown-item") do
+              = icon_for(current_user.institution)
+              My Institution
             = link_to(user_path(current_user), class: "dropdown-item") do
-              = icon_for(:info)
+              = icon_for(current_user)
               My Account
             = link_to(logout_path, method: :delete, class: "dropdown-item") do
               %i.fa.fa-sign-out-alt

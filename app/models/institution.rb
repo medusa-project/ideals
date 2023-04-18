@@ -266,7 +266,7 @@ class Institution < ApplicationRecord
     name
   end
 
-  def breadcrumb_parent(institution = nil)
+  def breadcrumb_parent
     Institution
   end
 

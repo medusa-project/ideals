@@ -28,8 +28,8 @@ class Vocabulary < ApplicationRecord
     self.name
   end
 
-  def breadcrumb_parent(institution = nil)
-    institution ? self.institution : Vocabulary
+  def breadcrumb_parent
+    Vocabulary
   end
 
 end

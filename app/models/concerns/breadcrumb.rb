@@ -15,17 +15,14 @@ module Breadcrumb
   end
 
   ##
-  # Includers can override to provide a breadcrumb parent object. They can also
-  # provide a Class representing a "first breadcrumb."
+  # Includers can override to provide a breadcrumb parent object. The override
+  # can return a Class representing a "first breadcrumb."
   # {ApplicationHelper#breadcrumbs} must recognize this class in order to
   # label and hyperlink it properly.
   #
-  # @param institution [Institution] Optional scoping institution, i.e. the
-  #                                  institutional scope through which the
-  #                                  instance is being viewed.
   # @return [Breadcrumb, Class]
   #
-  def breadcrumb_parent(institution = nil)
+  def breadcrumb_parent
   end
 
 end

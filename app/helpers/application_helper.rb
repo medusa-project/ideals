@@ -80,8 +80,20 @@ module ApplicationHelper
   # @return [String] HTML string.
   #
   def breadcrumbs(object)
-    crumb_obj  = object
-    crumbs = []
+    # Most institution-scoped models should have an `institution` getter
+    # linking them to their owning institution. If this institution is
+    # different from the current institution host (which could only be the case
+    # for sysadmins), we want to render the breadcrumbs a little differently,
+    # with a notice that we are looking at something in a different
+    # institution, and the first breadcrumb must always be that institution.
+    object_institution = object.respond_to?(:institution) ?
+                           object.institution : (object.kind_of?(Institution) ? object : nil)
+    object_scope_matches_request_scope =
+      (object_institution == current_institution) || !object_institution
+    all_scopes_align   = object_institution == current_user&.institution &&
+      object_institution == current_institution
+    crumb_obj = object
+    crumbs    = []
     loop do
       break unless crumb_obj
       if crumbs.any?
@@ -107,28 +119,28 @@ module ApplicationHelper
         when "Vocabulary"
           crumbs.unshift({label: "Vocabularies", url: vocabularies_path})
         else
-          crumbs.unshift({icon: icon_for(crumb_obj), label: crumb_obj.breadcrumb_label,
-                          url: url_for(crumb_obj)})
+          crumb_obj = crumb_obj.becomes(User) if crumb_obj.kind_of?(User)
+          crumbs.unshift({icon:  icon_for(crumb_obj),
+                          label: crumb_obj.breadcrumb_label,
+                          url:   url_for(crumb_obj)})
         end
       else # the last crumb is never hyperlinked
         crumbs << {icon: icon_for(crumb_obj), label: crumb_obj.breadcrumb_label}
       end
       crumb_obj = crumb_obj.respond_to?(:breadcrumb_parent) ?
-                    crumb_obj.breadcrumb_parent(current_institution) : nil
+                    crumb_obj.breadcrumb_parent : nil
     end
 
-    # Most institution-scoped models have an `institution` getter linking them
-    # to their owning institution. If this institution is different from the
-    # current institution host, we want to render the breadcrumbs differently,
-    # with a notice that we are looking at something in a different
-    # institution. (This only applies to sysadmins.)
-    in_scope = (object.respond_to?(:institution) && object.institution == current_institution) ||
-      (object.kind_of?(Institution) && object == current_institution)
+    if object_institution && !all_scopes_align && !object.kind_of?(Institution)
+      crumbs.unshift({ icon:  icon_for(object_institution),
+                       label: object_institution.name,
+                       url:   institution_path(object_institution) })
+    end
 
     html = StringIO.new
     html << "<nav aria-label=\"breadcrumb\">"
-    html <<   "<ol class=\"breadcrumb #{in_scope ? nil : "bg-warning" }\">"
-    crumbs.each_with_index do |crumb, index|
+    html <<   "<ol class=\"breadcrumb #{object_scope_matches_request_scope ? nil : "bg-warning" }\">"
+    crumbs.each do |crumb|
       html << "<li class=\"breadcrumb-item\">"
       if crumb[:url]
         if crumb[:icon]
@@ -142,11 +154,6 @@ module ApplicationHelper
         html << crumb[:icon] + " " + crumb[:label]
       else
         html << crumb[:label]
-      end
-      if !in_scope && index == crumbs.length - 1
-        html << "<span class=\"badge badge-pill text-bg-light\">"
-        html <<   "<i class=\"fa fa-exclamation-triangle\"></i> OTHER INSTITUTION"
-        html << "</span>"
       end
       html << "</li>"
     end
@@ -186,9 +193,16 @@ module ApplicationHelper
   end
 
   ##
-  # @return [Institution,nil] The institution whose FQDN corresponds to the
-  #         value of the `X-Forwarded-Host` header. In global scope, there
-  #         will be no such header, in which case `nil` is returned.
+  # Returns the institution whose FQDN corresponds to the value of the
+  # `X-Forwarded-Host` header. In global scope, there will be no such header,
+  # in which case `nil` is returned.
+  #
+  # Note that there may be other institutions in a given context:
+  #
+  # 1. The institution to whom the current user (if available) belongs
+  # 2. The institution to which the currently viewed entity (if any) belongs
+  #
+  # @return [Institution,nil]
   # @see institution_host?
   #
   def current_institution

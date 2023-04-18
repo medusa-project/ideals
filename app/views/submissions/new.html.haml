@@ -19,13 +19,13 @@
           %li.mb-1
             - if item.title
               = link_to(raw("#{item.title} (started #{local_time_ago(item.created_at)})"),
-                        edit_submission_path(item))
+                        edit_submission_url(item, host: item.institution.fqdn))
             - elsif item.primary_collection
               = link_to(raw("Started #{local_time_ago(item.created_at)} in #{item.primary_collection.title}"),
-                        edit_submission_path(item))
+                        edit_submission_url(item, host: item.institution.fqdn))
             - else
               = link_to(raw("Started #{local_time_ago(item.created_at)}"),
-                        edit_submission_path(item))
+                        edit_submission_url(item, host: item.institution.fqdn))
 
 .alert.alert-light
   = icon_for(:info)

@@ -187,12 +187,8 @@ class Unit < ApplicationRecord
     self.title
   end
 
-  def breadcrumb_parent(institution = nil)
-    if institution
-      self.parent || self.institution
-    else
-      self.parent || Unit
-    end
+  def breadcrumb_parent
+    self.parent || Unit
   end
 
   ##

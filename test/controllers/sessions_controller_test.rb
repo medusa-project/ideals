@@ -8,7 +8,6 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    host! institutions(:example).fqdn
     log_out
   end
 
@@ -42,23 +41,24 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "create() with user of different institution redirects to the return
-  URL" do
-    user = users(:northeast)
-    post "/auth/identity/callback", params: {
-      auth_key: user.email,
-      password: "password"
-    }
-    assert_redirected_to @institution.scope_url
-  end
-
-  test "create() via XHR with user of different institution returns HTTP 403" do
+  test "create() via XHR with non-sysadmin user of different institution
+  returns HTTP 403" do
     user = users(:northeast)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
       password: "password"
     }, xhr: true
     assert_response :forbidden
+  end
+
+  test "create() via XHR with sysadmin user of different institution redirects
+  to the return URL" do
+    user = users(:southwest_sysadmin)
+    post "/auth/identity/callback", params: {
+      auth_key: user.email,
+      password: "password"
+    }, xhr: true
+    assert_redirected_to @institution.scope_url
   end
 
   test "create() with valid credentials redirects to the institution root URL" do

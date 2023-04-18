@@ -53,8 +53,8 @@ class PrebuiltSearch < ApplicationRecord
     name
   end
 
-  def breadcrumb_parent(institution = nil)
-    institution ? self.institution : PrebuiltSearch
+  def breadcrumb_parent
+    PrebuiltSearch
   end
 
   ##

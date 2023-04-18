@@ -41,7 +41,10 @@ class SessionsController < ApplicationController
       user = LocalUser.from_omniauth(auth)
     end
 
-    if user&.id && user.enabled && user.institution == current_institution
+    # Sysadmins can log in via any institution's host. This is a feature needed
+    # by CARLI sysadmins for e.g. walking users through how to do things. But
+    # there is no use case for non-sysadmins to be able to do this.
+    if user&.id && user.enabled && (user.institution == current_institution || user.sysadmin?)
       begin
         hostname = Resolv.getname(request.remote_ip)
       rescue Resolv::ResolvError
