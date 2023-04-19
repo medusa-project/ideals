@@ -1,41 +1,47 @@
 ################################# global ####################################
 
 global:
-  name:                       Global Profile
-  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  name:                          Global Profile
+  full_text_relevance_weight:    <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  all_elements_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 ################################ northeast ##################################
 
 northeast_default:
-  institution:                northeast
-  name:                       Default Profile
-  institution_default:        true
-  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  institution:                   northeast
+  name:                          Default Profile
+  institution_default:           true
+  full_text_relevance_weight:    <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  all_elements_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 ################################ southwest ##################################
 
 southwest_default:
-  institution:                southwest
-  name:                       Default Profile
-  institution_default:        true
-  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  institution:                   southwest
+  name:                          Default Profile
+  institution_default:           true
+  full_text_relevance_weight:    <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  all_elements_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 ################################## uiuc #####################################
 
 uiuc_default:
-  institution:                uiuc
-  name:                       Default Profile
-  institution_default:        true
-  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  institution:                   uiuc
+  name:                          Default Profile
+  institution_default:           true
+  full_text_relevance_weight:    <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  all_elements_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 uiuc_empty:
-  institution:                uiuc
-  name:                       Empty Profile
-  institution_default:        false
-  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  institution:                   uiuc
+  name:                          Empty Profile
+  institution_default:           false
+  full_text_relevance_weight:    <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  all_elements_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
 uiuc_unused:
-  institution:                uiuc
-  name:                       Unused Profile
-  institution_default:        false
-  full_text_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  institution:                   uiuc
+  name:                          Unused Profile
+  institution_default:           false
+  full_text_relevance_weight:    <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
+  all_elements_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>

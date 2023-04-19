@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_14_154839) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_19_025208) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -450,6 +450,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_14_154839) do
     t.datetime "updated_at", null: false
     t.bigint "institution_id"
     t.integer "full_text_relevance_weight", default: 5, null: false
+    t.integer "all_elements_relevance_weight", default: 5, null: false
     t.index ["institution_default"], name: "index_metadata_profiles_on_institution_default"
     t.index ["institution_id", "name"], name: "index_metadata_profiles_on_institution_id_and_name", unique: true
     t.index ["institution_id"], name: "index_metadata_profiles_on_institution_id"

@@ -145,7 +145,8 @@ class MetadataProfilesController < ApplicationController
   private
 
   def metadata_profile_params
-    params.require(:metadata_profile).permit(:full_text_relevance_weight,
+    params.require(:metadata_profile).permit(:all_elements_relevance_weight,
+                                             :full_text_relevance_weight,
                                              :institution_default,
                                              :institution_id, :name)
   end

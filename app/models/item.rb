@@ -87,6 +87,7 @@ class Item < ApplicationRecord
   # metadata fields may also be present.
   #
   class IndexFields
+    ALL_ELEMENTS       = OpenSearchIndex::StandardFields::ALL_ELEMENTS
     CLASS              = OpenSearchIndex::StandardFields::CLASS
     COLLECTION_TITLES  = "k_collection_titles"
     COLLECTIONS        = "i_collection_ids"
@@ -451,12 +452,14 @@ class Item < ApplicationRecord
     doc[IndexFields::UNIT_TITLES]        = units.map(&:title)
     doc[IndexFields::UNITS]              = units.map(&:id)
 
-    # Index ascribed metadata elements into dynamic fields.
+    # Index ascribed metadata elements into dynamic fields, and also
+    # concatenate them together into the all-elements field.
+    all_values = []
     self.elements.each do |asc_e|
-      reg_e       = asc_e.registered_element
-      field       = reg_e.indexed_field
+      reg_e      = asc_e.registered_element
+      field      = reg_e.indexed_field
       # The fields are all arrays in order to support multiple values.
-      doc[field]  = [] unless doc[field]&.respond_to?(:each)
+      doc[field] = [] unless doc[field]&.respond_to?(:each)
       # Most element values are indexed as-is (with HTML tags stripped). But
       # values of date-type registered elements (which may be in forms like
       # "Month DD, YYYY") need to be normalized as ISO 8601.
@@ -470,9 +473,12 @@ class Item < ApplicationRecord
           doc[field] << Nokogiri::HTML(asc_e.string).text
         end
       else
-        doc[field] << Nokogiri::HTML(asc_e.string).text[0..OpenSearchIndex::MAX_KEYWORD_FIELD_LENGTH]
+        string      = Nokogiri::HTML(asc_e.string).text
+        all_values << string
+        doc[field] << string[0..OpenSearchIndex::MAX_KEYWORD_FIELD_LENGTH]
       end
     end
+    doc[IndexFields::ALL_ELEMENTS] = all_values.join(" ")
     doc
   end
 

@@ -327,13 +327,13 @@ class AbstractRelation
   # @see multi_query
   #
   def query_all(query)
-    query(OpenSearchIndex::StandardFields::SEARCH_ALL, query)
+    query(OpenSearchIndex::StandardFields::ALL_ELEMENTS, query)
     self
   end
 
   ##
   # Adds a query to search for one term across all searchable fields in the
-  # current [MetadataProfile metadata profile], as well as the full text field.
+  # current {MetadataProfile metadata profile}, as well as the full text field.
   # Element weights are respected.
   #
   # @param query [String, Hash] See {query}.
@@ -346,6 +346,7 @@ class AbstractRelation
     fields = @metadata_profile.elements.
       select(&:searchable).
       map(&:indexed_field)
+    fields << OpenSearchIndex::StandardFields::ALL_ELEMENTS
     fields << OpenSearchIndex::StandardFields::FULL_TEXT
     fields << Item::IndexFields::FILENAMES if self.kind_of?(ItemRelation)
     query(fields, query)
@@ -798,16 +799,19 @@ class AbstractRelation
   end
 
   def weighted_field(field)
-    if [OpenSearchIndex::StandardFields::FULL_TEXT,
-        Item::IndexFields::FILENAMES].include?(field)
+    case field
+    when OpenSearchIndex::StandardFields::FULL_TEXT
+      weight = @metadata_profile.full_text_relevance_weight
+    when OpenSearchIndex::StandardFields::ALL_ELEMENTS
+      weight = @metadata_profile.all_elements_relevance_weight
+    when Item::IndexFields::FILENAMES
       weight = MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT
     else
       weight = @metadata_profile.elements.
         find{ |e| e.indexed_field == field }&.
-        relevance_weight
+        relevance_weight || MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT
     end
-    weight ||= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT
-    weight ? "#{field}^#{weight}" : field
+    "#{field}^#{weight}"
   end
 
 end

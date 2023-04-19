@@ -5,16 +5,22 @@
 # (t_element_*) except for those with a date input type, which are indexed as
 # dates (d_element_*).
 #
-# The t_* type includes a keyword subfield to support faceting, as well as a
-# sort subfield to support sorting. The sort subfield uses the
-# icu_collation_keyword type to support a natural sort order.
+# The t_* (text) type includes a keyword subfield to support faceting, as well
+# as a sort subfield to support sorting. The sort subfield uses the
+# icu_collation_keyword type to support a natural sort order (e.g. 9, 10, 11
+# vs. 10, 11, 9). Note that the presence of these subfields limits the maximum
+# length of the text type to 32 KB. Text values larger than this should be
+# stored in longtext fields (lt_*) instead.
+#
+# Currently the search_all field is populated but not actually used. Instead, a
+# similar lt_all_elements field is written into the document that enables
+# support for simple cross-field search queries--for example, "author title"--
+# without containing a bunch of irrelevant non-metadata text like search_all
+# does.
 #
 # Maximum document size depends on AWS OpenSearch instance size, which for
 # us is probably 10 MB. Large fields must be truncated to less than this
 # length, with enough room left over for the rest of the document.
-#
-# Text values larger than 32 KB should be stored in longtext fields rather than
-# text.
 #
 # When this file is changed, a new index has to be created (see the
 # OpenSearch:indexes:* rake tasks) and then either the old index must be copied

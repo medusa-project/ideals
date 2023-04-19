@@ -28,6 +28,7 @@ class OpenSearchIndex
   # Standard fields present in all or most documents.
   #
   class StandardFields
+    ALL_ELEMENTS     = "lt_all_elements"
     CLASS            = "k_class"
     CREATED          = "d_created"
     # Only item documents may have this.
@@ -42,8 +43,10 @@ class OpenSearchIndex
     SCORE            = "_score"
     # Many fields get copied into this field automatically by ES, but its use
     # is frowned upon because it does not respect
-    # {MetadataProfileElement#relevance_weight field weights}. See
-    # {OpenSearchClient#query}.
+    # {MetadataProfileElement#relevance_weight field weights}, and it also
+    # contains irrelevant and potentially unauthorized text. {ALL_ELEMENTS}
+    # would generally be used instead, and we should probably reevaluate
+    # whether we even need this field.
     SEARCH_ALL       = "search_all"
   end
 

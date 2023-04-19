@@ -8,9 +8,23 @@
     .mb-3
       = f.label :name
       = f.text_field :name, class: 'form-control'
+
   .mb-3
-    = f.label :full_text_relevance_weight, "Full Text Relevance Weight (1-10)"
-    = f.number_field :full_text_relevance_weight, min: 1, max: 10, class: 'form-control'
+    = f.label :all_elements_relevance_weight,
+              "All Elements Relevance Weight (#{MetadataProfileElement::MIN_RELEVANCE_WEIGHT}-#{MetadataProfileElement::MAX_RELEVANCE_WEIGHT})"
+    = f.number_field :all_elements_relevance_weight,
+                     min:   MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
+                     max:   MetadataProfileElement::MAX_RELEVANCE_WEIGHT,
+                     class: "form-control"
+
+  .mb-3
+    = f.label :full_text_relevance_weight,
+              "Full Text Relevance Weight (#{MetadataProfileElement::MIN_RELEVANCE_WEIGHT}-#{MetadataProfileElement::MAX_RELEVANCE_WEIGHT})"
+    = f.number_field :full_text_relevance_weight,
+                     min:   MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
+                     max:   MetadataProfileElement::MAX_RELEVANCE_WEIGHT,
+                     class: "form-control"
+
   - unless f.object.global?
     .mb-3
       .form-check
@@ -34,7 +48,7 @@
           = check_box_tag "elements[]",
                           reg_e.id,
                           f.object.elements.pluck(:registered_element_id).include?(reg_e.id),
-                          id: "elements-#{reg_e.id}",
+                          id:    "elements-#{reg_e.id}",
                           class: "form-check-input"
           = label_tag "elements-#{reg_e.id}", reg_e.label
 

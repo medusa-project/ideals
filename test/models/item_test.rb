@@ -192,7 +192,10 @@ class ItemTest < ActiveSupport::TestCase
   # as_indexed_json()
 
   test "as_indexed_json() returns the correct structure" do
+    @instance.elements.build(registered_element: registered_elements(:uiuc_dc_title),
+                             string:             "test")
     doc = @instance.as_indexed_json
+    assert_not_empty doc[Item::IndexFields::ALL_ELEMENTS]
     assert_equal "Item", doc[Item::IndexFields::CLASS]
     assert_not_empty doc[Item::IndexFields::COLLECTION_TITLES]
     assert_not_empty doc[Item::IndexFields::COLLECTIONS]

@@ -91,6 +91,28 @@
                                                                  type:                       "button"}
                 %i.fa.fa-pencil-alt
                 Edit
+          %td All Elements
+          %td.boolean= boolean(false)
+          %td.boolean= boolean(true)
+          %td.boolean= boolean(false)
+          %td.boolean= boolean(false)
+          %td
+            .progress
+              .progress-bar{role: "progressbar",
+                            style: "width: #{@profile.all_elements_relevance_weight * 10}%",
+                            "aria-valuenow": @profile.all_elements_relevance_weight,
+                            "aria-valuemin": MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
+                            "aria-valuemax": MetadataProfileElement::MAX_RELEVANCE_WEIGHT}
+                = @profile.all_elements_relevance_weight
+        %tr
+          %td{style: "width: 1px; white-space: nowrap"}
+            .btn-group
+              %button.btn.btn-light.btn-sm.edit-metadata-profile{"data-bs-target":           "#edit-metadata-profile-modal",
+                                                                 "data-bs-toggle":           "modal",
+                                                                 "data-metadata-profile-id": @profile.id,
+                                                                 type:                       "button"}
+                %i.fa.fa-pencil-alt
+                Edit
           %td Full Text
           %td.boolean= boolean(false)
           %td.boolean= boolean(true)
@@ -99,10 +121,10 @@
           %td
             .progress
               .progress-bar{role: "progressbar",
-                              style: "width: #{@profile.full_text_relevance_weight * 10}%",
-                              "aria-valuenow": @profile.full_text_relevance_weight,
-                              "aria-valuemin": MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
-                              "aria-valuemax": MetadataProfileElement::MAX_RELEVANCE_WEIGHT}
+                            style: "width: #{@profile.full_text_relevance_weight * 10}%",
+                            "aria-valuenow": @profile.full_text_relevance_weight,
+                            "aria-valuemin": MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
+                            "aria-valuemax": MetadataProfileElement::MAX_RELEVANCE_WEIGHT}
                 = @profile.full_text_relevance_weight
         - @profile.elements.each do |element|
           %tr
