@@ -159,6 +159,7 @@ class IdealsMailer < ApplicationMailer
   def item_submitted(item)
     @institution = item.institution
     @item_url    = item_url(item, host: @institution.scope_url)
+    @review_url  = items_review_url(host: @institution.scope_url)
     if item.primary_collection&.administering_users&.any?
       recipients = item.primary_collection.administering_users.map(&:email)
       mail(to:      recipients,

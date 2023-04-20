@@ -6,3 +6,7 @@ Follow the link below to review this item:
 
 {{{item_url}}}
 
+You may view the full list of items requiring review here:
+
+{{{review_url}}}
+

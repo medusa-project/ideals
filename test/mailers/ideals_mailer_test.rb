@@ -181,14 +181,16 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
-    assert email.to.length > 1
+    assert_equal ["admin@example.edu"], email.to
     assert_equal "A new IDEALS item requires review", email.subject
 
     assert_equal render_template("item_submitted.txt",
-                                 item_url: "#{item.institution.scope_url}/items/#{item.id}"),
+                                 item_url:   "#{item.institution.scope_url}/items/#{item.id}",
+                                 review_url: "#{item.institution.scope_url}/items/review"),
                  email.text_part.body.raw_source
     assert_equal render_template("item_submitted.html",
-                                 item_url: "#{item.institution.scope_url}/items/#{item.id}"),
+                                 item_url:   "#{item.institution.scope_url}/items/#{item.id}",
+                                 review_url: "#{item.institution.scope_url}/items/review"),
                  email.html_part.body.raw_source
   end
 
