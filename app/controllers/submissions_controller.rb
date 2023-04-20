@@ -177,14 +177,14 @@ class SubmissionsController < ApplicationController
   def check_submitting
     unless @item.submitting?
       flash['error'] = "This item has already been submitted."
-      redirect_back fallback_location: root_path
+      redirect_to item_path(@item)
     end
   end
 
   def check_submitted
     unless @item.submitted?
       flash['error'] = "This item is not in a submitted state."
-      redirect_back fallback_location: root_path
+      redirect_to item_path(@item)
     end
   end
 

@@ -35,12 +35,12 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to submission_status_path(item)
   end
 
-  test "complete() returns HTTP 302 when an item has already been submitted" do
+  test "complete() redirects to the item when it has already been submitted" do
     item = items(:uiuc_item1)
     assert !item.submitting?
     log_in_as(item.submitter)
     post submission_complete_path(item)
-    assert_redirected_to root_path
+    assert_redirected_to item_path(item)
   end
 
   test "complete() redirects to the edit-submission form when the item is
@@ -277,11 +277,11 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "edit() redirects back when an item has already been submitted" do
+  test "edit() redirects to the item when an item has already been submitted" do
     item = items(:uiuc_item1)
     log_in_as(item.submitter)
     get edit_submission_path(item)
-    assert_redirected_to root_path
+    assert_redirected_to item_path(item)
   end
 
   # new()
@@ -325,11 +325,11 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  test "status() redirects back when an item is not in the submitted stage" do
+  test "status() redirects to the item when it is not in the submitted stage" do
     item = items(:uiuc_item1)
     log_in_as(item.submitter)
     get submission_status_path(item)
-    assert_redirected_to root_path
+    assert_redirected_to item_path(item)
   end
 
   # update()
