@@ -650,6 +650,19 @@ class ItemTest < ActiveSupport::TestCase
 
   # ingest_into_medusa()
 
+  test "ingest_into_medusa() does nothing if preservation is not active for the
+  owning institution" do
+    fixture = file_fixture("escher_lego.png")
+    @instance.bitstreams.each do |bs|
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+    end
+
+    @instance.move_into_permanent_storage
+    @instance.ingest_into_medusa
+  end
+
   test "ingest_into_medusa() ingests all associated Bitstreams into Medusa" do
     fixture = file_fixture("escher_lego.png")
     @instance.bitstreams.each do |bs|

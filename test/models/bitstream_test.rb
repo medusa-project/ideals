@@ -638,13 +638,11 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
-  test "ingest_into_medusa() raises an error if preservation is not active for
-  the owning institution" do
+  test "ingest_into_medusa() does nothing if preservation is not active for the
+  owning institution" do
     @instance = bitstreams(:uiuc_awaiting_ingest_into_medusa)
     @instance.institution.outgoing_message_queue = nil
-    assert_raises ArgumentError do
-      @instance.ingest_into_medusa
-    end
+    @instance.ingest_into_medusa
   end
 
   test "ingest_into_medusa() raises an error if the owning item does not have a

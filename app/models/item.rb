@@ -683,6 +683,7 @@ class Item < ApplicationRecord
   end
 
   def ingest_into_medusa
+    return if self.institution.outgoing_message_queue.blank?
     raise "Cannot ingest into Medusa without a handle" unless self.handle
     self.bitstreams.each(&:ingest_into_medusa)
   end

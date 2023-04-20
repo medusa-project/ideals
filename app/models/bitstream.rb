@@ -516,16 +516,13 @@ class Bitstream < ApplicationRecord
 
   ##
   # @raises [ArgumentError] if the bitstream does not have an ID or permanent
-  #                         key, or if its owning item does not have a handle,
-  #                         or if its owning institution does not
-  #                         {Institution#preservation_active? support
-  #                         preservation}.
+  #                         key, or if its owning item does not have a handle.
   #
   def ingest_into_medusa
+    return if self.institution.outgoing_message_queue.blank?
     raise ArgumentError, "Instance has not been saved yet" if self.id.blank?
     raise ArgumentError, "Permanent key is not set" if self.permanent_key.blank?
     raise ArgumentError, "Owning item does not have a handle" if !self.item.handle || self.item.handle&.suffix&.blank?
-    raise ArgumentError, "Owning institution does not have an outgoing message queue set" if self.institution.outgoing_message_queue.blank?
 
     # The staging key (this is Medusa AMQP interface terminology, not
     # Bitstream terminology) is relative to the permanent key prefix because
