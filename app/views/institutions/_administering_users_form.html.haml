@@ -9,34 +9,6 @@
   -# Include a random property because `institution` is required in the params
   = f.hidden_field :key, value: f.object.key
 
-  = hidden_field_tag "user_group_ids[]"
-
-  %h5 Global User Groups
-
-  - UserGroup.where(institution: nil).order(:name).each do |user_group|
-    .form-check
-      = check_box_tag "user_group_ids[]", user_group.id,
-                      f.object.administrator_groups.where(user_group: user_group).any?,
-                      { id: "user_group_ids_#{user_group.id}", class: "form-check-input" }
-      = label_tag "user_group_ids_#{user_group.id}",
-        user_group.name, class: "form-check-label"
-
-  %hr
-
-  %h5 Local User Groups
-
-  - UserGroup.where(institution: institution).order(:name).each do |user_group|
-    .form-check
-      = check_box_tag "user_group_ids[]", user_group.id,
-                      f.object.administrator_groups.where(user_group: user_group).any?,
-                      { id: "user_group_ids_#{user_group.id}", class: "form-check-input" }
-      = label_tag "user_group_ids_#{user_group.id}",
-        user_group.name, class: "form-check-label"
-
-  %hr
-
-  %h5 Users
-
   .mb-3
     = hidden_field_tag "administering_users[]"
     - user_strings = f.object.administering_users.each.map(&:to_autocomplete)

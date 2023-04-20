@@ -49,12 +49,21 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Used for editing administrators.
+  # Used for editing administering groups.
   #
-  # Responds to `GET /institutions/:key/edit-administrators` (XHR only)
+  # Responds to `GET /institutions/:key/edit-administering-groups` (XHR only)
   #
-  def edit_administrators
-    render partial: "administrators_form", locals: { institution: @institution }
+  def edit_administering_groups
+    render partial: "administering_groups_form", locals: { institution: @institution }
+  end
+
+  ##
+  # Used for editing administering users.
+  #
+  # Responds to `GET /institutions/:key/edit-administering-users` (XHR only)
+  #
+  def edit_administering_users
+    render partial: "administering_users_form", locals: { institution: @institution }
   end
 
   ##

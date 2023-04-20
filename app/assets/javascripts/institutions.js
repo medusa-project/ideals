@@ -196,10 +196,17 @@ const InstitutionView = function() {
                     $("#invite-administrator-modal .modal-body").html(data);
                 });
             });
-            $('.edit-administrators').on("click", function () {
-                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-administrators";
+            $('.edit-administering-groups').on("click", function () {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-administering-groups";
                 $.get(url, function (data) {
-                    $("#edit-administrators-modal .modal-body").html(data);
+                    $("#edit-administering-groups-modal .modal-body").html(data);
+                    new IDEALS.MultiElementList();
+                });
+            });
+            $('.edit-administering-users').on("click", function () {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-administering-users";
+                $.get(url, function (data) {
+                    $("#edit-administering-users-modal .modal-body").html(data);
                     new IDEALS.LocalUserAutocompleter(
                         $("input[name=primary_administrator], input[name='administering_users[]']"));
                     new IDEALS.MultiElementList();

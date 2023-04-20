@@ -19,8 +19,12 @@ class InstitutionPolicy < ApplicationPolicy
     effective_sysadmin(@user, @role_limit)
   end
 
-  def edit_administrators
+  def edit_administering_groups
     edit_settings
+  end
+
+  def edit_administering_users
+    edit_administering_groups
   end
 
   def edit_element_mappings

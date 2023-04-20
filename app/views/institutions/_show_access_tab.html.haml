@@ -7,14 +7,6 @@
                                                "data-institution-key": @institution.key }
       %i.fa.fa-plus
       Invite Administrator
-  - if policy(@institution).edit_administrators?
-    -# Edit Administrators button
-    %button.btn.btn-light.edit-administrators{"data-bs-target":       "#edit-administrators-modal",
-                                              "data-bs-toggle":       "modal",
-                                              role:                   "button",
-                                              "data-institution-key": @institution.key}
-      %i.fas.fa-pencil-alt
-      Edit Administrators
 
 .clearfix.mb-3
 
@@ -22,6 +14,14 @@
   .col-md-6
     .card.mb-3
       .card-body
+        - if policy(@institution).edit_administering_groups?
+          .float-end
+            %button.btn.btn-sm.btn-light.edit-administering-groups{"data-bs-target":       "#edit-administering-groups-modal",
+                                                                   "data-bs-toggle":       "modal",
+                                                                   role:                   "button",
+                                                                   "data-institution-key": @institution.key}
+              %i.fas.fa-pencil-alt
+              Edit
         %h5.card-title Direct Group Administrators
         - if @institution.administering_groups.any?
           %ul
@@ -33,6 +33,14 @@
   .col-md-6
     .card.mb-3
       .card-body
+        - if policy(@institution).edit_administering_users?
+          .float-end
+            %button.btn.btn-sm.btn-light.edit-administering-users{"data-bs-target":       "#edit-administering-users-modal",
+                                                                  "data-bs-toggle":       "modal",
+                                                                  role:                   "button",
+                                                                  "data-institution-key": @institution.key}
+              %i.fas.fa-pencil-alt
+              Edit
         %h5.card-title Direct User Administrators
         - if @institution.administering_users.any?
           %ul
@@ -45,5 +53,8 @@
        locals: { id: "invite-administrator-modal",
                  title: "Invite Administrator" }
 = render partial: "shared/ajax_modal",
-       locals: { id: "edit-administrators-modal",
-                 title: "Edit Administrators" }
+       locals: { id: "edit-administering-groups-modal",
+                 title: "Edit Administering Groups" }
+= render partial: "shared/ajax_modal",
+       locals: { id: "edit-administering-users-modal",
+                 title: "Edit Administering Users" }

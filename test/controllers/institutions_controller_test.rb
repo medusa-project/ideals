@@ -129,34 +129,65 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  # edit_administrators()
+  # edit_administering_groups()
 
-  test "edit_administrators() returns HTTP 404 for unscoped requests" do
+  test "edit_administering_groups() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    delete institution_edit_administrators_path(@institution)
+    delete institution_edit_administering_groups_path(@institution)
     assert_response :not_found
   end
 
-  test "edit_administrators() returns HTTP 403 for logged-out users" do
-    get institution_edit_administrators_path(@institution), xhr: true
+  test "edit_administering_groups() returns HTTP 403 for logged-out users" do
+    get institution_edit_administering_groups_path(@institution), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_administrators() returns HTTP 403 for unauthorized users" do
+  test "edit_administering_groups() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    get institution_edit_administrators_path(@institution), xhr: true
+    get institution_edit_administering_groups_path(@institution), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_administrators() returns HTTP 404 for non-XHR requests" do
+  test "edit_administering_groups() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:southwest_admin))
-    get institution_edit_administrators_path(@institution)
+    get institution_edit_administering_groups_path(@institution)
     assert_response :not_found
   end
 
-  test "edit_administrators() returns HTTP 200 for XHR requests" do
+  test "edit_administering_groups() returns HTTP 200 for XHR requests" do
     log_in_as(users(:southwest_admin))
-    get institution_edit_administrators_path(@institution), xhr: true
+    get institution_edit_administering_groups_path(@institution), xhr: true
+    assert_response :ok
+  end
+
+  # edit_administering_users()
+
+  test "edit_administering_users() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete institution_edit_administering_users_path(@institution)
+    assert_response :not_found
+  end
+
+  test "edit_administering_users() returns HTTP 403 for logged-out users" do
+    get institution_edit_administering_users_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_administering_users() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_edit_administering_users_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_administering_users() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:southwest_admin))
+    get institution_edit_administering_users_path(@institution)
+    assert_response :not_found
+  end
+
+  test "edit_administering_users() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:southwest_admin))
+    get institution_edit_administering_users_path(@institution), xhr: true
     assert_response :ok
   end
 
@@ -627,10 +658,10 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   test "show_access() respects role limits" do
     log_in_as(users(:southwest_admin))
     get institution_access_path(@institution), xhr: true
-    assert_select(".edit-administrators")
+    assert_select(".edit-administering-groups")
 
     get institution_access_path(@institution, role: Role::LOGGED_OUT), xhr: true
-    assert_select(".edit-administrators", false)
+    assert_select(".edit-administering-groups", false)
   end
 
   # show_element_mappings()
