@@ -43,6 +43,7 @@ class SubmissionsController < ApplicationController
         build_embargo
         @item.complete_submission
         @item.save!
+        RefreshOpensearchJob.perform_later
       end
     rescue => e
       flash['error'] = "#{e}"
