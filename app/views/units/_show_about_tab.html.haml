@@ -84,5 +84,10 @@
 
 - if @collections.any?
   = resource_list(@collections, use_resource_host: false)
+- elsif current_user&.effective_unit_admin?(@unit)
+  .alert.alert-warning
+    = icon_for(:warning)
+    This unit does not contain any collections. Items cannot be added to it
+    until a collection has been added.
 - else
   %p This unit does not contain any collections.

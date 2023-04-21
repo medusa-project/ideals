@@ -30,6 +30,8 @@
                                  type:             "button"}
         = icon_for(:info)
         About This Unit
+        - if @unit.unit_collection_memberships.count < 1 && current_user&.effective_unit_admin?(@unit)
+          %i.fa.fa-exclamation-triangle.text-danger
     - if policy(@unit).show_statistics?
       %button#statistics-tab.nav-link{"data-bs-target": "#statistics-tab-content",
                                       "data-bs-toggle": "tab",
