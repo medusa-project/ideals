@@ -159,7 +159,6 @@ class IdealsMailer < ApplicationMailer
   # @param item [Item]
   #
   def item_approved(item)
-    item.handle      = Handle.create!(item: item, suffix: "12345")
     @item_title      = item.title
     @item_handle_url = item.handle.url
     mail(to:      [item.submitter.email],

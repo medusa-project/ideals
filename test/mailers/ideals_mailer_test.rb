@@ -176,8 +176,9 @@ class IdealsMailerTest < ActionMailer::TestCase
   # item_approved()
 
   test "item_approved() sends the expected email" do
-    item  = items(:uiuc_submitted)
-    email = IdealsMailer.item_approved(item).deliver_now
+    item        = items(:uiuc_submitted)
+    item.handle = Handle.create!(item: item, suffix: "12345")
+    email       = IdealsMailer.item_approved(item).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
