@@ -187,6 +187,9 @@
             = link_to(user_path(current_user), class: "dropdown-item") do
               = icon_for(current_user)
               My Account
+            = link_to("https://docs.google.com/document/d/1r79TlQcDa0FPud_wXWbMqXk0v4SGVxiLFMtDXWpnwpc/edit?usp=sharing", class: "dropdown-item") do
+              = icon_for(:help)
+              Pilot Guide
             = link_to(logout_path, method: :delete, class: "dropdown-item") do
               %i.fa.fa-sign-out-alt
               Log Out
