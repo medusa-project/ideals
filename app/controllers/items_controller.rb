@@ -23,6 +23,8 @@ class ItemsController < ApplicationController
   def approve
     approve_item(@item)
     RefreshOpensearchJob.perform_later
+    toast!(title:   "Item approved",
+           message: "This item has been approved.")
     redirect_back fallback_location: item_path(@item)
   end
 
@@ -281,6 +283,8 @@ class ItemsController < ApplicationController
   def reject
     reject_item(@item)
     RefreshOpensearchJob.perform_later
+    toast!(title:   "Item rejected",
+           message: "This item has been rejected.")
     redirect_back fallback_location: item_path(@item)
   end
 
