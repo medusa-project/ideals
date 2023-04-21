@@ -464,6 +464,8 @@ module ApplicationHelper
       icon = "fa fa-cog"
     when "Symbol"
       case entity
+      when :help
+        icon = "fa fa-question-circle"
       when :info
         icon = "fa fa-info-circle"
       else
