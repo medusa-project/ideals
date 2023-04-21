@@ -425,6 +425,7 @@ class ItemsController < ApplicationController
       end
       item.approve
       item.save!
+      IdealsMailer.item_approved(item).deliver_now
     end
   end
 
@@ -490,6 +491,7 @@ class ItemsController < ApplicationController
                           user:        current_user,
                           description: "Item was rejected.").execute do
       item.update!(stage: Item::Stages::REJECTED)
+      IdealsMailer.item_rejected(item).deliver_now
     end
   end
 

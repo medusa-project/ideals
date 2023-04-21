@@ -1,0 +1,3 @@
+Your item, "{{{item_title}}}", has been approved. Its permanent URL is:
+{{{item_handle_url}}}
+

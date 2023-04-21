@@ -173,6 +173,52 @@ class IdealsMailerTest < ActionMailer::TestCase
                  email.html_part.body.raw_source
   end
 
+  # item_approved()
+
+  test "item_approved() sends the expected email" do
+    item  = items(:uiuc_submitted)
+    email = IdealsMailer.item_approved(item).deliver_now
+    assert !ActionMailer::Base.deliveries.empty?
+
+    assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
+    assert_equal [item.submitter.email], email.to
+    assert_equal "Your item has been approved", email.subject
+
+    assert_equal render_template("item_approved.txt",
+                                 item_title:      item.title,
+                                 item_handle_url: item.handle.url),
+                 email.text_part.body.raw_source
+    assert_equal render_template("item_approved.html",
+                                 item_title:      item.title,
+                                 item_handle_url: item.handle.url),
+                 email.html_part.body.raw_source
+  end
+
+  # item_rejected()
+
+  test "item_rejected() sends the expected email" do
+    item  = items(:uiuc_submitted)
+    email = IdealsMailer.item_rejected(item).deliver_now
+    assert !ActionMailer::Base.deliveries.empty?
+
+    assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
+    assert_equal [item.submitter.email], email.to
+    assert_equal "Your item has been rejected", email.subject
+
+    assert_equal render_template("item_rejected.txt",
+                                 item_title:       item.title,
+                                 collection_title: item.primary_collection.title,
+                                 service_name:     item.institution.service_name,
+                                 feedback_email:   item.institution.feedback_email),
+                 email.text_part.body.raw_source
+    assert_equal render_template("item_rejected.html",
+                                 item_title:       item.title,
+                                 collection_title: item.primary_collection.title,
+                                 service_name:     item.institution.service_name,
+                                 feedback_email:   item.institution.feedback_email),
+                 email.html_part.body.raw_source
+  end
+
   # item_submitted()
 
   test "item_submitted() sends the expected email" do
@@ -235,7 +281,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   def render_template(fixture_name, vars = {})
     text = read_fixture(fixture_name).join
     vars.each do |k, v|
-      text.gsub!("{{{#{k}}}}", v)
+      text.gsub!("{{{#{k}}}}", v.to_s)
     end
     text
   end

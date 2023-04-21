@@ -154,6 +154,37 @@ class IdealsMailer < ApplicationMailer
   end
 
   ##
+  # Sends an email to an item's submitter after it has been approved.
+  #
+  # @param item [Item]
+  #
+  def item_approved(item)
+    item.handle      = Handle.create!(item: item, suffix: "12345")
+    @item_title      = item.title
+    @item_handle_url = item.handle.url
+    mail(to:      [item.submitter.email],
+         subject: "Your item has been approved")
+  end
+
+  ##
+  # Sends an email to an item's submitter after it has been rejected.
+  #
+  # @param item [Item]
+  #
+  def item_rejected(item)
+    @item_title       = item.title
+    @collection_title = item.primary_collection.title
+    @service_name     = item.institution.service_name
+    @feedback_email   = item.institution.feedback_email
+    mail(to:      [item.submitter.email],
+         subject: "Your item has been rejected")
+  end
+
+  ##
+  # Sends an email to the administrators of a collection (but **not**
+  # administrators of its owning unit/institution) when an item has been
+  # submitted to it and it is requiring review of submissions.
+  #
   # @param item [Item]
   #
   def item_submitted(item)
@@ -165,7 +196,6 @@ class IdealsMailer < ApplicationMailer
       mail(to:      recipients,
            subject: "A new #{@institution.service_name} item requires review")
     end
-
   end
 
   ##

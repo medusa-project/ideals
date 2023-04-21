@@ -70,6 +70,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil item.handle
   end
 
+  test "approve() sends an email to the submitter" do
+    item = items(:uiuc_submitted)
+    assert ActionMailer::Base.deliveries.empty?
+    log_in_as(users(:uiuc_admin))
+    patch item_approve_path(item)
+    assert !ActionMailer::Base.deliveries.empty?
+  end
+
   # delete()
 
   test "delete() returns HTTP 404 for unscoped requests" do
@@ -580,6 +588,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     patch item_reject_path(item)
     item.reload
     assert_equal Item::Stages::REJECTED, item.stage
+  end
+
+  test "reject() sends an email to the submitter" do
+    item = items(:uiuc_submitted)
+    assert ActionMailer::Base.deliveries.empty?
+    log_in_as(users(:uiuc_admin))
+    patch item_reject_path(item)
+    assert !ActionMailer::Base.deliveries.empty?
   end
 
   # review()
