@@ -13,15 +13,16 @@ module Describable
   included do
 
     ##
-    # @return [Enumerable<String>] All author [AscribedElement]s in the
+    # @return [Enumerable<String>] All author {AscribedElement}s in the
     #                              {elements} association.
     #
     def authors
-      self.elements.select{ |e| e.name == self.institution.author_element&.name }
+      self.elements.sort_by(&:position).
+        select{ |e| e.name == self.institution.author_element&.name }
     end
 
     ##
-    # @return [String] Value of any description [AscribedElement] in the
+    # @return [String] Value of any description {AscribedElement} in the
     #                  {elements} association, or an empty string if not found.
     #
     def description
