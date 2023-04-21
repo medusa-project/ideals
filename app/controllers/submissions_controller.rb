@@ -82,7 +82,9 @@ class SubmissionsController < ApplicationController
   # @see destroy
   #
   def destroy
-    @item.destroy!
+    ActiveRecord::Base.transaction do # trigger after_commit callbacks
+      @item.destroy!
+    end
   rescue => e
     flash['error'] = "#{e}"
   else
