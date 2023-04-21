@@ -12,7 +12,7 @@
   #submissions-in-progress.card.text-white.bg-info.mb-3
     .card-header
       = icon_for(:info)
-      = "You already have #{pluralize(@submissions.length, "submission")} in progress."
+      = "You have #{pluralize(@submissions.length, "submission")} in progress."
     .card-body.pb-1
       %ol
         - @submissions.each do |item|
