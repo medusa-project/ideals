@@ -741,11 +741,8 @@ module ApplicationHelper
       html << " &bull; "
       html << local_time(resource.created_at)
     elsif resource.kind_of?(Item)
-      author = resource.elements.
-        select{ |e| e.name == resource.institution.author_element.name }.
-        map(&:string).
-        join("; ")
-      date    = resource.elements.
+      author = resource.authors.map(&:string).join("; ")
+      date   = resource.elements.
         select{ |e| e.name == resource.institution.date_published_element.name }.
         map{ |e| e.string.to_i.to_s }.
         reject{ |e| e == "0" }.
