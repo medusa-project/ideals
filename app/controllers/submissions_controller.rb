@@ -83,14 +83,14 @@ class SubmissionsController < ApplicationController
   #
   def destroy
     ActiveRecord::Base.transaction do # trigger after_commit callbacks
-      @item.destroy!
+      @item.bury!
     end
   rescue => e
     flash['error'] = "#{e}"
   else
     flash['success'] = "Your submission has been canceled."
   ensure
-    redirect_to root_path
+    redirect_to @item.institution.scope_url, allow_other_host: true
   end
 
   ##

@@ -215,7 +215,8 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "destroy() redirects to root page for logged-out users" do
+  test "destroy() redirects to the item's owning institution for logged-out
+  users" do
     item = items(:uiuc_submitting)
     delete submission_path(item)
     assert_redirected_to item.institution.scope_url
@@ -227,11 +228,12 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "destroy() returns HTTP 302 for an existing item" do
+  test "destroy() redirects to the item's owning institution for an existing
+  item" do
     log_in_as(users(:uiuc))
     submission = items(:uiuc_submitting)
     delete submission_path(submission)
-    assert_redirected_to root_path
+    assert_redirected_to submission.institution.scope_url
   end
 
   test "destroy() returns HTTP 404 for a missing item" do
@@ -247,12 +249,12 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "destroy() destroys the item" do
+  test "destroy() buries the item" do
     log_in_as(users(:uiuc))
     item = items(:uiuc_submitting)
-    assert_difference "Item.count", -1 do
-      delete submission_path(item)
-    end
+    delete submission_path(item)
+    item.reload
+    assert_equal Item::Stages::BURIED, item.stage
   end
 
   # edit()
