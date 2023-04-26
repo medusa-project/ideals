@@ -715,6 +715,9 @@ class Institution < ApplicationRecord
     self.registered_elements.build(name:             "dc:type:genre",
                                    label:            "Genre of Resource",
                                    vocabulary:       Vocabulary.find_by_name("Common Genres"))
+    self.registered_elements.build(name:             "orcid:identifier",
+                                   label:            "ORCID Identifier",
+                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
     self.registered_elements.build(name:             "thesis:degree:department",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD,
                                    label:            "Dissertation/Thesis Degree Department")
