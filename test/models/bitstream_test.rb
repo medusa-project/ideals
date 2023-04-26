@@ -57,22 +57,6 @@ class BitstreamTest < ActiveSupport::TestCase
                                          key:    dest_key).content_length > 0
   end
 
-  test "create_zip_file() increments the download count of every file inside
-  the zip file" do
-    bitstreams = [bitstreams(:uiuc_approved_in_permanent),
-                  bitstreams(:uiuc_item1_license_bundle)]
-    bitstreams.each do |bitstream|
-      assert_equal 0, bitstream.events.where(event_type: Event::Type::DOWNLOAD).count
-    end
-    dest_key   = "institutions/test/downloads/file.zip"
-    Bitstream.create_zip_file(bitstreams: bitstreams, dest_key: dest_key)
-
-    bitstreams.each do |bitstream|
-      bitstream.reload
-      assert_equal 1, bitstream.events.where(event_type: Event::Type::DOWNLOAD).count
-    end
-  end
-
   # medusa_key()
 
   test "medusa_key() raises an error if the handle argument is blank" do

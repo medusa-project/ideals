@@ -237,26 +237,23 @@ class Bitstream < ApplicationRecord
     task&.update!(indeterminate: false,
                   started_at:    Time.now,
                   status_text:   status_text)
-    transaction do
-      Dir.mktmpdir do |tmpdir|
-        bitstreams.each_with_index do |bs, index|
-          bs.add_download(user: task&.user)
-          tmpfile = bs.download_to_temp_file
-          FileUtils.mv(tmpfile.path, File.join(tmpdir, bs.filename))
-          task&.progress(index / bitstreams.length.to_f)
-        end
-        zip_filename = "files.zip"
-        zip_pathname = File.join(tmpdir, zip_filename)
-        # -j: don't record directory names
-        # -r: recurse into directories
-        `zip -jr "#{zip_pathname}" #{tmpdir}`
+    Dir.mktmpdir do |tmpdir|
+      bitstreams.each_with_index do |bs, index|
+        tmpfile = bs.download_to_temp_file
+        FileUtils.mv(tmpfile.path, File.join(tmpdir, bs.filename))
+        task&.progress(index / bitstreams.length.to_f)
+      end
+      zip_filename = "files.zip"
+      zip_pathname = File.join(tmpdir, zip_filename)
+      # -j: don't record directory names
+      # -r: recurse into directories
+      `zip -jr "#{zip_pathname}" #{tmpdir}`
 
-        # Upload the zip file into the application S3 bucket.
-        File.open(zip_pathname, "r") do |file|
-          PersistentStore.instance.put_object(key:             dest_key,
-                                              institution_key: bitstreams.first.institution.key,
-                                              file:            file)
-        end
+      # Upload the zip file into the application S3 bucket.
+      File.open(zip_pathname, "r") do |file|
+        PersistentStore.instance.put_object(key:             dest_key,
+                                            institution_key: bitstreams.first.institution.key,
+                                            file:            file)
       end
     end
   end
