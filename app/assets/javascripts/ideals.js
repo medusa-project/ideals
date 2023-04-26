@@ -440,6 +440,54 @@ const IDEALS = {
     },
 
     /**
+     * Given a date input with a year menu/field and month and day select
+     * menus, ensures that the day menu always contains the correct number of
+     * days depending on the month and (leap) year.
+     *
+     * @param yearField {jQuery} Text field or select menu.
+     * @param monthMenu {jQuery} Select menu.
+     * @param dayMenu {jQuery} Select menu.
+     * @constructor
+     */
+    DatePicker: function(yearField, monthMenu, dayMenu) {
+        const dayCounts              = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        const monthMenuIncludesBlank = (monthMenu.find("option:first").val() === "")
+        const onYearChanged = function() {
+            const year  = parseInt(yearField.val());
+            const month = parseInt(monthMenu.val());
+            if (!isNaN(year) && month === 2) {
+                if (year % 4 === 0) { // february has 29 days in leap years
+                    dayMenu.append("<option value='29'>29</option>");
+                } else {
+                    dayMenu.find("option[value='29']").remove();
+                }
+            }
+        };
+        const onMonthChanged = function() {
+            const year  = parseInt(yearField.val());
+            const month = parseInt(monthMenu.val());
+            if (!isNaN(month)) {
+                const numDays          = dayCounts[month - 1];
+                const numDaysInMenuNow = dayMenu.children().length - (monthMenuIncludesBlank ? 1 : 0);
+                if (numDays > numDaysInMenuNow) {
+                    for (var i = numDaysInMenuNow; i < numDays; i++) {
+                        dayMenu.append("<option>" + (i + 1)  + "</option>");
+                    }
+                } else if (numDays < numDaysInMenuNow) {
+                    for (var i = 0; i < numDaysInMenuNow - numDays; i++) {
+                        dayMenu.children().filter(":last").remove();
+                    }
+                }
+                if (month === 2 && year % 4 === 0) { // february has 29 days in leap years
+                    dayMenu.append("<option value='29'>29</option>");
+                }
+            }
+        };
+        monthMenu.on("change", onMonthChanged).trigger("change");
+        yearField.on("change", onYearChanged);
+    },
+
+    /**
      * @param modal_body {jQuery}
      * @param html {String}
      * @constructor

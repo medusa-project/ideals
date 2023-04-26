@@ -366,7 +366,13 @@ const SubmissionForm = function() {
      * input value appropriately (in ISO 8601 format).
      */
     const wireDateTransformer = function() {
-        metadataForm.find("[name=month], [name=day], [name=year]").on("change", function () {
+        $(".value-inputs").each(function() {
+            IDEALS.DatePicker($(this).find("[name=year]"),
+                $(this).find("[name=month]"),
+                $(this).find("[name=day]"));
+        });
+
+        metadataForm.find("[name=month], [name=day], [name=year]").on("change", function() {
             const hiddenInput = $("#" + $(this).data("for"));
             const parent      = hiddenInput.parent();
             const month       = parent.find("[name=month]").val(); // may be empty
