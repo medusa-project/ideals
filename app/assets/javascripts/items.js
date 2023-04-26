@@ -44,6 +44,12 @@ const ItemsView = function() {
         $(this).val(params.get($(this).attr("name")));
     });
 
+    advSearchContent.find(".date-picker").each(function() {
+        IDEALS.DatePicker($(this).find("select:last"),
+            $(this).find("select:first"),
+            $(this).find("select:nth(1)"));
+    });
+
     // When the All Items tab is selected, remove all other search input.
     allItemsTab.on("show.bs.tab", function() {
         window.location = "/items";
@@ -307,6 +313,13 @@ const ItemView = function() {
             const modalBody = $("#edit-item-embargoes-modal .modal-body");
             modalBody.html(data);
 
+            const wireDatePicker = function(embargo) {
+                IDEALS.DatePicker(embargo.find(".date-picker select:last"),
+                    embargo.find(".date-picker select:first"),
+                    embargo.find(".date-picker select:nth(1)"));
+            };
+            wireDatePicker(modalBody.find(".card:last"));
+
             const updateEmbargoIndices = function() {
                 modalBody.find(".card").each(function(index, element) {
                     $(element).find("input, select").each(function() {
@@ -330,6 +343,7 @@ const ItemView = function() {
                 newEmbargo.find(".remove-embargo").on("click", onRemoveEmbargoClicked);
                 newEmbargo.find(".remove-user-group").on("click", onRemoveUserGroupClicked);
                 newEmbargo.find(".add-user-group").on("click", onAddUserGroupClicked);
+                wireDatePicker(newEmbargo);
             };
             const onRemoveEmbargoClicked = function() {
                 const cardToRemove = $(this).parents(".card");
