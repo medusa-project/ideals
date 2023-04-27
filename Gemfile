@@ -46,7 +46,7 @@ gem "netaddr"
 # Enables local identity logins.
 gem "omniauth-identity"
 gem "omniauth-rails_csrf_protection"
-# Enables Shibboleth logins.
+gem "omniauth-saml"
 gem "omniauth-shibboleth"
 # Our database
 gem "pg"
