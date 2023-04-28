@@ -1,8 +1,10 @@
 -# This will only be rendered in development, so no need for policy checks
 
-%h2
-  Indexed Document
-  %small (development only)
-
-%pre
-  = JSON.pretty_generate(@item.indexed_document)
+#indexed-document-accordion.accordion.mt-3
+  .accordion-item
+    %h2.accordion-header
+    %button.accordion-button.collapsed{type: "button", "data-bs-toggle": "collapse", "data-bs-target": "#indexed-document", "aria-expanded": "false", "aria-controls": "indexed-document"}
+      Indexed Document (development only)
+  #indexed-document.accordion-collapse.collapse{"data-bs-parent": "#indexed-document-accordion"}
+    .accordion-body
+      %pre= JSON.pretty_generate(@item.indexed_document)
