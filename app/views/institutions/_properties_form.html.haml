@@ -5,11 +5,11 @@
     -# populated via ajax by shared/_validation_messages.js.erb
 
   .mb-3
-    = f.label :name, "Name"
+    = f.label :name, "Name", class: "required"
     = f.text_field :name, class: 'form-control'
 
   .mb-3
-    = f.label :key, "Key"
+    = f.label :key, "Key", class: "required"
     = f.text_field :key, class: 'form-control', disabled: !f.object.new_record?
     %p.form-text
       = icon_for(:info)
@@ -17,7 +17,7 @@
       Used only internally and cannot be changed later.
 
   .mb-3
-    = f.label :fqdn, "Fully Qualified Domain Name (FQDN)"
+    = f.label :fqdn, "Fully Qualified Domain Name (FQDN)", class: "required"
     = f.text_field :fqdn, class: 'form-control'
     - if Rails.env.development? || Rails.env.test?
       %p.form-text

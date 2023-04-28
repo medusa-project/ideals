@@ -8,7 +8,7 @@
   .mb-3.row
     = label_tag("settings[#{Setting::Key::EARLIEST_SEARCH_YEAR}]",
                 "Earliest Search Year",
-                class: "col-sm-3 col-form-label")
+                class: "col-sm-3 col-form-label required")
     .col-sm-9
       = number_field_tag("settings[#{Setting::Key::EARLIEST_SEARCH_YEAR}]",
                          Setting::integer(Setting::Key::EARLIEST_SEARCH_YEAR),

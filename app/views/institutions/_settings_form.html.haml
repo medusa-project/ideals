@@ -3,7 +3,7 @@
     -# populated via ajax by shared/_validation_messages.js.erb
 
   .mb-3
-    = f.label :service_name, "Service Name"
+    = f.label :service_name, "Service Name", class: "required"
     = f.text_field :service_name, class: "form-control"
 
   .mb-3

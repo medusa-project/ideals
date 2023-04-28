@@ -5,13 +5,13 @@
   = f.hidden_field :institution_id, value: f.object.institution.id
 
   .mb-3
-    = f.label :name
+    = f.label :name, class: "required"
     = f.text_field :name, class: "form-control", disabled: !f.object.new_record?
   .mb-3
     = f.label :uri, "URI"
     = f.text_field :uri, class: "form-control"
   .mb-3
-    = f.label :label
+    = f.label :label, class: "required"
     = f.text_field :label, class: "form-control"
   .mb-3
     = f.label :vocabulary_id, "Vocabulary"
@@ -20,7 +20,7 @@
                { include_blank: true },
                class: "form-select")
   .mb-3
-    = f.label :input_type, "Input Type"
+    = f.label :input_type, "Input Type", class: "required"
     = f.select(:input_type, options_for_select(RegisteredElement::InputType.all.map{ |t| [t.split("_").map(&:capitalize).join(" "), t] }.sort.reverse,
                                                f.object.input_type),
                {},

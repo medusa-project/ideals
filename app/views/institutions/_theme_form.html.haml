@@ -18,31 +18,31 @@
         %code rgba(128, 72, 9, 0.5)
 
   .mb-3
-    = f.label :header_background_color, "Header Background Color"
+    = f.label :header_background_color, "Header Background Color", class: "required"
     = f.text_field :header_background_color, class: "form-control"
 
   .mb-3
-    = f.label :footer_background_color, "Footer Background Color"
+    = f.label :footer_background_color, "Footer Background Color", class: "required"
     = f.text_field :footer_background_color, class: "form-control"
 
   .mb-3
-    = f.label :primary_color, "Primary Color"
+    = f.label :primary_color, "Primary Color", class: "required"
     = f.text_field :primary_color, class: "form-control"
 
   .mb-3
-    = f.label :primary_hover_color, "Primary Hover Color"
+    = f.label :primary_hover_color, "Primary Hover Color", class: "required"
     = f.text_field :primary_hover_color, class: "form-control"
 
   .mb-3
-    = f.label :link_color, "Link Color"
+    = f.label :link_color, "Link Color", class: "required"
     = f.text_field :link_color, class: "form-control"
 
   .mb-3
-    = f.label :link_hover_color, "Link Hover Color"
+    = f.label :link_hover_color, "Link Hover Color", class: "required"
     = f.text_field :link_hover_color, class: "form-control"
 
   .mb-3
-    = f.label :active_link_color, "Active Link Color"
+    = f.label :active_link_color, "Active Link Color", class: "required"
     = f.text_field :active_link_color, class: "form-control"
 
   .mb-3
@@ -74,7 +74,7 @@
       Should be at least 1920 pixels wide. PNG format recommended.
 
   .mb-3
-    = f.label :banner_image_height, "Banner Image Height (Pixels)"
+    = f.label :banner_image_height, "Banner Image Height (Pixels)", class: "required"
     = f.number_field :banner_image_height, class: "form-control"
 
   .mb-3

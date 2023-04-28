@@ -8,7 +8,7 @@
   = f.hidden_field :note, value: "Invited by #{current_user.name} (#{current_user.email})"
 
   .mb-3
-    = f.label :email, "Email"
+    = f.label :email, "Email", class: "required"
     = f.text_field :email, class: "form-control"
     .text-muted
       An email containing a link to the registration form will be sent

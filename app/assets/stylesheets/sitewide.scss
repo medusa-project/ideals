@@ -125,6 +125,15 @@ input[name=direction] {
   appearance: none;
 }
 
+label.required {
+  font-weight: bold;
+}
+
+label.required::after {
+  content: " (required)";
+  color: red;
+}
+
 .resource-list {
   a {
     text-decoration: none;

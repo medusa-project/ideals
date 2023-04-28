@@ -5,7 +5,7 @@
     -# populated via ajax by shared/_validation_messages.js.erb
 
   .mb-3
-    = f.label :medusa_file_group_id, "Medusa File Group ID"
+    = f.label :medusa_file_group_id, "Medusa File Group ID", class: "required"
     = f.text_field :medusa_file_group_id, class: "form-control"
     %p.form-text
       = icon_for(:info)
@@ -13,14 +13,14 @@
       collection.
 
   .mb-3
-    = f.label :outgoing_message_queue, "Outgoing Message Queue"
+    = f.label :outgoing_message_queue, "Outgoing Message Queue", class: "required"
     = f.text_field :outgoing_message_queue, class: "form-control"
     %p.form-text
       = icon_for(:info)
       A queue with this name must exist in RabbitMQ.
 
   .mb-3
-    = f.label :incoming_message_queue, "Incoming Message Queue"
+    = f.label :incoming_message_queue, "Incoming Message Queue", class: "required"
     = f.text_field :incoming_message_queue, class: "form-control"
     %p.form-text
       = icon_for(:info)

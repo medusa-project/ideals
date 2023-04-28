@@ -5,10 +5,10 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
   .mb-3
-    = f.label :stored_value
+    = f.label :stored_value, class: "required"
     = f.text_field :stored_value, class: 'form-control'
   .mb-3
-    = f.label :displayed_value
+    = f.label :displayed_value, class: "required"
     = f.text_field :displayed_value, class: 'form-control'
 
   .clearfix

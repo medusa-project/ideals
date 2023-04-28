@@ -6,7 +6,7 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
   .mb-3
-    = f.label :registered_element_id, "Element"
+    = f.label :registered_element_id, "Element", class: "required"
     = f.select(:registered_element_id, RegisteredElement.where(institution: current_institution).order(:label).map{ |e| ["#{e.label} (#{e.name})", e.id] },
       { selected: f.object.registered_element_id },
       class: "form-select")

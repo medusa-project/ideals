@@ -6,12 +6,13 @@
 
   - unless f.object.global?
     .mb-3
-      = f.label :name
+      = f.label :name, class: "required"
       = f.text_field :name, class: 'form-control'
 
   .mb-3
     = f.label :all_elements_relevance_weight,
-              "All Elements Relevance Weight (#{MetadataProfileElement::MIN_RELEVANCE_WEIGHT}-#{MetadataProfileElement::MAX_RELEVANCE_WEIGHT})"
+              "All Elements Relevance Weight (#{MetadataProfileElement::MIN_RELEVANCE_WEIGHT}-#{MetadataProfileElement::MAX_RELEVANCE_WEIGHT})",
+              class: "required"
     = f.number_field :all_elements_relevance_weight,
                      min:   MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
                      max:   MetadataProfileElement::MAX_RELEVANCE_WEIGHT,
@@ -19,7 +20,8 @@
 
   .mb-3
     = f.label :full_text_relevance_weight,
-              "Full Text Relevance Weight (#{MetadataProfileElement::MIN_RELEVANCE_WEIGHT}-#{MetadataProfileElement::MAX_RELEVANCE_WEIGHT})"
+              "Full Text Relevance Weight (#{MetadataProfileElement::MIN_RELEVANCE_WEIGHT}-#{MetadataProfileElement::MAX_RELEVANCE_WEIGHT})",
+              class: "required"
     = f.number_field :full_text_relevance_weight,
                      min:   MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
                      max:   MetadataProfileElement::MAX_RELEVANCE_WEIGHT,

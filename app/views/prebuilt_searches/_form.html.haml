@@ -7,11 +7,11 @@
   = f.hidden_field :institution_id, value: f.object.institution_id
 
   .mb-3
-    = f.label :name
+    = f.label :name, class: "required"
     = f.text_field :name, class: "form-control"
 
   .mb-3
-    = label_tag "Elements"
+    = label_tag "Elements", "Elements", class: "required"
     = hidden_field_tag "prebuilt_search_elements[][registered_element_id]"
     = hidden_field_tag "prebuilt_search_elements[][term]"
     - elements = f.object.elements

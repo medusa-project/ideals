@@ -12,7 +12,7 @@
   = f.hidden_field :id, value: f.object.id
 
   .mb-3
-    = f.label :title
+    = f.label :title, class: "required"
     = f.text_field :title, class: "form-control"
 
   .mb-3
@@ -20,7 +20,7 @@
     = f.text_area :description, class: "form-control"
 
   .mb-3
-    = f.label :short_description
+    = f.label :short_description, "Short Description"
     = f.text_area :short_description, class: "form-control"
 
   .mb-3
@@ -43,18 +43,29 @@
     = f.label :metadata_profile_id, "Metadata Profile"
     = f.select :metadata_profile_id, MetadataProfile.where(institution: current_institution).order(:name).pluck(:name, :id),
                { include_blank: true }, class: "form-select"
+    %p.form-text
+      = icon_for(:info)
+      If left blank, the metadata profile will be inherited from the unit, or
+      else the default profile will be used.
 
   .mb-3
     = f.label :submission_profile_id, "Submission Profile"
     = f.select :submission_profile_id, SubmissionProfile.where(institution: current_institution).order(:name).pluck(:name, :id),
                { include_blank: true }, class: "form-select"
+    %p.form-text
+      = icon_for(:info)
+      If left blank, the submission profile will be inherited from the unit, or
+      else the default profile will be used.
 
   .mb-3
     .form-check
       = f.check_box :submissions_reviewed, class: 'form-check-input'
       = f.label :submissions_reviewed, "Submissions Reviewed", class: "form-check-label"
     %p.form-text
-      %i.fa.fa-info-circle
+      = icon_for(:info)
+      When enabled, new submissions must be reviewed by a collection administrator
+      before they will appear in public.
+    %p.form-text
       Changing this will not affect submitted items that are still in the review queue.
 
   .clearfix

@@ -13,10 +13,10 @@
 
   -# For ShibbolethUsers, all of these properties are provided by AD.
   .mb-3
-    = f.label :name
+    = f.label :name, class: "required"
     = f.text_field :name, class: "form-control", disabled: !user.kind_of?(LocalUser)
   .mb-3
-    = f.label :email
+    = f.label :email, class: "required"
     = f.email_field :email, class: "form-control", disabled: !user.kind_of?(LocalUser)
   .mb-3
     = f.label :phone
@@ -24,9 +24,9 @@
 
   - if policy(user.becomes(User)).change_institution?
     .mb-3
-      = f.label :institution
+      = f.label :institution, class: "required"
       = f.select(:institution_id, options_for_select(Institution.all.order(:name).map{ |i| [i.name, i.id] }, f.object.institution_id),
-                 { include_blank: true },
+                 {},
                  { class: "form-select" })
 
   .clearfix
