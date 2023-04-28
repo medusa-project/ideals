@@ -187,12 +187,15 @@ class IdealsMailer < ApplicationMailer
   # @param item [Item]
   #
   def item_submitted(item)
-    @institution = item.institution
-    @item_url    = item_url(item, host: @institution.scope_url)
-    @review_url  = items_review_url(host: @institution.scope_url)
-    if item.primary_collection&.administering_users&.any?
-      recipients = item.primary_collection.administering_users.map(&:email)
-      mail(to:      recipients,
+    @institution      = item.institution
+    @item_url         = item_url(item, host: @institution.scope_url)
+    @review_url       = items_review_url(host: @institution.scope_url)
+    collection        = item.effective_primary_collection
+    recipient_emails  = Set.new
+    recipient_emails += (collection&.administering_users || []).map(&:email)
+    recipient_emails += (collection&.administering_groups || []).map{ |g| g.users.map(&:email) }.flatten
+    if recipient_emails.any?
+      mail(to:      recipient_emails.to_a,
            subject: "A new #{@institution.service_name} item requires review")
     end
   end
