@@ -363,6 +363,25 @@ module ApplicationHelper
   end
 
   ##
+  # Renders a help button triggering pop-up help.
+  #
+  # N.B.: this uses a Bootstrap popover which must be initialized manually in
+  # JavaScript. This is already done on page load, but if this button is being
+  # rendered into XHR-loaded content, you will need to initialize it manually
+  # using `IDEALS.EnablePopovers()`.
+  #
+  # @param text [String] Help text.
+  # @return [String]     Help button HTML.
+  #
+  def help_button(text)
+    html = "<a tabindex=\"0\" role=\"button\" "\
+        "data-bs-toggle=\"popover\" data-bs-trigger=\"focus\" "\
+        "data-bs-placement=\"bottom\" "\
+        "data-bs-content=\"#{text.gsub('"', "&quot;")}\"><i class=\"fa fa-question-circle\"></i></a>"
+    raw(html)
+  end
+
+  ##
   # @param entity [Object]
   # @return [String] Series of Highwire Press meta tags.
   # @see https://scholar.google.no/intl/en/scholar/inclusion.html#indexing

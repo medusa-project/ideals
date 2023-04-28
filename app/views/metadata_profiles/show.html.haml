@@ -91,7 +91,9 @@
                                                                  type:                       "button"}
                 %i.fa.fa-pencil-alt
                 Edit
-          %td All Elements
+          %td
+            All Elements
+            = help_button("The values of all of the elements below are automatically concatenated into this field. This enables cross-field queries, like \"author title.\"")
           %td.boolean= boolean(false)
           %td.boolean= boolean(true)
           %td.boolean= boolean(false)
@@ -113,7 +115,9 @@
                                                                  type:                       "button"}
                 %i.fa.fa-pencil-alt
                 Edit
-          %td Full Text
+          %td
+            Full Text
+            = help_button("For some file formats, full text is automatically extracted and added to this field.")
           %td.boolean= boolean(false)
           %td.boolean= boolean(true)
           %td.boolean= boolean(false)
