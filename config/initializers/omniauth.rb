@@ -4,9 +4,9 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   # The identity provider (for local password logins) is available in all
   # environments.
   provider :identity,
-           model: LocalIdentity,
-           fields: [:email, :name],
-           locate_conditions: -> (req) { { model.auth_key => req['auth_key']&.downcase } },
+           model:                  LocalIdentity,
+           fields:                 [:email, :name],
+           locate_conditions:      -> (req) { { model.auth_key => req['auth_key']&.downcase } },
            on_failed_registration: WelcomeController.action(:on_failed_registration) # TODO: we aren't using this
 
   # The developer provider (for Shibboleth dev/test auth) is available only in
@@ -21,19 +21,11 @@ Rails.application.config.middleware.use OmniAuth::Builder do
 
   # SAML (everybody else) is available in all environments.
   provider :saml,
-           assertion_consumer_service_url:     "https://demo.ideals.illinois.edu/auth/saml",
-           sp_entity_id:                       "ideals",
+           assertion_consumer_service_url:     "https://bagels.demo.scholarship.illinois.edu/auth/saml",
+           sp_entity_id:                       "bagels-ir",
            idp_sso_service_url:                "https://example.edu",
-           idp_sso_service_url_runtime_params: {:original_request_param => :mapped_idp_param},
-           # only need this or fingerprint, not both
-           idp_cert:                           "-----BEGIN CERTIFICATE-----\n...-----END CERTIFICATE-----",
-           idp_cert_multi:                     {
-             signing:    ["-----BEGIN CERTIFICATE-----\n...-----END CERTIFICATE-----", "-----BEGIN CERTIFICATE-----\n...-----END CERTIFICATE-----"],
-             encryption: []
-           },
-           idp_cert_fingerprint:           "E7:91:B2:E1:...",
-           idp_cert_fingerprint_validator: lambda { |fingerprint| fingerprint },
-           name_identifier_format:         "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+           idp_sso_service_url_runtime_params: { original_request_param: :mapped_idp_param },
+           name_identifier_format:             "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
 end
 
 OmniAuth.config.on_failure = Proc.new { |env|
