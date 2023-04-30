@@ -173,7 +173,7 @@ class CollectionsController < ApplicationController
     end
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS)
-    @start            = @permitted_params[:start].to_i
+    @start            = @permitted_params[:start].to_i.abs
     @window           = window_size
     @collections      = Collection.search.
         institution(current_institution).
@@ -355,7 +355,7 @@ class CollectionsController < ApplicationController
   #
   def show_submissions_in_progress
     @permitted_params = params.permit(Search::RESULTS_PARAMS)
-    @start            = @permitted_params[:start].to_i
+    @start            = @permitted_params[:start].to_i.abs
     @window           = window_size
     @items            = submissions_in_progress(@start, @window)
     @count            = @items.count
@@ -592,7 +592,7 @@ class CollectionsController < ApplicationController
 
   def set_item_results_ivars
     @permitted_params = params.permit(RESULTS_PARAMS + [:collection_id])
-    @start            = @permitted_params[:start].to_i
+    @start            = @permitted_params[:start].to_i.abs
     @window           = window_size
     @items            = Item.search.
       institution(@collection.institution).

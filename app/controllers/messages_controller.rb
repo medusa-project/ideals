@@ -13,7 +13,7 @@ class MessagesController < ApplicationController
   #
   def index
     @permitted_params = results_params
-    @start            = @permitted_params[:start].to_i
+    @start            = @permitted_params[:start].to_i.abs
     @window           = window_size
     @messages         = Message.all.order(updated_at: :desc)
     if @permitted_params[:key].present?
