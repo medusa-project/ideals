@@ -567,8 +567,8 @@ class InstitutionsController < ApplicationController
                                         :latitude_minutes, :latitude_seconds,
                                         :longitude_degrees, :longitude_minutes,
                                         :longitude_seconds, :name,
-                                        :openathens_organization_id, :org_dn,
-                                        :service_name)
+                                        :openathens_organization_id,
+                                        :service_name, :shibboleth_org_dn)
   end
 
   def settings_params

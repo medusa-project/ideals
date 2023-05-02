@@ -24,8 +24,8 @@
   - if @institution.key == "uiuc"
     %dt Organization DN
     %dd
-      - if @institution.org_dn.present?
-        %code= @institution.org_dn
+      - if @institution.shibboleth_org_dn.present?
+        %code= @institution.shibboleth_org_dn
       - else
         Not Set
   - else

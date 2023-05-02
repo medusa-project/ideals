@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_01_191603) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_02_153523) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -297,7 +297,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_01_191603) do
   create_table "institutions", force: :cascade do |t|
     t.string "key", null: false
     t.string "name", null: false
-    t.string "org_dn"
+    t.string "shibboleth_org_dn"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "fqdn", null: false
@@ -345,8 +345,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_01_191603) do
     t.index ["medusa_file_group_id"], name: "index_institutions_on_medusa_file_group_id", unique: true
     t.index ["name"], name: "index_institutions_on_name", unique: true
     t.index ["openathens_organization_id"], name: "index_institutions_on_openathens_organization_id", unique: true
-    t.index ["org_dn"], name: "index_institutions_on_org_dn", unique: true
     t.index ["outgoing_message_queue"], name: "index_institutions_on_outgoing_message_queue", unique: true
+    t.index ["shibboleth_org_dn"], name: "index_institutions_on_shibboleth_org_dn", unique: true
   end
 
   create_table "invitees", force: :cascade do |t|

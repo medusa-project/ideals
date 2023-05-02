@@ -30,8 +30,8 @@
 
   .mb-3
     - if f.object.key == "uiuc"
-      = f.label :org_dn, "Organization DN"
-      = f.text_field :org_dn, class: "form-control"
+      = f.label :shibboleth_org_dn, "Shibboleth Organization DN"
+      = f.text_field :shibboleth_org_dn, class: "form-control"
       %p.form-text
         = icon_for(:info)
         When filled in, this will enable Shibboleth authentication for this

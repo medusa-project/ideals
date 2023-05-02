@@ -14,7 +14,8 @@
 #   institution, or is invited into a particular institution by a sysadmin at
 #   the time they are invited to register.
 # * For {ShibbolethUser}s, the user's "org DN" provided by the IdP is matched
-#   against an {Institution}'s {Institution#org_dn} property at login.
+#   against an {Institution}'s {Institution#shibboleth_org_dn} property at
+#   login.
 # * For {SamlUser}s, the user's "organization ID" provided by the OpenAthens
 #   IdP is matched against an {Institution}'s
 #   {Institution#openathens_organization_id} property at login.

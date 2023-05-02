@@ -55,8 +55,8 @@
   - if current_institution.key == "uiuc"
     %dt Organization DN
     %dd
-      - if @user.org_dn
-        %code= @user.org_dn
+      - if @user.shibboleth_org_dn
+        %code= @user.shibboleth_org_dn
       - else
         None
     %dt Affiliation

@@ -80,22 +80,22 @@ southwest:
     - southwest_admins
 
 uiuc:
-  key:                        uiuc
-  fqdn:                       illinois.edu
-  name:                       University of Illinois at Urbana-Champaign
-  service_name:               IDEALS
-  org_dn:                     o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
-  main_website_url:           https://illinois.edu
-  feedback_email:             feedback@fakeuiuc.edu
-  welcome_html:               <h1>Welcome to IDEALS</h1>
-  outgoing_message_queue:     ideals_to_medusa
-  incoming_message_queue:     medusa_to_ideals
-  title_element:              uiuc_dc_title
-  author_element:             uiuc_dc_creator
-  description_element:        uiuc_dc_description
-  date_approved_element:      uiuc_ideals_date_approved
-  date_published_element:     uiuc_ideals_date_published
-  date_submitted_element:     uiuc_ideals_date_submitted
-  handle_uri_element:         uiuc_ideals_handle_uri
+  key:                    uiuc
+  fqdn:                   illinois.edu
+  name:                   University of Illinois at Urbana-Champaign
+  service_name:           IDEALS
+  shibboleth_org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
+  main_website_url:       https://illinois.edu
+  feedback_email:         feedback@fakeuiuc.edu
+  welcome_html:           <h1>Welcome to IDEALS</h1>
+  outgoing_message_queue: ideals_to_medusa
+  incoming_message_queue: medusa_to_ideals
+  title_element:          uiuc_dc_title
+  author_element:         uiuc_dc_creator
+  description_element:    uiuc_dc_description
+  date_approved_element:  uiuc_ideals_date_approved
+  date_published_element: uiuc_ideals_date_published
+  date_submitted_element: uiuc_ideals_date_submitted
+  handle_uri_element:     uiuc_ideals_handle_uri
   administering_groups:
     - uiuc_admins

@@ -73,15 +73,15 @@
 #                                attribute supplied by the OpenAthens IdP.
 #                                This should be filled in by all institutions
 #                                that use OpenAthens for authentication.
-# * `org_dn`                     Value of an `eduPersonOrgDN` attribute from
-#                                the Shibboleth SP. This should be filled in
-#                                by all institutions that use Shibboleth for
-#                                authentication (currently only UIUC).
 # * `primary_color`              Theme primary color.
 # * `primary_hover_color`        Theme hover-over primary color.
 # * `service_name`               Name of the service that the institution is
 #                                running. For example, at UIUC, this would be
 #                                IDEALS.
+# * `shibboleth_org_dn`          Value of an `eduPersonOrgDN` attribute from
+#                                the Shibboleth IdP. This should be filled in
+#                                by all institutions that use Shibboleth for
+#                                authentication (currently only UIUC).
 # * `title_element_id`           Foreign key to {RegisteredElement} designating
 #                                an element to treat as the title element.
 # * `updated_at`                 Managed by ActiveRecord.
@@ -946,11 +946,12 @@ class Institution < ApplicationRecord
   end
 
   ##
-  # Ensures that {org_dn} and {openathens_organization_id} are not both filled
-  # in.
+  # Ensures that {shibboleth_org_dn} and {openathens_organization_id} are not
+  # both filled in.
   #
   def validate_authentication_method
-    if self.org_dn.present? && self.openathens_organization_id.present?
+    if self.shibboleth_org_dn.present? &&
+      self.openathens_organization_id.present?
       errors.add(:base, "Organization DN and OpenAthens organization ID "\
                         "cannot both be present")
     end

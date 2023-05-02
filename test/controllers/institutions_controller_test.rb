@@ -31,10 +31,10 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            institution: {
-             name: "New Institution",
-             key: "new",
-             fqdn: "new.org",
-             org_dn: "new"
+             name:              "New Institution",
+             key:               "new",
+             fqdn:              "new.org",
+             shibboleth_org_dn: "new"
            }
          }
     assert_response :forbidden
@@ -46,12 +46,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            institution: {
-             name:             "New Institution",
-             service_name:     "New",
-             key:              "new",
-             fqdn:             "new.org",
-             org_dn:           "new",
-             main_website_url: "https://new.org"
+             name:              "New Institution",
+             service_name:      "New",
+             key:               "new",
+             fqdn:              "new.org",
+             shibboleth_org_dn: "new",
+             main_website_url:  "https://new.org"
            }
          }
     assert_response :ok
@@ -65,12 +65,12 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
              institution: {
-               name:             "New Institution",
-               service_name:     "New",
-               key:              "new",
-               fqdn:             "new.org",
-               org_dn:           "new",
-               main_website_url: "https://new.org"
+               name:              "New Institution",
+               service_name:      "New",
+               key:               "new",
+               fqdn:              "new.org",
+               shibboleth_org_dn: "new",
+               main_website_url:  "https://new.org"
              }
            }
     end
@@ -1232,9 +1232,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             institution: {
-              name: "New Institution",
-              fqdn: "new.org",
-              org_dn: "new"
+              name:              "New Institution",
+              fqdn:              "new.org",
+              shibboleth_org_dn: "new"
             }
           }
     assert_response :ok

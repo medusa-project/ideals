@@ -116,7 +116,8 @@ class ShibbolethUser < User
     # UIS accounts will not have an org DN--eventually these users will be
     # converted into LocalUsers and moved into the UIS space
     self.institution = self.org_dn.present? ?
-                         Institution.find_by_org_dn(self.org_dn) : Institution.find_by_key("uiuc")
+                         Institution.find_by_shibboleth_org_dn(self.org_dn) :
+                         Institution.find_by_key("uiuc")
     self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
     self.affiliation = Affiliation.from_shibboleth(auth)
     dept             = auth.dig("extra", "raw_info", "departmentCode")
