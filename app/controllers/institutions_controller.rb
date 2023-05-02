@@ -566,7 +566,8 @@ class InstitutionsController < ApplicationController
     params.require(:institution).permit(:fqdn, :key, :latitude_degrees,
                                         :latitude_minutes, :latitude_seconds,
                                         :longitude_degrees, :longitude_minutes,
-                                        :longitude_seconds, :name, :org_dn,
+                                        :longitude_seconds, :name,
+                                        :openathens_organization_id, :org_dn,
                                         :service_name)
   end
 

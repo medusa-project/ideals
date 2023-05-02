@@ -1149,9 +1149,8 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             institution: {
-              name:   "New Institution",
-              fqdn:   "new.org",
-              org_dn: "new"
+              name: "New Institution",
+              fqdn: "new.org"
             }
           }
     institution.reload
@@ -1167,8 +1166,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
           params: {
             institution: {
               name: "New Institution",
-              fqdn: "new.org",
-              org_dn: "new"
+              fqdn: "new.org"
             }
           }
     assert_response :ok

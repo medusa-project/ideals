@@ -18,7 +18,7 @@
 
   .mb-3
     = f.label :fqdn, "Fully Qualified Domain Name (FQDN)", class: "required"
-    = f.text_field :fqdn, class: 'form-control'
+    = f.text_field :fqdn, class: "form-control"
     - if Rails.env.development? || Rails.env.test?
       %p.form-text
         = icon_for(:info)
@@ -28,14 +28,21 @@
         %code= "config/environments/#{Rails.env}.rb"
         file.
 
-  - if f.object.key == "uiuc"
-    .mb-3
+  .mb-3
+    - if f.object.key == "uiuc"
       = f.label :org_dn, "Organization DN"
-      = f.text_field :org_dn, class: 'form-control'
+      = f.text_field :org_dn, class: "form-control"
       %p.form-text
         = icon_for(:info)
-        Copy this value from the properties page of a user of this institution
-        who has signed in via Shibboleth.
+        When filled in, this will enable Shibboleth authentication for this
+        institution.
+    - else
+      = f.label :openathens_organization_id, "OpenAthens Organization ID"
+      = f.text_field :openathens_organization_id, class: "form-control"
+      %p.form-text
+        = icon_for(:info)
+        When filled in, this will enable OpenAthens authentication for this
+        institution.
 
   .mb-3
     = f.label :latitude, "Latitude"

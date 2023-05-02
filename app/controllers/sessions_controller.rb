@@ -38,6 +38,8 @@ class SessionsController < ApplicationController
     case auth[:provider]
     when "developer", "shibboleth"
       user = ShibbolethUser.from_omniauth(auth)
+    when "saml"
+      user = SamlUser.from_omniauth(auth)
     when "identity"
       user = LocalUser.from_omniauth(auth)
     end

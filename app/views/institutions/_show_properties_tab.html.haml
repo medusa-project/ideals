@@ -21,12 +21,20 @@
   %dt Key
   %dd
     %code= @institution.key
-  %dt Organization DN
-  %dd
-    - if @institution.org_dn.present?
-      %code= @institution.org_dn
-    - else
-      Not Set
+  - if @institution.key == "uiuc"
+    %dt Organization DN
+    %dd
+      - if @institution.org_dn.present?
+        %code= @institution.org_dn
+      - else
+        Not Set
+  - else
+    %dt OpenAthens Organization ID
+    %dd
+      - if @institution.openathens_organization_id?
+        %code= @institution.openathens_organization_id
+      - else
+        Not Set
   %dt Latitude
   %dd
     - if @institution.latitude_degrees.present? && @institution.latitude_minutes.present? && @institution.latitude_seconds.present?

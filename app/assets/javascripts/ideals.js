@@ -962,12 +962,13 @@ const IDEALS = {
     NonNetIDLoginForm: function() {
         const ROOT_URL = $("input[name=root_url]").val();
         const modal    = $("#login-modal");
+        const form     = modal.find(".local-identity");
         const flash    = modal.find(".alert.login-status");
-        modal.find("input[name=password").on("keyup", function() {
+        form.find("input[name=password").on("keyup", function() {
             flash.hide();
         });
-        modal.find("input[name=auth_key]").on("keyup", function() {
-            const submitButton = modal.find("button[type=submit]");
+        form.find("input[name=auth_key]").on("keyup", function() {
+            const submitButton = form.find("button[type=submit]");
             if ($(this).val().endsWith("@illinois.edu")) {
                 flash.removeClass("alert-success")
                     .addClass("alert-danger")
@@ -981,12 +982,11 @@ const IDEALS = {
                 submitButton.prop("disabled", false);
             }
         });
-        modal.find("button[type=submit]").on("click", function(event) {
+        form.find("button[type=submit]").on("click", function(event) {
             event.preventDefault();
             $.ajax({
                 method: "POST",
                 url: ROOT_URL + "/auth/identity/callback",
-
                 data: $(this).parents("form").serialize(),
                 success: function() {
                     flash.text("Login succeeded. One moment...")

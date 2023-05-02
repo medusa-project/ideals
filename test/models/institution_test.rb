@@ -594,6 +594,22 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.destroyed?
   end
 
+  # openathens_organization_id
+
+  test "openathens_organization_id and org_dn cannot both be filled in" do
+    @instance.openathens_organization_id = "cats"
+    @instance.org_dn                     = "dogs"
+    assert !@instance.valid?
+  end
+
+  # org_dn
+
+  test "org_dn and openathens_organization_id cannot both be filled in" do
+    @instance.org_dn                     = "dogs"
+    @instance.openathens_organization_id = "cats"
+    assert !@instance.valid?
+  end
+
   # primary_color
 
   test "primary_color must contain a valid CSS color" do

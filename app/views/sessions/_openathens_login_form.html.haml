@@ -1,0 +1,10 @@
+.text-center
+  = button_to("/auth/saml", method: :post, class: "btn btn-primary p-4") do
+    %i.fa.fa-sign-in-alt
+    &nbsp;OpenAthens Log In
+
+  %p.mt-4
+    %a{href:             "#",
+       "data-bs-target": "#login-carousel",
+       "data-bs-slide":  "next"}
+      I don't have an OpenAthens account

@@ -110,6 +110,15 @@ southwest_sysadmin:
   user_groups:
     - sysadmin
 
+southwest_saml:
+  type:        SamlUser
+  institution: southwest
+  uid:         saml@southwest.edu
+  name:        Southwest University SAML User
+  email:       saml@southwest.edu
+  phone:       (888) 555-1234
+  enabled:     true
+
 southwest_shibboleth:
   type:        ShibbolethUser
   institution: southwest

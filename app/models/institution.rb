@@ -68,8 +68,15 @@
 # * `medusa_file_group_id`       ID of the Medusa file group in which the
 #                                institution's content is stored.
 # * `name`                       Institution name.
+# * `openathens_organization_id` Value of the
+#                                `http://eduserv.org.uk/federation/attributes/1.0/organisationid`
+#                                attribute supplied by the OpenAthens IdP.
+#                                This should be filled in by all institutions
+#                                that use OpenAthens for authentication.
 # * `org_dn`                     Value of an `eduPersonOrgDN` attribute from
-#                                the Shibboleth SP.
+#                                the Shibboleth SP. This should be filled in
+#                                by all institutions that use Shibboleth for
+#                                authentication (currently only UIUC).
 # * `primary_color`              Theme primary color.
 # * `primary_hover_color`        Theme hover-over primary color.
 # * `service_name`               Name of the service that the institution is
@@ -147,7 +154,8 @@ class Institution < ApplicationRecord
   validates :primary_hover_color, presence: true
   validates :service_name, presence: true
 
-  validate :disallow_key_changes, :validate_css_colors
+  validate :disallow_key_changes, :validate_css_colors,
+           :validate_authentication_method
 
   # N.B.: order is important!
   after_create :add_default_vocabularies, :add_default_elements,
@@ -935,6 +943,17 @@ class Institution < ApplicationRecord
   def upload_theme_image(io:, filename:)
     key = self.class.image_key_prefix(self.key) + filename
     PersistentStore.instance.put_object(key: key, io: io, public: true)
+  end
+
+  ##
+  # Ensures that {org_dn} and {openathens_organization_id} are not both filled
+  # in.
+  #
+  def validate_authentication_method
+    if self.org_dn.present? && self.openathens_organization_id.present?
+      errors.add(:base, "Organization DN and OpenAthens organization ID "\
+                        "cannot both be present")
+    end
   end
 
   def validate_css_colors

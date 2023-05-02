@@ -16,7 +16,16 @@
     IDEALS migrated to a new platform on June 23, 2022. If you created
     your account prior to this date, you will have to reset your password
     using the forgot-password link below.
+- elsif current_institution&.openathens_organization_id.present? || current_institution&.org_dn.present?
+  .mb-3
+    %a.btn.btn-light{href:             "#",
+                     "data-bs-target": "#login-carousel",
+                     "data-bs-slide":  "prev"}
+      %i.fa.fa-arrow-left
+      Go Back
+
 .alert.alert-danger.login-status
+
 = form_tag "/auth/identity/callback" do
   .mb-3.row
     %label.col-sm-4.col-form-label{for: :auth_key} Email

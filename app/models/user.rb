@@ -15,6 +15,9 @@
 #   the time they are invited to register.
 # * For {ShibbolethUser}s, the user's "org DN" provided by the IdP is matched
 #   against an {Institution}'s {Institution#org_dn} property at login.
+# * For {SamlUser}s, the user's "organization ID" provided by the OpenAthens
+#   IdP is matched against an {Institution}'s
+#   {Institution#openathens_organization_id} property at login.
 #
 # # Attributes
 #
@@ -22,7 +25,9 @@
 # * `email`             Email address.
 # * `enabled`           Whether the user is able to log in.
 # * `institution_id`    Foreign key to {Institution} representing the
-#                       institution of which the instance is a member.
+#                       institution of which the instance is a member. All non-
+#                       sysadmin users can only log into and browse around
+#                       their home institution's space in the IR.
 # * `local_identity_id` Foreign key to {LocalIdentity}. Used only by
 #                       {LocalUser}s; set during processing of the
 #                       registration form.
@@ -32,9 +37,11 @@
 #                       {ShibbolethUser}s have this. TODO: this is probably not needed anymore now that we have institution_id
 # * `phone`             The user's phone number.
 # * `type`              Supports Rails single-table inheritance (STI).
-# * `uid`               For {ShibbolethUser}s, this is the UID provided by
-#                       Shibboleth (which is probably the EPPN). For
-#                       {LocalUser}s, it's the email address.
+# * `uid`               Unique identifier from the authentication provider.
+#                       For {ShibbolethUser}s, this is probably the EPPN. For
+#                       {LocalUser}s, it's the email address. For {SamlUser}s,
+#                       it's some long string. We don't really use it, although
+#                       it is guaranteed unique.
 # * `updated_at:        Managed by ActiveRecord.
 #
 class User < ApplicationRecord

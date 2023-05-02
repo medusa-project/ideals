@@ -2,8 +2,11 @@
                                "data-bs-touch":    "false",
                                "data-bs-interval": "9999999999"}
   .carousel-inner
-    - if current_institution&.key == "uiuc"
-      .carousel-item.active
-        = render partial: "sessions/netid_login_form"
-    .carousel-item.p-1{class: current_institution&.key == "uiuc" ? "" : "active"}
+    - if current_institution&.openathens_organization_id&.present?
+      .carousel-item.openathens.active
+        = render partial: "sessions/openathens_login_form"
+    - elsif current_institution&.org_dn&.present?
+      .carousel-item.shibboleth.active
+        = render partial: "sessions/shibboleth_login_form"
+    .carousel-item.local-identity.p-1{class: (current_institution&.org_dn&.present? || current_institution&.openathens_organization_id&.present?) ? "" : "active"}
       = render partial: "sessions/local_login_form"
