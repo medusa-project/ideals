@@ -14,7 +14,7 @@ class MetadataProfilePolicy < ApplicationPolicy
   def initialize(request_context, metadata_profile)
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit
+    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
     @profile         = metadata_profile
   end
 

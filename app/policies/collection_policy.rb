@@ -60,7 +60,7 @@ class CollectionPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif @ctx_institution != @collection.institution
       return WRONG_SCOPE_RESULT
-    elsif (!@role_limit || @role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
+    elsif (@role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
       @user.effective_institution_admin?(@collection.institution)
       return AUTHORIZED_RESULT
     end

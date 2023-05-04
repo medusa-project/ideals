@@ -10,7 +10,7 @@ class SubmissionPolicy < ApplicationPolicy
     @request_context = request_context
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit
+    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
     @item            = item
   end
 

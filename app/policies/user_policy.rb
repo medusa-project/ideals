@@ -15,7 +15,7 @@ class UserPolicy < ApplicationPolicy
   #
   def initialize(request_context, object_user)
     @subject_user    = request_context&.user
-    @role_limit      = request_context&.role_limit
+    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
     @ctx_institution = request_context&.institution
     @object_user     = object_user
   end
