@@ -201,14 +201,15 @@ class UnitsController < ApplicationController
   # Responds to `GET /units/new` (XHR only)
   #
   def new
-    authorize(Unit)
     institution_id = params.dig(:unit, :institution_id)
     if institution_id.blank?
       render plain: "Missing institution ID", status: :bad_request
       return
     end
     @unit             = Unit.new
+    @unit.parent_id   = params.dig(:unit, :parent_id)
     @unit.institution = Institution.find(institution_id)
+    authorize(@unit)
     render partial: "new_form", locals: { parent_id: params[:parent_id] }
   end
 

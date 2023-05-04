@@ -40,7 +40,7 @@ const Units = {
                 });
                 $(".add-child-unit").on("click", function() {
                     const url = "/units/new?unit%5Binstitution_id%5D=" + institutionID +
-                        "&parent_id=" + unitID;
+                        "&unit%5Bparent_id%5D=" + unitID;
                     $.get(url, function(data) {
                         $("#add-child-unit-modal .modal-body").html(data);
                     });
