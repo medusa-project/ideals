@@ -1,91 +1,106 @@
+# frozen_string_literal: true
+
 ##
-# The root of the main entity tree. All {Unit}s reside in an institution.
+# The root of the main entity tree. All {Unit}s reside directly in an
+# institution.
 #
 # Each institution has its own domain name at which its own website, scoped to
-# its own content, is available.
+# its own content, is available. It may also use its own authentication system.
 #
 # # Attributes
 #
-# * `active_link_color`          Theme active hyperlink color.
-# * `author_element_id`          Foreign key to {RegisteredElement} designating
-#                                an element to treat as the author element.
-# * `banner_image_filename`      Filename of the banner image, which may exist
-#                                in the application S3 bucket under
-#                                {image_key_prefix}. If not present, a generic
-#                                image is used.
-# * `banner_image_height`        Height of the banner image.
-# * `copyright_notice`           Generic institution-wide copyright notice,
-#                                displayed on the website somewhere (probably
-#                                in the footer).
-# * `created_at`                 Managed by ActiveRecord.
-# * `date_approved_element_id`   Foreign key to {RegisteredElement} designating
-#                                an element to treat as the date-approved
-#                                element.
-# * `date_published_element_id`  Foreign key to {RegisteredElement} designating
-#                                an element to treat as the date-approved
-#                                element.
-# * `date_submitted_element_id`  Foreign key to {RegisteredElement} designating
-#                                an element to treat as the date-submitted
-#                                element.
-# * `description_element_id`     Foreign key to {RegisteredElement} designating
-#                                an element to treat as the description
-#                                element.
-# * `earliest_search_year`       Earliest year available in advanced search.
-# * `feedback_email`             Email address for public feedback.
-# * `footer_background_color`    Theme background color of the footer.
-# * `footer_image_filename`      Filename of the footer image, which is
-#                                expected
-#                                to exist in the application S3 bucket under
-#                                {image_key_prefix}.
-# * `handle_uri_element_id`      Foreign key to {RegisteredElement} designating
-#                                an element to treat as the date-submitted
-#                                element.
-# * `has_favicon`                Whether the instance has a favicon, i.e.
-#                                whether an institution admin has uploaded one.
-#                                Unlike the other image-related attributes, the
-#                                favicon's filenames are fixed.
-# * `header_background_color`    Theme background color of the header.
-# * `header_image_filename`      Filename of the header image, which is
-#                                expected to exist in the application S3 bucket
-#                                under {image_key_prefix}.
-# * `key`                        Short string that uniquely identifies the
-#                                institution.
-# * `latitude_degrees`           The degrees component of the institution's
-#                                latitude.
-# * `latitude_minutes`           The minutes component of the institution's
-#                                latitude.
-# * `latitude_seconds`           The seconds component of the institution's
-#                                latitude.
-# * `link_color`                 Theme hyperlink color.
-# * `link_hover_color`           Theme hover-over-hyperlink color.
-# * `longitude_degrees`          The degrees component of the institution's
-#                                longitude.
-# * `longitude_minutes`          The minutes component of the institution's
-#                                longitude.
-# * `longitude_seconds`          The seconds component of the institution's
-#                                longitude.
-# * `main_website_url`           URL of the institution's main website.
-# * `medusa_file_group_id`       ID of the Medusa file group in which the
-#                                institution's content is stored.
-# * `name`                       Institution name.
-# * `openathens_organization_id` Value of the
-#                                `http://eduserv.org.uk/federation/attributes/1.0/organisationid`
-#                                attribute supplied by the OpenAthens IdP.
-#                                This should be filled in by all institutions
-#                                that use OpenAthens for authentication.
-# * `primary_color`              Theme primary color.
-# * `primary_hover_color`        Theme hover-over primary color.
-# * `service_name`               Name of the service that the institution is
-#                                running. For example, at UIUC, this would be
-#                                IDEALS.
-# * `shibboleth_org_dn`          Value of an `eduPersonOrgDN` attribute from
-#                                the Shibboleth IdP. This should be filled in
-#                                by all institutions that use Shibboleth for
-#                                authentication (currently only UIUC).
-# * `title_element_id`           Foreign key to {RegisteredElement} designating
-#                                an element to treat as the title element.
-# * `updated_at`                 Managed by ActiveRecord.
-# * `welcome_html`               HTML text that appears on the main page.
+# * `active_link_color`              Theme active hyperlink color.
+# * `author_element_id`              Foreign key to {RegisteredElement}
+#                                    designating an element to treat as the
+#                                    author element.
+# * `banner_image_filename`          Filename of the banner image, which may
+#                                    exist in the application S3 bucket under
+#                                    {image_key_prefix}. If not present, a
+#                                    generic image is used.
+# * `banner_image_height`            Height of the banner image.
+# * `copyright_notice`               Generic institution-wide copyright notice,
+#                                    displayed on the website somewhere
+#                                    (probably in the footer).
+# * `created_at`                     Managed by ActiveRecord.
+# * `date_approved_element_id`       Foreign key to {RegisteredElement}
+#                                    designating an element to treat as the
+#                                    date-approved element.
+# * `date_published_element_id`      Foreign key to {RegisteredElement}
+#                                    designating an element to treat as the
+#                                    date-approved element.
+# * `date_submitted_element_id`      Foreign key to {RegisteredElement}
+#                                    designating an element to treat as the
+#                                    date-submitted element.
+# * `description_element_id`         Foreign key to {RegisteredElement}
+#                                    designating an element to treat as the
+#                                    description element.
+# * `earliest_search_year`           Earliest year available in advanced
+#                                    search.
+# * `feedback_email`                 Email address for public feedback.
+# * `footer_background_color`        Theme background color of the footer.
+# * `footer_image_filename`          Filename of the footer image, which is
+#                                    expected to exist in the application S3
+#                                    bucket under {image_key_prefix}.
+# * `handle_uri_element_id`          Foreign key to {RegisteredElement}
+#                                    designating an element to treat as the
+#                                    date-submitted element.
+# * `has_favicon`                    Whether the instance has a favicon, i.e.
+#                                    whether an institution admin has uploaded
+#                                    one. Unlike the other image-related
+#                                    attributes, the favicon's filenames are
+#                                    fixed.
+# * `header_background_color`        Theme background color of the header.
+# * `header_image_filename`          Filename of the header image, which is
+#                                    expected to exist in the application S3
+#                                    bucket under {image_key_prefix}.
+# * `key`                            Short string that uniquely identifies the
+#                                    institution.
+# * `latitude_degrees`               The degrees component of the institution's
+#                                    latitude.
+# * `latitude_minutes`               The minutes component of the institution's
+#                                    latitude.
+# * `latitude_seconds`               The seconds component of the institution's
+#                                    latitude.
+# * `link_color`                     Theme hyperlink color.
+# * `link_hover_color`               Theme hover-over-hyperlink color.
+# * `longitude_degrees`              The degrees component of the institution's
+#                                    longitude.
+# * `longitude_minutes`              The minutes component of the institution's
+#                                    longitude.
+# * `longitude_seconds`              The seconds component of the institution's
+#                                    longitude.
+# * `main_website_url`               URL of the institution's main website.
+# * `medusa_file_group_id`           ID of the Medusa file group in which the
+#                                    institution's content is stored.
+# * `name`                           Institution name.
+# * `openathens_idp_cert`            Required only by institutions that use
+#                                    OpenAthens for authentication.
+# * `openathens_idp_slo_service_url` Required only by institutions that use
+#                                    OpenAthens for authentication.
+# * `openathens_idp_sso_service_url` Required only by institutions that use
+#                                    OpenAthens for authentication.
+# * `openathens_organization_id`     Value of the
+#                                    `http://eduserv.org.uk/federation/attributes/1.0/organisationid`
+#                                    attribute supplied by the OpenAthens IdP.
+#                                    Required only by institutions that use
+#                                    OpenAthens for authentication.
+# * `openathens_sp_entity_id`        Required only by institutions that use
+#                                    OpenAthens for authentication.
+# * `primary_color`                  Theme primary color.
+# * `primary_hover_color`            Theme hover-over primary color.
+# * `service_name`                   Name of the service that the institution
+#                                    is running. For example, at UIUC, this
+#                                    would be IDEALS.
+# * `shibboleth_org_dn`              Value of an `eduPersonOrgDN` attribute
+#                                    from the Shibboleth IdP. This should be
+#                                    filled in by all institutions that use
+#                                    Shibboleth for authentication (currently
+#                                    only UIUC).
+# * `title_element_id`               Foreign key to {RegisteredElement}
+#                                    designating an element to treat as the
+#                                    title element.
+# * `updated_at`                     Managed by ActiveRecord.
+# * `welcome_html`                   HTML text that appears on the main page.
 #
 class Institution < ApplicationRecord
 

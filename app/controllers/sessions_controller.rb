@@ -13,28 +13,24 @@ class SessionsController < ApplicationController
       redirect_to "/auth/developer"
     else
       shib_opts = YAML.load_file(File.join(Rails.root, 'config', 'shibboleth.yml'))[Rails.env]
-      redirect_to shibboleth_login_path(shib_opts['host'])
+      redirect_to "/Shibboleth.sso/Login?target=https://#{shib_opts['host']}/auth/shibboleth/callback"
     end
   end
 
   ##
-  # Handles callbacks from the auth provider. (In development this is the
-  # OmniAuth development strategy, and in demo/production it's the Shibboleth
-  # SP.) It is responsible for taking the UID from the authentication hash,
-  # translating it into a {User}, and setting the user's ID in the session.
+  # Handles callbacks from the auth provider (OmniAuth). Responsible for
+  # translating an authentication hash into a {User} and setting its ID in the
+  # session.
   #
   # This method will only have been called upon successful authentication--
   # never upon failure. However, only {User#enabled enabled users} whose
-  # {User#institution owning institution} matches the request institution are
-  # allowed to log in. {LocalUser}s also must have an associated
-  # {LocalIdentity}.
+  # {User#institution owning institution} matches the request institution
+  # (sysadmins exempted) are allowed to log in.
   #
   # Responds to `GET/POST /auth/:provider/callback`.
   #
   def create
     auth = request.env["omniauth.auth"]
-    user = nil
-
     case auth[:provider]
     when "developer", "shibboleth"
       user = ShibbolethUser.from_omniauth(auth)
@@ -42,12 +38,14 @@ class SessionsController < ApplicationController
       user = SamlUser.from_omniauth(auth)
     when "identity"
       user = LocalUser.from_omniauth(auth)
+    else
+      user = nil
     end
 
     # Sysadmins can log in via any institution's host. This is a feature needed
     # by CARLI sysadmins for e.g. walking users through how to do things. But
     # there is no use case for non-sysadmins to be able to do this.
-    if user&.id && user.enabled && (user.institution == current_institution || user.sysadmin?)
+    if user&.enabled && (user.institution == current_institution || user.sysadmin?)
       begin
         hostname = Resolv.getname(request.remote_ip)
       rescue Resolv::ResolvError
@@ -69,8 +67,8 @@ class SessionsController < ApplicationController
 
   def destroy
     reset_session
-    redirect_to(institution_host? ? current_institution.scope_url : root_url,
-                allow_other_host: true)
+    redirect_to institution_host? ? current_institution.scope_url : root_url,
+                allow_other_host: true
   end
 
   ##
@@ -88,7 +86,7 @@ class SessionsController < ApplicationController
     end
   end
 
-  def unauthorized # TODO: this should be private
+  def unauthorized
     message = "You are not authorized to log in. "\
               "If this problem persists, please contact us."
     if request.xhr?
@@ -104,10 +102,6 @@ class SessionsController < ApplicationController
 
   def return_url
     session[:login_return_url] || current_institution&.scope_url || root_url
-  end
-
-  def shibboleth_login_path(host)
-    "/Shibboleth.sso/Login?target=https://#{host}/auth/shibboleth/callback"
   end
 
 end

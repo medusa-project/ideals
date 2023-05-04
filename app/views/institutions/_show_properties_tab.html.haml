@@ -14,13 +14,18 @@
 
 .clearfix.mb-3
 
+%h3 General
+
 %dl
   %dt Scope URL
-  %dd
-    %code= link_to(@institution.scope_url, @institution.scope_url)
+  %dd= link_to(@institution.scope_url, @institution.scope_url)
   %dt Key
   %dd
     %code= @institution.key
+
+%h3 Authentication
+
+%dl
   - if @institution.key == "uiuc"
     %dt Organization DN
     %dd
@@ -31,10 +36,44 @@
   - else
     %dt OpenAthens Organization ID
     %dd
-      - if @institution.openathens_organization_id?
+      - if @institution.openathens_organization_id.present?
         %code= @institution.openathens_organization_id
       - else
         Not Set
+    %dt OpenAthens SP Entity ID
+    %dd
+      - if @institution.openathens_sp_entity_id.present?
+        %code= @institution.openathens_sp_entity_id
+      - else
+        Not Set
+    %dt OpenAthens SSO Service URL
+    %dd
+      - if @institution.openathens_idp_sso_service_url.present?
+        %code= @institution.openathens_idp_sso_service_url
+      - else
+        Not Set
+    %dt OpenAthens SLO Service URL
+    %dd
+      - if @institution.openathens_idp_slo_service_url.present?
+        %code= @institution.openathens_idp_slo_service_url
+      - else
+        Not Set
+    %dt OpenAthens IdP Certificate
+    %dd
+      - if @institution.openathens_idp_cert.present?
+        Present
+      - else
+        Not Set
+    %dt SAML Metadata URL
+    %dd
+      - if @institution.openathens_organization_id.present?
+        = link_to("#{@institution.scope_url}/auth/saml/metadata")
+      - else
+        Not Available
+
+%h3 Spatial
+
+%dl
   %dt Latitude
   %dd
     - if @institution.latitude_degrees.present? && @institution.latitude_minutes.present? && @institution.latitude_seconds.present?

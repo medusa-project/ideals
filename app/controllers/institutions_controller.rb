@@ -567,7 +567,11 @@ class InstitutionsController < ApplicationController
                                         :latitude_minutes, :latitude_seconds,
                                         :longitude_degrees, :longitude_minutes,
                                         :longitude_seconds, :name,
+                                        :openathens_idp_cert,
+                                        :openathens_idp_slo_service_url,
+                                        :openathens_idp_sso_service_url,
                                         :openathens_organization_id,
+                                        :openathens_sp_entity_id,
                                         :service_name, :shibboleth_org_dn)
   end
 
