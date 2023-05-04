@@ -67,7 +67,8 @@
     %dt SAML Metadata URL
     %dd
       - if @institution.openathens_organization_id.present?
-        = link_to("#{@institution.scope_url}/auth/saml/metadata")
+        = link_to("#{@institution.scope_url}/auth/saml/metadata",
+                  "#{@institution.scope_url}/auth/saml/metadata")
       - else
         Not Available
 
