@@ -173,11 +173,11 @@ class CollectionPolicy < ApplicationPolicy
   private
 
   def effective_admin
-    if effective_sysadmin?(@user, @role_limit) ||
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit) ||
       effective_institution_admin?(@user, @ctx_institution, @role_limit)
       return AUTHORIZED_RESULT
-    elsif !@user
-      return LOGGED_OUT_RESULT
     elsif @collection.kind_of?(Collection) &&
       @ctx_institution != @collection.institution
       return WRONG_SCOPE_RESULT
@@ -191,10 +191,10 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def effective_submitter
-    if effective_sysadmin?(@user, @role_limit)
-      return AUTHORIZED_RESULT
-    elsif !@user
+    if !@user
       return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
     elsif @collection.kind_of?(Collection) &&
       @ctx_institution != @collection.institution
       return WRONG_SCOPE_RESULT
