@@ -6,7 +6,7 @@ class StatisticPolicy < ApplicationPolicy
   #
   def initialize(request_context, statistic)
     @user       = request_context&.user
-    @role_limit = request_context&.role_limit
+    @role_limit = request_context&.role_limit || Role::NO_LIMIT
     @statistic  = statistic
   end
 

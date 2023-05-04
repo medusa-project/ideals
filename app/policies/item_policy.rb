@@ -61,7 +61,7 @@ class ItemPolicy < ApplicationPolicy
       @item.collections.each do |collection|
         # non-sysadmins can submit to collections for which they have submitter
         # privileges
-        return AUTHORIZED_RESULT if (!@role_limit || @role_limit >= Role::COLLECTION_SUBMITTER) &&
+        return AUTHORIZED_RESULT if (@role_limit >= Role::COLLECTION_SUBMITTER) &&
           @user&.effective_submitter?(collection)
       end
     end
@@ -76,10 +76,10 @@ class ItemPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif @ctx_institution != @item.institution
       return WRONG_SCOPE_RESULT
-    elsif (!@role_limit || @role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
+    elsif (@role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
       @user.effective_institution_admin?(@item.institution)
       return AUTHORIZED_RESULT
-    elsif (!@role_limit || @role_limit >= Role::COLLECTION_SUBMITTER) &&
+    elsif (@role_limit >= Role::COLLECTION_SUBMITTER) &&
       @user == @item.submitter && @item.submitting?
       return AUTHORIZED_RESULT
     end
@@ -132,7 +132,7 @@ class ItemPolicy < ApplicationPolicy
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif (!@role_limit || @role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
+    elsif (@role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
       effective_institution_admin?(@user, @user.institution, @role_limit)
       return AUTHORIZED_RESULT
     end
@@ -240,11 +240,11 @@ class ItemPolicy < ApplicationPolicy
     elsif @user
       @item.collections.each do |collection|
         # collection admins can see access of items within their collections
-        return AUTHORIZED_RESULT if (!@role_limit || @role_limit >= Role::COLLECTION_ADMINISTRATOR) &&
+        return AUTHORIZED_RESULT if (@role_limit >= Role::COLLECTION_ADMINISTRATOR) &&
           @user.effective_collection_admin?(collection)
         # unit admins can see access of items within their units
         collection.units.each do |unit|
-          return AUTHORIZED_RESULT if (!@role_limit || @role_limit >= Role::UNIT_ADMINISTRATOR) &&
+          return AUTHORIZED_RESULT if (@role_limit >= Role::UNIT_ADMINISTRATOR) &&
             @user.effective_unit_admin?(unit)
         end
       end
@@ -317,7 +317,7 @@ class ItemPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif @ctx_institution != @item.institution
       return WRONG_SCOPE_RESULT
-    elsif (!@role_limit || @role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
+    elsif (@role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
       @user.effective_institution_admin?(@item.institution)
       return AUTHORIZED_RESULT
     end
@@ -331,17 +331,17 @@ class ItemPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif @ctx_institution != @item.institution
       return WRONG_SCOPE_RESULT
-    elsif (!@role_limit || @role_limit >= Role::COLLECTION_SUBMITTER) &&
+    elsif (@role_limit >= Role::COLLECTION_SUBMITTER) &&
       @user == @item.submitter && @item.submitting?
       return AUTHORIZED_RESULT
     elsif @user
       @item.collections.each do |collection|
         # collection admins can update items within their collections
-        return AUTHORIZED_RESULT if (!@role_limit || @role_limit >= Role::COLLECTION_ADMINISTRATOR) &&
+        return AUTHORIZED_RESULT if (@role_limit >= Role::COLLECTION_ADMINISTRATOR) &&
           @user.effective_collection_admin?(collection)
         # unit admins can update items within their units
         collection.units.each do |unit|
-          return AUTHORIZED_RESULT if (!@role_limit || @role_limit >= Role::UNIT_ADMINISTRATOR) &&
+          return AUTHORIZED_RESULT if (@role_limit >= Role::UNIT_ADMINISTRATOR) &&
             @user.effective_unit_admin?(unit)
         end
       end
@@ -363,7 +363,7 @@ class ItemPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif @ctx_institution != @item.institution
       return WRONG_SCOPE_RESULT
-    elsif (!@role_limit || @role_limit >= Role::UNIT_ADMINISTRATOR) &&
+    elsif (@role_limit >= Role::UNIT_ADMINISTRATOR) &&
       @user&.effective_unit_admin?(@item.effective_primary_unit)
       return AUTHORIZED_RESULT
     end

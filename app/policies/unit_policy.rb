@@ -14,7 +14,7 @@ class UnitPolicy < ApplicationPolicy
   def initialize(request_context, unit)
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit
+    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
     @unit            = unit
   end
 
@@ -51,7 +51,14 @@ class UnitPolicy < ApplicationPolicy
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif effective_institution_admin?(@user, @user.institution, @role_limit)
+    elsif @unit == Unit &&
+      effective_institution_admin?(@user, @ctx_institution, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @unit.kind_of?(Unit) &&
+      effective_institution_admin?(@user, @unit.institution, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @role_limit >= Role::UNIT_ADMINISTRATOR &&
+      @unit.kind_of?(Unit) && @unit.parent && @user.effective_unit_admin?(@unit.parent)
       return AUTHORIZED_RESULT
     end
     { authorized: false,

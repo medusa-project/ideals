@@ -14,7 +14,7 @@ class DownloadPolicy < ApplicationPolicy
     @client_hostname = request_context&.client_hostname
     @ctx_institution = request_context&.institution
     @user            = request_context&.user
-    @role_limit      = request_context&.role_limit
+    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
     @download        = download
   end
 

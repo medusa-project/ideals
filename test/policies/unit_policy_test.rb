@@ -112,6 +112,18 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.create?
   end
 
+  test "create?() authorizes admins of the parent unit" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    @unit.administering_users << user
+    child_unit = Unit.create!(institution: @unit.institution,
+                              parent:      @unit,
+                              title:       "Child Unit")
+    policy     = UnitPolicy.new(context, child_unit)
+    assert policy.create?
+  end
+
   test "create?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)

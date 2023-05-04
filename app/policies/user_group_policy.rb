@@ -12,7 +12,7 @@ class UserGroupPolicy < ApplicationPolicy
   def initialize(request_context, user_group)
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit
+    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
     @user_group      = user_group
   end
 
