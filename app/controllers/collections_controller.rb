@@ -247,7 +247,6 @@ class CollectionsController < ApplicationController
   # Responds to `GET /collections/new`
   #
   def new
-    authorize(Collection)
     if params[:primary_unit_id].blank?
       render plain: "Missing primary unit ID", status: :bad_request
       return
@@ -257,6 +256,7 @@ class CollectionsController < ApplicationController
     end
     @collection              = Collection.new(collection_params)
     @collection.primary_unit = Unit.find_by_id(params[:primary_unit_id])
+    authorize(@collection)
     render partial: "new_form", locals: {
       institution:  @collection.institution,
       primary_unit: @collection.primary_unit,
