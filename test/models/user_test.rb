@@ -259,8 +259,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "Shib Boleth", user.name
     assert_equal "ShibbolethUser@example.org", user.email
     assert_equal "(888) 555-5555", user.phone
-    assert_equal "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
-                 user.org_dn
     assert_equal institutions(:uiuc), user.institution
     assert_equal "Example Department", user.department.name
     assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
@@ -277,8 +275,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "Shib Boleth", user.name
     assert_equal "ShibbolethUser@example.org", user.email
     assert_equal "(888) 555-5555", user.phone
-    assert_equal "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
-                 user.org_dn
     assert_equal institutions(:uiuc), user.institution
     assert_equal "Example Department", user.department.name
     assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),

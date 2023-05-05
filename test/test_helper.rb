@@ -81,7 +81,7 @@ class ActiveSupport::TestCase
           },
           extra: {
             raw_info: {
-              "org-dn":           user.org_dn,
+              "org-dn":           user.institution.shibboleth_org_dn,
               overwriteUserAttrs: "false"
             }
           }

@@ -40,9 +40,6 @@
 #                       during processing of the registration form.
 # * `name`              The user's name in whatever format they choose to
 #                       provide it.
-# * `org_dn`            `eduPersonOrgDN` property supplied by Shibboleth. Only
-#                       {User::AuthType::SHIBBOLETH Shibboleth} users have
-#                       this. TODO: this is probably not needed anymore now that we have institution_id
 # * `phone`             The user's phone number.
 # * `updated_at:        Managed by ActiveRecord.
 #
@@ -554,11 +551,12 @@ class User < ApplicationRecord
     self.name        = "#{auth.dig("extra", "raw_info", "givenName")} "\
                        "#{auth.dig("extra", "raw_info", "sn")}"
     self.name        = self.email if self.name.blank?
-    self.org_dn      = auth.dig("extra", "raw_info", "org-dn")
+    org_dn           = auth.dig("extra", "raw_info", "org-dn")
     # UIS accounts will not have an org DN--eventually these users will be
-    # converted into OpenAthens users and moved into the UIS space
-    self.institution = self.org_dn.present? ?
-                         Institution.find_by_shibboleth_org_dn(self.org_dn) :
+    # converted into OpenAthens users and moved into the UIS space, and we
+    # will fall back to nil here instead of UIUC.
+    self.institution = org_dn.present? ?
+                         Institution.find_by_shibboleth_org_dn(org_dn) :
                          Institution.find_by_key("uiuc")
     self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
     self.affiliation = Affiliation.from_shibboleth(auth)
