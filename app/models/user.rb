@@ -100,8 +100,7 @@ class User < ApplicationRecord
   #
   # @param email [String]
   # @param password [String]
-  # @param institution [Institution] If not provided, the user will be placed
-  #        in the {Institution#default default institution}.
+  # @param institution [Institution]
   # @param name [String] If not provided, the email is used.
   # @return [User]
   #
@@ -145,8 +144,9 @@ class User < ApplicationRecord
   # @return [User]
   #
   def self.fetch_from_omniauth_openathens(auth)
-    auth  = auth.deep_stringify_keys
-    email = auth['extra']['raw_info'].attributes[:emailAddress]&.first
+    auth  = auth.deep_symbolize_keys
+    attrs = auth[:extra][:raw_info].attributes.deep_symbolize_keys
+    email = attrs[:emailAddress]&.first
     User.find_by_email(email)
   end
 
@@ -507,12 +507,13 @@ class User < ApplicationRecord
   # @param auth [OmniAuth::AuthHash]
   #
   def update_from_openathens(auth)
-    auth = auth.deep_stringify_keys
-    attrs = auth['extra']['raw_info'].attributes
+    auth  = auth.deep_symbolize_keys
+    attrs = auth[:extra][:raw_info].attributes.deep_symbolize_keys
+
     # By design, logging in overwrites certain existing user properties with
     # current information from the IdP. By supplying this custom attribute,
     # we can preserve the user properties that are set up in test fixture data.
-    return if attrs['overwriteUserAttrs'] == "false"
+    return if attrs[:overwriteUserAttrs] == "false"
 
     self.auth_method = AuthMethod::OPENATHENS
     self.email       = attrs[:emailAddress]&.first
@@ -525,7 +526,7 @@ class User < ApplicationRecord
       self.save!
     rescue => e
       @message = IdealsMailer.error_body(e,
-                                         detail: "[user: #{YAML::dump(self)}]\n"\
+                                         detail: "[user: #{YAML::dump(self)}]\n\n"\
                                                  "[auth hash: #{YAML::dump(auth)}]",
                                          user:   self)
       Rails.logger.error(@message)
@@ -566,7 +567,8 @@ class User < ApplicationRecord
       self.save!
     rescue => e
       @message = IdealsMailer.error_body(e,
-                                         detail: "[user: #{self.as_json}]\n[auth hash: #{auth.as_json}]",
+                                         detail: "[user: #{self.as_json}]\n\n"\
+                                                 "[auth hash: #{auth.as_json}]",
                                          user:   self)
       Rails.logger.error(@message)
       IdealsMailer.error(@message).deliver_now unless Rails.env.development?
