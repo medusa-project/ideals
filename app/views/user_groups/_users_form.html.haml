@@ -4,16 +4,23 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  = hidden_field_tag "user_group[shibboleth_users][]"
-  - users = f.object.shibboleth_users
+  .alert.alert-light
+    = icon_for(:info)
+    Only email addresses of existing users are accepted. Email addresses for
+    which no user account exists in the system will be discarded.
+
+  = hidden_field_tag "user_group[users][]"
+  - users = f.object.users
   - users = [User.new] if users.empty?
   - users.each do |user|
     .input-group.mb-3
-      = text_field_tag "user_group[shibboleth_users][]", user.netid,
-                       placeholder: "NetID",
+      = text_field_tag "user_group[users][]", user.email,
+                       placeholder: "Email",
                        class: "form-control"
       %button.btn.btn-outline-danger.remove{type: "button"}
         %i.fa.fa-minus
+      .dropdown-menu
+        - # populated by javascript
   %button.btn.btn-outline-success.add{type: "button"}
     %i.fa.fa-plus
 

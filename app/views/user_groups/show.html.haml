@@ -1,8 +1,8 @@
 - provide :body_id, "show_user_group"
 - provide :title, @user_group.name
 
-- can_edit             = policy(@user_group).edit?
-- show_uiuc_dimensions = @user_group.institution&.key == "uiuc" || (!@user_group.institution && current_institution.key == "uiuc")
+- can_edit                   = policy(@user_group).edit?
+- show_shibboleth_dimensions = @user_group.institution&.shibboleth_org_dn.present? || !@user_group.institution
 
 .btn-group.float-end{role: "group"}
   - if can_edit
@@ -26,7 +26,7 @@
   = @user_group.name
   - unless @user_group.institution
     %small
-      %span.badge.bg-info GLOBAL
+      %span.badge.bg-primary GLOBAL
 
 - if @user_group.defines_institution
   .alert.alert-light
@@ -62,21 +62,21 @@
           .card-body
             - if can_edit
               .float-end
-                %button.btn.btn-light.btn-sm.edit-local-users{"data-bs-target":     "#edit-local-users-modal",
-                                                              "data-bs-toggle":     "modal",
-                                                              "data-user-group-id": @user_group.id,
-                                                              type:                 "button"}
+                %button.btn.btn-light.btn-sm.edit-users{"data-bs-target":     "#edit-users-modal",
+                                                        "data-bs-toggle":     "modal",
+                                                        "data-user-group-id": @user_group.id,
+                                                        type:                 "button"}
                   %i.fa.fa-pencil-alt
                   Edit
-            %h4.card-title Local Users
-            - if @local_users.any?
+            %h4.card-title Direct User Assignments
+            - if @users.any?
               - if @user_group.institution_id
                 %ul
-                  - @local_users.each do |user|
+                  - @users.each do |user|
                     %li= link_to(user.name, user)
               - else
                 %table.table
-                  - @local_users.each do |user|
+                  - @users.each do |user|
                     %tr
                       %td
                         = link_to(user) do
@@ -89,11 +89,80 @@
             - else
               %p None
 
+    .row.mb-3
+      .col-sm-4
+        - if show_shibboleth_dimensions
+          .card
+            .card-body
+              - if can_edit
+                .float-end
+                  %button.btn.btn-light.btn-sm.edit-departments{"data-bs-target":     "#edit-departments-modal",
+                                                                "data-bs-toggle":     "modal",
+                                                                "data-user-group-id": @user_group.id,
+                                                                type:                 "button"}
+                    %i.fa.fa-pencil-alt
+                    Edit
+              %h4.card-title
+                Departments
+                %small
+                  %span.badge.bg-primary SHIBBOLETH ONLY
+              - if @departments.any?
+                %ul
+                  - @departments.each do |department|
+                    %li= department.name
+              - else
+                %p None
+      .col-sm-4
+        - if show_shibboleth_dimensions
+          .card
+            .card-body
+              - if can_edit
+                .float-end
+                  %button.btn.btn-light.btn-sm.edit-affiliations{"data-bs-target":     "#edit-affiliations-modal",
+                                                                 "data-bs-toggle":     "modal",
+                                                                 "data-user-group-id": @user_group.id,
+                                                                 type:                 "button"}
+                    %i.fa.fa-pencil-alt
+                    Edit
+              %h4.card-title
+                Affiliations
+                %small
+                  %span.badge.bg-primary SHIBBOLETH ONLY
+              - if @affiliations.any?
+                %ul
+                  - @affiliations.each do |affiliation|
+                    %li= affiliation.name
+              - else
+                %p None
+
+      .col-sm-4
+        - if show_shibboleth_dimensions
+          .card
+            .card-body
+              - if can_edit
+                .float-end
+                  %button.btn.btn-light.btn-sm.edit-ad-groups{"data-bs-target":     "#edit-ad-groups-modal",
+                                                              "data-bs-toggle":     "modal",
+                                                              "data-user-group-id": @user_group.id,
+                                                              type:                 "button"}
+                    %i.fa.fa-pencil-alt
+                    Edit
+              %h4.card-title
+                AD Groups
+                %small
+                  %span.badge.bg-primary SHIBBOLETH ONLY
+              - if @ad_groups.any?
+                %ul
+                  - @ad_groups.each do |group|
+                    %li= group.name
+              - else
+                %p None
+
     .alert.alert-light
       = icon_for(:info)
-      The aspects below are obtained from sources stored outside the system.
-      The system can check a whether a particular user belongs to the group
-      based on these aspects, but it cannot generate a definitive list of
+      The aspects below are not stored in the system.
+      The system can check a whether a particular logged-in user belongs to the
+      group based on these aspects, but it cannot generate a definitive list of
       users who belong to it.
 
     .row.mb-3
@@ -135,97 +204,6 @@
                     %code= pattern.pattern
             - else
               %p None
-
-    .row.mb-3
-      .col-sm-6
-        - if show_uiuc_dimensions
-          .card
-            .card-body
-              - if can_edit
-                .float-end
-                  %button.btn.btn-light.btn-sm.edit-shibboleth-users{"data-bs-target":     "#edit-shibboleth-users-modal",
-                                                                     "data-bs-toggle":     "modal",
-                                                                     "data-user-group-id": @user_group.id,
-                                                                     type:                 "button"}
-                    %i.fa.fa-pencil-alt
-                    Edit
-              %h4.card-title
-                NetID/Shibboleth Users
-                %span.badge.bg-primary UIUC only
-              - if @shibboleth_users.any?
-                %ul
-                  - @shibboleth_users.each do |user|
-                    %li
-                      - if user.name != user.netid
-                        = link_to("#{user.name} (#{user.netid})", user)
-                      - else
-                        = link_to(user.netid, user)
-              - else
-                %p None
-      .col-sm-6
-        - if show_uiuc_dimensions
-          .card
-            .card-body
-              - if can_edit
-                .float-end
-                  %button.btn.btn-light.btn-sm.edit-departments{"data-bs-target":     "#edit-departments-modal",
-                                                                "data-bs-toggle":     "modal",
-                                                                "data-user-group-id": @user_group.id,
-                                                                type:                 "button"}
-                    %i.fa.fa-pencil-alt
-                    Edit
-              %h4.card-title
-                Departments
-                %span.badge.bg-primary UIUC only
-              - if @departments.any?
-                %ul
-                  - @departments.each do |department|
-                    %li= department.name
-              - else
-                %p None
-    .row.mb-3
-      .col-sm-6
-        - if show_uiuc_dimensions
-          .card
-            .card-body
-              - if can_edit
-                .float-end
-                  %button.btn.btn-light.btn-sm.edit-affiliations{"data-bs-target":     "#edit-affiliations-modal",
-                                                                 "data-bs-toggle":     "modal",
-                                                                 "data-user-group-id": @user_group.id,
-                                                                 type:                 "button"}
-                    %i.fa.fa-pencil-alt
-                    Edit
-              %h4.card-title
-                Affiliations
-                %span.badge.bg-primary UIUC only
-              - if @affiliations.any?
-                %ul
-                  - @affiliations.each do |affiliation|
-                    %li= affiliation.name
-              - else
-                %p None
-      .col-sm-6
-        - if show_uiuc_dimensions
-          .card
-            .card-body
-              - if can_edit
-                .float-end
-                  %button.btn.btn-light.btn-sm.edit-ad-groups{"data-bs-target":     "#edit-ad-groups-modal",
-                                                              "data-bs-toggle":     "modal",
-                                                              "data-user-group-id": @user_group.id,
-                                                              type:                 "button"}
-                    %i.fa.fa-pencil-alt
-                    Edit
-              %h4.card-title
-                AD Groups
-                %span.badge.bg-primary UIUC only
-              - if @ad_groups.any?
-                %ul
-                  - @ad_groups.each do |group|
-                    %li= group.name
-              - else
-                %p None
 
   #usage.tab-pane.fade{role: "tabpanel",
                        "aria-labelledby": "usage-tab"}
@@ -282,10 +260,8 @@
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-departments-modal", title: "Edit Departments" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-local-users-modal", size: :lg, title: "Edit Local Users" }
-= render partial: "shared/ajax_modal",
          locals: { id: "edit-hosts-modal", title: "Edit Hosts" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-shibboleth-users-modal", title: "Edit NetID/Shibboleth Users" }
+         locals: { id: "edit-users-modal", title: "Edit Users" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-email-patterns-modal", title: "Edit Email Address Patterns" }

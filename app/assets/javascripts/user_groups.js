@@ -80,19 +80,13 @@ const UserGroupView = function() {
             UserGroupForm.attachEventListeners();
         });
     });
-    $("button.edit-local-users").on("click", function() {
+    $("button.edit-users").on("click", function() {
         const id = $(this).data("user-group-id");
-        const url = ROOT_URL + "/user-groups/" + id + "/edit-local-users";
+        const url = ROOT_URL + "/user-groups/" + id + "/edit-users";
         $.get(url, function(data) {
-            $("#edit-local-users-modal .modal-body").html(data);
-        });
-    });
-    $("button.edit-shibboleth-users").on("click", function() {
-        const id = $(this).data("user-group-id");
-        const url = ROOT_URL + "/user-groups/" + id + "/edit-shibboleth-users";
-        $.get(url, function(data) {
-            $("#edit-shibboleth-users-modal .modal-body").html(data);
+            $("#edit-users-modal .modal-body").html(data);
             UserGroupForm.attachEventListeners();
+            new IDEALS.LocalUserAutocompleter($("input[name='user_group[users][]']"));
         });
     });
     $("button.edit-hosts").on("click", function() {

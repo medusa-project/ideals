@@ -137,20 +137,6 @@ class UserGroup < ApplicationRecord
   end
 
   ##
-  # @return [ActiveRecord::Relation<User>]
-  #
-  def local_users
-    self.users.where(auth_method: User::AuthMethod::LOCAL)
-  end
-
-  ##
-  # @return [ActiveRecord::Relation<User>]
-  #
-  def shibboleth_users
-    self.users.where(auth_method: User::AuthMethod::SHIBBOLETH)
-  end
-
-  ##
   # @return [Boolean] Whether the group is required by the system. Required
   #                   groups can be modified but not deleted.
   #

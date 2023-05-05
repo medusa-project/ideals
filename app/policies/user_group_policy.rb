@@ -62,11 +62,7 @@ class UserGroupPolicy < ApplicationPolicy
     edit
   end
 
-  def edit_local_users
-    edit
-  end
-
-  def edit_shibboleth_users
+  def edit_users
     edit
   end
 

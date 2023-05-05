@@ -92,18 +92,10 @@ class UserGroupsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /user-groups/:id/edit-local-users` (XHR only)
+  # Responds to `GET /user-groups/:id/edit-users` (XHR only)
   #
-  def edit_local_users
-    render partial: "user_groups/local_users_form",
-           locals: { user_group: @user_group }
-  end
-
-  ##
-  # Responds to `GET /user-groups/:id/edit-shibboleth-users` (XHR only)
-  #
-  def edit_shibboleth_users
-    render partial: "user_groups/shibboleth_users_form",
+  def edit_users
+    render partial: "user_groups/users_form",
            locals: { user_group: @user_group }
   end
 
@@ -145,13 +137,12 @@ class UserGroupsController < ApplicationController
   # Responds to `GET /user-groups/:id`
   #
   def show
-    @local_users      = @user_group.local_users.order(:name)
-    @shibboleth_users = @user_group.shibboleth_users.order(:name)
-    @ad_groups        = @user_group.ad_groups.order(:name)
-    @hosts            = @user_group.hosts.order(:pattern)
-    @departments      = @user_group.departments.order(:name)
-    @affiliations     = @user_group.affiliations.order(:name)
-    @email_patterns   = @user_group.email_patterns.order(:pattern)
+    @users          = @user_group.users.order(:name)
+    @ad_groups      = @user_group.ad_groups.order(:name)
+    @hosts          = @user_group.hosts.order(:pattern)
+    @departments    = @user_group.departments.order(:name)
+    @affiliations   = @user_group.affiliations.order(:name)
+    @email_patterns = @user_group.email_patterns.order(:pattern)
   end
 
   ##
@@ -162,8 +153,7 @@ class UserGroupsController < ApplicationController
       UserGroup.transaction do
         # Process input from the various edit modals.
         build_ad_groups
-        build_local_users
-        build_shibboleth_users
+        build_users
         build_hosts
         build_departments
         build_email_patterns
@@ -219,32 +209,14 @@ class UserGroupsController < ApplicationController
     end
   end
 
-  def build_local_users
-    if params[:user_group][:user_ids]&.respond_to?(:each)
+  def build_users
+    if params[:user_group][:users]&.respond_to?(:each)
       UserGroupUser.
-        joins(:user).
-        where("user.auth_method": User::AuthMethod::LOCAL).
         where(user_group: @user_group).
         destroy_all
-      params[:user_group][:user_ids].select(&:present?).each do |id|
-        @user_group.users << User.find(id)
-      end
-    end
-  end
-
-  def build_shibboleth_users
-    if params[:user_group][:shibboleth_users]&.respond_to?(:each)
-      UserGroupUser.
-        joins(:user).
-        where("user.auth_method": User::AuthMethod::SHIBBOLETH).
-        where(user_group: @user_group).
-        destroy_all
-      params[:user_group][:shibboleth_users].select(&:present?).each do |netid|
-        email = "#{netid}@illinois.edu"
-        user  = User.find_by_email(email) || User.new(email:       email,
-                                                      name:        netid,
-                                                      auth_method: User::AuthMethod::SHIBBOLETH)
-        @user_group.users << user
+      params[:user_group][:users].select(&:present?).each do |user_str|
+        user = User.from_autocomplete_string(user_str)
+        @user_group.users << user if user
       end
     end
   end
