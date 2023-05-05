@@ -1,15 +1,15 @@
 ##
-# N.B.: every LocalUser in this file MUST have a corresponding LocalIdentity in
-# `local_identities.yml`. (This is a requirement of the omniauth-identity gem.)
+# N.B.: every local-auth user in this file MUST have a corresponding
+# LocalIdentity in `local_identities.yml`.
 #
-# N.B. 2: to place a ShibbolethUser in an AD group, edit the `ad.groups` key in
-# the config/environments/test.yml file.
+# N.B. 2: to place a Shibboleth user in an AD group, edit the `ad.groups` key
+# in the config/environments/test.yml file.
 #
 
 ################################# example ###################################
 
 example:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: example
   identity:    example
   name:        I have no rights
@@ -18,7 +18,7 @@ example:
   enabled:     true
 
 example2:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: example
   identity:    example2
   name:        I have no rights
@@ -27,7 +27,7 @@ example2:
   enabled:     true
 
 example_approved:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: example
   identity:    approved
   name:        Not Approved
@@ -36,7 +36,7 @@ example_approved:
   enabled:     true
 
 example_sysadmin:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: example
   identity:    example_sysadmin
   name:        admin
@@ -49,7 +49,7 @@ example_sysadmin:
 ################################# northeast #################################
 
 northeast:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: northeast
   identity:    northeast
   name:        Northeast University Normal User
@@ -58,7 +58,7 @@ northeast:
   enabled:     true
 
 northeast_admin:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: northeast
   identity:    northeast
   name:        Northeast.edu Institution Administrator
@@ -71,7 +71,7 @@ northeast_admin:
 ################################# southwest #################################
 
 southwest:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: southwest
   identity:    southwest
   name:        Southwest University Normal User
@@ -80,7 +80,7 @@ southwest:
   enabled:     true
 
 southwest_admin:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: southwest
   identity:    southwest_admin
   name:        Southwest University Institution Administrator
@@ -91,7 +91,7 @@ southwest_admin:
     - southwest_admins
 
 southwest_sysadmin:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: southwest
   identity:    southwest_sysadmin
   name:        Southwest University System Administrator
@@ -102,7 +102,7 @@ southwest_sysadmin:
     - sysadmin
 
 southwest_saml:
-  type:        SamlUser
+  auth_method: <%= User::AuthMethod::OPENATHENS %>
   institution: southwest
   name:        Southwest University SAML User
   email:       saml@southwest.edu
@@ -110,7 +110,7 @@ southwest_saml:
   enabled:     true
 
 southwest_shibboleth:
-  type:        ShibbolethUser
+  auth_method: <%= User::AuthMethod::SHIBBOLETH %>
   institution: southwest
   name:        Southwest University Shibboleth User
   email:       shib@southwest.edu
@@ -120,7 +120,7 @@ southwest_shibboleth:
 ################################### uiuc ###################################
 
 uiuc:
-  type:        ShibbolethUser
+  auth_method: <%= User::AuthMethod::SHIBBOLETH %>
   name:        Shib Boleth, Esq.
   email:       shib@illinois.edu
   phone:       (888) 555-1234
@@ -129,7 +129,7 @@ uiuc:
   institution: uiuc
 
 uiuc2:
-  type:        ShibbolethUser
+  auth_method: <%= User::AuthMethod::SHIBBOLETH %>
   institution: uiuc
   name:        UIUC Normal User 2
   email:       user2@illinois.edu
@@ -138,7 +138,7 @@ uiuc2:
   org_dn:      o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
 
 uiuc_admin:
-  type:        ShibbolethUser
+  auth_method: <%= User::AuthMethod::SHIBBOLETH %>
   institution: uiuc
   name:        UIUC Institution Admin
   email:       instadmin@illinois.edu
@@ -149,7 +149,7 @@ uiuc_admin:
     - uiuc_admins
 
 uiuc_sysadmin:
-  type:        ShibbolethUser
+  auth_method: <%= User::AuthMethod::SHIBBOLETH %>
   institution: uiuc
   name:        UIUC Sysadmin
   email:       sysadmin@illinois.edu
@@ -160,7 +160,7 @@ uiuc_sysadmin:
     - sysadmin
 
 uiuc_collection1_collection1_admin:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: uiuc
   name:        Collection1 Collection1 Administrator
   email:       uiuc_collection1_collection1_admin@illinois.edu
@@ -168,7 +168,7 @@ uiuc_collection1_collection1_admin:
   enabled:     true
 
 uiuc_collection1_collection1_submitter:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: uiuc
   name:        Collection1 Collection1 Submitter
   email:       phil@illinois.edu
@@ -176,7 +176,7 @@ uiuc_collection1_collection1_submitter:
   enabled:     true
 
 uiuc_unit1_admin:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: uiuc
   name:        Unit1 Admin
   email:       uiuc_unit1_admin@illinois.edu
@@ -184,7 +184,7 @@ uiuc_unit1_admin:
   enabled:     true
 
 uiuc_unit1_unit2_unit1_admin:
-  type:        LocalUser
+  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: uiuc
   name:        Unit1 Unit2 Unit1 Admin
   email:       uiuc_unit1_unit2_unit1_admin@illinois.edu

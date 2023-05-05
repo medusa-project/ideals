@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 ##
-# Aggregation of {LocalUser}s, {AdGroup}s, and other dimensions, for the
-# purpose of performing group-based authorization.
+# Aggregation of {User}s, {AdGroup}s, and other dimensions, for the purpose of
+# performing group-based authorization.
 #
 # User groups can be global or scoped to an institution. Global groups can only
 # be created or edited by system administrators.
@@ -94,7 +94,8 @@ class UserGroup < ApplicationRecord
   #
   def all_users
     self.users +
-      ShibbolethUser.all.select{ |u| u.belongs_to_user_group?(self) }
+      User.where(auth_method: User::AuthMethod::SHIBBOLETH).
+        select{ |u| u.belongs_to_user_group?(self) }
   end
 
   def breadcrumb_label
@@ -114,7 +115,7 @@ class UserGroup < ApplicationRecord
   # OR (has an email address matching one of the email patterns)
   # OR (belongs to an associated department)
   # OR (is of an associated affiliation)
-  # OR (is a ShibbolethUser AND belongs to an associated AD Group)
+  # OR (is a Shibboleth user AND belongs to an associated AD Group)
   # ```
   #
   # @param user [User]
@@ -131,22 +132,22 @@ class UserGroup < ApplicationRecord
     self.affiliations.where(id: user.affiliation_id).count.positive? ||
     # belongs to an associated AD group
     # (this check comes last because it is the most expensive)
-    (user.kind_of?(ShibbolethUser) &&
+    (user.shibboleth? &&
       self.ad_groups.find{ |g| user.belongs_to_ad_group?(g) }.present?)
   end
 
   ##
-  # @return [ActiveRecord::Relation<LocalUser>]
+  # @return [ActiveRecord::Relation<User>]
   #
   def local_users
-    self.users.where(type: LocalUser.to_s)
+    self.users.where(auth_method: User::AuthMethod::LOCAL)
   end
 
   ##
-  # @return [ActiveRecord::Relation<ShibbolethUser>]
+  # @return [ActiveRecord::Relation<User>]
   #
   def netid_users
-    self.users.where(type: ShibbolethUser.to_s)
+    self.users.where(auth_method: User::AuthMethod::SHIBBOLETH)
   end
 
   ##

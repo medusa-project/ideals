@@ -4,7 +4,7 @@
 
 = form_for(@identity, method: :patch, url: local_identity_path(@identity, token: @token)) do |f|
 
-  = f.fields_for(:user, @user.becomes(User)) do |u|
+  = f.fields_for(:user, @user) do |u|
     .row.mb-3
       = u.label :name, class: "col-sm-3 col-form-label"
       .col-sm-9

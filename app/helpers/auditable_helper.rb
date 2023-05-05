@@ -32,7 +32,7 @@ module AuditableHelper
       html <<       '</span>'
       html <<       local_time(event.happened_at)
       if event.user
-        html <<       link_to(event.user.becomes(User), class: "ms-2") do
+        html <<       link_to(event.user, class: "ms-2") do
           raw("#{icon_for(event.user)} <small>#{event.user.name}</small>")
         end
       end

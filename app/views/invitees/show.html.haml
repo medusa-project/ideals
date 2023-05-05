@@ -10,9 +10,9 @@
   %dt Email
   %dd= link_to(@invitee.email, "mailto:#{@invitee.email}")
   %dt Associated User
-  %dd= @invitee.user ? link_to(@invitee.user.name, @invitee.user.becomes(User)) : "Not yet registered"
+  %dd= @invitee.user ? link_to(@invitee.user.name, @invitee.user) : "Not yet registered"
   %dt Invited By
-  %dd= @invitee.inviting_user ? link_to(@invitee.inviting_user.name, @invitee.inviting_user.becomes(User)) : "Self-Invited"
+  %dd= @invitee.inviting_user ? link_to(@invitee.inviting_user.name, @invitee.inviting_user) : "Self-Invited"
   %dt Purpose
   %dd= @invitee.note
   %dt Approval State

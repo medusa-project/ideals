@@ -45,7 +45,7 @@
         - if @institution.administering_users.any?
           %ul
             - @institution.administering_users.each do |user|
-              %li= link_to(user.name, user.becomes(User))
+              %li= link_to(user.name, user)
         - else
           None
 

@@ -17,7 +17,7 @@
       - else
         None
     - if @item.submitter
-      - submitter = @item.submitter.becomes(User)
+      - submitter = @item.submitter
       %dt Submitter
       %dd
         - if policy(submitter).show?

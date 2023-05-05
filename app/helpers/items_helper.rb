@@ -279,7 +279,7 @@ module ItemsHelper
         form <<     "</h5>"
         # Submitter
         form <<     "Submitted by "
-        form <<     link_to(item.submitter.becomes(User)) do
+        form <<     link_to(item.submitter) do
           icon_for(item.submitter) + " " + item.submitter.name
         end
         form <<     " on "

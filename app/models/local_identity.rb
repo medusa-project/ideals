@@ -2,8 +2,8 @@
 
 ##
 # Local user identity, which hooks into the `omniauth-identity` authentication
-# strategy. This is a surrogate of a {LocalUser} used for users whose
-# credentials are stored in the database.
+# strategy. This is a surrogate of a {User} for users whose credentials are
+# stored in the database.
 #
 # N.B. 1: See the documentation of {Invitee} for a detailed overview of the
 # invitation & registration process.

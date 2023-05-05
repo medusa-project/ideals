@@ -1,5 +1,6 @@
 ##
-# University affiliation associated with {UserGroup} and {ShibbolethUser}.
+# University affiliation associated with {UserGroup} and
+# {#User::AuthType::SHIBBOLETH Shibboleth} users.
 #
 # # Attributes
 #
@@ -10,7 +11,7 @@
 #
 class Affiliation < ApplicationRecord
 
-  has_one :user # ShibbolethUsers only!
+  has_one :user
   has_and_belongs_to_many :user_groups
 
   FACULTY_STAFF_KEY         = "staff"

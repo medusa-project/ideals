@@ -6,10 +6,10 @@ namespace :users do
   task :create_local, [:email, :password, :name, :institution_key] => :environment do |task, args|
     institution = Institution.find_by_key(args[:institution_key])
     raise ArgumentError, "Institution not found: #{institution}" unless institution
-    user = LocalUser.create_manually(email:       args[:email],
-                                     password:    args[:password],
-                                     name:        args[:name],
-                                     institution: institution)
+    user = User.create_local(email:       args[:email],
+                             password:    args[:password],
+                             name:        args[:name],
+                             institution: institution)
     user.save!
   end
 
@@ -17,24 +17,11 @@ namespace :users do
   task :create_local_sysadmin, [:email, :password, :name, :institution_key] => :environment do |task, args|
     institution = Institution.find_by_key(args[:institution_key])
     raise ArgumentError, "Institution not found: #{institution}" unless institution
-    user = LocalUser.create_manually(email:       args[:email],
-                                     password:    args[:password],
-                                     name:        args[:name],
-                                     institution: institution)
+    user = User.create_local(email:       args[:email],
+                             password:    args[:password],
+                             name:        args[:name],
+                             institution: institution)
     user.user_groups << UserGroup.sysadmin
-    user.save!
-  end
-
-  desc "Create a Shibboleth identity user"
-  task :create_shib, [:email] => :environment do |task, args|
-    user = ShibbolethUser.no_omniauth(args[:email])
-    user.save!
-  end
-
-  desc "Create a Shibboleth identity sysadmin user"
-  task :create_shib_sysadmin, [:email] => :environment do |task, args|
-    user = ShibbolethUser.no_omniauth(args[:email])
-    user.ad_groups << UserGroup.sysadmin.ad_groups.first
     user.save!
   end
 

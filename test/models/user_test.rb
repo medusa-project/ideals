@@ -6,6 +6,185 @@ class UserTest < ActiveSupport::TestCase
     @user = users(:example)
   end
 
+  OPENATHENS_AUTH_HASH = {
+    provider: "saml",
+    uid: "TheUID",
+    info: {
+      name: nil,
+      email: nil,
+      first_name: nil,
+      last_name: nil
+    },
+    credentials: {},
+    extra: {
+      raw_info: OneLogin::RubySaml::Attributes.new(
+        "urn:oid:1.3.6.1.4.1.5923.1.1.1.9": [
+          "member@southwest.edu"
+        ],
+        emailAddress: [
+          "OpenAthensUser@example.org"
+        ],
+        "urn:mace:eduserv.org.uk:athens:attribute-def:federation:1.0:identifier": [
+          "urn:mace:eduserv.org.uk:athens:federation:uk"
+        ],
+        "urn:oid:1.3.6.1.4.1.5923.1.1.1.1": [
+          "member"
+        ],
+        "http://eduserv.org.uk/federation/attributes/1.0/organisationid": [
+          "southwest.edu"
+        ],
+        "urn:oid:1.3.6.1.4.1.5923.1.1.1.10": [
+          "https://idp.southwest.edu/openathens/ejurg5iical0uvrqv4oo0aql7"
+        ],
+        fingerprint: nil
+      ),
+      session_index: "9405916a4fc24a6c4057d6d5cf5dc9721af145739489bde3d7ce22ce00bc6a8e",
+      response_object: {
+        errors: [],
+        options: {
+          # a million different things in here that we aren't using
+        }
+      }
+    }
+  }
+
+  SHIBBOLETH_AUTH_HASH = {
+    provider: "shibboleth",
+    uid: "ShibbolethUser@example.org",
+    info: {
+      name: "Shib Boleth",
+      email: "ShibbolethUser@example.org"
+    },
+    credentials: {},
+    extra: {
+      raw_info: {
+        eppn: "ShibbolethUser@example.org",
+        "unscoped-affiliation": "member;staff;employee",
+        uid: "example",
+        sn: "Boleth",
+        "org-dn": "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
+        nickname: "",
+        givenName: "Shib",
+        telephoneNumber: "(888) 555-5555",
+        member: "urn:mace:uiuc.edu:urbana:library:units:ideals:library ideals admin",
+        iTrustAffiliation: "member;staff;employee",
+        departmentCode: "Example Department",
+        programCode: nil,
+        levelCode: nil
+      }
+    }
+  }
+
+  # create_local()
+
+  test "create_local() creates a correct instance" do
+    email       = "test@example.org"
+    name        = "Testy Test"
+    password    = LocalIdentity.random_password
+    institution = institutions(:southwest)
+    user        = User.create_local(email:       email,
+                                    name:        name,
+                                    password:    password,
+                                    institution: institution)
+
+    # check the Invitee
+    invitee  = Invitee.find_by_email(email)
+    assert_equal institution, invitee.institution
+    assert invitee.approved?
+
+    # check the LocalIdentity
+    identity = invitee.identity
+    assert_equal email, identity.email
+
+    # check the User
+    assert_equal identity, user.identity
+    assert_equal email, user.email
+    assert_equal name, user.name
+    assert_nil user.phone
+    assert_equal institution, user.institution
+    assert_equal User::AuthMethod::LOCAL, user.auth_method
+    assert !user.sysadmin?
+  end
+
+  # fetch_from_omniauth_local()
+
+  test "fetch_from_omniauth_local() with a matching email returns the user" do
+    user = users(:southwest)
+    auth = {
+      provider: "identity",
+      uid:      user.email,
+      info: {
+        email: user.email
+      }
+    }
+    assert_equal user, User.fetch_from_omniauth_local(auth)
+  end
+
+  test "fetch_from_omniauth_local() with a non-matching email returns nil" do
+    auth = {
+      provider: "identity",
+      uid:      "bogus@example.edu",
+      info: {
+        email: "bogus@example.edu"
+      }
+    }
+    assert_nil User.fetch_from_omniauth_local(auth)
+  end
+
+  # fetch_from_omniauth_openathens()
+
+  test "fetch_from_omniauth_openathens() with a matching email returns the user" do
+    user = users(:southwest)
+    auth = {
+      provider: "saml",
+      extra: {
+        raw_info: OneLogin::RubySaml::Attributes.new(
+          emailAddress: [
+            user.email
+          ]
+        )
+      }
+    }
+    assert_equal user, User.fetch_from_omniauth_openathens(auth)
+  end
+
+  test "fetch_from_omniauth_openathens() with a non-matching email returns nil" do
+    auth = {
+      provider: "saml",
+      extra: {
+        raw_info: OneLogin::RubySaml::Attributes.new(
+          emailAddress: [
+            "bogus@example.org"
+          ]
+        )
+      }
+    }
+    assert_nil User.fetch_from_omniauth_openathens(auth)
+  end
+
+  # fetch_from_omniauth_shibboleth()
+
+  test "fetch_from_omniauth_shibboleth() with a matching email returns the user" do
+    user = users(:southwest)
+    auth = {
+      provider: "shibboleth",
+      info: {
+        email: user.email
+      }
+    }
+    assert_equal user, User.fetch_from_omniauth_shibboleth(auth)
+  end
+
+  test "fetch_from_omniauth_shibboleth() with a non-matching email returns nil" do
+    auth = {
+      provider: "shibboleth",
+      info: {
+        email: "bogus@example.org"
+      }
+    }
+    assert_nil User.fetch_from_omniauth_shibboleth(auth)
+  end
+
   # from_autocomplete_string()
 
   test "from_autocomplete_string() returns a user" do
@@ -21,32 +200,98 @@ class UserTest < ActiveSupport::TestCase
 
   # from_omniauth()
 
-  test "from_omniauth() returns a LocalUser" do
+  test "from_omniauth() returns nil when given a local user auth hash
+  for which no database match exists" do
+    email = "newuser@southwest.edu"
+    user = User.from_omniauth(
+      provider: "identity",
+      uid:      email,
+      info: {
+        email: email
+      }
+    )
+    assert_nil user
+  end
+
+  test "from_omniauth() returns an existing user when given a local user auth
+  hash for which a database match exists" do
     email = "newuser@southwest.edu"
     Invitee.create!(email:       email,
                     note:        "hello world",
                     institution: institutions(:southwest))
-    user = User.from_omniauth(provider: "identity",
-                              info:     { email: email })
-    assert_kind_of LocalUser, user
+    user = User.from_omniauth(
+      provider: "identity",
+      uid:      email,
+      info: {
+        email: email
+      }
+    )
+    assert user.local?
   end
 
-  test "from_omniauth() returns a ShibbolethUser" do
-    user = User.from_omniauth(provider: "shibboleth",
-                              info:     { email: "user@example.org" })
-    assert_kind_of ShibbolethUser, user
+  test "from_omniauth() returns a new user when given an OpenAthens auth hash
+  hash for which no database match exists" do
+    user = User.from_omniauth(OPENATHENS_AUTH_HASH)
+    assert user.openathens?
+    assert_equal "OpenAthensUser@example.org", user.name
+    assert_equal "OpenAthensUser@example.org", user.email
+    assert_nil user.phone
+    assert_equal institutions(:southwest), user.institution
+  end
 
+  test "from_omniauth() returns an existing user when given an OpenAthens auth
+  hash for which a database match exists" do
+    email = OPENATHENS_AUTH_HASH[:extra][:raw_info].attributes[:emailAddress].first
+    @user.update!(email: email)
+
+    user = User.from_omniauth(OPENATHENS_AUTH_HASH)
+    assert user.openathens?
+    assert_equal "OpenAthensUser@example.org", user.name
+    assert_equal "OpenAthensUser@example.org", user.email
+    assert_nil user.phone
+    assert_equal institutions(:southwest), user.institution
+  end
+
+  test "from_omniauth() returns a new user when given a Shibboleth auth
+  hash for which no database match exists" do
+    user = User.from_omniauth(SHIBBOLETH_AUTH_HASH)
+    assert user.shibboleth?
+    assert_equal "Shib Boleth", user.name
+    assert_equal "ShibbolethUser@example.org", user.email
+    assert_equal "(888) 555-5555", user.phone
+    assert_equal "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
+                 user.org_dn
+    assert_equal institutions(:uiuc), user.institution
+    assert_equal "Example Department", user.department.name
+    assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
+                 user.affiliation
+  end
+
+  test "from_omniauth() returns an existing user when given a Shibboleth auth
+  hash for which a database match exists" do
+    @user.update!(email: SHIBBOLETH_AUTH_HASH[:info][:email])
+
+    user = User.from_omniauth(SHIBBOLETH_AUTH_HASH)
+    assert_equal @user, user
+    assert user.shibboleth?
+    assert_equal "Shib Boleth", user.name
+    assert_equal "ShibbolethUser@example.org", user.email
+    assert_equal "(888) 555-5555", user.phone
+    assert_equal "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
+                 user.org_dn
+    assert_equal institutions(:uiuc), user.institution
+    assert_equal "Example Department", user.department.name
+    assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
+                 user.affiliation
+  end
+
+  test "from_omniauth() returns an updated user when given a Shibboleth
+  developer auth hash" do
     user = User.from_omniauth(provider: "developer",
-                              info:     { email: "user@example.org" })
-    assert_kind_of ShibbolethUser, user
-  end
-
-  test "from_omniauth() returns a SamlUser" do
-    user = User.from_omniauth(provider: "saml",
-                              extra: {
-                                raw_info: OneLogin::RubySaml::Attributes.new(emailAddress: "user@example.org")
+                              info: {
+                                email: "user@example.org"
                               })
-    assert_kind_of SamlUser, user
+    assert user.shibboleth?
   end
 
   test "from_omniauth() with an unsupported provider raises an error" do
@@ -71,8 +316,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "belongs_to_user_group?() returns true for a user belonging to an AD
   group associated with the group" do
-    skip # this is not testable because AD group membership checks don't happen in the test environment
-    # TODO: set up a mock AD group system for the test environment?
+    skip # TODO: set up a mock AD group system for the test environment
     user       = users(:uiuc_admin)
     user_group = user_groups(:sysadmin)
     assert user.belongs_to_user_group?(user_group)
@@ -102,25 +346,15 @@ class UserTest < ActiveSupport::TestCase
     assert !@user.collection_admin?(collections(:uiuc_collection1))
   end
 
-  # effective_institution_admin?()
+  # destroy()
 
-  test "effective_institution_admin?() returns true if the user is a sysadmin" do
-    @user = users(:example_sysadmin)
-    assert @user.effective_institution_admin?(@user.institution)
-  end
+  test "destroy() destroys the associated Identity" do
+    identity = @user.identity
+    @user.destroy!
 
-  test "effective_institution_admin?() returns true if the user is an
-  administrator of the given institution" do
-    @user   = users(:example_sysadmin)
-    institution = institutions(:uiuc)
-    @user.administering_institutions << institution
-    @user.save!
-    assert @user.effective_institution_admin?(institution)
-  end
-
-  test "effective_institution_admin?() returns false if the user is neither a
-  member of the given institution nor a sysadmin" do
-    assert !@user.effective_institution_admin?(institutions(:southwest))
+    assert_raises ActiveRecord::RecordNotFound do
+      identity.reload
+    end
   end
 
   # effective_collection_admin?()
@@ -171,6 +405,63 @@ class UserTest < ActiveSupport::TestCase
     assert !@user.effective_collection_admin?(collections(:uiuc_collection1))
   end
 
+  # effective_institution_admin?()
+
+  test "effective_institution_admin?() returns true if the user is a sysadmin" do
+    @user = users(:example_sysadmin)
+    assert @user.effective_institution_admin?(@user.institution)
+  end
+
+  test "effective_institution_admin?() returns true if the user is an
+  administrator of the given institution" do
+    @user   = users(:example_sysadmin)
+    institution = institutions(:uiuc)
+    @user.administering_institutions << institution
+    @user.save!
+    assert @user.effective_institution_admin?(institution)
+  end
+
+  test "effective_institution_admin?() returns false if the user is neither a
+  member of the given institution nor a sysadmin" do
+    assert !@user.effective_institution_admin?(institutions(:southwest))
+  end
+
+  # effective_submittable_collections()
+
+  test "effective_submittable_collections() returns all collections in the same
+  institution for sysadmins" do
+    user = users(:example_sysadmin)
+    assert_equal Collection.joins(:units).where("units.institution_id = ?",
+                                                user.institution_id).count,
+                 user.effective_submittable_collections.count
+  end
+
+  test "effective_submittable_collections() returns all unit collections for
+  unit administrators" do
+    user = users(:uiuc_unit1_unit2_unit1_admin)
+    assert_equal user.administering_units.count,
+                 user.effective_submittable_collections.count
+  end
+
+  test "effective_submittable_collections() returns all administering
+  collections for collection administrators" do
+    user = users(:uiuc_collection1_collection1_admin)
+    assert_equal user.administering_collections.count,
+                 user.effective_submittable_collections.count
+  end
+
+  test "effective_submittable_collections() returns all submitting collections
+  for collection submitters" do
+    user = users(:uiuc_collection1_collection1_submitter)
+    assert_equal user.submitting_collections.count,
+                 user.effective_submittable_collections.count
+  end
+
+  test "effective_submittable_collections() returns an empty set for ordinary
+  users" do
+    assert_empty users(:example).effective_submittable_collections
+  end
+
   # effective_submitter?()
 
   test "effective_submitter?() returns true when the user is a sysadmin" do
@@ -216,42 +507,6 @@ class UserTest < ActiveSupport::TestCase
   test "effective_submitter?() returns false when the user is not an
   administrator of the given collection, nor a unit admin, nor a sysadmin" do
     assert !@user.effective_submitter?(collections(:uiuc_collection1))
-  end
-
-  # effective_submittable_collections()
-
-  test "effective_submittable_collections() returns all collections in the same
-  institution for sysadmins" do
-    user = users(:example_sysadmin)
-    assert_equal Collection.joins(:units).where("units.institution_id = ?",
-                                                user.institution_id).count,
-                 user.effective_submittable_collections.count
-  end
-
-  test "effective_submittable_collections() returns all unit collections for
-  unit administrators" do
-    user = users(:uiuc_unit1_unit2_unit1_admin)
-    assert_equal user.administering_units.count,
-                 user.effective_submittable_collections.count
-  end
-
-  test "effective_submittable_collections() returns all administering
-  collections for collection administrators" do
-    user = users(:uiuc_collection1_collection1_admin)
-    assert_equal user.administering_collections.count,
-                 user.effective_submittable_collections.count
-  end
-
-  test "effective_submittable_collections() returns all submitting collections
-  for collection submitters" do
-    user = users(:uiuc_collection1_collection1_submitter)
-    assert_equal user.submitting_collections.count,
-                 user.effective_submittable_collections.count
-  end
-
-  test "effective_submittable_collections() returns an empty set for ordinary
-  users" do
-    assert_empty users(:example).effective_submittable_collections
   end
 
   # effective_unit_admin?()
@@ -304,7 +559,9 @@ class UserTest < ActiveSupport::TestCase
   test "email must be unique" do
     email = @user.email
     assert_raises ActiveRecord::RecordInvalid do
-      LocalUser.create!(email: email, name: email)
+      User.create!(email:       email,
+                   name:        email,
+                   auth_method: User::AuthMethod::LOCAL)
     end
   end
 
@@ -327,6 +584,18 @@ class UserTest < ActiveSupport::TestCase
     assert !@user.institution_admin?(nil)
   end
 
+  # local?()
+
+  test "local?() returns false for non-local users" do
+    @user.auth_method = User::AuthMethod::OPENATHENS
+    assert !@user.local?
+  end
+
+  test "local?() returns true for local users" do
+    @user.auth_method = User::AuthMethod::LOCAL
+    assert @user.local?
+  end
+
   # name
 
   test "name is required" do
@@ -334,6 +603,44 @@ class UserTest < ActiveSupport::TestCase
     assert !@user.valid?
     @user.name = "test"
     assert @user.valid?
+  end
+
+  # netid()
+
+  test "netid() returns the NetID" do
+    assert_equal @user.email.split("@").first, @user.netid
+  end
+
+  # openathens?()
+
+  test "openathens?() returns false for non-OpenAthens users" do
+    @user.auth_method = User::AuthMethod::LOCAL
+    assert !@user.openathens?
+  end
+
+  test "openathens?() returns true for OpenAthens users" do
+    @user.auth_method = User::AuthMethod::OPENATHENS
+    assert @user.openathens?
+  end
+
+  # save()
+
+  test "save() updates the email of the associated LocalIdentity" do
+    new_email = "new@example.edu"
+    @user.update!(email: new_email)
+    assert_equal new_email, @user.identity.email
+  end
+
+  # shibboleth?()
+
+  test "shibboleth?() returns false for non-Shibboleth users" do
+    @user.auth_method = User::AuthMethod::LOCAL
+    assert !@user.shibboleth?
+  end
+
+  test "shibboleth?() returns true for Shibboleth users" do
+    @user.auth_method = User::AuthMethod::SHIBBOLETH
+    assert @user.shibboleth?
   end
 
   # submitter?()
@@ -355,16 +662,61 @@ class UserTest < ActiveSupport::TestCase
     assert @user.submitter?(collection)
   end
 
-  test "submitter?() returns false when the user is not a submitter in the given collection" do
+  test "submitter?() returns false when the user is not a submitter in the
+  given collection" do
     assert !@user.submitter?(collections(:uiuc_collection1))
   end
 
   # sysadmin?()
 
-  test "sysadmin?() raises an error" do
-    assert_raises do
-      @user.becomes(User).sysadmin?
-    end
+  test "sysadmin?() with the local auth method returns true when the user
+  is directly associated with the sysadmin user group" do
+    @user = users(:example_sysadmin)
+    assert @user.sysadmin?
+  end
+
+  test "sysadmin?() with the local auth method returns false when the user is
+  not directly associated with the sysadmin user group" do
+    assert !@user.sysadmin?
+  end
+
+  test "sysadmin?() with the OpenAthens auth method returns true when the user
+  is directly associated with the sysadmin user group" do
+    @user.auth_method = User::AuthMethod::OPENATHENS
+    user_groups(:sysadmin).users << @user
+    assert @user.sysadmin?
+  end
+
+  test "sysadmin?() with the OpenAthens auth method returns false when the user
+  is not directly associated with the sysadmin user group" do
+    @user.auth_method = User::AuthMethod::OPENATHENS
+    assert !@user.sysadmin?
+  end
+
+  test "sysadmin?() with the Shibboleth auth method returns true when the user
+  is directly associated with the sysadmin user group" do
+    @user.auth_method = User::AuthMethod::SHIBBOLETH
+    user_groups(:sysadmin).users << @user
+    assert @user.sysadmin?
+  end
+
+  test "sysadmin?() with the Shibboleth auth method returns false when the user
+  is not directly associated with the sysadmin user group" do
+    @user.auth_method = User::AuthMethod::SHIBBOLETH
+    assert !@user.sysadmin?
+  end
+
+  test "sysadmin?() with the Shibboleth auth method returns true when the user
+  is a member of an LDAP group included in the sysadmin user group" do
+    @user = users(:example_sysadmin)
+    @user.auth_method = User::AuthMethod::SHIBBOLETH
+    assert @user.sysadmin?
+  end
+
+  test "sysadmin?() with the Shibboleth auth method returns false when the user
+  is not a member of the sysadmin LDAP group" do
+    @user.auth_method = User::AuthMethod::SHIBBOLETH
+    assert !@user.sysadmin?
   end
 
   # to_autocomplete()

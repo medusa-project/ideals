@@ -1,27 +1,33 @@
 # frozen_string_literal: true
 
 ##
-# Abstract class representing a user. Concrete implementations are subclasses
-# using Rails single-table inheritance. (Basically this just means that their
-# class name is stored in the `type` column.)
+# Encapsulates a user account.
+#
+# # Authentication Methods
+#
+# Users can sign in via several {AuthMethod methods}. Their last (and current)
+# sign-in method is assigned to the {auth_method} attribute.
 #
 # # Institution Membership
 #
 # The process by which a user is made a member of an institution varies
-# depending on the subclass:
+# depending on the {auth_method authentication method}:
 #
-# * For {LocalUser}s, the user either requests to join a particular
+# * For local authentication, the user either requests to join a particular
 #   institution, or is invited into a particular institution by a sysadmin at
 #   the time they are invited to register.
-# * For {ShibbolethUser}s, the user's "org DN" provided by the IdP is matched
-#   against an {Institution}'s {Institution#shibboleth_org_dn} property at
-#   login.
-# * For {SamlUser}s, the user's "organization ID" provided by the OpenAthens
-#   IdP is matched against an {Institution}'s
+# * For Shibboleth authentication, the user's "org DN" provided by the IdP is
+#   matched against an institution's {Institution#shibboleth_org_dn} property
+#   at login.
+# * For OpenAthens authentication, the user's "organization ID" provided by the
+#   OpenAthens IdP is matched against an institution's
 #   {Institution#openathens_organization_id} property at login.
 #
 # # Attributes
 #
+# * `auth_method`       One of the {User::AuthMethod} constant values
+#                       representing the authentication method used at the last
+#                       login.
 # * `created_at`        Managed by ActiveRecord.
 # * `email`             Email address.
 # * `enabled`           Whether the user is able to log in.
@@ -29,26 +35,36 @@
 #                       institution of which the instance is a member. All non-
 #                       sysadmin users can only log into and browse around
 #                       their home institution's space in the IR.
-# * `local_identity_id` Foreign key to {LocalIdentity}. Used only by
-#                       {LocalUser}s; set during processing of the
-#                       registration form.
+# * `local_identity_id` Foreign key to {LocalIdentity}. Used only with
+#                       {User::AuthMethod::LOCAL local authentication}; set
+#                       during processing of the registration form.
 # * `name`              The user's name in whatever format they choose to
 #                       provide it.
 # * `org_dn`            `eduPersonOrgDN` property supplied by Shibboleth. Only
-#                       {ShibbolethUser}s have this. TODO: this is probably not needed anymore now that we have institution_id
+#                       {User::AuthType::SHIBBOLETH Shibboleth} users have
+#                       this. TODO: this is probably not needed anymore now that we have institution_id
 # * `phone`             The user's phone number.
-# * `type`              Supports Rails single-table inheritance (STI).
 # * `updated_at:        Managed by ActiveRecord.
 #
 class User < ApplicationRecord
 
   include Breadcrumb
 
-  # ShibbolethUsers only!
+  class AuthMethod
+    # Credentials are stored in the users table.
+    LOCAL      = 0
+    # Used only by UIUC.
+    SHIBBOLETH = 1
+    # Used by many CARLI member institutions.
+    OPENATHENS = 2
+  end
+
+  # Only Shibboleth users will have one of these.
   belongs_to :affiliation, optional: true
   belongs_to :identity, class_name: "LocalIdentity",
              foreign_key: "local_identity_id", inverse_of: :user, optional: true
   belongs_to :institution, optional: true
+  # Only Shibboleth users will have one of these.
   has_one :department
   has_many :collection_administrators, class_name: "CollectionAdministrator"
   has_many :events
@@ -66,16 +82,86 @@ class User < ApplicationRecord
   has_many :submitters, class_name: "CollectionSubmitter"
   has_many :submitting_collections, through: :submitters, source: :collection
   has_many :tasks
-  # ShibbolethUsers only!
   has_many :unit_administrators
   has_many :administering_units, through: :unit_administrators, source: :unit
-  # This includes only directly assigned user groups. See `belongs_to_user_group?()`
+  # This includes only directly assigned user groups. See
+  # `belongs_to_user_group?()`
   has_and_belongs_to_many :user_groups
 
   validates :email, presence: true, length: {maximum: 255},
             format: {with: StringUtils::EMAIL_REGEX}
   validates_uniqueness_of :email, case_sensitive: false
   validates :name, presence: true
+
+  before_save :sync_identity_properties
+  before_destroy :destroy_identity
+
+  ##
+  # This is used for quickly creating local administrators in development. It
+  # should not be used in production as it does not proceed through the normal
+  # invitation & registration workflow.
+  #
+  # @param email [String]
+  # @param password [String]
+  # @param institution [Institution] If not provided, the user will be placed
+  #        in the {Institution#default default institution}.
+  # @param name [String] If not provided, the email is used.
+  # @return [User]
+  #
+  def self.create_local(email:, password:, institution:, name: nil)
+    ActiveRecord::Base.transaction do
+      invitee = Invitee.find_by_email(email)
+      unless invitee
+        invitee = Invitee.create!(email:          email,
+                                  institution:    institution,
+                                  approval_state: Invitee::ApprovalState::APPROVED,
+                                  note:           "Created as a sysadmin "\
+                                                  "manually, bypassing the "\
+                                                  "invitation process")
+      end
+      identity = LocalIdentity.find_by_email(email)
+      unless identity
+        identity = LocalIdentity.create!(email:                 email,
+                                         password:              password,
+                                         password_confirmation: password,
+                                         invitee:               invitee)
+      end
+      identity.build_user(email:       email,
+                          institution: institution,
+                          name:        name || email,
+                          auth_method: AuthMethod::LOCAL)
+    end
+  end
+
+  ##
+  # @param auth [OmniAuth::AuthHash]
+  # @return [User]
+  #
+  def self.fetch_from_omniauth_local(auth)
+    auth  = auth.deep_symbolize_keys
+    email = auth.dig(:info, :email)
+    User.find_by_email(email)
+  end
+
+  ##
+  # @param auth [OmniAuth::AuthHash]
+  # @return [User]
+  #
+  def self.fetch_from_omniauth_openathens(auth)
+    auth  = auth.deep_stringify_keys
+    email = auth['extra']['raw_info'].attributes[:emailAddress]&.first
+    User.find_by_email(email)
+  end
+
+  ##
+  # @param auth [OmniAuth::AuthHash]
+  # @return [User]
+  #
+  def self.fetch_from_omniauth_shibboleth(auth)
+    auth  = auth.deep_symbolize_keys
+    email = auth.dig(:info, :email)
+    User.find_by_email(email)
+  end
 
   ##
   # @param string [String] Autocomplete text field string.
@@ -85,7 +171,7 @@ class User < ApplicationRecord
   def self.from_autocomplete_string(string)
     if string.present?
       # user strings may be in one of two formats: "Name (email)" or "email"
-      tmp = string.scan(/\((.*)\)/).last
+      tmp   = string.scan(/\((.*)\)/).last
       email = tmp ? tmp.first : string
       return User.find_by_email(email)
     end
@@ -93,19 +179,90 @@ class User < ApplicationRecord
   end
 
   ##
-  # @param auth [OmniAuth::AuthHash]
+  # Obtains (by retrieval or creation) a user matching the given auth hash.
+  #
+  # @param auth [OmniAuth::AuthHash, Hash]
   # @return [User] One of the concrete implementations.
   #
   def self.from_omniauth(auth)
     case auth[:provider]
     when "developer", "shibboleth"
-      ShibbolethUser.from_omniauth(auth)
+      User.from_omniauth_shibboleth(auth)
     when "saml"
-      SamlUser.from_omniauth(auth)
+      User.from_omniauth_openathens(auth)
     when "identity"
-      LocalUser.from_omniauth(auth)
+      User.from_omniauth_local(auth)
     else
-      raise ArgumentError, "Unsupported provider"
+      raise ArgumentError, "Unsupported auth provider"
+    end
+  end
+
+  ##
+  # @private
+  #
+  def self.from_omniauth_local(auth)
+    user = User.fetch_from_omniauth_local(auth)
+    unless user
+      auth  = auth.deep_symbolize_keys
+      email = auth.dig(:info, :email)&.strip
+      invitee = Invitee.find_by(email: email)
+      return nil unless invitee&.expires_at
+      return nil unless invitee.expires_at >= Time.current
+      user = User.new(email:       email,
+                      name:        email,
+                      institution: invitee.institution)
+    end
+    user.auth_method = AuthMethod::LOCAL
+    user.save!
+    user
+  end
+
+  ##
+  # @private
+  #
+  def self.from_omniauth_openathens(auth)
+    user = User.fetch_from_omniauth_openathens(auth) ||
+      User.new(auth_method: AuthMethod::OPENATHENS)
+    user.send(:update_from_openathens, auth)
+    user
+  end
+
+  ##
+  # @private
+  #
+  def self.from_omniauth_shibboleth(auth)
+    user = User.fetch_from_omniauth_shibboleth(auth) ||
+      User.new(auth_method: AuthMethod::SHIBBOLETH)
+    user.send(:update_from_shibboleth, auth)
+    user
+  end
+
+  ##
+  # Performs an LDAP query to determine whether the instance belongs to the
+  # given group. Works only for {AuthMethod::SHIBBOLETH Shibboleth users}.
+  #
+  # N.B.: in development and test environments, no query is executed, and
+  # instead the return value is `true` if the email and group name both include
+  # the string `admin`.
+  #
+  # @param group [AdGroup,String]
+  # @return [Boolean]
+  #
+  def belongs_to_ad_group?(group)
+    return false if auth_method != AuthMethod::SHIBBOLETH
+    group = group.to_s
+    if Rails.env.development? || Rails.env.test?
+      groups = Configuration.instance.ad.dig(:groups, self.email)
+      return groups&.include?(group)
+    end
+    cache_key = Digest::MD5.hexdigest("#{self.institution.key} #{self.netid} ismemberof #{group}")
+    Rails.cache.fetch(cache_key, expires_in: 12.hours) do
+      begin
+        user = UiucLibAd::User.new(cn: self.netid)
+        user.is_member_of?(group_cn: group)
+      rescue UiucLibAd::NoDNFound
+        false
+      end
     end
   end
 
@@ -244,6 +401,39 @@ class User < ApplicationRecord
   end
 
   ##
+  # @return [Boolean]
+  #
+  def local?
+    self.auth_method == AuthMethod::LOCAL
+  end
+
+  ##
+  # @return [String] The NetID (the user component of the email). This works
+  #                  regardless of {auth_method} authentication method, even
+  #                  though technically only Shibboleth users have NetIDs.
+  #
+  def netid
+    return nil unless self.email.respond_to?(:split)
+    netid = self.email.split("@").first
+    return nil if netid.blank?
+    netid
+  end
+
+  ##
+  # @return [Boolean]
+  #
+  def openathens?
+    self.auth_method == AuthMethod::OPENATHENS
+  end
+
+  ##
+  # @return [Boolean]
+  #
+  def shibboleth?
+    self.auth_method == AuthMethod::SHIBBOLETH
+  end
+
+  ##
   # @param collection [Collection]
   # @return [Boolean] Whether the instance is a direct submitter of the given
   #                   collection.
@@ -262,7 +452,13 @@ class User < ApplicationRecord
   #                   absolutely anything.
   #
   def sysadmin?
-    raise "Subclasses must override sysadmin?()"
+    case auth_method
+    when AuthMethod::SHIBBOLETH
+      self.user_groups.include?(UserGroup.sysadmin) ||
+        UserGroup.sysadmin.ad_groups.find{ |g| self.belongs_to_ad_group?(g) }.present?
+    else
+      self.user_groups.include?(UserGroup.sysadmin)
+    end
   end
 
   ##
@@ -288,6 +484,95 @@ class User < ApplicationRecord
       return true if self.belongs_to_user_group?(group)
     end
     false
+  end
+
+
+  private
+
+  def destroy_identity
+    if auth_method == AuthMethod::LOCAL
+      LocalIdentity.destroy_by(email: self.email)
+    end
+  end
+
+  ##
+  # Updates the relevant properties of the associated {LocalIdentity} to match
+  # those of the instance.
+  #
+  def sync_identity_properties
+    if auth_method == AuthMethod::LOCAL && self.email_changed?
+      id = LocalIdentity.find_by_email(self.email_was)
+      id&.update_attribute(:email, self.email)
+    end
+  end
+
+  ##
+  # @param auth [OmniAuth::AuthHash]
+  #
+  def update_from_openathens(auth)
+    auth = auth.deep_stringify_keys
+    attrs = auth['extra']['raw_info'].attributes
+    # By design, logging in overwrites certain existing user properties with
+    # current information from the IdP. By supplying this custom attribute,
+    # we can preserve the user properties that are set up in test fixture data.
+    return if attrs['overwriteUserAttrs'] == "false"
+
+    self.auth_method = AuthMethod::OPENATHENS
+    self.email       = attrs[:emailAddress]&.first
+    self.name        = [attrs[:firstName]&.first, attrs[:lastName]&.first].join(" ").strip
+    self.name        = self.email if self.name.blank?
+    org_id           = attrs[:"http://eduserv.org.uk/federation/attributes/1.0/organisationid"]
+    self.institution = Institution.find_by_openathens_organization_id(org_id) if org_id
+    self.phone       = attrs[:phoneNumber]&.first
+    begin
+      self.save!
+    rescue => e
+      @message = IdealsMailer.error_body(e,
+                                         detail: "[user: #{YAML::dump(self)}]\n"\
+                                                 "[auth hash: #{YAML::dump(auth)}]",
+                                         user:   self)
+      Rails.logger.error(@message)
+      IdealsMailer.error(@message).deliver_now unless Rails.env.development?
+    end
+  end
+
+  ##
+  # @param auth [OmniAuth::AuthHash]
+  #
+  def update_from_shibboleth(auth)
+    auth = auth.deep_stringify_keys
+    # By design, logging in overwrites certain existing user properties with
+    # current information from the Shib IdP. By supplying this custom
+    # attribute, we can preserve the user properties that are set up in test
+    # fixture data.
+    return if auth.dig("extra", "raw_info", "overwriteUserAttrs") == "false"
+
+    # N.B.: we have to be careful accessing this hash because not all providers
+    # will populate all properties.
+    self.auth_method = AuthMethod::SHIBBOLETH
+    self.email       = auth["info"]["email"]
+    self.name        = "#{auth.dig("extra", "raw_info", "givenName")} "\
+                       "#{auth.dig("extra", "raw_info", "sn")}"
+    self.name        = self.email if self.name.blank?
+    self.org_dn      = auth.dig("extra", "raw_info", "org-dn")
+    # UIS accounts will not have an org DN--eventually these users will be
+    # converted into OpenAthens users and moved into the UIS space
+    self.institution = self.org_dn.present? ?
+                         Institution.find_by_shibboleth_org_dn(self.org_dn) :
+                         Institution.find_by_key("uiuc")
+    self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
+    self.affiliation = Affiliation.from_shibboleth(auth)
+    dept             = auth.dig("extra", "raw_info", "departmentCode")
+    self.department  = Department.create!(name: dept) if dept
+    begin
+      self.save!
+    rescue => e
+      @message = IdealsMailer.error_body(e,
+                                         detail: "[user: #{self.as_json}]\n[auth hash: #{auth.as_json}]",
+                                         user:   self)
+      Rails.logger.error(@message)
+      IdealsMailer.error(@message).deliver_now unless Rails.env.development?
+    end
   end
 
 end

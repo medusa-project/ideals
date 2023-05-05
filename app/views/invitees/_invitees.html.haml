@@ -17,7 +17,7 @@
     - @invitees.each do |invitee|
       %tr
         %td= link_to(invitee.email, invitee)
-        %td= invitee.inviting_user ? link_to(invitee.inviting_user.name, invitee.inviting_user.becomes(User)) : "Self-Invited"
+        %td= invitee.inviting_user ? link_to(invitee.inviting_user.name, invitee.inviting_user) : "Self-Invited"
         %td= local_time(invitee.created_at)
         %td
           - case invitee.approval_state

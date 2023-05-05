@@ -223,11 +223,11 @@ class UserGroupsController < ApplicationController
     if params[:user_group][:user_ids]&.respond_to?(:each)
       UserGroupUser.
         joins(:user).
-        where("user.type": LocalUser.to_s).
+        where("user.auth_method": User::AuthMethod::LOCAL).
         where(user_group: @user_group).
         destroy_all
       params[:user_group][:user_ids].select(&:present?).each do |id|
-        @user_group.users << LocalUser.find(id)
+        @user_group.users << User.find(id)
       end
     end
   end
@@ -236,13 +236,14 @@ class UserGroupsController < ApplicationController
     if params[:user_group][:netid_users]&.respond_to?(:each)
       UserGroupUser.
         joins(:user).
-        where("user.type": ShibbolethUser.to_s).
+        where("user.auth_method": User::AuthMethod::SHIBBOLETH).
         where(user_group: @user_group).
         destroy_all
       params[:user_group][:netid_users].select(&:present?).each do |netid|
         email = "#{netid}@illinois.edu"
-        user  = ShibbolethUser.find_by_email(email) || ShibbolethUser.new(email: email,
-                                                                          name:  netid)
+        user  = User.find_by_email(email) || User.new(email:       email,
+                                                      name:        netid,
+                                                      auth_method: User::AuthMethod::SHIBBOLETH)
         @user_group.users << user
       end
     end

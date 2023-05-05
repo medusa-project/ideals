@@ -7,7 +7,7 @@
   = hidden_field_tag "user_group[user_ids][]"
   %table.table
     %tbody
-      - users = LocalUser.all
+      - users = User.where(auth_method: User::AuthMethod::LOCAL)
       - if f.object.institution
         - users = users.where(institution: f.object.institution)
       - users.order(:name).each do |user|

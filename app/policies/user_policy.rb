@@ -1,12 +1,5 @@
-##
-# N.B.: To use this policy, a {LocalUser}, {ShibbolethUser}, etc. instance must
-# be cast to its {User} superclass; for example:
-#
-# ```
-# authorize(user.becomes(User))
-# policy(user.becomes(User)).edit?
-# ```
-#
+# frozen_string_literal: true
+
 class UserPolicy < ApplicationPolicy
 
   ##

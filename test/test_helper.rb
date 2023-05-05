@@ -44,7 +44,27 @@ class ActiveSupport::TestCase
   end
 
   def log_in_as(user)
-    if user.kind_of?(ShibbolethUser)
+    if user.openathens?
+      post "/auth/saml/callback", env: {
+        "omniauth.auth": {
+          provider:          "saml",
+          uid:               user.email,
+          info: {
+            email: user.email
+          },
+          extra: {
+            raw_info: OneLogin::RubySaml::Attributes.new(
+              emailAddress: [
+                user.email
+              ],
+              "http://eduserv.org.uk/federation/attributes/1.0/organisationid": [
+                user.institution.openathens_organization_id
+              ]
+            ),
+          }
+        }
+      }
+    elsif user.shibboleth?
       # N.B. 1: See "request_type option" section for info about using
       # omniauth-shibboleth in development:
       # https://github.com/toyokazu/omniauth-shibboleth

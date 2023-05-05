@@ -5,7 +5,7 @@
   %dd= @import.id
   %dt User
   %dd
-    = link_to(@import.user.becomes(User)) do
+    = link_to(@import.user) do
       = icon_for(@import.user)
       = @import.user.name
   %dt Collection

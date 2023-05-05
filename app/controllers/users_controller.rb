@@ -202,8 +202,7 @@ class UsersController < ApplicationController
   end
 
   def authorize_user
-    # N.B.: without becomes(), a separate policy class would be required.
-    @user ? authorize(@user.becomes(User)) : skip_authorization
+    @user ? authorize(@user) : skip_authorization
   end
 
   def properties_params

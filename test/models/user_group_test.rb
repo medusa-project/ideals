@@ -48,11 +48,11 @@ class UserGroupTest < ActiveSupport::TestCase
 
   # all_users()
 
-  test "all_users() returns associated LocalUsers" do
+  test "all_users() returns associated users" do
     assert @instance.all_users.include?(users(:example_sysadmin))
   end
 
-  test "all_users() returns ShibbolethUsers belonging to an associated AD group" do
+  test "all_users() returns all users belonging to an associated AD group" do
     assert @instance.all_users.include?(users(:uiuc_sysadmin))
   end
 

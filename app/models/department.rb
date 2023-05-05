@@ -1,5 +1,6 @@
 ##
-# University department associated with a {UserGroup} and a {ShibbolethUser}.
+# University department associated with a {UserGroup} and a
+# {#User::AuthType::SHIBBOLETH} user.
 #
 # This table is not normalized--multiple same-named departments may exist,
 # associated with different entities, with {name} being used for comparison.
@@ -8,7 +9,7 @@
 #
 # * `created_at` Managed by ActiveRecord.
 # * `name`       Department name, which must match the name of the department
-#                the university directory.
+#                in the UIUC directory.
 # * `updated_at` Managed by ActiveRecord.
 #
 class Department < ApplicationRecord

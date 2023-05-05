@@ -11,7 +11,7 @@
     - @imports.each do |import|
       %tr
         %td
-          = link_to(import.user.becomes(User)) do
+          = link_to(import.user) do
             = icon_for(import.user)
             = import.user.name
         %td= link_to(import.collection.title, import.collection)

@@ -6,7 +6,7 @@
 
   = hidden_field_tag "user_group[netid_users][]"
   - users = f.object.netid_users
-  - users = [ShibbolethUser.new] if users.empty?
+  - users = [User.new] if users.empty?
   - users.each do |user|
     .input-group.mb-3
       = text_field_tag "user_group[netid_users][]", user.netid,

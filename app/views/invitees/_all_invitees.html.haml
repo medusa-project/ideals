@@ -18,7 +18,7 @@
       %tr
         %td= link_to(invitee.email, invitee)
         %td= invitee.institution&.name
-        %td= invitee.inviting_user ? link_to(invitee.inviting_user.name, invitee.inviting_user.becomes(User)) : "Self-Invited"
+        %td= invitee.inviting_user ? link_to(invitee.inviting_user.name, invitee.inviting_user) : "Self-Invited"
         %td
           - case invitee.approval_state
           - when Invitee::ApprovalState::PENDING

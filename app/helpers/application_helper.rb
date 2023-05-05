@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ApplicationHelper
 
   # These tags will not be filtered out when displaying user-entered HTML.
@@ -119,7 +121,6 @@ module ApplicationHelper
         when "Vocabulary"
           crumbs.unshift({label: "Vocabularies", url: vocabularies_path})
         else
-          crumb_obj = crumb_obj.becomes(User) if crumb_obj.kind_of?(User)
           crumbs.unshift({icon:  icon_for(crumb_obj),
                           label: crumb_obj.breadcrumb_label,
                           url:   url_for(crumb_obj)})
@@ -494,7 +495,7 @@ module ApplicationHelper
       icon = "fa fa-ellipsis-h"
     when "Unit"
       icon = "fa fa-building"
-    when "User", "LocalUser", "ShibbolethUser"
+    when "User"
       icon = "fa fa-user"
     when "UserGroup"
       icon = "fa fa-users"
@@ -754,7 +755,7 @@ module ApplicationHelper
     html <<     "</h5>"
 
     if show_submitter && resource.submitter
-      html << link_to(resource.submitter.becomes(User)) do
+      html << link_to(resource.submitter) do
         icon_for(resource.submitter) + " " + resource.submitter.name
       end
       html << " &bull; "

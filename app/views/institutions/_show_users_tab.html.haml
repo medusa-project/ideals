@@ -2,9 +2,9 @@
   - @institution.users.each do |user|
     .d-flex.resource-list.mb-3
       .flex-shrink-0
-        = link_to(user.becomes(User)) do
+        = link_to(user) do
           = icon_for(user)
       .flex-grow-1.ms-3
-        %h5= link_to(user.name, user.becomes(User))
+        %h5= link_to(user.name, user)
 - else
   %p There are no users in this institution.

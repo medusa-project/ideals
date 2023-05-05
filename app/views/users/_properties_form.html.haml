@@ -7,22 +7,22 @@
 -#
 -# user [User]
 -#
-= form_for(user.becomes(User), url: user_update_properties_path(user), remote: true) do |f|
+= form_for(user, url: user_update_properties_path(user), remote: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  -# For ShibbolethUsers, all of these properties are provided by AD.
+  -# For Shibboleth users, all of these properties are provided by AD.
   .mb-3
     = f.label :name, class: "required"
-    = f.text_field :name, class: "form-control", disabled: !user.kind_of?(LocalUser)
+    = f.text_field :name, class: "form-control", disabled: !user.local?
   .mb-3
     = f.label :email, class: "required"
-    = f.email_field :email, class: "form-control", disabled: !user.kind_of?(LocalUser)
+    = f.email_field :email, class: "form-control", disabled: !user.local?
   .mb-3
     = f.label :phone
-    = f.phone_field :phone, class: "form-control", disabled: !user.kind_of?(LocalUser)
+    = f.phone_field :phone, class: "form-control", disabled: !user.local?
 
-  - if policy(user.becomes(User)).change_institution?
+  - if policy(user).change_institution?
     .mb-3
       = f.label :institution, class: "required"
       = f.select(:institution_id, options_for_select(Institution.all.order(:name).map{ |i| [i.name, i.id] }, f.object.institution_id),
