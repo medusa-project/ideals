@@ -1,0 +1,58 @@
+.btn-group.float-end{role: "group"}
+  - if policy(@institution).edit_authentication?
+    -# Edit button
+    %button.btn.btn-light.edit-authentication{"data-bs-target":       "#edit-authentication-modal",
+                                              "data-bs-toggle":       "modal",
+                                              type:                   "button",
+                                              "data-institution-key": @institution.key }
+      %i.fa.fa-pencil-alt
+      Edit
+
+.clearfix.mb-3
+
+%dl
+  - if @institution.key == "uiuc"
+    %dt Organization DN
+    %dd
+      - if @institution.shibboleth_org_dn.present?
+        %code= @institution.shibboleth_org_dn
+      - else
+        Not Set
+  - else
+    %dt OpenAthens Organization ID
+    %dd
+      - if @institution.openathens_organization_id.present?
+        %code= @institution.openathens_organization_id
+      - else
+        Not Set
+    %dt OpenAthens SP Entity ID
+    %dd
+      - if @institution.openathens_sp_entity_id.present?
+        %code= @institution.openathens_sp_entity_id
+      - else
+        Not Set
+    %dt OpenAthens SSO Service URL
+    %dd
+      - if @institution.openathens_idp_sso_service_url.present?
+        %code= @institution.openathens_idp_sso_service_url
+      - else
+        Not Set
+    %dt OpenAthens SLO Service URL
+    %dd
+      - if @institution.openathens_idp_slo_service_url.present?
+        %code= @institution.openathens_idp_slo_service_url
+      - else
+        Not Set
+    %dt OpenAthens IdP Certificate
+    %dd
+      - if @institution.openathens_idp_cert.present?
+        Present
+      - else
+        Not Set
+    %dt SAML Metadata URL
+    %dd
+      - if @institution.openathens_organization_id.present?
+        = link_to("#{@institution.scope_url}/auth/saml/metadata",
+                  "#{@institution.scope_url}/auth/saml/metadata")
+      - else
+        Not Available

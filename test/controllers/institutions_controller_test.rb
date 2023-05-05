@@ -191,6 +191,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_authentication()
+
+  test "edit_authentication() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_edit_authentication_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "edit_authentication() returns HTTP 403 for logged-out users" do
+    get institution_edit_authentication_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_authentication() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_edit_authentication_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_authentication() returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    get institution_edit_authentication_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # edit_element_mappings()
 
   test "edit_element_mappings() returns HTTP 404 for unscoped requests" do
@@ -662,6 +687,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
 
     get institution_access_path(@institution, role: Role::LOGGED_OUT), xhr: true
     assert_select(".edit-administering-groups", false)
+  end
+
+  # show_authentication()
+
+  test "show_authentication() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_authentication_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_authentication() returns HTTP 403 for logged-out users" do
+    get institution_authentication_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_authentication() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_authentication_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_authentication() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_authentication_path(@institution), xhr: true
+    assert_response :ok
   end
 
   # show_element_mappings()
@@ -1232,9 +1282,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             institution: {
-              name:              "New Institution",
-              fqdn:              "new.org",
-              shibboleth_org_dn: "new"
+              name:                       "New Institution",
+              fqdn:                       "new.org",
+              openathens_organization_id: "new"
             }
           }
     assert_response :ok

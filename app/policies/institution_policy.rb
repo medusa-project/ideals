@@ -27,6 +27,10 @@ class InstitutionPolicy < ApplicationPolicy
     edit_administering_groups
   end
 
+  def edit_authentication
+    edit_settings
+  end
+
   def edit_element_mappings
     edit_settings
   end
@@ -99,6 +103,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def show_access
     show
+  end
+
+  def show_authentication
+    show_settings
   end
 
   def show_element_mappings

@@ -40,6 +40,15 @@
                                       "aria-selected":  "false"}
           %i.fa.fa-cog
           Settings
+      - if policy(@institution).show_authentication?
+        %button#authentication-tab.nav-link{"data-bs-target": "#authentication-tab-content",
+                                            "data-bs-toggle": "pill",
+                                            role:             "tab",
+                                            type:             "button",
+                                            "aria-controls":  "authentication-tab-content",
+                                            "aria-selected":  "false"}
+          %i.fa.fa-lock
+          Authentication
       - if policy(@institution).show_preservation?
         %button#preservation-tab.nav-link{"data-bs-target": "#preservation-tab-content",
                                           "data-bs-toggle": "pill",
@@ -174,6 +183,11 @@
                                           "aria-labelledby": "settings-tab"}
         = spinner
 
+    - if policy(@institution).show_authentication?
+      #authentication-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                "aria-labelledby": "authentication-tab"}
+        = spinner
+
     - if policy(@institution).show_element_mappings?
       #element-mappings-tab-content.tab-pane.fade{role:              "tabpanel",
                                                   "aria-labelledby": "element-mappings-tab"}
@@ -249,5 +263,7 @@
          locals: { id: "edit-properties-modal", title: "Edit Properties" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-settings-modal", title: "Edit Settings" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-authentication-modal", title: "Edit Authentication" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-theme-modal", title: "Edit Theme" }

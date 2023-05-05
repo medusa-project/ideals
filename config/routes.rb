@@ -70,11 +70,15 @@ Rails.application.routes.draw do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/access", to: "institutions#show_access", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/authentication", to: "institutions#show_authentication", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-administering-groups", to: "institutions#edit_administering_groups", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-administering-users", to: "institutions#edit_administering_users", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/element-mappings/edit", to: "institutions#edit_element_mappings", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-authentication", to: "institutions#edit_authentication", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-preservation", to: "institutions#edit_preservation", via: :get,
           constraints: lambda { |request| request.xhr? }

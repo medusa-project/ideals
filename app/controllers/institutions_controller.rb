@@ -67,6 +67,14 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /institutions/:key/edit-authentication`
+  #
+  def edit_authentication
+    render partial: "institutions/authentication_form",
+           locals: { institution: @institution }
+  end
+
+  ##
   # Used for editing element mappings.
   #
   # Responds to `GET /institutions/:key/element-mappings/edit` (XHR only)
@@ -250,6 +258,15 @@ class InstitutionsController < ApplicationController
   #
   def show_access
     render partial: "show_access_tab"
+  end
+
+  ##
+  # Renders HTML for the authentication tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/authentication` (XHR only)
+  #
+  def show_authentication
+    render partial: "show_authentication_tab"
   end
 
   ##
@@ -567,12 +584,7 @@ class InstitutionsController < ApplicationController
                                         :latitude_minutes, :latitude_seconds,
                                         :longitude_degrees, :longitude_minutes,
                                         :longitude_seconds, :name,
-                                        :openathens_idp_cert,
-                                        :openathens_idp_slo_service_url,
-                                        :openathens_idp_sso_service_url,
-                                        :openathens_organization_id,
-                                        :openathens_sp_entity_id,
-                                        :service_name, :shibboleth_org_dn)
+                                        :service_name)
   end
 
   def settings_params
@@ -589,6 +601,12 @@ class InstitutionsController < ApplicationController
                                         :date_submitted_element_id,
                                         :description_element_id,
                                         :handle_uri_element_id,
+                                        :openathens_idp_cert,
+                                        :openathens_idp_slo_service_url,
+                                        :openathens_idp_sso_service_url,
+                                        :openathens_organization_id,
+                                        :openathens_sp_entity_id,
+                                        :shibboleth_org_dn,
                                         :title_element_id,
                                         # Theme tab
                                         :active_link_color,

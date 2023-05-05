@@ -1,0 +1,41 @@
+-# @param institution [Institution]
+
+= form_for(institution, url: institution.new_record? ? institutions_path : institution_settings_path(institution), remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .mb-3
+    - if f.object.key == "uiuc"
+      = f.label :shibboleth_org_dn, "Shibboleth Organization DN"
+      = f.text_field :shibboleth_org_dn, class: "form-control"
+      %p.form-text
+        = icon_for(:info)
+        When filled in, this will enable Shibboleth authentication for this
+        institution.
+    - else
+      = f.label :openathens_organization_id, "OpenAthens Organization ID"
+      = f.text_field :openathens_organization_id, class: "form-control"
+      %p.form-text
+        = icon_for(:info)
+        When filled in, this will enable OpenAthens authentication for this
+        institution.
+
+  - if f.object.key != "uiuc"
+    .mb-3
+      = f.label :openathens_sp_entity_id, "OpenAthens SP Entity ID"
+      = f.text_field :openathens_sp_entity_id, class: "form-control"
+    .mb-3
+      = f.label :openathens_idp_sso_service_url, "OpenAthens SSO Service URL"
+      = f.text_field :openathens_idp_sso_service_url, class: "form-control"
+    .mb-3
+      = f.label :openathens_idp_slo_service_url, "OpenAthens SLO Service URL"
+      = f.text_field :openathens_idp_slo_service_url, class: "form-control"
+    .mb-3
+      = f.label :openathens_idp_cert, "OpenAthens IDP Certificate"
+      = f.text_area :openathens_idp_cert, rows: 10, class: "form-control"
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = f.submit(f.object.new_record? ? "Create Institution" : "Save Changes",
+                 class: "btn btn-primary")

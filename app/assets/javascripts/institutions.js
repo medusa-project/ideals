@@ -46,6 +46,19 @@ const InstitutionView = function() {
         });
     });
 
+    $("#authentication-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/authentication";
+        $.get(url, function (data) {
+            $("#authentication-tab-content").html(data);
+            $("button.edit-authentication").on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-authentication";
+                $.get(url, function(data) {
+                    $("#edit-authentication-modal .modal-body").html(data);
+                });
+            });
+        });
+    });
+
     $("#element-registry-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/elements";
         $.get(url, function (data) {
