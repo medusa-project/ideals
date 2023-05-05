@@ -93,6 +93,23 @@ class User < ApplicationRecord
   end
 
   ##
+  # @param auth [OmniAuth::AuthHash]
+  # @return [User] One of the concrete implementations.
+  #
+  def self.from_omniauth(auth)
+    case auth[:provider]
+    when "developer", "shibboleth"
+      ShibbolethUser.from_omniauth(auth)
+    when "saml"
+      SamlUser.from_omniauth(auth)
+    when "identity"
+      LocalUser.from_omniauth(auth)
+    else
+      raise ArgumentError, "Unsupported provider"
+    end
+  end
+
+  ##
   # @param user_group [UserGroup]
   # @return [Boolean]
   #

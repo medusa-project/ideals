@@ -31,16 +31,7 @@ class SessionsController < ApplicationController
   #
   def create
     auth = request.env["omniauth.auth"]
-    case auth[:provider]
-    when "developer", "shibboleth"
-      user = ShibbolethUser.from_omniauth(auth)
-    when "saml"
-      user = SamlUser.from_omniauth(auth)
-    when "identity"
-      user = LocalUser.from_omniauth(auth)
-    else
-      user = nil
-    end
+    user = User.from_omniauth(auth)
 
     # Sysadmins can log in via any institution's host. This is a feature needed
     # by CARLI sysadmins for e.g. walking users through how to do things. But

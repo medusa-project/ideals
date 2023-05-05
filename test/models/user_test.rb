@@ -19,6 +19,42 @@ class UserTest < ActiveSupport::TestCase
     assert_nil User.from_autocomplete_string(string)
   end
 
+  # from_omniauth()
+
+  test "from_omniauth() returns a LocalUser" do
+    email = "newuser@southwest.edu"
+    Invitee.create!(email:       email,
+                    note:        "hello world",
+                    institution: institutions(:southwest))
+    user = User.from_omniauth(provider: "identity",
+                              info:     { email: email })
+    assert_kind_of LocalUser, user
+  end
+
+  test "from_omniauth() returns a ShibbolethUser" do
+    user = User.from_omniauth(provider: "shibboleth",
+                              info:     { email: "user@example.org" })
+    assert_kind_of ShibbolethUser, user
+
+    user = User.from_omniauth(provider: "developer",
+                              info:     { email: "user@example.org" })
+    assert_kind_of ShibbolethUser, user
+  end
+
+  test "from_omniauth() returns a SamlUser" do
+    user = User.from_omniauth(provider: "saml",
+                              extra: {
+                                raw_info: OneLogin::RubySaml::Attributes.new(emailAddress: "user@example.org")
+                              })
+    assert_kind_of SamlUser, user
+  end
+
+  test "from_omniauth() with an unsupported provider raises an error" do
+    assert_raises ArgumentError do
+      User.from_omniauth(provider: "bogus")
+    end
+  end
+
   # belongs_to_user_group?()
 
   test "belongs_to_user_group?() returns false for a user not associated with
