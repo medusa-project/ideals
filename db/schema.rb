@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_02_175957) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_05_045429) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -697,7 +697,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_02_175957) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "uid", null: false
     t.string "name", null: false
     t.string "email", null: false
     t.datetime "created_at", null: false
@@ -714,7 +713,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_02_175957) do
     t.index ["institution_id"], name: "index_users_on_institution_id"
     t.index ["local_identity_id"], name: "index_users_on_local_identity_id"
     t.index ["name"], name: "index_users_on_name"
-    t.index ["uid"], name: "index_users_on_uid", unique: true
   end
 
   create_table "vocabularies", force: :cascade do |t|

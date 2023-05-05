@@ -10,8 +10,9 @@ class SamlUser < User
   # @return [SamlUser]
   #
   def self.from_omniauth(auth)
-    auth = auth.deep_stringify_keys
-    user = SamlUser.find_by(uid: auth['uid'])
+    auth  = auth.deep_stringify_keys
+    email = auth['extra']['raw_info'].attributes[:emailAddress]&.first
+    user  = SamlUser.find_by(email: email)
     if user
       user.update_with_omniauth(auth)
     else
@@ -34,25 +35,27 @@ class SamlUser < User
   end
 
   def update_with_omniauth(auth)
+    # This is an OmniAuth::AuthHash
     auth = auth.deep_stringify_keys
+    # This is a Hash
+    attrs = auth['extra']['raw_info'].attributes
     # By design, logging in overwrites certain existing user properties with
     # current information from the IdP. By supplying this custom attribute,
     # we can preserve the user properties that are set up in test fixture data.
-    return if auth.dig("extra", "raw_info", "overwriteUserAttrs") == "false"
+    return if attrs['overwriteUserAttrs'] == "false"
 
-    self.uid         = auth['uid']
-    self.email       = auth.dig("extra", "raw_info", "attributes", "emailAddress")&.first
-    self.name        = [auth.dig("extra", "raw_info", "attributes", "firstName")&.first,
-                        auth.dig("extra", "raw_info", "attributes", "lastName")&.first].join(" ").strip
-    self.name        = nil if self.name.blank?
-    org_id           = auth.dig("extra", "raw_info", "attributes", "http://eduserv.org.uk/federation/attributes/1.0/organisationid")&.first
+    self.email       = attrs[:emailAddress]&.first
+    self.name        = [attrs[:firstName]&.first, attrs[:lastName]&.first].join(" ").strip
+    self.name        = self.email if self.name.blank?
+    org_id           = attrs[:"http://eduserv.org.uk/federation/attributes/1.0/organisationid"]
     self.institution = Institution.find_by_openathens_organization_id(org_id) if org_id
-    self.phone       = auth.dig("extra", "raw_info", "attributes", "telephoneNumber")&.first
+    self.phone       = attrs[:phoneNumber]&.first
     begin
       self.save!
     rescue => e
       @message = IdealsMailer.error_body(e,
-                                         detail: "[user: #{self.as_json}]\n[auth hash: #{auth.as_json}]",
+                                         detail: "[user: #{YAML::dump(self)}]\n"\
+                                                 "[auth hash: #{YAML::dump(auth)}]",
                                          user:   self)
       Rails.logger.error(@message)
       IdealsMailer.error(@message).deliver_now unless Rails.env.development?

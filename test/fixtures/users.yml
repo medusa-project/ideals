@@ -12,7 +12,6 @@ example:
   type:        LocalUser
   institution: example
   identity:    example
-  uid:         example@example.edu
   name:        I have no rights
   email:       example@example.edu
   phone:       (888) 555-1234
@@ -22,7 +21,6 @@ example2:
   type:        LocalUser
   institution: example
   identity:    example2
-  uid:         example2@example.edu
   name:        I have no rights
   email:       example2@example.edu
   phone:       (888) 555-1234
@@ -32,7 +30,6 @@ example_approved:
   type:        LocalUser
   institution: example
   identity:    approved
-  uid:         approved@example.edu
   name:        Not Approved
   email:       approved@example.edu
   phone:       (888) 555-1234
@@ -42,7 +39,6 @@ example_sysadmin:
   type:        LocalUser
   institution: example
   identity:    example_sysadmin
-  uid:         admin@example.edu
   name:        admin
   email:       admin@example.edu
   phone:       (888) 555-1234
@@ -56,7 +52,6 @@ northeast:
   type:        LocalUser
   institution: northeast
   identity:    northeast
-  uid:         user@northeast.edu
   name:        Northeast University Normal User
   email:       user@northeast.edu
   phone:       (888) 555-1234
@@ -66,7 +61,6 @@ northeast_admin:
   type:        LocalUser
   institution: northeast
   identity:    northeast
-  uid:         admin@northeast.edu
   name:        Northeast.edu Institution Administrator
   email:       admin@northeast.edu
   phone:       (888) 555-1235
@@ -80,7 +74,6 @@ southwest:
   type:        LocalUser
   institution: southwest
   identity:    southwest
-  uid:         user@southwest.edu
   name:        Southwest University Normal User
   email:       user@southwest.edu
   phone:       (888) 555-1234
@@ -90,7 +83,6 @@ southwest_admin:
   type:        LocalUser
   institution: southwest
   identity:    southwest_admin
-  uid:         admin@southwest.edu
   name:        Southwest University Institution Administrator
   email:       admin@southwest.edu
   phone:       (888) 555-1235
@@ -102,7 +94,6 @@ southwest_sysadmin:
   type:        LocalUser
   institution: southwest
   identity:    southwest_sysadmin
-  uid:         sysadmin@southwest.edu
   name:        Southwest University System Administrator
   email:       sysadmin@southwest.edu
   phone:       (888) 555-1235
@@ -113,7 +104,6 @@ southwest_sysadmin:
 southwest_saml:
   type:        SamlUser
   institution: southwest
-  uid:         saml@southwest.edu
   name:        Southwest University SAML User
   email:       saml@southwest.edu
   phone:       (888) 555-1234
@@ -122,7 +112,6 @@ southwest_saml:
 southwest_shibboleth:
   type:        ShibbolethUser
   institution: southwest
-  uid:         shib@southwest.edu
   name:        Southwest University Shibboleth User
   email:       shib@southwest.edu
   phone:       (888) 555-1234
@@ -132,7 +121,6 @@ southwest_shibboleth:
 
 uiuc:
   type:        ShibbolethUser
-  uid:         shib@illinois.edu
   name:        Shib Boleth, Esq.
   email:       shib@illinois.edu
   phone:       (888) 555-1234
@@ -143,7 +131,6 @@ uiuc:
 uiuc2:
   type:        ShibbolethUser
   institution: uiuc
-  uid:         user2@illinois.edu
   name:        UIUC Normal User 2
   email:       user2@illinois.edu
   phone:       (888) 555-1234
@@ -153,7 +140,6 @@ uiuc2:
 uiuc_admin:
   type:        ShibbolethUser
   institution: uiuc
-  uid:         instadmin@illinois.edu
   name:        UIUC Institution Admin
   email:       instadmin@illinois.edu
   phone:       (888) 555-1235
@@ -165,7 +151,6 @@ uiuc_admin:
 uiuc_sysadmin:
   type:        ShibbolethUser
   institution: uiuc
-  uid:         sysadmin@illinois.edu
   name:        UIUC Sysadmin
   email:       sysadmin@illinois.edu
   phone:       (888) 555-1235
@@ -177,7 +162,6 @@ uiuc_sysadmin:
 uiuc_collection1_collection1_admin:
   type:        LocalUser
   institution: uiuc
-  uid:         uiuc_collection1_collection1_admin@illinois.edu
   name:        Collection1 Collection1 Administrator
   email:       uiuc_collection1_collection1_admin@illinois.edu
   phone:       (888) 555-1234
@@ -186,7 +170,6 @@ uiuc_collection1_collection1_admin:
 uiuc_collection1_collection1_submitter:
   type:        LocalUser
   institution: uiuc
-  uid:         phil@illinois.edu
   name:        Collection1 Collection1 Submitter
   email:       phil@illinois.edu
   phone:       (888) 555-1234
@@ -195,7 +178,6 @@ uiuc_collection1_collection1_submitter:
 uiuc_unit1_admin:
   type:        LocalUser
   institution: uiuc
-  uid:         uiuc_unit1_admin@illinois.edu
   name:        Unit1 Admin
   email:       uiuc_unit1_admin@illinois.edu
   phone:       (888) 555-1234
@@ -204,7 +186,6 @@ uiuc_unit1_admin:
 uiuc_unit1_unit2_unit1_admin:
   type:        LocalUser
   institution: uiuc
-  uid:         uiuc_unit1_unit2_unit1_admin@illinois.edu
   name:        Unit1 Unit2 Unit1 Admin
   email:       uiuc_unit1_unit2_unit1_admin@illinois.edu
   phone:       (888) 555-1234

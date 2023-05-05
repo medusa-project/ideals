@@ -31,7 +31,6 @@ class LocalUserTest < ActiveSupport::TestCase
     assert_equal identity, user.identity
     assert_equal email, user.email
     assert_equal name, user.name
-    assert_equal email, user.uid
     assert_equal institution, user.institution
     assert !user.sysadmin?
     assert_nil user.phone
@@ -41,18 +40,6 @@ class LocalUserTest < ActiveSupport::TestCase
 
   test "from_omniauth() returns nil if the auth hash is empty" do
     assert_nil LocalUser.from_omniauth({})
-  end
-
-  test "from_omniauth() returns nil if the auth hash UID is missing" do
-    hash = {
-        provider: "identity",
-        info: {
-            name: "I have no rights",
-            email: "example@example.edu"
-        },
-        credentials: ""
-    }
-    assert_nil LocalUser.from_omniauth(hash)
   end
 
   test "from_omniauth() returns nil if the auth hash email is missing" do

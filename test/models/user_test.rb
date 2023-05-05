@@ -268,7 +268,7 @@ class UserTest < ActiveSupport::TestCase
   test "email must be unique" do
     email = @user.email
     assert_raises ActiveRecord::RecordInvalid do
-      LocalUser.create!(email: email, name: email, uid: email)
+      LocalUser.create!(email: email, name: email)
     end
   end
 
@@ -338,24 +338,6 @@ class UserTest < ActiveSupport::TestCase
                  @user.to_autocomplete
     @user.name = nil
     assert_equal @user.email, @user.to_autocomplete
-  end
-
-  # uid
-
-  test "uid is required" do
-    @user.uid = nil
-    assert !@user.valid?
-    @user.uid = "test"
-    assert @user.valid?
-  end
-
-  test "uid must be unique" do
-    uid = @user.uid
-    assert_raises ActiveRecord::RecordInvalid do
-      LocalUser.create!(email: "random12345@example.org",
-                        name: uid,
-                        uid: uid)
-    end
   end
 
   # unit_admin?()

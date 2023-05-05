@@ -13,7 +13,7 @@ class ShibbolethUser < User
   #
   def self.from_omniauth(auth)
     auth = auth.deep_stringify_keys
-    user = ShibbolethUser.find_by(uid: auth["uid"])
+    user = ShibbolethUser.find_by(email: auth['info']['email'])
     if user
       user.update_with_omniauth(auth)
     else
@@ -38,7 +38,6 @@ class ShibbolethUser < User
 
   def self.create_no_omniauth(email:)
     create! do |user|
-      user.uid   = email
       user.email = email
       user.name  = email.split("@").first
     end
@@ -71,7 +70,7 @@ class ShibbolethUser < User
   def belongs_to_ad_group?(group)
     group = group.to_s
     if Rails.env.development? || Rails.env.test?
-      groups = Configuration.instance.ad.dig(:groups, self.uid)
+      groups = Configuration.instance.ad.dig(:groups, self.email)
       return groups&.include?(group)
     end
     cache_key = Digest::MD5.hexdigest("#{self.institution.key} #{self.netid} ismemberof #{group}")
@@ -104,14 +103,12 @@ class ShibbolethUser < User
     # fixture data.
     return if auth.dig("extra", "raw_info", "overwriteUserAttrs") == "false"
 
-    # N.B.: we must access the auth hash carefully because not all properties
-    # will be present in all environments; in particular, in development, we
-    # are using omniauth's developer strategy which doesn't supply much.
-    self.uid         = auth["uid"] || auth["info"]["email"]
+    # N.B.: not all providers will populate all properties; the developer
+    # provider doesn't supply much.
     self.email       = auth["info"]["email"]
     self.name        = "#{auth.dig("extra", "raw_info", "givenName")} "\
                        "#{auth.dig("extra", "raw_info", "sn")}"
-    self.name        = self.uid if self.name.blank?
+    self.name        = self.email if self.name.blank?
     self.org_dn      = auth.dig("extra", "raw_info", "org-dn")
     # UIS accounts will not have an org DN--eventually these users will be
     # converted into LocalUsers and moved into the UIS space

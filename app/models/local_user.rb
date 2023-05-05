@@ -45,7 +45,6 @@ class LocalUser < User
                                          invitee:               invitee)
       end
       identity.build_user(email:       email,
-                          uid:         email,
                           institution: institution,
                           name:        name || email,
                           type:        LocalUser.to_s)
@@ -58,15 +57,13 @@ class LocalUser < User
   # @private
   #
   def self.create_with_omniauth(auth)
-    email = auth[:info][:email].strip
-    return nil unless email
-
+    auth    = auth.deep_symbolize_keys
+    email   = auth.dig(:info, :email)&.strip
     invitee = Invitee.find_by(email: email)
     return nil unless invitee&.expires_at
     return nil unless invitee.expires_at >= Time.current
 
     create! do |user|
-      user.uid         = email
       user.email       = email
       user.name        = email
       user.institution = invitee.institution
@@ -78,20 +75,9 @@ class LocalUser < User
   # @return [LocalUser] Instance corresponding to the given OmniAuth hash.
   #
   def self.from_omniauth(auth)
-    auth = auth.deep_symbolize_keys
-    return nil unless auth && auth[:uid] && auth[:info][:email]
-
-    email = auth[:info][:email].strip
-    user  = LocalUser.find_by(uid: email)
-    if user
-      # Unlike an omniauth-shibboleth user, the auth hash of an
-      # omniauth-identity user is not going to contain any info other than an
-      # email. So there is not much to update.
-      user.update!(uid: auth[:info][:email].strip)
-    else
-      user = LocalUser.create_with_omniauth(auth)
-    end
-    user
+    auth  = auth.deep_symbolize_keys
+    email = auth.dig(:info, :email)&.strip
+    LocalUser.find_by(email: email) || LocalUser.create_with_omniauth(auth)
   end
 
   ##

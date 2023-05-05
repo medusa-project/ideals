@@ -81,7 +81,6 @@ class LocalIdentitiesController < ApplicationController
       user = @identity.user
       unless user
         user = @identity.build_user(email:          @identity.email,
-                                    uid:            @identity.email,
                                     name:           @identity.email,
                                     institution_id: @identity.invitee.institution_id,
                                     type:           LocalUser.to_s)

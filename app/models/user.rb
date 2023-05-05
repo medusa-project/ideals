@@ -38,11 +38,6 @@
 #                       {ShibbolethUser}s have this. TODO: this is probably not needed anymore now that we have institution_id
 # * `phone`             The user's phone number.
 # * `type`              Supports Rails single-table inheritance (STI).
-# * `uid`               Unique identifier from the authentication provider.
-#                       For {ShibbolethUser}s, this is probably the EPPN. For
-#                       {LocalUser}s, it's the email address. For {SamlUser}s,
-#                       it's some long string. We don't really use it, although
-#                       it is guaranteed unique.
 # * `updated_at:        Managed by ActiveRecord.
 #
 class User < ApplicationRecord
@@ -81,8 +76,6 @@ class User < ApplicationRecord
             format: {with: StringUtils::EMAIL_REGEX}
   validates_uniqueness_of :email, case_sensitive: false
   validates :name, presence: true
-  validates :uid, presence: true
-  validates_uniqueness_of :uid, case_sensitive: false
 
   ##
   # @param string [String] Autocomplete text field string.

@@ -55,7 +55,7 @@ class ActiveSupport::TestCase
         "omniauth.auth": {
           provider:          "shibboleth",
           "Shib-Session-ID": SecureRandom.hex,
-          uid:               user.uid,
+          uid:               user.email,
           info: {
             email: user.email
           },

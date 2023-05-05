@@ -240,11 +240,9 @@ class UserGroupsController < ApplicationController
         where(user_group: @user_group).
         destroy_all
       params[:user_group][:netid_users].select(&:present?).each do |netid|
-        uid   = "#{netid}@illinois.edu"
-        email = uid
-        user  = ShibbolethUser.find_by_uid(uid) || ShibbolethUser.new(uid:   uid,
-                                                                      email: email,
-                                                                      name:  netid)
+        email = "#{netid}@illinois.edu"
+        user  = ShibbolethUser.find_by_email(email) || ShibbolethUser.new(email: email,
+                                                                          name:  netid)
         @user_group.users << user
       end
     end

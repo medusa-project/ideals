@@ -108,13 +108,12 @@ class ShibbolethUserTest < ActiveSupport::TestCase
 
   test "from_omniauth() returns a new instance if a corresponding
   ShibbolethUser does not already exist" do
-    assert_nil ShibbolethUser.find_by_uid("example@illinois.edu")
+    assert_nil ShibbolethUser.find_by_email("example@illinois.edu")
     assert_not_nil ShibbolethUser.from_omniauth(self.class.auth_hash)
   end
 
   test "from_omniauth() sets correct properties" do
     user = ShibbolethUser.from_omniauth(self.class.auth_hash)
-    assert_equal "example@illinois.edu", user.uid
     assert_equal "Shib Boleth", user.name
     assert_equal "example@illinois.edu", user.email
     assert_equal "(888) 555-5555", user.phone

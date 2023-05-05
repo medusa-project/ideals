@@ -219,7 +219,7 @@ class UsersController < ApplicationController
     @window           = window_size
     q                 = "%#{@permitted_params[:q]&.downcase}%"
     @users            = User.
-      where("LOWER(name) LIKE ? OR LOWER(uid) LIKE ? OR LOWER(email) LIKE ?", q, q, q).
+      where("LOWER(name) LIKE ? OR LOWER(email) LIKE ?", q, q).
       order(:name)
     if institution
       @users          = @users.where(institution_id: institution.id)
