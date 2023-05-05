@@ -143,18 +143,18 @@
             .card-body
               - if can_edit
                 .float-end
-                  %button.btn.btn-light.btn-sm.edit-netid-users{"data-bs-target":     "#edit-netid-users-modal",
-                                                                "data-bs-toggle":     "modal",
-                                                                "data-user-group-id": @user_group.id,
-                                                                type:                 "button"}
+                  %button.btn.btn-light.btn-sm.edit-shibboleth-users{"data-bs-target":     "#edit-shibboleth-users-modal",
+                                                                     "data-bs-toggle":     "modal",
+                                                                     "data-user-group-id": @user_group.id,
+                                                                     type:                 "button"}
                     %i.fa.fa-pencil-alt
                     Edit
               %h4.card-title
-                NetID Users
+                NetID/Shibboleth Users
                 %span.badge.bg-primary UIUC only
-              - if @netid_users.any?
+              - if @shibboleth_users.any?
                 %ul
-                  - @netid_users.each do |user|
+                  - @shibboleth_users.each do |user|
                     %li
                       - if user.name != user.netid
                         = link_to("#{user.name} (#{user.netid})", user)
@@ -286,6 +286,6 @@
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-hosts-modal", title: "Edit Hosts" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-netid-users-modal", title: "Edit NetID Users" }
+         locals: { id: "edit-shibboleth-users-modal", title: "Edit NetID/Shibboleth Users" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-email-patterns-modal", title: "Edit Email Address Patterns" }

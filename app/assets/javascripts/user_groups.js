@@ -87,11 +87,11 @@ const UserGroupView = function() {
             $("#edit-local-users-modal .modal-body").html(data);
         });
     });
-    $("button.edit-netid-users").on("click", function() {
+    $("button.edit-shibboleth-users").on("click", function() {
         const id = $(this).data("user-group-id");
-        const url = ROOT_URL + "/user-groups/" + id + "/edit-netid-users";
+        const url = ROOT_URL + "/user-groups/" + id + "/edit-shibboleth-users";
         $.get(url, function(data) {
-            $("#edit-netid-users-modal .modal-body").html(data);
+            $("#edit-shibboleth-users-modal .modal-body").html(data);
             UserGroupForm.attachEventListeners();
         });
     });

@@ -100,10 +100,10 @@ class UserGroupsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /user-groups/:id/edit-netid-users` (XHR only)
+  # Responds to `GET /user-groups/:id/edit-shibboleth-users` (XHR only)
   #
-  def edit_netid_users
-    render partial: "user_groups/netid_users_form",
+  def edit_shibboleth_users
+    render partial: "user_groups/shibboleth_users_form",
            locals: { user_group: @user_group }
   end
 
@@ -145,13 +145,13 @@ class UserGroupsController < ApplicationController
   # Responds to `GET /user-groups/:id`
   #
   def show
-    @local_users    = @user_group.local_users.order(:name)
-    @netid_users    = @user_group.netid_users.order(:name)
-    @ad_groups      = @user_group.ad_groups.order(:name)
-    @hosts          = @user_group.hosts.order(:pattern)
-    @departments    = @user_group.departments.order(:name)
-    @affiliations   = @user_group.affiliations.order(:name)
-    @email_patterns = @user_group.email_patterns.order(:pattern)
+    @local_users      = @user_group.local_users.order(:name)
+    @shibboleth_users = @user_group.shibboleth_users.order(:name)
+    @ad_groups        = @user_group.ad_groups.order(:name)
+    @hosts            = @user_group.hosts.order(:pattern)
+    @departments      = @user_group.departments.order(:name)
+    @affiliations     = @user_group.affiliations.order(:name)
+    @email_patterns   = @user_group.email_patterns.order(:pattern)
   end
 
   ##
@@ -163,7 +163,7 @@ class UserGroupsController < ApplicationController
         # Process input from the various edit modals.
         build_ad_groups
         build_local_users
-        build_netid_users
+        build_shibboleth_users
         build_hosts
         build_departments
         build_email_patterns
@@ -232,14 +232,14 @@ class UserGroupsController < ApplicationController
     end
   end
 
-  def build_netid_users
-    if params[:user_group][:netid_users]&.respond_to?(:each)
+  def build_shibboleth_users
+    if params[:user_group][:shibboleth_users]&.respond_to?(:each)
       UserGroupUser.
         joins(:user).
         where("user.auth_method": User::AuthMethod::SHIBBOLETH).
         where(user_group: @user_group).
         destroy_all
-      params[:user_group][:netid_users].select(&:present?).each do |netid|
+      params[:user_group][:shibboleth_users].select(&:present?).each do |netid|
         email = "#{netid}@illinois.edu"
         user  = User.find_by_email(email) || User.new(email:       email,
                                                       name:        netid,

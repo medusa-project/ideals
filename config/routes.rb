@@ -246,7 +246,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-local-users", to: "user_groups#edit_local_users", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/edit-netid-users", to: "user_groups#edit_netid_users", via: :get,
+    match "/edit-shibboleth-users", to: "user_groups#edit_shibboleth_users", via: :get,
           constraints: lambda { |request| request.xhr? }
   end
   resources :users, only: [:index, :show] do

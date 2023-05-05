@@ -362,39 +362,39 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # edit_netid_users()
+  # edit_shibboleth_users()
 
-  test "edit_netid_users() returns HTTP 404 for unscoped requests" do
+  test "edit_shibboleth_users() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
     group = user_groups(:uiuc)
-    get user_group_edit_netid_users_path(group), xhr: true
+    get user_group_edit_shibboleth_users_path(group), xhr: true
     assert_response :not_found
   end
 
-  test "edit_netid_users() returns HTTP 403 for logged-out users" do
+  test "edit_shibboleth_users() returns HTTP 403 for logged-out users" do
     group = user_groups(:uiuc)
-    get user_group_edit_netid_users_path(group), xhr: true
+    get user_group_edit_shibboleth_users_path(group), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_netid_users() returns HTTP 403 for unauthorized users" do
+  test "edit_shibboleth_users() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
     group = user_groups(:uiuc)
-    get user_group_edit_netid_users_path(group), xhr: true
+    get user_group_edit_shibboleth_users_path(group), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_netid_users() returns HTTP 404 for non-XHR requests" do
+  test "edit_shibboleth_users() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
     group = user_groups(:uiuc)
-    get user_group_edit_netid_users_path(group)
+    get user_group_edit_shibboleth_users_path(group)
     assert_response :not_found
   end
 
-  test "edit_netid_users() returns HTTP 200 for XHR requests" do
+  test "edit_shibboleth_users() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_sysadmin))
     group = user_groups(:uiuc)
-    get user_group_edit_netid_users_path(group), xhr: true
+    get user_group_edit_shibboleth_users_path(group), xhr: true
     assert_response :ok
   end
 

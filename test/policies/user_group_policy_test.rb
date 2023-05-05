@@ -539,64 +539,64 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_local_users?
   end
 
-  # edit_netid_users?()
+  # edit_shibboleth_users?()
 
-  test "edit_netid_users?() returns false with a nil user" do
+  test "edit_shibboleth_users?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @user_group.institution)
     policy = UserGroupPolicy.new(context, @user_group)
-    assert !policy.edit_netid_users?
+    assert !policy.edit_shibboleth_users?
   end
 
-  test "edit_netid_users?() does not authorize an incorrect scope" do
+  test "edit_shibboleth_users?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
     policy  = UserGroupPolicy.new(context, @user_group)
-    assert !policy.edit_netid_users?
+    assert !policy.edit_shibboleth_users?
   end
 
-  test "edit_netid_users?() authorizes sysadmins" do
+  test "edit_shibboleth_users?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_netid_users?
+    assert policy.edit_shibboleth_users?
   end
 
-  test "edit_netid_users?() authorizes administrators of the same institution
-  as the user group" do
+  test "edit_shibboleth_users?() authorizes administrators of the same
+  institution as the user group" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
-    assert policy.edit_netid_users?
+    assert policy.edit_shibboleth_users?
   end
 
-  test "edit_netid_users?() does not authorize administrators of a different
+  test "edit_shibboleth_users?() does not authorize administrators of a different
   institution than that of the user group" do
     user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
-    assert !policy.edit_netid_users?
+    assert !policy.edit_shibboleth_users?
   end
 
-  test "edit_netid_users?() does not authorize anybody else" do
+  test "edit_shibboleth_users?() does not authorize anybody else" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
-    assert !policy.edit_netid_users?
+    assert !policy.edit_shibboleth_users?
   end
 
-  test "edit_netid_users?() respects role limits" do
+  test "edit_shibboleth_users?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = UserGroupPolicy.new(context, @user_group)
-    assert !policy.edit_netid_users?
+    assert !policy.edit_shibboleth_users?
   end
 
   # index?()

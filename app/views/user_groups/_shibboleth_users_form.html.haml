@@ -4,12 +4,12 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  = hidden_field_tag "user_group[netid_users][]"
-  - users = f.object.netid_users
+  = hidden_field_tag "user_group[shibboleth_users][]"
+  - users = f.object.shibboleth_users
   - users = [User.new] if users.empty?
   - users.each do |user|
     .input-group.mb-3
-      = text_field_tag "user_group[netid_users][]", user.netid,
+      = text_field_tag "user_group[shibboleth_users][]", user.netid,
                        placeholder: "NetID",
                        class: "form-control"
       %button.btn.btn-outline-danger.remove{type: "button"}

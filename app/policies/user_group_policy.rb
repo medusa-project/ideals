@@ -66,7 +66,7 @@ class UserGroupPolicy < ApplicationPolicy
     edit
   end
 
-  def edit_netid_users
+  def edit_shibboleth_users
     edit
   end
 

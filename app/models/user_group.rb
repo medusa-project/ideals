@@ -146,7 +146,7 @@ class UserGroup < ApplicationRecord
   ##
   # @return [ActiveRecord::Relation<User>]
   #
-  def netid_users
+  def shibboleth_users
     self.users.where(auth_method: User::AuthMethod::SHIBBOLETH)
   end
 
