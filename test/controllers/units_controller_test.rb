@@ -117,13 +117,15 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:uiuc_admin))
+    user = users(:uiuc_admin)
+    log_in_as(user)
     post units_path,
          xhr: true,
          params: {
-             unit: {
-                 title: ""
-             }
+           unit: {
+             institution_id: user.institution.id,
+             title:          "" # invalid
+           }
          }
     assert_response :bad_request
   end
@@ -192,7 +194,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "delete() redirects to the owning institution if the unit is in a
   different institution than the current institution's scope and there is no
   parent unit and the delete succeeds" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:uiuc_sysadmin))
     unit = units(:southwest_unit2)
     post unit_delete_path(unit)
     assert_redirected_to institution_path(unit.institution)
@@ -405,8 +407,9 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:uiuc))
-    get new_unit_path
+    user = users(:uiuc)
+    log_in_as(user)
+    get new_unit_path(unit: { institution_id: user.institution.id })
     assert_response :forbidden
   end
 

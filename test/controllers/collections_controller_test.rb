@@ -497,7 +497,8 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "new() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
-    get new_collection_path
+    get new_collection_path(primary_unit_id: 0,
+                            collection:      { institution_id: 0 })
     assert_response :forbidden
   end
 
