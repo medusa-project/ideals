@@ -254,17 +254,19 @@ class User < ApplicationRecord
 
   ##
   # Performs an LDAP query to determine whether the instance belongs to the
-  # given group. Works only for {AuthMethod::SHIBBOLETH Shibboleth users}.
+  # given AD group. Groups are assigned only to
+  # {AuthMethod::SHIBBOLETH Shibboleth users}, but this method will work for
+  # users who have signed in via Shibboleth before, had groups assigned to them
+  # then, and then signed in via some other method later.
   #
   # N.B.: in development and test environments, no query is executed, and
-  # instead the return value is `true` if the email and group name both include
-  # the string `admin`.
+  # instead the return value is `true` if the `ad.groups` key in the
+  # configuration includes the user's email.
   #
   # @param group [AdGroup,String]
   # @return [Boolean]
   #
   def belongs_to_ad_group?(group)
-    return false if auth_method != AuthMethod::SHIBBOLETH
     group = group.to_s
     if Rails.env.development? || Rails.env.test?
       groups = Configuration.instance.ad.dig(:groups, self.email)
