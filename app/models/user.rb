@@ -54,6 +54,23 @@ class User < ApplicationRecord
     SHIBBOLETH = 1
     # Used by many CARLI member institutions.
     OPENATHENS = 2
+
+    def self.all
+      self.constants.map{ |c| self.const_get(c) }.sort
+    end
+
+    def self.label_for(value)
+      case value
+      when LOCAL
+        "Local"
+      when OPENATHENS
+        "OpenAthens"
+      when SHIBBOLETH
+        "Shibboleth"
+      else
+        "Unknown"
+      end
+    end
   end
 
   # Only Shibboleth users will have one of these.
@@ -85,6 +102,7 @@ class User < ApplicationRecord
   # `belongs_to_user_group?()`
   has_and_belongs_to_many :user_groups
 
+  validates :auth_method, inclusion: { in: AuthMethod.all }
   validates :email, presence: true, length: {maximum: 255},
             format: {with: StringUtils::EMAIL_REGEX}
   validates_uniqueness_of :email, case_sensitive: false

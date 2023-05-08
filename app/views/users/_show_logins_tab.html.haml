@@ -1,25 +1,27 @@
-- if current_user.sysadmin?
-  #login-accordion.accordion
-    - @logins.each do |login|
-      .accordion-item
-        %h2.accordion-header
-          %button.accordion-button.collapsed{type:             "button",
-                                             "data-bs-toggle": "collapse",
-                                             "data-bs-target": "#login-#{login.id}",
-                                             "aria-expanded":  "false",
-                                             "aria-controls":  "login-#{login.id}"}
-            = local_time(login.created_at)
-        .accordion-collapse.collapse{id:               "login-#{login.id}",
-                                     "data-bs-parent": "#login-accordion"}
-          .accordion-body
-            %dl
-              %dt Host
-              %dd
-                - if login.hostname.present?
-                  %code= login.hostname
-                  = " (#{login.ip_address})"
-                - else
-                  = login.ip_address
+#login-accordion.accordion
+  - @logins.each do |login|
+    .accordion-item
+      %h2.accordion-header
+        %button.accordion-button.collapsed{type:             "button",
+                                           "data-bs-toggle": "collapse",
+                                           "data-bs-target": "#login-#{login.id}",
+                                           "aria-expanded":  "false",
+                                           "aria-controls":  "login-#{login.id}"}
+          = local_time(login.created_at)
+      .accordion-collapse.collapse{id:               "login-#{login.id}",
+                                   "data-bs-parent": "#login-accordion"}
+        .accordion-body
+          %dl
+            %dt Host
+            %dd
+              - if login.hostname.present?
+                %code= login.hostname
+            %dt IP Address
+            %dd
+              %code= login.ip_address
+            %dt Auth Method
+            %dd= User::AuthMethod.label_for(login.auth_method)
+            - if current_user.sysadmin? && request_context.role_limit >= Role::SYSTEM_ADMINISTRATOR
               %dt Auth Hash
               -# some of this content can be very wide and would mess up the page layout
               -# without the overflow-x
@@ -28,16 +30,3 @@
                   %pre= JSON.pretty_generate(login.auth_hash)
                 - else
                   Not Recorded
-- else
-  %table.table
-    %thead
-      %th Date/Time
-      %th IP Address
-      %th Hostname
-    %tbody
-      - @logins.each do |login|
-        %tr
-          %td= local_time(login.created_at)
-          %td= login.ip_address
-          %td
-            %code= login.hostname

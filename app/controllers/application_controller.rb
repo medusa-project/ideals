@@ -3,7 +3,7 @@
 class ApplicationController < ActionController::Base
 
   protect_from_forgery with: :exception
-  helper_method :current_user, :logged_in?, :to_do_list
+  helper_method :current_user, :logged_in?, :request_context, :to_do_list
 
   rescue_from StandardError, with: :rescue_server_error
   rescue_from ActionController::InvalidAuthenticityToken, with: :rescue_invalid_auth_token

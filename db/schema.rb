@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_05_195127) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_06_030550) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -409,6 +409,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_05_195127) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "hostname"
+    t.integer "auth_method"
     t.index ["created_at"], name: "index_logins_on_created_at"
     t.index ["user_id"], name: "index_logins_on_user_id"
   end

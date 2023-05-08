@@ -296,6 +296,15 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
+  # auth_method
+
+  test "auth_method must be set to one of the AuthMethod constant values" do
+    @user.auth_method = User::AuthMethod::OPENATHENS
+    assert @user.valid?
+    @user.auth_method = 99
+    assert !@user.valid?
+  end
+
   # belongs_to_user_group?()
 
   test "belongs_to_user_group?() returns false for a user not associated with
