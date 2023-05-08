@@ -181,9 +181,10 @@
                     = item[:message]
               %li
                 %hr.dropdown-divider
-            = link_to(institution_path(current_user.institution), class: "dropdown-item") do
-              = icon_for(current_user.institution)
-              My Institution
+            - if current_user.effective_institution_admin?(current_user.institution)
+              = link_to(institution_path(current_user.institution), class: "dropdown-item") do
+                = icon_for(current_user.institution)
+                My Institution
             = link_to(user_path(current_user), class: "dropdown-item") do
               = icon_for(current_user)
               My Account
