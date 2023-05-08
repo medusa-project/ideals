@@ -10,4 +10,4 @@ services:
       - handle
       - minio
       - rabbitmq
-    command: bash -c "sleep 30 && bin/rails db:prepare && bin/rails opensearch:indexes:create[ideals-test] && bin/rails test && bin/rails zeitwerk:check"
+    command: bash -c "sleep 40 && bin/rails db:prepare && bin/rails opensearch:indexes:create[ideals-test] && bin/rails test && bin/rails zeitwerk:check"
