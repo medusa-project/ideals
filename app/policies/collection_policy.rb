@@ -85,7 +85,11 @@ class CollectionPolicy < ApplicationPolicy
     update
   end
 
-  def edit_submitters
+  def edit_submitting_groups
+    update
+  end
+
+  def edit_submitting_users
     update
   end
 

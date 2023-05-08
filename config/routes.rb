@@ -39,7 +39,9 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "collections#edit_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/edit-submitters", to: "collections#edit_submitters", via: :get,
+    match "/edit-submitting-groups", to: "collections#edit_submitting_groups", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-submitting-users", to: "collections#edit_submitting_users", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-unit-membership", to: "collections#edit_unit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }

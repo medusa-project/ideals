@@ -9,7 +9,9 @@ class CollectionsController < ApplicationController
                                           :edit_administering_groups,
                                           :edit_administering_users,
                                           :edit_collection_membership,
-                                          :edit_properties, :edit_submitters,
+                                          :edit_properties,
+                                          :edit_submitting_groups,
+                                          :edit_submitting_users,
                                           :edit_unit_membership,
                                           :edit_user_access, :new,
                                           :show_access,
@@ -148,11 +150,20 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /collections/:collection_id/edit-submitters`
+  # Responds to `GET /collections/:collection_id/edit-submitting-groups`
   # (XHR only)
   #
-  def edit_submitters
-    render partial: "collections/submitters_form",
+  def edit_submitting_groups
+    render partial: "collections/submitting_groups_form",
+           locals: { collection: @collection }
+  end
+
+  ##
+  # Responds to `GET /collections/:collection_id/edit-submitting-users`
+  # (XHR only)
+  #
+  def edit_submitting_users
+    render partial: "collections/submitting_users_form",
            locals: { collection: @collection }
   end
 

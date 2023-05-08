@@ -424,46 +424,88 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_properties?
   end
 
-  # edit_submitters?()
+  # edit_submitting_groups?()
 
-  test "edit_submitters?() returns false with a nil user" do
+  test "edit_submitting_groups?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @collection.institution)
     policy = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_submitters?
+    assert !policy.edit_submitting_groups?
   end
 
-  test "edit_submitters?() does not authorize an incorrect scope" do
+  test "edit_submitting_groups?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
     policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_submitters?
+    assert !policy.edit_submitting_groups?
   end
 
-  test "edit_submitters?() is restrictive by default" do
+  test "edit_submitting_groups?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_submitters?
+    assert !policy.edit_submitting_groups?
   end
 
-  test "edit_submitters?() authorizes sysadmins" do
+  test "edit_submitting_groups?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy   = CollectionPolicy.new(context, @collection)
-    assert policy.edit_submitters?
+    assert policy.edit_submitting_groups?
   end
 
-  test "edit_submitters?() respects role limits" do
+  test "edit_submitting_groups?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_submitters?
+    assert !policy.edit_submitting_groups?
+  end
+
+  # edit_submitting_users?()
+
+  test "edit_submitting_users?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @collection.institution)
+    policy = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_submitting_users?
+  end
+
+  test "edit_submitting_users?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_submitting_users?
+  end
+
+  test "edit_submitting_users?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_submitting_users?
+  end
+
+  test "edit_submitting_users?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy   = CollectionPolicy.new(context, @collection)
+    assert policy.edit_submitting_users?
+  end
+
+  test "edit_submitting_users?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_submitting_users?
   end
 
   # edit_unit_membership?()

@@ -1,0 +1,26 @@
+-# frozen_string_literal: true
+-#
+-# Required locals:
+-#
+-# collection [Collection]
+-#
+= form_for(collection, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  -# `collection` is required in the params (but this attribute is not permitted)
+  = f.hidden_field :id, value: f.object.id
+
+  = hidden_field_tag "submitting_user_group_ids[]"
+  - UserGroup.order(:name).each do |user_group|
+    .form-check
+      = check_box_tag "submitting_user_group_ids[]", user_group.id,
+                      f.object.submitter_groups.where(user_group: user_group).any?,
+                      { id: "submitting_user_group_ids_#{user_group.id}", class: "form-check-input" }
+      = label_tag "submitting_user_group_ids_#{user_group.id}",
+        user_group.name, class: "form-check-label"
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Save Changes", class: "btn btn-primary")

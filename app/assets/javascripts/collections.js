@@ -250,10 +250,16 @@ const CollectionView = function() {
                     new IDEALS.MultiElementList();
                 });
             });
-            $(".edit-collection-submitters").on("click", function() {
-                const url = ROOT_URL + "/collections/" + collectionID + "/edit-submitters";
+            $(".edit-submitting-groups").on("click", function() {
+                const url = ROOT_URL + "/collections/" + collectionID + "/edit-submitting-groups";
                 $.get(url, function(data) {
-                    $("#edit-collection-submitters-modal .modal-body").html(data);
+                    $("#edit-submitting-groups-modal .modal-body").html(data);
+                });
+            });
+            $(".edit-submitting-users").on("click", function() {
+                const url = ROOT_URL + "/collections/" + collectionID + "/edit-submitting-users";
+                $.get(url, function(data) {
+                    $("#edit-submitting-users-modal .modal-body").html(data);
                     new IDEALS.LocalUserAutocompleter($("input[name='submitters[]']"));
                     new IDEALS.MultiElementList();
                 });

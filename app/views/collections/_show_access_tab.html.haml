@@ -53,21 +53,17 @@
               None
 
   #submitters.tab-pane.fade{role: "tabpanel", "aria-labelledby": "submitters-tab"}
-    .btn-group.float-end{role: "group"}
-      - if policy(@collection).edit_submitters?
-        %button.btn.btn-light.edit-collection-submitters{"data-collection-id": @collection.id,
-                                                         "data-bs-target":     "#edit-collection-submitters-modal",
-                                                         "data-bs-toggle":     "modal",
-                                                         role:                 "button"}
-          %i.fas.fa-pencil-alt
-          Edit Submitters
-
-    .clearfix.mb-3
-
     .row
       .col-md-6
         .card
           .card-body
+            - if policy(@collection).edit_submitting_groups?
+              .float-end
+                %button.btn.btn-sm.btn-light.edit-submitting-groups{"data-bs-target": "#edit-submitting-groups-modal",
+                                                                    "data-bs-toggle": "modal",
+                                                                    role:             "button"}
+                  %i.fas.fa-pencil-alt
+                  Edit
             %h5.card-title Groups
             - if @collection.submitting_groups.any?
               %ul
@@ -78,6 +74,13 @@
       .col-md-6
         .card
           .card-body
+            - if policy(@collection).edit_submitting_users?
+              .float-end
+                %button.btn.btn-sm.btn-light.edit-submitting-users{"data-bs-target": "#edit-submitting-users-modal",
+                                                                   "data-bs-toggle": "modal",
+                                                                   role:             "button"}
+                  %i.fas.fa-pencil-alt
+                  Edit
             %h5.card-title Users
             - if @collection.submitting_users.any?
               %ul
@@ -93,5 +96,8 @@
          locals: { id: "edit-administering-users-modal",
                    title: "Edit User Administrators" }
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-collection-submitters-modal",
-                   title: "Edit Submitters" }
+         locals: { id: "edit-submitting-groups-modal",
+                   title: "Edit Group Submitters" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-submitting-users-modal",
+                   title: "Edit User Submitters" }

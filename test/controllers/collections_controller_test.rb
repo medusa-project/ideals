@@ -394,46 +394,89 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # edit_submitters()
+  # edit_submitting_groups()
 
-  test "edit_submitters() returns HTTP 404 for unscoped requests" do
+  test "edit_submitting_groups() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
     collection = collections(:uiuc_collection1)
-    get collection_edit_submitters_path(collection), xhr: true
+    get collection_edit_submitting_groups_path(collection), xhr: true
     assert_response :not_found
   end
 
-  test "edit_submitters() returns HTTP 403 for logged-out users" do
+  test "edit_submitting_groups() returns HTTP 403 for logged-out users" do
     collection = collections(:uiuc_collection1)
-    get collection_edit_submitters_path(collection), xhr: true
+    get collection_edit_submitting_groups_path(collection), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_submitters() returns HTTP 403 for unauthorized users" do
+  test "edit_submitting_groups() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:example))
     collection = collections(:uiuc_collection1)
-    get collection_edit_submitters_path(collection), xhr: true
+    get collection_edit_submitting_groups_path(collection), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_submitters() returns HTTP 404 for non-XHR requests" do
+  test "edit_submitting_groups() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:example_sysadmin))
     collection = collections(:uiuc_collection1)
-    get collection_edit_submitters_path(collection)
+    get collection_edit_submitting_groups_path(collection)
     assert_response :not_found
   end
 
-  test "edit_submitters() returns HTTP 410 for a buried collection" do
+  test "edit_submitting_groups() returns HTTP 410 for a buried collection" do
     log_in_as(users(:uiuc_admin))
     collection = collections(:uiuc_buried)
-    get collection_edit_submitters_path(collection), xhr: true
+    get collection_edit_submitting_groups_path(collection), xhr: true
     assert_response :gone
   end
 
-  test "edit_submitters() returns HTTP 200 for XHR requests" do
+  test "edit_submitting_groups() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_admin))
     collection = collections(:uiuc_collection1)
-    get collection_edit_submitters_path(collection), xhr: true
+    get collection_edit_submitting_groups_path(collection), xhr: true
+    assert_response :ok
+  end
+
+  # edit_submitting_users()
+
+  test "edit_submitting_users() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_edit_submitting_users_path(collection), xhr: true
+    assert_response :not_found
+  end
+
+  test "edit_submitting_users() returns HTTP 403 for logged-out users" do
+    collection = collections(:uiuc_collection1)
+    get collection_edit_submitting_users_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_submitting_users() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:example))
+    collection = collections(:uiuc_collection1)
+    get collection_edit_submitting_users_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_submitting_users() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:example_sysadmin))
+    collection = collections(:uiuc_collection1)
+    get collection_edit_submitting_users_path(collection)
+    assert_response :not_found
+  end
+
+  test "edit_submitting_users() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:uiuc_admin))
+    collection = collections(:uiuc_buried)
+    get collection_edit_submitting_users_path(collection), xhr: true
+    assert_response :gone
+  end
+
+  test "edit_submitting_users() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:uiuc_admin))
+    collection = collections(:uiuc_collection1)
+    get collection_edit_submitting_users_path(collection), xhr: true
     assert_response :ok
   end
 
