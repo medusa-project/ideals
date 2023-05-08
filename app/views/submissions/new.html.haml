@@ -27,28 +27,29 @@
               = link_to(raw("Started #{local_time_ago(item.created_at)}"),
                         edit_submission_url(item, host: item.institution.fqdn))
 
-.alert.alert-light
-  = icon_for(:info)
-  To start your deposit, please review the deposit agreement and answer the
-  following questions.
+- if current_institution.deposit_agreement.present?
+  .alert.alert-light
+    = icon_for(:info)
+    To start your deposit, please review the deposit agreement and answer the
+    following questions.
 
-#deposit-agreement.accordion.mb-3
-  .accordion-item
-    %h3#deposit-agreement-header.accordion-header
-      %button.accordion-button.collapsed{type:             "button",
-                                         "data-bs-toggle": "collapse",
-                                         "data-bs-target": "#deposit-agreement-collapse",
-                                         "aria-expanded":  "false",
-                                         "aria-controls":  "deposit-agreement-collapse"}
-        = current_institution.service_name
-        Deposit Agreement&nbsp;
-        %span.text-info (expand)
-    #deposit-agreement-collapse.accordion-collapse.collapse{"aria-labelledby": "deposit-agreement-heading",
-                                                            "data-bs-parent":  "#deposit-agreement"}
-      .accordion-body
-        = sanitize(current_institution.deposit_agreement,
-                   tags:       ApplicationHelper::ALLOWED_HTML_TAGS,
-                   attributes: ApplicationHelper::ALLOWED_HTML_TAG_ATTRIBUTES)
+  #deposit-agreement.accordion.mb-3
+    .accordion-item
+      %h3#deposit-agreement-header.accordion-header
+        %button.accordion-button.collapsed{type:             "button",
+                                           "data-bs-toggle": "collapse",
+                                           "data-bs-target": "#deposit-agreement-collapse",
+                                           "aria-expanded":  "false",
+                                           "aria-controls":  "deposit-agreement-collapse"}
+          = current_institution.service_name
+          Deposit Agreement&nbsp;
+          %span.text-info (expand)
+      #deposit-agreement-collapse.accordion-collapse.collapse{"aria-labelledby": "deposit-agreement-heading",
+                                                              "data-bs-parent":  "#deposit-agreement"}
+        .accordion-body
+          = sanitize(current_institution.deposit_agreement,
+                     tags:       ApplicationHelper::ALLOWED_HTML_TAGS,
+                     attributes: ApplicationHelper::ALLOWED_HTML_TAG_ATTRIBUTES)
 
 -# N.B.: these questions are outside of the form because they are only read
 -# by JavaScript and don't need to be submitted
@@ -100,29 +101,34 @@
         included such information, while a selection of ‘Yes’ indicates that
         such information has been removed.
 
-  %hr
+  %div{style: "display: #{current_institution.deposit_agreement.present? ? "block" : "none"}"}
 
-  %p
-    %strong
-      Do you agree to the
-      = current_institution.service_name
-      Deposit Agreement in its entirety?
+    %hr
 
-  .row
-    .col-sm-3.question.mb-3
-      .form-check
-        %input#q3-1.response.form-check-input{type: "radio", name: "q3", value: "Yes"}
-        %label.form-check-label{for: "q3-1"} Yes
-      .form-check
-        %input#q3-2.response.form-check-input{type: "radio", name: "q3", value: "No"}
-        %label.form-check-label{for: "q3-2"} No
-    .col-sm-9
-      %p.mt-2.text-secondary
-        %i.fa.fa-info-circle
-        Deposit into
+    %p
+      %strong
+        Do you agree to the
         = current_institution.service_name
-        requires agreement to the Deposit Agreement. Click
-        on the Deposit Agreement heading above to view the full agreement.
+        Deposit Agreement in its entirety?
+
+    .row
+      .col-sm-3.question.mb-3
+        .form-check
+          %input#q3-1.response.form-check-input{type:    "radio",
+                                                name:    "q3",
+                                                value:   "Yes",
+                                                checked: current_institution.deposit_agreement.blank?}
+          %label.form-check-label{for: "q3-1"} Yes
+        .form-check
+          %input#q3-2.response.form-check-input{type: "radio", name: "q3", value: "No"}
+          %label.form-check-label{for: "q3-2"} No
+      .col-sm-9
+        %p.mt-2.text-secondary
+          %i.fa.fa-info-circle
+          Deposit into
+          = current_institution.service_name
+          requires agreement to the Deposit Agreement. Click
+          on the Deposit Agreement heading above to view the full agreement.
 
   %hr
 
