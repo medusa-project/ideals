@@ -6,7 +6,8 @@ class UnitsController < ApplicationController
 
   before_action :ensure_institution_host
   before_action :ensure_logged_in, only: [:create, :delete,
-                                          :edit_administrators,
+                                          :edit_administering_groups,
+                                          :edit_administering_users,
                                           :edit_membership, :edit_properties,
                                           :new, :show_access, :undelete,
                                           :update]
@@ -106,12 +107,21 @@ class UnitsController < ApplicationController
   end
 
   ##
-  # Used for editing administrators.
+  # Used for editing administering groups.
   #
-  # Responds to `GET /units/:unit_id/edit-administrators` (XHR only)
+  # Responds to `GET /units/:unit_id/edit-administering-groups` (XHR only)
   #
-  def edit_administrators
-    render partial: "units/administrators_form", locals: { unit: @unit }
+  def edit_administering_groups
+    render partial: "units/administering_groups_form", locals: { unit: @unit }
+  end
+
+  ##
+  # Used for editing administering users.
+  #
+  # Responds to `GET /units/:unit_id/edit-administering-users` (XHR only)
+  #
+  def edit_administering_users
+    render partial: "units/administering_users_form", locals: { unit: @unit }
   end
 
   ##

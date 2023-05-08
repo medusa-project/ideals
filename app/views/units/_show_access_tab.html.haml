@@ -1,18 +1,14 @@
-.btn-group.float-end{role: "group"}
-  - if policy(@unit).edit_administrators?
-    %button.btn.btn-light.edit-administrators{"data-unit-id":   @unit.id,
-                                              "data-bs-target": "#edit-administrators-modal",
-                                              "data-bs-toggle": "modal",
-                                              role:             "button"}
-      %i.fas.fa-pencil-alt
-      Edit Administrators
-
-.clearfix.mb-3
-
 .row
   .col-md-6
     .card.mb-3
       .card-body
+        - if policy(@unit).edit_administering_groups?
+          .float-end
+            %button.btn.btn-sm.btn-light.edit-administering-groups{"data-bs-target": "#edit-administering-groups-modal",
+                                                                   "data-bs-toggle": "modal",
+                                                                   role:             "button"}
+              %i.fas.fa-pencil-alt
+              Edit
         %h5.card-title Direct Group Administrators
         - if @unit.administering_groups.any?
           %ul
@@ -34,6 +30,13 @@
   .col-md-6
     .card.mb-3
       .card-body
+        - if policy(@unit).edit_administering_users?
+          .float-end
+            %button.btn.btn-sm.btn-light.edit-administering-users{"data-bs-target":  "#edit-administering-users-modal",
+                                                                  "data-bs-toggle": "modal",
+                                                                  role:             "button"}
+              %i.fas.fa-pencil-alt
+              Edit
         %h5.card-title Direct User Administrators
         - if @unit.administering_users.any?
           %ul
@@ -54,5 +57,8 @@
           None
 
 = render partial: "shared/ajax_modal",
-       locals: { id: "edit-administrators-modal",
-                 title: "Edit Administrators" }
+       locals: { id: "edit-administering-groups-modal",
+                 title: "Edit Administering Groups" }
+= render partial: "shared/ajax_modal",
+       locals: { id: "edit-administering-users-modal",
+                 title: "Edit Administering Users" }

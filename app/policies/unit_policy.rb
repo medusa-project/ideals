@@ -72,7 +72,11 @@ class UnitPolicy < ApplicationPolicy
     create
   end
 
-  def edit_administrators
+  def edit_administering_groups
+    show_access
+  end
+
+  def edit_administering_users
     show_access
   end
 

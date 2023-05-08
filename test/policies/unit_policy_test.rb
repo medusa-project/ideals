@@ -177,39 +177,74 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.delete?
   end
 
-  # edit_administrators?()
+  # edit_administering_groups?()
 
-  test "edit_administrators?() returns false with a nil user" do
+  test "edit_administering_groups?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
-    assert !policy.edit_administrators?
+    assert !policy.edit_administering_groups?
   end
 
-  test "edit_administrators?() is restrictive by default" do
+  test "edit_administering_groups?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
-    assert !policy.edit_administrators?
+    assert !policy.edit_administering_groups?
   end
 
-  test "edit_administrators?() authorizes sysadmins" do
+  test "edit_administering_groups?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
-    assert policy.edit_administrators?
+    assert policy.edit_administering_groups?
   end
 
-  test "edit_administrators?() respects role limits" do
+  test "edit_administering_groups?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
-    assert !policy.edit_administrators?
+    assert !policy.edit_administering_groups?
+  end
+
+  # edit_administering_users?()
+
+  test "edit_administering_users?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @unit.institution)
+    policy = UnitPolicy.new(context, @unit)
+    assert !policy.edit_administering_users?
+  end
+
+  test "edit_administering_users?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.edit_administering_users?
+  end
+
+  test "edit_administering_users?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.edit_administering_users?
+  end
+
+  test "edit_administering_users?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.edit_administering_users?
   end
 
   # edit_membership?()

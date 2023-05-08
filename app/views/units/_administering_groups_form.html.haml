@@ -11,8 +11,6 @@
   -# Include a random property because `unit` is required in the params
   = f.hidden_field :parent_id, value: f.object.parent_id
 
-  %h5 Groups
-
   = hidden_field_tag "user_group_ids[]"
   - UserGroup.order(:name).each do |user_group|
     .form-check
@@ -21,28 +19,6 @@
                       { id: "user_group_ids_#{user_group.id}", class: "form-check-input" }
       = label_tag "user_group_ids_#{user_group.id}",
         user_group.name, class: "form-check-label"
-
-  %hr
-
-  %h5 Users
-
-  .mb-3
-    = hidden_field_tag "administering_users[]"
-    - user_strings = f.object.administering_users.each.map(&:to_autocomplete)
-    - user_strings << "" if user_strings.empty?
-    - user_strings.each do |user_str|
-      .input-group.mb-3.user
-        = text_field_tag "administering_users[]", user_str,
-                         autocomplete: "off",
-                         class: "form-control"
-        %button.btn.btn-outline-danger.remove{type: "button"}
-          %i.fa.fa-minus
-          Remove
-        .dropdown-menu
-          -# populated by javascript
-    %button.btn.btn-sm.btn-outline-success.add
-      %i.fa.fa-plus
-      Add User
 
   .clearfix
     .float-end

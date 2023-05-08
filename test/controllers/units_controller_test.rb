@@ -206,46 +206,89 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  # edit_administrators()
+  # edit_administering_groups()
 
-  test "edit_administrators() returns HTTP 404 for unscoped requests" do
+  test "edit_administering_groups() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
     unit = units(:uiuc_unit1)
-    get unit_edit_administrators_path(unit), xhr: true
+    get unit_edit_administering_groups_path(unit), xhr: true
     assert_response :not_found
   end
 
-  test "edit_administrators() returns HTTP 403 for logged-out users" do
+  test "edit_administering_groups() returns HTTP 403 for logged-out users" do
     unit = units(:uiuc_unit1)
-    get unit_edit_administrators_path(unit), xhr: true
+    get unit_edit_administering_groups_path(unit), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_administrators() returns HTTP 403 for unauthorized users" do
+  test "edit_administering_groups() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:uiuc))
     unit = units(:uiuc_unit1)
-    get unit_edit_administrators_path(unit), xhr: true
+    get unit_edit_administering_groups_path(unit), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_administrators() returns HTTP 404 for non-XHR requests" do
+  test "edit_administering_groups() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
-    get unit_edit_administrators_path(unit)
+    get unit_edit_administering_groups_path(unit)
     assert_response :not_found
   end
 
-  test "edit_administrators() returns HTTP 410 for a buried unit" do
+  test "edit_administering_groups() returns HTTP 410 for a buried unit" do
     log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_buried)
-    get unit_edit_administrators_path(unit), xhr: true
+    get unit_edit_administering_groups_path(unit), xhr: true
     assert_response :gone
   end
 
-  test "edit_administrators() returns HTTP 200 for XHR requests" do
+  test "edit_administering_groups() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_admin))
     unit = units(:uiuc_unit1)
-    get unit_edit_administrators_path(unit), xhr: true
+    get unit_edit_administering_groups_path(unit), xhr: true
+    assert_response :ok
+  end
+
+  # edit_administering_users()
+
+  test "edit_administering_users() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:uiuc_unit1)
+    get unit_edit_administering_users_path(unit), xhr: true
+    assert_response :not_found
+  end
+
+  test "edit_administering_users() returns HTTP 403 for logged-out users" do
+    unit = units(:uiuc_unit1)
+    get unit_edit_administering_users_path(unit), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_administering_users() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:uiuc))
+    unit = units(:uiuc_unit1)
+    get unit_edit_administering_users_path(unit), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_administering_users() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:uiuc_admin))
+    unit = units(:uiuc_unit1)
+    get unit_edit_administering_users_path(unit)
+    assert_response :not_found
+  end
+
+  test "edit_administering_users() returns HTTP 410 for a buried unit" do
+    log_in_as(users(:uiuc_admin))
+    unit = units(:uiuc_buried)
+    get unit_edit_administering_users_path(unit), xhr: true
+    assert_response :gone
+  end
+
+  test "edit_administering_users() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:uiuc_admin))
+    unit = units(:uiuc_unit1)
+    get unit_edit_administering_users_path(unit), xhr: true
     assert_response :ok
   end
 
@@ -542,10 +585,10 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "show_access() respects role limits" do
     log_in_as(users(:uiuc_admin))
     get unit_access_path(units(:uiuc_unit1)), xhr: true
-    assert_select(".edit-administrators")
+    assert_select(".edit-administering-users")
 
     get unit_access_path(units(:uiuc_unit1), role: Role::LOGGED_OUT), xhr: true
-    assert_select(".edit-administrators", false)
+    assert_select(".edit-administering-users", false)
   end
 
   # show_items()

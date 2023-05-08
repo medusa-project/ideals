@@ -212,10 +212,16 @@ const Units = {
             const url = ROOT_URL + "/units/" + unitID + "/access";
             $.get(url, function(data) {
                 $("#access-tab-content").html(data);
-                $('.edit-administrators').on("click", function () {
-                    const url = ROOT_URL + "/units/" + unitID + "/edit-administrators";
+                $(".edit-administering-groups").on("click", function () {
+                    const url = ROOT_URL + "/units/" + unitID + "/edit-administering-groups";
                     $.get(url, function (data) {
-                        $("#edit-administrators-modal .modal-body").html(data);
+                        $("#edit-administering-groups-modal .modal-body").html(data);
+                    });
+                });
+                $(".edit-administering-users").on("click", function () {
+                    const url = ROOT_URL + "/units/" + unitID + "/edit-administering-users";
+                    $.get(url, function (data) {
+                        $("#edit-administering-users-modal .modal-body").html(data);
                         new IDEALS.LocalUserAutocompleter(
                             $("input[name=primary_administrator], input[name='administering_users[]']"));
                         new IDEALS.MultiElementList();

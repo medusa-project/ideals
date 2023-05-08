@@ -225,7 +225,9 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/collections-tree-fragment", to: "units#collections_tree_fragment", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/edit-administrators", to: "units#edit_administrators", via: :get,
+    match "/edit-administering-groups", to: "units#edit_administering_groups", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-administering-users", to: "units#edit_administering_users", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-membership", to: "units#edit_membership", via: :get,
           constraints: lambda { |request| request.xhr? }
