@@ -236,15 +236,21 @@ const CollectionView = function() {
         const url = ROOT_URL + "/collections/" + collectionID + "/access";
         $.get(url, function (data) {
             $("#access-tab-content").html(data);
-            $(".edit-collection-administrators").on("click", function() {
-                const url = ROOT_URL + "/collections/" + collectionID + "/edit-administrators";
+            $(".edit-administering-groups").on("click", function() {
+                const url = ROOT_URL + "/collections/" + collectionID + "/edit-administering-groups";
                 $.get(url, function(data) {
-                    $("#edit-collection-administrators-modal .modal-body").html(data);
+                    $("#edit-administering-groups-modal .modal-body").html(data);
+                });
+            });
+            $(".edit-administering-users").on("click", function() {
+                const url = ROOT_URL + "/collections/" + collectionID + "/edit-administering-users";
+                $.get(url, function(data) {
+                    $("#edit-administering-users-modal .modal-body").html(data);
                     new IDEALS.LocalUserAutocompleter($("input[name='administrators[]']"));
                     new IDEALS.MultiElementList();
                 });
             });
-            $('.edit-collection-submitters').on("click", function() {
+            $(".edit-collection-submitters").on("click", function() {
                 const url = ROOT_URL + "/collections/" + collectionID + "/edit-submitters";
                 $.get(url, function(data) {
                     $("#edit-collection-submitters-modal .modal-body").html(data);

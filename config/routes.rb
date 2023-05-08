@@ -30,7 +30,9 @@ Rails.application.routes.draw do
 
     match "/children", to: "collections#children", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/edit-administrators", to: "collections#edit_administrators", via: :get,
+    match "/edit-administering-groups", to: "collections#edit_administering_groups", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-administering-users", to: "collections#edit_administering_users", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-collection-membership",
           to: "collections#edit_collection_membership", via: :get,

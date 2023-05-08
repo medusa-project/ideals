@@ -69,11 +69,15 @@ class CollectionPolicy < ApplicationPolicy
                   "the collection resides." }
   end
 
-  def edit_collection_membership
+  def edit_administering_groups
     update
   end
 
-  def edit_administrators
+  def edit_administering_users
+    update
+  end
+
+  def edit_collection_membership
     update
   end
 

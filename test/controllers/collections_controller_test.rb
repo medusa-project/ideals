@@ -265,46 +265,89 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # edit_administrators()
+  # edit_administering_groups()
 
-  test "edit_administrators() returns HTTP 404 for unscoped requests" do
+  test "edit_administering_groups() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
     collection = collections(:uiuc_collection1)
-    get collection_edit_administrators_path(collection), xhr: true
+    get collection_edit_administering_groups_path(collection), xhr: true
     assert_response :not_found
   end
 
-  test "edit_administrators() returns HTTP 403 for logged-out users" do
+  test "edit_administering_groups() returns HTTP 403 for logged-out users" do
     collection = collections(:uiuc_collection1)
-    get collection_edit_administrators_path(collection), xhr: true
+    get collection_edit_administering_groups_path(collection), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_administrators() returns HTTP 403 for unauthorized users" do
+  test "edit_administering_groups() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:example))
     collection = collections(:uiuc_collection1)
-    get collection_edit_administrators_path(collection), xhr: true
+    get collection_edit_administering_groups_path(collection), xhr: true
     assert_response :forbidden
   end
 
-  test "edit_administrators() returns HTTP 404 for non-XHR requests" do
+  test "edit_administering_groups() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:example_sysadmin))
     collection = collections(:uiuc_collection1)
-    get collection_edit_administrators_path(collection)
+    get collection_edit_administering_groups_path(collection)
     assert_response :not_found
   end
 
-  test "edit_administrators() returns HTTP 410 for a buried collection" do
+  test "edit_administering_groups() returns HTTP 410 for a buried collection" do
     log_in_as(users(:uiuc_admin))
     collection = collections(:uiuc_buried)
-    get collection_edit_administrators_path(collection), xhr: true
+    get collection_edit_administering_groups_path(collection), xhr: true
     assert_response :gone
   end
 
-  test "edit_administrators() returns HTTP 200 for XHR requests" do
+  test "edit_administering_groups() returns HTTP 200 for XHR requests" do
     log_in_as(users(:uiuc_admin))
     collection = collections(:uiuc_collection1)
-    get collection_edit_administrators_path(collection), xhr: true
+    get collection_edit_administering_groups_path(collection), xhr: true
+    assert_response :ok
+  end
+
+  # edit_administering_users()
+
+  test "edit_administering_users() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:uiuc_collection1)
+    get collection_edit_administering_users_path(collection), xhr: true
+    assert_response :not_found
+  end
+
+  test "edit_administering_users() returns HTTP 403 for logged-out users" do
+    collection = collections(:uiuc_collection1)
+    get collection_edit_administering_users_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_administering_users() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:example))
+    collection = collections(:uiuc_collection1)
+    get collection_edit_administering_users_path(collection), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_administering_users() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:example_sysadmin))
+    collection = collections(:uiuc_collection1)
+    get collection_edit_administering_users_path(collection)
+    assert_response :not_found
+  end
+
+  test "edit_administering_users() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:uiuc_admin))
+    collection = collections(:uiuc_buried)
+    get collection_edit_administering_users_path(collection), xhr: true
+    assert_response :gone
+  end
+
+  test "edit_administering_users() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:uiuc_admin))
+    collection = collections(:uiuc_collection1)
+    get collection_edit_administering_users_path(collection), xhr: true
     assert_response :ok
   end
 
@@ -665,10 +708,10 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:uiuc_admin))
     collection = collections(:uiuc_collection1)
     get collection_access_path(collection), xhr: true
-    assert_select(".edit-collection-administrators")
+    assert_select(".edit-administering-groups")
 
     get collection_access_path(collection, role: Role::LOGGED_OUT), xhr: true
-    assert_select(".edit-collection-administrators", false)
+    assert_select(".edit-administering-groups", false)
   end
 
   # show_items()

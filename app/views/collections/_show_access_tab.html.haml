@@ -16,21 +16,17 @@
 .tab-content
   #administrators.tab-pane.fade.show.active{role:              "tabpanel",
                                             "aria-labelledby": "administrators-tab"}
-    .btn-group.float-end{role: "group"}
-      - if policy(@collection).edit_administrators?
-        %button.btn.btn-light.edit-collection-administrators{"data-collection-id": @collection.id,
-                                                             "data-bs-target":     "#edit-collection-administrators-modal",
-                                                             "data-bs-toggle":     "modal",
-                                                             role:                 "button"}
-          %i.fas.fa-pencil-alt
-          Edit Administrators
-
-    .clearfix.mb-3
-
     .row
       .col-md-6
         .card
           .card-body
+            - if policy(@collection).edit_administering_groups?
+              .float-end
+                %button.btn.btn-sm.btn-light.edit-administering-groups{"data-bs-target": "#edit-administering-groups-modal",
+                                                                       "data-bs-toggle": "modal",
+                                                                       role:             "button"}
+                  %i.fas.fa-pencil-alt
+                  Edit
             %h5.card-title Groups
             - if @collection.administering_groups.any?
               %ul
@@ -41,6 +37,13 @@
       .col-md-6
         .card
           .card-body
+            - if policy(@collection).edit_administering_users?
+              .float-end
+                %button.btn.btn-sm.btn-light.edit-administering-users{"data-bs-target": "#edit-administering-users-modal",
+                                                                      "data-bs-toggle": "modal",
+                                                                      role:             "button"}
+                  %i.fas.fa-pencil-alt
+                  Edit
             %h5.card-title Users
             - if @collection.administering_users.any?
               %ul
@@ -84,8 +87,11 @@
               None
 
 = render partial: "shared/ajax_modal",
-         locals: { id: "edit-collection-administrators-modal",
-                   title: "Edit Administrators" }
+         locals: { id: "edit-administering-groups-modal",
+                   title: "Edit Group Administrators" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-administering-users-modal",
+                   title: "Edit User Administrators" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-collection-submitters-modal",
                    title: "Edit Submitters" }

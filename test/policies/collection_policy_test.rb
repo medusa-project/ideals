@@ -298,46 +298,88 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_collection_membership?
   end
 
-  # edit_administrators?()
+  # edit_administering_groups?()
 
-  test "edit_administrators?() returns false with a nil user" do
+  test "edit_administering_groups?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @collection.institution)
     policy = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_administrators?
+    assert !policy.edit_administering_groups?
   end
 
-  test "edit_administrators?() does not authorize an incorrect scope" do
+  test "edit_administering_groups?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
     policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_administrators?
+    assert !policy.edit_administering_groups?
   end
 
-  test "edit_administrators?() is restrictive by default" do
+  test "edit_administering_groups?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_administrators?
+    assert !policy.edit_administering_groups?
   end
 
-  test "edit_administrators?() authorizes sysadmins" do
+  test "edit_administering_groups?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy   = CollectionPolicy.new(context, @collection)
-    assert policy.edit_administrators?
+    assert policy.edit_administering_groups?
   end
 
-  test "edit_administrators?() respects role limits" do
+  test "edit_administering_groups?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = CollectionPolicy.new(context, @collection)
-    assert !policy.edit_administrators?
+    assert !policy.edit_administering_groups?
+  end
+
+  # edit_administering_users?()
+
+  test "edit_administering_users?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @collection.institution)
+    policy = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_administering_users?
+  end
+
+  test "edit_administering_users?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_administering_users?
+  end
+
+  test "edit_administering_users?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_administering_users?
+  end
+
+  test "edit_administering_users?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy   = CollectionPolicy.new(context, @collection)
+    assert policy.edit_administering_users?
+  end
+
+  test "edit_administering_users?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.edit_administering_users?
   end
 
   # edit_properties?()

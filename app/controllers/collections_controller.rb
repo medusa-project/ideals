@@ -6,7 +6,8 @@ class CollectionsController < ApplicationController
 
   before_action :ensure_institution_host
   before_action :ensure_logged_in, only: [:all_files, :create, :delete,
-                                          :edit_administrators,
+                                          :edit_administering_groups,
+                                          :edit_administering_users,
                                           :edit_collection_membership,
                                           :edit_properties, :edit_submitters,
                                           :edit_unit_membership,
@@ -112,11 +113,20 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /collections/:collection_id/edit-administrators`
+  # Responds to `GET /collections/:collection_id/edit-administering-groups`
   # (XHR only)
   #
-  def edit_administrators
-    render partial: 'collections/administrators_form',
+  def edit_administering_groups
+    render partial: "collections/administering_groups_form",
+           locals: { collection: @collection }
+  end
+
+  ##
+  # Responds to `GET /collections/:collection_id/edit-administering-users`
+  # (XHR only)
+  #
+  def edit_administering_users
+    render partial: "collections/administering_users_form",
            locals: { collection: @collection }
   end
 
@@ -125,7 +135,7 @@ class CollectionsController < ApplicationController
   # (XHR only)
   #
   def edit_collection_membership
-    render partial: 'collections/collection_membership_form',
+    render partial: "collections/collection_membership_form",
            locals: { collection: @collection }
   end
 
@@ -133,7 +143,7 @@ class CollectionsController < ApplicationController
   # Responds to GET `/collections/:collection_id/edit-properties` (XHR only)
   #
   def edit_properties
-    render partial: 'collections/properties_form',
+    render partial: "collections/properties_form",
            locals: { collection: @collection }
   end
 
@@ -142,7 +152,7 @@ class CollectionsController < ApplicationController
   # (XHR only)
   #
   def edit_submitters
-    render partial: 'collections/submitters_form',
+    render partial: "collections/submitters_form",
            locals: { collection: @collection }
   end
 
@@ -150,7 +160,7 @@ class CollectionsController < ApplicationController
   # Responds to `GET /collections/:id/edit-unit-membership` (XHR only)
   #
   def edit_unit_membership
-    render partial: 'collections/unit_membership_form',
+    render partial: "collections/unit_membership_form",
            locals: { collection: @collection,
                      primary_unit: @collection.primary_unit }
   end
@@ -159,7 +169,7 @@ class CollectionsController < ApplicationController
   # Responds to `GET /collections/:id/edit-user-access` (XHR only)
   #
   def edit_user_access
-    render partial: 'collections/user_access_form',
+    render partial: "collections/user_access_form",
            locals: { collection: @collection }
   end
 
