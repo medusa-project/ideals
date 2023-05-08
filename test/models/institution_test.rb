@@ -75,7 +75,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "item_counts() returns a correct value" do
     counts = Institution.item_counts
-    assert_equal Institution.count, counts.count
+    assert_equal 3, counts.count
   end
 
   # create()

@@ -266,11 +266,12 @@ class Institution < ApplicationRecord
   ##
   # @return [Enumerable<Hash>]
   #
-  def self.item_counts
+  def self.item_counts(include_buried: false)
     sql = "SELECT ins.id, ins.name, COUNT(i.id) AS count
       FROM institutions ins
-      LEFT JOIN items i ON ins.id = i.institution_id
-      GROUP BY ins.id
+      LEFT JOIN items i ON ins.id = i.institution_id "
+    sql += "WHERE i.stage != #{Item::Stages::BURIED} " unless include_buried
+    sql += "GROUP BY ins.id
       ORDER BY ins.name;"
     connection.execute(sql)
   end
