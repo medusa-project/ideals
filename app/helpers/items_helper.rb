@@ -114,6 +114,7 @@ module ItemsHelper
   # @return [String] HTML string.
   #
   def embargoes_form_card(embargo: nil, institution: nil, index: 0)
+    institution ||= embargo&.item&.institution
     selected_year = Time.now.year
     latest_year   = selected_year + 100
     html          = StringIO.new
