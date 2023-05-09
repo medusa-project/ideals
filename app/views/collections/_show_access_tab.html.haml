@@ -93,8 +93,19 @@
                   %li= link_to(group.name, group)
             - else
               None
-      .col-md-6
         .card
+          .card-body
+            %h5.card-title
+              Effective Group Submitters
+            - admins = @collection.effective_submitting_groups
+            - if admins.any?
+              %ul
+                - admins.each do |group|
+                  %li= link_to(group.name, group)
+            - else
+              None
+      .col-md-6
+        .card.mb-3
           .card-body
             - if policy(@collection).edit_submitting_users?
               .float-end
@@ -110,6 +121,15 @@
                   %li= link_to(user.name, "mailto:#{user.email}")
             - else
               None
+        .card
+          .card-body
+            %h5.card-title
+              Effective User Submitters
+            - admins = @collection.effective_submitters
+            - if admins.any?
+              %ul
+                - admins.each do |user|
+                  %li= link_to(user.name, user.becomes(User))
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-administering-groups-modal",
