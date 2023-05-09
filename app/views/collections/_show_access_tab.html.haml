@@ -27,7 +27,7 @@
                                                                        role:             "button"}
                   %i.fas.fa-pencil-alt
                   Edit
-            %h5.card-title Groups
+            %h5.card-title Direct Group Administrators
             - groups = @collection.administering_groups
             - if groups.any?
               %ul
@@ -37,7 +37,7 @@
               None
         .card
           .card-body
-            %h5.card-title Effective Users
+            %h5.card-title Effective User Administrators
             - groups = @collection.all_administering_groups
             - if groups.any?
               %ul
@@ -55,7 +55,7 @@
                                                                       role:             "button"}
                   %i.fas.fa-pencil-alt
                   Edit
-            %h5.card-title Users
+            %h5.card-title Direct User Administrators
             - users = @collection.administering_users
             - if users.any?
               %ul
@@ -65,7 +65,7 @@
               None
         .card
           .card-body
-            %h5.card-title Effective Users
+            %h5.card-title Effective User Administrators
             - users = @collection.all_administering_users
             - if users.any?
               %ul
@@ -75,9 +75,12 @@
               None
 
   #submitters.tab-pane.fade{role: "tabpanel", "aria-labelledby": "submitters-tab"}
+    .alert.alert-light
+      = icon_for(:info)
+      Administrators are also submitters.
     .row
       .col-md-6
-        .card
+        .card.mb-3
           .card-body
             - if policy(@collection).edit_submitting_groups?
               .float-end
@@ -86,7 +89,7 @@
                                                                     role:             "button"}
                   %i.fas.fa-pencil-alt
                   Edit
-            %h5.card-title Groups
+            %h5.card-title Direct Group Submitters
             - if @collection.submitting_groups.any?
               %ul
                 - @collection.submitting_groups.each do |group|
@@ -114,7 +117,7 @@
                                                                    role:             "button"}
                   %i.fas.fa-pencil-alt
                   Edit
-            %h5.card-title Users
+            %h5.card-title Direct User Submitters
             - if @collection.submitting_users.any?
               %ul
                 - @collection.submitting_users.each do |user|
