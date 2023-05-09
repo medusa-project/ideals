@@ -199,6 +199,23 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<User>]
+  #
+  def all_administering_users
+    users       = Set.new
+    users      += self.administering_users
+    root_parent = self
+    all_parents.each do |parent|
+      users      += parent.administering_users
+      root_parent = parent
+    end
+    root_parent.units.each do |unit|
+      users += unit.all_administrators
+    end
+    users
+  end
+
+  ##
   # @return [Enumerable<Collection>] All parents in order from closest to
   #                                  farthest.
   #

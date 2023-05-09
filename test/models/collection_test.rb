@@ -59,6 +59,12 @@ class CollectionTest < ActiveSupport::TestCase
     groups = collections(:uiuc_collection1_collection1_collection1).all_administering_groups
     assert_equal 1, groups.length
   end
+
+  # all_administering_users()
+
+  test "all_administering_users() returns the correct users" do
+    groups = collections(:uiuc_collection1_collection1_collection1).all_administering_users
+    assert_equal 2, groups.length
   end
 
   # all_parents()
