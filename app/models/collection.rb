@@ -185,10 +185,15 @@ class Collection < ApplicationRecord
   # @return [Enumerable<UserGroup>]
   #
   def all_administering_groups
-    groups  = Set.new
-    groups += self.administering_groups
+    groups      = Set.new
+    groups     += self.administering_groups
+    root_parent = self
     all_parents.each do |parent|
-      groups += parent.administering_groups
+      groups     += parent.administering_groups
+      root_parent = parent
+    end
+    root_parent.units.each do |unit|
+      groups += unit.all_administrator_groups
     end
     groups
   end
