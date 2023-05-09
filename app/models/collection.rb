@@ -204,12 +204,10 @@ class Collection < ApplicationRecord
   def all_administering_users
     users       = Set.new
     users      += self.administering_users
-    root_parent = self
     all_parents.each do |parent|
-      users      += parent.administering_users
-      root_parent = parent
+      users += parent.administering_users
     end
-    root_parent.units.each do |unit|
+    self.units.each do |unit|
       users += unit.all_administrators
     end
     users
