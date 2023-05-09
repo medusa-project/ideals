@@ -1,10 +1,23 @@
 - provide :title, "Settings"
 - provide :body_id, "settings"
 
-%h1 Settings
+%h1 Global Settings
 
 = form_tag(settings_path, method: :patch) do
 
+  .mb-3.row
+    = label_tag("settings[#{Setting::Key::FEEDBACK_EMAIL}]",
+                "Feedback Email",
+                class: "col-sm-3 col-form-label required")
+    .col-sm-9
+      = text_field_tag("settings[#{Setting::Key::FEEDBACK_EMAIL}]",
+                       Setting.string(Setting::Key::FEEDBACK_EMAIL),
+                       class: "form-control")
+      %p.form-text
+        = icon_for(:info)
+        This is used in the global context and for notifications of
+        system-level events. Institutions can override this within their own
+        contexts.
   .mb-3.row
     = label_tag("settings[#{Setting::Key::EARLIEST_SEARCH_YEAR}]",
                 "Earliest Search Year",

@@ -27,7 +27,7 @@ class WelcomeController < ApplicationController
       return
     end
     feedback_email = current_institution&.feedback_email ||
-      Institution.find_by_key("uiuc").feedback_email # TODO: we need a global feedback email
+      Setting.string(Setting::Key::FEEDBACK_EMAIL)
     begin
       IdealsMailer.contact(page_url:   params[:page_url],
                            from_name:  params[:name],

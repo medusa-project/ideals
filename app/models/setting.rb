@@ -1,5 +1,5 @@
 ##
-# Encapsulates a key-value setting. Keys should be one of the [Setting::Key]
+# Encapsulates a key-value setting. Keys should be one of the {Setting::Key}
 # constant values. Values are stored as JSON in the database. Simple values can
 # be accessed using the {boolean}, {integer}, or {string} class methods.
 #
@@ -20,6 +20,9 @@ class Setting < ApplicationRecord
     # Used in global search context. Not used in a scoped context, where
     # {Institution#earliest_search_year} is used instead.
     EARLIEST_SEARCH_YEAR = "earliest_search_year"
+    # Feedback email used in global context and for sending e.g. error emails
+    # to.
+    FEEDBACK_EMAIL       = "feedback_email"
   end
 
   validates :key, presence: true, uniqueness: { case_sensitive: false }
@@ -69,6 +72,14 @@ class Setting < ApplicationRecord
   end
 
   ##
+  # @private
+  #
+  def self.value_for(key)
+    opt = Setting.where(key: key).limit(1).first
+    opt&.value
+  end
+
+  ##
   # @return [Object] Raw value.
   #
   def value
@@ -80,13 +91,6 @@ class Setting < ApplicationRecord
   #
   def value=(value)
     write_attribute(:value, JSON.generate(value))
-  end
-
-  private
-
-  def self.value_for(key)
-    opt = Setting.where(key: key).limit(1).first
-    opt&.value
   end
 
 end
