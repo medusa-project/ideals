@@ -419,6 +419,38 @@ class CollectionTest < ActiveSupport::TestCase
     @instance.effective_submitters.include?(@instance.submitting_users.first)
   end
 
+  # effective_submitting_groups()
+
+  test "effective_submitting_groups() includes the sysadmin group" do
+    @instance.effective_submitting_groups.include?(user_groups(:sysadmin))
+  end
+
+  test "effective_submitting_groups() includes unit administrator groups" do
+    @instance.effective_submitting_groups.include?(@instance.primary_unit.administering_groups.first)
+  end
+
+  test "effective_submitting_groups() includes administrator groups of parent
+  collections" do
+    parent    = collections(:uiuc_collection1)
+    @instance = collections(:uiuc_collection1_collection1)
+    @instance.effective_submitting_groups.include?(parent.administering_groups.first)
+  end
+
+  test "effective_submitting_groups() includes direct administrator groups" do
+    @instance.effective_submitting_groups.include?(@instance.administering_groups.first)
+  end
+
+  test "effective_submitting_groups() includes submitter groups of parent
+  collections" do
+    parent    = collections(:uiuc_collection1)
+    @instance = collections(:uiuc_collection1_collection1)
+    @instance.effective_submitting_groups.include?(parent.submitting_groups.first)
+  end
+
+  test "effective_submitting_groups() includes direct submitter groups" do
+    @instance.effective_submitting_groups.include?(@instance.submitting_groups.first)
+  end
+
   # exhume!()
 
   test "exhume!() exhumes a buried collection" do

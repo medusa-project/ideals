@@ -443,6 +443,21 @@ class Collection < ApplicationRecord
   end
 
   ##
+  # @return [Set<UserGroup>] All user groups that are effectively
+  #                          submitters into the instance.
+  #
+  def effective_submitting_groups
+    set = Set.new
+    set += effective_administering_groups
+    # Add submitter groups of parent collections.
+    all_parents.each do |parent|
+      set += parent.submitting_groups
+    end
+    set += self.submitting_groups
+    set
+  end
+
+  ##
   # Un-buries an instance.
   #
   # @see bury!
