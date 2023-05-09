@@ -76,7 +76,7 @@ class UnitsController < ApplicationController
       RefreshOpensearchJob.perform_later
       toast!(title:   "Unit created",
              message: "The unit \"#{@unit.title}\" has been created.")
-      render "create", locals: { unit: @unit }
+      render "shared/reload"
     end
   end
 
