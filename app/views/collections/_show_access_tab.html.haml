@@ -18,7 +18,7 @@
                                             "aria-labelledby": "administrators-tab"}
     .row
       .col-md-6
-        .card
+        .card.mb-3
           .card-body
             - if policy(@collection).edit_administering_groups?
               .float-end
@@ -28,14 +28,25 @@
                   %i.fas.fa-pencil-alt
                   Edit
             %h5.card-title Groups
-            - if @collection.administering_groups.any?
+            - groups = @collection.administering_groups
+            - if groups.any?
               %ul
-                - @collection.administering_groups.each do |group|
+                - groups.each do |group|
+                  %li= link_to(group.name, group)
+            - else
+              None
+        .card
+          .card-body
+            %h5.card-title Effective Users
+            - groups = @collection.all_administering_groups
+            - if groups.any?
+              %ul
+                - groups.each do |group|
                   %li= link_to(group.name, group)
             - else
               None
       .col-md-6
-        .card
+        .card.mb-3
           .card-body
             - if policy(@collection).edit_administering_users?
               .float-end
@@ -45,9 +56,20 @@
                   %i.fas.fa-pencil-alt
                   Edit
             %h5.card-title Users
-            - if @collection.administering_users.any?
+            - users = @collection.administering_users
+            - if users.any?
               %ul
-                - @collection.administering_users.each do |user|
+                - users.each do |user|
+                  %li= link_to(user.name, "mailto:#{user.email}")
+            - else
+              None
+        .card
+          .card-body
+            %h5.card-title Effective Users
+            - users = @collection.all_administering_users
+            - if users.any?
+              %ul
+                - users.each do |user|
                   %li= link_to(user.name, "mailto:#{user.email}")
             - else
               None
