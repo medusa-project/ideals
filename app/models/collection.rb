@@ -193,7 +193,7 @@ class Collection < ApplicationRecord
       root_parent = parent
     end
     root_parent.units.each do |unit|
-      groups += unit.all_administrator_groups
+      groups += unit.all_administering_groups
     end
     groups
   end
@@ -374,7 +374,7 @@ class Collection < ApplicationRecord
     set << UserGroup.sysadmin
     # Add unit administrator groups.
     self.units.each do |unit|
-      set += unit.all_administrator_groups
+      set += unit.all_administering_groups
     end
     # Add direct administrator groups.
     set += self.administering_groups

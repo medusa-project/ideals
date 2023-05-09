@@ -102,7 +102,7 @@ class Unit < ApplicationRecord
   ##
   # @return [Enumerable<UserGroup>]
   #
-  def all_administrator_groups
+  def all_administering_groups
     groups  = Set.new
     groups += self.administering_groups
     all_parents.each do |parent|
