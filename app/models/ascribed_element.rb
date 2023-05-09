@@ -45,20 +45,20 @@ class AscribedElement < ApplicationRecord
     if s.match?(/\dT\d{2}:/)
       return Date.parse(s)
     # MM/DD/YY or MM/DD/YYYY
-    elsif s.match?(/^\d{1,2}\/\d{1,2}\/\d{2,4}/)
+    elsif s.match?(/\A\d{1,2}\/\d{1,2}\/\d{2,4}/)
       parts = s.split("/")
       parts[2] = "19#{parts[2]}" if parts[2].length == 2
       return Date.new(parts[2].to_i, parts[0].to_i, parts[1].to_i)
     # YYYY-MM-DD
-    elsif s.match?(/^\d{4}-\d{2}-\d{2}/)
+    elsif s.match?(/\A\d{4}-\d{2}-\d{2}/)
       parts = s.split("-")
       return Date.new(parts[0].to_i, parts[1].to_i, parts[2].to_i)
     # YYYY-MM
-    elsif s.match?(/^\d{4}-\d{2}/)
+    elsif s.match?(/\A\d{4}-\d{2}/)
       parts = s.split("-")
       return Date.new(parts[0].to_i, parts[1].to_i)
     # YYYY
-    elsif s.match?(/^\d{4}/)
+    elsif s.match?(/\A\d{4}/)
       return Date.new(s.to_i)
     # Mon DD YYYY, DD-Mon-YY, Mon YYYY
     elsif s.match?(/[A-Za-z]+ \d{1,2},? \d{4}/) ||

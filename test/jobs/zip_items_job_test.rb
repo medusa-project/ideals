@@ -24,7 +24,7 @@ class ZipItemsJobTest < ActiveSupport::TestCase
     ZipItemsJob.new.perform(item_ids, download)
 
     download.reload
-    assert download.filename.match?(/^items-[a-z\d]{16}.zip$/)
+    assert download.filename.match?(/\Aitems-[a-z\d]{16}.zip\z/)
   end
 
 end

@@ -206,7 +206,7 @@ class SafImporter
 
           # Add metadata corresponding to any other metadata files.
           item_object_keys = store.objects(key_prefix: item_dir)
-          item_object_keys.map(&:key).select{ |k| k.match(/\/metadata_.+.xml$/) }.each do |metadata_key|
+          item_object_keys.map(&:key).select{ |k| k.match(/\/metadata_.+.xml\z/) }.each do |metadata_key|
             content = store.get_object(key: metadata_key).read
             add_metadata(item:                   item,
                          metadata_relative_path: metadata_key,

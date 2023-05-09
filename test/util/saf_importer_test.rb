@@ -134,7 +134,7 @@ class SafImporterTest < ActiveSupport::TestCase
                                    mapfile_path:       mapfile.path)
       end
       contents = mapfile.read
-      assert_match /^item_1\t\d+\/\d+\b/, contents
+      assert_match /\Aitem_1\t\d+\/\d+\b/, contents
     end
   end
 

@@ -467,7 +467,7 @@ module ApplicationHelper
             # TODO: this is an ugly hack because the FA SVGs referenced in
             # formats.yml are from an earlier version of FA
             icon = "file-alt" if icon == "file-text-o"
-            icon = "far fa-#{icon.gsub(/-o$/, "")}"
+            icon = "far fa-#{icon.gsub(/-o\z/, "")}"
           end
         end
       end

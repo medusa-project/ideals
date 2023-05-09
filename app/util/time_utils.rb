@@ -38,14 +38,14 @@ class TimeUtils
                      September October November December)
     iso_str = year = month = day = nil
     # Check for "Month DD YYYY" or "Month DD, YYYY"
-    result = string.match(/(#{month_names.join("|")}) (\d{1,2}),? (\d{4})$/)
+    result = string.match(/(#{month_names.join("|")}) (\d{1,2}),? (\d{4})\z/)
     if result
       month = (month_names.index(result[1]) + 1).to_s.rjust(2, "0")
       day   = result[2].rjust(2, "0")
       year  = result[3]
     end
     # Check for "Month YYYY" or "Month, YYYY"
-    result = string.match(/(#{month_names.join("|")}),? ?(\d{4})$/)
+    result = string.match(/(#{month_names.join("|")}),? ?(\d{4})\z/)
     if result
       month = (month_names.index(result[1]) + 1).to_s.rjust(2, "0")
       year  = result[2]

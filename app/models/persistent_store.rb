@@ -165,7 +165,7 @@ class PersistentStore
       raise ArgumentError, "One of the source arguments must be provided."
     end
     unless institution_key
-      result = key.match(/^institutions\/(\w+)/i)
+      result = key.match(/\Ainstitutions\/(\w+)/i)
       institution_key = result.captures[0] if result
     end
     if institution_key

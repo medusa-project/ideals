@@ -356,7 +356,7 @@ const SubmissionForm = function() {
         metadataForm.find("[name=year]").on("input", function () {
             const input = $(this);
             input.val(input.val().replace(/[^\d]/g, "")); // only numbers
-            input.val(input.val().replace(/^0/g, ""));    // years may not start with 0
+            input.val(input.val().replace(/\A0/g, ""));    // years may not start with 0
         });
     }
 

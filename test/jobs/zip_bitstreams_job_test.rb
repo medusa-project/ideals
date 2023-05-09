@@ -60,7 +60,7 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
     ZipBitstreamsJob.new.perform(bitstreams, download)
 
     download.reload
-    assert download.filename.match?(/^[a-z\d]{16}.zip$/)
+    assert download.filename.match?(/\A[a-z\d]{16}.zip\z/)
   end
 
 end

@@ -6,11 +6,11 @@ class ColorUtils
   #
   def self.css_color?(string)
     return false if string.blank?
-    string.match?(/^#[A-Fa-f0-9]{3}$/) ||                                           # 3-digit hex
-      string.match?(/^#[A-Fa-f0-9]{6}$/) ||                                         # 6-digit hex
-      string.match?(/^rgb\(\d{1,3}%?, *\d{1,3}%?, *\d{1,3}%?\)$/) ||             # rgb()
-      string.match?(/^rgba\(\d{1,3}%?, *\d{1,3}%?, *\d{1,3}%?, *\d?.?\d?\)$/) || # rgba()
-      string.match?(/^[a-z]+$/)                                                  # color name
+    string.match?(/\A#[A-Fa-f0-9]{3}\z/) ||                                        # 3-digit hex
+      string.match?(/\A#[A-Fa-f0-9]{6}\z/) ||                                      # 6-digit hex
+      string.match?(/\Argb\(\d{1,3}%?, *\d{1,3}%?, *\d{1,3}%?\)\z/) ||             # rgb()
+      string.match?(/\Argba\(\d{1,3}%?, *\d{1,3}%?, *\d{1,3}%?, *\d?.?\d?\)\z/) || # rgba()
+      string.match?(/\A[a-z]+\z/)                                                  # color name
   end
 
   ##

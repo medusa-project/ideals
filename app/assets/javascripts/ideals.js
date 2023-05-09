@@ -204,7 +204,7 @@ const IDEALS = {
     Chart: function(canvas, chart_data, color) {
         // X axis labels
         const labels = $.map(chart_data, function(n, i) {
-            const regex = /^(\d+)-(\d+)-(\d+)/;
+            const regex = /\A(\d+)-(\d+)-(\d+)/;
             const matches = regex.exec(n.month);
             return matches[2] + "/" + matches[1];
         });
