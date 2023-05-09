@@ -585,7 +585,7 @@ class Collection < ApplicationRecord
   # Ensures that the instance has a primary unit.
   #
   def validate_primary_unit
-    if unit_collection_memberships.select(&:primary).empty?
+    if unit_collection_memberships.any? && !primary_unit
       errors.add(:primary_unit, "is not set")
       throw(:abort)
     end
