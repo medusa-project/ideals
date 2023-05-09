@@ -448,15 +448,6 @@ class CollectionTest < ActiveSupport::TestCase
     end
   end
 
-  test "parent_id cannot be set to an ID of a collection in a different unit" do
-    other = collections(:uiuc_collection2)
-    assert_not_equal @instance.primary_unit, other.primary_unit
-    @instance.parent_id = other.id
-    assert_raises ActiveRecord::RecordInvalid do
-      @instance.save!
-    end
-  end
-
   # reindex() (Indexed concern)
 
   test "reindex reindexes the instance" do

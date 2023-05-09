@@ -574,9 +574,6 @@ class Collection < ApplicationRecord
       elsif all_children.map(&:id).include?(self.parent_id)
         errors.add(:parent_id, "cannot be set to a child collection")
         throw(:abort)
-      elsif self.parent.primary_unit != self.primary_unit
-        errors.add(:parent_id, "cannot be set to a collection in a different unit")
-        throw(:abort)
       end
     end
   end
