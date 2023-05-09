@@ -183,7 +183,7 @@ module ItemsHelper
     html <<           'Exempted User Groups<br>'
     if embargo && embargo.user_groups.any?
       embargo.user_groups.each_with_index do |group, index2|
-        html << embargo_user_group_row(group: group, index: index2)
+        html << embargo_user_group_row(institution: institution, group: group, index: index2)
       end
     else
       html << embargo_user_group_row(institution: institution)
@@ -298,8 +298,7 @@ module ItemsHelper
 
   private
 
-  def embargo_user_group_row(group: nil, institution: nil, index: 0)
-    institution ||= group&.institution
+  def embargo_user_group_row(institution:, group: nil, index: 0)
     html  = StringIO.new
     html << "<div class=\"user-group input-group mb-2\" "\
                   "style=\"#{group ? "" : "display: none"}\">"
