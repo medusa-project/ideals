@@ -10,20 +10,18 @@
       = f.text_field :shibboleth_org_dn, class: "form-control"
       %p.form-text
         = icon_for(:info)
-        When filled in, this will enable Shibboleth authentication for this
+        When filled in, Shibboleth authentication will be enabled for this
         institution.
     - else
       = f.label :openathens_sp_entity_id, "OpenAthens SP Entity ID"
       = f.text_field :openathens_sp_entity_id, class: "form-control"
       %p.form-text
         = icon_for(:info)
-        When filled in, this will enable OpenAthens authentication for this
-        institution.
+        When filled in, OpenAthens authentication will be enabled for this
+        institution. After changing this value, you should also click the "Refresh
+        OpenAthens Metadata" button on the page underneath.
 
   - if f.object.key != "uiuc"
-    .mb-3
-      = f.label :openathens_idp_sso_service_url, "OpenAthens SSO Service URL"
-      = f.text_field :openathens_idp_sso_service_url, class: "form-control"
     .mb-3
       = f.label :openathens_email_attribute, "OpenAthens Email Attribute"
       = f.text_field :openathens_email_attribute, class: "form-control"
@@ -33,9 +31,6 @@
     .mb-3
       = f.label :openathens_last_name_attribute, "OpenAthens Last Name Attribute"
       = f.text_field :openathens_last_name_attribute, class: "form-control"
-    .mb-3
-      = f.label :openathens_idp_cert, "OpenAthens IDP Certificate"
-      = f.text_area :openathens_idp_cert, rows: 10, class: "form-control"
 
   .clearfix
     .float-end

@@ -447,6 +447,50 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # refresh_openathens_metadata()
+
+  test "refresh_openathens_metadata() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch institution_refresh_openathens_metadata_path(@institution)
+    assert_response :not_found
+  end
+
+  test "refresh_openathens_metadata() redirects to root page for logged-out users" do
+    patch institution_refresh_openathens_metadata_path(@institution)
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "refresh_openathens_metadata() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    patch institution_refresh_openathens_metadata_path(@institution)
+    assert_response :forbidden
+  end
+
+  test "refresh_openathens_metadata() updates an institution's OAF metadata" do
+    skip # TODO: why isn't the job executing in the test environment?
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    patch institution_refresh_openathens_metadata_path(institution)
+    institution.reload
+    assert_not_nil institution.openathens_idp_cert
+  end
+
+  test "refresh_openathens_metadata() returns HTTP 302" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    patch institution_refresh_openathens_metadata_path(institution)
+    assert_redirected_to institution_path(institution)
+  end
+
+  test "refresh_openathens_metadata() returns HTTP 404 for nonexistent
+  institutions" do
+    log_in_as(users(:southwest_admin))
+    patch "/institutions/bogus/refresh-openathens-metadata"
+    assert_response :not_found
+  end
+
   # remove_banner_image()
 
   test "remove_banner_image() returns HTTP 404 for unscoped requests" do

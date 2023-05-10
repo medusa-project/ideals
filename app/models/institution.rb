@@ -63,11 +63,11 @@
 #                                     latitude.
 # * `link_color`                      Theme hyperlink color.
 # * `link_hover_color`                Theme hover-over-hyperlink color.
-# * `longitude_degrees`               The degrees component of the institution's
+# * `longitude_degrees`               Degrees component of the institution's
 #                                     longitude.
-# * `longitude_minutes`               The minutes component of the institution's
+# * `longitude_minutes`               Minutes component of the institution's
 #                                     longitude.
-# * `longitude_seconds`               The seconds component of the institution's
+# * `longitude_seconds`               Seconds component of the institution's
 #                                     longitude.
 # * `main_website_url`                URL of the institution's main website.
 # * `medusa_file_group_id`            ID of the Medusa file group in which the
@@ -106,6 +106,7 @@
 class Institution < ApplicationRecord
 
   include Breadcrumb
+  include Openathens
 
   belongs_to :author_element, class_name: "RegisteredElement",
              foreign_key: :author_element_id, optional: true

@@ -613,6 +613,59 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
+  # refresh_openathens_metadata?()
+
+  test "refresh_openathens_metadata?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.refresh_openathens_metadata?
+  end
+
+  test "refresh_openathens_metadata?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.refresh_openathens_metadata?
+  end
+
+  test "refresh_openathens_metadata?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.refresh_openathens_metadata?
+  end
+
+  test "refresh_openathens_metadata?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.refresh_openathens_metadata?
+  end
+
+  test "refresh_openathens_metadata?() does not authorize administrators of
+  different institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.refresh_openathens_metadata?
+  end
+
+  test "refresh_openathens_metadata?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.refresh_openathens_metadata?
+  end
+
   # remove_banner_image?()
 
   test "remove_banner_image?() returns false with a nil request context" do

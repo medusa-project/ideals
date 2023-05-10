@@ -1,5 +1,11 @@
 .btn-group.float-end{role: "group"}
   - if policy(@institution).edit_authentication?
+    - if @institution.openathens_sp_entity_id.present?
+      -# Refresh OpenAthens Metadata button
+      = link_to(institution_refresh_openathens_metadata_path,
+                class: "btn btn-light", method: :patch) do
+        %i.fa.fa-sync
+        Refresh OpenAthens Metadata
     -# Edit button
     %button.btn.btn-light.edit-authentication{"data-bs-target":       "#edit-authentication-modal",
                                               "data-bs-toggle":       "modal",
@@ -24,7 +30,35 @@
       - if @institution.openathens_sp_entity_id.present?
         %code= @institution.openathens_sp_entity_id
       - else
-        Not Set
+        = boolean(false, style: :word, false_value: "NOT SET")
+    %dt SAML Metadata URL
+    %dd
+      - if @institution.openathens_sp_entity_id.present?
+        = link_to("#{@institution.scope_url}/auth/saml/metadata",
+                  "#{@institution.scope_url}/auth/saml/metadata")
+      - else
+        = boolean(false, style: :word, false_value: "NOT AVAILABLE")
+    %dt OpenAthens Email Attribute
+    %dd
+      - if @institution.openathens_email_attribute.present?
+        %code= @institution.openathens_email_attribute
+      - else
+        = boolean(false, style: :word, false_value: "NOT SET")
+    %dt OpenAthens First Name Attribute
+    %dd
+      - if @institution.openathens_first_name_attribute.present?
+        %code= @institution.openathens_first_name_attribute
+      - else
+        = boolean(false, style: :word, false_value: "NOT SET")
+    %dt OpenAthens Last Name Attribute
+    %dd
+      - if @institution.openathens_last_name_attribute.present?
+        %code= @institution.openathens_last_name_attribute
+      - else
+        = boolean(false, style: :word, false_value: "NOT SET")
+
+- if @institution.key != "uiuc"
+  %dl
     %dt OpenAthens SSO Service URL
     %dd
       - if @institution.openathens_idp_sso_service_url.present?
@@ -33,32 +67,7 @@
         Not Set
     %dt OpenAthens IdP Certificate
     %dd
-      - if @institution.openathens_idp_cert.present?
-        Present
-      - else
-        Not Set
-    %dt OpenAthens Email Attribute
-    %dd
-      - if @institution.openathens_email_attribute.present?
-        %code= @institution.openathens_email_attribute
-      - else
-        Not Set
-    %dt OpenAthens First Name Attribute
-    %dd
-      - if @institution.openathens_first_name_attribute.present?
-        %code= @institution.openathens_first_name_attribute
-      - else
-        Not Set
-    %dt OpenAthens Last Name Attribute
-    %dd
-      - if @institution.openathens_last_name_attribute.present?
-        %code= @institution.openathens_last_name_attribute
-      - else
-        Not Set
-    %dt SAML Metadata URL
-    %dd
-      - if @institution.openathens_sp_entity_id.present?
-        = link_to("#{@institution.scope_url}/auth/saml/metadata",
-                  "#{@institution.scope_url}/auth/saml/metadata")
-      - else
-        Not Available
+      = boolean(@institution.openathens_idp_cert.present?,
+                style:       :word,
+                true_value:  "PRESENT",
+                false_value: "NOT PRESENT")

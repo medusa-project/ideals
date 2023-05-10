@@ -67,6 +67,10 @@ class InstitutionPolicy < ApplicationPolicy
     effective_sysadmin(@user, @role_limit)
   end
 
+  def refresh_openathens_metadata
+    edit_authentication
+  end
+
   def remove_banner_image
     update_settings
   end

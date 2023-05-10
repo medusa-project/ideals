@@ -190,6 +190,22 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Responds to `PATCH /institutions/:id/refresh-openathens-metadata`
+  #
+  def refresh_openathens_metadata
+    RefreshOpenathensMetadataJob.perform_later(@institution)
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    toast!(title: "Refreshing metadata",
+           message: "This institution's OpenAthens Federation metadata is "\
+                    "being refreshed in the background. Please wait a moment "\
+                    "and then reload the page.")
+  ensure
+    redirect_back fallback_location: @institution
+  end
+
+  ##
   # Responds to `DELETE /institutions/:id/banner-image`
   #
   def remove_banner_image
@@ -604,8 +620,6 @@ class InstitutionsController < ApplicationController
                                         :openathens_email_attribute,
                                         :openathens_first_name_attribute,
                                         :openathens_last_name_attribute,
-                                        :openathens_idp_cert,
-                                        :openathens_idp_sso_service_url,
                                         :openathens_sp_entity_id,
                                         :shibboleth_org_dn,
                                         :title_element_id,

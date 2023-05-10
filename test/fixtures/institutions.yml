@@ -8,10 +8,6 @@ empty:
   fqdn:                            empty.edu
   name:                            Institution With No Users Or Units
   service_name:                    IDEALS
-  openathens_sp_entity_id:         empty
-  openathens_email_attribute:      emailAddress
-  openathens_first_name_attribute: firstName
-  openathens_last_name_attribute:  lastName
   main_website_url:                https://empty.edu
   feedback_email:                  feedback@empty.edu
   outgoing_message_queue:          empty_to_nowhere
@@ -29,8 +25,9 @@ example:
   fqdn:                            example.edu
   name:                            Example University
   service_name:                    IDEALS
-  openathens_sp_entity_id:         example
+  openathens_sp_entity_id:         https://example.edu
   openathens_email_attribute:      emailAddress
+  openathens_first_name_attribute: firstName
   openathens_last_name_attribute:  lastName
   main_website_url:                https://example.edu
   feedback_email:                  feedback@example.edu
@@ -46,10 +43,10 @@ example:
 
 northeast:
   key:                             northeast
-  fqdn:                            northeast.edu
+  fqdn:                            https://northeast.edu
   name:                            Northeast University
   service_name:                    IDEALS
-  openathens_sp_entity_id:         northeast
+  openathens_sp_entity_id:         northeast.edu
   openathens_email_attribute:      emailAddress
   openathens_first_name_attribute: firstName
   openathens_last_name_attribute:  lastName
@@ -72,7 +69,7 @@ southwest:
   fqdn:                            southwest.edu
   name:                            Southwest University
   service_name:                    IDEALS
-  openathens_sp_entity_id:         southwest
+  openathens_sp_entity_id:         https://southwest.edu
   openathens_email_attribute:      emailAddress
   openathens_first_name_attribute: firstName
   openathens_last_name_attribute:  lastName
